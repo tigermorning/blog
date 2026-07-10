@@ -6,6 +6,7 @@
   --muted: #8c7460;
   --accent: #c0694a;
   --accent-green: #7c9473;
+  --border: #d8c4a0;
   --font-heading: 'Cormorant Garamond', 'Nanum Myeongjo', Georgia, serif;
   --font-body: 'Cormorant Garamond', 'Nanum Myeongjo', Georgia, serif;
 }
@@ -32,6 +33,7 @@ html[lang="zh"] {
     --muted: #b8a888;
     --accent: #e08a63;
     --accent-green: #9ab591;
+    --border: #4a3f30;
   }
 }
 
@@ -61,7 +63,8 @@ main,
 }
 
 .site-header {
-  padding: 3rem 1.5rem 1rem;
+  padding: 3rem 1.5rem 1.5rem;
+  border-bottom: 1px solid var(--border);
 }
 
 .site-header .container {
@@ -98,13 +101,8 @@ main,
 
 main {
   max-width: 640px;
-  margin: 2.5rem auto 4rem;
-  padding: 3rem 2.5rem 4rem;
-  border-image-source: url('assets/sketchy-frame.svg');
-  border-image-slice: 46 fill;
-  border-image-width: 34px;
-  border-image-repeat: stretch;
-  border-style: solid;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 4rem;
 }
 
 main h1 {
@@ -136,4 +134,5 @@ main p {
   color: var(--muted);
   font-size: 0.85rem;
   font-family: var(--font-body);
+  border-top: 1px solid var(--border);
 }
