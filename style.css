@@ -1,19 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Hahmlet:wght@600;700&family=Gowun+Batang&family=Playfair+Display:wght@600;700&family=EB+Garamond:wght@400;600&family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Brush+Script&family=Nanum+Myeongjo:wght@400;700&family=Playfair+Display:wght@600;700&family=EB+Garamond:wght@400;600&family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&display=swap');
 
 :root {
-  --bg: #f3e6c9;
-  --ink: #4a3324;
-  --muted: #8c7460;
-  --accent: #c0694a;
-  --accent-green: #7c9473;
-  --border: #d8c4a0;
-  --font-heading: 'Playfair Display', 'Hahmlet', Georgia, serif;
-  --font-body: 'EB Garamond', 'Gowun Batang', Georgia, serif;
+  --bg: #ead9ad;
+  --ink: #3b2418;
+  --muted: #6b5643;
+  --accent: #a8432a;
+  --accent-green: #5f7a52;
+  --border: #c2a668;
+  --font-heading: 'Playfair Display', 'Nanum Brush Script', Georgia, serif;
+  --font-body: 'EB Garamond', 'Nanum Myeongjo', Georgia, serif;
 }
 
 html[lang="ko"] {
-  --font-heading: 'Hahmlet', serif;
-  --font-body: 'Gowun Batang', serif;
+  --font-heading: 'Nanum Brush Script', serif;
+  --font-body: 'Nanum Myeongjo', serif;
 }
 
 html[lang="en"] {
@@ -28,12 +28,12 @@ html[lang="zh"] {
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #2b241d;
-    --ink: #ecdfc8;
-    --muted: #b8a888;
-    --accent: #e08a63;
-    --accent-green: #9ab591;
-    --border: #4a3f30;
+    --bg: #201811;
+    --ink: #f2e4c4;
+    --muted: #c7ac82;
+    --accent: #e8703f;
+    --accent-green: #7fa06e;
+    --border: #4a3b26;
   }
 }
 
@@ -97,6 +97,15 @@ main,
 .lang-switch a:hover,
 .lang-switch a.active {
   color: var(--accent);
+}
+
+/* 붓글씨체는 획이 가늘어서 제목 크기를 더 키워줘야 우아하게 보임 */
+html[lang="ko"] .site-title {
+  font-size: 2.1rem;
+}
+
+html[lang="ko"] main h1 {
+  font-size: 3.2rem;
 }
 
 main {
