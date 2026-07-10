@@ -1,26 +1,37 @@
-@import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nanum+Myeongjo:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Song+Myung&family=Nanum+Myeongjo:wght@400;700&family=Cormorant+Garamond:wght@400;600;700&family=Noto+Serif+SC:wght@400;700&display=swap');
 
 :root {
   --bg: #f3e6c9;
-  --paper: #f9f0dc;
   --ink: #4a3324;
   --muted: #8c7460;
   --accent: #c0694a;
   --accent-green: #7c9473;
-  --border: #d8c4a0;
-  --shadow: #d8c4a0;
+  --font-heading: 'Cormorant Garamond', 'Nanum Myeongjo', Georgia, serif;
+  --font-body: 'Cormorant Garamond', 'Nanum Myeongjo', Georgia, serif;
+}
+
+html[lang="ko"] {
+  --font-heading: 'Song Myung', 'Nanum Myeongjo', serif;
+  --font-body: 'Nanum Myeongjo', serif;
+}
+
+html[lang="en"] {
+  --font-heading: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Cormorant Garamond', Georgia, serif;
+}
+
+html[lang="zh"] {
+  --font-heading: 'Noto Serif SC', serif;
+  --font-body: 'Noto Serif SC', serif;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #2b241d;
-    --paper: #342b22;
     --ink: #ecdfc8;
     --muted: #b8a888;
     --accent: #e08a63;
     --accent-green: #9ab591;
-    --border: #4a3f30;
-    --shadow: #1c1712;
   }
 }
 
@@ -28,62 +39,56 @@
   box-sizing: border-box;
 }
 
-body {
-  margin: 0;
-  background: var(--bg);
-  background-image:
-    radial-gradient(circle at 20% 20%, rgba(0, 0, 0, 0.03) 0, transparent 40%),
-    radial-gradient(circle at 80% 60%, rgba(0, 0, 0, 0.03) 0, transparent 45%);
-  color: var(--ink);
-  font-family: 'Nanum Myeongjo', 'Noto Serif KR', Georgia, serif;
-  line-height: 1.8;
+html, body {
+  overflow-x: hidden;
 }
 
-.divider {
-  display: block;
-  max-width: 700px;
-  margin: 0 auto;
-  opacity: 0.8;
+body {
+  position: relative;
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  line-height: 1.85;
+}
+
+.site-header,
+main,
+.site-footer {
+  position: relative;
+  z-index: 1;
 }
 
 .site-header {
-  padding: 1.5rem 1rem 0.5rem;
+  padding: 3rem 1.5rem 1rem;
 }
 
 .site-header .container {
-  max-width: 700px;
+  max-width: 640px;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: baseline;
   flex-wrap: wrap;
   gap: 0.75rem;
 }
 
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.header-left img {
-  display: block;
-}
-
 .site-title {
-  font-family: 'Gaegu', cursive;
-  font-size: 1.8rem;
+  font-family: var(--font-heading);
+  font-size: 1.7rem;
   font-weight: 700;
   text-decoration: none;
   color: var(--ink);
+  letter-spacing: 0.02em;
 }
 
 .lang-switch a {
   color: var(--muted);
   text-decoration: none;
-  margin-left: 0.75rem;
-  font-size: 0.95rem;
-  font-family: 'Gaegu', cursive;
+  margin-left: 1rem;
+  font-size: 0.9rem;
+  font-family: var(--font-body);
 }
 
 .lang-switch a:hover,
@@ -92,38 +97,43 @@ body {
 }
 
 main {
-  max-width: 700px;
-  margin: 1.5rem auto 3rem;
-  padding: 2rem 2.2rem;
-  background: var(--paper);
-  border: 2px solid var(--border);
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-  box-shadow: 5px 5px 0 var(--shadow);
+  max-width: 640px;
+  margin: 2.5rem auto 4rem;
+  padding: 3rem 2.5rem 4rem;
+  border-image-source: url('assets/sketchy-frame.svg');
+  border-image-slice: 46 fill;
+  border-image-width: 34px;
+  border-image-repeat: stretch;
+  border-style: solid;
 }
 
 main h1 {
-  font-family: 'Gaegu', cursive;
-  font-size: 2.1rem;
-  margin-bottom: 1rem;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 2.6rem;
+  margin-bottom: 1.25rem;
   color: var(--accent);
+  line-height: 1.3;
 }
 
 main p {
-  font-size: 1.08rem;
+  font-size: 1.15rem;
   color: var(--ink);
+  max-width: 34rem;
 }
 
 .post-date {
   color: var(--muted);
   font-size: 0.9rem;
   margin-bottom: 1.5rem;
-  font-family: 'Gaegu', cursive;
+  font-family: var(--font-body);
+  font-style: italic;
 }
 
 .site-footer {
-  padding: 1.5rem 1rem 2rem;
+  padding: 2rem 1.5rem 3rem;
   text-align: center;
   color: var(--muted);
-  font-size: 0.9rem;
-  font-family: 'Gaegu', cursive;
+  font-size: 0.85rem;
+  font-family: var(--font-body);
 }
