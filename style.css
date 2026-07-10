@@ -1,18 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nanum+Myeongjo:wght@400;700&display=swap');
+
 :root {
-  --bg: #ffffff;
-  --fg: #1a1a1a;
-  --muted: #6b6b6b;
-  --accent: #d97706;
-  --border: #e5e5e5;
+  --bg: #f3e6c9;
+  --paper: #f9f0dc;
+  --ink: #4a3324;
+  --muted: #8c7460;
+  --accent: #c0694a;
+  --accent-green: #7c9473;
+  --border: #d8c4a0;
+  --shadow: #d8c4a0;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #16181d;
-    --fg: #e8e8e8;
-    --muted: #9a9a9a;
-    --accent: #f5a742;
-    --border: #2a2d33;
+    --bg: #2b241d;
+    --paper: #342b22;
+    --ink: #ecdfc8;
+    --muted: #b8a888;
+    --accent: #e08a63;
+    --accent-green: #9ab591;
+    --border: #4a3f30;
+    --shadow: #1c1712;
   }
 }
 
@@ -23,15 +31,23 @@
 body {
   margin: 0;
   background: var(--bg);
-  color: var(--fg);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo",
-    "Noto Sans KR", "Malgun Gothic", sans-serif;
-  line-height: 1.7;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(0, 0, 0, 0.03) 0, transparent 40%),
+    radial-gradient(circle at 80% 60%, rgba(0, 0, 0, 0.03) 0, transparent 45%);
+  color: var(--ink);
+  font-family: 'Nanum Myeongjo', 'Noto Serif KR', Georgia, serif;
+  line-height: 1.8;
+}
+
+.divider {
+  display: block;
+  max-width: 700px;
+  margin: 0 auto;
+  opacity: 0.8;
 }
 
 .site-header {
-  border-bottom: 1px solid var(--border);
-  padding: 1.5rem 1rem;
+  padding: 1.5rem 1rem 0.5rem;
 }
 
 .site-header .container {
@@ -41,21 +57,33 @@ body {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.75rem;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.header-left img {
+  display: block;
 }
 
 .site-title {
-  font-size: 1.3rem;
+  font-family: 'Gaegu', cursive;
+  font-size: 1.8rem;
   font-weight: 700;
   text-decoration: none;
-  color: var(--fg);
+  color: var(--ink);
 }
 
 .lang-switch a {
   color: var(--muted);
   text-decoration: none;
   margin-left: 0.75rem;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
+  font-family: 'Gaegu', cursive;
 }
 
 .lang-switch a:hover,
@@ -65,30 +93,37 @@ body {
 
 main {
   max-width: 700px;
-  margin: 0 auto;
-  padding: 2.5rem 1rem;
+  margin: 1.5rem auto 3rem;
+  padding: 2rem 2.2rem;
+  background: var(--paper);
+  border: 2px solid var(--border);
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  box-shadow: 5px 5px 0 var(--shadow);
 }
 
 main h1 {
-  font-size: 2rem;
+  font-family: 'Gaegu', cursive;
+  font-size: 2.1rem;
   margin-bottom: 1rem;
+  color: var(--accent);
 }
 
 main p {
-  font-size: 1.05rem;
-  color: var(--fg);
+  font-size: 1.08rem;
+  color: var(--ink);
 }
 
 .post-date {
   color: var(--muted);
   font-size: 0.9rem;
   margin-bottom: 1.5rem;
+  font-family: 'Gaegu', cursive;
 }
 
 .site-footer {
-  border-top: 1px solid var(--border);
-  padding: 1.5rem 1rem;
+  padding: 1.5rem 1rem 2rem;
   text-align: center;
   color: var(--muted);
-  font-size: 0.85rem;
+  font-size: 0.9rem;
+  font-family: 'Gaegu', cursive;
 }
