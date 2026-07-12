@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Git 브랜치와 병합(merge) 초보자 실습 (6) — Git이 뭔지도 몰랐던 내가 하루 만에 블로그를 만들기까지 - Tigermorning</title>
+  <meta name="description" content="Git 브랜치(branch)와 병합(merge)이 뭔지 초보자가 직접 실습해본 후기. 브랜치를 만들고, 작업하고, main에 합치는 과정을 순서대로 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Git 브랜치와 병합(merge) 초보자 실습 (6) — Git이 뭔지도 몰랐던 내가 하루 만에 블로그를 만들기까지">
+  <meta property="og:description" content="Git 브랜치(branch)와 병합(merge)이 뭔지 초보자가 직접 실습해본 후기. 브랜치를 만들고, 작업하고, main에 합치는 과정을 순서대로 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/learning-git-6.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <main>
+    <h1>Git 브랜치와 병합(merge) 초보자 실습 (6) — Git이 뭔지도 몰랐던 내가 하루 만에 블로그를 만들기까지</h1>
+    <p class="post-date">2026. 7. 12.</p>
+
+    <p>지금까지는 늘 <code>main</code>이라는 한 갈래에서만 작업했어요. 이번엔 Git에서 정말 자주 나오는 개념인 <strong>브랜치(branch)</strong>와 <strong>병합(merge)</strong>을 직접 실습해봤어요.</p>
+
+    <a class="post-nav" href="learning-git-5.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">(5) GitHub Actions로 예약 발행 만들기</span>
+    </a>
+
+    <hr>
+
+    <h2>1. 브랜치가 뭔가요?</h2>
+    <p><strong>브랜치</strong>는 원본(<code>main</code>)을 안 건드리고, 안전하게 실험해볼 수 있는 "다른 갈래"예요. 문서를 고칠 때 원본은 그대로 두고 사본을 만들어서 그 사본에 마음대로 낙서해보는 것과 비슷해요.</p>
+
+    <h2>2. 병합(merge)이 뭔가요?</h2>
+    <p>그 갈래(브랜치)에서 작업한 결과가 마음에 들면, 다시 원본(<code>main</code>)에 합쳐 넣는 걸 <strong>병합(merge)</strong>이라고 해요.</p>
+
+    <blockquote>
+      <p><strong>중요한 오해 하나</strong>: 브랜치는 "거쳐가는 임시 과정"이 아니라, 그 안의 커밋은 진짜로 저장돼요. 다만 <code>main</code>과는 분리되어 있어서, <strong>병합하기 전까지는 실제 결과(예: 배포되는 웹사이트)에 반영이 안 될 뿐</strong>이에요.</p>
+    </blockquote>
+
+    <h2>3. 브랜치 만들고 이동하기</h2>
+
+    <blockquote>
+      <p>🎨 <strong>바이브 코딩으로</strong>: Claude에게 "새 브랜치를 만들어서 그쪽으로 이동해줘"라고 말하면 돼요.</p>
+    </blockquote>
+
+    <h3>🔍 궁금하다면: 실제로 어떤 명령어일까?</h3>
+    <pre><code>git checkout -b practice-branch</code></pre>
+    <p><code>checkout -b</code>는 "브랜치 만들기"와 "그 브랜치로 이동하기"를 한 번에 해주는 명령어예요.</p>
+
+    <h2>4. 그 브랜치 안에서만 파일 수정하고 커밋하기</h2>
+    <p>이 상태에서 파일을 수정하고 커밋하면, 그 기록은 <code>practice-branch</code>에만 남아요. 신기하게도 다시 <code>main</code>으로 돌아가서 확인해보면, 방금 수정한 내용이 <strong>안 보여요</strong> — 브랜치가 서로 격리되어 있다는 증거예요.</p>
+
+    <h2>5. main으로 돌아가서 병합하기</h2>
+
+    <blockquote>
+      <p>🎨 <strong>바이브 코딩으로</strong>: Claude에게 "main으로 돌아가서 이 브랜치를 합쳐줘"라고 말하면 돼요.</p>
+    </blockquote>
+
+    <h3>🔍 궁금하다면: 실제로 어떤 명령어일까?</h3>
+    <pre><code>git checkout main
+git merge practice-branch
+git branch -d practice-branch</code></pre>
+    <p><code>merge</code>로 합친 다음, <code>branch -d</code>로 다 쓴 브랜치를 정리했어요. 여기서 또 헷갈렸던 게, "브랜치를 지우면 그 안의 커밋 기록도 같이 지워지는 거 아니야?"였는데 — <strong>아니에요.</strong> <code>branch -d</code>는 그냥 "브랜치 이름표(책갈피)"만 떼는 거고, 이미 <code>main</code>에 합쳐진 커밋 기록은 그대로 남아있어요.</p>
+
+    <h2>6. 왜 그냥 main에서 바로 작업하면 안 되나요?</h2>
+    <p>사실 혼자 작업할 땐 브랜치 없이 <code>main</code>에서 바로 고쳐도 결과는 똑같아요. 브랜치가 진가를 발휘하는 건:</p>
+    <ul>
+      <li>실험적인 기능을 만들다가 잘못돼도 <code>main</code>은 안전하게 유지하고 싶을 때</li>
+      <li>여러 사람이 동시에 각자 다른 부분을 작업할 때</li>
+    </ul>
+
+    <hr>
+
+    <p>브랜치와 병합까지 익히고 나니, Git의 핵심 개념은 거의 다 훑은 것 같아요. 처음엔 "Git이 뭐예요?"부터 시작했는데, 여기까지 오게 됐네요.</p>
+  </main>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
