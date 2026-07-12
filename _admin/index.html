@@ -64,24 +64,80 @@
       return m[1].replace(/<[^>]+>/g, '').trim();
     }
 
+    // 한국시간(KST) 기준 09/15/21시 슬롯 중, 지금 이후로 남은 슬롯을 n개 계산
+    function nextSlotsKST(n) {
+      const hours = [9, 15, 21];
+      const nowKST = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
+      const results = [];
+      let dayOffset = 0;
+      while (results.length < n) {
+        const base = new Date(nowKST);
+        base.setDate(base.getDate() + dayOffset);
+        base.setHours(0, 0, 0, 0);
+        for (const h of hours) {
+          const slot = new Date(base);
+          slot.setHours(h, 0, 0, 0);
+          if (slot > nowKST) {
+            results.push(slot);
+            if (results.length === n) break;
+          }
+        }
+        dayOffset++;
+      }
+      return results;
+    }
+
+    function fmtKST(d) {
+      const mm = d.getMonth() + 1;
+      const dd = d.getDate();
+      const hh = String(d.getHours()).padStart(2, '0');
+      return `${mm}월 ${dd}일 ${hh}시`;
+    }
+
     async function loadQueue() {
       const el = document.getElementById('queue-list');
+
       const data = await ghApi('_drafts/queue.txt');
-      if (!data || !data.content) {
-        el.innerHTML = '<p>대기 중인 글이 없습니다.</p>';
-        return;
+      const queuedLines = (data && data.content)
+        ? b64DecodeUtf8(data.content).split('\n').map(l => l.trim()).filter(Boolean)
+        : [];
+
+      // _drafts 안의 모든 초안 파일 (큐에 있든 없든 전부)
+      let allDrafts = [];
+      for (const lang of LANGS) {
+        const files = await ghApi(`_drafts/${lang}`);
+        if (files && Array.isArray(files)) {
+          for (const f of files) {
+            if (f.name.endsWith('.html')) allDrafts.push(`${lang}/${f.name}`);
+          }
+        }
       }
-      const lines = b64DecodeUtf8(data.content).split('\n').map(l => l.trim()).filter(Boolean);
-      if (lines.length === 0) {
-        el.innerHTML = '<p>대기 중인 글이 없습니다.</p>';
-        return;
+      const notQueued = allDrafts.filter(p => !queuedLines.includes(p));
+
+      let html = '';
+
+      if (queuedLines.length > 0) {
+        const slots = nextSlotsKST(queuedLines.length);
+        const items = await Promise.all(queuedLines.map(async (line, i) => {
+          const raw = await fetchRaw(`_drafts/${line}`);
+          const title = extractTitle(raw, line);
+          return `<li><strong>${title}</strong><br><span style="color:var(--muted)">${line} — 예상 발행: ${fmtKST(slots[i])} (KST)</span></li>`;
+        }));
+        html += '<h3>발행 순서 확정 (큐 등록됨)</h3><ol>' + items.join('') + '</ol>';
+      } else {
+        html += '<h3>발행 순서 확정 (큐 등록됨)</h3><p>큐에 등록된 글이 없습니다.</p>';
       }
-      const items = await Promise.all(lines.map(async (line) => {
-        const raw = await fetchRaw(`_drafts/${line}`);
-        const title = extractTitle(raw, line);
-        return `<li><strong>${title}</strong> <span style="color:var(--muted)">— ${line} (발행 대기)</span></li>`;
-      }));
-      el.innerHTML = '<ol>' + items.join('') + '</ol>';
+
+      if (notQueued.length > 0) {
+        const items2 = await Promise.all(notQueued.map(async (path) => {
+          const raw = await fetchRaw(`_drafts/${path}`);
+          const title = extractTitle(raw, path);
+          return `<li><strong>${title}</strong> <span style="color:var(--muted)">— ${path} (작성됨, 아직 큐에 등록 안 됨)</span></li>`;
+        }));
+        html += '<h3>작성됨 · 큐 대기 중</h3><ul>' + items2.join('') + '</ul>';
+      }
+
+      el.innerHTML = html;
     }
 
     async function loadPublished() {
