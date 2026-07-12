@@ -1,0 +1,20 @@
+name: Publish scheduled drafts
+
+on:
+  schedule:
+    - cron: '0 22 * * *'   # 매일 UTC 22:00 = 한국시간(KST) 다음날 07:00
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Publish due drafts
+        run: bash .github/scripts/publish-drafts.sh
