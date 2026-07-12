@@ -47,6 +47,23 @@
       return decodeURIComponent(escape(atob(base64.replace(/\n/g, ''))));
     }
 
+    async function fetchRaw(path) {
+      try {
+        const res = await fetch(`https://raw.githubusercontent.com/${REPO}/main/${path}`);
+        if (!res.ok) return null;
+        return await res.text();
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function extractTitle(html, fallback) {
+      if (!html) return fallback;
+      const m = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
+      if (!m) return fallback;
+      return m[1].replace(/<[^>]+>/g, '').trim();
+    }
+
     async function loadQueue() {
       const el = document.getElementById('queue-list');
       const data = await ghApi('_drafts/queue.txt');
@@ -59,7 +76,12 @@
         el.innerHTML = '<p>대기 중인 글이 없습니다.</p>';
         return;
       }
-      el.innerHTML = '<ol>' + lines.map(l => `<li><code>${l}</code> (발행 대기)</li>`).join('') + '</ol>';
+      const items = await Promise.all(lines.map(async (line) => {
+        const raw = await fetchRaw(`_drafts/${line}`);
+        const title = extractTitle(raw, line);
+        return `<li><strong>${title}</strong> <span style="color:var(--muted)">— ${line} (발행 대기)</span></li>`;
+      }));
+      el.innerHTML = '<ol>' + items.join('') + '</ol>';
     }
 
     async function loadPublished() {
@@ -70,9 +92,12 @@
         if (!files || !Array.isArray(files)) continue;
         const posts = files.filter(f => f.name.endsWith('.html') && f.name !== 'index.html');
         if (posts.length === 0) continue;
-        html += `<h3>${lang}</h3><ul>` + posts.map(f =>
-          `<li><a href="../${lang}/${f.name}" target="_blank" rel="noopener">${f.name}</a></li>`
-        ).join('') + '</ul>';
+        const items = await Promise.all(posts.map(async (f) => {
+          const raw = await fetchRaw(`${lang}/${f.name}`);
+          const title = extractTitle(raw, f.name);
+          return `<li><a href="../${lang}/${f.name}" target="_blank" rel="noopener">${title}</a></li>`;
+        }));
+        html += `<h3>${lang}</h3><ul>${items.join('')}</ul>`;
       }
       el.innerHTML = html || '<p>발행된 글이 없습니다.</p>';
     }
