@@ -2,7 +2,9 @@ name: Publish scheduled drafts
 
 on:
   schedule:
-    - cron: '0 22 * * *'   # 매일 UTC 22:00 = 한국시간(KST) 다음날 07:00
+    - cron: '0 0 * * *'   # 한국시간(KST) 09:00 — 대기열에서 1개 발행
+    - cron: '0 4 * * *'   # 한국시간(KST) 13:00 — 대기열에서 1개 발행
+    - cron: '0 8 * * *'   # 한국시간(KST) 17:00 — 대기열에서 1개 발행
   workflow_dispatch: {}
 
 permissions:
@@ -16,5 +18,5 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Publish due drafts
+      - name: Publish next queued draft
         run: bash .github/scripts/publish-drafts.sh
