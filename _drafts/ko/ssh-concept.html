@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>SSH는 어떻게 "나"를 증명할까? 공개키·개인키 원리 — Tigermorning</title>
+  <meta name="description" content="SSH가 비밀번호 없이 어떻게 나를 인증하는지, 공개키와 개인키가 무엇인지, 접속할 때마다 무슨 일이 일어나는지 도장 비유로 쉽게 설명합니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="SSH는 어떻게 &quot;나&quot;를 증명할까? 공개키·개인키 원리">
+  <meta property="og:description" content="SSH가 비밀번호 없이 어떻게 나를 인증하는지, 공개키와 개인키가 무엇인지, 접속할 때마다 무슨 일이 일어나는지 도장 비유로 쉽게 설명합니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/ssh-concept.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <main>
+    <h1>SSH는 어떻게 "나"를 증명할까? 공개키·개인키 원리</h1>
+    <p class="post-date">2026. 7. 12.</p>
+
+    <p>GitHub에 SSH로 연결하면서 궁금했어요. 비밀번호도 안 쳤는데, 어떻게 "이 컴퓨터가 진짜 내 컴퓨터"라는 걸 증명하는 걸까요?</p>
+
+    <h2>SSH가 뭔데?</h2>
+    <p><strong>SSH(Secure Shell)</strong>는 두 컴퓨터가 인터넷을 통해 안전하게(암호화해서) 통신할 수 있게 해주는 프로토콜이에요. GitHub 같은 서버에 접속할 때, 비밀번호 대신 미리 만들어둔 <strong>열쇠 한 쌍</strong>으로 자동 인증을 해줘요.</p>
+    <ul>
+      <li><strong>개인키(private key)</strong>: 내 컴퓨터에만 보관, 절대 공유 X (도장 그 자체)</li>
+      <li><strong>공개키(public key)</strong>: 상대 서버(GitHub 등)에 미리 등록해두는 것 (도장의 인주 샘플)</li>
+    </ul>
+
+    <h2>실제로 "나"라는 걸 어떻게 증명하나요?</h2>
+    <p>비밀번호처럼 값 자체를 주고받는 게 아니에요. 접속할 때마다 이런 순서로 진행돼요.</p>
+    <ol>
+      <li>서버가 랜덤한 데이터를 하나 만들어서 나에게 보냄 — "이거에 서명해봐"</li>
+      <li>내 컴퓨터가 <strong>개인키</strong>로 그 자리에서 즉석 전자서명을 만들어서 보냄</li>
+      <li>서버는 미리 등록된 <strong>공개키</strong>로 그 서명이 맞는지 수학적으로 검증</li>
+    </ol>
+    <p>검증되면 인증 성공이에요. 핵심은, 실제로 오가는 게 "비밀번호"가 아니라 <strong>"그 문제를 풀 수 있는지 여부"</strong>라는 점이에요.</p>
+
+    <blockquote>
+      <p><strong>비유하자면:</strong> 서버가 무작위 문서 한 장을 주면서 "여기 서명해봐"라고 함 → 나는 나만 가진 도장(개인키)으로 찍음 → 서버는 등록된 인주 샘플(공개키)과 대조해서 확인. 도장 자체는 절대 보여주지 않고, 찍힌 자국(서명)만 매번 새로 만들어서 보여주는 셈이에요.</p>
+    </blockquote>
+
+    <h2>등록한 건 "공개키"지 "서명"이 아니에요</h2>
+    <p>여기서 헷갈리기 쉬운 부분이 있어요. GitHub에 등록하는 건 공개키(인주 샘플)를 딱 한 번 등록해두는 거고, <strong>서명은 접속할 때마다 그 자리에서 매번 새로 만들어지는 일회용</strong>이에요. 그래서 도청당해도 그 서명 값을 재사용할 수 없어요 — 다음번엔 서버가 또 다른 랜덤 데이터를 던지니까요.</p>
+
+    <h2>그럼 패스키(지문/얼굴 로그인)도 같은 원리인가요?</h2>
+    <p>맞아요! 요즘 구글·애플 로그인에서 쓰는 <strong>패스키(Passkey)</strong>도 SSH와 똑같은 공개키 암호 방식이에요. 지문/얼굴인식은 서버로 전송되는 게 아니라, 그냥 내 폰 안에 있는 개인키를 꺼내 쓰기 위한 잠금 해제 수단일 뿐이에요.</p>
+
+    <p>실제로 SSH 키를 만들고 GitHub에 등록하는 전 과정은 <a href="learning-git-2.html">시리즈 2편</a>에서 순서대로 다뤘어요.</p>
+  </main>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>블로그 검색 노출(SEO) 기초 — 해시태그의 진실, sitemap, 메타 설명 — Tigermorning</title>
+  <meta name="description" content="블로그가 검색에 잘 걸리려면 뭐가 필요한지 정리했습니다. 해시태그가 실제로 얼마나 효과 있는지, meta description과 sitemap.xml의 역할을 쉽게 설명합니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="블로그 검색 노출(SEO) 기초 — 해시태그의 진실, sitemap, 메타 설명">
+  <meta property="og:description" content="블로그가 검색에 잘 걸리려면 뭐가 필요한지 정리했습니다. 해시태그가 실제로 얼마나 효과 있는지, meta description과 sitemap.xml의 역할을 쉽게 설명합니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/blog-seo-basics.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <main>
+    <h1>블로그 검색 노출(SEO) 기초 — 해시태그의 진실, sitemap, 메타 설명</h1>
+    <p class="post-date">2026. 7. 12.</p>
+
+    <p>티스토리나 네이버 블로그는 글 밑에 해시태그를 붙이잖아요. 직접 만든 사이트도 그러면 검색이 잘 될 줄 알았는데, 알고 보니 오해가 있었어요.</p>
+
+    <h2>해시태그, 효과 있을까?</h2>
+    <p>티스토리·네이버 블로그의 해시태그는 그 플랫폼 자체의 "태그 검색" 기능과 연결돼 있어서 효과가 있어요. 하지만 <strong>직접 만든 순수 HTML 사이트</strong>에서는, 화면에 <code>#Git #GitHub</code> 같은 걸 붙여놔도 구글이 "이건 태그구나, 특별 취급해줘야지" 하고 인식하는 기능 자체가 없어요. 그냥 페이지에 있는 일반 텍스트로 취급돼요.</p>
+
+    <h2>실제로 효과가 큰 것들</h2>
+    <ol>
+      <li><strong><code>&lt;meta name="description"&gt;</code> 태그</strong>: 구글 검색 결과에 나오는 회색 요약 문구를 직접 지정하는 것. 이게 없으면 구글이 본문에서 아무 문장이나 골라서 보여줘요.</li>
+      <li><strong>제목에 실제 검색될 법한 단어를 앞쪽에 배치</strong>: 구글은 검색 결과에 제목을 보통 앞부분 50~60자 정도만 보여주고 뒤는 잘라버려요. 핵심 키워드가 뒤에 있으면 검색결과에서 잘려서 안 보일 수 있어요.</li>
+      <li><strong>sitemap.xml</strong>: "제 사이트에 이런 페이지들이 있어요"라고 크롤러에게 직접 건네주는 목록 파일. 전체 글 목록 페이지가 없는 사이트일수록 더 중요해요.</li>
+      <li><strong>Open Graph 태그</strong>: 카카오톡·페이스북 등에 링크를 공유했을 때 미리보기 카드(제목/설명/이미지)가 예쁘게 뜨게 해주는 것.</li>
+    </ol>
+
+    <h2>sitemap을 만들어도 자동으로 검색되진 않아요</h2>
+    <p>여기서 흔히 오해하는 부분이 있어요. sitemap.xml 파일이 그 주소에 존재한다는 것만으로는, 구글이 그 존재를 몰라요. 구글에게 알려주는 방법은 두 가지예요.</p>
+    <ul>
+      <li>robots.txt에 sitemap 위치 적어두기 (단, 이건 사이트 맨 루트에 있어야 해서, 하위 경로에 있는 사이트는 이 방법이 안 통해요)</li>
+      <li><strong>Google Search Console에 직접 제출하기</strong></li>
+    </ul>
+    <p>즉, sitemap을 만드는 것과 Search Console에 제출하는 건 별개의 단계예요.</p>
+
+    <h2>Search Console과 애드센스는 별개예요</h2>
+    <p>Search Console은 "구글이 이 사이트를 색인하게 등록"하는 거고, 애드센스는 "이 사이트에 광고를 붙이고 수익을 낼 수 있게 승인"받는 거예요. 다만 같은 구글 계정으로 다른 사이트가 애드센스 심사 중이라면, 새 사이트를 급하게 추가하는 건 신중하게 타이밍을 보는 게 좋아요.</p>
+
+    <p>실제로 이 블로그에 sitemap.xml과 메타 태그를 적용한 과정은 <a href="learning-git-4.html">4편</a>과 <a href="learning-git-5.html">5편</a>에서 다룬 GitHub Pages·자동화 이야기와도 연결돼 있어요.</p>
+  </main>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>

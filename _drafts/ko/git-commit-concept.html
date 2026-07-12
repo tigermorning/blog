@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Git 커밋(commit)이 뭔가요? 저장과 다른 점 — Tigermorning</title>
+  <meta name="description" content="Git commit이 파일 저장(Ctrl+S)과 어떻게 다른지, 왜 이름/이메일을 등록해야 하는지, 저장소 초기화와 무엇이 다른지 개념부터 쉽게 설명합니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Git 커밋(commit)이 뭔가요? 저장과 다른 점">
+  <meta property="og:description" content="Git commit이 파일 저장(Ctrl+S)과 어떻게 다른지, 왜 이름/이메일을 등록해야 하는지, 저장소 초기화와 무엇이 다른지 개념부터 쉽게 설명합니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/git-commit-concept.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <main>
+    <h1>Git 커밋(commit)이 뭔가요? 저장(Ctrl+S)과 뭐가 다를까</h1>
+    <p class="post-date">2026. 7. 12.</p>
+
+    <p>Git을 처음 배우면서 제일 헷갈렸던 단어 하나만 고르라면 단연 <strong>커밋(commit)</strong>이에요. "그냥 저장하는 거 아니야?"라고 생각했는데, 알고 보니 완전히 다른 개념이었어요.</p>
+
+    <h2>저장과 커밋은 뭐가 다른가</h2>
+    <p><strong>저장(Ctrl+S)</strong>은 지금 상태로 파일을 덮어쓰는 거예요. 예전 상태는 사라져요.</p>
+    <p><strong>커밋(commit)</strong>은 "이 시점의 상태를 사진처럼 찍어서 기록으로 남기는 것"이에요. 커밋을 여러 번 하면, 마치 앨범에 사진을 계속 쌓아두는 것처럼 언제든 예전 시점으로 돌아가거나 비교해볼 수 있어요.</p>
+
+    <blockquote>
+      <p>비유하면: 저장은 원고를 계속 고쳐 쓰는 것이고, 커밋은 "이 버전은 완성됐으니 기록으로 남겨두자" 하고 사진을 찍어두는 것이에요.</p>
+    </blockquote>
+
+    <h2>커밋할 때마다 남는 정보</h2>
+    <p>커밋을 하나 남길 때마다 아래 세 가지가 함께 기록돼요.</p>
+    <ol>
+      <li>누가 변경했는지 (이름/이메일)</li>
+      <li>언제 변경했는지</li>
+      <li>무엇을 변경했는지 (커밋 메시지)</li>
+    </ol>
+    <p>그래서 Git을 쓰기 전에 <code>git config --global user.name</code>과 <code>user.email</code>을 등록해야 해요 — 앞으로 만들 모든 커밋에 "이건 내가 한 거다"라는 서명이 남기 때문이에요.</p>
+
+    <h2>흔한 오해: 이게 "저장소 초기화"인가요?</h2>
+    <p>아니에요! <code>git config</code>는 "이 컴퓨터에서 커밋할 때는 항상 이 이름/이메일을 써라"는 <strong>전역 규칙</strong>일 뿐이에요. <strong>저장소(repository)</strong>는 완전히 다른 개념으로, 특정 폴더 하나를 "여기서부터 이력을 관리하겠다"고 선언하는 거예요 (<code>git init</code> 또는 <code>git clone</code>으로 시작).</p>
+    <p>비유하면: config 설정은 "도장을 새로 파서 등록해둔 것"이고, 저장소를 만드는 건 "그 도장을 실제로 쓸 서류철(폴더)을 여는 것"이에요. 도장만 파두고 서류철은 하나도 안 연 상태로는, 아무 기록도 남길 수 없어요.</p>
+
+    <p>더 자세히 실습해보고 싶다면, Git을 처음부터 배운 과정을 정리한 <a href="learning-git-1.html">시리즈 1편</a>과, 실제로 커밋하고 push하는 방법을 다룬 <a href="learning-git-3.html">3편</a>도 함께 보시면 좋아요.</p>
+  </main>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
