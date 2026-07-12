@@ -199,6 +199,37 @@ main hr {
   margin: 2.5rem 0;
 }
 
+.post-nav {
+  display: block;
+  max-width: 34rem;
+  margin-top: 1.5rem;
+  padding: 1.1rem 1.4rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--ink);
+  transition: border-color 0.15s ease;
+}
+
+.post-nav:hover {
+  border-color: var(--accent);
+}
+
+.post-nav .post-nav-label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 0.3rem;
+}
+
+.post-nav .post-nav-title {
+  display: block;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--accent);
+}
+
 .post-date {
   color: var(--muted);
   font-size: 0.9rem;
