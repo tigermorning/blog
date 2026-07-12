@@ -105,6 +105,27 @@ main p {
   max-width: 34rem;
 }
 
+main figure {
+  margin: 1.5rem 0;
+  max-width: 34rem;
+}
+
+main figure img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+main figcaption {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-style: italic;
+}
+
 main h2 {
   font-family: var(--font-heading);
   font-weight: 700;
@@ -148,6 +169,34 @@ main pre code {
   background: none;
   color: inherit;
   padding: 0;
+}
+
+main h3 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin-top: 1.75rem;
+  margin-bottom: 0.5rem;
+  color: var(--accent);
+}
+
+main blockquote {
+  margin: 1.25rem 0;
+  padding: 0.9rem 1.25rem;
+  border-left: 3px solid var(--accent);
+  background: var(--border);
+  max-width: 34rem;
+  font-size: 1.02rem;
+}
+
+main blockquote p {
+  margin: 0;
+}
+
+main hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2.5rem 0;
 }
 
 .post-date {
