@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>AI로 번역 감수 자동화하기 — 내가 만들고 싶은 것 — Tigermorning</title>
+  <meta name="description" content="영상 번역·SDH 자막 신입으로서 AI로 번역 감수(맞춤법·띄어쓰기·외래어 표기 검토)를 자동화하고 싶은 이유와 아이디어를 정리합니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="AI로 번역 감수 자동화하기 — 내가 만들고 싶은 것">
+  <meta property="og:description" content="영상 번역·SDH 자막 신입으로서 AI로 번역 감수(맞춤법·띄어쓰기·외래어 표기 검토)를 자동화하고 싶은 이유와 아이디어를 정리합니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/translation-review-automation-idea.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <main>
+    <h1>AI로 번역 감수 자동화하기 — 내가 만들고 싶은 것</h1>
+    <p class="post-date">2026. 7. 12.</p>
+
+    <p>저는 영상 번역과 SDH 자막(Subtitles for the Deaf and Hard of hearing, 청각장애인을 위한 자막)을 만드는 사람이 되고 싶어요. 그런데 이 바닥에 신규 인력으로 들어가는 게 생각보다 쉽지 않더라고요. 요즘은 AI가 많이 발전해서, 경력자들이 오히려 AI를 적극적으로 활용해 속도와 품질을 같이 끌어올리는 경우가 많아요. 신입인 저는 경력도 없는데 실수까지 잦으면 설 자리가 더 없어지겠다는 생각이 들었어요. 그래서 저도 AI의 도움을 받아서, 부족한 경력을 속도와 정확성으로 메우고 싶다는 생각을 하게 됐어요.</p>
+
+    <h2>왜 하필 "감수"부터인가</h2>
+    <p>번역 실력 자체는 하루아침에 늘지 않아요. 하지만 <strong>번역 감수(맞춤법·띄어쓰기·외래어 표기 검토)</strong>는 이야기가 달라요. 이건 감각이나 경험보다 <strong>정해진 규칙과 표준을 얼마나 꼼꼼히 대조하느냐</strong>의 문제거든요. 그리고 이 부분이야말로 AI가 사람보다 더 잘 할 수 있을 것 같은 영역이에요 — 지치지 않고, 표준국어대사전 전체를 매번 빠짐없이 대조할 수 있으니까요.</p>
+    <p>번역의 뉘앙스, 톤, 창의적인 의역 같은 건 AI에게 통째로 맡기고 싶은 생각이 없어요. 딱 <strong>가장 기초적이고 기술적인 검증 부분</strong>만 자동화하고 싶은 거예요.</p>
+
+    <h2>지금은 이걸 어떻게 하고 있나</h2>
+    <p>지금은 사람이 국립국어원 <strong>표준국어대사전</strong> 같은 걸 하나하나 손으로 찾아보면서 맞춤법과 외래어 표기를 확인하고 고쳐요. 문제는 이 과정이 전적으로 <strong>그 사람의 지식과 꼼꼼함</strong>에 달려있다는 거예요. 감수하는 사람이 잘못 알고 있거나 대충 넘어가면, 그 허점이 그대로 남아서 나중에 더 큰 문제로 터지고, 결국 감수자가 다시 고생하게 돼요.</p>
+
+    <blockquote>
+      <p>비유하면: 시험 답안지를 채점하는데, 채점자가 답안지를 하나씩 손으로 채점하다가 지치거나 헷갈려서 틀린 걸 맞다고 넘기는 상황이에요. 답안지(자막)가 많아질수록 실수할 확률도 늘어나요.</p>
+    </blockquote>
+
+    <h2>그래서 내가 만들고 싶은 것 (아직은 큰 그림만)</h2>
+    <p>아직 세세한 설계까지 들어가진 않았어요. 처음부터 나무만 보면 숲을 놓치니까, 지금은 방향만 잡아볼게요.</p>
+    <ul>
+      <li>자막 텍스트를 표준국어대사전·외래어 표기법 같은 공식 기준과 자동으로 대조해서, 맞춤법·띄어쓰기·외래어 표기 후보 오류를 미리 걸러주는 것</li>
+      <li>사람(저)이 최종 판단은 하되, 반복적이고 기계적인 검토는 AI가 1차로 걸러줘서 검토 속도를 확 끌어올리는 것</li>
+      <li>감수자 개인의 지식 한계에 기대지 않고, 매번 동일한 기준으로 빠짐없이 검토되는 것</li>
+    </ul>
+    <p>이전에 <a href="what-is-api.html">API가 뭔지 설명한 글</a>에서 살짝 언급했던 국립국어원 오픈API 같은 것도, 이 아이디어를 실제로 구현할 때 중요한 재료가 될 것 같아요. 이 프로젝트는 앞으로 하나씩 구체화해서 별도 글로 계속 이어가 볼게요.</p>
+  </main>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
