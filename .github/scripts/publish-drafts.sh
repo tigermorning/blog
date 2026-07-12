@@ -37,6 +37,14 @@ mv "$src" "$dest"
 # 큐에서 맨 앞 줄 제거 (나머지는 다음 차례로 이월됨)
 tail -n +2 "$QUEUE_FILE" > "${QUEUE_FILE}.tmp" && mv "${QUEUE_FILE}.tmp" "$QUEUE_FILE"
 
+# sitemap.xml에 새로 발행된 글 주소 자동 추가
+SITEMAP="sitemap.xml"
+NEW_URL="https://tigermorning.github.io/blog/${dest}"
+if [ -f "$SITEMAP" ] && ! grep -qF "$NEW_URL" "$SITEMAP"; then
+  sed -i "s#</urlset>#  <url><loc>${NEW_URL}</loc></url>\n</urlset>#" "$SITEMAP"
+  echo "sitemap.xml에 추가됨: $NEW_URL"
+fi
+
 git add -A
 git commit -m "예약 발행: $dest"
 git push
