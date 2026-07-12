@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Git이 뭔지도 몰랐던 내가 하루 만에 블로그를 만들기까지 (2) GitHub 계정과 SSH - Tigermorning</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <main>
+    <h1>Git이 뭔지도 몰랐던 내가 하루 만에 블로그를 만들기까지 (2) — GitHub 계정과 SSH 연결</h1>
+    <p class="post-date">2026. 7. 12.</p>
+
+    <p><a href="learning-git-1.html">1편</a>에서는 Claude 설치, 컴퓨터 기본기, Git 개념과 설정까지 다뤘어요. 이번 2편에서는 <strong>GitHub 계정을 만들고, 내 컴퓨터와 GitHub을 안전하게 연결하는 방법(SSH)</strong>을 다룹니다.</p>
+
+    <hr>
+
+    <h2>1. GitHub 계정 만들기</h2>
+    <p><strong>GitHub</strong>은 내 저장소를 인터넷에 올려두고 관리할 수 있는 사이트예요.</p>
+    <ol>
+      <li><a href="https://github.com" target="_blank" rel="noopener">github.com</a> 접속</li>
+      <li>우측 상단 <strong>Sign up</strong> 클릭</li>
+      <li>이메일, 비밀번호, 사용자 이름(아이디) 입력</li>
+      <li>이메일로 온 인증 코드 입력해서 가입 완료</li>
+    </ol>
+    <p>여기서 정한 <strong>사용자 이름(아이디)</strong>은 나중에 홈페이지 주소에도 그대로 쓰이니, 신중하게 정하는 게 좋아요. (저는 <code>tigermorning</code>으로 정했어요.)</p>
+
+    <h2>2. SSH가 뭔데?</h2>
+    <p>GitHub에 파일을 올리려면 "이 컴퓨터가 진짜 내 계정 주인이 맞다"는 걸 증명해야 해요. 매번 비밀번호를 치는 대신, <strong>SSH</strong>는 미리 만들어둔 열쇠 한 쌍으로 자동 인증을 해줘요.</p>
+    <ul>
+      <li><strong>개인키(private key)</strong>: 내 컴퓨터에만 보관, 절대 공유 X (도장 그 자체)</li>
+      <li><strong>공개키(public key)</strong>: GitHub 계정에 등록해두는 것 (도장의 인주 샘플)</li>
+    </ul>
+
+    <h3>어떻게 "나"라는 걸 증명하나요?</h3>
+    <p>비밀번호처럼 값 자체를 주고받는 게 아니에요. 접속할 때마다:</p>
+    <ol>
+      <li>GitHub이 랜덤한 문제(데이터)를 하나 던짐 — "이거에 서명해봐"</li>
+      <li>내 컴퓨터가 <strong>개인키</strong>로 그 자리에서 즉석 서명을 만들어서 보냄</li>
+      <li>GitHub이 등록된 <strong>공개키</strong>로 그 서명이 맞는지 검증</li>
+    </ol>
+    <p>서명은 매번 새로 만들어지는 일회용이라 도청당해도 재사용이 안 되고, 개인키 자체는 절대 컴퓨터 밖으로 안 나가요.</p>
+
+    <blockquote>
+      <p><strong>비유하자면:</strong> 서버가 무작위 문서 한 장을 주면서 "여기 서명해봐"라고 함 → 나는 나만 가진 도장(개인키)으로 찍음 → 서버는 등록된 인주 샘플(공개키)과 대조해서 확인. 도장 자체는 보여주지 않고, 찍힌 자국만 보여주는 셈이에요.</p>
+    </blockquote>
+
+    <h2>3. SSH 키 만들기</h2>
+    <p>이미 키가 있는지 먼저 확인해볼 수도 있지만, 없다면 새로 만들면 돼요.</p>
+    <pre><code>ssh-keygen -t ed25519 -C "내 이메일"</code></pre>
+    <p>몇 가지 질문이 나오는데(저장 위치, 비밀번호 설정 등) 그냥 Enter만 계속 눌러도 기본값으로 만들어져요.</p>
+
+    <h2>4. 공개키를 GitHub에 등록하기</h2>
+    <ol>
+      <li>만들어진 <strong>공개키</strong>(파일 이름 끝에 <code>.pub</code>가 붙은 것) 내용을 복사</li>
+      <li>GitHub 우측 상단 프로필 → <strong>Settings</strong></li>
+      <li>왼쪽 메뉴에서 <strong>SSH and GPG keys</strong></li>
+      <li><strong>New SSH key</strong> 클릭</li>
+      <li>Title에는 아무 이름(예: "내 컴퓨터"), Key 칸에는 복사한 공개키 통째로 붙여넣기</li>
+      <li><strong>Add SSH key</strong> 클릭</li>
+    </ol>
+
+    <h2>5. 연결이 잘 됐는지 테스트하기</h2>
+    <pre><code>ssh -T git@github.com</code></pre>
+    <p>이런 메시지가 나오면 성공이에요.</p>
+    <pre><code>Hi (내 아이디)! You've successfully authenticated, but GitHub does not provide shell access.</code></pre>
+    <p>뒷부분의 "shell access"가 안 된다는 문구는 에러가 아니라 정상 응답이에요 — GitHub는 인증만 확인해주고, 실제 터미널 접속은 원래 안 시켜준다는 뜻이에요.</p>
+
+    <hr>
+
+    <p>이제 내 컴퓨터가 GitHub과 안전하게 연결됐어요. 다음 3편에서는 실제로 저장소를 만들고, 파일을 주고받는(clone, commit, push) 방법을 다뤄볼게요.</p>
+  </main>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
