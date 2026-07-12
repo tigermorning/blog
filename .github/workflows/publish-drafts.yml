@@ -2,9 +2,9 @@ name: Publish scheduled drafts
 
 on:
   schedule:
-    - cron: '0 0 * * *'   # 한국시간(KST) 09:00 — 대기열에서 1개 발행
-    - cron: '0 4 * * *'   # 한국시간(KST) 13:00 — 대기열에서 1개 발행
-    - cron: '0 8 * * *'   # 한국시간(KST) 17:00 — 대기열에서 1개 발행
+    - cron: '0 0 * * *'    # 한국시간(KST) 09:00 — 대기열에서 1개 발행
+    - cron: '0 6 * * *'    # 한국시간(KST) 15:00 — 대기열에서 1개 발행
+    - cron: '0 12 * * *'   # 한국시간(KST) 21:00 — 대기열에서 1개 발행
   workflow_dispatch: {}
 
 permissions:
