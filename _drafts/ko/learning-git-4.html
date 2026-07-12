@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Git이 뭔지도 몰랐던 내가 하루 만에 블로그를 만들기까지 (4) — GitHub Pages로 진짜 홈페이지 만들기 - Tigermorning</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <main>
+    <h1>Git이 뭔지도 몰랐던 내가 하루 만에 블로그를 만들기까지 (4) — GitHub Pages로 진짜 홈페이지 만들기</h1>
+    <p class="post-date">2026. 7. 12.</p>
+
+    <p>이번 4편에서는 지금까지 배운 걸 가지고, 실제로 인터넷 주소로 접속되는 <strong>진짜 홈페이지</strong>를 만들어볼게요. 사실 지금 이 글을 보고 계신 <code>tigermorning.github.io</code> 사이트 자체가 이 방법으로 만들어진 거예요.</p>
+
+    <a class="post-nav" href="learning-git-3.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">(3) 저장소와 파일 주고받기</span>
+    </a>
+
+    <hr>
+
+    <h2>1. GitHub Pages가 뭔가요?</h2>
+    <p><strong>GitHub Pages</strong>는 GitHub이 무료로 제공하는 웹사이트 호스팅 기능이에요. 저장소 안에 <code>index.html</code> 파일 하나만 있으면, GitHub이 그 내용을 실제 웹사이트로 인터넷에 공개해줘요.</p>
+
+    <h2>2. 저장소 이름을 특별하게 짓기</h2>
+    <p>여기서 중요한 규칙이 하나 있어요. 저장소 이름을 정확히 <strong>내깃허브아이디.github.io</strong>로 만들면, 그 저장소는 <strong>루트 주소</strong>(예: <code>tigermorning.github.io</code>)로 바로 공개돼요.</p>
+    <p>그 외의 이름(예: <code>hello-aiffel</code>)으로 만들면, 주소 뒤에 저장소 이름이 붙어요 (예: <code>tigermorning.github.io/hello-aiffel/</code>).</p>
+
+    <blockquote>
+      <p><strong>참고</strong>: 저장소 이름은 나중에 바꿀 수도 있어요. 저는 처음에 <code>tigermorning.github.io</code>로 만들었다가 <code>blog</code>로 이름을 바꿨는데, 그 순간 주소도 <code>tigermorning.github.io/blog/</code>로 자연스럽게 바뀌었어요. 삭제하고 새로 만든 게 아니라, GitHub 저장소 <strong>Settings에서 이름만 바꾼 것</strong>이라 커밋 기록도 그대로 유지돼요.</p>
+    </blockquote>
+
+    <h2>3. index.html 파일 만들기</h2>
+    <p>저장소 맨 위(루트)에 <code>index.html</code>이라는 이름의 파일이 있어야, GitHub이 그걸 홈페이지 첫 화면으로 인식해요.</p>
+
+    <blockquote>
+      <p>🎨 <strong>바이브 코딩으로</strong>: Claude에게 "간단한 인사말이 담긴 index.html 파일을 만들어줘"라고 말하면 알아서 만들어줘요.</p>
+    </blockquote>
+
+    <h3>🔍 궁금하다면: 실제로 어떤 내용일까?</h3>
+    <p>아주 기본적인 형태는 이런 모습이에요.</p>
+    <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;내 이름&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;안녕하세요!&lt;/h1&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    <p><code>&lt;h1&gt;</code> 태그 사이의 글자가 화면에 큰 제목으로 보이는 부분이에요. 이 글자만 원하는 내용으로 바꿔도 이미 나만의 홈페이지가 완성돼요.</p>
+
+    <h2>4. 커밋 → push → 몇 분 기다리기</h2>
+    <p>3편에서 배운 것과 똑같아요. 파일을 만들었으면 기록을 남기고(commit), GitHub로 올려보내면(push) 돼요.</p>
+
+    <blockquote>
+      <p>🎨 <strong>바이브 코딩으로</strong>: Claude에게 "이 파일 커밋하고 push해줘"라고 말하면 끝이에요.</p>
+    </blockquote>
+
+    <p>push가 끝나면 바로 사이트가 뜨는 건 아니고, GitHub이 페이지를 만드는 데 <strong>1~2분 정도</strong> 걸려요. 그 사이에 접속하면 404 에러가 뜰 수 있는데, 조금 기다렸다가 다시 새로고침(강력 새로고침: <code>Ctrl+Shift+R</code>)해보면 돼요.</p>
+
+    <hr>
+
+    <p>여기까지가 Git·GitHub·GitHub Pages의 기본 흐름 전체예요. 준비물조차 없던 컴퓨터에서 시작해서, 이제는 실제로 인터넷에 공개된 내 홈페이지를 갖게 됐어요. 다음 5편에서는 조금 더 나아가서, 글을 미리 써두면 자동으로 하루 몇 개씩 예약 발행되는 시스템(GitHub Actions)을 만들어볼게요.</p>
+  </main>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
