@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Git이 뭔지도 몰랐던 내가 블로그를 만들기까지 - Tigermorning</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <main>
+    <h1>Git이 뭔지도 몰랐던 내가, 하루 만에 블로그를 만들기까지</h1>
+    <p class="post-date">2026. 7. 12.</p>
+
+    <p>저는 어제까지만 해도 Git이 뭔지 전혀 몰랐습니다. 그런데 하루 만에 GitHub 저장소를 만들고, 제 이름으로 된 블로그까지 띄웠어요. 저처럼 아무것도 몰라도 그대로 따라 할 수 있도록, 제가 했던 순서를 정리해봤습니다.</p>
+
+    <h2>1. 내 컴퓨터에 Git이 있는지 확인하기</h2>
+    <p>Git은 "코드나 글의 변경 이력을 기록해주는 프로그램"이에요. 터미널(명령창)에 아래 명령어를 쳐서 이미 설치되어 있는지부터 확인했어요.</p>
+    <pre><code>git --version</code></pre>
+    <p>버전 번호가 나오면 이미 설치된 거예요. 없다면 <a href="https://git-scm.com" target="_blank" rel="noopener">git-scm.com</a>에서 내려받으면 됩니다.</p>
+
+    <h2>2. Git에게 "내가 누구인지" 알려주기</h2>
+    <p>Git으로 기록을 남길 때마다 "누가 남겼는지"가 같이 저장돼요. 그래서 이름과 이메일을 딱 한 번 등록해둬야 해요.</p>
+    <pre><code>git config --global user.name "내 이름"
+git config --global user.email "내 이메일"</code></pre>
+
+    <h2>3. GitHub과 안전하게 연결하기 (SSH 키)</h2>
+    <p>GitHub에 파일을 올리려면 "이 컴퓨터가 진짜 내 컴퓨터가 맞다"는 걸 증명해야 해요. 매번 비밀번호를 치는 대신, SSH 키라는 열쇠를 한 번만 만들어두면 자동으로 인증돼요.</p>
+    <pre><code>ssh-keygen -t ed25519 -C "내 이메일"</code></pre>
+    <p>이 명령으로 만들어진 <strong>공개키</strong>를 복사해서, GitHub 사이트의 <strong>Settings → SSH and GPG keys → New SSH key</strong>에 붙여넣으면 등록 끝이에요.</p>
+
+    <h2>4. 연결이 잘 됐는지 테스트하기</h2>
+    <pre><code>ssh -T git@github.com</code></pre>
+    <p>"Hi (내 아이디)! You've successfully authenticated..."라는 메시지가 나오면 성공이에요.</p>
+
+    <h2>5. GitHub에서 저장소(repository) 만들기</h2>
+    <p>저장소는 "파일들을 모아두는 폴더 + 변경 이력"이라고 생각하면 돼요. GitHub 우측 상단의 <strong>+ → New repository</strong>를 눌러서 이름을 정하고 만들었어요.</p>
+
+    <h2>6. 내 컴퓨터로 가져오기 (clone)</h2>
+    <p>저장소의 초록색 <strong>Code</strong> 버튼 → SSH 주소를 복사해서, 아래처럼 내 컴퓨터로 복사(clone)해왔어요.</p>
+    <pre><code>git clone git@github.com:내아이디/저장소이름.git</code></pre>
+
+    <h2>7. 파일을 고치고 기록을 남기기 (commit → push)</h2>
+    <p>파일을 수정한 뒤, "이 상태를 기록으로 남기겠다"는 의미로 커밋(commit)을 하고, GitHub로 올려보내는 걸 푸시(push)라고 해요.</p>
+    <pre><code>git add 파일이름
+git commit -m "무엇을 바꿨는지 메시지"
+git push origin main</code></pre>
+    <p>커밋은 사진을 찍어서 남겨두는 것과 비슷해요. 나중에 언제든 그 시점으로 돌아가거나 비교해볼 수 있어요.</p>
+
+    <h2>8. 진짜 홈페이지 만들기 (GitHub Pages)</h2>
+    <p>여기가 제일 신기했던 부분이에요. 저장소 이름을 <strong>내깃허브아이디.github.io</strong>로 정확히 만들면, 그 저장소 자체가 인터넷에 공개된 웹사이트 주소가 돼요. 그 안에 <code>index.html</code> 파일 하나만 만들어서 push하면, 잠시 후 그 주소로 접속했을 때 내가 만든 페이지가 바로 보여요.</p>
+
+    <p>저도 처음엔 "Git이 뭐예요?"부터 시작했는데, 순서대로 따라 하니 하루 만에 제 블로그가 생겼어요. 다음 글에서는 이 블로그로 무엇을 할 계획인지 이야기해볼게요.</p>
+  </main>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
