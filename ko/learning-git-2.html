@@ -58,6 +58,12 @@
 
     <h2>3. SSH 키 만들기</h2>
     <p>이미 키가 있는지 먼저 확인해볼 수도 있지만, 없다면 새로 만들면 돼요.</p>
+
+    <blockquote>
+      <p>🎨 <strong>바이브 코딩으로</strong>: Claude에게 "내 컴퓨터에 SSH 키가 있는지 확인하고, 없으면 새로 만들어줘"라고 말하면 알아서 확인·생성해줘요.</p>
+    </blockquote>
+
+    <h3>🔍 궁금하다면: 실제로 어떤 명령어일까?</h3>
     <pre><code>ssh-keygen -t ed25519 -C "내 이메일"</code></pre>
     <p>몇 가지 질문이 나오는데(저장 위치, 비밀번호 설정 등) 그냥 Enter만 계속 눌러도 기본값으로 만들어져요.</p>
 
@@ -72,6 +78,12 @@
     </ol>
 
     <h2>5. 연결이 잘 됐는지 테스트하기</h2>
+
+    <blockquote>
+      <p>🎨 <strong>바이브 코딩으로</strong>: Claude에게 "GitHub SSH 연결이 되는지 확인해줘"라고 말하면 테스트하고 결과를 알려줘요.</p>
+    </blockquote>
+
+    <h3>🔍 궁금하다면: 실제로 어떤 명령어일까?</h3>
     <pre><code>ssh -T git@github.com</code></pre>
     <p>이런 메시지가 나오면 성공이에요.</p>
     <pre><code>Hi (내 아이디)! You've successfully authenticated, but GitHub does not provide shell access.</code></pre>
