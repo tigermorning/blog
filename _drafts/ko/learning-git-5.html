@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>GitHub Actions로 블로그 예약 발행 만들기 (5) — Git이 뭔지도 몰랐던 내가 하루 만에 블로그를 만들기까지 - Tigermorning</title>
+  <meta name="description" content="GitHub Actions로 블로그 글을 하루 3개, 6시간 간격으로 자동 예약 발행하는 시스템을 직접 만든 과정. 큐 파일과 cron 스케줄로 구현하는 법.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="GitHub Actions로 블로그 예약 발행 만들기 (5) — Git이 뭔지도 몰랐던 내가 하루 만에 블로그를 만들기까지">
+  <meta property="og:description" content="GitHub Actions로 블로그 글을 하루 3개, 6시간 간격으로 자동 예약 발행하는 시스템을 직접 만든 과정. 큐 파일과 cron 스케줄로 구현하는 법.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/learning-git-5.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <main>
+    <h1>GitHub Actions로 블로그 예약 발행 만들기 (5) — Git이 뭔지도 몰랐던 내가 하루 만에 블로그를 만들기까지</h1>
+    <p class="post-date">2026. 7. 12.</p>
+
+    <p>4편까지 만들고 나니, 새로운 고민이 생겼어요. 글을 여러 편 몰아서 써두고 한꺼번에 올리면, 나중에 애드센스 심사 같은 걸 받을 때 "이거 AI가 대량으로 찍어낸 거 아니야?"라고 보일 수 있다는 거였어요. 그래서 <strong>미리 써둔 글을 하루에 몇 개씩, 시간 간격을 두고 자동으로 발행</strong>해주는 시스템을 만들어봤어요.</p>
+
+    <a class="post-nav" href="learning-git-4.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">(4) GitHub Pages로 무료 홈페이지 만드는 법</span>
+    </a>
+
+    <hr>
+
+    <h2>1. 목표 정하기</h2>
+    <ul>
+      <li>하루 최대 <strong>3개</strong>까지만 발행</li>
+      <li>발행 간격은 <strong>6시간</strong> (한국시간 09시 / 15시 / 21시)</li>
+      <li>3개보다 많으면 <strong>자동으로 다음 날로 이월</strong></li>
+      <li>날짜를 일일이 계산할 필요 없이, <strong>순서대로 큐에 넣기만</strong> 하면 되도록</li>
+    </ul>
+
+    <h2>2. 큐(대기열) 파일 만들기</h2>
+    <p>발행 순서를 적어두는 파일을 하나 만들었어요. <code>_drafts/queue.txt</code>에 발행할 글의 경로를 한 줄씩 순서대로 적어두는 방식이에요.</p>
+
+    <blockquote>
+      <p>🎨 <strong>바이브 코딩으로</strong>: 새 글을 다 쓰고 나면 Claude에게 "이 글 예약 발행 큐에 넣어줘"라고 말하면, 큐 파일에 순서대로 추가해줘요. 날짜를 계산할 필요가 전혀 없어요.</p>
+    </blockquote>
+
+    <h3>🔍 궁금하다면: 큐 파일이 실제로 어떤 모습일까?</h3>
+    <pre><code>ko/learning-git-5.html
+ko/learning-git-6.html</code></pre>
+    <p>이렇게 한 줄에 파일 하나씩, 발행 순서대로 적혀 있어요. 맨 위 줄이 다음에 발행될 글이에요.</p>
+
+    <h2>3. GitHub Actions로 정해진 시간마다 실행하기</h2>
+    <p><strong>GitHub Actions</strong>는 "정해진 시간이 되면 자동으로 특정 작업을 실행해주는 기능"이에요. 제 컴퓨터나 Claude 세션이 꺼져 있어도, GitHub 서버가 알아서 실행해줘서 훨씬 안정적이에요.</p>
+
+    <h3>🔍 궁금하다면: 실제로 어떻게 설정할까?</h3>
+    <p>저장소 안에 <code>.github/workflows/publish-drafts.yml</code> 파일을 만들고, 언제 실행할지 <code>cron</code>이라는 시간 표기법으로 지정해요.</p>
+    <pre><code>on:
+  schedule:
+    - cron: '0 0 * * *'    # 한국시간 09:00
+    - cron: '0 6 * * *'    # 한국시간 15:00
+    - cron: '0 12 * * *'   # 한국시간 21:00</code></pre>
+    <p>GitHub 서버는 한국시간이 아니라 UTC(세계표준시) 기준이라서, 한국시간 09시를 표현하려면 9시간을 빼서 UTC 00시로 적어야 해요.</p>
+
+    <h2>4. 실행될 때마다 할 일: 큐 맨 앞 글 하나만 꺼내서 발행</h2>
+    <p>정해진 시간이 되면, 작은 스크립트가 실행돼서 이런 일을 해요.</p>
+    <ol>
+      <li>큐 파일의 <strong>맨 위 한 줄</strong>만 읽기</li>
+      <li>그 글 파일을 <code>_drafts</code>에서 진짜 위치(<code>ko/</code> 등)로 옮기기</li>
+      <li>큐 파일에서 그 줄 삭제 (나머지는 자연스럽게 다음 차례로)</li>
+      <li>커밋하고 push</li>
+      <li>(덤으로) sitemap.xml에도 새 글 주소를 자동으로 추가</li>
+    </ol>
+    <p>한 번 실행에 딱 하나만 처리하기 때문에, 아무리 큐에 글이 쌓여 있어도 하루 3번(3개)을 절대 넘지 않아요.</p>
+
+    <h2>5. 저장소 권한 설정도 필요해요</h2>
+    <p>GitHub Actions가 대신 커밋하고 push하려면, 저장소 설정에서 권한을 허용해줘야 해요.</p>
+    <ol>
+      <li>저장소 <strong>Settings</strong> → 왼쪽 메뉴 <strong>Actions</strong> → <strong>General</strong></li>
+      <li>맨 아래 <strong>Workflow permissions</strong> 항목에서 <strong>Read and write permissions</strong> 선택</li>
+      <li>저장</li>
+    </ol>
+    <p>이 설정을 안 해두면, 자동화가 실행은 되는데 마지막에 push하는 단계에서 권한 오류가 나요.</p>
+
+    <h2>6. 사람이 직접 발행한 글도 하루 개수에 포함해야 해요</h2>
+    <p>여기서 한 번 실수할 뻔했어요. 이 자동화 시스템은 <strong>자기가 실행한 횟수만</strong> 셀 뿐, 제가 그날 직접 커밋해서 올린 글은 전혀 몰라요. 그래서 "오늘 이미 직접 3개를 올렸으니, 큐에 있는 글은 내일로 미뤄야 한다"는 판단은 <strong>사람(저와 Claude)이 따로 챙겨야 하는 부분</strong>이에요.</p>
+
+    <hr>
+
+    <p>이제 글을 미리 여러 개 써두고 큐에 넣어두기만 하면, 나머지는 알아서 하루 3개씩 자동으로 나가요. 다음 6편에서는 실습해봤던 Git의 브랜치(branch)와 병합(merge) 개념을 다뤄볼게요.</p>
+
+    <a class="post-nav" href="learning-git-6.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">(6) Git 브랜치와 병합(merge) 초보자 실습</span>
+    </a>
+  </main>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
