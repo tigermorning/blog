@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>AI에게 일을 맡기는 개발 작업대 — Node.js·npm·uv·터미널이 뭔지 하나도 몰랐던 하루 - Tigermorning</title>
+  <meta name="description" content="Claude Code, Node.js, npm, uv, Git, 터미널이 왜 다 필요한지 하나도 몰랐던 제가, 하루 종일 질문하고 직접 설치하고 삽질하면서 이해한 과정을 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="AI에게 일을 맡기는 개발 작업대 — Node.js·npm·uv·터미널이 뭔지 하나도 몰랐던 하루">
+  <meta property="og:description" content="Claude Code, Node.js, npm, uv, Git, 터미널이 왜 다 필요한지 하나도 몰랐던 제가, 하루 종일 질문하고 직접 설치하고 삽질하면서 이해한 과정을 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/ai-agent-dev-environment.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <main>
+    <h1>AI에게 일을 맡기는 개발 작업대 — Node.js·npm·uv·터미널이 뭔지 하나도 몰랐던 하루</h1>
+    <p class="post-date">2026. 7. 13.</p>
+
+    <p>저는 AI 에이전트 과정을 듣고 있어요. 오늘 수업 제목이 "AI에게 일을 맡길 작업대를 차린다는 것"이었는데, 사실 제목부터 이해가 안 됐어요. "작업대"가 왜 필요한지, Claude Code·터미널·Node.js·npm·uv·Git이 왜 한꺼번에 나오는지 하나도 감이 안 왔거든요. 그래서 하루 종일 AI한테 하나씩 캐물으면서, 직접 설치하고, 에러 나고, 원인 찾고를 반복했어요. 이 글은 그 하루를 정리한 기록이에요.</p>
+
+    <h2>왜 굳이 "작업대"를 차려야 하나</h2>
+    <p>Claude Code는 말하자면 <strong>AI 요리사</strong>예요. 그런데 요리사가 아무리 실력이 좋아도, <strong>빈 방에 혼자 서 있으면 요리를 할 수 없어요.</strong> 칼도, 화구도, 재료 창고도 있어야 진짜 요리가 나와요. 오늘 하는 "작업대 차리기"는 이 AI 요리사가 실제로 일할 수 있는 주방을 갖추는 거였어요.</p>
+    <p>일반 챗봇과 Claude Code의 차이도 여기서 나와요. 챗봇은 "이렇게 하면 됩니다"라고 <strong>레시피만 알려주는 사람</strong>이에요. Claude Code는 그 레시피를 듣고 <strong>실제로 주방에 서서 요리해주는 사람</strong>이에요. 웹서비스를 만들려면 "이렇게 하면 됩니다"라는 답변이 아니라, 진짜로 작동하는 파일이 있어야 하니까요. 이런 도구를 "에이전틱 코딩 도구"라고 부른다고 해요 — 말하면 실제로 손이 움직이는 도구라는 뜻이에요.</p>
+
+    <h2>다섯 가지 도구, 하나의 그림으로</h2>
+    <p>오늘의 작업대는 Claude Code, Node.js·npm, uv, Git, 터미널 이렇게 다섯 가지로 이루어져 있어요. 이걸 주방에 비유해서 그려봤어요.</p>
+
+    <figure>
+      <img src="images/ai-workbench-kitchen.png" alt="Claude Code를 요리사로, 터미널·Git·Node.js·npm·uv를 각각 대화창·사진첩·화구·재료창고로 비유한 다이어그램">
+      <figcaption>요리사(Claude Code) 혼자서는 아무것도 없는 빈 방에 서 있는 것과 같아요 — 주방 도구가 있어야 진짜 요리가 나와요.</figcaption>
+    </figure>
+
+    <ul>
+      <li><strong>Claude Code</strong> = 요리사. 자연어로 지시하면 직접 파일을 만들고 고치는, 이 작업대의 메인 도구예요.</li>
+      <li><strong>Node.js</strong> = 화구. 자바스크립트 코드를 실제로 "돌려서" 작동하게 만들어주는 엔진이에요.</li>
+      <li><strong>npm</strong> = 자바스크립트용 재료 창고. 이미 누가 만들어둔 코드 조각을 갖다 쓰게 해줘요.</li>
+      <li><strong>uv</strong> = 파이썬용 재료 창고. npm이랑 똑같은 역할인데, 취급하는 언어만 파이썬이에요.</li>
+      <li><strong>Git</strong> = 요리 과정을 매번 사진 찍어두는 앨범. AI가 마음껏 고쳐도 예전 사진으로 되돌릴 수 있으니, 겁 없이 실험할 수 있어요.</li>
+      <li><strong>터미널</strong> = 요리사와 대화하고, 화구·창고가 잘 작동하는지 로그를 눈으로 보는 창이에요.</li>
+    </ul>
+
+    <p>오늘 저는 이 다섯 개 중 네 개(Node.js, npm, uv, Git, 터미널 — 사실 Git은 원래 깔려 있었어요)를 실제로 설치하거나 직접 써보면서, "이게 왜 필요하지?"를 하나씩 몸으로 이해했어요.</p>
+
+    <h2>자바스크립트는 왜 브라우저 "밖"으로 나와야 했나</h2>
+    <p>Node.js를 이해하려면 먼저 "왜 자바스크립트가 브라우저 안에서만 살았는가"부터 알아야 했어요.</p>
+    <p><strong>브라우저(크롬, 사파리 등)</strong>는 서버에서 HTML이라는 글자 텍스트를 받아와서, 그걸 눈에 보이는 화면으로 그려주는 프로그램이에요. 그런데 HTML/CSS만으로는 "이렇게 생겼다"까지만 표현할 수 있어요. "이런 상황이면 이렇게 해라"라는 판단은 표현할 방법이 없어요. 그래서 브라우저에 판단력을 주기 위해 만들어진 언어가 자바스크립트예요. 제 블로그의 언어 자동 감지 스크립트("한국어 브라우저면 한국어 페이지로 보내라")가 정확히 이 "판단"의 예시예요.</p>
+    <p>즉 자바스크립트는 원래 <strong>브라우저 안에만 살던 통역사</strong>였어요. 2009년 라이언 달이라는 사람이 이 통역사를 브라우저 밖으로 데리고 나와서, 혼자서도 일할 수 있게 독립시킨 게 Node.js예요. 그래서 지금은 터미널에서 <code>node 파일이름.js</code>라고 치면, 브라우저를 아예 열지 않고도 자바스크립트 코드를 실행시킬 수 있어요.</p>
+
+    <figure>
+      <img src="images/static-vs-dynamic.png" alt="정적 웹페이지(인쇄된 전단지처럼 항상 같은 내용)와 동적 웹페이지(그 자리에서 계산해서 보여주는 즉석 요리)를 비교한 다이어그램">
+      <figcaption>제 블로그는 이미 완성된 파일을 그대로 보여주는 "정적" 사이트라서, 지금까지 Node.js가 필요 없었어요.</figcaption>
+    </figure>
+
+    <p>제 블로그가 지금까지 Node.js 없이도 잘 돌아갔던 이유가 여기 있었어요. 이미 완성된 HTML 파일을 그대로 보여주는 <strong>정적(static)</strong> 사이트라서, "그 자리에서 계산해서 보여줘야 하는" 일이 없었거든요. 반면 로그인한 사람 이름을 화면에 띄우는 것처럼, 방문자마다 다르게 계산해서 보여줘야 하는 <strong>동적(dynamic)</strong> 기능을 만들려면, 그 계산을 실제로 실행해줄 엔진(Node.js)이 필요해져요.</p>
+
+    <h2>npm과 uv — 창고 이름이 다를 뿐, 하는 일은 같다</h2>
+    <p><strong>npm</strong>은 전 세계 개발자들이 이미 만들어서 올려놓은 코드 조각 수백만 개가 쌓여있는 온라인 창고예요. <code>npm install</code>이라는 명령어로 그 창고에서 원하는 코드를 내 컴퓨터로 갖다 쓸 수 있어요. 오늘 저는 <code>npm install -g @anthropic-ai/claude-code</code>, <code>npm install -g opencode-ai</code>를 쳐서 실제로 이 창고에서 완성품을 두 개 꺼내왔어요.</p>
+    <p><strong>uv</strong>는 하는 일이 npm과 완전히 똑같아요, 다만 취급하는 언어가 파이썬이라는 것만 달라요. 한국어책만 있는 도서관과 영어책만 있는 도서관처럼, "창고"라는 개념은 같은데 언어 구역만 다른 거예요. 참고로 uv는 원래 파이썬 세계에서 쓰던 <code>pip</code>라는 오래된 창고를 대체하려고 나온 더 빠른 신상 창고예요 — pip는 재료 가져오기·작업실 만들기·버전 관리를 각각 다른 도구로 따로 했는데, uv는 이걸 하나로 통합했어요.</p>
+
+    <h2>터미널 안에서는 무슨 일이 일어나는가 — 셸, 커널, 프롬프트</h2>
+    <p>터미널을 열었을 때 보이는 그 까만 창 안에는, 사실 여러 층이 겹쳐 있었어요. 각 이름이 원래 어디서 왔는지부터 짚어보면 훨씬 쉬워요.</p>
+    <ul>
+      <li><strong>터미널(terminal)</strong>: 원래 통신 회선의 "끝단, 종착지"를 뜻하는 말이었어요. 옛날엔 거대한 중앙 컴퓨터 한 대에 여러 사람이 각자의 키보드/화면 장치로 연결해서 썼는데, 그 "끝에 달린 장치"가 터미널이었어요. 지금은 그 장치를 화면 속에서 흉내 낸 창(PowerShell 창, Git Bash 창)을 터미널이라고 불러요.</li>
+      <li><strong>셸(shell)</strong>: "껍데기"라는 뜻이에요. 달걀 껍데기가 알맹이를 감싸듯, 셸이 컴퓨터의 핵심을 감싸고 있다는 비유예요. 사람이 타이핑한 글자를 해석해서 실제 명령으로 바꿔주는 통역사예요. PowerShell, Bash, cmd가 다 이 "통역사"의 서로 다른 이름이에요.</li>
+      <li><strong>커널(kernel)</strong>: "씨앗의 알맹이, 핵심"이라는 뜻이에요. CPU, 메모리, 파일 같은 컴퓨터 자원을 실제로 다루는 진짜 일꾼이에요. 사람은 커널에 직접 말을 걸 수 없고, 항상 셸을 통해서만 요청을 전달해요.</li>
+      <li><strong>프롬프트(prompt)</strong>: "재촉하다, 대사를 알려주다"라는 뜻이에요. 방송에서 진행자에게 다음 대사를 알려주는 프롬프터에서 온 말이라고 해요. <code>PS C:\Users\user&gt;</code>처럼, "얼른 명령어를 입력해줘"라고 셸이 화면에 띄워두는 신호예요.</li>
+    </ul>
+    <p>이 구조를 알고 나니, 오늘 제가 <code>pwd</code>를 쳤을 때 왜 지금 위치가 나오는지도 이해됐어요. <strong>컴퓨터의 모든 프로그램은 "지금 나는 어느 폴더에 서 있다"는 책갈피를 하나씩 들고 있어요.</strong> <code>cd</code>는 그 책갈피를 옮기는 것이고, <code>pwd</code>는 "지금 책갈피가 어디 꽂혀 있어?"라고 물어보는 것이었어요.</p>
+
+    <h2>CLI와 GUI, 뭐가 다른가</h2>
+    <p>Claude Code는 두 가지 모습으로 만날 수 있다고 해요 — Claude Desktop(그래픽 화면)과 터미널의 <code>claude</code> 명령(글자 화면). 겉모습만 다르고 같은 엔진을 쓴다고 하는데, 그럼 대체 뭐가 다른 걸까 궁금했어요.</p>
+
+    <figure>
+      <img src="images/cli-gui-hierarchy.png" alt="조작 방식이라는 큰 분류 아래 CLI(Bash, PowerShell, cmd)와 GUI(Windows 탐색기, Claude Desktop, 대부분의 일반 앱)가 나란히 있는 계통도">
+      <figcaption>CLI와 GUI는 하나가 다른 하나를 포함하는 관계가 아니라, 서로 나란히 있는 별개의 조작 방식이에요.</figcaption>
+    </figure>
+
+    <p>실제로 명령을 내렸을 때 무슨 일이 일어나는지 순서대로 그려보니 차이가 확실해졌어요.</p>
+
+    <figure>
+      <img src="images/gui-cli-execution-flow.png" alt="GUI는 클릭 위치를 조회해서 미리 정해진 함수를 실행하고, CLI는 문장을 문법적으로 해석해서 자유롭게 조합된 명령을 실행한 뒤 둘 다 커널에 요청을 보낸다는 5단계 흐름도">
+      <figcaption>②번 단계가 핵심이에요 — GUI는 "미리 정해둔 표를 찾아보기", CLI는 "문법으로 해석하기"라서, CLI만 그 자리에서 완전히 새로운 명령 조합을 만들어낼 수 있어요.</figcaption>
+    </figure>
+
+    <p>그래서 <strong>GUI로 일을 시키려면, 그 일에 딱 맞는 버튼이 미리 만들어져 있어야만 해요.</strong> 없으면 방법이 없어요. 반면 CLI는 문법을 아니까, 명령어를 조합해서 그 자리에서 새로운 지시를 만들어낼 수 있어요. 오늘 저희가 git 브랜치를 만들고 병합하고, PowerShell로 그림을 직접 그려서 PNG를 만드는 것 같은 일은, 누군가 미리 그런 버튼을 만들어둔 적이 없어서 GUI로는 원래 불가능했던 일이었어요.</p>
+    <p>그리고 강의에서 "Claude Desktop으로 시작하고, 자동화 같은 고급 흐름이 필요해지면 터미널로 넘어가라"고 한 이유도 이제 정확히 이해됐어요. 여기서 "자동화"는 <strong>AI 자체가 사람 없이 혼자 판단하고 실행해야 하는 경우</strong>를 말하는 거였어요. 제 블로그의 예약 발행 스크립트처럼 "미리 정해진 명령만 반복하는 자동화"는 Claude Desktop으로 대본만 써두면 충분하지만, "매번 AI가 새로 판단해야 하는 자동화"는 화면을 클릭할 사람이 없으니 터미널이나 Agent SDK가 있어야만 가능해요.</p>
+
+    <h2>오늘의 진짜 사건 — "설치했는데 왜 안 보이지?"</h2>
+    <p>오늘 가장 오래 헤맸던 건 개념이 아니라 <strong>PATH(환경변수)</strong>라는 실전 문제였어요. Node.js, npm, uv, Claude Code CLI를 설치했는데, 새 터미널 창을 열어도 계속 "이런 명령어 없음" 에러가 났어요.</p>
+    <p>알고 보니 컴퓨터의 모든 프로그램은 "명령어를 입력하면 어느 폴더들을 뒤져서 찾아야 하는지" 적어둔 목록(PATH)을 참고하는데, 설치 프로그램이 이 목록에 새 폴더를 추가해도, <strong>이미 켜져 있던 창(Explorer 같은 프로그램)이 그 최신 목록을 못 받아서</strong> 예전 목록을 계속 쓰고 있었던 거예요. 컴퓨터를 재시작하니 해결됐어요.</p>
+    <p>그런데 재시작해도 안 되는 경우가 한 번 더 있었는데, 이번엔 원인이 완전히 달랐어요. 제가 대화하는 이 화면(Claude Desktop)의 작업 공간과, 제가 직접 여는 진짜 터미널이 <strong>서로 다른 공간</strong>이었던 거예요. 바탕화면에 저장한 그림 파일 같은 건 두 공간에서 똑같이 보이는데, "프로그램 설치"처럼 시스템 설정을 바꾸는 일은 한쪽 공간에서만 적용되고 다른 쪽에는 전달이 안 됐어요. 그래서 결국 Node.js·npm·uv·Claude Code CLI는 제가 직접 실제 터미널을 열어서, 손으로 명령어를 쳐서 설치해야 했어요.</p>
+
+    <h2>오늘의 핵심 한 문장, 다시 보기</h2>
+    <blockquote>
+      <p>개발 환경은 AI에게 일을 시키고, 그 결과를 바로 검토·수정하기 위한 작업대입니다.</p>
+    </blockquote>
+    <p>그리고 "중요한 건 도구가 아니라, 자연어로 지시하고 결과를 판단하는 루프를 여는 것"이라는 말도 이제 이해가 돼요. <strong>루프(loop)</strong>는 원래 "고리, 둥근 원"을 뜻하는 말이에요. 실을 둥글게 감으면 끝이 다시 처음으로 이어지는 것처럼, "지시 → AI가 실행 → 결과 확인 → 다시 지시"를 계속 반복하는 게 이 루프예요. 오늘 저는 이 루프를 셀 수 없이 많이 돌렸어요 — 설치가 안 됨 → 왜 안 되는지 물음 → 원인 찾음 → 다시 시도 → 성공. 이 반복 자체가 오늘 배운 가장 중요한 실력이었던 것 같아요.</p>
+
+    <p>오늘 다룬 "바이브 코딩"이라는 개념 자체를 더 자세히 정리해둔 글도 있어요.</p>
+
+    <a class="post-nav" href="what-is-vibe-coding.html">
+      <span class="post-nav-label">참고 글</span>
+      <span class="post-nav-title">바이브 코딩이란 무엇인가</span>
+    </a>
+  </main>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
