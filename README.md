@@ -11,3 +11,7 @@
 - 한국어: https://tigermorning.github.io/blog/ko/hello-world.html
 - English: https://tigermorning.github.io/blog/en/hello-world.html
 - 中文: https://tigermorning.github.io/blog/zh/hello-world.html
+
+## 관리자 모드
+
+**→ [글 관리 페이지](https://tigermorning.github.io/blog/_admin/)** — 예약 대기중/발행된 글 목록 확인용 (비공개, 검색엔진 노출 안 됨)
