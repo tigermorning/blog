@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>AI에게 일을 맡기는 개발 작업대 (2) — 내 작업대 상태 확인하기 - Tigermorning</title>
+  <meta name="description" content="Node.js와 npm은 대체 언제 실제로 실행되는지 구체적인 예시로 정리하고, AI에게 맡겨서 설치하는 법과 손으로 직접 설치하는 법(nvm, uv, Git, Claude Code)을 함께 다룹니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="AI에게 일을 맡기는 개발 작업대 (2) — 내 작업대 상태 확인하기">
+  <meta property="og:description" content="Node.js와 npm은 대체 언제 실제로 실행되는지 구체적인 예시로 정리하고, AI에게 맡겨서 설치하는 법과 손으로 직접 설치하는 법(nvm, uv, Git, Claude Code)을 함께 다룹니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/ai-agent-dev-environment-check.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <main>
+    <h1>AI에게 일을 맡기는 개발 작업대 (2) — 내 작업대 상태 확인하기</h1>
+    <p class="post-date">2026. 7. 13.</p>
+
+    <a class="post-nav" href="ai-agent-dev-environment.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">(1) AI에게 일을 맡기는 개발 작업대</span>
+    </a>
+
+    <hr>
+
+    <p>오늘 수업 2강은 "내 작업대 상태 확인하기"였어요. 도구를 까는 방법이 두 갈래로 나뉘어 있었는데, 저는 <strong>A. Claude Code에게 자연어로 맡기는 길</strong>로 갔고, <strong>B. 손으로 직접 하나씩 설치하는 길</strong>은 건너뛰었어요. 그런데 B길에 "(기본기)"라고 적혀 있고, Node.js·npm·nvm 같은 이름이 또 나오는 걸 보니 알고는 넘어가야 할 것 같아서, 참고 자료로 정리해봤어요.</p>
+
+    <h2>A길과 B길, 뭐가 다른가</h2>
+    <ul>
+      <li><strong>A. AI 네이티브 길</strong>: Claude Desktop을 열고, "이 컴퓨터에 Node.js·npm·Git 설치돼 있는지 확인하고, 없으면 공식 방법으로 깔아줘"라고 자연어로 부탁해요. 저는 이 방법으로 했어요.</li>
+      <li><strong>B. 손으로 직접 설치하는 길(기본기)</strong>: 공식 문서에 적힌 명령어를 제가 직접 하나씩 터미널에 타이핑해서 까는 거예요. 어떻게 깔리는지 눈으로 보고 싶은 사람, 또는 나중에 문제가 생겼을 때 "어디서부터 왔는지" 알고 싶은 사람을 위한 길이에요.</li>
+    </ul>
+    <p>두 길 다 결과는 똑같아요. 마지막엔 반드시 <code>node --version</code> 같은 명령어로 "진짜 이 컴퓨터에서 되는지"를 직접 확인하는 것도 똑같아요. 왜 이 확인이 중요한지는 아래에서 다시 다룰게요.</p>
+
+    <h2>진짜 궁금했던 것 — Node.js와 npm은 대체 "언제" 실행되는 거야?</h2>
+    <p>1편에서 저는 Node.js를 "화구", npm을 "재료 창고"라고 비유했어요. 그런데 비유만으로는 부족했어요. <strong>구체적으로 어느 순간에 이것들이 실제로 켜지는지</strong>가 궁금했거든요. 그래서 "Next.js로 랜딩페이지 하나 만들어줘"라고 AI에게 부탁했을 때, 뒤에서 실제로 무슨 일이 일어나는지 순서대로 뽑아봤어요.</p>
+
+    <figure>
+      <img src="images/npm-nodejs-execution-timing.png" alt="사용자 요청 이후 npx create-next-app과 npm install에서 npm이 두 번 실행되고, npm run dev에서 Node.js가 실제로 웹서버를 켜서 브라우저 요청에 응답하는 5단계 흐름도">
+      <figcaption>npm은 "준비하는 순간"에만 잠깐 실행되고, Node.js는 그 이후로 "계속 켜져서 일하는 엔진"이에요.</figcaption>
+    </figure>
+
+    <ol>
+      <li><strong>제가 요청</strong>: "Next.js로 랜딩페이지 하나 만들어줘"</li>
+      <li><strong>npm이 처음 등장</strong>: AI가 <code>npx create-next-app</code>을 실행해요. 이때 npm 창고에서 Next.js 뼈대 도구를 꺼내와서, <code>package.json</code> 같은 실제 파일들을 만들어줘요.</li>
+      <li><strong>npm이 두 번째로 등장</strong>: <code>npm install</code>을 실행해요. 방금 만들어진 <code>package.json</code>에 "이 프로젝트는 이런 재료들이 필요하다"고 적혀있는데, npm이 그 목록을 보고 필요한 코드 조각을 전부 다운로드해서 <code>node_modules</code>라는 폴더에 채워 넣어요.</li>
+      <li><strong>여기서 Node.js가 처음으로 실제 가동돼요</strong>: <code>npm run dev</code>를 실행하면, 이 순간 Node.js가 진짜로 <strong>웹서버를 켜요.</strong> 이건 한 번 실행하고 끝나는 게 아니라, <code>localhost:3000</code>이라는 주소에서 <strong>계속 켜진 채로 대기</strong>하고 있어요.</li>
+      <li><strong>제가 브라우저로 그 주소에 접속하면</strong>, 그 순간 Node.js가 제 요청을 실시간으로 처리해서 실제 페이지를 화면에 응답해줘요.</li>
+    </ol>
+
+    <p>이제 확실히 답할 수 있어요. <strong>npm은 "재료를 준비하는 그 잠깐의 순간"에만 실행돼요</strong> — 프로젝트를 처음 만들 때, 그리고 재료를 설치할 때요. <strong>Node.js는 그 이후로 "계속 켜져서 실제로 일하는 엔진"</strong>이에요 — 개발 서버가 켜져 있는 동안 내내, 누가 접속할 때마다 그 자리에서 응답을 만들어내요. 제 블로그가 지금까지 이 과정이 한 번도 없었던 이유는, 이미 완성된 HTML을 그냥 보여주기만 하는 정적 사이트라서 이 다섯 단계 자체가 필요 없었던 거예요.</p>
+
+    <h2>(참고) 손으로 직접 설치하는 법</h2>
+    <p>저는 이번엔 안 했지만, 언젠가 직접 해볼 걸 대비해서 정리해둬요.</p>
+
+    <h3>Node.js와 npm은 "nvm"으로 관리한다</h3>
+    <p><strong>nvm(Node Version Manager)</strong>은 Node.js 자체를 하나만 딱 고정해서 설치하는 게 아니라, <strong>여러 버전을 넣어두고 필요할 때마다 골라서 쓸 수 있게</strong> 해주는 관리자예요. 왜 이렇게 복잡하게 하냐면, 프로젝트마다 필요한 Node.js 버전이 다를 수 있어서예요 — 한 프로젝트의 Node.js가 다른 프로젝트를 덮어쓰면 안 되니까요.</p>
+    <p>더 실용적인 이유도 있어요. Node.js를 시스템 깊은 곳에 직접 설치하면, npm으로 뭔가를 전역 설치(<code>npm install -g</code>)할 때 "쓰기 권한이 없다"는 <code>EACCES</code> 에러가 나서 <code>sudo</code>(관리자 권한)를 붙여야 하는 경우가 많다고 해요. nvm은 제 계정 폴더(<code>~/.nvm</code>) 안에서 관리되기 때문에, 이 권한 문제를 대부분 피할 수 있어요.</p>
+    <p><strong>주의할 점</strong>: 윈도우용 nvm(nvm-windows)은 원래 유닉스용 nvm과는 완전히 다른, 별도의 프로그램이라고 해요. 그리고 윈도우용은 <code>--lts</code> 같은 줄임 옵션이 없어서, LTS 버전 번호를 직접 찾아서 적어줘야 한다고 해요.</p>
+
+    <h3>uv, Git, Claude Code</h3>
+    <ul>
+      <li><strong>uv</strong>: 공식 설치 문서의 명령어로 깔아요. (윈도우는 공식 문서의 PowerShell 명령을 그대로 씁니다.)</li>
+      <li><strong>Git</strong>: Git 공식 다운로드 페이지에서 운영체제에 맞는 걸 받아요.</li>
+      <li><strong>Claude Code</strong>: 공식 문서 기준으로, macOS/Linux/WSL은 <code>curl -fsSL https://claude.ai/install.sh | bash</code>, 윈도우 PowerShell은 <code>irm https://claude.ai/install.ps1 | iex</code>를 써요. 또는 Node.js 22 이상이 있다면 <code>npm install -g @anthropic-ai/claude-code</code>로도 설치할 수 있어요 (제가 실제로 이 방법으로 설치했었어요).</li>
+    </ul>
+    <p>한 가지 헷갈릴 수 있는 부분: <strong>Claude Code는 파이썬 패키지가 아니라서 <code>uv tool install</code>로 설치하지 않아요.</strong> uv는 파이썬 프로젝트·도구 전용이고, Claude Code는 npm(자바스크립트 창고) 쪽에 있는 도구예요 — 1편에서 정리했던 "창고마다 취급 언어가 다르다"는 얘기가 여기서도 그대로 적용돼요.</p>
+    <p><strong>공식 문서를 기준으로 삼는 이유</strong>도 짚어두고 싶어요. 버전은 계속 바뀌기 때문에, 지금 이 글에 적힌 명령어도 나중에는 최신이 아닐 수 있어요. 설치 명령을 복사하기 전에, 그 링크가 진짜 공식 문서인지, 버전 태그가 최신인지 한 번 확인하는 습관이 필요해요.</p>
+
+    <h2>확인 브릿지 — 왜 버전 확인이 "증거 수집"인가</h2>
+    <p>어떤 길로 설치했든, 마지막엔 반드시 터미널에서 직접 버전을 확인해야 해요.</p>
+    <pre><code>pwd
+node --version
+npm --version
+uv --version
+git --version
+claude --version</code></pre>
+    <p>숫자가 나오면 설치된 거고, <code>command not found</code>가 나오면 아직 안 된 거예요. 저는 오늘 이 확인 과정에서 계속 걸렸어요 — 분명히 설치했는데 새 터미널에서는 안 잡히는 일이 반복됐거든요(그 이야기는 1편에 자세히 적어뒀어요). <strong>그런데 그 실패 화면 자체가 오늘의 진짜 학습 자료였어요.</strong> "안 돼요"라고만 말했다면 저도 AI도 계속 헤맸을 텐데, "<code>node --version</code>을 쳤더니 <code>command not found</code>가 나왔다"처럼 정확히 말하니까, 원인을 훨씬 더 빠르게 좁힐 수 있었어요.</p>
+
+    <h2>AI에게 오류를 설명하는 올바른 방법</h2>
+    <p>오류가 나면 이 틀에 맞춰서 AI에게 물어보는 게 좋아요. 핵심은 <strong>환경, 실행한 명령, 실제 출력을 분리해서</strong> 주는 거예요.</p>
+    <blockquote>
+      <p>나는 Windows 환경에서 웹 개발 작업대를 설정하고 있어.<br>
+      터미널에서 아래 명령을 실행했어.<br><br>
+      명령: <code>node --version</code><br>
+      출력: [여기에 실제 오류 메시지 붙여넣기]<br><br>
+      내 목표는 Node.js와 npm 버전을 확인하는 거야.<br>
+      원인을 추정하지 말고, 내가 먼저 확인할 순서 3가지만 알려줘.</p>
+    </blockquote>
+    <p><strong>이 요청문이 "오류가 났어요"보다 나은 이유를 한 줄로 정리하면</strong>: AI가 추측할 부분을 최대한 없애줘서, 바로 다음 행동으로 넘어갈 수 있게 해주기 때문이에요. "안 돼요"는 AI도 저처럼 감으로 짚어야 하지만, 환경·명령·출력을 정확히 주면 AI가 그 자리에서 원인 후보를 좁힐 수 있어요. 오늘 저와 AI가 PATH 문제를 결국 찾아낸 것도, 매번 실제 에러 메시지와 명령어를 그대로 붙여넣었기 때문이었어요.</p>
+
+    <h2>제 작업대 상태표 (실제 결과)</h2>
+    <ul>
+      <li><code>pwd</code> → 정상, 현재 위치 확인됨</li>
+      <li><code>node --version</code> → v24.18.0</li>
+      <li><code>npm --version</code> → 11.16.0</li>
+      <li><code>uv --version</code> → 0.11.28</li>
+      <li><code>git --version</code> → 2.55.0</li>
+      <li><code>claude --version</code> → 2.1.207</li>
+    </ul>
+    <p>이 숫자들이 바로 나오기까지 새 창을 여러 번 열고 닫고, 재시작하고, 원인을 찾아 헤맨 하루였어요. 그래도 결국 여섯 개 다 숫자가 나오는 걸 눈으로 확인했다는 게, 오늘 제일 뿌듯한 부분이에요.</p>
+  </main>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
