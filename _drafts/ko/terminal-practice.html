@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>바이브 코딩으로 웹 만들기 (6) — PowerShell 터미널 명령어 실습 (pwd·cd·mkdir·mv) - Tigermorning</title>
+  <meta name="description" content="pwd, ls, cd, mkdir, mv 같은 터미널 명령어를 PowerShell에서 안전한 연습 폴더 안에서 직접 손으로 실습하고, 이 명령어들이 사실 PowerShell cmdlet의 별명이라는 것까지 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="바이브 코딩으로 웹 만들기 (6) — PowerShell 터미널 명령어 실습 (pwd·cd·mkdir·mv)">
+  <meta property="og:description" content="pwd, ls, cd, mkdir, mv 같은 터미널 명령어를 PowerShell에서 안전한 연습 폴더 안에서 직접 손으로 실습하고, 이 명령어들이 사실 PowerShell cmdlet의 별명이라는 것까지 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/terminal-practice.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <main>
+    <h1>바이브 코딩으로 웹 만들기 (6) — PowerShell 터미널 명령어 실습 (pwd·cd·mkdir·mv)</h1>
+    <p class="post-date">2026. 7. 13.</p>
+
+    <a class="post-nav" href="terminal-shell-kernel-prompt.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">바이브 코딩으로 웹 만들기 (5) — 터미널·셸·커널·프롬프트 차이 (PowerShell 기준)</span>
+    </a>
+
+    <hr>
+
+    <p>1~5교시가 개념을 이해하는 시간이었다면, 6~8교시는 그 개념을 손으로 직접 반복해보는 실습 시간이었어요. 그중 6교시는 터미널 명령어로 폴더를 직접 탐험하고 만들어보는 실습이에요. 사실 새로운 명령어는 거의 없어요 — <code>mkdir</code>과 <code>touch</code>(정확히는 <code>New-Item</code>)는 3편에서 이미 한 번 써봤고, 명령이 실제로 어떻게 처리되는지는 5편에서 파고들었어요. 오늘은 그걸 실제로 여러 번 반복해서 손에 익히는 시간이었어요.</p>
+
+    <h2>안전한 연습 폴더에서 시작하기</h2>
+    <p>수업 자료에는 분명한 안전 규칙이 있었어요 — <strong>삭제 명령은 실제 파일이 아니라 연습 폴더 안에서만 씁니다.</strong> 처음에는 바탕화면의 진짜 파일 대신, 이번에 새로 만들 <code>terminal-practice</code>라는 연습 전용 폴더 안에서만 연습하고, 공백이 있는 이름은 따옴표로 감싸라고 되어 있었어요.</p>
+    <table>
+      <thead>
+        <tr><th>명령</th><th>하는 일</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>pwd</code></td><td>지금 내가 있는 폴더의 전체 경로를 출력합니다.</td></tr>
+        <tr><td><code>ls</code></td><td>현재 폴더 안의 파일·폴더 이름을 보여줍니다.</td></tr>
+        <tr><td><code>cd 폴더이름</code></td><td>지정한 폴더로 이동합니다. <code>cd ..</code>는 한 단계 위로 갑니다.</td></tr>
+        <tr><td><code>mkdir 폴더이름</code></td><td>새 폴더를 만듭니다.</td></tr>
+        <tr><td><code>New-Item 파일이름</code></td><td>빈 파일을 만듭니다. (별명 <code>ni</code>)</td></tr>
+        <tr><td><code>rm 파일이름</code></td><td>기존 파일을 삭제합니다. (오늘 실습에서는 쓰지 않아요)</td></tr>
+        <tr><td><code>mv 원본 대상</code></td><td>파일·폴더를 이동하거나 이름을 바꿉니다. 실행 전 원본과 대상을 꼭 다시 읽어요.</td></tr>
+      </tbody>
+    </table>
+    <p>수업 자료의 원래 명령어는 <code>touch</code>였는데, 3편에서 이미 겪었듯 PowerShell에는 <code>touch</code>가 없어서 <code>New-Item</code>(별명 <code>ni</code>)을 써요. 다행히 <code>pwd</code>, <code>ls</code>, <code>cd</code>, <code>mkdir</code>, <code>mv</code>, <code>rm</code>은 PowerShell에서도 이름이 그대로 통해요. 폴더 여러 개를 한 번에 만들 때는 <code>mkdir ideas, assets, archive</code>처럼 쉼표로 구분해요.</p>
+
+    <h2>1단계 — 내 위치를 보고 연습 공간 만들기</h2>
+    <pre><code>pwd
+ls
+mkdir terminal-practice
+cd terminal-practice
+mkdir ideas, assets, archive
+ls</code></pre>
+    <p><code>pwd</code> 출력에서 지금 내 위치를 노트에 적어두고, <code>ls</code>로 <code>ideas</code>, <code>assets</code>, <code>archive</code> 세 폴더가 보이는지 확인해요. 이미 같은 이름의 폴더가 있다는 에러가 나오면, 지우지 말고 그냥 <code>ls</code>로 확인한 뒤 다음 단계로 넘어가면 돼요.</p>
+
+    <h2>2단계 — 파일을 만들고 이동하기</h2>
+    <pre><code>ni ideas/landing-page.txt
+mkdir assets/images
+mv ideas/landing-page.txt assets/images/landing-page.txt
+ls assets/images
+cd ..
+pwd</code></pre>
+    <p>빈 메모 파일을 하나 만든 뒤 이미지 폴더로 옮겨봤어요. <code>mv</code> 다음의 <code>ls assets/images</code> 출력에 <code>landing-page.txt</code>가 실제로 보일 때만 성공이에요. <strong>명령을 쳤다는 사실이 아니라, 그 다음 출력으로 확인하는 것</strong>이 중요해요 — 이건 4편에서 다뤘던 "판단" 단계와 똑같은 습관이에요.</p>
+
+    <h2>3단계 — 길을 잃었을 때 돌아오기</h2>
+    <pre><code>cd terminal-practice
+cd assets
+pwd
+cd ..
+ls</code></pre>
+    <p><code>cd ..</code>는 "한 단계 위 폴더로 가라"는 명령이에요. 화면에 스쳐 지나가는 이름만 믿지 말고, 이동할 때마다 <code>pwd</code>와 <code>ls</code>를 번갈아 확인하는 습관을 들이면 좋아요. 지금 위치가 불안하면 일단 <code>pwd</code>부터 실행하고, <code>mv</code>는 원본·대상 경로를 한 글자씩 눈으로 확인한 뒤에 실행해요. 실제로 중요한 파일에는 이 연습이 끝난 뒤에나 적용해요.</p>
+
+    <h2>오늘 쓴 명령어, 사실은 다 "별명"이었어요</h2>
+    <p>5편에서 <code>Get-Location</code>이 PowerShell의 내장 cmdlet이라는 걸 다뤘는데, 사실 오늘 쓴 <code>pwd</code>, <code>ls</code>, <code>cd</code>, <code>mkdir</code>, <code>mv</code>, <code>rm</code>은 전부 그 cmdlet들에 붙은 <strong>별명(alias)</strong>이었어요. PowerShell이 유닉스 계열 사용자도 익숙하게 쓸 수 있도록 미리 만들어둔 짧은 이름들이에요.</p>
+    <ul>
+      <li><code>pwd</code> → <code>Get-Location</code></li>
+      <li><code>ls</code> → <code>Get-ChildItem</code></li>
+      <li><code>cd</code> → <code>Set-Location</code></li>
+      <li><code>mkdir</code> → <code>New-Item</code>(폴더 만들기)</li>
+      <li><code>mv</code> → <code>Move-Item</code></li>
+      <li><code>rm</code> → <code>Remove-Item</code></li>
+    </ul>
+    <p>5편에서 관찰했던 <code>Get-Command</code>를 여기에도 써볼 수 있어요. <code>Get-Command ls</code>를 입력하면 "Alias, ls -&gt; Get-ChildItem"처럼 진짜 이름이 나와요. 짧은 이름 뒤에 진짜 cmdlet이 있다는 걸 직접 확인해보는 것도 좋은 관찰이에요.</p>
+
+    <hr>
+
+    <p><strong>참고한 자료</strong>: 실습 절차와 안전 규칙(연습 폴더 사용, 삭제 명령 자제)은 오늘 수업 자료를 바탕으로 정리했어요. PowerShell 별명(alias) 대응 관계는 수업 자료에는 없는 내용이라, 제 윈도우 환경에 맞춰 AI와 함께 직접 확인한 것이에요. 다음 실습(7편)에서는 이 폴더 정리를 Claude Code에게 맡기고, 결과를 검토하는 방법을 다뤄볼게요.</p>
+
+    <h3>"바이브 코딩으로 웹 만들기" 시리즈</h3>
+    <a class="post-nav" href="ai-agent-dev-environment.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">Claude Code로 AI 코딩 개발 환경 세팅하기</span>
+    </a>
+    <a class="post-nav" href="ai-agent-dev-environment-check.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">Node.js·npm 설치 확인과 개발 환경 점검하기</span>
+    </a>
+    <a class="post-nav" href="my-first-web-project.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">Claude Code로 HTML 첫 웹페이지 만들기</span>
+    </a>
+    <a class="post-nav" href="vibe-coding-loop.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">AI 코딩 프롬프트 작성법과 HTML·CSS 기초</span>
+    </a>
+    <a class="post-nav" href="terminal-shell-kernel-prompt.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">터미널·셸·커널·프롬프트 차이 (PowerShell 기준)</span>
+    </a>
+    <p class="post-date">(6) PowerShell 터미널 명령어 실습 (pwd·cd·mkdir·mv) (이 글)</p>
+  </main>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
