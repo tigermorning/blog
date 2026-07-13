@@ -97,9 +97,9 @@
     async function loadQueue() {
       const el = document.getElementById('queue-list');
 
-      const data = await ghApi('_drafts/queue.txt');
-      const queuedLines = (data && data.content)
-        ? b64DecodeUtf8(data.content).split('\n').map(l => l.trim()).filter(Boolean)
+      const queueRaw = await fetchRaw('_drafts/queue.txt');
+      const queuedLines = queueRaw
+        ? queueRaw.split('\n').map(l => l.trim()).filter(Boolean)
         : [];
 
       // _drafts 안의 모든 초안 파일 (큐에 있든 없든 전부)
