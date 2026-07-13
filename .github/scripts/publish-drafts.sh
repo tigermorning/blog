@@ -45,6 +45,23 @@ if [ -f "$SITEMAP" ] && ! grep -qF "$NEW_URL" "$SITEMAP"; then
   echo "sitemap.xml에 추가됨: $NEW_URL"
 fi
 
+# 랜딩 페이지(index.html)의 "최신 글" 링크를 방금 발행된 글로 자동 갱신
+lang_dir="$(dirname "$dest")"
+idx="$lang_dir/index.html"
+if [ -f "$idx" ]; then
+  post_title="$(grep -m1 -oP '(?<=<h1>)[^<]*' "$dest" || true)"
+  if [ -n "$post_title" ]; then
+    export POST_HREF="$(basename "$dest")"
+    export POST_TITLE="$post_title"
+    perl -0777 -pi -e '
+      my $href = $ENV{POST_HREF};
+      my $title = $ENV{POST_TITLE};
+      s{(<a class="post-nav" href=")([^"]*)(">\s*<span class="post-nav-label">)([^<]*)(</span>\s*<span class="post-nav-title">)([^<]*)(</span>)}{$1.$href.$3.$4.$5.$title.$7}se;
+    ' "$idx"
+    echo "${idx} 최신 글 링크 갱신됨: ${POST_HREF}"
+  fi
+fi
+
 git add -A
 git commit -m "예약 발행: $dest"
 git push
