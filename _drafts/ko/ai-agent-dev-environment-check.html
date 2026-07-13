@@ -62,7 +62,7 @@
     <ul>
       <li><strong>uv</strong>: 공식 설치 문서의 명령어로 깔아요. (윈도우는 공식 문서의 PowerShell 명령을 그대로 씁니다.)</li>
       <li><strong>Git</strong>: Git 공식 다운로드 페이지에서 운영체제에 맞는 걸 받아요.</li>
-      <li><strong>Claude Code</strong>: 공식 문서 기준으로, macOS/Linux/WSL은 <code>curl -fsSL https://claude.ai/install.sh | bash</code>, 윈도우 PowerShell은 <code>irm https://claude.ai/install.ps1 | iex</code>를 써요. 또는 Node.js 22 이상이 있다면 <code>npm install -g @anthropic-ai/claude-code</code>로도 설치할 수 있어요 (제가 실제로 이 방법으로 설치했었어요).</li>
+      <li><strong>Claude Code</strong>: 공식 문서 기준으로, 윈도우 PowerShell에서는 <code>irm https://claude.ai/install.ps1 | iex</code>를 써요. Node.js 22 이상이 있다면 <code>npm install -g @anthropic-ai/claude-code</code>로도 설치할 수 있어요 (제가 실제로 이 방법으로 설치했었어요). (참고로 macOS/Linux/WSL은 <code>curl -fsSL https://claude.ai/install.sh | bash</code>를 써요.)</li>
     </ul>
     <p>한 가지 헷갈릴 수 있는 부분: <strong>Claude Code는 파이썬 패키지가 아니라서 <code>uv tool install</code>로 설치하지 않아요.</strong> uv는 파이썬 프로젝트·도구 전용이고, Claude Code는 npm(자바스크립트 창고) 쪽에 있는 도구예요 — 1편에서 정리했던 "창고마다 취급 언어가 다르다"는 얘기가 여기서도 그대로 적용돼요.</p>
     <p><strong>공식 문서를 기준으로 삼는 이유</strong>도 짚어두고 싶어요. 버전은 계속 바뀌기 때문에, 지금 이 글에 적힌 명령어도 나중에는 최신이 아닐 수 있어요. 설치 명령을 복사하기 전에, 그 링크가 진짜 공식 문서인지, 버전 태그가 최신인지 한 번 확인하는 습관이 필요해요.</p>
@@ -111,6 +111,10 @@ claude --version</code></pre>
     <a class="post-nav" href="my-first-web-project.html">
       <span class="post-nav-label">(3)</span>
       <span class="post-nav-title">첫 프로젝트 폴더와 파일 만들기</span>
+    </a>
+    <a class="post-nav" href="vibe-coding-loop.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">바이브 코딩 루프 한 번 돌리기</span>
     </a>
   </main>
 
