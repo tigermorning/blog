@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>바이브 코딩으로 웹 만들기 (5) — 터미널·셸·커널·프롬프트 차이 (PowerShell 기준) - Tigermorning</title>
+  <meta name="description" content="터미널(terminal)·셸(shell)·커널(kernel)·프롬프트(prompt)가 각각 뭔지, 이름의 역사부터 PowerShell에서 명령 한 줄이 거치는 단계까지 초보자 기준으로 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="바이브 코딩으로 웹 만들기 (5) — 터미널·셸·커널·프롬프트 차이 (PowerShell 기준)">
+  <meta property="og:description" content="터미널(terminal)·셸(shell)·커널(kernel)·프롬프트(prompt)가 각각 뭔지, 이름의 역사부터 PowerShell에서 명령 한 줄이 거치는 단계까지 초보자 기준으로 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/terminal-shell-kernel-prompt.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <main>
+    <h1>바이브 코딩으로 웹 만들기 (5) — 터미널·셸·커널·프롬프트 차이 (PowerShell 기준)</h1>
+    <p class="post-date">2026. 7. 13.</p>
+
+    <a class="post-nav" href="vibe-coding-loop.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">바이브 코딩으로 웹 만들기 (4) — AI 코딩 프롬프트 작성법과 HTML·CSS 기초</span>
+    </a>
+
+    <hr>
+
+    <p>사실 이 네 단어는 오늘 처음 만난 게 아니었어요. 1편에서 CLI와 GUI의 실행 흐름을 그려볼 때, 마지막 단계를 그냥 <strong>"둘 다 커널에 요청을 보낸다"</strong>라고만 적고 넘어갔었거든요. 그때는 "커널"이 뭔지 제대로 몰라서 뭉뚱그린 거였어요. 오늘 5교시가 정확히 그 뭉뚱그린 부분 — 터미널, 셸, 커널, 프롬프트가 각각 뭐고 어떻게 이어지는지 — 를 다루는 시간이었어요. 그래서 오늘 새로 배운 내용에, 1편을 쓸 때 AI와 나눴던 이야기까지 합쳐서 정리해볼게요.</p>
+
+    <h2>이름의 역사부터 알아보기</h2>
+    <p>수업 자료에 따르면 이 네 단어는 컴퓨터가 생기기 전부터 있던 말이 컴퓨터 용어로 옮겨온 경우예요.</p>
+    <ul>
+      <li><strong>터미널(terminal)</strong>은 원래 "끝, 말단"이라는 뜻이에요. 통신·전기 분야에서 선로의 끝단을 가리키던 말이었어요. 1960~70년대에는 값비싼 대형 컴퓨터 한 대를 여러 사람이 나눠 썼는데, 사람들은 본체 앞이 아니라 키보드와 화면이 달린 "말단 장치"로 중앙 컴퓨터에 연결했어요. 그 물리 장치가 터미널이었고, 지금 우리가 쓰는 Windows Terminal이나 macOS Terminal은 그 옛 장치를 화면 속에서 흉내 내는 "터미널 에뮬레이터"예요.</li>
+      <li><strong>셸(shell)</strong>은 "껍데기"예요. 운영체제의 핵심(커널)을 감싸는 바깥층이라는 비유에서 온 이름이에요. 달걀을 떠올리면 딱 맞아요 — 껍데기가 알맹이를 감싸고 있죠.</li>
+      <li><strong>커널(kernel)</strong>은 "알맹이, 핵심"이에요. CPU·메모리·파일·네트워크 같은 컴퓨터의 진짜 자원을 관리하는 운영체제의 중심부예요.</li>
+      <li><strong>프롬프트(prompt)</strong>는 "재촉하다, 응답을 요구하다"라는 뜻이에요. 셸이 "나 지금 입력 기다리고 있어요"라고 화면에 띄우는 표시가 프롬프트예요.</li>
+    </ul>
+    <p>이 중에서 특히 <strong>프롬프트</strong>의 어원이 재미있었어요. 4편에서 다뤘던 "AI 코딩 프롬프트"도 결국 같은 단어, 같은 뜻이거든요 — AI에게 "응답을 재촉하는" 문장이 AI 프롬프트이고, 셸이 사람에게 "입력을 재촉하는" 표시가 셸 프롬프트예요. 재촉하는 주체와 방향이 반대일 뿐, "누군가의 응답을 기다리며 신호를 보낸다"는 원래 뜻은 똑같이 살아 있었던 거예요.</p>
+
+    <h2>명령이 지나가는 길 (Windows 기준)</h2>
+    <p>수업 자료의 원래 그림은 macOS·Linux 기준이라 PTY, zsh·bash가 나와요. 저는 Windows를 쓰니까, 같은 원리를 제 환경에 맞는 이름으로 다시 그려봤어요 — 수업 자료에는 없는 부분이라, 이 대응 관계는 AI와 함께 직접 정리한 거예요.</p>
+
+    <figure>
+      <img src="images/terminal-shell-kernel-layers.png" alt="터미널 에뮬레이터에서 ConPTY를 거쳐 PowerShell(셸)로, 다시 시스템 콜을 거쳐 Windows 커널로 이어지고 결과가 되돌아오는 4단계 구조도. 아래에 macOS·Linux의 대응 이름(PTY, zsh·bash)이 참고로 작게 표시됨">
+      <figcaption>Windows에서는 ConPTY가 macOS·Linux의 PTY와 같은 역할을, PowerShell이 zsh·bash와 같은 역할을 해요.</figcaption>
+    </figure>
+
+    <p>정리하면, <strong>터미널은 창(입출력 담당)</strong>, <strong>셸은 통역사(명령 해석과 실행 담당)</strong>, <strong>커널은 진짜 자원을 쥐고 있는 관리자</strong>예요. 1편에서 뭉뚱그렸던 "커널에 요청을 보낸다"는 사실 이 세 층을 다 거친 다음에야 일어나는 마지막 단계였던 거죠.</p>
+
+    <h2>명령 한 줄이 실제로 거치는 단계</h2>
+    <p>PowerShell에서 <code>Get-Location</code>(현재 위치 확인, <code>pwd</code>라는 별명으로도 씀)과 <code>node -v</code>(Node.js 버전 확인)를 각각 입력했을 때 어떤 차이가 있는지 따라가 봤어요. 이 둘을 고른 이유는, 하나는 PowerShell 안에서 바로 처리되는 "내장 명령"이고 다른 하나는 2편에서 다뤘던 "PowerShell 밖의 별도 프로그램"이라서예요.</p>
+    <ol>
+      <li><strong>터미널이 키 입력을 받는다.</strong> Windows Terminal이 글자를 화면에 보여주면서 ConPTY로 전달해요.</li>
+      <li><strong>ConPTY가 PowerShell에 글자를 넘긴다.</strong> Enter까지 모인 문장이 PowerShell 프로세스로 전달돼요.</li>
+      <li><strong>PowerShell이 문장을 해석한다.</strong> 명령 이름, 파이프(<code>|</code>), 옵션 같은 문법을 나눠서 읽어요.</li>
+      <li><strong>PowerShell이 명령을 어디서 찾을지 판단한다.</strong> <code>Get-Location</code>은 PowerShell에 이미 내장된 cmdlet이라 디스크를 뒤질 필요가 없어요. <code>node</code>는 내장되어 있지 않아서, <code>$env:Path</code>에 적힌 폴더들을 순서대로 뒤져서 <code>node.exe</code>를 찾아요.</li>
+      <li><strong>필요하면 새 프로세스를 만든다.</strong> <code>Get-Location</code>은 PowerShell 프로세스 안에서 곧바로 처리돼서 새 프로세스가 생기지 않아요. 반면 <code>node.exe</code>는 완전히 별도의 새 프로세스로 실행돼요(Windows는 이 과정에 <code>CreateProcess</code>라는 기능을 써요 — macOS·Linux의 fork·exec와 비슷한 역할이에요).</li>
+      <li><strong>프로그램이 시스템 콜로 커널에 요청한다.</strong> 파일을 읽거나 현재 경로를 확인하는 일은 반드시 커널에 요청해야 해요. 커널이 권한을 확인하고 자원을 내어줘요.</li>
+      <li><strong>결과가 되돌아와 화면에 보인다.</strong> 표준 출력(stdout)에 쓰인 결과가 ConPTY를 거쳐 터미널 화면에 그려지고, 그 다음 PowerShell이 새 프롬프트를 띄워요.</li>
+    </ol>
+    <p>2편에서 "Node.js와 npm은 대체 언제 실행되는가"를 다뤘을 때 그렸던 그림이 바로 이 ④~⑤단계의 확대판이었던 거예요. 그때는 "npm이 실행된다"라고만 말했는데, 오늘 보니 그 실행이라는 게 정확히는 "셸이 PATH에서 찾아서 새 프로세스로 띄우는 것"이었네요.</p>
+
+    <h2>흔한 오해 바로잡기</h2>
+    <p><strong>오해 1 — "터미널 = 검은 창 = 명령어"</strong>는 사실이 아니에요. 색은 그냥 꾸미기일 뿐이라, 밝은 테마의 Windows Terminal도 터미널이고 VS Code 아래쪽 패널도 터미널이에요. 터미널(창) · 셸(통역사) · 명령(실제로 실행되는 것)은 서로 다른 세 가지예요.</p>
+    <p><strong>오해 2 — "터미널과 셸은 하나로 묶여 있다"</strong>도 아니에요. 같은 Windows Terminal 창 안에서도 탭마다 PowerShell을 띄우거나, cmd.exe를 띄우거나, WSL의 bash를 띄울 수 있어요. 터미널은 그저 "그림을 그려주는 창"이고, 그 안에서 어떤 셸이 돌아가는지는 완전히 다른 선택이에요.</p>
+    <p><strong>오해 3 — "프롬프트 기호도 입력해야 한다"</strong>는 것도 흔한 착각이에요. 문서에 <code>PS C:\Users\user&gt; node -v</code>라고 적혀 있다면, <code>PS C:\Users\user&gt;</code>는 지금 PowerShell이 보여주는 프롬프트일 뿐이고 실제로 입력할 것은 <code>node -v</code>뿐이에요.</p>
+
+    <h2>실습 관찰 — 내 PowerShell의 각 층 확인하기</h2>
+    <p>아래 명령은 컴퓨터를 바꾸지 않고 정보만 보여줘요. Windows PowerShell에서 한 줄씩 실행해보세요.</p>
+    <pre><code>$PSVersionTable
+Get-Command node
+$env:Path</code></pre>
+    <ul>
+      <li><code>$PSVersionTable</code>은 지금 내가 쓰는 셸이 정말 PowerShell인지, 몇 버전인지 보여줘요.</li>
+      <li><code>Get-Command node</code>는 PowerShell이 <code>node</code>라는 명령을 어디서 찾았는지 알려줘요. 결과에 <code>node.exe</code>의 실제 경로가 나오면 정상이고, 못 찾으면 <code>node</code>가 <code>$env:Path</code>에 없다는 뜻이에요.</li>
+      <li><code>$env:Path</code>는 PowerShell이 외부 명령을 찾을 때 순서대로 뒤지는 폴더 목록이에요. 세미콜론(<code>;</code>)으로 구분된 여러 경로가 나와요.</li>
+    </ul>
+    <p><strong>이 관찰, 저는 이미 한 번 겪어본 적이 있어요.</strong> 2편에서 Node.js를 설치했는데도 새로 연 창에서 "찾을 수 없다"는 에러가 났던 적이 있었잖아요. 그게 바로 이 <code>$env:Path</code> 목록이 아직 새로고침되지 않은 상태였던 거예요. 설치는 됐는데 지금 이 PowerShell 창이 들고 있는 <code>$env:Path</code> 목록에는 아직 반영이 안 된 상태였던 거죠. 오늘 이 명령으로 직접 그 목록을 눈으로 보니, 그때 왜 창을 새로 열어야 했는지 훨씬 분명해졌어요.</p>
+    <p>관찰 질문: <code>$env:Path</code>에 Node.js나 <code>npm</code> 관련 경로가 보이나요? <code>Get-Command node</code>의 결과가 실제로 존재하는 파일을 가리키나요? 답이 예상과 다르더라도 괜찮아요 — 그 다른 결과 자체가 AI에게 물어볼 좋은 재료가 돼요.</p>
+    <p class="post-date" style="margin-top:1rem;">(참고) macOS·Linux 사용자는 <code>echo $SHELL</code>, <code>which node</code>, <code>echo $PATH</code>로 같은 걸 관찰할 수 있어요.</p>
+
+    <h2>Claude Code는 이 중 어디에 있을까</h2>
+    <p>Claude Code는 터미널도, 셸도, 커널도 아니에요. <strong>셸 위에서 실행되는 프로그램</strong>이에요. PowerShell 창에서 <code>claude</code>를 입력하면, PowerShell이 <code>$env:Path</code>에서 <code>claude</code>를 찾아 새 프로세스로 실행해요. 그 안에서 Claude Code가 파일을 읽고, 명령 실행을 요청하고, 결과를 다시 보여주는 거예요.</p>
+    <p>이 구분을 알면 에러가 났을 때 어디를 봐야 할지 감이 잡혀요.</p>
+    <ul>
+      <li><code>claude</code>라는 이름을 인식할 수 없다는 에러 → 설치가 안 됐거나 <code>$env:Path</code>에 없는 경우 (셸의 명령 탐색 문제)</li>
+      <li>"액세스가 거부되었습니다" 같은 권한 에러 → 커널이 관리하는 파일·폴더 권한 문제</li>
+      <li>글자가 깨지거나 창이 멈춤 → 터미널 앱이나 ConPTY 연결 자체의 문제</li>
+    </ul>
+    <p>AI가 아무리 강력해도 지금 서 있는 폴더와 권한을 넘어서지는 못해요. 그래서 에러 문구, <code>Get-Location</code> 결과, 실행한 명령을 함께 보여주는 습관이 (2편에서 이미 이야기했던) "환경 / 명령 / 결과"를 나눠 보여주는 것과 똑같이, AI에게 더 정확한 도움을 받는 방법이에요.</p>
+
+    <hr>
+
+    <p><strong>참고한 자료</strong>: 터미널·셸·커널·프롬프트의 이름과 역사, PTY 개념, 명령이 거치는 단계는 오늘 수업 자료(Linux kernel 공식 문서, GNU Bash Manual, zsh 공식 문서, POSIX/MDN의 시스템 콜 설명, Unix 셸 역사 관련 자료를 인용)를 바탕으로 정리했어요. 여기에 macOS·Linux 개념을 Windows(ConPTY, PowerShell, <code>CreateProcess</code>)에 대응시킨 부분은 수업 자료에는 없는 내용이라, AI와 함께 직접 정리해본 것이에요.</p>
+
+    <h3>"바이브 코딩으로 웹 만들기" 시리즈</h3>
+    <a class="post-nav" href="ai-agent-dev-environment.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">Claude Code로 AI 코딩 개발 환경 세팅하기</span>
+    </a>
+    <a class="post-nav" href="ai-agent-dev-environment-check.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">Node.js·npm 설치 확인과 개발 환경 점검하기</span>
+    </a>
+    <a class="post-nav" href="my-first-web-project.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">Claude Code로 HTML 첫 웹페이지 만들기</span>
+    </a>
+    <a class="post-nav" href="vibe-coding-loop.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">AI 코딩 프롬프트 작성법과 HTML·CSS 기초</span>
+    </a>
+    <p class="post-date">(5) 터미널·셸·커널·프롬프트 차이 (PowerShell 기준) (이 글)</p>
+  </main>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
