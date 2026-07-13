@@ -204,6 +204,28 @@ main hr {
   margin: 2.5rem 0;
 }
 
+main table {
+  width: 100%;
+  max-width: 34rem;
+  margin: 1.25rem 0;
+  border-collapse: collapse;
+  font-size: 1rem;
+}
+
+main th,
+main td {
+  border: 1px solid var(--border);
+  padding: 0.6rem 0.8rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+main th {
+  background: var(--border);
+  font-family: var(--font-heading);
+  font-weight: 700;
+}
+
 .post-nav {
   display: block;
   max-width: 34rem;

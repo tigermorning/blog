@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>바이브 코딩으로 웹 만들기 (4) — 바이브 코딩 루프 한 번 돌리기 - Tigermorning</title>
+  <meta name="description" content="지시→생성→판단→재지시로 이어지는 바이브 코딩 루프를 실제로 한 번 돌려봤어요. 개조식 요청, CSS가 뭔지, AI가 고쳐준 코드를 한 줄씩 해독하는 과정까지 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="바이브 코딩으로 웹 만들기 (4) — 바이브 코딩 루프 한 번 돌리기">
+  <meta property="og:description" content="지시→생성→판단→재지시로 이어지는 바이브 코딩 루프를 실제로 한 번 돌려봤어요. 개조식 요청, CSS가 뭔지, AI가 고쳐준 코드를 한 줄씩 해독하는 과정까지 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/vibe-coding-loop.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <main>
+    <h1>바이브 코딩으로 웹 만들기 (4) — 바이브 코딩 루프 한 번 돌리기</h1>
+    <p class="post-date">2026. 7. 13.</p>
+
+    <a class="post-nav" href="my-first-web-project.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">바이브 코딩으로 웹 만들기 (3) — 첫 프로젝트 폴더와 파일 만들기</span>
+    </a>
+
+    <hr>
+
+    <p>3교시에서 <code>index.html</code> 파일 하나를 처음 만들어봤다면, 4교시는 그 파일을 <strong>한 번 더 고쳐보는</strong> 시간이었어요. 그런데 이번에 새로 알게 된 게 있어요 — "AI에게 시키고 결과를 받는다"는 이 전체 과정에 이미 이름이 있었더라고요. 바로 <strong>바이브 코딩 루프</strong>예요.</p>
+
+    <h2>루프라고 부르는 이유</h2>
+    <p>수업 자료에서는 이 과정을 네 단계로 나눠서 설명했어요. <strong>①자연어로 지시한다 → ②AI가 코드를 생성한다 → ③내가 결과를 읽고 판단한다 → ④판단 결과에 따라 다시 지시한다</strong>. 그리고 ④에서 끝나는 게 아니라 다시 ①로 돌아가요. 그래서 "한 번 하고 끝"이 아니라 "루프(loop, 고리)"라고 부르는 거예요.</p>
+    <p>사실 저는 3편을 쓰면서 이미 이 루프의 한 바퀴를 돌았더라고요 — index.html을 만들어달라고 지시했고(①②), 브라우저로 열어서 제목과 본문을 확인했고(③), 문제가 없어서 그대로 뒀어요(④가 "그대로 유지"라는 형태로 일어난 거예요). 4교시는 이 루프를 <strong>한 번 더</strong>, 이번엔 "수정 요청"이 들어가는 형태로 돌려보는 시간이었어요.</p>
+
+    <figure>
+      <img src="images/vibe-coding-loop.png" alt="지시, 생성, 판단, 재지시 네 단계가 화살표로 원형 고리를 이루는 바이브 코딩 루프 다이어그램">
+      <figcaption>①지시 → ②생성 → ③판단 → ④재지시, 그리고 다시 ①로. 이 고리가 "바이브 코딩 루프"예요.</figcaption>
+    </figure>
+
+    <h2>두 번째 지시 — 이번엔 개조식으로</h2>
+    <p>수업에서는 <code>index.html</code>에 저만의 도메인 관련 섹션을 하나 추가해달라고 요청하는 예시가 나왔는데, 이번 요청은 문장을 줄줄 쓰는 대신 <strong>개조식(조목조목 나눠 적는 방식)</strong>으로 쓰라고 되어 있었어요. 저도 그 형태로 이렇게 요청해봤어요.</p>
+    <blockquote>
+      <p>index.html에 섹션을 하나 추가해줘.<br>
+      추가할 것:<br>
+      - 소제목: "AI로 개선하고 싶은 반복 업무"<br>
+      - 목록 3개: 내 실제 업무에서 AI로 줄이고 싶은 반복 작업<br>
+      지킬 것:<br>
+      - 기존 제목과 첫 문장은 그대로 유지해줘</p>
+    </blockquote>
+    <p>개조식이 왜 더 좋은지는 사실 2편에서 이미 한 번 다룬 원리와 같아요. 2편에서 저는 문제가 생겼을 때 AI에게 "환경 / 명령 / 결과" 세 칸으로 나눠서 보여주면 훨씬 정확하게 진단받을 수 있다는 걸 배웠어요. 이번 요청도 똑같아요 — "섹션 추가해줘, 소제목이랑 목록도 넣고, 제목은 그대로 둬"라고 한 문장으로 뭉쳐서 말하면 AI가 조건 하나를 놓칠 수 있는데, <strong>"추가할 것"과 "지킬 것"을 나눠 적으면 AI가 체크리스트처럼 하나씩 확인하면서 작업</strong>하게 돼요. 사람도 말을 조목조목 들으면 놓치는 게 줄어드는 것과 같은 이치더라고요.</p>
+
+    <h2>그런데 CSS라는 말이 나왔어요</h2>
+    <p>수업 자료를 보다가 CSS라는 단어를 처음 만났어요. 설명 없이 그냥 나와서 찾아봤어요. <strong>HTML이 "무엇이 있는지"를 정하는 언어라면, CSS(Cascading Style Sheets)는 "그게 어떻게 보이는지"를 정하는 언어</strong>예요.</p>
+    <p>건물로 비유하면 이해가 쉬워요. <strong>HTML은 골조</strong>예요 — 여기는 거실, 여기는 방, 여기는 현관, 하는 뼈대만 세우는 거예요. <strong>CSS는 마감재와 인테리어</strong>예요 — 벽 색깔, 바닥재, 가구 배치처럼 "이미 있는 뼈대를 어떻게 꾸밀지"를 정해요. 뼈대가 없으면 인테리어를 할 수 없고, 인테리어가 없어도 건물 자체는 서 있을 수 있어요. 그래서 이 블로그도 실제로 두 파일이 나뉘어 있어요 — 이 글의 뼈대는 지금 보고 계신 <code>.html</code> 파일이고, 글자 색이나 배너 카드 모양처럼 꾸미는 부분은 <code>style.css</code>라는 별도 파일에 들어 있어요.</p>
+    <p>그럼 왜 CSS 얘기가 여기서 나왔을까요? AI에게 "화면을 만들어줘"라고 부탁하면, AI는 종종 뼈대(HTML)만 주는 게 아니라 "그래도 예쁘게는 보여야지"라는 기본값을 가지고 스타일(CSS)까지 같이 넣어줘요. 그래서 내가 요청하지 않아도 결과물에 색깔이나 여백이 들어가 있을 수 있는데, 이게 바로 CSS가 한 일이라는 걸 알면 "이건 구조를 바꾼 게 아니라 꾸민 것뿐이구나"라고 구분해서 판단할 수 있어요.</p>
+
+    <h2>AI가 고쳐준 코드, 한 줄씩 해독해보기</h2>
+    <p>제 도메인(영상 자막·SDH 감수)에 맞춰서 요청했더니, 기존 코드에 이런 부분이 새로 생겼어요. 전체를 다시 보면 이렇게 됐어요.</p>
+    <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;나의 첫 웹페이지&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;AI 에이전트를 공부하는 Tigermorning&lt;/h1&gt;
+  &lt;p&gt;영상 자막(한국어) 감수를 AI로 자동화하는 일에 AI를 활용해 보고 싶습니다.&lt;/p&gt;
+  &lt;section&gt;
+    &lt;h2&gt;AI로 개선하고 싶은 반복 업무&lt;/h2&gt;
+    &lt;ul&gt;
+      &lt;li&gt;맞춤법·띄어쓰기 검사: 표준국어대사전과 대조해서 자주 틀리는 표기를 확인합니다.&lt;/li&gt;
+      &lt;li&gt;외래어 표기 검토: 국립국어원 표기 세칙에 맞는지 확인합니다.&lt;/li&gt;
+      &lt;li&gt;자막 타임코드 정리: 자막 텍스트와 타임코드를 분리해서 정돈합니다.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/section&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    <p>저는 코딩 용어를 하나도 모르는 상태라서, 이걸 그대로 "받아쓰기"하지 않고 한 줄씩 뜯어봤어요. 기존 <code>&lt;h1&gt;</code>과 <code>&lt;p&gt;</code> 아래에 새로 생긴 부분만 짚어볼게요.</p>
+    <ul>
+      <li><strong><code>&lt;section&gt;</code></strong>: "이 안에 있는 내용은 하나의 묶음이다"라고 표시하는 태그예요. 서류로 치면 "여기부터 여기까지가 한 항목"이라고 클립으로 묶어두는 것과 같아요. 그래서 <code>&lt;section&gt;</code>으로 시작하면 반드시 <code>&lt;/section&gt;</code>으로 닫아서, "이 묶음은 여기서 끝"이라고 알려줘요.</li>
+      <li><strong><code>&lt;h2&gt;</code></strong>: <code>&lt;h1&gt;</code>이 이 페이지 전체의 제목이었다면, <code>&lt;h2&gt;</code>는 그보다 한 단계 작은 소제목이에요. h는 heading(제목)의 줄임말이고, 숫자가 클수록(h1→h2→h3…) 더 작은 제목이 돼요.</li>
+      <li><strong><code>&lt;ul&gt;</code></strong>: unordered list, 즉 "순서가 없는 목록"이라는 뜻이에요. 번호가 아니라 점(•)으로 나열되는 목록을 만들 때 써요.</li>
+      <li><strong><code>&lt;li&gt;</code></strong>: list item, 목록 안의 항목 하나하나예요. <code>&lt;ul&gt;</code> 안에 <code>&lt;li&gt;</code> 세 개가 들어 있으니까, 점 세 개짜리 목록이 되는 거예요.</li>
+    </ul>
+    <p>여기서 중요한 게 하나 있어요. 이 태그들은 아무렇게나 뒤섞여 있는 게 아니라 <strong>포함 관계</strong>를 이루고 있어요 — <code>&lt;section&gt;</code> 안에 <code>&lt;h2&gt;</code>와 <code>&lt;ul&gt;</code>이 들어 있고, <code>&lt;ul&gt;</code> 안에 <code>&lt;li&gt;</code> 세 개가 들어 있는 식으로, 마치 상자 속에 상자가 또 들어 있는 구조예요.</p>
+
+    <figure>
+      <img src="images/html-tag-nesting.png" alt="body 태그 안에 h1과 p, section이 있고 section 안에 h2와 ul이, ul 안에 li 세 개가 차례로 포함되는 HTML 태그 중첩 구조도">
+      <figcaption>바깥 상자(body) 안에 중간 상자(section)가, 그 안에 더 작은 상자(ul, li)가 차례로 들어 있는 구조예요.</figcaption>
+    </figure>
+
+    <p>코드에서 뒤로 갈수록 들여쓰기(앞의 빈칸)가 늘어나는 것도 이 포함 관계를 눈으로 보이게 표시한 거예요. 들여쓰기 자체가 코드를 작동시키는 건 아니지만, 사람이 "어디까지가 한 묶음인지"를 한눈에 알아보게 해줘요.</p>
+
+    <h2>판단하기 — 이번에도 검토 질문에 직접 답해보기</h2>
+    <p>3편에서처럼, 결과를 받고 바로 넘어가지 않고 검토 질문에 하나씩 답해봤어요.</p>
+    <table>
+      <thead>
+        <tr><th>검토 항목</th><th>결과</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>기존 제목과 첫 문장이 그대로 유지됐는가</td><td>네, <code>&lt;h1&gt;</code>과 <code>&lt;p&gt;</code>는 그대로예요.</td></tr>
+        <tr><td>새 소제목이 요청한 문구와 일치하는가</td><td>네, "AI로 개선하고 싶은 반복 업무"로 정확히 들어갔어요.</td></tr>
+        <tr><td>목록 3개가 실제 제 업무(자막·SDH 감수)와 관련 있는가</td><td>네, 맞춤법·외래어 표기·타임코드처럼 실제로 반복하는 작업이 들어갔어요.</td></tr>
+        <tr><td>태그가 열고 닫는 짝이 맞는가 (<code>&lt;section&gt;</code>…<code>&lt;/section&gt;</code> 등)</td><td>네, 모두 짝이 맞게 닫혀 있어요.</td></tr>
+      </tbody>
+    </table>
+    <p>네 항목 모두 통과였어요. 만약 여기서 하나라도 "아니오"가 나왔다면, 그게 바로 루프의 ④단계 — 다시 지시하는 순간이었을 거예요. 예를 들어 목록이 제 업무와 안 맞았다면 "3번째 항목을 자막 타임코드가 아니라 [다른 업무]로 바꿔줘"처럼 구체적으로 재지시하면 되는 거죠.</p>
+
+    <p>지시하고, 생성되고, 판단하고, 필요하면 다시 지시하는 것. 코딩 용어를 하나도 몰라도 이 루프 자체는 계속 돌릴 수 있다는 걸 이번 실습에서 느꼈어요. 다만 판단을 제대로 하려면 결과물에 쓰인 단어들(태그, CSS 같은 것들)을 조금씩은 알아야 한다는 것도 함께 배웠고요.</p>
+
+    <hr>
+
+    <h3>"바이브 코딩으로 웹 만들기" 시리즈</h3>
+    <a class="post-nav" href="ai-agent-dev-environment.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">AI에게 일을 맡기는 개발 작업대</span>
+    </a>
+    <a class="post-nav" href="ai-agent-dev-environment-check.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">내 작업대 상태 확인하기</span>
+    </a>
+    <a class="post-nav" href="my-first-web-project.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">첫 프로젝트 폴더와 파일 만들기</span>
+    </a>
+    <p class="post-date">(4) 바이브 코딩 루프 한 번 돌리기 (이 글)</p>
+  </main>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
