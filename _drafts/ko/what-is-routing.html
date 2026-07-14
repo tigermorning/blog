@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>라우팅(Routing)이 뭔가요? — 언어별로 자동 연결되는 원리 - Tigermorning</title>
+  <meta name="description" content="제 블로그의 루트 페이지와 언어별 랜딩 페이지가 헷갈렸던 경험을 통해, 라우팅이 정확히 무엇이고 왜 필요한지 쉽게 설명합니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="라우팅(Routing)이 뭔가요? — 언어별로 자동 연결되는 원리">
+  <meta property="og:description" content="제 블로그의 루트 페이지와 언어별 랜딩 페이지가 헷갈렸던 경험을 통해, 라우팅이 정확히 무엇이고 왜 필요한지 쉽게 설명합니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/what-is-routing.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <main>
+    <h1>라우팅(Routing)이 뭔가요? — 언어별로 자동 연결되는 원리</h1>
+    <p class="post-date">2026. 7. 14.</p>
+
+    <p>이 블로그를 처음 만들 때, <code>tigermorning.github.io/blog</code>로 들어갔을 때 보이는 화면과 <code>tigermorning.github.io/blog/ko/hello-world.html</code>로 들어갔을 때 보이는 화면이 왜 다른지 한참 헷갈렸어요. "한국어 브라우저면 한국어 페이지로 바로 보내줄 수 없나?"라는 질문도 함께 들었는데, 그 질문에 답하다 보니 <strong>라우팅(routing)</strong>이라는 개념 자체를 제대로 정리하게 됐어요.</p>
+
+    <h2>라우팅이란</h2>
+    <p><strong>라우팅</strong>은 "어떤 요청이 들어왔을 때, 그걸 어디로 보낼지 정해서 연결해주는 것"을 말해요. 원래는 택배나 통신 회선에서 "가장 좋은 길을 정한다"는 뜻으로 쓰던 말이에요(route = 길, 경로). 웹사이트에서는 "이 주소로 들어온 사람을 어떤 페이지로 데려다줄까"를 결정하는 로직을 라우팅이라고 불러요.</p>
+    <blockquote>
+      <p>비유하면: 교차로에 서 있는 교통경찰이에요. 차(방문자)가 오면, 그 차의 상태(브라우저 언어)를 보고 "너는 이 길로, 너는 저 길로" 하고 갈 곳을 정해서 보내줘요. 교통경찰 자신은 목적지가 아니라, 목적지로 가는 길을 정해주는 역할만 해요.</p>
+    </blockquote>
+
+    <h2>제 블로그의 라우팅 구조</h2>
+    <p>제 블로그는 총 네 개의 파일이 이 역할을 나눠서 맡고 있어요.</p>
+
+    <figure>
+      <img src="images/blog-routing-structure.png" alt="루트 index.html이 브라우저 언어를 감지해서 ko, en, zh 세 개의 언어별 랜딩 페이지 중 하나로 보내고, 그 아래에 개별 블로그 글이 별도로 존재하는 라우팅 구조도">
+      <figcaption>루트 1개가 언어별 랜딩 3개로 갈라지고, 그 아래에 또 별개로 개별 글들이 있는 구조예요.</figcaption>
+    </figure>
+
+    <ul>
+      <li><strong>루트(맨 바깥의 index.html)</strong>: 이건 사람이 읽는 "페이지"가 아니에요. 화면에 아무것도 안 그리고, 접속하는 즉시 "이 브라우저 언어가 뭐지?"만 확인해서 0.01초 만에 다른 곳으로 넘겨버리는 안내 로봇 같은 파일이에요. <code>tigermorning.github.io/blog</code>로 접속하면 이 파일이 무조건 먼저 실행되지만, 눈에 보일 틈도 없이 바로 다음 단계로 넘어가요.</li>
+      <li><strong>언어별 랜딩 페이지 3개</strong>: <code>ko/index.html</code>, <code>en/index.html</code>, <code>zh/index.html</code>이라는, 진짜 인사말이 담긴 페이지가 각 언어 폴더 안에 따로 있어요. 루트가 브라우저 언어를 보고 이 셋 중 하나로 사용자를 데려다줘요.</li>
+      <li><strong>개별 글(예: ko/hello-world.html)</strong>: 랜딩 페이지와는 또 다른, 별개의 파일이에요. 홈페이지 첫 화면과 게시글 하나가 다른 것과 같은, 아주 정상적인 구조예요.</li>
+    </ul>
+
+    <h2>그래서 "한국어면 한국어로 자동 연결"은 이미 되고 있었어요</h2>
+    <p>결국 처음 궁금했던 질문 — "각 언어 사용자에게 바로 그 언어 페이지가 보이게 할 수 없냐" — 의 답은 <strong>"이미 그렇게 되고 있다"</strong>였어요. 한국어 브라우저로 오면 루트를 거쳐 자동으로 <code>ko/index.html</code>(한국어 랜딩)로 가고, 영어 브라우저면 <code>en/index.html</code>로 가요. 사용자가 언어를 고를 필요도 없고, 이미 그렇게 동작하도록 만들어져 있는 상태였던 거예요.</p>
+    <p>그럼 왜 처음에 헷갈렸을까요? <code>ko/hello-world.html</code>은 위 그림의 맨 아래 칸, "개별 글" 중 하나였어요. 랜딩 페이지(인사말만 있는 얼굴 역할)와 블로그 글(실제 내용이 있는 포스트)은 원래부터 다른 페이지고, 이건 언어 라우팅 문제가 아니라 그냥 "첫 화면"과 "게시글 하나"가 다른 것뿐이었어요. 라우팅(언어를 보고 갈 곳을 정하는 것)과 "랜딩 페이지 vs 개별 글"(둘 다 이미 도착한 뒤의 별개 구분)을 하나로 착각했던 게 헷갈림의 진짜 원인이었던 거예요.</p>
+
+    <p>이 개념은 사실 "바이브 코딩으로 웹 만들기" 시리즈에서 만든 <code>index.html</code> 하나짜리 페이지보다 한 단계 더 큰 이야기예요. 페이지가 여러 개로 늘어나기 시작하면, "누가 들어왔을 때 어디로 보낼지"를 정하는 라우팅이 반드시 필요해져요.</p>
+
+    <a class="post-nav" href="ai-agent-dev-environment.html">
+      <span class="post-nav-label">참고 글</span>
+      <span class="post-nav-title">바이브 코딩으로 웹 만들기 (1) — Claude Code로 AI 코딩 개발 환경 세팅하기</span>
+    </a>
+  </main>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
