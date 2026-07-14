@@ -16,6 +16,35 @@ if [ -z "$next_entry" ]; then
   exit 0
 fi
 
+# 낮 시간(KST 09:00~24:00)에만 발행. 그 전이면 이번 실행은 건너뜀
+now_kst_hour=$(TZ=Asia/Seoul date +%-H)
+if [ "$now_kst_hour" -lt 9 ]; then
+  echo "KST 09시 이전이라 이번 실행은 건너뜁니다."
+  exit 0
+fi
+
+# 남은 대기열 개수만큼 오늘 하루(남은 시간) 안에 다 발행되도록 간격을 계산.
+# 간격은 최소 1시간, 대기열이 적을수록 하루 안에서 더 넓게 퍼짐.
+queue_count=$(grep -c . "$QUEUE_FILE" || true)
+now_kst_min=$(TZ=Asia/Seoul date +%-M)
+minutes_left_today=$(( (24 - now_kst_hour) * 60 - now_kst_min ))
+if [ "$minutes_left_today" -lt 60 ]; then
+  minutes_left_today=60
+fi
+interval_sec=$(( minutes_left_today * 60 / queue_count ))
+if [ "$interval_sec" -lt 3600 ]; then
+  interval_sec=3600
+fi
+
+last_publish_ts=$(git log -1 --grep='^예약 발행: ' --format=%ct 2>/dev/null || echo 0)
+now_ts=$(date +%s)
+elapsed_sec=$(( now_ts - last_publish_ts ))
+
+if [ "$last_publish_ts" -ne 0 ] && [ "$elapsed_sec" -lt "$interval_sec" ]; then
+  echo "마지막 발행 후 $((elapsed_sec / 60))분 경과, 필요한 간격은 $((interval_sec / 60))분(대기열 ${queue_count}개 기준). 이번 실행은 건너뜁니다."
+  exit 0
+fi
+
 src="_drafts/$next_entry"
 dest="$next_entry"
 

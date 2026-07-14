@@ -2,9 +2,10 @@ name: Publish scheduled drafts
 
 on:
   schedule:
-    - cron: '0 0 * * *'    # 한국시간(KST) 09:00 — 대기열에서 1개 발행
-    - cron: '0 6 * * *'    # 한국시간(KST) 15:00 — 대기열에서 1개 발행
-    - cron: '0 12 * * *'   # 한국시간(KST) 21:00 — 대기열에서 1개 발행
+    # 20분마다 실행을 "틱"으로 확인만 하고, 실제 발행 여부와 간격은
+    # publish-drafts.sh가 대기열 개수를 보고 그때그때 계산합니다
+    # (최소 1시간 간격, 대기열에 있는 시리즈가 KST 09:00~24:00 안에 다 발행되도록).
+    - cron: '*/20 * * * *'
   workflow_dispatch: {}
 
 permissions:
