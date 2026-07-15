@@ -41,6 +41,15 @@
 
     <h2 id="vibe-coding">바이브코딩</h2>
 
+    <div class="search-box">
+      <input type="search" id="post-search" placeholder="글 검색" aria-label="글 검색">
+      <div class="search-scope">
+        <label><input type="radio" name="search-scope" value="title" checked> 제목만</label>
+        <label><input type="radio" name="search-scope" value="all"> 제목+글</label>
+      </div>
+      <p class="search-status" id="search-status" hidden></p>
+    </div>
+
     <ul class="title-list">
       <li><a href="what-is-api.html"><span class="title-list-title">API가 뭔가요? AI랑 헷갈리지 않는 법</span><span class="title-list-date">2026.07.12</span></a></li>
       <li><a href="learning-git-1.html"><span class="title-list-title">Git 사용법 초보자 가이드 (1) 개념과 기본 세팅 — Git이 뭔지도 몰랐던 내가 하루 만에 블로그를 만들기까지</span><span class="title-list-date">2026.07.12</span></a></li>
@@ -75,5 +84,64 @@
   <footer class="site-footer">
     &copy; 2026 Tigermorning
   </footer>
+
+  <script src="../search-data.js"></script>
+  <script>
+    (function () {
+      var input = document.getElementById('post-search');
+      var scopeRadios = document.getElementsByName('search-scope');
+      var items = Array.prototype.slice.call(document.querySelectorAll('.title-list li'));
+      var status = document.getElementById('search-status');
+
+      function currentScope() {
+        for (var i = 0; i < scopeRadios.length; i++) {
+          if (scopeRadios[i].checked) return scopeRadios[i].value;
+        }
+        return 'title';
+      }
+
+      function norm(s) {
+        return (s || '').toLowerCase();
+      }
+
+      function filter() {
+        var query = norm(input.value.trim());
+        var scope = currentScope();
+        var visibleCount = 0;
+
+        items.forEach(function (li) {
+          var a = li.querySelector('a');
+          var href = a.getAttribute('href');
+          var titleText = norm(a.querySelector('.title-list-title').textContent);
+          var match;
+
+          if (!query) {
+            match = true;
+          } else if (scope === 'title') {
+            match = titleText.indexOf(query) !== -1;
+          } else {
+            var data = (typeof SEARCH_DATA !== 'undefined') ? SEARCH_DATA[href] : null;
+            var bodyText = norm(data ? data.text : titleText);
+            match = bodyText.indexOf(query) !== -1;
+          }
+
+          li.hidden = !match;
+          if (match) visibleCount++;
+        });
+
+        if (query) {
+          status.hidden = false;
+          status.textContent = visibleCount > 0 ? (visibleCount + '개 글을 찾았어요.') : '일치하는 글이 없어요.';
+        } else {
+          status.hidden = true;
+        }
+      }
+
+      input.addEventListener('input', filter);
+      for (var i = 0; i < scopeRadios.length; i++) {
+        scopeRadios[i].addEventListener('change', filter);
+      }
+    })();
+  </script>
 </body>
 </html>
