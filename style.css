@@ -265,6 +265,56 @@ main th {
   font-style: italic;
 }
 
+.post-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  max-width: 34rem;
+  margin-top: 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.post-card {
+  display: block;
+  padding: 1.1rem 1.4rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--ink);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.post-card:hover {
+  border-color: var(--accent);
+  background: var(--border);
+}
+
+.post-card .post-card-title {
+  display: block;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.1rem;
+  line-height: 1.4;
+  color: var(--accent);
+  margin-bottom: 0.4rem;
+}
+
+.post-card .post-card-excerpt {
+  display: block;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--ink);
+  margin-bottom: 0.6rem;
+}
+
+.post-card .post-card-date {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
 .site-footer {
   padding: 2rem 1.5rem 3rem;
   text-align: center;
