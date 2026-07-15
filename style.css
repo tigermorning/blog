@@ -265,54 +265,34 @@ main th {
   font-style: italic;
 }
 
-.post-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 0.9rem;
-  max-width: 34rem;
-  margin-top: 1rem;
-  padding: 0;
+.title-list {
   list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  max-width: 34rem;
 }
 
-.post-card {
+.title-list li {
+  border-bottom: 1px solid var(--border);
+}
+
+.title-list li:last-child {
+  border-bottom: none;
+}
+
+.title-list a {
   display: block;
-  padding: 1.1rem 1.4rem;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  text-decoration: none;
-  color: var(--ink);
-  transition: border-color 0.15s ease, background 0.15s ease;
-}
-
-.post-card:hover {
-  border-color: var(--accent);
-  background: var(--border);
-}
-
-.post-card .post-card-title {
-  display: block;
+  padding: 0.85rem 0.15rem;
   font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: 1.1rem;
-  line-height: 1.4;
-  color: var(--accent);
-  margin-bottom: 0.4rem;
-}
-
-.post-card .post-card-excerpt {
-  display: block;
-  font-size: 0.95rem;
-  line-height: 1.65;
+  font-size: 1.02rem;
+  line-height: 1.5;
   color: var(--ink);
-  margin-bottom: 0.6rem;
+  text-decoration: none;
+  transition: color 0.15s ease;
 }
 
-.post-card .post-card-date {
-  display: block;
-  font-size: 0.8rem;
-  color: var(--muted);
-  font-style: italic;
+.title-list a:hover {
+  color: var(--accent);
 }
 
 /* 사이드바가 있는 페이지(현재는 홈)만 이 wrapper를 쓴다. 일반 글 페이지는
