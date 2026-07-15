@@ -281,18 +281,39 @@ main th {
 }
 
 .title-list a {
-  display: block;
-  padding: 0.85rem 0.15rem;
-  font-family: var(--font-heading);
-  font-size: 1.02rem;
-  line-height: 1.5;
-  color: var(--ink);
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.5rem 0.15rem;
   text-decoration: none;
+  color: var(--ink);
   transition: color 0.15s ease;
 }
 
 .title-list a:hover {
   color: var(--accent);
+}
+
+.title-list a:hover .title-list-title {
+  color: var(--accent);
+}
+
+.title-list-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-family: var(--font-heading);
+  font-size: 0.98rem;
+  color: var(--ink);
+}
+
+.title-list-date {
+  flex: 0 0 auto;
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-style: italic;
 }
 
 /* 사이드바가 있는 페이지(현재는 홈)만 이 wrapper를 쓴다. 일반 글 페이지는
