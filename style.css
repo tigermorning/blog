@@ -113,7 +113,7 @@ main h1.greeting {
 main p {
   font-size: 1.15rem;
   color: var(--ink);
-  max-width: 42rem;
+  max-width: 100%;
 }
 
 main figure {
@@ -150,7 +150,7 @@ main ol,
 main ul {
   font-size: 1.1rem;
   color: var(--ink);
-  max-width: 42rem;
+  max-width: 100%;
   padding-left: 1.4rem;
 }
 
@@ -173,7 +173,7 @@ main pre {
   padding: 1rem 1.25rem;
   border-radius: 8px;
   overflow-x: auto;
-  max-width: 42rem;
+  max-width: 100%;
 }
 
 main pre code {
@@ -196,7 +196,7 @@ main blockquote {
   padding: 0.9rem 1.25rem;
   border-left: 3px solid var(--accent);
   background: var(--border);
-  max-width: 42rem;
+  max-width: 100%;
   font-size: 1.02rem;
 }
 
@@ -234,7 +234,7 @@ main th {
 
 .post-nav {
   display: block;
-  max-width: 42rem;
+  max-width: 100%;
   margin-top: 1.5rem;
   padding: 1.1rem 1.4rem;
   border: 1px solid var(--border);
@@ -273,7 +273,7 @@ main th {
 
 .search-box {
   margin: 1rem 0 0;
-  max-width: 42rem;
+  max-width: 100%;
 }
 
 .search-box input[type="search"] {
@@ -318,7 +318,7 @@ main th {
   list-style: none;
   margin: 1rem 0 0;
   padding: 0;
-  max-width: 42rem;
+  max-width: 100%;
 }
 
 .title-list li {
