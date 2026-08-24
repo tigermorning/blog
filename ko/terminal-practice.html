@@ -66,7 +66,7 @@
     </table>
     <p>수업 자료의 원래 명령어는 <code>touch</code>였는데, 3편에서 이미 겪었듯 PowerShell에는 <code>touch</code>가 없어서 <code>New-Item</code>(별명 <code>ni</code>)을 써요. 다행히 <code>pwd</code>, <code>ls</code>, <code>cd</code>, <code>mkdir</code>, <code>mv</code>, <code>rm</code>은 PowerShell에서도 이름이 그대로 통해요. 폴더 여러 개를 한 번에 만들 때는 <code>mkdir ideas, assets, archive</code>처럼 쉼표로 구분해요.</p>
 
-    <h2>1단계 — 내 위치를 보고 연습 공간 만들기</h2>
+    <h2>1~2단계 — 연습 공간을 만들고 파일을 옮겨보기</h2>
     <p>가장 먼저 할 일은 폴더를 만드는 게 아니라 <strong>지금 내가 어디 서 있는지 확인하는 것</strong>이에요. 3편에서 이 단계를 건너뛰었다가 폴더가 엉뚱한 데 생겼으니까요. 위치를 확인하고, 거기가 맞으면 그때 연습 폴더를 만들어요.</p>
     <pre><code>pwd
 ls
@@ -76,7 +76,6 @@ mkdir ideas, assets, archive
 ls</code></pre>
     <p><code>pwd</code> 출력에서 지금 내 위치를 노트에 적어두고, <code>ls</code>로 <code>ideas</code>, <code>assets</code>, <code>archive</code> 세 폴더가 보이는지 확인해요. 이미 같은 이름의 폴더가 있다는 에러가 나오면, 지우지 말고 그냥 <code>ls</code>로 확인한 뒤 다음 단계로 넘어가면 돼요.</p>
 
-    <h2>2단계 — 파일을 만들고 이동하기</h2>
     <p>빈 방 세 개를 만들었으니, 이번엔 그 안에 실제로 뭔가를 넣고 옮겨볼 차례예요. 폴더를 만드는 것보다 <strong>옮기는 것</strong>이 한 단계 더 조심스러운 일이라서 여기서 연습해두는 게 중요해요. 만들기는 잘못돼도 새 폴더가 하나 생길 뿐이지만, 옮기기는 원래 있던 자리에서 파일이 <em>사라지는</em> 일이거든요.</p>
     <pre><code>ni ideas/landing-page.txt
 mkdir assets/images
@@ -86,7 +85,7 @@ cd ..
 pwd</code></pre>
     <p>빈 메모 파일을 하나 만든 뒤 이미지 폴더로 옮겨봤어요. <code>mv</code> 다음의 <code>ls assets/images</code> 출력에 <code>landing-page.txt</code>가 실제로 보일 때만 성공이에요. <strong>명령을 쳤다는 사실이 아니라, 그 다음 출력으로 확인하는 것</strong>이 중요해요 — 이건 4편에서 다뤘던 "판단" 단계와 똑같은 습관이에요.</p>
 
-    <h2>3단계 — 길을 잃었을 때 돌아오기</h2>
+    <h2>3단계 — 길을 잃었을 때 돌아오기, 그리고 명령어의 정체</h2>
     <p>2단계를 하면서 실제로 불편한 게 하나 생겼어요. <code>cd</code>로 폴더를 몇 번 들어갔다 나왔더니, 지금 제가 어느 층에 있는지 헷갈리기 시작한 거예요. 화면에는 마지막 명령의 결과만 남아 있어서 눈으로는 알 수가 없었어요. 그래서 3단계는 <strong>일부러 깊이 들어갔다가 되돌아 나오는</strong> 연습이에요.</p>
     <pre><code>cd terminal-practice
 cd assets
@@ -95,7 +94,6 @@ cd ..
 ls</code></pre>
     <p><code>cd ..</code>는 "한 단계 위 폴더로 가라"는 명령이에요. 화면에 스쳐 지나가는 이름만 믿지 말고, 이동할 때마다 <code>pwd</code>와 <code>ls</code>를 번갈아 확인하는 습관을 들이면 좋아요. 지금 위치가 불안하면 일단 <code>pwd</code>부터 실행하고, <code>mv</code>는 원본·대상 경로를 한 글자씩 눈으로 확인한 뒤에 실행해요. 실제로 중요한 파일에는 이 연습이 끝난 뒤에나 적용해요.</p>
 
-    <h2>오늘 쓴 명령어, 사실은 다 "별명"이었어요</h2>
     <p>실습을 하다가 걸리는 게 하나 있었어요. <code>touch</code>는 PowerShell에서 안 통했는데, 왜 <code>pwd</code>랑 <code>ls</code>는 똑같은 유닉스 명령어인데도 멀쩡히 통했을까요? 이상해서 찾아봤더니 답이 나왔어요.</p>
     <p>5편에서 <code>Get-Location</code>이 PowerShell의 내장 <strong>cmdlet</strong>(커맨드릿, PowerShell에 처음부터 들어 있는 진짜 명령어)이라는 걸 다뤘는데, 사실 오늘 쓴 <code>pwd</code>, <code>ls</code>, <code>cd</code>, <code>mkdir</code>, <code>mv</code>, <code>rm</code>은 하나도 진짜 이름이 아니었어요. 전부 그 cmdlet들에 붙여둔 <strong>별명(alias)</strong>이었어요. PowerShell을 만든 쪽에서 유닉스에 익숙한 사람들이 헤매지 않도록 미리 짧은 이름을 달아둔 거예요.</p>
     <ul>
