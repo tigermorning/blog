@@ -85,7 +85,7 @@ main,
 }
 
 main {
-  max-width: 640px;
+  max-width: 760px;
   margin: 0 auto;
   padding: 3rem 1.5rem 4rem;
 }
@@ -113,12 +113,12 @@ main h1.greeting {
 main p {
   font-size: 1.15rem;
   color: var(--ink);
-  max-width: 34rem;
+  max-width: 42rem;
 }
 
 main figure {
   margin: 1.5rem 0;
-  max-width: 34rem;
+  max-width: 42rem;
 }
 
 main figure img {
@@ -150,7 +150,7 @@ main ol,
 main ul {
   font-size: 1.1rem;
   color: var(--ink);
-  max-width: 34rem;
+  max-width: 42rem;
   padding-left: 1.4rem;
 }
 
@@ -173,7 +173,7 @@ main pre {
   padding: 1rem 1.25rem;
   border-radius: 8px;
   overflow-x: auto;
-  max-width: 34rem;
+  max-width: 42rem;
 }
 
 main pre code {
@@ -196,7 +196,7 @@ main blockquote {
   padding: 0.9rem 1.25rem;
   border-left: 3px solid var(--accent);
   background: var(--border);
-  max-width: 34rem;
+  max-width: 42rem;
   font-size: 1.02rem;
 }
 
@@ -212,7 +212,7 @@ main hr {
 
 main table {
   width: 100%;
-  max-width: 34rem;
+  max-width: 100%;
   margin: 1.25rem 0;
   border-collapse: collapse;
   font-size: 1rem;
@@ -234,7 +234,7 @@ main th {
 
 .post-nav {
   display: block;
-  max-width: 34rem;
+  max-width: 42rem;
   margin-top: 1.5rem;
   padding: 1.1rem 1.4rem;
   border: 1px solid var(--border);
@@ -273,7 +273,7 @@ main th {
 
 .search-box {
   margin: 1rem 0 0;
-  max-width: 34rem;
+  max-width: 42rem;
 }
 
 .search-box input[type="search"] {
@@ -318,7 +318,7 @@ main th {
   list-style: none;
   margin: 1rem 0 0;
   padding: 0;
-  max-width: 34rem;
+  max-width: 42rem;
 }
 
 .title-list li {
@@ -367,10 +367,11 @@ main th {
   font-style: italic;
 }
 
-/* 사이드바가 있는 페이지(현재는 홈)만 이 wrapper를 쓴다. 일반 글 페이지는
-   기존처럼 main {max-width:640px; margin:0 auto} 단일 컬럼을 그대로 쓴다. */
+/* 사이드바가 있는 모든 페이지가 이 wrapper를 쓴다(main의 max-width는
+   아래 .page-layout main 규칙이 담당). 위쪽의 단독 main 규칙은 사이드바가
+   없는 페이지가 생길 경우를 위한 폴백이다. */
 .page-layout {
-  max-width: 960px;
+  max-width: 1080px;
   margin: 0 auto;
   padding: 0 1.5rem;
   display: flex;
@@ -379,7 +380,7 @@ main th {
 }
 
 .page-layout main {
-  max-width: 640px;
+  max-width: 760px;
   margin: 0;
   padding: 3rem 0 4rem;
   flex: 1 1 auto;
