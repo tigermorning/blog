@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>프롬프트 기법의 역사 (5) - Tigermorning</title>
+  <meta name="description" content="예시 몇 개면 되던 2020년의 GPT-3부터, 풀이 과정을 요구한 2022년의 CoT, 도구까지 쓰게 된 ReAct, 추론이 내장된 지금 모델까지. 프롬프트 기법이 무엇을 늘려온 역사인지 논문 수치와 함께 정리했다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="프롬프트 기법의 역사 (5)">
+  <meta property="og:description" content="예시 몇 개면 되던 2020년의 GPT-3부터, 풀이 과정을 요구한 2022년의 CoT, 도구까지 쓰게 된 ReAct, 추론이 내장된 지금 모델까지. 프롬프트 기법이 무엇을 늘려온 역사인지 논문 수치와 함께 정리했다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/prompt-engineering-history.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>프롬프트 기법의 역사 (5)</h1>
+    <p class="post-date">2026. 8. 24.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="context-engineering-basics.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">컨텍스트 엔지니어링이란?</span>
+    </a>
+
+    <hr>
+
+    <p>"단계별로 생각해봐"라는 문구를 프롬프트에 붙이면 AI가 더 똑똑해진다는 말, 다들 한 번쯤 들어봤을 거다. 그런데 요즘 나오는 최신 모델에는 이 문구가 오히려 별 소용이 없거나, 심지어 방해가 될 수도 있다는 이야기를 들었다. 같은 말인데 왜 예전엔 통하고 지금은 안 통할까. 이 궁금증을 풀려고 프롬프트 기법이 걸어온 길을 찾아봤는데, 생각보다 훨씬 재밌는 역사였다. 2020년, 2022년, 그리고 지금까지 딱 네 번의 큰 전환이 있었고, 그때마다 "프롬프트로 손댈 수 있는 대상"이 계속 넓어져 왔다는 걸 알게 됐다.</p>
+
+    <h2>2020년 — 예시 몇 개만 보여줬는데 새 문제를 푼다?</h2>
+    <p>이야기는 2020년 GPT-3 논문(Brown 등)에서 시작한다. 그전까지는 AI에게 새로운 일을 시키려면 그 일에 맞는 데이터를 모아 <strong>fine-tuning</strong>, 즉 모델 내부 값을 다시 학습시키는 과정이 당연했다. 그런데 이 논문은 175B(1,750억 개) 매개변수짜리 GPT-3가 내부 값을 전혀 바꾸지 않은 채로, 프롬프트 안에 문제 설명과 입력-출력 예시 몇 개만 넣어줘도 여러 과업을 그럭저럭 해낸다는 걸 보여줬다. 학습이 사라졌다는 뜻이 아니라, 실행하는 그 순간의 맥락만으로도 "이런 식으로 답해줘"라는 계약을 전달할 수 있다는 걸 처음 확인한 사건이었다.</p>
+    <p>수치도 같이 봐야 이 발견의 크기를 제대로 잡을 수 있다. <strong>SuperGLUE</strong>(언어 이해 능력을 여러 과업으로 재는 벤치마크, 즉 성능을 비교하려고 표준화해둔 시험지)에서 GPT-3 175B는 예시가 없는 <strong>zero-shot</strong>(예시 0개) 조건에서 64.3, 예시 1개인 <strong>one-shot</strong>에서 68.2, 예시 여러 개인 <strong>few-shot</strong>에서 71.8을 기록했다. 예시가 늘수록 점수가 오른 건 사실이다. 그런데 같은 표에서 당시 fine-tuning으로 학습시킨 SOTA(state-of-the-art, 그 시점 최고 기록) 모델은 89.3이었다. 71.8은 89.3에 한참 못 미친다. 그러니 "예시만 넣으면 fine-tuning을 대체한다"는 식으로 읽으면 안 된다는 걸 논문 자체가 같은 표 안에서 보여주고 있는 셈이다.</p>
+    <p>이름도 다시 보게 됐다. 이 현상을 흔히 "인컨텍스트 러닝(in-context learning)"이라 부르는데, "러닝(학습)"이라는 단어 때문에 마치 모델이 그 예시를 보고 뭔가를 영구히 배운 것처럼 오해하기 쉽다. 하지만 매개변수는 그대로다. 더 정확히는 예시가 "이번 실행에서 입력을 이렇게 읽고 이런 형식으로 답하라"는 임시 견본 역할을 한 것에 가깝다. 게다가 Min 등의 후속 연구는 여기서 한 걸음 더 나갔다. 예시 안의 정답 레이블이 실제로 맞는지보다, 입력의 분포나 레이블이 어떤 값들로 구성돼 있는지, 출력 형식이 어떤지 같은 요소가 성능에 더 크게 작용하는 경우가 있다는 걸 보였다. "정답 예시를 많이 넣을수록 무조건 좋다"는 단순한 믿음은 이 지점에서 이미 깨진다.</p>
+
+    <h2>2022년 — 정답만 말고 풀이 과정을 보여달라, CoT의 등장</h2>
+    <p>2020년의 예시는 "문제 → 정답" 형태였다. 그런데 이 방식으로는 여러 단계를 거쳐야 풀리는 수학 문장제 같은 문제에서 한계가 뚜렷했다. 여기서 2022년의 전환이 나온다. Wei 등이 제안한 <strong>CoT(Chain-of-Thought, 생각의 사슬)</strong>는 예시에 정답만 넣는 대신, 정답에 이르는 중간 풀이 과정을 문장으로 함께 적어 보여주는 방식이다. PaLM-540B 모델을 GSM8K(초등학생 수준 수학 문장제 벤치마크)로 테스트했더니, 예시 8개를 보통 방식대로 넣었을 땐 17.9%였던 정답률이, 같은 예시에 중간 풀이 과정을 덧붙였더니 58.1%까지 올랐다. 예시가 최종 답만이 아니라 "수량을 찾고 → 변화를 계산하고 → 단위를 확인한다"는 절차 자체를 보여줬기 때문에 가능한 변화였다.</p>
+    <p>재밌는 건 그다음이다. Kojima 등은 예시를 아예 하나도 안 넣고, 그냥 프롬프트 끝에 "Let's think step by step(단계별로 생각해보자)"이라는 한 문장만 붙였다. 이걸 <strong>zero-shot CoT</strong>라 부르는데, text-davinci-002 모델에서 MultiArith는 17.7%에서 78.7%로, GSM8K는 10.4%에서 40.7%로 뛰었다고 보고됐다. 문장 하나로 이 정도 차이가 났으니 만능 주문처럼 느껴질 만도 했다. 그런데 딱 여기서 지금 내가 처음에 품었던 궁금증의 절반이 풀렸다. 이건 특정 모델, 특정 문제에서 측정된 수치이지, "이 말을 붙이면 항상 좋다"는 법칙이 아니다.</p>
+    <p>비슷한 시기에 Wang 등은 <strong>self-consistency(자기 일관성)</strong>라는 아이디어도 냈다. CoT를 한 번만 돌리는 대신, 매 단계 가장 확률 높은 단어만 고르는 기본 방식인 <strong>greedy decoding</strong> 하나 대신 서로 다른 풀이 경로 여러 개를 뽑아본 뒤 다수결로 답을 정하는 방식이다. PaLM-540B, GSM8K 기준으로 CoT 단독이 56.9%였던 것이 self-consistency를 쓰자 74.4%로 올랐다. 여러 경로가 우연히 같은 오답으로 몰리면 다수결도 틀리지만, 산술처럼 서로 다른 풀이가 같은 정답으로 수렴하기 쉬운 문제에서는 확실히 효과가 있었다.</p>
+
+    <h2>프롬프트가 시스템이 되다 — ReAct와 단계 쪼개기</h2>
+    <p>CoT는 프롬프트 안에서 벌어지는 "생각"을 다뤘다. 그런데 생각만으로 안 풀리는 문제도 있다. 최신 정보가 필요하거나, 실제로 코드를 돌려봐야 아는 문제라면 아무리 잘 생각해도 모델 혼자 힘으로는 한계가 있다. Yao 등이 제안한 <strong>ReAct</strong>는 여기서 프롬프트의 범위를 모델 바깥, 즉 환경 행동까지 확장한다. Thought(생각) → Action(행동) → Observation(관측)을 번갈아 가며 반복하는 구조다. 모델이 검색을 요청하면 검색 결과 원문이 Observation으로 돌아오고, 코드를 실행해달라고 하면 그 실행 결과나 오류가 다음 Thought의 근거가 된다. 답을 기억 속에서 이어 쓰는 게 아니라, 필요한 사실을 직접 찾아 확인하고 그 확인 결과를 보고 다음 행동을 고르는 구조로 바뀐 것이다. HotpotQA, ALFWorld, WebShop 같은 여러 환경에서 평가됐는데, 결과는 환경마다 크게 달라서 "ReAct 점수는 몇 점"이라고 하나로 뭉뚱그릴 수 없다. 검색이 허탕이거나 코드가 실패했을 때 뭘 다시 시도하고 언제 멈출지도 이 방식을 설계하는 사람이 정해야 하는 몫이다.</p>
+    <p>비슷한 시기에 Zhou 등이 제안한 <strong>least-to-most(단계 쪼개기)</strong>도 방향이 비슷하다. 어려운 문제를 한 번의 긴 답변으로 몰아서 풀게 하는 대신, 쉬운 하위 문제부터 순서대로 풀고 앞 단계의 답을 다음 단계 입력에 넣어주는 방식이다. 길이가 점점 길어지는 문제에 얼마나 잘 일반화하는지를 보는 SCAN 벤치마크에서 PaLM-540B 기준으로 CoT는 16%에 그쳤지만 least-to-most는 99%까지 올라갔다. 다만 이 방식이 효과를 내려면 단계마다 입력과 출력의 형식이 명확해야 하고, 각 단계의 결과를 검사할 방법도 있어야 한다. 그렇지 않으면 첫 단계에서 난 오류가 그대로 뒤 단계까지 이어진다. 결국 체인을 만드는 목적은 "더 오래 생각하게 만들기"가 아니라, 중간 결과 하나하나를 따로 확인할 수 있게 쪼개는 데 있다. 이 지점에서 프롬프트 엔지니어링은 문구 하나를 고르는 일에서, 검색·코드 실행·검증까지 아우르는 하나의 작은 시스템을 설계하는 일로 넘어갔다.</p>
+
+    <h2>지금은 또 다르다 — 추론이 내장된 모델과 사라지지 않는 질문</h2>
+    <p>자, 이제 처음 질문으로 돌아갈 차례다. 왜 "단계별로 생각해봐"가 요즘 모델에서는 예전만큼 안 통할까. 최신 추론 모델들은 답을 내놓기 전에 내부적으로 이미 긴 추론 과정을 거치도록 학습되고 설계된 경우가 많다. 이미 모델 내부에서 스스로 단계를 밟고 있는데 프롬프트로 또 "단계별로 생각해"라고 요구하면, 도움은커녕 오히려 내부 처리 방식과 어긋나 방해가 될 수 있다는 것이다. 게다가 요즘 제품 사용 지침은 짧고 직접적인 요청을 오히려 권하기도 한다. 2022년의 CoT가 틀린 이야기가 됐다는 뜻이 아니다. 모델이 실행되는 방식 자체가 바뀌었으니, 같은 문구를 다시 검증해봐야 한다는 뜻이다.</p>
+    <p>Qwen3 기술 보고서를 찾아보니 이 흐름이 더 뚜렷하게 드러나 있었다. 이 모델은 thinking 모드와 non-thinking 모드를 구분해두고, <strong>thinking budget</strong>(추론에 쓸 토큰 예산 — 답을 내기 전 속으로 얼마나 오래 생각할지를 숫자로 정해주는 값)으로 추론에 쓸 토큰 양을 조절한다. 같은 질문이라도 non-thinking 모드에서는 긴 추론 과정 없이 바로 답이 나올 수 있고, thinking 모드라도 예산이 작으면 복잡한 문제를 다 풀기 전에 답을 내버릴 수 있다. 반대로 단순한 정보 하나 꺼내는 질문에 큰 예산을 줘버리면, 답은 똑같은데 비용과 대기 시간만 늘어난다. 이건 프롬프트 엔지니어링이 끝났다는 신호가 아니라, 다루는 대상이 "어떻게 문장으로 유도할까"에서 "모델에게 어떤 조건을 쥐여줄까"로 옮겨갔다는 신호다.</p>
+    <p>네 번의 전환을 한 줄로 이으면 이렇게 정리된다. 2020년 GPT-3에서 프롬프트 엔지니어링은 <strong>예시 계약</strong>이었다. 2022년 CoT와 self-consistency에서는 <strong>추론 형식</strong>이 됐다. 2022~23년 ReAct와 단계 쪼개기에서는 <strong>시스템 설계</strong>로 넓어졌다. 그리고 추론이 내장된 지금은 <strong>조건 설계</strong>가 중심이다. 앞의 세 단계가 사라진 게 아니라, 지금의 조건 설계 안에 부품으로 남아 있다는 게 중요하다. 예를 들어 thinking budget을 512에서 4,096으로 올려서 어려운 계산 문제의 정답률이 오르더라도, 평균 응답 시간이 네 배로 늘어 제한 시간 안에 못 끝내는 요청이 생긴다면, 그게 정말 개선인지는 그 서비스가 약속한 응답 속도에 달려 있다. 그래서 이 역사를 보고 나서 내가 얻은 결론은 하나다. 각 이정표에 붙은 숫자는 그 시절 특정 모델·특정 벤치마크·특정 조건에서 나온 관찰 기록, 말 그대로 표지판이지 지도가 아니다. 내가 지금 붙잡고 있는 문제에 어떤 기법이 통할지는 결국 직접, 같은 입력과 같은 성공 기준을 고정해두고, 조건 하나씩만 바꿔가며 확인해보는 수밖에 없다.</p>
+
+        <a class="post-nav" href="prompt-technique-verification.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">프롬프트 기법 재검증하기</span>
+    </a>
+
+    <hr>
+
+    <h3>"AI 프롬프트에서 에이전트까지" 시리즈</h3>
+    <a class="post-nav" href="what-is-prompt-engineering.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">프롬프트 엔지니어링이란?</span>
+    </a>
+    <a class="post-nav" href="what-is-ai-agent.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">AI 에이전트(Agent)란 무엇인가</span>
+    </a>
+    <a class="post-nav" href="what-is-model-input.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">AI가 실제로 읽는 입력이란?</span>
+    </a>
+    <a class="post-nav" href="context-engineering-basics.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">컨텍스트 엔지니어링이란?</span>
+    </a>
+    <p class="post-date">(5) 프롬프트 기법의 역사 (이 글)</p>
+    <a class="post-nav" href="prompt-technique-verification.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">프롬프트 기법 재검증하기</span>
+    </a>
+    <a class="post-nav" href="agent-self-improvement-complexity.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">AI 에이전트 자기개선과 복잡도</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
