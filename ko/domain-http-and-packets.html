@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>도메인·포트·HTTPS — 주소가 화면이 되기까지 - Tigermorning</title>
+  <meta name="description" content="도메인과 DNS, 사설망과 포트, HTTPS의 공개키 암호화 원리, 그리고 주소창에 엔터를 쳤을 때 벌어지는 일과 HTTP 상태 코드까지 — 인터넷 네트워크 기본기를 택배 배송에 비유해 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="도메인·포트·HTTPS — 주소가 화면이 되기까지">
+  <meta property="og:description" content="도메인과 DNS, 사설망과 포트, HTTPS의 공개키 암호화 원리, 그리고 주소창에 엔터를 쳤을 때 벌어지는 일과 HTTP 상태 코드까지 — 인터넷 네트워크 기본기를 택배 배송에 비유해 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/domain-http-and-packets.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>도메인·포트·HTTPS — 주소가 화면이 되기까지</h1>
+    <p class="post-date">2026. 7. 18.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="why-backend-needed.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">왜 화면 뒤에 서버가 필요할까</span>
+    </a>
+
+    <hr>
+
+    <p><a href="why-backend-needed.html">지난 글</a>에서 서버가 왜 필요한지는 알았어요. 그런데 서버가 어딘가에 켜져 있다고 해도, 저는 그 컴퓨터가 정확히 어디 있는지 몰라요. 브라우저는 대체 무엇을 보고 그 컴퓨터를 찾아가는 걸까요? 오늘은 주소창에 뭔가를 치는 순간부터 화면이 뜨기까지, 그 짧은 순간에 벌어지는 일들을 하나씩 따라가봤어요.</p>
+
+    <h2>이름과 번호 — 도메인과 DNS</h2>
+    <p>인터넷에 연결된 모든 컴퓨터는 <strong>IP 주소</strong>라는 숫자 번호를 갖고 있어요. 문제는 사람이 숫자를 외우기 어렵다는 거예요. 그래서 나온 게 <strong>도메인(domain)</strong>이에요 — <code>google.com</code>처럼 사람이 기억하기 쉬운 이름이죠. 이 이름과 번호를 연결해주는 시스템이 <strong>DNS(Domain Name System)</strong>인데, 인터넷 전체가 쓰는 전화번호부라고 보면 돼요. 도메인을 새로 바꾸면 바로 반영되지 않고 살짝 지연이 생기는데, 이건 이 전화번호부가 전 세계 여러 곳에 복사되어 있어서(캐시) 그 복사본들이 갱신되는 데 시간이 걸리기 때문이에요.</p>
+    <p>도메인을 따로 쓰는 이유가 그저 "예뻐서"만은 아니에요. 서버를 이사해도 도메인만 그대로면 사용자는 아무것도 모른 채 계속 접속할 수 있고, 서브도메인(<code>blog.내사이트.com</code> 같은 것)으로 서비스를 구역별로 나눌 수 있고, 그 자체가 신뢰의 증표가 되기도 해요. 다만 한 가지, 브라우저 주소창의 <strong>자물쇠 아이콘(HTTPS)</strong>은 "이 사이트가 안전하게 암호화되어 있다"는 뜻이지 "이 사이트를 믿어도 된다"는 뜻은 아니에요. 사기 사이트도 얼마든지 HTTPS를 쓸 수 있거든요.</p>
+
+    <h2>우리 집 안쪽과 바깥쪽 — 사설망과 포트</h2>
+    <p>제 컴퓨터가 집 공유기에 연결되어 있으면, 그 컴퓨터는 <code>192.168.x.x</code> 같은 <strong>사설 IP</strong>를 가져요. 이건 우리 집 안에서만 통하는 주소예요. 바깥 인터넷에서 보면 우리 집은 공유기 한 대로만 보이는데, 이렇게 안쪽 여러 기기를 바깥에서 하나로 보이게 하는 역할을 <strong>NAT</strong>가 해요. 그래서 집 안(LAN)과 바깥 인터넷(WAN)은 공유기라는 문지기를 사이에 두고 나뉘어 있어요.</p>
+    <p>한 컴퓨터 안에서도 여러 서비스가 동시에 돌 수 있는데, 이걸 구분하는 게 <strong>포트(port)</strong>예요. IP 주소가 건물 주소라면, 포트는 그 건물의 호실 번호예요. 웹은 보통 80번(HTTP)이나 443번(HTTPS)을, 개발 중인 화면은 흔히 3000번 같은 포트를 써요. 아까 나온 <code>localhost:3000</code>의 <code>:3000</code>이 바로 이 호실 번호였던 거예요. 그리고 <strong>방화벽</strong>은 이 문들 중 허락하지 않은 문은 아예 두드리지도 못하게 막는 장치예요.</p>
+
+    <h2>편지를 아무나 못 열어보게 — HTTPS와 공개키</h2>
+    <p>주소를 찾아갔다고 끝이 아니에요. 오가는 내용을 중간에서 누가 훔쳐볼 수도 있으니까요. 그래서 나온 게 <strong>HTTPS</strong>, HTTP에 암호화를 더한 버전이에요. 원리를 이해하는 데 저는 <strong>우편함</strong> 비유가 잘 맞았어요. 저마다 자물쇠(공개키)와 그 자물쇠를 여는 유일한 열쇠(개인키)를 갖고 있다고 생각해보세요. 자물쇠는 아무한테나 나눠줘도 괜찮아요. 편지를 보낼 사람이 그 자물쇠로 편지함을 잠그면, 오직 열쇠를 가진 사람만 열 수 있으니까요.</p>
+    <p>브라우저와 서버는 접속을 시작할 때 이 방식으로 짧게 인사를 나누며 둘만 아는 임시 암호를 정해요. 이 과정을 <strong>TLS 핸드셰이크</strong>라고 불러요. 그런데 "이 자물쇠가 진짜 그 사이트 것"이라는 건 누가 보증해줄까요? 여기서 <strong>인증기관(CA)</strong>이 등장해요. 신뢰할 수 있는 제3자가 "이 사이트, 진짜 맞음"이라고 도장을 찍어주는 거예요. 아까 말한 자물쇠 아이콘이 확인해주는 게 딱 여기까지예요 — 통신이 암호화되어 있고 사이트 신원이 확인됐다는 것. 그 사이트가 착한 사이트인지는 별개의 문제예요.</p>
+
+    <h2>주소창에 엔터를 치는 순간 — 택배 배송으로 보는 전체 여정</h2>
+    <p>이 모든 걸 합쳐서, 주소창에 엔터를 쳤을 때 벌어지는 일을 <strong>택배 배송</strong>에 비유해봤어요. 데이터는 편지 한 통을 통째로 보내지 않고, <strong>패킷(packet)</strong>이라는 작은 조각으로 잘게 쪼개져서 여러 경로로 각자 출발해요. 택배 상자를 여러 개로 나눠 보내는 것과 비슷해요. 각 상자에는 보내는 곳과 받는 곳 주소가 붙어있고, 인터넷 곳곳의 배송 거점(라우터)을 거치며 목적지로 향해요. 도착지에서는 이 조각들이 다시 순서대로 조립되는데, 이 전체 규칙을 정한 게 앞서 나온 TCP/IP예요.</p>
+    <p>정리하면 네 단계예요. ① DNS가 도메인을 IP 주소로 바꿔주고(전화번호부 찾기), ② 그 주소로 패킷들이 인터넷을 거쳐 이동하고(택배 발송), ③ 목적지 서버가 요청을 처리해서 응답을 돌려보내고(주문 처리), ④ 브라우저가 그 응답을 조립해서 화면에 그려줘요(택배 개봉). 이 전 과정이 보통 1초도 안 걸려요.</p>
+
+    <h2>답장에 붙는 숫자 — HTTP 상태 코드</h2>
+    <p>서버가 돌려주는 응답에는 항상 세 자리 숫자가 붙어요. 이걸 신호등처럼 생각하면 외우기 쉬워요. <strong>2로 시작하면</strong> 성공(200 OK), <strong>3으로 시작하면</strong> 다른 곳으로 이동(301 영구 이동), <strong>4로 시작하면</strong> 내 쪽(요청)의 잘못(401 로그인 필요, 403 권한 없음, 404 페이지 없음, 429 요청 너무 많음), <strong>5로 시작하면</strong> 서버 쪽의 잘못(500 서버 오류)이에요. 재밌는 건 418번인데, 원래 만우절 장난으로 만든 "나는 찻주전자입니다"라는 코드가 지금도 공식 표준에 남아있어요.</p>
+    <p>이 숫자는 실제로 아주 쓸모가 있어요. 화면이 이상하게 동작할 때, 브라우저 개발자 도구의 <strong>네트워크(Network) 탭</strong>을 열면 방금 오간 요청들과 그 상태 코드를 그대로 볼 수 있거든요. 404가 떴다면 주소가 틀린 거고, 500이 떴다면 서버 쪽 코드에 문제가 있는 거예요. 저는 이제 오류가 나면 이 탭부터 열어서 숫자를 확인하고, 그 숫자를 그대로 AI에게 붙여서 물어봐요. "어떻게 안 되는데요"보다 "404가 떴어요"가 훨씬 정확한 질문이더라고요.</p>
+    <p>여기까지가 화면과 서버 사이를 잇는 네트워크의 기본 뼈대였어요. 다음 글에서는 이 여정 끝에서 요청을 실제로 받아 처리하는 <strong>백엔드가 안에서 무슨 일을 하는지</strong>, 그리고 AI가 짠 백엔드 코드에서 특히 조심해야 할 것들을 정리해볼게요.</p>
+
+    <a class="post-nav" href="what-backend-actually-does.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">백엔드가 실제로 하는 일과 AI 코드의 약점</span>
+    </a>
+
+    <hr>
+
+    <h3>"화면 뒤에서 일어나는 일들" 시리즈</h3>
+    <a class="post-nav" href="why-backend-needed.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">왜 화면 뒤에 서버가 필요할까</span>
+    </a>
+    <p class="post-date">(2) 도메인·포트·HTTPS — 주소가 화면이 되기까지 (이 글)</p>
+    <a class="post-nav" href="what-backend-actually-does.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">백엔드가 실제로 하는 일</span>
+    </a>
+    <a class="post-nav" href="ai-code-security-basics.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">AI가 짠 백엔드 코드에서 반드시 확인할 것들</span>
+    </a>
+    <a class="post-nav" href="deploying-and-free-hosting.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">배포, 무료 호스팅, 그리고 집 컴퓨터를 서버로 쓰기</span>
+    </a>
+    <a class="post-nav" href="connecting-frontend-backend.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">AI로 프론트-백엔드 연결하기</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>

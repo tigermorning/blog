@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>배포, 무료 호스팅, 그리고 집 컴퓨터를 서버로 쓰기 - Tigermorning</title>
+  <meta name="description" content="화면·서버·데이터를 나눠 배포하는 이유, GitHub 자동 배포와 배포 3대 함정, 사라진 무료 서버들과 지금 쓸 만한 무료 호스팅 비교표, 집 컴퓨터를 서버로 쓰는 법, Supabase RLS 보안까지 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="배포, 무료 호스팅, 그리고 집 컴퓨터를 서버로 쓰기">
+  <meta property="og:description" content="화면·서버·데이터를 나눠 배포하는 이유, GitHub 자동 배포와 배포 3대 함정, 사라진 무료 서버들과 지금 쓸 만한 무료 호스팅 비교표, 집 컴퓨터를 서버로 쓰는 법, Supabase RLS 보안까지 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/deploying-and-free-hosting.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>배포, 무료 호스팅, 그리고 집 컴퓨터를 서버로 쓰기</h1>
+    <p class="post-date">2026. 7. 20.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="ai-code-security-basics.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">AI가 짠 백엔드 코드에서 반드시 확인할 것들</span>
+    </a>
+
+    <hr>
+
+    <p>보안까지 챙긴 백엔드가 완성됐다면, 이제 <a href="why-backend-needed.html">첫 글에서 겪었던 그 장면</a> — 친구가 못 열던 링크 — 을 진짜로 고칠 차례예요. <strong>배포(deploy)</strong>는 내 컴퓨터에만 있던 서비스를 늘 켜진 서버에 올려, 누구나 주소로 들어올 수 있게 하는 거예요. 예전엔 서버 사고 설정하고 며칠씩 걸리던 전문가의 일이었는데, 지금은 비전공자도 클릭 몇 번과 AI의 도움으로 몇 분이면 된다는 게 신기했어요.</p>
+
+    <h2>세 군데에 나눠 올린다</h2>
+    <p>현대 웹서비스는 보통 화면·서버·데이터, 이 세 가지를 각각 다른 곳에 나눠 배포해요.</p>
+    <table>
+      <thead><tr><th>무엇을</th><th>어디에 (예)</th><th>왜 여기에</th></tr></thead>
+      <tbody>
+        <tr><td>화면(프론트)</td><td>Vercel · Netlify</td><td>전 세계 여러 지점에서 손님 가까운 곳에 빠르게 보여줘야 해서</td></tr>
+        <tr><td>서버(백엔드)</td><td>Render · Railway</td><td>요청을 계속 처리하려면 늘 켜져 있어야 해서</td></tr>
+        <tr><td>데이터(DB)</td><td>Supabase 등</td><td>안전하게 오래 보관해야 해서</td></tr>
+      </tbody>
+    </table>
+    <p>왜 한 군데에 다 안 올릴까요? 각자 잘하는 게 다르기 때문이에요. 화면 전문점은 전 세계에 빠르게 뿌리는 데 강하고, 서버 전문점은 오래 돌아가는 데 강하고, 데이터 전문점은 안전한 보관에 강해요. 나눠 맡기면 각자 최고를 쓰는 셈이에요. 요즘 배포는 흐름이 단순해요 — 코드를 GitHub에 올리고, 배포 플랫폼에서 그 저장소와 연결 버튼을 누르면, 그때부터 플랫폼이 코드가 바뀔 때마다 자동으로 다시 배포해줘요. 배포가 끝나면 <code>내프로젝트.vercel.app</code> 같은 주소가 자동으로 생겨요. "저장 → 올리기 → 자동 배포"가 한 줄로 이어지는 거예요.</p>
+
+    <h2>초보가 가장 많이 막히는 세 곳</h2>
+    <p>이 세 가지만 미리 알면 "왜 안 되지?"의 대부분을 피할 수 있어요. 첫째, <strong>환경변수 빼먹기</strong> — <a href="ai-code-security-basics.html">지난 글에서 다룬</a> <code>.env</code> 비밀값은 GitHub에 일부러 안 올리기 때문에, 배포 플랫폼의 설정 화면에 비밀값을 따로 넣어줘야 해요. 이걸 빼먹어서 "로컬에선 됐는데 배포하니 안 돼"가 가장 흔해요. 둘째, <strong>CORS 막힘</strong> — 화면과 서버가 서로 다른 주소에 살면, 서버가 "이 화면에서 오는 요청은 허용"이라고 문을 열어줘야 해요. 안 그러면 브라우저가 "다른 집 요청은 못 받아"라며 막아버려요. AI에게 "내 프론트 주소에서 오는 요청을 허용(CORS)해줘"라고 하면 돼요. 셋째, <strong>무료의 함정</strong> — 대부분 무료 티어가 있지만, 트래픽이 늘면 유료로 넘어가요.</p>
+    <p>무료로 시작해도 방심하면 요금이 훅 오를 수 있어요. 특히 키 유출이나 실수로 만든 무한 반복 때문에요. 그래서 저는 세 가지를 지키기로 했어요 — 요금 알림을 켜두기("한 달에 X원 넘으면 알려줘"), 내가 쓰는 플랫폼의 무료 한도를 알아두기, 비밀 키를 지키기. 유출된 키로 남이 내 계정에서 비싼 작업을 돌리면, 그 요금은 고스란히 제 몫이 되니까요.</p>
+
+    <h2>공짜의 세계는 계속 줄어드는 중 — 지금 쓸 만한 무료 호스팅</h2>
+    <p>흥미로운 사실 하나 — 한때 초보들의 성지였던 <strong>Heroku 무료 서버는 2022년 11월 완전히 사라졌고</strong>, Railway는 2023년, Fly.io는 2024년에 상시 무료를 없앴고, Glitch는 2025년 7월 앱 호스팅을 종료했어요. 무료 계정을 암호화폐 채굴 같은 곳에 악용하는 사람이 늘면서, 회사들이 하나둘 공짜를 거둬들인 거예요. 그러니 "지금 무료인 것도 언젠가 바뀔 수 있다"는 전제로, 가입 직전엔 늘 공식 요금 페이지를 한 번 확인하는 습관이 안전해요.</p>
+    <table>
+      <thead><tr><th>서비스</th><th>뭘 올리기 좋나</th><th>무료로 주는 것 · 주의점</th></tr></thead>
+      <tbody>
+        <tr><td>Cloudflare Pages</td><td>정적·프론트</td><td>대역폭 무제한 — 트래픽 걱정이 가장 적음</td></tr>
+        <tr><td>GitHub Pages</td><td>정적 전용</td><td>가장 단순. 코드 저장하던 곳에 그대로 게시</td></tr>
+        <tr><td>Vercel (Hobby)</td><td>프론트·Next.js</td><td>손이 가장 덜 감. 단 개인·비상업용만 허용</td></tr>
+        <tr><td>Netlify</td><td>정적·프론트</td><td>Vercel 대안, 상업적 이용 허용</td></tr>
+        <tr><td>Render</td><td>백엔드 API</td><td>15분 안 쓰면 잠듦(다시 깨는 데 ~1분)</td></tr>
+        <tr><td>Supabase</td><td>백엔드+DB</td><td>DB·로그인 한 번에. 7일 미사용 시 일시정지</td></tr>
+        <tr><td>Oracle Always Free</td><td>진짜 리눅스 서버(VM)</td><td>상시 무료 VM. 단 카드 필요·설정 어려움</td></tr>
+      </tbody>
+    </table>
+    <p>고민되면 기본값으로 시작하면 돼요. 포트폴리오·소개 페이지처럼 화면만 있다면 Cloudflare Pages나 GitHub Pages, Next.js 같은 프레임워크로 만든 프론트라면 Vercel, 로그인·저장이 필요한 백엔드+DB라면 Supabase가 무난한 1순위(API 서버가 따로 필요하면 Render를 곁들여요), "진짜 서버를 만져보며 공부"하고 싶다면 설정 난이도는 있지만 Oracle Always Free. 다만 무료 티어엔 함정이 있어요 — 한동안 아무도 안 오면 잠드는 <strong>잠듦(spin-down)</strong>, 일정 기간 뒤 사라지거나 잠시 멈추는 <strong>기한·일시정지</strong>(예: Render 무료 Postgres는 30일 후 만료), 그리고 카드가 걸린 서비스는 예산 알림을 꼭 걸어야 하는 <strong>요금 폭탄</strong>. 무료는 배우고 시연하기엔 충분하지만, 많은 사람에게 안정적으로 24시간 제공하는 단계가 오면 그때 유료를 검토하면 돼요.</p>
+
+    <h2>"굳이 남의 서버를 빌려? 내 컴퓨터를 켜두면 되잖아?"</h2>
+    <p>맞는 생각이고, 실제로 돼요. 다만 왜 기본적으로는 안 되는지부터 알면 훨씬 수월해요. 집 안의 기기들은 공유기가 나눠준 <a href="domain-http-and-packets.html">집 안 전용 주소(사설 IP)</a>를 쓰고, 바깥 인터넷에서 우리 집은 공유기 한 대로만 보여서(NAT) 밖에서 곧장 내 노트북으로 연결이 안 돼요 — 덕분에 평소엔 안전한 거예요. 게다가 집 회선의 바깥 주소는 대개 고정이 아니라 통신사가 수시로 바꾸는 유동 IP고요. 그래서 밖에서 접속하게 하려면 전통적으로는 공유기에 특정 문을 열어주는 <strong>포트 포워딩</strong>과, 계속 바뀌는 주소를 따라다닐 이름표인 <strong>DDNS</strong>가 필요했어요. 하지만 이 방법은 집 네트워크를 인터넷에 직접 노출시키고, 요즘 많은 가정 회선은 통신사가 주소 하나를 여러 집이 나눠 쓰는 방식(CGNAT)이라 아예 안 되는 경우도 많아요.</p>
+    <p>요즘은 <strong>터널(tunnel)</strong>이라는 더 쉬운 방법이 있어요. 발상을 뒤집어서, 밖에서 우리 집으로 들어오게 여는 대신 내 컴퓨터가 바깥 서비스로 먼저 연결을 맺어 그 통로로 손님을 받는 방식이에요. 그래서 포트를 열 필요가 없고 CGNAT도 통과해요. <strong>Cloudflare Tunnel</strong>은 포트 개방 없이 정식 주소·인증서까지 무료로 주는 가장 든든한 상시용이고, <strong>ngrok</strong>은 한 줄 명령으로 즉시 공개 주소가 나와서 잠깐 시연·테스트에 좋고, <strong>Tailscale Funnel</strong>은 내 기기끼리 사설망으로 묶고 일부만 공개할 때 편해요. 라즈베리파이 같은 저전력 컴퓨터를 24시간 켜두고 개인 서버로 쓰는 문화도 있는데(홈랩·셀프호스팅), 여기에 터널을 얹으면 포트 개방 없이 안전하게 밖에서도 접속할 수 있어요.</p>
+    <p>결론적으로 저는 이렇게 정리했어요 — 집 서버는 원리 학습, 취미, 가족·집안 내부용, 다운타임을 감수할 수 있을 때 맞고, 남에게 안정적으로 24시간 보여줘야 하는 포트폴리오나 상용 서비스라면 거의 항상 무료 클라우드가 더 안전하고 손이 덜 가요. 원리는 집에서 익히고, 세상에 보여줄 땐 클라우드 — 이 조합이 초보에게 가장 무난했어요.</p>
+
+    <h2>Supabase를 쓴다면 꼭 켜야 하는 것 — RLS</h2>
+    <p>백엔드+DB를 가장 빠르게 쓸 수 있는 Supabase에는 꼭 알아야 할 함정이 하나 있어요. Supabase는 브라우저가 공개 키로 DB에 직접 접근하는 구조라서, <strong>RLS(행 수준 보안, Row Level Security)</strong>를 켜고 규칙을 짜야만 안전해요. 안 켜면 그 공개 키로 누구나 데이터를 읽고 고치고 지울 수 있어요. 실제로 AI 코딩 툴로 만든 테이블은 RLS가 꺼진 채 시작되는 경우가 많아서, 수백 개 앱이 데이터를 통째로 노출한 사고(CVE-2025-48757)가 있었대요. 공식처럼 외워두면 좋아요 — <strong>공개 키 + RLS 켜짐 = 안전, RLS 꺼짐 = 열린 DB</strong>. Supabase를 쓸 때는 AI에게 "RLS 켜고 정책 넣어줘"라고 반드시 요구하고, 정말 켜졌는지 확인해야 해요.</p>
+    <p>여기까지가 배포와 호스팅의 큰 그림이었어요. 다음 글에서는 이렇게 각자 배포된 화면과 서버를 실제로 <strong>어떻게 이어 붙이는지</strong> — 그 연결 과정에서 초보가 가장 많이 헤매는 지점들을 정리해볼게요.</p>
+
+    <a class="post-nav" href="connecting-frontend-backend.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">AI로 프론트-백엔드 연결하기</span>
+    </a>
+
+    <hr>
+
+    <h3>"화면 뒤에서 일어나는 일들" 시리즈</h3>
+    <a class="post-nav" href="why-backend-needed.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">왜 화면 뒤에 서버가 필요할까</span>
+    </a>
+    <a class="post-nav" href="domain-http-and-packets.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">도메인·포트·HTTPS — 주소가 화면이 되기까지</span>
+    </a>
+    <a class="post-nav" href="what-backend-actually-does.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">백엔드가 실제로 하는 일</span>
+    </a>
+    <a class="post-nav" href="ai-code-security-basics.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">AI가 짠 백엔드 코드에서 반드시 확인할 것들</span>
+    </a>
+    <p class="post-date">(5) 배포, 무료 호스팅, 그리고 집 컴퓨터를 서버로 쓰기 (이 글)</p>
+    <a class="post-nav" href="connecting-frontend-backend.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">AI로 프론트-백엔드 연결하기</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
