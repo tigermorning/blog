@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>셔터가 닫힐 때 사라지는 것 - Tigermorning</title>
+  <meta name="description" content="3차원 공간이 사진 한 장으로 눌리는 순간 정확히 무엇이 사라지는지, 그리고 중고 거래·부동산 매물·수리 매뉴얼처럼 사진 여러 장 대신 돌려 볼 수 있는 3차원 화면 하나가 필요한 이유를 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="셔터가 닫힐 때 사라지는 것">
+  <meta property="og:description" content="3차원 공간이 사진 한 장으로 눌리는 순간 정확히 무엇이 사라지는지, 그리고 중고 거래·부동산 매물·수리 매뉴얼처럼 사진 여러 장 대신 돌려 볼 수 있는 3차원 화면 하나가 필요한 이유를 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/why-photos-lose-distance.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>셔터가 닫힐 때 사라지는 것</h1>
+    <p class="post-date">2026. 8. 21.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="voice-cloning-and-responsible-ai.html">
+      <span class="post-nav-label">← 이전 시리즈</span>
+      <span class="post-nav-title">그 목소리, 복제해도 됩니까 — 법과 요약의 세탁</span>
+    </a>
+
+    <hr>
+
+    <p>중고 거래 앱에 스탠드 하나를 올린다고 해봐요. 사진 다섯 장을 올렸는데 사려는 사람은 매번 같은 걸 물어요. 받침 뒷면에 흠집이 있는지, 목이 꺾이는 각도가 어디까지인지, 전선이 어느 쪽으로 나오는지. 사진 다섯 장으로는 답이 안 되니 사진을 더 찍어 보내요. 그 물건이 돌아가는 화면 하나가 있으면 이 왕복이 통째로 사라져요. 부동산 매물도 마찬가지예요. 평면도와 사진 열 장을 놓아도 "현관에서 거실까지 몇 걸음인가"는 안 보여요. 셋 다 같은 요구예요. 평면 사진 여러 장 대신 돌려 볼 수 있는 한 덩어리를 달라는 거예요.</p>
+
+    <h2>사진은 거리를 버린다</h2>
+    <p>셔터가 열리는 순간에 무슨 일이 일어나는지 생각해봐요. 눈앞에는 3차원 공간이 있어요. 컵이 30센티미터 앞에 있고, 그 뒤 1미터 지점에 모니터가 있고, 3미터 뒤에 벽이 있어요. 이 배치가 렌즈를 지나 납작한 격자 위에 눌려요. 격자의 칸 하나마다 남는 것은 빨강·초록·파랑 세 숫자, 곧 빛의 세기뿐이에요. 거리는 어디에도 안 적혀요. 컵 화소와 벽 화소는 파일 안에서 똑같은 자격을 가진 세 숫자예요. 무엇이 앞이고 무엇이 뒤인지, 이 화소가 30센티미터에서 왔는지 3미터에서 왔는지를 사진 파일은 기록하지 않아요. 3차원이 2차원으로 눌리면서 없어진 것이 정확히 거리예요. 이 노드에서 하는 일은 버려진 그 거리를 계산으로 되찾는 일이에요.</p>
+
+    <h2>거리를 재는 장비와 되찾는 계산</h2>
+    <p>거리를 직접 재는 장비도 있어요. 레이저나 구조광을 쏴서 거리를 그 자리에서 측정하는 스캐너인데, 값이 비싸고 무겁고 그래서 문화재나 건설 현장 같은 곳에만 놓여요. 이 시리즈에서 하는 일은 정반대 방향이에요. 거리를 재는 장비 없이, 이미 거리를 버린 평범한 사진에서 그 거리를 계산으로 되찾는 거예요. 폰 하나로 방을 15초에서 20초 찍으면, 그 영상에서 뽑은 사진 스물네 장이 방의 3차원 점 삼백만 개로 풀려 나와요. 점은 크기가 없어서 그대로는 화면을 못 채우니, 점 하나하나에 부피와 투명도를 주어 알갱이로 바꿔요. 마지막으로 그 파일을 웹에 올릴 수 있는 크기로 줄여 자기 주소에 올리는 것까지가 오늘 갈 네 걸음이에요. 무대도 둘로 나뉘어요. 하나는 구글이 무료로 열어주는 파이썬 실행 환경 코랩인데, 여기서 그래픽 장치가 붙은 남의 기계를 잠깐 빌려 방을 점으로 푸는 계산을 돌려요. 다른 하나는 깃허브에 파일 몇 개를 올려두면 주소가 하나 생기는 정적 호스팅이에요. 프로그램을 띄워두는 게 아니라 파일을 그대로 내려주기만 해서 정적이라 불러요. 계산은 코랩에서, 결과는 정적 주소에서 도는 이 구조가 이 시리즈 전체를 관통해요.</p>
+
+    <h2>시키는 말과 판단하는 말</h2>
+    <p>이번 실습도 코드를 직접 쓰지 않아요. 코딩 에이전트에게 시키고, 나온 것을 판단하는 쪽에 시간을 써요. 그래서 앞으로 몇 편에 걸쳐 다룰 이론의 목적은 하나예요. 에이전트에게 던질 지시문에 넣을 낱말을 손에 쥐는 거예요. 메시와 포인트 클라우드와 복셀과 가우시안 스플랫이라는 담는 그릇 넷의 이름, 그리고 그 스플랫 하나를 이루는 불투명도와 크기와 회전과 구면 조화 같은 말이에요. 이 말을 쓰면 원하는 것이 나오고 안 쓰면 엉뚱한 것이 나와요. 여기에 시키는 말이 아니라 나온 것을 판단할 때 쓰는 말도 몇 개 딸려 와요. 정렬 순서와 시차가 그래요. 시키는 말은 틀려도 다시 시키면 되지만, 판단하는 말을 모르면 잘못 나온 것을 잘 나온 것으로 보고 지나가요. 이쪽이 오히려 더 중요해요. 다음 글에서는 3차원 공간을 컴퓨터에 담는 네 가지 그릇부터 하나씩 뜯어볼게요.</p>
+
+    <a class="post-nav" href="four-containers-for-3d-space.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">공간을 담는 네 가지 그릇</span>
+    </a>
+
+    <hr>
+
+    <h3>"사진에서 공간을 되찾는 법" 시리즈</h3>
+    <p class="post-date">(1) 셔터가 닫힐 때 사라지는 것 (이 글)</p>
+    <a class="post-nav" href="four-containers-for-3d-space.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">공간을 담는 네 가지 그릇</span>
+    </a>
+    <a class="post-nav" href="birth-of-nerf-and-gaussian-splatting.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">장면을 외우게 하다 — NeRF와 가우시안 스플래팅의 탄생</span>
+    </a>
+    <a class="post-nav" href="recovering-depth-from-photos.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">사진에서 거리를 되찾는 법 — 시차와 깊이 추정</span>
+    </a>
+    <a class="post-nav" href="turning-points-into-splats.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">점을 알갱이로 바꾸는 계산</span>
+    </a>
+    <a class="post-nav" href="shrinking-splat-files-for-the-web.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">파일을 줄이고 화면에 그리기</span>
+    </a>
+    <a class="post-nav" href="thirty-years-of-3d-reconstruction.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">서른 해 동안 난 길들 — 3차원 복원의 계보</span>
+    </a>
+    <a class="post-nav" href="judging-and-fixing-a-3d-scan.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">안 될 때와 더 낫게 — 스캔을 판단하고 고치는 법</span>
+    </a>
+    <a class="post-nav" href="famous-is-not-the-same-as-usable.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">유명한 것과 쓸 수 있는 것은 다르다</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
