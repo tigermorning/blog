@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>스킬과 규칙 파일 — 반복 작업을 AI에게 외워 두기 - Tigermorning</title>
+  <meta name="description" content="매번 같은 설명을 반복하는 재프롬프트 문제를 푸는 스킬(Skill)의 점진 공개 원리, SKILL.md 작성법, AGENTS.md·CLAUDE.md 같은 규칙 파일, 그리고 MCP·스킬·규칙을 언제 쓸지 구분하는 법을 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="스킬과 규칙 파일 — 반복 작업을 AI에게 외워 두기">
+  <meta property="og:description" content="매번 같은 설명을 반복하는 재프롬프트 문제를 푸는 스킬(Skill)의 점진 공개 원리, SKILL.md 작성법, AGENTS.md·CLAUDE.md 같은 규칙 파일, 그리고 MCP·스킬·규칙을 언제 쓸지 구분하는 법을 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/ai-skills-and-rules-files.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>스킬과 규칙 파일 — 반복 작업을 AI에게 외워 두기</h1>
+    <p class="post-date">2026. 7. 26.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="mcp-usb-c-for-ai.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">MCP — AI를 내 데이터에 꽂는 USB-C</span>
+    </a>
+
+    <hr>
+
+    <h2>문제: 매번 같은 설명을 다시 하고 있지 않나요</h2>
+    <p>AI에게 "우리 브랜드 톤으로 정리해줘", "이 형식으로 보고서 만들어줘"를 매번 처음부터 설명하고 있다면 — 지겹고, 그때그때 결과도 달라져요. 이걸 <strong>재프롬프트(re-prompting) 문제</strong>라고 부른대요.</p>
+
+    <h2>스킬 = 재사용하는 '플레이북'</h2>
+    <p><strong>스킬(Skill)</strong>은 자주 하는 작업을 한 번 적어 두고 계속 꺼내 쓰는 설명서예요. 기술적으로는 그냥 폴더 하나예요 — 그 안에 <code>SKILL.md</code>라는 파일에 "무엇을, 언제 쓰는지"를 적어두면, AI가 관련된 일을 만났을 때 알아서 꺼내 써요. 특히 영리한 점은 켜 두어도 거의 공짜라는 거예요. AI는 평소엔 스킬의 이름과 한 줄 설명만 알고 있다가(약 30~50 토큰), 정말 필요할 때만 본문을 읽어요. 그래서 수십 개를 켜둬도 느려지지 않아요.</p>
+    <p>SKILL.md는 두 부분이에요 — 맨 위 머리말(이름·설명)과 그 아래 본문(실제 지시). 예를 들어 "우리 서비스 말투로 안내문 다듬기" 스킬은 이런 식이에요.</p>
+    <pre>---
+name: tone-polish
+description: 사용자용 안내 문구를 우리 서비스 말투(정중하고 짧게)로 다듬을 때 사용
+---
+
+# 우리 서비스 말투로 다듬기
+1. 한 문장은 40자 이내로 끊는다.
+2. "~해야 합니다"보다 "~해 주세요"처럼 부탁형으로 쓴다.
+3. 전문용어는 괄호로 짧게 풀어 준다.</pre>
+    <p>핵심 원리는 <strong>점진 공개(progressive disclosure)</strong>였어요. AI는 평소 머리말의 이름과 설명만(수십 토큰 수준) 훑고 있다가, 지금 하는 일이 그 설명과 맞을 때만 본문 전체를 읽어와요. 그래서 스킬을 수십 개 켜둬도 평소엔 거의 공짜이고, 필요한 순간에만 '펼쳐져요'. 설명을 잘 쓰는 게 중요한 이유가 여기 있었어요 — AI가 언제 이 스킬을 꺼낼지를 그 한 줄로 판단하니까요.</p>
+
+    <h2>남들이 이미 만들어 둔 스킬들</h2>
+    <p>스킬은 직접 쓸 수도 있지만, 잘 만들어진 걸 가져다 쓰는 게 더 빠를 때가 많았어요. 가장 유명한 건 Anthropic이 만든 '문서 스킬' 네 개예요 — 파워포인트(pptx), 엑셀(xlsx), 워드(docx), PDF. claude.ai에서 "이 자료로 발표 슬라이드 만들어줘"라고 하면 뒤에서 조용히 이 스킬들이 돌아가는데, 마크다운을 흉내 낸 가짜가 아니라 서식까지 갖춘 진짜 파일을 뽑아줘요. Claude의 문서 생성 기능이 통째로 이 스킬들 위에서 돌아가고, 소스도 공개돼 있어서 '잘 만든 스킬은 어떻게 생겼나'의 교본으로 자주 인용된대요.</p>
+    <p>딱 하나 조심할 것도 있었어요. 스킬은 결국 'AI에게 주는 지시문 + 실행 코드'라서, 출처가 불분명한 걸 함부로 켜면 위험해요. 제가 만들었거나 공식 저장소에서 온 것 위주로 쓰고, 남의 스킬은 안에 뭐가 들었는지 한 번 열어보고 쓰는 게 안전했어요.</p>
+
+    <h2>규칙 파일(AGENTS.md·CLAUDE.md), 그리고 셋의 구분</h2>
+    <p>스킬과 비슷하지만 더 기본이 되는 게 있어요. AI에게 "우리 프로젝트는 이런 규칙이야"를 매번 설명하기 지겨울 때, 그걸 파일 하나에 적어두는 거예요. 흔히 <code>AGENTS.md</code> 또는 <code>CLAUDE.md</code>라고 부르고, 공식 설명은 이걸 "에이전트를 위한 README"라고 해요. 많은 도구가 대화를 시작할 때 이 파일을 자동으로 먼저 읽어서(단, Claude Code는 CLAUDE.md만 자동으로 읽어요), 여기 적은 건 매번 처음부터 아는 지식이 돼요. 프로젝트 개요, 자주 쓰는 명령, 규칙·컨벤션, 하지 말 것 같은 걸 적으면 유용했어요. 2025년에는 여러 회사가 모여 AGENTS.md라는 공통 표준을 만들었대요(수만 개 프로젝트가 채택).</p>
+    <p>MCP·스킬·규칙, 셋이 비슷해 보이지만 역할이 달랐어요. 이 결정 규칙이면 충분했어요.</p>
+    <table>
+      <thead><tr><th>내가 원하는 것</th><th>무엇을 쓰나</th></tr></thead>
+      <tbody>
+        <tr><td>AI에게 새 능력·연결을 주고 싶다 (내 DB·도구에 붙이기)</td><td>MCP</td></tr>
+        <tr><td>AI가 항상 이런 식으로 행동하게 하고 싶다</td><td>규칙 (CLAUDE.md / AGENTS.md)</td></tr>
+        <tr><td>반복하는 다단계 작업을 자동화하고 싶다</td><td>스킬(Skill)</td></tr>
+      </tbody>
+    </table>
+    <p>한 문장으로 정리하면, 스킬은 선반에서 꺼내 쓰는 '방법서', 규칙은 프로젝트의 '상시 안내문', MCP는 도구를 꽂는 '어댑터'였어요. 서로 경쟁이 아니라 함께 쓰는 거예요. 다음 글에서는 이런 확장을 실제로 쓰는 도구들 — 터미널형, 편집기형, 브라우저형, 클라우드형으로 나뉘는 AI 코딩 도구들을 어떻게 고르는지 볼게요.</p>
+
+    <a class="post-nav" href="choosing-ai-coding-tools.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">AI 코딩 도구 고르기 — 터미널이냐 편집기냐 클라우드냐</span>
+    </a>
+
+    <hr>
+
+    <h3>"AI 에이전트 도구 - 내 AI를 더 강하게" 시리즈</h3>
+    <a class="post-nav" href="agent-react-loop-and-autogpt.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">에이전트는 어떻게 스스로 반복할까 — ReAct 루프와 AutoGPT 소동</span>
+    </a>
+    <a class="post-nav" href="mcp-usb-c-for-ai.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">MCP — AI를 내 데이터에 꽂는 USB-C</span>
+    </a>
+    <p class="post-date">(3) 스킬과 규칙 파일 — 반복 작업을 AI에게 외워 두기 (이 글)</p>
+    <a class="post-nav" href="choosing-ai-coding-tools.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">AI 코딩 도구 고르기 — 터미널이냐 편집기냐 클라우드냐</span>
+    </a>
+    <a class="post-nav" href="ai-permissions-local-models-and-token-cost.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">AI에게 컴퓨터를 맡길 때 — 권한, 로컬 모델, 토큰 비용</span>
+    </a>
+    <a class="post-nav" href="claude-plugins-and-spec-driven-development.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">플러그인과 명세 주도 개발</span>
+    </a>
+    <a class="post-nav" href="compound-engineering-and-loop-engineering.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">컴파운드 엔지니어링과 루프, 그리고 MCP 다음은 CLI</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
