@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Little Bobby Tables — SQL 주입과 백업 - Tigermorning</title>
+  <meta name="description" content="유명한 xkcd 만화와 TalkTalk·Heartland 실제 사고로 보는 SQL 주입 공격과 파라미터화 쿼리 방어법, 개인정보 최소 수집 원칙, 그리고 픽사·GitLab의 백업 참사와 3-2-1 백업 규칙을 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Little Bobby Tables — SQL 주입과 백업">
+  <meta property="og:description" content="유명한 xkcd 만화와 TalkTalk·Heartland 실제 사고로 보는 SQL 주입 공격과 파라미터화 쿼리 방어법, 개인정보 최소 수집 원칙, 그리고 픽사·GitLab의 백업 참사와 3-2-1 백업 규칙을 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/sql-injection-and-backup-basics.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>Little Bobby Tables — SQL 주입과 백업</h1>
+    <p class="post-date">2026. 7. 23.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="user-accounts-sessions-and-cache.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">회원가입과 로그인을 데이터로 보면</span>
+    </a>
+
+    <hr>
+
+    <p>데이터베이스에 진짜 정보가 쌓이기 시작하면, 두 가지 위험이 따라와요 — 누가 훔쳐 가는 것(보안)과 실수로 날아가는 것(백업). 코드는 AI가 쓰지만, 이 위험을 아는 건 제 몫이었어요.</p>
+
+    <h2>"Little Bobby Tables" — SQL 주입</h2>
+    <p>프로그래머 사이에서 전설적인 만화가 있대요(xkcd, 2007). 학교에서 엄마에게 전화가 와요. 학교는 "아드님 이름을 데이터베이스에 넣었더니 학생 기록이 전부 지워졌어요"라고 하고, 엄마는 "아, 우리 아들 이름이 좀 특이하죠. <code>Robert'); DROP TABLE Students;--</code>라서요"라고 답해요. 학교는 "앞으로는 입력값을 꼭 검증하시길 바라요"라고 마무리하고요.</p>
+    <p>무슨 일이 벌어진 걸까요? 아들 이름에 DB 명령어처럼 생긴 문자가 들어 있었고, 학교 프로그램이 그걸 이름이 아니라 명령으로 실행해서 학생(Students) 표를 통째로 삭제(DROP)해버린 거예요. 이게 그 유명한 <strong>SQL 주입(SQL Injection)</strong>이에요 — 25년 넘게 보안 위협 1위권을 지키는 공격이래요. 로그인 창에 특정 문자를 넣어 비밀번호 없이 로그인하는 것도 같은 원리고요.</p>
+
+    <h2>레시피와 재료를 섞지 않는다 — 방어법과 실제 사고</h2>
+    <p>SQL 주입은 무서워 보여도 정해진 방어법이 확실했어요. 핵심은 하나 — <strong>명령(레시피)과 사용자 입력(재료)을 섞지 않는 것</strong>이에요. 위험한 방식은 사용자가 친 글자를 명령 문장에 그대로 이어 붙이는 거예요 — 그러면 DB가 "어디까지가 명령이고 어디부터가 데이터"인지 헷갈려버려요. 안전한 방식은 자리표(<code>?</code>)를 미리 비워 둔 명령을 만들고, 사용자 입력은 따로 건네는 거예요 — 그러면 DB가 입력을 무조건 '그냥 데이터'로만 취급해서, <code>Robert'); DROP...</code>을 넣어도 그런 이름을 가진 사람을 찾을 뿐 명령으로 실행하지 않아요. 이 방식을 <strong>파라미터화 쿼리(prepared statement)</strong>라고 부르는데, 보안 전문가들이 꼽는 표준 방어법이었어요. AI에게는 이렇게 요구하면 됐어요 — "DB에 넣는 값은 문자열로 이어 붙이지 말고, 파라미터화 쿼리로 처리해줘. 사용자 입력을 그대로 신뢰하지 마."</p>
+    <p>이게 옛날이야기 같지만 전혀 아니었어요. 2015년, 영국의 대형 통신사 <strong>TalkTalk</strong>이 이 공격으로 뚫렸는데, 놀라운 건 공격자가 대단한 조직이 아니라 십대들이었다는 거예요. 심지어 이용된 구멍은 3년 반 전에 이미 고치는 패치가 나와 있던 것이었대요 — 회사가 그걸 안 막고 방치한 거죠. 결과는 뼈아팠어요. 고객 약 15만 7천 명의 정보가 새어 나갔고, 회사는 규제기관에서 당시 최고액 벌금을 맞았으며, 사고 비용은 약 4,200만 파운드였어요. 규제기관의 총평은 짧고 매서웠대요 — "가장 기본적인 보안 조치조차 하지 않았다." 규모로는 더 큰 사고도 있었는데, 2008년 미국 결제회사 Heartland는 같은 SQL 주입으로 카드번호 약 1억 3천만 장이 털렸어요 — 당시 사상 최대 규모였대요. 교훈은 <a href="ai-code-security-basics.html">앞서 본 유출 사고들</a>과 똑같았어요 — 대부분의 큰 사고는 새로운 마법이 아니라, 오래전에 답이 나온 기본을 안 지켜서 벌어진다는 것.</p>
+
+    <h2>덜 모으고, 조심해서 다루기 — 개인정보 최소 원칙</h2>
+    <p>데이터베이스에 이름·이메일·비밀번호 같은 개인정보(PII)가 쌓이면, 그건 자산이자 책임이었어요. 지킬 원칙은 넷이었어요. 첫째, <strong>필요한 것만 모아요(최소 수집)</strong> — 한국 개인정보보호법도 "목적에 필요한 최소한만" 모으도록 정해요. "이메일 하나면 되는데 전화번호·생년월일까지 받고 있진 않나?"를 늘 자문하면 됐어요. 둘째, <strong>비밀번호는 절대 그대로 저장하지 않아요</strong> — 해시로 바꿔 저장하고, 그것도 빠른 해시가 아니라 bcrypt·Argon2 같은 비밀번호 전용을 써요. 셋째, <strong>민감정보(주민번호·카드번호)는 직접 다루지 않는 게 최선</strong>이에요 — 결제는 결제대행사(PG)에, 본인확인은 인증 서비스에 맡기고 내 DB엔 저장하지 않아요. 넷째, <strong>모을 때 밝힌 목적에만 써요(목적 제한)</strong> — 다른 데 쓰거나 남에게 넘기려면 별도 동의가 필요해요.</p>
+    <p>한 줄로 요약하면 "덜 모으고, 비밀번호는 해시하고, 민감정보는 남에게 맡기고, 목적 밖으로 쓰지 않는다"였어요. 모으지 않은 정보는 유출될 수도 없으니, 가장 안전한 데이터는 애초에 안 가진 데이터라는 게 인상 깊었어요. 실제 사용자를 받는다면 최소한 이건 지켜야 해요 — 가입 때 '수집·이용 동의'를 받고, 개인정보처리방침 한 장을 두고, 제3자에게 정보를 넘길 땐 미리 알리고 동의를 받되 제공받는 자·목적·항목·기간·거부권을 밝히는 것.</p>
+
+    <h2>해커가 없어도 데이터는 사라진다 — 백업의 황금률</h2>
+    <p>백업 참사 중 가장 섬뜩했던 건 픽사 이야기였어요. 「토이 스토리 2」(1999년 개봉) 제작 중이던 1998년, 누군가 잘못된 명령을 실행해 영화 파일이 눈앞에서 지워지기 시작했어요. 설상가상 백업 시스템도 한 달째 고장 나 있었대요. 영화를 살린 건, 출산 후 재택근무하던 한 기술 총괄이 집 컴퓨터에 두었던 2주 전 사본이었어요. 하마터면 영화가 통째로 날아갈 뻔한 거예요. GitLab(2017)에서는 엔지니어가 실수로 잘못된 서버의 데이터를 지웠는데, 여러 겹의 백업이 모두 조용히 고장 나 있어서 6시간치 데이터를 잃었대요. Ma.gnolia(2009)는 백업은 있었지만 원본과 같은 시스템에 뒀다가, 그 시스템이 망가지자 백업도 함께 사라져 서비스가 문을 닫았고요.</p>
+    <p>교훈은 분명했어요 — 백업이 '진짜 되는지' 가끔 확인하고(픽사·GitLab 둘 다 '있다고 믿었지만' 고장 나 있었으니), 사본은 원본과 다른 곳에 두고, 여러 벌을 두는 것. 미국 사이버보안기관(CISA)이 권하는 표준이 <strong>3-2-1 규칙</strong>이었어요 — 원본 1 + 사본 2로 최소 세 벌(3), 서로 다른 매체 두 곳에(2, 예: 노트북 디스크 + 클라우드), 그중 1벌은 화재·도난 같은 사고에 대비해 다른 장소에(1). 개인이 실천하는 예로는 노트북의 원본, 외장하드 사본, 클라우드(구글 드라이브나 DB 자동 백업) 이렇게 세 곳에 두면 자연스럽게 3-2-1이 갖춰져요. 요즘 클라우드 DB는 백업을 도와주지만, 무료 요금제에는 자동 백업이 없는 경우가 많다는 것도 챙겨야 했어요 — 예를 들어 Supabase 무료 요금제는 직접 백업이 필요하고, 자동 일일 백업은 유료 Pro부터 제공돼요. 다음 글에서는 이 모든 걸 감안해서, 실제로 무료로 쓸 수 있는 데이터베이스들을 비교해볼게요.</p>
+
+    <a class="post-nav" href="choosing-a-free-database.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">무료로 쓸 수 있는 데이터베이스 고르기</span>
+    </a>
+
+    <hr>
+
+    <h3>"데이터베이스 - 고객의 데이터는 어떻게 관리될까" 시리즈</h3>
+    <a class="post-nav" href="why-database-needed.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">데이터베이스가 뭔가요 — 도서관과 마법 상자</span>
+    </a>
+    <a class="post-nav" href="database-history-sql-nosql.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">데이터베이스는 왜 이렇게 종류가 많을까 — SQL과 NoSQL의 역사</span>
+    </a>
+    <a class="post-nav" href="sql-basics-and-table-design.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">SQL 구경하기 — 표, 관계, 그리고 빠른 이유</span>
+    </a>
+    <a class="post-nav" href="transactions-normalization-nosql-types.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">트랜잭션, 정규화, 그리고 NoSQL 네 가지</span>
+    </a>
+    <a class="post-nav" href="user-accounts-sessions-and-cache.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">회원가입과 로그인을 데이터로 보면</span>
+    </a>
+    <p class="post-date">(6) Little Bobby Tables — SQL 주입과 백업 (이 글)</p>
+    <a class="post-nav" href="choosing-a-free-database.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">무료로 쓸 수 있는 데이터베이스 고르기</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>

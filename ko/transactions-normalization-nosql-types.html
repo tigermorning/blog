@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>트랜잭션, 정규화, 그리고 NoSQL 네 가지 - Tigermorning</title>
+  <meta name="description" content="계좌 이체가 반쪽만 되지 않게 막는 ACID와 트랜잭션, 같은 정보를 두 번 적지 않는 정규화, 표 구조를 안전하게 바꾸는 마이그레이션, 그리고 문서·키값·컬럼·그래프 네 가지 NoSQL을 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="트랜잭션, 정규화, 그리고 NoSQL 네 가지">
+  <meta property="og:description" content="계좌 이체가 반쪽만 되지 않게 막는 ACID와 트랜잭션, 같은 정보를 두 번 적지 않는 정규화, 표 구조를 안전하게 바꾸는 마이그레이션, 그리고 문서·키값·컬럼·그래프 네 가지 NoSQL을 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/transactions-normalization-nosql-types.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>트랜잭션, 정규화, 그리고 NoSQL 네 가지</h1>
+    <p class="post-date">2026. 7. 22.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="sql-basics-and-table-design.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">SQL 구경하기 — 표, 관계, 그리고 빠른 이유</span>
+    </a>
+
+    <hr>
+
+    <p>이건 개발자로 더 깊이 갈 사람만 봐도 되는 내용이라고 했는데, 저는 궁금해서 끝까지 읽어봤어요. <a href="sql-basics-and-table-design.html">지난 글</a>에서 표와 관계, 색인까지 봤으니, 오늘은 그 표들이 안전하게 지켜지는 원리와 정리정돈되는 원리를 봐요.</p>
+
+    <h2>계좌 이체가 '반쪽만' 되면 어떻게 될까 — ACID</h2>
+    <p>은행에서 A가 B에게 만 원을 보내는 상황을 생각해봤어요. 컴퓨터가 할 일은 둘이에요 — ① A에서 만 원 빼기, ② B에 만 원 넣기. 그런데 ①을 하고 ②를 하기 직전에 정전이 나면 어떻게 될까요? A 돈은 사라졌는데 B는 못 받아요. 만 원이 그냥 증발해버리는 거예요.</p>
+    <p>데이터베이스는 이걸 막으려고 여러 동작을 하나의 묶음(<strong>트랜잭션</strong>)으로 처리해요. 원칙은 딱 하나 — "전부 되거나, 전부 안 되거나." 중간에 반쪽만 남는 일은 없어요. 이 성질을 포함한 네 가지 약속을 묶어 <strong>ACID</strong>라고 불러요. <strong>A(원자성)</strong>는 반쪽 실행이 없다는 것(전부 아니면 전부 취소), <strong>C(일관성)</strong>는 규칙에 어긋난 상태로는 안 끝난다는 것, <strong>I(고립성)</strong>는 동시에 여러 명이 만져도 서로 꼬이지 않는다는 것, <strong>D(지속성)</strong>는 한번 됐다고 하면 정전이 나도 남아 있다는 것이에요. 저는 이걸 외울 필요는 없었고, 돈·주문·예약처럼 "틀리면 큰일"인 데이터는 이 성질이 강한 SQL DB가 안전하다는 감만 챙기면 됐어요.</p>
+    <p>실감 나는 예로, 친구 둘이 마지막 티켓 한 장을 거의 동시에 누르는 상황이 있어요. 아무 규칙이 없으면 둘 다에게 팔릴 수 있는데, 트랜잭션이 이걸 막아줘요. 제가 기억할 실전 요령은 하나였어요 — 돈·재고·예약처럼 '동시에 두 번' 눌릴 수 있는 곳은 AI에게 "동시에 두 명이 마지막 하나를 요청하는 상황도 테스트하고 안전하게 처리해줘"라고 요구하는 것. 그리고 ACID는 백업이 아니라는 것도 중요했어요 — 실수로 지운 걸 되돌려주진 않으니, 백업은 따로 챙겨야 했어요.</p>
+
+    <h2>같은 걸 두 번 적지 않기 — 정규화</h2>
+    <p>단골 손님의 주소가 바뀌었다고 해봐요. 만약 그 손님의 주문 100건에 주소를 매번 따로 적어뒀다면, 100군데를 다 고쳐야 하고 하나라도 놓치면 데이터가 서로 안 맞게 돼요. 그래서 관계형 DB는 "같은 정보는 한 곳에만 적고, 나머지는 그걸 가리키게" 해요. 손님 정보는 '회원 표'에 한 번만 두고, 주문 표에는 '몇 번 회원'이라고만 적는 식이에요. 주소가 바뀌면 회원 표 한 곳만 고치면 끝이에요. 이렇게 중복을 걷어내는 정리정돈을 <strong>정규화(normalization)</strong>라고 불러요 — <a href="database-history-sql-nosql.html">앞서 나온</a> 에드거 코드가 꿈꿨던 "중복 없이"가 바로 이거였어요.</p>
+    <p>이것도 AI가 알아서 해줘요. 제가 할 일은 데이터의 모양을 그릴 때 "이 정보, 여기저기 똑같이 적히고 있진 않나?" 한 번만 의심해보는 것뿐이었어요.</p>
+
+    <h2>데이터가 커지면 생기는 일 — 마이그레이션</h2>
+    <p>처음엔 잘 돌던 서비스도 데이터가 쌓이면 조회가 눈에 띄게 느려져요. 원하는 줄을 찾느라 수백만 줄을 처음부터 훑기 때문인데, <a href="sql-basics-and-table-design.html">지난 글에서 본</a> 색인(인덱스)이 이 문제의 해법이었어요. 또 하나, 서비스가 자라면 표 구조 자체를 바꿔야 할 때가 와요(칸 추가, 표 분리 등). 이미 데이터가 들어 있는 DB의 구조를 안전하게 바꾸는 작업을 <strong>마이그레이션(migration)</strong>이라고 불러요. "DB 구조 변경을 Git처럼 이력으로 관리하는 것"이라고 생각하면 됐어요 — 되돌리기도 돼요. 딱 하나만 기억하면 됐어요 — 칸을 삭제하는 변경은 그 안의 데이터가 영구히 사라질 수 있으니, 구조를 바꾸기 전엔 반드시 백업.</p>
+
+    <h2>NoSQL도 한 종류가 아니다 — 네 가지 갈래</h2>
+    <p>"NoSQL"이라고 뭉뚱그렸지만, 사실 성격이 다른 네 종류가 있었어요. 이름과 어떤 서비스가 쓰는지만 알아 두면 충분했어요.</p>
+    <table>
+      <thead><tr><th>종류</th><th>한 줄 설명</th><th>대표</th><th>어떤 곳에</th></tr></thead>
+      <tbody>
+        <tr><td>문서(Document)</td><td>JSON처럼 자유로운 덩어리로 저장</td><td>MongoDB</td><td>형태가 자주 바뀌는 데이터, 프로필·카탈로그</td></tr>
+        <tr><td>키-값(Key-Value)</td><td>"이름표 → 값" 아주 단순·초고속</td><td>Redis, DynamoDB</td><td>장바구니·세션·캐시(빠른 임시 저장)</td></tr>
+        <tr><td>컬럼(Column)</td><td>대량 분석에 강한 열 중심</td><td>Cassandra, HBase</td><td>로그·대규모 통계 분석</td></tr>
+        <tr><td>그래프(Graph)</td><td>점과 선으로 '관계'를 저장</td><td>Neo4j</td><td>소셜 네트워크("친구의 친구")</td></tr>
+      </tbody>
+    </table>
+    <p>재미있었던 예는, 그래프 DB가 "친구의 친구의 친구"처럼 연결을 따라가는 데 최적이라 소셜 네트워크가 즐겨 쓴다는 것과, 키-값은 너무 단순해서 오히려 엄청나게 빠르기 때문에 쇼핑몰 장바구니 같은 데 쓰인다는 거였어요. 이걸 지금 다 고를 필요는 없었어요. 첫 서비스는 SQL로 시작하고, "내 데이터가 소셜 관계 중심이네", "엄청 빠른 임시 저장이 필요하네" 같은 특별한 이유가 생겼을 때 NoSQL을 후보에 올리면 됐어요.</p>
+    <p>정리하면 이래요 — 데이터가 표로 잘 정리되고 관계가 분명하면(사용자·주문·상품처럼) SQL(관계형)을 쓰고, 형태가 자주 바뀌고 아주 대규모면 NoSQL을 써요. 비전공자의 첫 서비스 기본값은 SQL, 그중에서도 PostgreSQL이 무난했어요 — 자료가 가장 많고, 필요하면 유연한 형식도 지원해서 나중에 곤란해질 일이 적었거든요. 다음 글에서는 서비스에 사람이 로그인하기 시작할 때 — 회원 데이터를 어떻게 저장하고 로그인 상태를 어떻게 유지하는지를 데이터 관점에서 봐볼게요.</p>
+
+    <a class="post-nav" href="user-accounts-sessions-and-cache.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">회원가입과 로그인을 데이터로 보면</span>
+    </a>
+
+    <hr>
+
+    <h3>"데이터베이스 - 고객의 데이터는 어떻게 관리될까" 시리즈</h3>
+    <a class="post-nav" href="why-database-needed.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">데이터베이스가 뭔가요 — 도서관과 마법 상자</span>
+    </a>
+    <a class="post-nav" href="database-history-sql-nosql.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">데이터베이스는 왜 이렇게 종류가 많을까 — SQL과 NoSQL의 역사</span>
+    </a>
+    <a class="post-nav" href="sql-basics-and-table-design.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">SQL 구경하기 — 표, 관계, 그리고 빠른 이유</span>
+    </a>
+    <p class="post-date">(4) 트랜잭션, 정규화, 그리고 NoSQL 네 가지 (이 글)</p>
+    <a class="post-nav" href="user-accounts-sessions-and-cache.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">회원가입과 로그인을 데이터로 보면</span>
+    </a>
+    <a class="post-nav" href="sql-injection-and-backup-basics.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">Little Bobby Tables — SQL 주입과 백업</span>
+    </a>
+    <a class="post-nav" href="choosing-a-free-database.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">무료로 쓸 수 있는 데이터베이스 고르기</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>

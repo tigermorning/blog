@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>SQL 구경하기 — 표, 관계, 그리고 빠른 이유 - Tigermorning</title>
+  <meta name="description" content="거의 영어 문장에 가까운 SQL 한 줄 읽는 법, 표·행·열로 데이터를 나누는 관계형의 개념, 1:N과 N:M 관계 설계, 그리고 책 찾아보기처럼 작동하는 색인(인덱스)의 원리를 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="SQL 구경하기 — 표, 관계, 그리고 빠른 이유">
+  <meta property="og:description" content="거의 영어 문장에 가까운 SQL 한 줄 읽는 법, 표·행·열로 데이터를 나누는 관계형의 개념, 1:N과 N:M 관계 설계, 그리고 책 찾아보기처럼 작동하는 색인(인덱스)의 원리를 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/sql-basics-and-table-design.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>SQL 구경하기 — 표, 관계, 그리고 빠른 이유</h1>
+    <p class="post-date">2026. 7. 22.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="database-history-sql-nosql.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">데이터베이스는 왜 이렇게 종류가 많을까 — SQL과 NoSQL의 역사</span>
+    </a>
+
+    <hr>
+
+    <p>카페 사장님이 "오늘 케이크 주문만 보고 싶어요"라고 했는데, 주문이 수백 건이라 눈으로 찾기 어려운 상황을 생각해봤어요. 필요한 조건의 데이터만 골라 달라고 DB에 요청하는 말이 필요한데, 그 요청을 쓰는 언어가 바로 <strong>SQL</strong>이었어요.</p>
+
+    <h2>SQL은 거의 영어 문장이었어요</h2>
+    <p>겁먹을 것 없었어요. SQL 한 줄을 봤는데 정말 영어 문장에 가까웠거든요.</p>
+    <pre>SELECT 이름, 가격 FROM 상품 WHERE 분류 = '케이크';</pre>
+    <p>풀어 읽으면 이래요 — "상품 표에서(FROM 상품) 분류가 '케이크'인 것들의(WHERE) 이름과 가격을 줘(SELECT)." 넣고·고치고·지우는 것도 단어만 바뀌어요. <code>SELECT</code>는 꺼내 보기(조회), <code>INSERT</code>는 새로 넣기, <code>UPDATE</code>는 고치기, <code>DELETE</code>는 지우기예요. 이 네 가지를 묶어 <a href="what-backend-actually-does.html">앞서 다룬</a> CRUD(만들기·읽기·고치기·지우기)라고 불러요. 대부분의 서비스는 결국 이 네 동작의 반복이었어요. 외울 필요는 없어요 — 실제 SQL은 AI가 써주고, 저는 "아, 이 표에서 뭘 꺼내는(넣는) 거구나"를 알아보는 정도면 충분했어요.</p>
+
+    <h2>표로 생각하기 — 행, 열, 그리고 관계</h2>
+    <p>관계형 데이터베이스는 결국 표예요. 엑셀을 떠올리면 돼요. 표 하나는 한 종류(예: 상품 표), 행(row)은 한 건(예: 딸기 케이크 하나), 열(column)은 항목(예: 이름·가격·분류)이에요. 그리고 표끼리는 관계로 이어져요. 예를 들어 주문 표는 "어떤 상품을 샀는지"를 상품 표를 가리키는 방식으로 적는데, 정확히는 각 상품에 붙은 고유 번호(ID)로 가리켜요. 상품 정보를 주문마다 통째로 베끼지 않아도 되는 거예요. 이 "표로 나누고 관계로 잇기"가 바로 관계형(relational)이라는 이름의 뜻이었어요.</p>
+    <p>쇼핑몰 데이터로 감을 잡아봤어요. 한 덩어리로 뭉치면 "홍길동이 3월 2일에 초코케이크 2개를 12,000원에 샀고, 홍길동의 주소는…"처럼 적히는데, 주문이 100건이면 홍길동 주소가 100번 반복돼요. 그래서 성격이 다른 것끼리 표를 나눠요.</p>
+    <table>
+      <thead><tr><th>표</th><th>담는 것</th><th>예시 한 줄</th></tr></thead>
+      <tbody>
+        <tr><td>회원</td><td>사람 정보</td><td>1번 · 홍길동 · 서울…</td></tr>
+        <tr><td>상품</td><td>파는 것</td><td>7번 · 초코케이크 · 12,000원</td></tr>
+        <tr><td>주문</td><td>언제 누가 무엇을</td><td>55번 · 1번 회원 · 7번 상품 · 2개 · 3/2</td></tr>
+      </tbody>
+    </table>
+    <p>핵심은 주문 표가 이름·주소를 다시 적지 않고 "1번 회원"이라고만 가리키는 거예요(이걸 정규화라고 부르는데, 다음 글에서 더 다뤄볼게요). 주소가 바뀌면 회원 표 한 곳만 고치면 끝이에요. 표를 잇는 이 '번호'를 <strong>키(key)</strong>라고 불러요 — 표와 표를 잇는 고리예요. 이걸 직접 설계할 필요는 없어요. AI에게 "쇼핑몰에 필요한 표들과 그 관계를 그려줘"라고 하면 이런 그림을 만들어줘요. 제가 할 일은 그 그림을 읽고 "내 서비스엔 어떤 표가 더 필요하지?"를 판단하는 것뿐이었어요.</p>
+
+    <h2>표는 어떻게 이어지나 — 1:N과 N:M</h2>
+    <p>표를 여러 개로 나눴으면, 이제 서로 어떻게 이어지는지 볼 차례예요. 관계는 대부분 두 가지 모양이었어요. <strong>일대다(1:N)</strong>는 한쪽이 여러 개를 가지는 경우예요. 회원 1명은 주문을 여러 건 남기지만, 주문 1건은 한 회원의 것이죠. 이럴 땐 '주문' 표에 "누구의 주문인지"를 가리키는 칸(회원 번호) 하나만 넣으면 끝이에요. 블로그의 '글 1개 ↔ 댓글 여러 개'도 같은 모양이에요.</p>
+    <p><strong>다대다(N:M)</strong>는 양쪽 다 여러 개를 가지는 경우예요. 학생 1명은 여러 수업을 듣고, 수업 1개도 여러 학생이 들어요. 이건 양쪽 표 어디에도 상대를 다 적을 수 없어요(한 칸에 여러 개를 욱여넣으면 검색이 깨지거든요). 그래서 '누가 어떤 수업을 듣는다'는 연결 표를 하나 새로 만들어, 학생 번호와 수업 번호를 짝지어 한 줄씩 적어요. 그러면 N:M이 '연결 표를 사이에 둔 두 개의 1:N'으로 깔끔하게 풀려요. 판단 감각은 하나면 충분했어요 — "A 하나가 B 여럿을, 동시에 B 하나도 A 여럿을 갖나?" 그렇다면 N:M이라 중간 표가 필요하고, 한쪽만 여러 개면 1:N이에요.</p>
+
+    <h2>DB는 왜 이렇게 빠를까 — 책 뒤 찾아보기</h2>
+    <p>수만 권 중에서 원하는 책을 도서관이 금방 찾는 비결이 뭘까 궁금했는데, 데이터베이스도 같은 트릭을 쓰고 있었어요 — <strong>색인(index)</strong>이에요. 두꺼운 전공책 맨 뒤에는 '찾아보기'가 있죠. "삼투압 → 245쪽"처럼요. 그 덕에 처음부터 한 장씩 넘기지 않고 바로 원하는 곳으로 가요. DB의 색인이 정확히 이거예요 — 자주 찾는 항목(예: 이메일, 상품명)에 색인을 만들어 두면, 수백만 건에서도 순식간에 찾아요. 색인이 없으면 처음부터 전부 뒤지니까 느려져요.</p>
+    <p>다만 색인이 공짜는 아니었어요. '값 → 행 위치'를 미리 정리해 둔 구조라서, 넣고 고칠 때마다 색인도 갱신해야 하고 공간도 들거든요. 그래서 많이 거는 게 아니라, 실제로 자주 쓰는 검색·정렬에 맞게 최소한만 거는 게 빠른 DB였어요. 실전 요령은 이거예요 — AI에게 그냥 "색인 넣어줘"라고 하지 말고, 먼저 "사용자는 자기 주문만 최근순 20개 본다"처럼 실제 화면의 질문을 문장으로 주면, AI가 맞는 색인을 제안해줘요. 다음 글에서는 여러 작업이 동시에 안전하게 처리되는 원리(트랜잭션)와, 중복을 없애는 정규화, 그리고 NoSQL의 네 가지 갈래를 더 파볼게요.</p>
+
+    <a class="post-nav" href="transactions-normalization-nosql-types.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">트랜잭션, 정규화, 그리고 NoSQL 네 가지</span>
+    </a>
+
+    <hr>
+
+    <h3>"데이터베이스 - 고객의 데이터는 어떻게 관리될까" 시리즈</h3>
+    <a class="post-nav" href="why-database-needed.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">데이터베이스가 뭔가요 — 도서관과 마법 상자</span>
+    </a>
+    <a class="post-nav" href="database-history-sql-nosql.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">데이터베이스는 왜 이렇게 종류가 많을까 — SQL과 NoSQL의 역사</span>
+    </a>
+    <p class="post-date">(3) SQL 구경하기 — 표, 관계, 그리고 빠른 이유 (이 글)</p>
+    <a class="post-nav" href="transactions-normalization-nosql-types.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">트랜잭션, 정규화, 그리고 NoSQL 네 가지</span>
+    </a>
+    <a class="post-nav" href="user-accounts-sessions-and-cache.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">회원가입과 로그인을 데이터로 보면</span>
+    </a>
+    <a class="post-nav" href="sql-injection-and-backup-basics.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">Little Bobby Tables — SQL 주입과 백업</span>
+    </a>
+    <a class="post-nav" href="choosing-a-free-database.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">무료로 쓸 수 있는 데이터베이스 고르기</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
