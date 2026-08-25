@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>왜 화면 뒤에 서버가 필요할까 - Tigermorning</title>
+  <meta name="description" content="친구에게 링크를 보냈는데 안 열리는 이유부터, 클라이언트·서버 구조와 인터넷의 역사(ARPANET~클라우드), 수평 확장과 CDN까지 비전공자 눈높이로 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="왜 화면 뒤에 서버가 필요할까">
+  <meta property="og:description" content="친구에게 링크를 보냈는데 안 열리는 이유부터, 클라이언트·서버 구조와 인터넷의 역사(ARPANET~클라우드), 수평 확장과 CDN까지 비전공자 눈높이로 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/why-backend-needed.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>왜 화면 뒤에 서버가 필요할까</h1>
+    <p class="post-date">2026. 7. 18.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="mock-data-and-rest-api.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">목업 데이터와 REST API</span>
+    </a>
+
+    <hr>
+
+    <p>화면을 만들고 정말 뿌듯했던 날이 있었어요. AI랑 같이 뚝딱 완성해서, 친구한테 링크를 보냈죠. 근데 답이 왔어요. "어? 안 열리는데?" 제 컴퓨터에서는 멀쩡히 잘 되는데, 왜 친구 컴퓨터에서는 안 열릴까요. 이 질문 하나가 <strong>백엔드(서버)가 왜 필요한지</strong>를 이해하는 가장 빠른 문이었어요.</p>
+
+    <h2>내 컴퓨터에서만 열리는 화면 — localhost의 정체</h2>
+    <p>제가 만든 화면을 실행하면 주소창에 <code>localhost:3000</code> 같은 게 떠요. 이 <strong>localhost</strong>는 "지금 이 컴퓨터 자신"을 가리키는 특수한 이름이에요. 친구가 <code>localhost:3000</code>을 자기 컴퓨터에 쳐도, 그건 제 컴퓨터가 아니라 <strong>친구 자신의 컴퓨터</strong>를 가리키니까 당연히 아무것도 안 떠요. 제가 만든 화면은 지금 제 컴퓨터 안에서만 잠깐 켜져 있는 상태였던 거예요.</p>
+    <p>증상은 셋으로 갈렸어요. 링크가 아예 안 열리거나, 열려도 로그인이나 저장이 안 되거나, 새로고침하면 입력했던 게 다 사라지거나. 원인은 하나였어요 — <strong>24시간 켜져서 요청을 받아줄 컴퓨터가 어디에도 없다는 것</strong>. 제 노트북은 잠도 자고 꺼지기도 하니까요.</p>
+
+    <h2>손님과 상담원 — 클라이언트와 서버</h2>
+    <p>이 구조를 이해하는 데 저는 <strong>24시간 콜센터</strong> 그림이 제일 잘 맞았어요. 등장인물은 둘이에요.</p>
+    <ul>
+      <li><strong>클라이언트(client)</strong> = 전화를 거는 사람. 제 브라우저, 제 스마트폰 앱이 여기 해당해요. 필요할 때만 전화를 걸어요.</li>
+      <li><strong>서버(server)</strong> = 늘 자리를 지키고 있는 상담원. 어딘가의 컴퓨터에서 24시간 대기하며, 전화(요청)가 오면 받아서 답(응답)을 줘요.</li>
+    </ul>
+    <p>제 노트북은 상담원이 될 수 없어요. 밤에는 잠을 자야 하고, 카페에 가면 전화선(인터넷 연결)도 끊기니까요. 그래서 화면을 진짜로 세상에 열어두려면, <strong>절대 안 꺼지는 상담원 자리</strong>를 어딘가에 따로 마련해야 해요. 그 자리가 바로 서버이고, 그 서버 안에서 도는 프로그램을 우리는 흔히 백엔드라고 불러요.</p>
+    <p>재밌는 건, 서버가 필요한지 아닌지는 미리 예측할 수 있다는 거예요. 버튼을 누르면 색이 바뀌는 애니메이션은 제 컴퓨터 안에서 다 처리되니 서버가 필요 없어요. 반면 회원가입·로그인, 남이 쓴 글 보기, 새로고침해도 남아있는 저장, 카드 결제는 전부 <strong>다른 사람과 정보를 주고받거나 오래 보관해야</strong> 하니 서버가 꼭 필요해요. "이 기능, 내 컴퓨터를 벗어나야 하나?"라고 물어보면 답이 나와요.</p>
+
+    <h2>상담원 한 명으로는 부족해질 때 — 확장과 CDN</h2>
+    <p>상담원이 한 명이면 전화가 몰릴 때 다 못 받겠죠. 그래서 서비스가 커지면 상담원을 여러 명 세우고, 전화가 오면 비어있는 사람에게 자동으로 연결해줘요. 이 "누구한테 연결할지 정하는 역할"을 <strong>로드 밸런서(load balancer)</strong>라고 불러요. 서버를 여러 대로 늘리는 방식을 <strong>수평 확장(horizontal scaling)</strong>이라고 해요.</p>
+    <p>비슷한 문제가 하나 더 있어요. 서버가 미국에 딱 한 대만 있으면, 한국에서 접속하는 사람은 지구 반 바퀴를 돌아 응답을 받아야 해서 느려요. 그래서 <strong>CDN(Content Delivery Network)</strong>이라는 게 있는데, 자주 쓰이는 데이터의 복사본을 전 세계 여러 곳에 미리 뿌려두는 서비스예요. 사용자는 자기랑 가장 가까운 복사본에서 답을 받아서 훨씬 빨라져요.</p>
+
+    <h2>이 모든 게 시작된 곳 — 인터넷의 아주 짧은 역사</h2>
+    <p>이 구조가 왜 이렇게 생겼는지는 역사를 보면 이해가 쉬워요. 1969년, 미국 국방부 프로젝트로 <strong>ARPANET</strong>이라는 네트워크가 처음 컴퓨터 몇 대를 연결했어요. 원래 목적은 한 곳이 고장 나도 다른 경로로 정보가 전달되게 하는 것이었죠. 1970~80년대에 이 여러 네트워크들이 서로 통신할 수 있는 공통 규칙, <strong>TCP/IP</strong>가 자리를 잡으면서 "네트워크들의 네트워크", 즉 진짜 인터넷이 됐어요.</p>
+    <p>1989~91년에는 스위스 CERN의 <strong>팀 버너스리(Tim Berners-Lee)</strong>가 문서끼리 링크로 연결되는 <strong>월드와이드웹(Web)</strong>과, 그 문서를 주고받는 규칙인 <strong>HTTP</strong>를 만들었어요. 지금 우리가 브라우저 주소창에 뭔가를 치는 순간마다 쓰는 바로 그 기술이에요. 2000년대 이후로는 AWS·Google Cloud 같은 <strong>클라우드</strong> 회사들이 등장해서, 예전엔 직접 사야 했던 서버를 이제는 빌려 쓸 수 있게 됐어요. 제가 지금 배우는 "서버를 몇 분 만에 띄운다"는 감각은, 이 클라우드 시대가 있어서 가능한 거였어요.</p>
+    <p>정리하면, 화면이 안 열렸던 이유는 간단했어요. 제 화면은 손님(클라이언트)만 있고 상담원(서버)이 없는 상태였던 거예요. 다음 글에서는 이 서버에 어떻게 <strong>주소(도메인)</strong>가 붙고, 그 주소를 타고 요청이 실제로 어떤 길을 지나가는지 — 네트워크의 기본기를 하나씩 따라가볼게요.</p>
+
+    <a class="post-nav" href="domain-http-and-packets.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">도메인·포트·HTTPS — 주소가 화면이 되기까지</span>
+    </a>
+
+    <hr>
+
+    <h3>"화면 뒤에서 일어나는 일들" 시리즈</h3>
+    <p class="post-date">(1) 왜 화면 뒤에 서버가 필요할까 (이 글)</p>
+    <a class="post-nav" href="domain-http-and-packets.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">도메인·포트·HTTPS — 주소가 화면이 되기까지</span>
+    </a>
+    <a class="post-nav" href="what-backend-actually-does.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">백엔드가 실제로 하는 일</span>
+    </a>
+    <a class="post-nav" href="ai-code-security-basics.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">AI가 짠 백엔드 코드에서 반드시 확인할 것들</span>
+    </a>
+    <a class="post-nav" href="deploying-and-free-hosting.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">배포, 무료 호스팅, 그리고 집 컴퓨터를 서버로 쓰기</span>
+    </a>
+    <a class="post-nav" href="connecting-frontend-backend.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">AI로 프론트-백엔드 연결하기</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
