@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>사전학습과 스케일링 — GPT는 어떻게 커졌나 - Tigermorning</title>
+  <meta name="description" content="트랜스포머가 인코더만 남긴 BERT와 디코더만 남긴 GPT로 갈라진 이유, 2020년 스케일링 법칙이 보여준 멱법칙, 그리고 GPT-3에서 처음 나타난 인컨텍스트 러닝이 프롬프트 시대를 연 과정을 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="사전학습과 스케일링 — GPT는 어떻게 커졌나">
+  <meta property="og:description" content="트랜스포머가 인코더만 남긴 BERT와 디코더만 남긴 GPT로 갈라진 이유, 2020년 스케일링 법칙이 보여준 멱법칙, 그리고 GPT-3에서 처음 나타난 인컨텍스트 러닝이 프롬프트 시대를 연 과정을 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/pretraining-and-scaling-laws.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>사전학습과 스케일링 — GPT는 어떻게 커졌나</h1>
+    <p class="post-date">2026. 8. 2.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="birth-of-the-transformer.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">트랜스포머의 탄생 — Q/K/V와 두 길의 합류</span>
+    </a>
+
+    <hr>
+
+    <p>2017년의 트랜스포머는 사실 번역기 한 대에 지나지 않았어요. 어텐션만으로 문장을 한꺼번에 바라보고 그 덕에 병렬로 학습할 수 있다는 구조적 발명이었을 뿐이었죠. 그런데 몇 해 지나지 않아 이 구조는 번역기의 자리를 훌쩍 넘어, 매일 대화하는 챗봇이자 코드를 쓰고 도구를 부리는 에이전트의 뼈대가 됐어요. 그 사이에 세 번의 도약이 있었는데, 오늘은 그중 두 가지 — 사전학습과 스케일링을 봤어요.</p>
+
+    <h2>사전학습의 두 갈래 — BERT와 GPT</h2>
+    <p>트랜스포머는 원래 문장을 읽는 인코더와 문장을 쓰는 디코더가 짝을 이룬 구조였어요. 이후의 연구는 이 구조를 통째로 쓰는 대신 한쪽만 떼어 극단으로 밀어붙이는 두 갈래로 갈렸고, 그 갈림이 오늘날 언어 모델의 두 성격을 만들었어요.</p>
+    <p>한쪽은 인코더만 남긴 <strong>BERT(2018)</strong>예요. 문장의 단어 일부를 가린 뒤 그 빈칸을 앞뒤 문맥을 모두 보고 맞히도록 훈련하는데, 한 방향으로만 읽는 대신 양쪽을 동시에 참고한다는 뜻에서 양방향 마스크 언어 모델링이라고 불러요. 이렇게 훈련된 모델은 의미를 깊이 이해해야 하는 분류나 검색 과제에서 강했어요. 다른 한쪽은 디코더만 남긴 <strong>GPT 계열</strong>이에요. 오직 다음 토큰 하나를 예측하는 일만 반복해요. 앞 문맥이 주어지면 그다음에 올 단어의 확률 분포를 내놓고, 뽑은 단어를 다시 문맥에 이어 붙여 또 다음을 예측해요. 빈칸을 채우는 BERT와 달리 글을 이어 쓰는 이 방식이 문장을 생성하는 데는 훨씬 자연스러웠어요.</p>
+    <p>두 갈래는 방식이 달라도 한 가지 흐름을 공유했어요. 웹 규모의 텍스트로 언어의 일반적인 통계를 한 번 크게 익혀두고(<strong>사전학습</strong>), 그렇게 만든 밑바탕 모델을 과제마다 적은 데이터로 조금씩 손보는(파인튜닝) 방식이었어요. 새 과제를 만날 때마다 데이터를 모아 파라미터를 다시 조정하는 게 한동안은 당연한 절차였는데, 곧 이 당연함을 무너뜨리는 반전이 왔어요.</p>
+
+    <h2>키웠더니 능력이 솟아났다 — 스케일링 법칙</h2>
+    <p>GPT 계열은 여기서 남다른 선택을 했어요. 구조를 바꾸는 대신 그냥 더 키우기로 한 거예요. 2019년의 GPT-2는 파라미터를 15억 개까지 늘렸고, 별도 파인튜닝 없이도 제법 그럴듯한 글을 이어 썼어요. 그러자 질문이 따라왔어요. 얼마나 키우면 얼마나 좋아지는가.</p>
+    <p>이 질문에 정면으로 답한 게 2020년의 <strong>스케일링 법칙</strong>이었어요. 연구진이 모델의 크기와 학습 데이터의 양과 계산량을 각각 키워가며 재보니, 틀린 정도를 숫자 하나로 요약한 값인 손실이 어느 순간 뚝 떨어지는 게 아니라 자원을 몇 배로 늘릴 때마다 정해진 비율만큼 매끈하게 줄어들었어요. 한쪽을 몇 배 하면 다른 쪽이 일정 비율로 변하는 이런 관계를 <strong>멱법칙</strong>이라고 불러요. 성능 향상이 우연한 요행이 아니라 자원을 부으면 예측 가능하게 따라오는 공학의 문제임을 보여준 거였어요.</p>
+    <p>그래서 다음 수순은 정해졌어요. 2020년의 GPT-3는 파라미터를 1,750억 개까지 밀어붙였어요. 그런데 놀라운 건 낮아진 손실 수치가 아니라, 그 큰 모델에서 아무도 명시적으로 가르치지 않은 능력이 솟아났다는 점이었어요. 바로 <strong>인컨텍스트 러닝</strong>이에요.</p>
+
+    <h2>인컨텍스트 러닝 — 학습 없이 말로 시키는 시대</h2>
+    <p>인컨텍스트 러닝이란, 모델의 가중치를 하나도 바꾸지 않고 입력 창(컨텍스트) 안에 예시 몇 개를 적어주는 것만으로 새 과제를 수행하는 능력이에요. "영어를 프랑스어로 옮겨라"라고 예시 두세 쌍을 보여준 뒤 새 문장을 던지면, 모델은 파인튜닝 없이 그 패턴을 그 자리에서 흉내 내 답을 내놓아요. 예시를 몇 개 주느냐에 따라 이를 퓨샷이라고 불러요.</p>
+    <p>이 능력이 왜 사건이었을까요. 방금 전까지 당연했던 워크플로가 통째로 뒤집혔기 때문이에요. 과제는 이제 훈련의 대상이 아니라 프롬프트에 적어 넣는 지시가 됐어요. 모델을 다시 학습시키는 대신 말로 시키면 되는 시대가 여기서 열렸어요. 지금 제가 <a href="what-is-prompt-engineering.html">프롬프트를 쓰는 방식</a>의 뿌리가 바로 이 창발 능력이었던 거예요.</p>
+    <p>여기까지 오니 <a href="how-ai-learns-from-data.html">앞서 배운</a> "예측 → 오차 → 조정"이 이렇게 큰 능력으로 이어질 줄은 몰랐어요. 가중치가 커지고 데이터가 많아졌을 뿐인데, 아무도 가르치지 않은 능력이 저절로 생겨난다는 게 신기했어요. 다만 이렇게 커진 모델도 아직 결정적인 문제가 하나 남아 있었어요 — 훈련받은 목표가 오직 "다음에 올 법한 토큰을 잇는 것"뿐이었다는 사실이에요. "다음에 올 법한"과 "사람이 원하는"은 전혀 같은 말이 아니었어요. 다음 글에서는 이 간극을 메우는 작업, 정렬(alignment)을 볼게요.</p>
+
+    <a class="post-nav" href="what-is-alignment-sft-rlhf-dpo.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">정렬이란 무엇인가 — SFT, RLHF, DPO</span>
+    </a>
+
+    <hr>
+
+    <h3>"트랜스포머 - AI는 어떻게 언어를 배웠나" 시리즈</h3>
+    <a class="post-nav" href="how-cnn-broke-the-depth-wall.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">지금 이 모델은 어디서 왔을까 — 이미지가 먼저 연 길</span>
+    </a>
+    <a class="post-nav" href="how-language-broke-the-order-wall.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">언어가 부딪힌 순서의 벽 — RNN에서 어텐션까지</span>
+    </a>
+    <a class="post-nav" href="birth-of-the-transformer.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">트랜스포머의 탄생 — Q/K/V와 두 길의 합류</span>
+    </a>
+    <p class="post-date">(4) 사전학습과 스케일링 — GPT는 어떻게 커졌나 (이 글)</p>
+    <a class="post-nav" href="what-is-alignment-sft-rlhf-dpo.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">정렬이란 무엇인가 — SFT, RLHF, DPO</span>
+    </a>
+    <a class="post-nav" href="transformers-beyond-language.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">트랜스포머가 언어 밖으로 — ViT, Whisper, 그리고 그 너머</span>
+    </a>
+    <a class="post-nav" href="tokens-and-context-window-cost.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">토큰과 컨텍스트 — 활용가가 보는 비용과 한계</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
