@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>양자화 — 정밀도를 깎아도 왜 멀쩡할까 - Tigermorning</title>
+  <meta name="description" content="16비트 가중치를 4비트로 눌러도 모델이 멀쩡한 이유, K-quant와 Q4_K_M 표기가 뜻하는 것, 그리고 Llama 3.1 8B 실측 데이터로 확인한 용량 69% 감소 대비 성능 0.5% 손실이라는 교환비를 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="양자화 — 정밀도를 깎아도 왜 멀쩡할까">
+  <meta property="og:description" content="16비트 가중치를 4비트로 눌러도 모델이 멀쩡한 이유, K-quant와 Q4_K_M 표기가 뜻하는 것, 그리고 Llama 3.1 8B 실측 데이터로 확인한 용량 69% 감소 대비 성능 0.5% 손실이라는 교환비를 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/quantization-why-it-still-works.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>양자화 — 정밀도를 깎아도 왜 멀쩡할까</h1>
+    <p class="post-date">2026. 8. 5.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="training-vs-inference-memory.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">내 노트북에서도 LLM이 돌아갈까 — 학습과 추론은 다른 일이다</span>
+    </a>
+
+    <hr>
+
+    <p><a href="training-vs-inference-memory.html">14GB를 어떻게든 줄여야 했어요.</a> 저 14GB는 정확히 무엇으로 채워져 있을까요. 70억 개의 실수예요. 하나하나가 0.0731 같은 소수점 값이고, FP16 형식으로 16비트, 2바이트씩 차지해요. 16비트면 6만 5천 가지 값을 구분할 수 있어요. 학습이 끝난 가중치 하나를 표현하는 데 정말 6만 5천 단계의 해상도가 필요할까요.</p>
+
+    <h2>눈금을 성기게 만드는 일</h2>
+    <p><strong>양자화(quantization)</strong>는 이름이 거창하지만 하는 일은 단순했어요. 연속적인 실수값을 미리 정해둔 몇 개의 눈금 중 가장 가까운 곳으로 반올림해서 저장하는 거예요. 16비트는 눈금이 6만 5천 개인 자예요. 4비트로 내리면 눈금이 16개뿐인 자가 돼요. 0.0731이라는 값은 16개 눈금 중 하나로 끌려가고, 그 차이만큼 오차가 생겨요. 대신 저장에 필요한 공간은 2바이트에서 0.5바이트로, 정확히 4분의 1이 돼요.</p>
+    <p>직관적으로는 위험해 보여요. 70억 개 전부에 오차를 심는 셈이니까요. 그런데 실제로는 잘 버텼어요. 이유는 두 가지였어요. 하나는 신경망의 출력이 수많은 곱셈과 덧셈의 합이라 개별 오차가 서로 상쇄되는 경향이 있다는 것이고, 다른 하나는 모델이 맨 끝에서 쓰는 <a href="softmax-and-mnist-classification.html">softmax</a> 덕분이에요. 모델은 다음에 올 후보 토큰마다 점수를 하나씩 매기는데, softmax는 이 점수들을 전부 더하면 1이 되는 확률로 바꿔줘요. 결과가 점수의 절대값이 아니라 누가 누구보다 큰가에 좌우된다는 게 핵심이었어요. 그래서 점수가 소수점 아래에서 조금 흔들려도 어떤 토큰이 1등인지는 좀처럼 바뀌지 않았어요.</p>
+
+    <h2>모든 층을 똑같이 깎지는 않는다 — K-quant</h2>
+    <p>여기서 한 걸음 더 나갔어요. 첫째, 70억 개 전체에 하나의 자를 대지 않아요. 가중치를 256개씩 묶은 슈퍼블록으로 나누고, 그 안을 다시 32개짜리 블록으로 쪼갠 뒤 블록마다 자기만의 스케일 값을 갖게 해요. 그러면 값의 범위가 좁은 블록은 그 좁은 범위 안에서 눈금 16개를 촘촘하게 쓸 수 있어요. 이 방식을 <strong>K-quant</strong>라고 부르는데, 개인 컴퓨터에서 LLM을 돌리려고 만들어진 오픈소스 실행 엔진 llama.cpp 커뮤니티가 만들었어요.</p>
+    <p>둘째, 모든 텐서를 똑같이 깎지는 않아요. 트랜스포머 블록은 크게 두 부분이에요. 앞쪽은 토큰들이 서로를 참고하는 어텐션이고, 뒤쪽은 그렇게 섞은 값을 토큰마다 크게 부풀렸다가 다시 줄이며 다듬는 피드포워드 층이에요. 그런데 거칠게 깎았을 때 손해가 유독 큰 자리가 따로 있어요 — 어텐션에서 값을 담아 나르는 Value 행렬과, 부풀린 피드포워드 결과를 다시 원래 크기로 줄여주는 아래쪽 사영 행렬. llama.cpp는 이 두 자리에 한해, 그것도 전체 레이어의 절반가량에만 4비트 대신 6비트를 써요. 깎아도 덜 아픈 곳을 골라 깎으니 용량은 크게 줄고 품질은 덜 상했어요.</p>
+    <p>그래서 모델 파일 이름에서 만나게 되는 <strong>Q4_K_M</strong>이라는 표기는 이렇게 읽혀요. Q4는 기본이 4비트, K는 K-quant 방식, M은 medium — 방금 본 두 자리를 6비트로 올려주는 중간 강도의 혼합 정밀도라는 뜻이에요. 섞여 있기 때문에 실효 비트 수는 정수가 아니라 파라미터당 약 4.8비트쯤 돼요.</p>
+
+    <h2>얼마나 줄고, 얼마나 잃을까</h2>
+    <p>Llama 3.1 8B Instruct를 여러 양자화 수준으로 재본 실측 데이터를 보면 숫자가 선명했어요.</p>
+    <table>
+      <thead><tr><th>항목</th><th>FP16</th><th>Q4_K_M</th><th>변화</th></tr></thead>
+      <tbody>
+        <tr><td>파일 크기</td><td>14.96 GB</td><td>4.57 GB</td><td>69.4% 감소</td></tr>
+        <tr><td>Perplexity (WikiText-2)</td><td>7.32</td><td>7.56</td><td>3.3% 악화</td></tr>
+        <tr><td>다운스트림 벤치마크 평균</td><td>69.47</td><td>69.15</td><td>0.46% 하락</td></tr>
+        <tr><td>GSM8K (수학 추론)</td><td>77.63</td><td>77.41</td><td>0.22p 하락</td></tr>
+        <tr><td>MMLU</td><td>63.50</td><td>62.43</td><td>1.07p 하락</td></tr>
+      </tbody>
+    </table>
+    <p>여기서 Perplexity는 모델이 다음 단어를 얼마나 헷갈려 하는지를 재는 값이에요 — 낮을수록 좋아요. GSM8K는 초등 수준의 문장제 수학을 풀리는 시험이고, MMLU는 역사부터 법률과 의학까지 쉰 개가 넘는 분야의 객관식으로 넓은 지식을 훑는 시험이에요. 파일은 3분의 1 아래로 줄었는데 벤치마크 평균 손실은 0.5% 미만이었어요. MMLU처럼 지식을 폭넓게 긁어오는 과제에서 1점 정도 빠지는 게 가장 큰 타격이고, 수학 추론이나 지시 따르기는 거의 그대로였어요. 이 비율이 Q4_K_M이 사실상의 표준 선택지가 된 이유였어요. 더 줄이고 싶다면 3비트나 2비트도 있지만, 거기서부터는 손실 곡선이 눈에 띄게 가팔라졌어요.</p>
+    <p>이 4.57GB 파일은 보통 <strong>GGUF</strong>라는 형식으로 배포돼요. 가중치, 메타데이터, 토크나이저 어휘, 텐서 데이터를 파일 하나에 전부 담아서 곁다리 파일 없이 그대로 로드할 수 있게 만든 포맷인데, 메모리 매핑을 염두에 두고 텐서를 정렬해두기 때문에 로딩도 빨라요. 다음 글에서는 이렇게 줄인 모델을 실제로 내 컴퓨터에 올릴 수 있을지, KV 캐시까지 포함해서 계산해볼게요.</p>
+
+    <a class="post-nav" href="kv-cache-and-vram-budget.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">KV 캐시와 VRAM — 내 컴퓨터에 들어갈지 계산하기</span>
+    </a>
+
+    <hr>
+
+    <h3>"LLM과 로컬 실행 - 클라우드 API vs 로컬" 시리즈</h3>
+    <a class="post-nav" href="training-vs-inference-memory.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">내 노트북에서도 LLM이 돌아갈까 — 학습과 추론은 다른 일이다</span>
+    </a>
+    <p class="post-date">(2) 양자화 — 정밀도를 깎아도 왜 멀쩡할까 (이 글)</p>
+    <a class="post-nav" href="kv-cache-and-vram-budget.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">KV 캐시와 VRAM — 내 컴퓨터에 들어갈지 계산하기</span>
+    </a>
+    <a class="post-nav" href="running-local-llm-with-ollama.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">직접 Ollama로 로컬 LLM 돌려보기</span>
+    </a>
+    <a class="post-nav" href="three-ways-to-run-an-llm.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">로컬이냐 API냐는 틀린 질문 — 세 갈래와 품질 격차</span>
+    </a>
+    <a class="post-nav" href="where-does-your-data-stay.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">데이터는 어디에 남는가 — 학습에 안 쓴다는 안 남는다는 다른 말</span>
+    </a>
+    <a class="post-nav" href="cost-and-control-of-local-llm.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">비용과 통제권 — 손익분기 계산과 누가 바꾸는가</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>

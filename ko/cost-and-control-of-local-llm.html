@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>비용과 통제권 — 손익분기 계산과 누가 바꾸는가 - Tigermorning</title>
+  <meta name="description" content="로컬이 유리해지는 손익분기점이 분석마다 천 배씩 차이 나는 이유, 전기요금을 직접 계산하는 법, 모델 폐기 공지 기간과 회귀 테스트, 그리고 하이브리드가 가장 흔한 실무 답인 이유와 실행 위치 결정문 작성법을 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="비용과 통제권 — 손익분기 계산과 누가 바꾸는가">
+  <meta property="og:description" content="로컬이 유리해지는 손익분기점이 분석마다 천 배씩 차이 나는 이유, 전기요금을 직접 계산하는 법, 모델 폐기 공지 기간과 회귀 테스트, 그리고 하이브리드가 가장 흔한 실무 답인 이유와 실행 위치 결정문 작성법을 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/cost-and-control-of-local-llm.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>비용과 통제권 — 손익분기 계산과 누가 바꾸는가</h1>
+    <p class="post-date">2026. 8. 8.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="where-does-your-data-stay.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">데이터는 어디에 남는가 — 학습에 안 쓴다는 안 남는다는 다른 말</span>
+    </a>
+
+    <hr>
+
+    <p><a href="where-does-your-data-stay.html">데이터 질문에 답했으니</a> 이제 두 번째와 세 번째 축, 비용과 통제권을 봤어요. 비용 이야기는 이상하게 자주 어긋나요. 누군가는 "API 비용이 부담됩니다"라고 하고, 다른 누군가는 "그럼 로컬로 돌리면 공짜 아닌가요"라고 답해요. 어긋나는 이유는 같은 비용이 서로 다른 모양으로 나타나기 때문이에요. API 비용은 매달 청구서에 숫자로 찍히지만, 로컬 비용은 장비 구매 품의로 한 번 크게 나타난 뒤 전기요금과 담당자의 시간과 응답을 기다리는 몇 초 속에 섞여요. 청구서가 없다고 비용이 없는 건 아니었어요.</p>
+
+    <h2>손익분기 숫자를 인용하면 안 되는 이유</h2>
+    <p>"몇 토큰부터 로컬이 유리한가"를 다룬 분석을 여러 편 모아봤는데, 결과가 흥미로웠어요. 어떤 분석은 하루 50만 토큰 근처, 다른 분석은 하루 1천만 토큰, 또 다른 분석은 월 5억 토큰이라고 썼어요. 천 배 가까이 차이가 났어요. 계산이 틀려서가 아니라 전제가 달랐던 거예요. 가장 크게 갈리는 전제는 <strong>무엇을 대체하는가</strong>였어요 — 값싼 소형 API 모델로 충분한 업무를 로컬로 옮기려 하면 손익분기점은 아주 멀리 밀려나고, 상위 모델에 긴 문서를 매일 밀어 넣던 업무라면 훨씬 가까워요. 두 번째 전제는 <strong>사람 시간을 비용으로 세는가</strong>예요. 자체 운영에는 매달 모니터링, 업데이트, 장애 대응 시간이 들어가는데, 이 줄을 빼고 계산하면 로컬이 이기고 넣으면 지는 일이 자주 벌어졌어요. 세 번째 전제는 <strong>가동률</strong>이에요. 하루 종일 돌아가는 GPU와 업무 시간에만 몇 번 호출되는 GPU는 토큰당 비용이 열 배 넘게 차이 났어요.</p>
+    <p>그러니 남의 손익분기 숫자를 회의 자료에 붙이는 대신 자기 숫자를 넣어야 했어요. 전기요금은 직접 계산할 수 있었어요 — 400W급 카드를 하루 24시간 돌리면 하루 9.6kWh, 한 달이면 대략 288kWh, kWh당 150원으로 잡으면 월 4만원대예요. 산수라서 틀릴 일이 없고, 회의에서 반박당하지도 않아요. 월간 비용 구조를 표로 만들 때는 두 쪽 모두에서 가장 큰 항목 하나씩에 동그라미를 치면 병목이 보여요. API 쪽 병목이 출력 토큰이라면 프롬프트 설계부터, 입력 토큰이라면 캐싱과 사전 요약부터, 로컬 쪽 병목이 운영 인력 시간이라면 장비를 바꿔도 총액은 거의 줄지 않는다는 걸 알게 됐어요.</p>
+
+    <h2>누가 바꿀 수 있는가 — 통제권의 시간축</h2>
+    <p>세 번째 질문은 앞의 둘보다 늦게 체감됐어요. 데이터 문제는 도입 심사에서 걸리고 비용 문제는 첫 청구서에서 드러나지만, 통제권 문제는 대개 반년쯤 뒤 아무 일 없던 화요일 아침에 찾아왔어요. 주권은 세 개의 짧은 질문이었어요 — <strong>누가 바꿀 수 있는가, 누가 멈출 수 있는가, 누가 설명할 수 있는가.</strong></p>
+    <p>API를 쓴다는 건 남이 관리하는 모델을 빌려 쓴다는 뜻이고, 빌려주는 쪽은 물건을 바꿀 권리를 가져요. 이건 추측이 아니라 문서에 적힌 일정이에요 — 한 제공자는 일반 공개 모델 최소 6개월, 특화 변형 최소 3개월, 프리뷰 모델은 2주 수준의 예고로도 종료될 수 있다고 공지해요. 더 자주 겪는 건 종료가 아니라 미묘한 변화예요. 같은 프롬프트를 보냈는데 지난달과 답의 형식이 조금 달라요. 대개는 개선이지만, 그 출력을 그대로 파싱해서 다음 단계로 넘기던 시스템이라면 개선이 곧 장애였어요. 실무 대응은 명확했어요 — <strong>회귀 테스트 세트</strong>를 만들어두는 것. 실제 업무 입력 20~50개를 골라 기대 출력의 조건을 적어두고, 모델이나 버전을 바꿀 때마다 돌려보는 거예요. 로컬 실행의 가장 실질적인 이점이 여기 있었어요 — 모델 파일을 제가 가지고 있으면 버전을 고정할 수 있어요. 검증을 마친 그 모델이, 제가 바꾸기로 결정할 때까지 그대로 있어요.</p>
+
+    <h2>로컬의 주권은 공짜가 아니다</h2>
+    <p>로컬을 고르면 통제권이 따라와요. 그런데 통제권은 권리이면서 동시에 의무였어요. 보안 패치, 모델 업데이트, 성능 튜닝, 접근 권한 관리 — 밖으로 미뤄뒀던 일들이 한꺼번에 안으로 들어와요. 관리형 서비스를 쓸 땐 이걸 누군가 알아서 했지만, 이제는 누가 이 소식을 추적하고 언제 적용할지 정해야 했어요. 그리고 감사나 사고 조사 자리에서는 결국 설명을 요구받는데, 재미있는 건 잘 정리된 외부 계약이 허술한 내부 운영보다 설명하기 쉬운 경우가 흔하다는 거였어요. 로컬로 옮겼다는 사실 자체는 설명이 되지 않아요. 로컬에서 무엇을 어떻게 관리했는지가 설명이었어요.</p>
+
+    <h2>세 축이 만나는 자리 — 하이브리드가 가장 흔한 답</h2>
+    <p>세 축(데이터·비용·주권)을 다 봤으니, 실행 위치는 한쪽을 반드시 골라야 하는 게 아니었어요. 오히려 실무에서 가장 자주 나오는 답은 <strong>하이브리드</strong>였어요. 상담 원문에서 개인 식별자를 떼어내는 전처리는 내부에서 돌리고, 익명화된 텍스트의 요약은 API로 보내는 구조. 민감한 문서군만 로컬 모델이 처리하고 나머지는 API로 라우팅하는 구조. 업무를 단계로 쪼개면 각 단계마다 답이 다를 수 있고, 그 편이 대개 더 정확했어요.</p>
+    <p>이 시리즈를 마무리하며 실제로 만든 산출물은 챗봇이 아니라, 도메인 업무 하나에 대해 "이건 여기서 돌린다"고 말하고 그 이유를 댈 수 있는 <strong>결정문</strong>이었어요. 업무 이름, 입력 데이터, 데이터 근거(민감 정보·확인 정책·남는 것), 비용 근거(월 요청 수·양쪽 비용·가장 큰 항목), 주권 근거(버전 고정 필요 여부·대체 경로·감사 자료), 그리고 결정(API/관리형/로컬/하이브리드)을 한 장에 채우고, 마지막에 <strong>재검토 조건</strong>을 붙이는 거예요 — 월 사용량이 얼마를 넘을 때, 데이터 민감도 등급이 바뀔 때, 모델 종료 예고가 뜰 때, 규정이 바뀔 때. 재검토 조건이 없는 결정문은 반년 뒤에 아무도 믿지 않는 문서가 된다는 게 인상 깊었어요. 조건이 적혀 있으면, 그 조건이 걸렸을 때 누구든 이 문서를 다시 열게 되니까요.</p>
+
+    <hr>
+
+    <h3>"LLM과 로컬 실행 - 클라우드 API vs 로컬" 시리즈</h3>
+    <a class="post-nav" href="training-vs-inference-memory.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">내 노트북에서도 LLM이 돌아갈까 — 학습과 추론은 다른 일이다</span>
+    </a>
+    <a class="post-nav" href="quantization-why-it-still-works.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">양자화 — 정밀도를 깎아도 왜 멀쩡할까</span>
+    </a>
+    <a class="post-nav" href="kv-cache-and-vram-budget.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">KV 캐시와 VRAM — 내 컴퓨터에 들어갈지 계산하기</span>
+    </a>
+    <a class="post-nav" href="running-local-llm-with-ollama.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">직접 Ollama로 로컬 LLM 돌려보기</span>
+    </a>
+    <a class="post-nav" href="three-ways-to-run-an-llm.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">로컬이냐 API냐는 틀린 질문 — 세 갈래와 품질 격차</span>
+    </a>
+    <a class="post-nav" href="where-does-your-data-stay.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">데이터는 어디에 남는가 — 학습에 안 쓴다는 안 남는다는 다른 말</span>
+    </a>
+    <p class="post-date">(7) 비용과 통제권 — 손익분기 계산과 누가 바꾸는가 (이 글)</p>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
