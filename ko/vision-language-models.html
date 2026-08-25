@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>이미지와 언어를 함께 보는 모델 — VLM - Tigermorning</title>
+  <meta name="description" content="이미지를 패치와 특징 벡터로 바꿔 언어 모델과 연결하는 VLM의 원리, projector·cross-attention·Q-Former 같은 연결 방식의 차이, 문서 전용 VLM이 무엇을 더 보려 하는지, 그리고 말로 답한다는 것은 틀려도 말이 될 수 있다는 위험을 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="이미지와 언어를 함께 보는 모델 — VLM">
+  <meta property="og:description" content="이미지를 패치와 특징 벡터로 바꿔 언어 모델과 연결하는 VLM의 원리, projector·cross-attention·Q-Former 같은 연결 방식의 차이, 문서 전용 VLM이 무엇을 더 보려 하는지, 그리고 말로 답한다는 것은 틀려도 말이 될 수 있다는 위험을 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/vision-language-models.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>이미지와 언어를 함께 보는 모델 — VLM</h1>
+    <p class="post-date">2026. 8. 11.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="segmentation-and-sam.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">박스로 안 되는 일 — 분할과 SAM</span>
+    </a>
+
+    <hr>
+
+    <p>"이 계약서에서 갑이 누구입니까"라는 질문을 생각해봤어요. 문서에는 "갑"이라는 글자 대신 "발주자"라고만 적혀 있을 수 있어요. 글자를 정확히 읽는 것만으로는 부족하고, 계약 문맥에서 발주자가 어떤 역할인지 해석해야 해요. "이 사진에서 위험해 보이는 곳이 있습니까"도 비슷해요. 통로의 적재물, 열린 배전반, 바닥의 물기처럼 후보 목록을 질문 전에 완전히 정하기 어려워요. 이때 필요한 건 <a href="what-is-alignment-sft-rlhf-dpo.html">앞서 본</a> 출력 형식을 자유롭게 두는 능력이 아니라, 이미지 단서와 언어로 표현된 요구를 함께 해석하는 능력이었어요. 이런 모델을 <strong>VLM(Vision-Language Model, 시각-언어 모델)</strong>이라고 불러요.</p>
+
+    <h2>그림을 언어 모델이 다룰 수 있는 표현으로 바꾸기</h2>
+    <p><a href="birth-of-the-transformer.html">언어 모델은</a> 입력을 토큰과 숫자 벡터로 바꿔 처리해요. VLM은 이미지도 작은 영역(패치)의 특징 벡터로 바꾸고, 이 시각 정보를 언어 모델이 쓸 수 있도록 연결해요. 패치에서 특징을 만드는 신경망을 <strong>비전 인코더</strong>라고 불러요. 연결 방식은 한 가지가 아니었어요. <strong>Projector·concatenation</strong>은 이미지 특징을 언어 토큰과 맞는 크기로 바꿔 같은 입력 줄에 붙이는 방식이고(단순하고 널리 쓰여요), <strong>Cross-attention</strong>은 언어 토큰이 별도 이미지 특징을 필요한 순간에 참고하는 방식이고, <strong>Q-Former</strong>는 소수의 학습된 질의가 이미지에서 필요한 특징을 뽑아 언어 모델로 전달하는 압축 다리예요. 그러니 "모든 VLM이 이미지와 질문을 한 줄에 넣어 동일한 self-attention으로 처리한다"고 말하면 지나친 일반화였어요. 공통점은 시각 특징과 언어 요구가 모델 내부에서 정보를 주고받는다는 데 있었어요.</p>
+
+    <h2>문서 전용 VLM은 무엇을 더 보려 하는가</h2>
+    <p>범용 VLM은 사진, 도표, 화면, 문서를 폭넓게 다뤄요. 문서 전용 VLM은 읽는 순서, 제목과 본문, 표의 셀, 수식과 차트처럼 문서에 반복되는 구조에 학습과 출력을 집중해요. 예를 들어 <strong>PaddleOCR-VL</strong>은 PaddleOCR 프로젝트가 공개한 문서 파싱용 VLM 계열인데, 동적 해상도 비전 인코더와 언어 모델을 결합해 페이지 크기와 레이아웃이 다른 문서에서 텍스트·표·수식·차트를 Markdown이나 구조화 결과로 복원하도록 설계됐어요.</p>
+    <p>이건 "기존 OCR보다 무조건 우수한 하나의 모델"이라는 뜻은 아니었어요. 좌표가 필요한 대량 문자 인식에서는 <a href="ocr-assembly-line-and-error-propagation.html">전용 OCR 파이프라인</a>이 더 단순하고 빠를 수 있고, 복잡한 표와 수식의 읽기 순서를 보존해야 할 때는 문서 VLM이 유리할 수 있었어요. 같은 페이지를 두 방식으로 돌려 출력 차이를 직접 보는 실습이 필요했던 이유예요.</p>
+
+    <h2>말로 답한다는 것은 틀려도 말이 될 수 있다는 뜻</h2>
+    <p>생성형 VLM은 앞서 나온 토큰과 입력을 바탕으로 다음 토큰의 분포를 계산하고, 디코딩 규칙에 따라 답을 이어가요. 잘 보이지 않는 자리에서 멈추지 않고 문맥상 그럴듯한 값을 채울 수 있기 때문에, 원문에 없는 내용이 자연스럽게 섞이는 <strong>환각</strong>을 따로 확인해야 했어요. 반대로 Tesseract나 PaddleOCR 같은 인식 엔진도 틀리지만, 기본 출력이 검출된 이미지 영역과 인식 문자열에 묶여 있어 오류 위치를 되짚기 쉬웠어요. 문서 VLM과 범용 VLM도 일부 설정에서 상자나 영역을 출력할 수 있지만, 전용 OCR처럼 필드마다 일관된 근거 좌표가 기본 보장되는 건 아니었어요. 좌표를 받았다는 사실만 믿지 말고 실제 원문 위치와 대조해야 했어요.</p>
+    <p>또한 반복 실행에서 같은 답이 나오는 <strong>재현성</strong>과 원문에 맞는 <strong>정확성</strong>을 구분해야 했어요. 같은 오답을 두 번 낼 수 있으므로, 반복 실행 비교는 흔들리는 필드를 찾는 도구일 뿐 정답 검증을 대신하지 않았어요. 전통 OCR 파이프라인은 검출 이미지, 인식 문자열, 좌표, 레이아웃 결과 같은 중간 산출물을 밖으로 꺼내 보기 쉬웠는데, VLM은 내부에 비전 인코더와 연결 모듈 등 여러 단계가 있어도 사용자가 받는 API 결과만으로는 "못 읽었는지, 표 관계를 잘못 해석했는지, 질문을 다르게 이해했는지"를 분리하기 어려운 경우가 많았어요.</p>
+    <p>그래서 외부에 새 정거장을 만들어야 했어요 — 원본 페이지와 해시를 보존하고, 요약·추정·보정을 금지하고 판독 불가는 <code>[UNCLEAR]</code>로 표시하게 하고, 페이지별 원시 결과와 정규화 결과를 둘 다 저장하고, 사람이 미리 적은 확인점과 대조하고, 실행일·모델·버전·프롬프트와 데이터 전송 위치를 기록하는 거예요. 다음 글에서는 이런 도구들 중 무엇을 고를지 AI에게 상담하는 법과, 실제로 YOLO를 돌려 탐지·분할·포즈 결과를 만들어본 실습을 볼게요.</p>
+
+    <a class="post-nav" href="choosing-ai-tools-and-yolo-practice.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">AI에게 도구 선택을 상담하는 법, 그리고 YOLO 실습</span>
+    </a>
+
+    <hr>
+
+    <h3>"AI는 문서와 사진에서 무엇을 꺼낼까?" 시리즈</h3>
+    <a class="post-nav" href="value-vs-location-two-requests.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">금요일 오후에 도착한 두 개의 요청 — 값과 위치는 다른 답이다</span>
+    </a>
+    <a class="post-nav" href="why-cant-ai-read-this-pdf.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">PDF인데 왜 AI가 못 읽나요 — OCR의 역사</span>
+    </a>
+    <a class="post-nav" href="ocr-assembly-line-and-error-propagation.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">글자를 찾고 읽는 조립 라인 — 전처리부터 레이아웃까지</span>
+    </a>
+    <a class="post-nav" href="object-detection-and-iou.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">물체 찾기와 IoU — 탐지 결과를 믿는 법</span>
+    </a>
+    <a class="post-nav" href="segmentation-and-sam.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">박스로 안 되는 일 — 분할과 SAM</span>
+    </a>
+    <p class="post-date">(6) 이미지와 언어를 함께 보는 모델 — VLM (이 글)</p>
+    <a class="post-nav" href="choosing-ai-tools-and-yolo-practice.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">AI에게 도구 선택을 상담하는 법, 그리고 YOLO 실습</span>
+    </a>
+    <a class="post-nav" href="outsourced-labor-kept-decisions.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">넘긴 것은 노동이고 남은 것은 결정입니다</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>

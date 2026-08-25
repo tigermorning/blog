@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>PDF인데 왜 AI가 못 읽나요 — OCR의 역사 - Tigermorning</title>
+  <meta name="description" content="텍스트 레이어가 있는 PDF와 스캔 이미지를 감싼 PDF의 차이, 1912년 첫 시연부터 템플릿 매칭·특징 기반 인식을 거쳐 LSTM에 이른 OCR의 계보, 그리고 PaddleOCR이 탐지·인식을 나눠 조립하는 구조를 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="PDF인데 왜 AI가 못 읽나요 — OCR의 역사">
+  <meta property="og:description" content="텍스트 레이어가 있는 PDF와 스캔 이미지를 감싼 PDF의 차이, 1912년 첫 시연부터 템플릿 매칭·특징 기반 인식을 거쳐 LSTM에 이른 OCR의 계보, 그리고 PaddleOCR이 탐지·인식을 나눠 조립하는 구조를 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/why-cant-ai-read-this-pdf.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>PDF인데 왜 AI가 못 읽나요 — OCR의 역사</h1>
+    <p class="post-date">2026. 8. 9.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="value-vs-location-two-requests.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">금요일 오후에 도착한 두 개의 요청 — 값과 위치는 다른 답이다</span>
+    </a>
+
+    <hr>
+
+    <p><a href="value-vs-location-two-requests.html">문서 쪽 요청을</a> 끝까지 따라가봤어요. 스캔된 계약서를 넣고 금액이 표로 나오기까지 기계 안에서 무슨 일이 벌어지는지 순서대로 보기 전에, 갈라 두어야 할 게 하나 있었어요.</p>
+
+    <h2>PDF인데 왜 AI가 못 읽나요</h2>
+    <p>이 질문은 문서 AI를 처음 다루는 사람이 거의 반드시 한 번은 하게 돼요. 답은 PDF라는 형식이 두 가지 완전히 다른 물건을 같은 확장자로 담고 있기 때문이었어요. 한쪽에는 <strong>텍스트 레이어가 있는 PDF</strong>가 있어요. 워드나 한글에서 "PDF로 내보내기"를 누르면 이런 파일이 나와요. 파일 안에는 "이 위치에, 이 글꼴로, 이런 문자열이 있다"는 정보가 그대로 들어 있어서, 여기서 글자를 꺼내는 일은 인식이 아니라 단순한 읽기예요.</p>
+    <p>다른 한쪽에는 <strong>스캔 이미지를 그냥 감싸놓은 PDF</strong>가 있어요. 복합기에서 종이를 밀어 넣어 만든 파일, 휴대폰으로 찍어 변환한 파일이 여기 속해요. 이 파일 안에는 글자가 하나도 없어요. 픽셀 덩어리 하나가 페이지마다 한 장씩 들어 있을 뿐이에요. 사람이 화면으로 볼 때는 두 종류가 구별되지 않지만, 프로그램 입장에서는 텍스트 파일과 사진 파일만큼이나 달랐어요. 뒤쪽, 글자를 알아봐야 하는 쪽에만 붙은 이름이 <strong>OCR(Optical Character Recognition, 광학 문자 인식)</strong>이에요. 여기서 가장 중요한 건 맨 앞의 "광학"이었어요 — 파일 안에 저장된 문자 코드를 꺼내오는 게 아니라, 종이에 반사된 빛의 밝고 어두움을 측정해서 거기 있는 모양을 문자로 판정하는 문제라는 뜻이에요.</p>
+
+    <h2>이 발상은 컴퓨터보다 먼저 나왔다</h2>
+    <p>인쇄물을 빛으로 훑어 읽으려는 초기 시연 중 하나는 1912년 에드먼드 푸르니에 달브가 선보인 장치였어요. 당시엔 밝고 어두운 무늬를 소리로 바꾸고 사람이 그 소리를 글자로 해석했어요. 1920년대의 판독기는 미리 만든 글자 모양과 입력을 포개는 <strong>템플릿 매칭</strong>을 썼고, 1950~60년대엔 전용 글꼴과 정해진 서식을 만들어 입력 쪽을 기계에 맞췄어요. OCR은 한 번에 등장한 발명이 아니라, 입력을 통제하는 방법과 인식 알고리즘이 함께 변해온 계보였어요.</p>
+    <table>
+      <thead><tr><th>변화</th><th>기계가 한 일</th><th>남은 한계</th></tr></thead>
+      <tbody>
+        <tr><td>템플릿 매칭</td><td>입력과 미리 저장한 글자 모양을 비교</td><td>글꼴·크기·기울기에 약함</td></tr>
+        <tr><td>특징 기반 인식</td><td>획과 모서리 같은 특징으로 문자를 분류</td><td>글자 분리와 규칙 설계가 필요</td></tr>
+        <tr><td>LSTM 행 인식</td><td>한 글자씩이 아니라 글자 줄의 맥락을 함께 사용</td><td>표·문서 구조는 별도 분석이 필요</td></tr>
+        <tr><td>문서 AI</td><td>글자, 좌표, 레이아웃, 표를 함께 구조화</td><td>모델·언어·배포 조건에 따라 결과가 달라짐</td></tr>
+      </tbody>
+    </table>
+    <p>오늘날 대표적인 로컬 OCR 엔진 <strong>Tesseract</strong>도 이 계보 위에 있어요. HP 연구소가 1980~90년대에 개발했고 2005년 오픈소스로 공개했으며, 2006년부터 2017년까지 Google이 개발을 이어갔어요. 3세대까지는 글자 모양의 특징을 판별하는 전통 엔진이 중심이었고, Tesseract 4부터는 글자 한 줄의 앞뒤 맥락을 읽는 LSTM 신경망 엔진이 기본이 됐어요. 현재도 명령줄 한 줄로 로컬에서 실행할 수 있어, 클라우드에 문서를 보내지 않는 가벼운 기준선으로 유용했어요.</p>
+
+    <h2>PaddleOCR — 모델 하나가 아니라 조립 가능한 도구 상자</h2>
+    <p>Tesseract는 OCR 엔진이고, <strong>PaddleOCR</strong>은 여러 모델과 파이프라인을 묶은 도구 모음이고, PaddleOCR-VL은 문서 구조를 생성하는 시각-언어 모델 계열이에요. 이름이 비슷해도 같은 종류의 도구가 아니었어요. PaddleOCR은 Baidu가 자사의 딥러닝 프레임워크 PaddlePaddle 생태계에서 공개한 오픈소스 OCR·문서 분석 프로젝트예요. 그래서 "PaddleOCR을 썼다"는 말만으로는 재현할 수 없어요. 어떤 탐지 모델과 인식 모델을 골랐는지, 어떤 언어 가중치를 썼는지까지 남겨야 해요.</p>
+    <p>PP-OCR 계열의 기본 흐름은 전통 OCR의 현대식 구현이에요. <strong>텍스트 탐지</strong>는 이미지에서 글자가 있을 픽셀 영역을 찾고(초기엔 DB 계열 탐지기), <strong>방향 판별</strong>은 잘라낸 글자 줄이 뒤집혔는지 판별해 교정하고, <strong>텍스트 인식</strong>은 글자 줄 이미지를 문자열로 바꾸고(초기엔 CRNN 계열, 이후 SVTR로 발전), <strong>결과 조립</strong>은 문자열과 점수, 원본 좌표를 묶어 다음 단계로 넘겨요. 이 구조의 장점은 중간 결과를 볼 수 있다는 거였어요 — 글자 영역을 못 찾았는지, 찾았지만 잘못 읽었는지, 읽은 결과를 표로 잘못 묶었는지를 단계별로 나눠 확인할 수 있어요. 다음 글에서는 이 조립 라인의 네 정거장을 하나씩 따라가며, 작은 오차 하나가 어떻게 마지막 결과까지 번지는지를 볼게요.</p>
+
+    <a class="post-nav" href="ocr-assembly-line-and-error-propagation.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">글자를 찾고 읽는 조립 라인 — 전처리부터 레이아웃까지</span>
+    </a>
+
+    <hr>
+
+    <h3>"AI는 문서와 사진에서 무엇을 꺼낼까?" 시리즈</h3>
+    <a class="post-nav" href="value-vs-location-two-requests.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">금요일 오후에 도착한 두 개의 요청 — 값과 위치는 다른 답이다</span>
+    </a>
+    <p class="post-date">(2) PDF인데 왜 AI가 못 읽나요 — OCR의 역사 (이 글)</p>
+    <a class="post-nav" href="ocr-assembly-line-and-error-propagation.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">글자를 찾고 읽는 조립 라인 — 전처리부터 레이아웃까지</span>
+    </a>
+    <a class="post-nav" href="object-detection-and-iou.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">물체 찾기와 IoU — 탐지 결과를 믿는 법</span>
+    </a>
+    <a class="post-nav" href="segmentation-and-sam.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">박스로 안 되는 일 — 분할과 SAM</span>
+    </a>
+    <a class="post-nav" href="vision-language-models.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">이미지와 언어를 함께 보는 모델 — VLM</span>
+    </a>
+    <a class="post-nav" href="choosing-ai-tools-and-yolo-practice.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">AI에게 도구 선택을 상담하는 법, 그리고 YOLO 실습</span>
+    </a>
+    <a class="post-nav" href="outsourced-labor-kept-decisions.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">넘긴 것은 노동이고 남은 것은 결정입니다</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
