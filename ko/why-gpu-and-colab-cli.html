@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>왜 내 노트북으론 벅찰까 — GPU와 Colab CLI - Tigermorning</title>
+  <meta name="description" content="파라미터 규모에 따라 카페 모델부터 거대 언어모델까지 하늘과 땅 차이가 나는 연산량, CPU와 GPU가 갈리는 이유, 그리고 터미널 한 줄로 Colab GPU를 빌리는 Colab CLI까지 정리하며 '결국 데이터가 전부다'라는 노드 전체의 결론을 마무리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="왜 내 노트북으론 벅찰까 — GPU와 Colab CLI">
+  <meta property="og:description" content="파라미터 규모에 따라 카페 모델부터 거대 언어모델까지 하늘과 땅 차이가 나는 연산량, CPU와 GPU가 갈리는 이유, 그리고 터미널 한 줄로 Colab GPU를 빌리는 Colab CLI까지 정리하며 '결국 데이터가 전부다'라는 노드 전체의 결론을 마무리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/why-gpu-and-colab-cli.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>왜 내 노트북으론 벅찰까 — GPU와 Colab CLI</h1>
+    <p class="post-date">2026. 7. 31.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="fine-tuning-and-transfer-learning.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">남이 배운 것을 물려받다 — 파인튜닝과 전이학습</span>
+    </a>
+
+    <hr>
+
+    <p><a href="fine-tuning-and-transfer-learning.html">파인튜닝쯤 오니</a> "내 노트북으론 벅차다"가 느껴졌어요. 왜일까요? 학습되는 숫자, 곧 파라미터의 개수와 그에 따르는 연산량이 문제마다 하늘과 땅 차이이기 때문이었어요.</p>
+
+    <h2>규모가 다르면 필요한 장비도 다르다</h2>
+    <table>
+      <thead><tr><th>모델</th><th>학습 파라미터 규모</th><th>어디서 도나</th></tr></thead>
+      <tbody>
+        <tr><td>카페 선형모델</td><td>2개 (w, b)</td><td>노트북에서 즉시</td></tr>
+        <tr><td>MNIST 분류기</td><td>수만 ~ 수십만</td><td>노트북 CPU로도 몇 분</td></tr>
+        <tr><td>ResNet18 파인튜닝</td><td>약 1,100만</td><td>GPU 권장(Colab 등)</td></tr>
+        <tr><td>대형 언어모델(LLM)</td><td>수십억 ~ 수천억</td><td>GPU 수백~수천 대, 데이터센터</td></tr>
+      </tbody>
+    </table>
+    <p>학습은 매 스텝마다 "예측 → 오차 → 조정"을 하는데, 그 계산의 대부분이 방대한 행렬 곱셈이었어요. 파라미터와 데이터가 많아질수록 곱셈 횟수가 폭발적으로 늘어요.</p>
+
+    <h2>CPU와 GPU가 갈리는 이유</h2>
+    <p>그래서 GPU를 써요. CPU는 복잡한 일을 순서대로 빠르게 처리하는 소수의 코어를 가진 반면, GPU는 단순한 계산을 동시에 처리하는 코어를 수천 개 갖고 있어요. 행렬 곱셈처럼 "같은 계산을 엄청나게 많이 병렬로" 해야 하는 학습에 딱 맞아서, 같은 일을 CPU보다 수십~수백 배 빠르게 끝내요. 행렬 곱셈이 병렬에 잘 맞는 건, 그 안의 수많은 곱셈이 서로 독립이라 순서 없이 한꺼번에 계산할 수 있어서예요. 개인 노트북에 이런 GPU가 없으니 Colab의 무료 GPU나 클라우드를 빌려 쓰는 거였어요(코딩 에이전트에게 "GPU 런타임에서 돌려줘"라고 부탁하는 것도 이 때문이에요).</p>
+    <p>규모를 끝까지 밀면 그림이 분명해졌어요. 대형 언어모델을 처음부터 학습(사전학습)하려면 고성능 GPU 수천 대를 수 주간 돌리고 수백만에서 수억 달러가 들어요. LLM의 수천억 개 파라미터를 1초에 하나씩 세기만 해도 수천 년이 걸리는데, 학습은 이 숫자 전부를 수없이 조정하는 일이니 왜 데이터센터급 장비가 필요한지 짐작이 갔어요. 그래서 현실의 실무는 대부분 직접 훈련하지 않아요. 이미 학습된 모델을 가져와(파인튜닝) 쓰거나 API로 불러요. 오늘 파인튜닝을 체험한 이유가 여기 있었어요 — "남이 배운 것을 물려받는" 감각과, 그 아래 깔린 규모·비용의 현실을 함께 아는 것.</p>
+
+    <h2>Colab CLI로 터미널에서 GPU 손에 넣기</h2>
+    <p>GPU가 없는 노트북에서는 이 실습들을 어떻게 돌릴까요. 가장 손쉬운 길이 구글 코랩(Google Colab)이에요. 브라우저로 노트북을 열면 GPU 한 대를 무료로 빌려줘요. 그런데 2026년 6월, 구글은 여기에 터미널용 도구를 하나 더 얹었어요. 바로 <strong>Colab CLI</strong>(공식 패키지 <code>google-colab-cli</code>)예요. 브라우저 탭을 열지 않고도 명령어 한 줄로 Colab의 GPU 런타임을 띄우고, 코드를 돌리고, 끝나면 정리까지 해줘요.</p>
+    <pre>pip install google-colab-cli   # 설치
+colab run --gpu T4 train.py    # GPU VM 띄움 → train.py 실행 → 자동 반납</pre>
+    <p>무료 요금제에서는 보통 T4 GPU가 주어지고, 더 강한 A100·H100이나 TPU는 유료(Pro/Pro+)에서 열려요. 여기서 실습 방식과 딱 맞물리는 점이 있었어요. Colab CLI는 AI 에이전트가 직접 쓰도록 설계돼서, Claude Code나 Codex 같은 코딩 에이전트가 이 명령을 대신 실행할 수 있어요. 덕분에 앞의 MNIST·파인튜닝에서 "에이전트에게 프롬프트로 시킨다"가 말뿐이 아니라, 에이전트가 실제 GPU에서 코드를 돌리고 정확도를 받아오는 데까지 이어졌어요. 직접 훈련 코드를 쓰지 않아도, 원리를 아는 사람이 "무엇을·어디서·어떻게 돌릴지"만 지시하면 되는 셈이었어요.</p>
+
+    <h2>결국 데이터가 전부다</h2>
+    <p>이번 시리즈에서 인공지능이 "배운다"는 것을 세 번 직접 봤어요. <strong>회귀(카페 매출)</strong>는 연속된 숫자를 예측했고, <strong>분류(MNIST)</strong>는 softmax로 후보마다 확률을 매겨 하나를 골랐고, <strong>파인튜닝(개/고양이)</strong>은 남이 사전학습한 특징을 물려받아 적은 데이터로 제 문제에 맞췄어요. 셋을 관통하는 한 문장은 이거였어요 — <strong>모델 구조보다 데이터가 결과를 가른다.</strong> 데이터를 10%로 줄이면 정확도가 떨어졌고, 사전학습된 특징을 물려받으면 적은 데이터로도 잘 됐어요. 그래서 AI를 다루는 사람의 진짜 일은 "좋은 모델 고르기"보다 좋은 데이터를 모으고 검증하는 것에 가깝다는 걸 배웠어요.</p>
+    <p>앞으로 이렇게 직접 학습을 돌릴 일이 많지는 않을 거예요. 하지만 오늘 원리를 봤기 때문에, 코딩 에이전트에게 무엇을 시키고(무슨 데이터로, 어떤 학습을), 나온 결과의 무엇을 의심할지(데이터가 충분한가, 정확도가 왜 이런가) 판단할 수 있게 됐어요. 다음 시간에는 오늘 잠깐 스친 언어모델의 속을 들여다볼게요 — 토큰과 컨텍스트, 그리고 트랜스포머예요.</p>
+
+    <hr>
+
+    <h3>"AI는 어떻게 배우나" 시리즈</h3>
+    <a class="post-nav" href="how-ai-learns-from-data.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">AI는 어떻게 '배울까' — 규칙에서 데이터로</span>
+    </a>
+    <a class="post-nav" href="turning-data-into-numbers.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">데이터를 숫자로 바꾸기 — 벡터와 텐서</span>
+    </a>
+    <a class="post-nav" href="smallest-learning-in-code.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">가장 작은 학습을 코드로 보기 — 카페 매출 예측 실습</span>
+    </a>
+    <a class="post-nav" href="softmax-and-mnist-classification.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">softmax로 분류하기 — MNIST 실습</span>
+    </a>
+    <a class="post-nav" href="fine-tuning-and-transfer-learning.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">남이 배운 것을 물려받다 — 파인튜닝과 전이학습</span>
+    </a>
+    <p class="post-date">(6) 왜 내 노트북으론 벅찰까 — GPU와 Colab CLI (이 글)</p>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>

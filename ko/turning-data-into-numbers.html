@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>데이터를 숫자로 바꾸기 — 벡터와 텐서 - Tigermorning</title>
+  <meta name="description" content="글은 토큰과 임베딩으로, 그림은 픽셀 숫자의 격자로 바뀌는 원리, 벡터 사이의 거리와 방향으로 '비슷함'을 재는 감각, 그리고 스칼라·벡터·행렬·텐서로 이어지는 텐서 사다리를 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="데이터를 숫자로 바꾸기 — 벡터와 텐서">
+  <meta property="og:description" content="글은 토큰과 임베딩으로, 그림은 픽셀 숫자의 격자로 바뀌는 원리, 벡터 사이의 거리와 방향으로 '비슷함'을 재는 감각, 그리고 스칼라·벡터·행렬·텐서로 이어지는 텐서 사다리를 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/turning-data-into-numbers.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>데이터를 숫자로 바꾸기 — 벡터와 텐서</h1>
+    <p class="post-date">2026. 7. 29.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="how-ai-learns-from-data.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">AI는 어떻게 '배울까' — 규칙에서 데이터로</span>
+    </a>
+
+    <hr>
+
+    <p>방금 "데이터로 배운다"고 했는데, 그 데이터는 애초에 어떻게 기계 안으로 들어갈까요? 기계가 만질 수 있는 건 오직 숫자뿐이에요. 글자도 그림도 직접 다루지 못해요. 그래서 무엇을 학습시키든 첫 단계는 늘 같았어요 — 대상을 숫자로 바꾸는 일.</p>
+
+    <h2>글도 숫자, 그림도 숫자 — 토큰·임베딩·픽셀</h2>
+    <p>먼저 글이에요. 문장을 통째로 삼킬 수는 없으니, 의미를 지닌 작은 조각인 <strong>토큰(token)</strong>으로 먼저 잘라요. 그리고 각 토큰을 여러 숫자의 묶음, 곧 <strong>벡터(vector)</strong>로 바꿔요. 이때 비슷한 맥락에서 쓰이는 단어일수록 비슷한 벡터가 되도록 맞춰줘요 — "이웃을 보면 그 단어의 뜻을 안다"는 오래된 언어학의 발상이에요. 이렇게 뜻을 담은 벡터를 특별히 <strong>임베딩(embedding)</strong>이라고 불러요.</p>
+    <p>그림도 원리는 같아요. 사진은 결국 작은 점(픽셀)들이 촘촘히 박힌 격자이고, 각 점은 밝기와 색을 나타내는 숫자예요. 손글씨 숫자 한 장(MNIST)은 보통 28×28, 즉 784개의 밝기 숫자로 적히고, 컬러 사진이라면 가로×세로×3(빨강·초록·파랑)만큼의 숫자 덩어리가 돼요. 예를 들어 숫자 '7'을 아주 거칠게 8×8로 줄여보면, 각 칸의 밝기(0=검정 배경, 255에 가까울수록 밝은 획)로 적히는데, 가로획 하나와 비스듬히 내려오는 획이 큰 숫자로 나타나요. 모델이 "보는" 건 그림이 아니라 정확히 이 숫자들이었어요.</p>
+
+    <h2>벡터를 좌표의 점으로 — 거리와 방향으로 재는 비슷함</h2>
+    <p>벡터는 순서 있는 숫자의 묶음이에요. 숫자 2개면 평면 위의 점 (x, y), 3개면 3차원 공간의 점이 돼요. 원점에서 그 점까지 화살표를 그으면 "방향과 크기를 가진 양"으로도 볼 수 있어요. 실제 모델은 수백~수천 개를 쓰므로 그림으로는 못 그리지만, 직관은 그대로였어요.</p>
+    <p>벡터를 이렇게 좌표 위의 점으로 놓고 나면, 두 점 사이의 "비슷함"을 두 가지 방식으로 재요. 하나는 <strong>거리</strong>예요. 두 점이 얼마나 바짝 붙어 있는지죠. 점 A=(2, 3)과 B=(2, 4)는 거의 겹칠 만큼 가까워(거리 1) 비슷하다고 보고, 멀찍이 떨어진 C=(9, 1)은 다르다고 봐요. 지도에서 서울과 인천은 가깝고 서울과 부산은 먼 것과 똑같아요. 다른 하나는 <strong>방향</strong>, 곧 두 화살표가 이루는 각도예요. 크기는 달라도 같은 쪽을 가리키면 "결이 같다"고 보는 거예요. 숫자를 여러 개(여러 차원) 쓰는 이유가 여기서 분명해졌어요. 한 축으로는 "일이냐 쉼이냐" 정도만 담지만, 축을 늘리면 "얼마나 공식적인지", "얼마나 시간과 관련되는지" 같은 특징을 동시에 담아 관계를 훨씬 풍부하게 표현할 수 있어요. 핵심은 언제나 같았어요 — <strong>점의 절대 위치가 아니라 점들 사이의 관계가 뜻을 만든다</strong>.</p>
+
+    <h2>텐서 사다리 — 숫자 하나에서 사진까지</h2>
+    <p>여기서 숫자를 늘어놓는 방향을 하나씩 늘려보면, 낮은 칸에서 높은 칸으로 사다리를 오르듯 자연스럽게 이어져요. 맨 아래 칸은 <strong>스칼라(0차)</strong>, 그냥 숫자 하나예요(오늘 매출 '7' 같은 것). 이 숫자를 한 줄로 늘어놓으면 <strong>벡터(1차)</strong>가 돼요(예: [방문객, 요일, 날씨]). 한 줄을 격자로 채우면 <strong>행렬(2차)</strong>이 되는데, 흑백 사진 한 장이 바로 세로×가로 픽셀 밝기의 격자예요. 그 격자를 여러 장 겹쳐 쌓으면 <strong>텐서(3차 이상)</strong>예요. 컬러 사진은 빨강·초록·파랑 세 장의 격자를 포갠 것(높이×너비×3)이고, 사진을 여러 장 한 번에 다루면(배치) 차원이 하나 더 붙어요.</p>
+    <table>
+      <thead><tr><th>단계</th><th>차원</th><th>예시</th></tr></thead>
+      <tbody>
+        <tr><td>스칼라</td><td>0차</td><td>숫자 1개 (오늘 매출 7)</td></tr>
+        <tr><td>벡터</td><td>1차</td><td>숫자 한 줄 ([방문객, 요일, 날씨])</td></tr>
+        <tr><td>행렬</td><td>2차</td><td>숫자 격자 (흑백 이미지)</td></tr>
+        <tr><td>텐서</td><td>3차+</td><td>격자를 쌓음 (컬러=R/G/B 3장)</td></tr>
+      </tbody>
+    </table>
+    <p>즉 텐서는 "숫자를 몇 방향으로 늘어놓았나"를 일반화한 말이었어요(0차 스칼라·1차 벡터·2차 행렬을 모두 포함해요). 그래서 손글씨 숫자 한 장은 28×28 행렬(=784개 숫자), 컬러 강아지 사진은 높이×너비×3 텐서로 모델에 들어가요. 어떤 데이터든 결국 이 숫자 덩어리가 되고, 학습은 그 안의 패턴을 찾는 일이었어요. 카페의 방문객·매출은 숫자, 손글씨 숫자는 784차원 벡터, 강아지 사진은 텐서 — 오늘 만질 데이터도 전부 이 형태였어요. 다음 글에서는 이렇게 숫자로 바뀐 데이터가 실제로 어떻게 학습되는지, 가장 작은 모델을 코드로 직접 돌려볼게요.</p>
+
+    <a class="post-nav" href="smallest-learning-in-code.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">가장 작은 학습을 코드로 보기 — 카페 매출 예측 실습</span>
+    </a>
+
+    <hr>
+
+    <h3>"AI는 어떻게 배우나" 시리즈</h3>
+    <a class="post-nav" href="how-ai-learns-from-data.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">AI는 어떻게 '배울까' — 규칙에서 데이터로</span>
+    </a>
+    <p class="post-date">(2) 데이터를 숫자로 바꾸기 — 벡터와 텐서 (이 글)</p>
+    <a class="post-nav" href="smallest-learning-in-code.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">가장 작은 학습을 코드로 보기 — 카페 매출 예측 실습</span>
+    </a>
+    <a class="post-nav" href="softmax-and-mnist-classification.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">softmax로 분류하기 — MNIST 실습</span>
+    </a>
+    <a class="post-nav" href="fine-tuning-and-transfer-learning.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">남이 배운 것을 물려받다 — 파인튜닝과 전이학습</span>
+    </a>
+    <a class="post-nav" href="why-gpu-and-colab-cli.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">왜 내 노트북으론 벅찰까 — GPU와 Colab CLI</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
