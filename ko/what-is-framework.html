@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>프레임워크란 무엇인가 - Tigermorning</title>
+  <meta name="description" content="React, Vue, Next.js... 검색창에서 이름만 보고 길을 잃었던 제가, 프레임워크가 실제로 뭘 덜어주는 도구인지 순수 JS와 React 코드를 나란히 비교하며 이해한 과정을 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="프레임워크란 무엇인가">
+  <meta property="og:description" content="React, Vue, Next.js... 검색창에서 이름만 보고 길을 잃었던 제가, 프레임워크가 실제로 뭘 덜어주는 도구인지 순수 JS와 React 코드를 나란히 비교하며 이해한 과정을 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/what-is-framework.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>프레임워크란 무엇인가</h1>
+    <p class="post-date">2026. 7. 15.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="terminal-vs-ai-retrospective.html">
+      <span class="post-nav-label">← 이전 시리즈</span>
+      <span class="post-nav-title">직접 명령어 vs AI 자동화 비교 회고</span>
+    </a>
+
+    <hr>
+
+    <p>지난 시간까지 저는 <a href="webpage-three-layers.html">HTML·CSS·JS 세 겹</a>만 알면 웹페이지를 만들 수 있다고 생각했어요. 그런데 검색창에 "프론트엔드 프레임워크 추천"을 쳐본 순간 상황이 달라졌어요. React, Vue, Svelte, Angular, Solid, Qwik... 여기에 Next.js, Nuxt 같은 이름까지 쏟아지니까 "이걸 다 알아야 웹사이트 하나 만드나?" 싶어서 막막했어요. 오늘은 이 막막함의 정체를 파헤쳐봤어요.</p>
+
+    <h2>프레임워크, 집을 지을 때의 "뼈대"</h2>
+    <p><strong>프레임워크(framework)</strong>는 직역하면 <strong>뼈대, 틀</strong>이에요. 집을 지을 때를 떠올리면 이해가 빨라요. 집을 지을 때마다 기둥·배관·전선을 0부터 새로 설계하지는 않죠. 이미 검증된 골조를 기준으로 삼고, 그 위에 우리 집만의 방 배치와 생활 방식을 올려요. 웹 프레임워크도 똑같아요. 웹서비스를 만들 때마다 반복되는 일 — 같은 버튼과 카드를 여러 곳에서 다시 쓰기, 데이터가 바뀌면 화면도 함께 바꾸기, 주소에 따라 다른 화면 보여주기 — 을 미리 정리해둔 개발 골조예요.</p>
+    <p>이 골조는 그냥 부품 상자(라이브러리)와는 살짝 달라요. 라이브러리는 필요할 때 꺼내 쓰는 느낌이라면, 프레임워크는 "이 안에서는 화면을 이런 방식으로 나누고 연결하자"는 약속까지 함께 줘요. 개발자들은 이 차이를 <strong>제어의 역전(Inversion of Control)</strong>이라고 부르더라고요. 라이브러리는 내가 필요할 때 불러 쓰지만, 프레임워크는 전체 흐름을 쥐고 있다가 정해진 순간에 내가 쓴 코드를 불러줘요. 그래서 여러 사람이 같은 프로젝트를 오래 고칠 때 특히 힘을 발휘해요 — 누가 들어와도 대략 어느 폴더를 봐야 하는지 짐작할 수 있거든요.</p>
+
+    <h2>버튼 하나 고치려다 서른 곳을 손대는 날 — 프레임워크가 푸는 세 가지 문제</h2>
+    <p>화면이 하나일 땐 순수 HTML/CSS/JS로도 충분해요. 문제는 화면이 열 개가 되고, 입력값과 결과가 서로 얽히기 시작할 때부터예요. 프레임워크가 덜어주려는 문제는 딱 세 가지로 정리돼요.</p>
+    <table>
+      <thead><tr><th>커질 때 생기는 문제</th><th>순수 웹 코드에서 겪는 모습</th><th>프레임워크가 덜어주는 일</th></tr></thead>
+      <tbody>
+        <tr><td><strong>반복</strong></td><td>비슷한 카드·폼·버튼 코드를 여러 곳에 복사</td><td>화면 조각을 한 번 만들어 여러 곳에서 재사용(컴포넌트)</td></tr>
+        <tr><td><strong>변화</strong></td><td>선택값·로딩중·실패·완료를 여러 코드가 따로 바꿈</td><td>데이터가 바뀌면 화면도 규칙적으로 함께 바뀜(상태)</td></tr>
+        <tr><td><strong>연결</strong></td><td>화면이 늘수록 어느 주소가 어느 화면인지 헷갈림</td><td>주소별 화면 연결을 정리(라우팅)</td></tr>
+      </tbody>
+    </table>
+    <p>말로만 들으면 안 와닿아서, 저는 같은 화면(전문가 프로필 카드 30개)을 순수 JS와 React로 각각 만들면 뭐가 다른지 직접 비교해봤어요.</p>
+    <p><strong>순수 JS라면</strong> 카드 구조를 30번 복사해야 해요. 나중에 배지 디자인 하나를 바꾸고 싶으면 30곳을 전부 찾아 고쳐야 하고요.</p>
+    <pre>const container = document.getElementById('expert-list');
+experts.forEach(expert => {
+  const card = document.createElement('div');
+  card.innerHTML = `&lt;h3&gt;${expert.name}&lt;/h3&gt;&lt;p&gt;${expert.badge}&lt;/p&gt;`;
+  container.appendChild(card);
+});
+// 배지 디자인을 바꾸려면? 이 코드를 다시 찾아 고쳐야 해요</pre>
+    <p><strong>React라면</strong> 카드의 설계(컴포넌트)를 한 곳에 딱 한 번 만들고, 데이터만 바꿔가며 여러 번 불러써요.</p>
+    <pre>function ExpertCard({ name, badge }) {
+  return (&lt;div&gt;&lt;h3&gt;{name}&lt;/h3&gt;&lt;p&gt;{badge}&lt;/p&gt;&lt;/div&gt;);
+}
+// 데이터만 바꿔서 30번 부릅니다
+{experts.map(e =&gt; &lt;ExpertCard key={e.name} {...e} /&gt;)}</pre>
+    <p>배지 디자인을 바꾸고 싶으면 <code>ExpertCard</code> 딱 한 곳만 고치면 30개 카드가 전부 바뀌어요. 이게 컴포넌트(재사용 조각)가 주는 힘이에요.</p>
+    <p><strong>상태</strong>도 비슷한 원리예요. 사용자가 "형사전문" 필터를 고르면 필터 버튼 표시, 결과 목록, 결과 수, 빈 결과 안내, 페이지 제목까지 다섯 군데가 한꺼번에 바뀌어야 해요. 순수 JS에선 이걸 사람이 다섯 곳 다 손으로 챙겨야 하고, 하나라도 빠뜨리면 "필터는 바뀌었는데 목록은 예전 것"인 버그가 생겨요. 프레임워크는 <code>selectedFilter</code>라는 값 하나만 바꾸면 나머지가 그 값에서 자동으로 계산돼서, 한 곳을 바꾸면 연결된 곳이 전부 일관되게 따라와요.</p>
+
+    <h2>이름이 왜 이렇게 많을까 — 반복을 덜어내려 한 20년</h2>
+    <p>이 문제를 줄이려는 시도는 2000년대부터 쭉 이어져 왔어요. 이름은 바뀌어도 풀려는 문제는 늘 같았어요.</p>
+    <ul>
+      <li><strong>2006년, jQuery</strong> — "적게 쓰고 더 많이 하자"는 슬로건으로 브라우저마다 다른 JS 문법 차이를 덮어줬어요. 화면이 수십 개로 늘면 그래도 코드가 뒤엉켰죠.</li>
+      <li><strong>2010년, AngularJS·Backbone.js</strong> — Google 등이 "화면을 구조적으로 나누자"는 시도를 본격화했어요. 데이터가 바뀌면 화면도 규칙적으로 바뀌는 발상이 여기서 나와요.</li>
+      <li><strong>2013년, React</strong> — Facebook(현 Meta)이 화면을 <strong>컴포넌트</strong>라는 재사용 조각으로 나누는 방식을 정면에 내세웠어요. "어떻게 바꿔라"가 아니라 "무엇이어야 한다"만 선언하는 <strong>선언형 UI</strong>가 업계 기본이 됐어요.</li>
+      <li><strong>2014년, Vue</strong> — React의 컴포넌트 사고를 받아들이되, "쓰고 싶은 만큼만 쓴다"는 더 점진적인 학습 곡선을 제안했어요.</li>
+      <li><strong>2016년~현재, Svelte·Solid·Qwik</strong> — 각자 다른 병목을 겨냥해요. Svelte는 컴파일러로 브라우저 부담을 줄이고, Solid는 반응형 성능을 밀고, Qwik은 서버 상태를 브라우저로 이어받는 새 방식을 시도해요.</li>
+    </ul>
+    <p>화면(프론트엔드) 얘기만 있는 게 아니에요. 눈에 안 보이는 서버(백엔드) 쪽에도 같은 이유로 파이썬의 Django·FastAPI, 자바의 Spring, Node.js의 Express처럼 도구가 많아요. 결국 질문은 하나예요 — <strong>"규모가 커질 때, 반복되는 일을 어떻게 줄일 것인가?"</strong> 이름은 여러 개지만 답의 방향은 늘 같았던 거예요.</p>
+
+    <h2>정리 — 그래서 프레임워크가 뭐냐면</h2>
+    <p>프레임워크는 개발자를 괴롭히려고 생긴 이름표가 아니었어요. 화면이 커질 때 반복해서 터지는 세 가지 문제(반복·변화·연결)를, 컴포넌트·상태·라우팅이라는 장치로 미리 해결해둔 골조였어요. 이름이 수십 개인 이유도 단순해요 — 팀마다 중요하게 여긴 반복 업무가 달랐고, 웹서비스가 커지면서 필요한 골조도 조금씩 달라졌거든요.</p>
+    <p>이 골조가 왜 이렇게 잘 작동하는지 한 겹 더 들어가면, 컴퓨터과학에서 오래 다듬어온 두 가지 생각과 만나요. 다음 글에서 그 얘기를 이어가볼게요.</p>
+
+    <a class="post-nav" href="what-is-abstraction-modularity.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">추상화·모듈화·가상 DOM</span>
+    </a>
+
+    <hr>
+
+    <h3>"바이브 코딩으로 웹 만들기 2" 시리즈</h3>
+    <p class="post-date">(1) 프레임워크란 무엇인가 (이 글)</p>
+    <a class="post-nav" href="what-is-abstraction-modularity.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">추상화·모듈화·가상 DOM</span>
+    </a>
+    <a class="post-nav" href="choosing-a-framework.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">프레임워크 고르는 법과 AI와 기획하기</span>
+    </a>
+    <a class="post-nav" href="mock-data-and-rest-api.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">목업 데이터와 REST API</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
