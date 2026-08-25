@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>같은 "오픈소스"가 아니다 — 목소리 합성기 고르는 법 - Tigermorning</title>
+  <meta name="description" content="내려받기 1위 TTS 모델에 한국어가 없다는 함정, 그래픽카드 없이 재생 시간의 6분의 1로 돌아가는 국내 합성기와 아카이브 공지, 목소리 고르기와 복제하기의 차이, 그리고 정반대의 라이선스를 가진 Fish Audio S2 Pro와의 비교를 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="같은 \"오픈소스\"가 아니다 — 목소리 합성기 고르는 법">
+  <meta property="og:description" content="내려받기 1위 TTS 모델에 한국어가 없다는 함정, 그래픽카드 없이 재생 시간의 6분의 1로 돌아가는 국내 합성기와 아카이브 공지, 목소리 고르기와 복제하기의 차이, 그리고 정반대의 라이선스를 가진 Fish Audio S2 Pro와의 비교를 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/choosing-a-voice-synthesis-tool.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>같은 "오픈소스"가 아니다 — 목소리 합성기 고르는 법</h1>
+    <p class="post-date">2026. 8. 19.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="omni-models-and-inference-engines.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">옴니 모델과 그걸 돌리는 엔진</span>
+    </a>
+
+    <hr>
+
+    <p>받아쓰기 반대편에는 글자를 소리로 바꾸는 일, TTS(Text-to-Speech)가 있어요. 여기도 함정이 같은 자리에 있어요. 내려받기 수 1위 모델에 정작 한국어가 없어요. 공식 문서에 지원 언어가 아홉 개 적혀 있는데 그중에 한국어는 없어요. 유명하다는 이유로 골랐다가 벽에 부딪히게 돼요.</p>
+
+    <h2>한국어 되는 로컬 TTS — supertonic</h2>
+    <p>한국어를 제대로 하면서 노트북에서 돌아가는 것으로 국내에서 만든 supertonic이라는 모델이 있어요. 직접 재본 값을 보면, 설치는 <code>pip install</code> 한 줄로 끝나고 별도 프로그램이 필요 없어요. 크기는 385MB, 메모리는 570MB 안팎으로 합성 중 최대 620MB까지 올라가요. 속도는 그래픽카드 없이, 코어가 많은 노트북에서 실제 재생 시간의 6분의 1로 만들어져요. 1분짜리 음성을 10초에 만드는 거예요. 다만 이건 코어가 넉넉한 노트북 기준이고, 무료 코랩의 기본 환경에서 재보면 오히려 재생 시간보다 느렸어요. 같은 코드라도 어디서 돌리느냐로 여덟 배가 갈린다는 뜻이에요. 발음이 실제로 알아들을 만한지 확인하려고, 만든 음성을 다시 받아쓰기에 넣어 원문과 대조해봤더니 거의 그대로 복원됐어요. 이 확인 방법은 기억해둘 만해요. 만든 것을 반대 방향 도구에 넣어 원래대로 돌아오는지 보는 거예요. 다만 이 방법이 증명하는 건 알아들을 수 있다까지이고, 자연스럽게 들리는지는 직접 들어봐야 해요.</p>
+
+    <h2>"오픈소스"라고 다 쓸 수 있는 게 아니다</h2>
+    <p>목소리 복제가 되는 유명한 모델들 상당수가 비상업 라이선스예요. 한국어 블로그에서 "무료 오픈소스"라고 소개되는 것 중에도 약관을 열어보면 상업적 사용을 막아둔 것이 있어요. 회사 일에 쓸 거라면 모델 배포 페이지의 라이선스를 반드시 열어 읽어야 해요. 아파치 2.0이나 MIT면 열려 있고, 회사 이름이 붙은 자체 라이선스면 본문을 봐야 해요. 그리고 코드와 가중치의 라이선스가 다를 수 있어요. supertonic도 코드는 MIT인데 모델 가중치는 다른 약관이 붙어 있어요. 저장소 첫 화면만 보고 판단하면 놓쳐요. 또 하나 알아둘 게 있어요. 이 저장소는 2026년 7월 23일자로 더 이상 개발과 공식 지원을 하지 않고 아카이브된다고 공지됐어요. 만든 회사도 정리 절차에 들어갔어요. 이미 공개된 가중치는 계속 내려받아 쓸 수 있고 실습도 그대로 돌아가지만, 버그 수정이나 새 판본은 없다고 보고 계획을 세워야 해요. 오픈소스 도구를 업무에 넣을 때 성능과 라이선스만 보지 말고 그 프로젝트가 살아 있는지도 봐야 한다는 이야기가 여기서 나와요.</p>
+
+    <h2>목소리 고르기와 복제하기는 다르다</h2>
+    <p>많이들 기대하는 게 있어요. 내 목소리로 읽게 하는 것, 몇 초만 녹음하면 된다는 이야기예요. 하지만 supertonic으로는 안 돼요. 목소리를 열 개(남성 다섯, 여성 다섯) 중에서 고르는 것만 돼요. 파일에서 목소리 설정을 불러오는 기능이 있어서 기대할 만한데, 열어보면 미리 만들어둔 설정 파일을 읽는 것이지 녹음 파일에서 목소리를 뽑아내는 게 아니에요. 음성을 받아 특징을 추출하는 부분 자체가 들어 있지 않아요. 감정도 값으로 지정할 수 없어요. 대신 <code>&lt;laugh&gt;</code>, <code>&lt;sigh&gt;</code>, <code>&lt;breath&gt;</code>처럼 정해진 열 개의 표현 태그를 문장 안에 끼워 넣으면 웃음이나 한숨, 숨소리가 섞여요. 다만 여기서 확인하고 써야 할 게 있어요. 목록에 없는 <code>&lt;angry&gt;</code> 같은 태그를 넣어봤더니 화난 톤이 되는 대신 "앵그리"라고 글자를 그대로 읽었어요. 정해진 태그만 태그로 처리되고 나머지는 본문 취급이에요. 태그를 쓸 거라면 목록에 있는 것인지 확인하고, 넣은 뒤에는 반드시 들어봐야 해요.</p>
+
+    <h2>반대편 끝, Fish Audio S2 Pro</h2>
+    <p>복제가 되는 쪽 실물 하나를 놓고 보면, 피시 오디오가 공개한 S2 Pro가 supertonic과 거의 모든 축에서 반대편에 있어요.</p>
+    <table>
+      <thead><tr><th></th><th>supertonic</th><th>Fish Audio S2 Pro</th></tr></thead>
+      <tbody>
+        <tr><td>내려받기 용량</td><td>385MB</td><td>11GB</td></tr>
+        <tr><td>어디서 도나</td><td>노트북 CPU</td><td>그래픽카드</td></tr>
+        <tr><td>한국어</td><td>됩니다</td><td>됩니다 (1군은 일본어·영어·중국어, 한국어는 2군)</td></tr>
+        <tr><td>목소리 복제</td><td>안 됩니다</td><td>10~30초 참조 음성으로 됩니다</td></tr>
+        <tr><td>감정 지시</td><td>정해진 태그 열 개</td><td>문장으로 적어 넣습니다 (1만 5천 가지 이상)</td></tr>
+        <tr><td>가중치 라이선스</td><td>조건부 상업 사용 가능</td><td>연구·비상업만 무료, 상업은 별도 계약</td></tr>
+        <tr><td>프로젝트 상태</td><td>지원 종료 예고</td><td>활발</td></tr>
+      </tbody>
+    </table>
+    <p>먼저 분명히 해둘 게 있어요. 이건 노트북에 깔아 쓰는 물건이 아니에요. 앞서 본 받아쓰기 모델 중 가장 큰 large-v3가 3.1GB였는데, 그보다 세 배 넘게 커요. 속도 수치도 H200이라는 서버용 그래픽카드 기준이라, 시험해보려면 만든 쪽이 운영하는 웹 놀이터를 쓰거나 코랩 같은 곳에 올려야 해요. 여기서 제일 중요한 건 라이선스가 정반대라는 점이에요. 이 모델은 연구와 비상업 용도는 무료지만 상업적 사용은 따로 계약해야 한다고 못 박혀 있어요. 그리고 여기서 말하는 상업의 범위가 넓어서, 제품이나 서비스에 넣는 것만이 아니라 회사나 조직의 내부 업무에 쓰는 것도 포함돼요. "우리끼리 사내에서만 쓰는 건데 괜찮겠지" 하고 넘어가기 딱 좋은 자리예요. 같은 "무료 공개 모델"이라는 말 안에 이만큼 다른 조건이 들어 있어요. 다음 글에서는 이 복제 기술을 실제로 써도 되는지, 법과 책임이 어디에 걸리는지, 그리고 이번 노드 전체를 관통한 "요약이 오류를 지운다"는 문제를 정리하며 마무리할게요.</p>
+
+    <a class="post-nav" href="voice-cloning-and-responsible-ai.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">그 목소리, 복제해도 됩니까 — 법과 요약의 세탁</span>
+    </a>
+
+    <hr>
+
+    <h3>"여러 입력을 함께 다루는 AI" 시리즈</h3>
+    <a class="post-nav" href="why-multimodal-one-model.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">왜 한 모델에 다 넣으려 하나 — 모달리티라는 말</span>
+    </a>
+    <a class="post-nav" href="clip-and-vision-language-models.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">픽셀을 문장처럼 다룬다는 발상 — CLIP과 VLM</span>
+    </a>
+    <a class="post-nav" href="speech-to-text-history.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">소리를 글자로 바꾸는 길 — STT 반백년의 계보</span>
+    </a>
+    <a class="post-nav" href="choosing-a-local-whisper.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">내 노트북에서 돌아가는 것 고르기 — Whisper 크기와 포맷</span>
+    </a>
+    <a class="post-nav" href="omni-models-and-inference-engines.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">옴니 모델과 그걸 돌리는 엔진</span>
+    </a>
+    <p class="post-date">(6) 같은 "오픈소스"가 아니다 — 목소리 합성기 고르는 법 (이 글)</p>
+    <a class="post-nav" href="voice-cloning-and-responsible-ai.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">그 목소리, 복제해도 됩니까 — 법과 요약의 세탁</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>

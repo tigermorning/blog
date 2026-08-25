@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>옴니 모델과 그걸 돌리는 엔진 - Tigermorning</title>
+  <meta name="description" content="글·소리·이미지·영상을 한 모델로 받는 옴니 모델(GPT-4o, Gemma 4)이 모델 카드와 다르게 실행 도구마다 입력 범위가 달라지는 함정, 그리고 개인용 로컬 실행 도구와 서버용 추론 엔진(vLLM 등)이 왜 다른 문제를 푸는지 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="옴니 모델과 그걸 돌리는 엔진">
+  <meta property="og:description" content="글·소리·이미지·영상을 한 모델로 받는 옴니 모델(GPT-4o, Gemma 4)이 모델 카드와 다르게 실행 도구마다 입력 범위가 달라지는 함정, 그리고 개인용 로컬 실행 도구와 서버용 추론 엔진(vLLM 등)이 왜 다른 문제를 푸는지 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/omni-models-and-inference-engines.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>옴니 모델과 그걸 돌리는 엔진</h1>
+    <p class="post-date">2026. 8. 19.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="choosing-a-local-whisper.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">내 노트북에서 돌아가는 것 고르기 — Whisper 크기와 포맷</span>
+    </a>
+
+    <hr>
+
+    <p>지금까지는 소리를 먼저 글자로 바꾸고, 그 글자를 다시 언어 모델에 넘기는 방식을 봤어요. 전문 도구를 여러 개 이어붙인 거예요. 반대 방향도 있어요. 하나의 모델이 글과 소리와 이미지와 영상을 어떤 조합으로든 그대로 받는 방식이에요. 이런 모델을 <strong>옴니 모델(omni model)</strong>이라고 불러요. 모든 것이라는 뜻의 라틴어에서 온 말이고, 만든 쪽이 직접 이렇게 불러요. OpenAI는 GPT-4o를 공개하면서 이 모델을 "글과 소리와 이미지와 영상을 어떤 조합으로든 입력으로 받는 옴니 모델"이라고 설명했어요. 이름 끝의 o가 그 뜻이에요.</p>
+
+    <h2>노트북에서 만져볼 수 있는 옴니 모델</h2>
+    <p>이런 모델을 가중치째로 내려받아 직접 돌려볼 수도 있어요. 구글이 공개한 Gemma 4가 그 사례예요. 글과 이미지는 전 크기에서 받고, 소리와 영상은 E2B·E4B·12B 크기에서 받아요. 12B는 파라미터 120억 개짜리라는 뜻이고, E2B와 E4B는 실제로는 더 크지만 돌아갈 때는 2B·4B만큼의 메모리만 쓰도록 만든 판본이에요. 노트북에서 시작한다면 E4B가 무난해요. 맥락 길이는 작은 쪽이 128K, 중간 크기가 256K예요. 12B에는 눈여겨볼 설계가 하나 있는데, <a href="clip-and-vision-language-models.html">앞서 본</a> 것처럼 시각용·청각용 인코더를 따로 두고 공유 공간에 올리는 대신, 입력을 곧바로 모델 안으로 투영해요. 중간 단계 하나를 아예 없앤 쪽으로 간 거예요.</p>
+
+    <h2>모델이 받는다고 내가 쓸 수 있는 건 아니다</h2>
+    <p>여기서 실무에서 자주 걸리는 함정이 하나 있어요. <a href="running-local-llm-with-ollama.html">앞서 로컬에서 모델을 돌릴 때</a> 쓴 Ollama로 이 모델도 받을 수 있어요. 그런데 같은 모델 가중치인데도 무엇으로 돌리느냐에 따라 넣을 수 있는 입력이 달라져요. 간편한 로컬 실행 도구로 돌리면 글과 이미지만 받고, 서버용 추론 엔진으로 돌리면 글·이미지·소리·영상을 다 받아요. 소리는 더 헷갈리는데, 로컬 실행 도구의 모델 소개 화면에는 소리를 받는다고 적혀 있는데 정작 내려받을 판본마다 붙은 입력 표기에는 글과 이미지만 있는 경우가 있어요. 한 도구의 문서끼리도 어긋나는 거예요. 모델이 못 하는 게 아니라 그 도구가 아직 영상이나 소리 입력을 열어주지 않은 것뿐이에요. 그래서 "이 모델이 무엇을 할 수 있나"와 "내 환경에서 무엇을 쓸 수 있나"는 따로 확인해야 해요. 모델 카드만 보고 계획을 세웠다가 막히는 일이 여기서 생겨요.</p>
+
+    <h2>추론 엔진이라는 것</h2>
+    <p>내려받은 모델 가중치는 그 자체로는 숫자가 잔뜩 든 파일이에요. 실제로 돌리려면 파일을 메모리에 올리고, 입력을 모델이 먹을 수 있는 형태로 바꾸고, 계산을 그래픽카드에 실어 보내고, 나온 숫자를 다시 글자로 되돌리는 일을 해줄 프로그램이 필요해요. 이 일을 하는 프로그램을 <strong>추론 엔진</strong>이라고 불러요. 여기서 갈래가 갈리는 이유가 있어요. 한 사람이 노트북에서 한 번에 하나씩 쓰는 것과, 서버 한 대로 수십 명을 동시에 받는 것은 완전히 다른 문제이기 때문이에요. 앞쪽에서는 설치가 쉽고 메모리를 적게 먹는 게 중요해요. 그래픽카드가 없어도 돌아가야 하고 명령 한 줄로 끝나야 해요. 뒤쪽에서는 그래픽카드를 놀리지 않는 게 중요해요. 요청이 하나씩 들어올 때마다 처리하면 카드가 대부분의 시간을 쉬게 되니, 여러 요청을 겹쳐 밀어 넣고 앞 요청이 끝나기를 기다리지 않고 새 요청을 끼워 넣어야 해요. 대표적인 서버용 엔진으로 vLLM, SGLang, LMDeploy가 있고, 애플 기기에 맞춰 최적화된 전용 프레임워크도 따로 있어요. 이름을 다 외울 필요는 없고, 어느 갈래인지 알아보는 것으로 충분해요.</p>
+
+    <h2>한 모델이 다 받으면 무엇이 바뀌나</h2>
+    <p>소리를 글자로 바꾸는 대신 그대로 받으면 두 가지가 바뀌어요. 하나는 중간에서 잃는 정보가 줄어들어요. 소리를 글자로 바꾸면 억양과 침묵이 사라지는데, 소리를 그대로 받는 모델에게는 그 단서가 남아 있어요. 둘은 대가예요. 검증할 자리가 줄어들어요. 받아쓰기와 요약을 나눠 두면 어느 단계에서 틀렸는지 짚을 수 있지만, 한 모델이 소리를 듣고 곧바로 결론을 말하면 그 중간 산출물이 없어요. 그래서 선택은 정확도가 아니라 무엇을 검증해야 하는가로 갈려요. 나중에 근거를 되짚어야 하는 일이라면 나눠 두는 편이 낫고, 실시간으로 상황을 파악해야 하는 일이라면 한 번에 받는 편이 나아요. 다음 글에서는 반대 방향, 글자를 소리로 바꾸는 목소리 합성 도구를 살펴볼게요.</p>
+
+    <a class="post-nav" href="choosing-a-voice-synthesis-tool.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">같은 "오픈소스"가 아니다 — 목소리 합성기 고르는 법</span>
+    </a>
+
+    <hr>
+
+    <h3>"여러 입력을 함께 다루는 AI" 시리즈</h3>
+    <a class="post-nav" href="why-multimodal-one-model.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">왜 한 모델에 다 넣으려 하나 — 모달리티라는 말</span>
+    </a>
+    <a class="post-nav" href="clip-and-vision-language-models.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">픽셀을 문장처럼 다룬다는 발상 — CLIP과 VLM</span>
+    </a>
+    <a class="post-nav" href="speech-to-text-history.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">소리를 글자로 바꾸는 길 — STT 반백년의 계보</span>
+    </a>
+    <a class="post-nav" href="choosing-a-local-whisper.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">내 노트북에서 돌아가는 것 고르기 — Whisper 크기와 포맷</span>
+    </a>
+    <p class="post-date">(5) 옴니 모델과 그걸 돌리는 엔진 (이 글)</p>
+    <a class="post-nav" href="choosing-a-voice-synthesis-tool.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">같은 "오픈소스"가 아니다 — 목소리 합성기 고르는 법</span>
+    </a>
+    <a class="post-nav" href="voice-cloning-and-responsible-ai.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">그 목소리, 복제해도 됩니까 — 법과 요약의 세탁</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
