@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>채점이 되는 곳에 걸리는 보상 - Tigermorning</title>
+  <meta name="description" content="채점기 모델을 따로 두지 않고 같은 문제의 답 여러 개를 그룹 안에서 비교해 메모리를 절반으로 줄인 GRPO, 그리고 사람의 판단이 전혀 개입하지 않는 수학 증명 검사기 Lean이 거짓 명제를 반례와 함께 거부하는 실제 사례를 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="채점이 되는 곳에 걸리는 보상">
+  <meta property="og:description" content="채점기 모델을 따로 두지 않고 같은 문제의 답 여러 개를 그룹 안에서 비교해 메모리를 절반으로 줄인 GRPO, 그리고 사람의 판단이 전혀 개입하지 않는 수학 증명 검사기 Lean이 거짓 명제를 반례와 함께 거부하는 실제 사례를 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/rewards-where-grading-is-possible.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>채점이 되는 곳에 걸리는 보상</h1>
+    <p class="post-date">2026. 8. 30.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="a-model-with-a-body.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">몸을 얻은 모델</span>
+    </a>
+
+    <hr>
+
+    <p>마지막 갈래는 대상이 바깥세상이 아니라 모델 자신이에요. 정답을 하나로 정할 수 없는 일에는 정답표를 보여주는 대신, 모델이 낸 답에 점수만 매기고 점수가 높은 답이 다음에 더 자주 나오도록 학습시키는 강화학습을 써요. 여기서 병목은 늘 점수를 누가 매기느냐였어요.</p>
+
+    <h2>사람이 병목이었다</h2>
+    <p>모델을 사람 취향에 맞추는 기존 방식은, 사람이 답 두 개를 보고 어느 쪽이 나은지 고르면 그 선호를 학습해 채점기를 만들고 그 채점기를 보상 삼아 모델을 다듬는 거였어요. 문제는 사람이 병목이라는 것, 답 하나를 채점하는 데 사람 시간이 들고 취향은 사람마다 다르다는 거였어요. 방향이 바뀌었어요. 기계가 정답 여부를 확인할 수 있는 문제에만 보상을 걸어요. 수학이면 최종 답이 정답과 같은지 비교하고, 코드면 시험을 통과하는지 돌려봐요. 사람이 필요 없으니 몇백만 번이든 돌릴 수 있어요. 이 방식을 검증 가능한 보상(verifiable reward)이라 부르고, 2024년 11월에 이 이름이 처음 붙었어요. 그 몇 달 전인 2024년 2월에는 이 학습을 훨씬 가볍게 돌리는 GRPO가 나왔어요. 기존 방식은 "이 답이 평균적으로 어느 정도 점수를 받을까"를 예측하는 별도 모델을 하나 더 두고 학습시켜야 했는데, GRPO는 그 모델을 없애요. 같은 문제에 답을 여러 개(가령 여덟 개) 뽑아놓고 그룹 안에서 서로 비교해, 평균보다 잘한 답은 더 나오게 못한 답은 덜 나오게 밀어요. 별도 모델이 사라지니 무료 코랩에서도 돌아가요. 이게 이 갈래의 경계이기도 해요. 잘 쓴 보고서인지 친절한 상담 답변인지는 기계가 채점하지 못하니, 이 방법은 수학과 코드와 논리처럼 답이 자동으로 확인되는 영역에 몰려 있어요.</p>
+
+    <h2>사람의 판단이 개입할 여지가 없는 채점기</h2>
+    <p>이 발상이 가장 순수하게 적용되는 데가 수학 증명이에요. 증명을 기계가 검사할 수 있는 언어로 쓰면 이야기가 달라져요. Lean이라는 언어로 정의와 논리 단계를 엄격한 문법으로 적으면, 검사기가 한 줄씩 확인해 통과 여부를 알려줘요. 사람의 판단이 개입할 여지가 없어요. 그러면 틀릴 일이 없는 채점기가 생겨요. 모델이 증명을 쓰고, 검사기가 통과 여부를 알려주고, 통과한 것을 더 나오게 밀면 사람이 한 명도 필요 없어요. 검사기 자체는 오래전부터 있었는데, 바뀐 건 사람이 손으로 형식화해둔 수학 라이브러리가 수십만 줄 규모로 쌓여 학습 자료가 됐고, 검증 가능한 보상 방식이 자리를 잡았고, 모델이 자기가 쓴 증명을 검사기에 넣어 실패 메시지를 받아 고쳐 쓰는 고리까지 갖추게 된 거예요.</p>
+
+    <h2>거짓 명제를 반례와 함께 거부한다</h2>
+    <p>Lean은 설치 없이 live.lean-lang.org에서 바로 증명을 쓰고 검사받을 수 있어요. 참인 정리를 넣으면 아무 말 없이 끝나요. 침묵이 곧 통과예요. 증명을 비워두고 자리만 표시하면 구멍이 있다고 경고하고, 거짓 명제를 넣으면 거부해요. 실제로 자연수에서 <code>a - b + b = a</code>가 참이라고 주장하고 <code>omega</code> 전술로 확인해보면, 검사기가 거부하면서 b가 a보다 크다는 반례 조건까지 집어 내놓아요. 자연수 뺄셈은 0에서 잘리기 때문에 실제로 거짓이거든요. "기계가 채점한다"는 말이 추상이 아니에요. 1초도 안 되어 참과 거짓이 갈리고, 틀렸으면 어디가 왜 틀렸는지까지 나와요. 이 채점기가 있기 때문에 그 위에 강화학습을 얹을 수 있어요. 이제 여덟 갈래를 다 봤으니, 다음 글에서는 이 여덟을 지나오며 계속 걸렸던 라이선스 문제를 정면으로 다뤄볼게요.</p>
+
+    <a class="post-nav" href="open-versus-usable-today.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">공개된 것과 오늘 쓸 수 있는 것 — 라이선스 네 계단</span>
+    </a>
+
+    <hr>
+
+    <h3>"AI가 새로 연 곳들" 시리즈</h3>
+    <a class="post-nav" href="same-week-different-fields.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">같은 주에 다른 데서 벌어진 일들</span>
+    </a>
+    <a class="post-nav" href="foundation-models-for-tables.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">학습 없이 표를 읽는 모델</span>
+    </a>
+    <a class="post-nav" href="from-sequence-to-structure.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">서열을 읽던 모델이 간 곳 — 유전체와 구조 예측</span>
+    </a>
+    <a class="post-nav" href="designing-proteins-backwards.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">방향을 뒤집다 — 없던 단백질을 짓는 법</span>
+    </a>
+    <a class="post-nav" href="new-molecules-new-crystals.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">없던 분자와 없던 결정</span>
+    </a>
+    <a class="post-nav" href="graphs-and-interatomic-forces.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">점과 선으로 보는 세계 — 그래프 신경망과 원자 사이의 힘</span>
+    </a>
+    <a class="post-nav" href="learning-the-weather-instead-of-computing-it.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">슈퍼컴퓨터가 하던 일을 배우다 — 기상 기반모델</span>
+    </a>
+    <a class="post-nav" href="a-model-with-a-body.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">몸을 얻은 모델</span>
+    </a>
+    <p class="post-date">(9) 채점이 되는 곳에 걸리는 보상 (이 글)</p>
+    <a class="post-nav" href="open-versus-usable-today.html">
+      <span class="post-nav-label">(10)</span>
+      <span class="post-nav-title">공개된 것과 오늘 쓸 수 있는 것 — 라이선스 네 계단</span>
+    </a>
+    <a class="post-nav" href="knowing-where-not-to-go-is-also-a-map.html">
+      <span class="post-nav-label">(11)</span>
+      <span class="post-nav-title">안 갈 데를 아는 것도 지도입니다</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
