@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>동영상도 만들 수 있을까 — 빈 칸은 중립이 아니다 - Tigermorning</title>
+  <meta name="description" content="영상에서는 카메라를 안 적으면 모델이 아무렇게나 움직인다는 사실, 동작에 끝점이 필요한 이유, 이미 있는 그림에서 출발할 때 다시 묘사하면 안 되는 이유, 짧은 토막을 이어붙이는 전략, 그리고 만드는 일에는 만든 사람이 남는다는 이 시리즈의 결론을 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="동영상도 만들 수 있을까 — 빈 칸은 중립이 아니다">
+  <meta property="og:description" content="영상에서는 카메라를 안 적으면 모델이 아무렇게나 움직인다는 사실, 동작에 끝점이 필요한 이유, 이미 있는 그림에서 출발할 때 다시 묘사하면 안 되는 이유, 짧은 토막을 이어붙이는 전략, 그리고 만드는 일에는 만든 사람이 남는다는 이 시리즈의 결론을 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/video-generation-and-empty-slots.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>동영상도 만들 수 있을까 — 빈 칸은 중립이 아니다</h1>
+    <p class="post-date">2026. 8. 16.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="choosing-image-generation-tools.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">무엇으로 만들 것인가 — 라이선스, ControlNet, 저작권</span>
+    </a>
+
+    <hr>
+
+    <p>정지 화면에서 <a href="writing-image-prompts.html">여섯 칸을 채우는 감</a>을 잡았다면 영상은 그 연장이었어요. 다만 칸이 몇 개 늘어나고, 새로 생기는 함정이 하나 있었어요.</p>
+
+    <h2>비는 칸이 중립이 아니다</h2>
+    <p>정지 화면에서는 카메라를 안 적으면 모델이 아무 구도나 골랐어요. 영상에서는 이게 더 사납게 나타났어요. <strong>카메라 움직임을 안 적으면 모델이 카메라를 움직여요.</strong> 가만히 있는 화면을 원한다면 "고정"이라고 반드시 적어야 해요. 비워두는 건 "아무래도 좋다"가 아니라 "네가 정해라"였어요. 모델이 배운 영상 대부분은 카메라가 움직이는 영화 footage이므로, 정하라고 하면 움직여요. 초보자의 결과물이 이유 없이 흔들리고 밀려 들어가는 이유가 대개 이거예요. 소리도 마찬가지였어요. 소리가 함께 나오는 도구를 쓰는데 들리는 걸 안 적으면 도구가 아무 소리나 얹어요. 조용한 장면을 원하면 조용하다고 적어야 했어요.</p>
+
+    <h2>여섯 칸이 층으로 늘어난다</h2>
+    <p>피사체와 환경, 조명, 스타일은 정지 화면과 같아요. 달라지는 건 둘이에요. <strong>동작에는 끝점이 필요해요.</strong> "걸어간다"라고만 적으면 모델이 동작을 끝내지 못하고 늘어져요. "걸어와 문 앞에서 멈춘다"처럼 어디서 끝나는지를 주면 클립이 깔끔하게 닫혀요. 8초에서 10초짜리 한 덩어리를 만드는 거니, 그 안에서 시작하고 끝나는 동작이어야 했어요. <strong>카메라에는 움직임이 하나 더 붙어요.</strong> 정지 화면에서는 샷 크기와 각도와 렌즈를 정했는데, 영상에서는 카메라가 어떻게 움직이는지가 더해져요. 그래도 셋을 넘기지 않는다는 원칙은 같았어요 — 샷 크기 하나, 움직임 하나, 렌즈 하나. 길이도 60~120단어를 유지해야 했어요. 층이 늘었다고 분량까지 늘리면 지시끼리 부딪히기 시작했거든요.</p>
+    <p>빈 칸이 많은 프롬프트("공장에서 작업자가 라인을 점검하는 영상")로 시켜보면, 카메라가 정해지지 않아 움직이고, 동작에 끝이 없어 8초 내내 어정쩡하게 걷고, 빛과 결이 정해지지 않아 매번 다른 분위기가 나왔어요. 반대로 "고정된 카메라, 미디엄 샷, 35mm 렌즈. 작업자가 오른쪽에서 걸어와 화면 중앙에서 멈춰 계기를 들여다본다. 왼쪽 창에서 차가운 아침 빛이…"처럼 칸을 채우면, 카메라는 세 가지만 적혀 있고 동작에는 끝점이 있어서 훨씬 안정적이었어요.</p>
+
+    <h2>이미 있는 그림에서 출발할 때</h2>
+    <p>실무에서 더 자주 쓰는 방식이 있었어요. 마음에 드는 정지 화면을 먼저 한 장 만들고, 그 그림을 움직이게 하는 거예요. 이때 지켜야 할 규칙이 하나 있는데, 이걸 어기는 사람이 아주 많았어요. <strong>이미 그림에 보이는 것은 다시 묘사하지 않고, 움직임만 적어요.</strong> 안전모를 쓴 작업자가 라인 앞에 서 있는 그림을 넣어놓고 "안전모를 쓴 작업자가 라인 앞에 서 있고…"라고 다시 적으면, 모델은 그걸 새로 그리라는 지시로 읽어서 애써 만든 그림이 다른 것으로 바뀌어요. 넣은 그림이 이미 답이니, 적을 건 "천천히 고개를 들어 정면을 본다" 하나면 됐어요. 이 방식에는 덤도 있었어요. <a href="writing-image-prompts.html">손처럼 잘 무너지는 부분</a>을 정지 화면에서 먼저 제대로 만들어두면, 영상이 그 상태를 유지하는 게 처음부터 만드는 것보다 쉬웠어요.</p>
+    <p>지금 도구들은 한 번에 8초에서 10초 정도를 만들어요. 그 이상 늘리면 뒤로 갈수록 무너져요. 1분짜리가 필요하면 여덟 토막으로 나눠 만들고 이어 붙일 계획을 먼저 세워야 했어요. 앞 토막의 마지막 프레임을 다음 토막의 출발 그림으로 쓰면, 인물이나 장소가 토막마다 달라 보이는 문제를 상당히 줄일 수 있었어요.</p>
+
+    <h2>과제 — ControlNet 포즈로 원하는 자세 만들기, 그리고 결론</h2>
+    <p>이 노드의 마지막 과제는 <a href="choosing-image-generation-tools.html">앞서 본</a> ControlNet의 Pose 조건을 써서 "이 자세로 한 장 만들어줘"라는 도구를 직접 만드는 것이었어요. 참조 사진에서 OpenPose가 관절을 뽑고, 그 관절 정보를 조건으로 넣어 같은 자세의 다른 인물이나 장면을 만드는 Colab 노트를 짜서 GitHub에 올리는 실습이에요.</p>
+    <p>이 시리즈를 마무리하며 남는 게 있었어요. <a href="value-vs-location-two-requests.html">읽어내는 쪽에서는</a> 틀리면 오류였어요. 검산하면 잡을 수 있었고, 잡으면 고칠 수 있었어요. 만들어내는 쪽에는 그런 정답이 없어요. 대신 선택이 남아요. 어떤 장면을 만들지, 어디까지 실제처럼 보이게 할지, 그것을 어디에 쓸지, 보는 사람에게 무엇을 밝힐지. 이 넷은 모델이 결정해주지 않고, 앞으로도 그럴 거예요. 기술이 좋아질수록 이 선택의 무게는 오히려 늘어나요. 손가락이 여섯 개인 그림은 누구나 알아보지만, 완벽해 보이는 그림은 아무도 못 알아보니까요. <strong>완벽해질수록 더 따져 물어야 한다</strong>는 게 이 시리즈의 결론이었어요.</p>
+
+    <hr>
+
+    <h3>"이미지 생성 어플리케이션 만들기" 시리즈</h3>
+    <a class="post-nav" href="blank-slots-model-decides.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">같은 모델인데 결과가 갈립니다 — 빈 칸은 모델이 채운다</span>
+    </a>
+    <a class="post-nav" href="gan-to-diffusion-models.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">노이즈에서 되돌린다는 발상 — GAN에서 확산 모델까지</span>
+    </a>
+    <a class="post-nav" href="latent-diffusion-and-distillation.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">개인 컴퓨터로 내려온 날 — 잠재 확산과 증류</span>
+    </a>
+    <a class="post-nav" href="writing-image-prompts.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">프롬프트를 쓰는 법 — 여섯 칸과 재질 하나</span>
+    </a>
+    <a class="post-nav" href="automating-image-generation.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">코드로 이미지 생성 자동화하기</span>
+    </a>
+    <a class="post-nav" href="choosing-image-generation-tools.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">무엇으로 만들 것인가 — 라이선스, ControlNet, 저작권</span>
+    </a>
+    <p class="post-date">(7) 동영상도 만들 수 있을까 — 빈 칸은 중립이 아니다 (이 글)</p>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
