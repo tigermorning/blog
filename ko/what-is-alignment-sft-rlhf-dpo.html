@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>정렬이란 무엇인가 — SFT, RLHF, DPO - Tigermorning</title>
+  <meta name="description" content="똑똑하지만 말귀를 못 알아듣던 사전학습 모델을 사람 곁으로 데려온 정렬(alignment)의 세 단계 — 모범 답안을 베끼는 지시학습(SFT), 사람의 선호로 다듬는 RLHF, 보상 모델 없이 곧장 최적화하는 DPO를 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="정렬이란 무엇인가 — SFT, RLHF, DPO">
+  <meta property="og:description" content="똑똑하지만 말귀를 못 알아듣던 사전학습 모델을 사람 곁으로 데려온 정렬(alignment)의 세 단계 — 모범 답안을 베끼는 지시학습(SFT), 사람의 선호로 다듬는 RLHF, 보상 모델 없이 곧장 최적화하는 DPO를 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/what-is-alignment-sft-rlhf-dpo.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>정렬이란 무엇인가 — SFT, RLHF, DPO</h1>
+    <p class="post-date">2026. 8. 3.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="pretraining-and-scaling-laws.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">사전학습과 스케일링 — GPT는 어떻게 커졌나</span>
+    </a>
+
+    <hr>
+
+    <p><a href="pretraining-and-scaling-laws.html">여기까지의 모델</a>은 분명 방대한 지식을 품었지만 결정적인 문제가 있었어요. 훈련받은 목표가 오직 하나, 다음에 올 법한 토큰을 잇는 것뿐이었다는 사실이에요. "다음에 올 법한"과 "사람이 원하는"은 전혀 같은 말이 아니었어요.</p>
+
+    <h2>똑똑하지만 말귀를 못 알아듣는 모델</h2>
+    <p>사전학습만 마친 모델에게 "프랑스의 수도를 알려줘"라고 물으면, 답을 아는데도 "이탈리아의 수도도 알려줘"라고 비슷한 질문을 이어 쓰는 일이 흔했어요. 인터넷에는 질문 뒤에 또 질문이 이어지는 텍스트가 널려 있으니 통계적으로 그것이 그럴듯한 다음 토큰이었던 거예요. 모델은 지시를 따르도록, 정직하게 답하도록, 해로운 요청을 거절하도록 만들어진 적이 없었어요. 이 간극을 메우는 작업이 <strong>정렬(alignment)</strong>이에요.</p>
+    <p>정렬은 허공에서 행동을 조각하는 마법이 아니라, <a href="birth-of-the-transformer.html">트랜스포머가 매 순간 내놓는</a> 다음 토큰의 확률 분포를 원하는 쪽으로 미는 작업이었어요. 여기서 강화학습이 등장하는데, 정답을 하나하나 알려주는 대신 잘한 행동에 보상을 주어 스스로 나아지게 하는 학습 방식이에요. 보상을 좇아 행동을 고르는 그 주체를 정책이라고 부르고, 정책이 다름 아닌 트랜스포머 언어 모델 자신이었어요.</p>
+
+    <h2>모범 답안을 베끼게 하다 — SFT</h2>
+    <p>첫 손질은 <strong>지시학습, SFT(supervised fine-tuning)</strong>였어요. 사람이 좋은 질문과 모범 답안 쌍을 여럿 써두고, 그 답안이 나올 확률이 가장 커지도록 모델을 미세조정해요. 놓치면 안 되는 건 이 단계가 새 지식을 심지 않는다는 점이에요. 프랑스의 수도가 파리라는 사실은 이미 사전학습에서 파라미터 깊숙이 들어와 있으니까요. SFT가 바꾸는 건 그 지식을 꺼내놓는 행동의 양식, 곧 질문에 질문으로 답하지 말고 지시가 오면 수행하라는 대화의 매너였어요.</p>
+    <p>SFT만으로도 모델은 눈에 띄게 쓸 만해져요. 다만 사람이 손으로 쓸 수 있는 모범 답안은 양이 한정적이고, 무엇보다 "무엇이 더 좋은 답인가"라는 미묘한 판단은 답안 하나를 베껴 쓰는 방식으로 전해지지 않았어요.</p>
+
+    <h2>사람의 선호로 다듬다 — RLHF</h2>
+    <p>그래서 나온 게 <strong>RLHF</strong>, 사람 피드백을 이용한 강화학습이에요. 좋은 답 하나를 베끼게 하는 대신, 같은 질문에 모델이 내놓은 여러 답을 사람에게 보여주고 어느 쪽이 더 나은지 고르게 해요. 절대 점수를 매기기는 어려워도 둘 중 나은 쪽을 고르기는 쉽다는, 사람 판단의 결을 영리하게 이용한 발상이었어요. 그렇게 모은 비교로 답에 점수를 매기는 보상 모델을 학습시키고, 그 심판의 점수가 높아지는 쪽으로 언어 모델의 토큰 분포를 옮겨요. 다만 보상만 좇으면 심판의 허점을 파고드는 답으로 폭주하니, 손질 전 모델에서 멀어진 만큼 벌점을 물리는 KL 제약으로 고삐를 함께 채워요.</p>
+    <p>절차는 복잡해도 효과는 극적이었어요. 이 방식을 GPT-3에 적용한 InstructGPT에서, 130배 넘게 작은 13억 개짜리 정렬 모델의 답을 1,750억 개짜리 원본 모델의 답보다 사람들이 더 선호했어요. 크기 차이 100배를 정렬 하나가 뒤집은 거예요. 모델을 쓸 만하게 만드는 게 크기만이 아님을 보여준 이 사건이 곧이어 등장한 ChatGPT의 바탕이 됐어요.</p>
+
+    <h2>보상 모델을 지우고 곧장 가는 길 — DPO</h2>
+    <p>RLHF는 강력하지만 무거웠어요. 보상 모델을 따로 학습시켜야 하고, 그 위에서 불안정하기로 악명 높은 강화학습을 돌려야 하며, 훈련 내내 모델이 답을 생성하게 해야 해요. 부품이 많다는 건 어긋날 곳도 많다는 뜻이었어요.</p>
+    <p>2023년의 <strong>DPO(직접 선호 최적화)</strong>는 여기에 우아한 질문을 던졌어요. 최종 목표가 선호에 맞는 정책을 얻는 것이라면, 중간의 보상 모델과 강화학습을 건너뛰고 선호 쌍에서 곧장 모델을 최적화할 수는 없을까. 답은 "가능하다"였어요. KL 고삐가 걸린 보상 최대화 문제를 종이 위에서 풀어 뒤집으면 보상이 정책 자신의 확률 비로 바뀌고, 그러면 보상 모델이 통째로 사라진 채 사람이 고른 답의 확률은 끌어올리고 진 답의 확률은 끌어내리는 분류 손실 하나만 남아요. RLHF와 같은 목표를 지도학습 한 번으로 겨냥하는 셈이라, 단순하고 안정적이라는 장점 덕에 이후 여러 오픈 모델이 이 방식을 택했어요.</p>
+
+    <h2>세 손질을 나란히 놓으면 보이는 것</h2>
+    <table>
+      <thead><tr><th>단계</th><th>학습 신호</th><th>바뀌는 것</th><th>치르는 대가</th></tr></thead>
+      <tbody>
+        <tr><td>사전학습</td><td>웹 텍스트의 다음 토큰</td><td>세계에 대한 지식과 언어의 통계</td><td>막대한 계산량</td></tr>
+        <tr><td>지시학습(SFT)</td><td>사람이 쓴 모범 답안</td><td>지식을 꺼내는 행동 양식(지시 따르기)</td><td>모범 답안 작성 비용</td></tr>
+        <tr><td>강화학습(RLHF)</td><td>답들 사이의 사람 선호</td><td>사람이 선호하는 쪽으로 분포를 이동</td><td>보상 모델과 불안정한 RL</td></tr>
+        <tr><td>직접 최적화(DPO)</td><td>답들 사이의 사람 선호</td><td>RLHF와 같으나 절차만 단순</td><td>선호 데이터 품질 의존</td></tr>
+      </tbody>
+    </table>
+    <p>핵심은 한 문장이었어요. <strong>모델이 아는 것은 대체로 사전학습에서 정해지고, 정렬은 그 아는 것을 어떻게 말하고 행동할지를 바꾼다.</strong> 사실을 새로 심는 단계가 아니라 태도를 조각하는 단계라는 점이, 정렬을 이해하는 열쇠였어요. 정렬이 마지막 퍼즐을 맞추자 모델은 비로소 쓸 만해졌고, 사람이 시키는 온갖 일을 곧잘 해내는 대화형 도구가 대중 앞에 섰어요. 그런데 진짜 사건은 그다음이었어요. 트랜스포머가 언어를 떠나기 시작한 거예요. 다음 글에서 이 정복의 현장을 따라가볼게요.</p>
+
+    <a class="post-nav" href="transformers-beyond-language.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">트랜스포머가 언어 밖으로 — ViT, Whisper, 그리고 그 너머</span>
+    </a>
+
+    <hr>
+
+    <h3>"트랜스포머 - AI는 어떻게 언어를 배웠나" 시리즈</h3>
+    <a class="post-nav" href="how-cnn-broke-the-depth-wall.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">지금 이 모델은 어디서 왔을까 — 이미지가 먼저 연 길</span>
+    </a>
+    <a class="post-nav" href="how-language-broke-the-order-wall.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">언어가 부딪힌 순서의 벽 — RNN에서 어텐션까지</span>
+    </a>
+    <a class="post-nav" href="birth-of-the-transformer.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">트랜스포머의 탄생 — Q/K/V와 두 길의 합류</span>
+    </a>
+    <a class="post-nav" href="pretraining-and-scaling-laws.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">사전학습과 스케일링 — GPT는 어떻게 커졌나</span>
+    </a>
+    <p class="post-date">(5) 정렬이란 무엇인가 — SFT, RLHF, DPO (이 글)</p>
+    <a class="post-nav" href="transformers-beyond-language.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">트랜스포머가 언어 밖으로 — ViT, Whisper, 그리고 그 너머</span>
+    </a>
+    <a class="post-nav" href="tokens-and-context-window-cost.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">토큰과 컨텍스트 — 활용가가 보는 비용과 한계</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
