@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>로컬이냐 API냐는 틀린 질문 — 세 갈래와 품질 격차 - Tigermorning</title>
+  <meta name="description" content="공개 클라우드 API·관리형 프라이빗 배포·로컬 온프레미스라는 세 갈래 실행 경로, 오픈 가중치 모델이 프런티어 모델보다 얼마나 뒤처지는지 보여주는 이중 격차, 그리고 도구 이름이 실행 위치를 알려주지 않는 함정을 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="로컬이냐 API냐는 틀린 질문 — 세 갈래와 품질 격차">
+  <meta property="og:description" content="공개 클라우드 API·관리형 프라이빗 배포·로컬 온프레미스라는 세 갈래 실행 경로, 오픈 가중치 모델이 프런티어 모델보다 얼마나 뒤처지는지 보여주는 이중 격차, 그리고 도구 이름이 실행 위치를 알려주지 않는 함정을 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/three-ways-to-run-an-llm.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>로컬이냐 API냐는 틀린 질문 — 세 갈래와 품질 격차</h1>
+    <p class="post-date">2026. 8. 7.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="running-local-llm-with-ollama.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">직접 Ollama로 로컬 LLM 돌려보기</span>
+    </a>
+
+    <hr>
+
+    <p><a href="running-local-llm-with-ollama.html">직접 돌려봤으니</a> 이제 비교할 자격이 생겼어요. 실습을 하면서 저는 두 가지 감정을 번갈아 느꼈어요. 하나는 "이게 정말 내 컴퓨터 안에서 도는구나" 하는 놀라움이고, 다른 하나는 "그런데 이걸로 진짜 일을 시킬 수 있나" 하는 의심이었어요. 둘 다 정확한 반응이었어요.</p>
+
+    <h2>갈래는 둘이 아니라 셋이다</h2>
+    <p>많은 사람이 이 문제를 "로컬이냐 API냐"라는 두 갈래로 놓고 시작하는데, 그러면 규제 산업에서 실제로 가장 많이 쓰이는 세 번째 갈래가 통째로 빠져요. 첫째는 <strong>공개 클라우드 API</strong>예요. 모델 제공사가 운영하는 공용 인프라에 HTTP 요청을 보내고 답을 받아요. 둘째는 <strong>관리형 프라이빗 배포</strong>예요. 클라우드 사업자가 자기 인프라 위에 조직 전용 환경을 열어주고, 그 안에서만 모델이 돌게 하는 방식이에요(Microsoft Foundry, Amazon Bedrock, Google Vertex AI가 대표적이에요). 물리적으로는 남의 데이터센터이지만, 데이터가 처리되는 리전이 계약으로 고정되고 프롬프트가 모델 학습에 쓰이지 않는다는 게 문서로 보장돼요. 셋째는 <strong>로컬 또는 온프레미스</strong>예요. 제가 방금 해본 그것, 또는 그것의 서버실 버전이에요.</p>
+    <table>
+      <thead><tr><th></th><th>공개 클라우드 API</th><th>관리형 프라이빗 배포</th><th>로컬·온프레미스</th></tr></thead>
+      <tbody>
+        <tr><td>쓸 수 있는 모델</td><td>최고 성능 모델을 가장 먼저</td><td>사업자 카탈로그에 올라온 것 중</td><td>내 하드웨어에 들어가는 것</td></tr>
+        <tr><td>시작 시간</td><td>키 발급 후 몇 분</td><td>며칠~몇 주(계약·리전 설계)</td><td>설치는 몇 분, 하드웨어 조달은 별개</td></tr>
+        <tr><td>비용의 모양</td><td>토큰당 종량제</td><td>종량제 + 관리 비용</td><td>초기 투자 크고 이후 한계비용은 전기값</td></tr>
+        <tr><td>데이터가 가는 곳</td><td>제공사 공용 인프라</td><td>지정한 리전의 전용 환경</td><td>내 장비 밖으로 안 나감</td></tr>
+        <tr><td>학습 사용 여부</td><td>주요 제공사는 기본적으로 안 씀</td><td>계약으로 명시</td><td>해당 없음</td></tr>
+      </tbody>
+    </table>
+    <p>여기서 얻을 교훈은 정책 문구를 외우는 게 아니라, 이런 문서가 존재하고 그걸 읽는 게 엔지니어의 일이라는 사실이었어요. 세 갈래 중 무엇을 고르든 저는 이 문서들을 근거로 누군가에게 설명해야 하는 자리에 서게 되는 거였어요.</p>
+
+    <h2>품질 격차는 아직 남아 있다 — 그리고 이중으로 벌어진다</h2>
+    <p>로컬 모델을 옹호하는 글도, 클라우드를 옹호하는 글도 이 지점에서 과장을 해요. Epoch AI가 공개 가중치 모델과 비공개 프런티어 모델의 성능 차이를 시간 단위로 환산해 추적하는데, 2026년 1~5월 측정에서 최상위 공개 가중치 모델은 최상위 비공개 모델보다 평균 약 4개월 뒤처졌어요. 격차는 작업 종류에 따라 크게 달랐어요 — 코딩처럼 검증 가능한 정답이 있는 영역에서는 공개 가중치 모델이 거의 따라붙었지만, 여러 단계를 거치는 추론과 긴 호흡의 에이전트 작업에서는 차이가 뚜렷하게 남아 있었어요.</p>
+    <p>그런데 여기 훨씬 중요한 함정이 있었어요. 이 비교에 등장하는 "최상위 공개 가중치 모델"은 제 노트북에서 돌지 않아요. 그것들은 수천억 파라미터 규모의 MoE 모델이고, 4비트로 눌러도 수십에서 수백 기가바이트를 요구해요. 제가 방금 돌려본 건 그보다 한두 자릿수 작은 모델이었어요. 그러니 실제로 체감할 격차는 "4개월"보다 훨씬 컸어요. 정확히 말하면 격차는 두 겹이었어요.</p>
+    <p style="text-align:center">프런티어 비공개 모델<br>↕ (약 3~5개월치 성능 차이)<br>최상위 공개 가중치 모델 (수백 GB, 서버 필요)<br>↕ (이쪽이 훨씬 큰 차이)<br>내 노트북에서 도는 공개 가중치 모델 (수 GB)</p>
+    <p>이 두 겹을 구분하지 않으면 "오픈 모델이 프런티어를 따라잡았다"는 헤드라인을 읽고 노트북에서 같은 성능을 기대하다가 실망하게 돼요. 반대로 로컬 모델의 답변에 실망한 뒤 "오픈 모델은 아직 멀었다"고 결론 내리는 것도 틀렸어요. 제가 만난 건 오픈 모델의 최전선이 아니라, 제 하드웨어에 맞춰 잘라낸 조각이었던 거예요.</p>
+
+    <h2>이름에 속지 말고 데이터가 흐르는 길을 보기</h2>
+    <p>문제는 도구 이름이 실행 위치를 알려주지 않는다는 거예요. <a href="running-local-llm-with-ollama.html">앞서 겪었듯</a> Ollama는 "로컬에서 모델 돌리는 도구"로 알려져 있지만, 태그 뒤에 <code>-cloud</code>를 붙이는 순간 같은 명령어 같은 인터페이스로 프롬프트가 Ollama의 데이터센터로 전송돼요. <code>ollama run qwen3.5:9b</code>와 <code>ollama run gpt-oss:120b-cloud</code>는 화면상 구별이 거의 안 되면서 데이터 흐름은 완전히 달랐어요.</p>
+    <p>반대 방향의 오해도 흔했어요. "API를 쓰면 우리 데이터가 학습에 들어간다"는 말은 상용 API 기본 약관을 읽어보면 사실이 아니었어요. 주요 제공사들은 상용 API 데이터를 학습에 쓰지 않는 걸 기본값으로 두고 있고, 보존 기간을 0으로 만드는 계약 옵션도 있어요. 무료 소비자용 서비스와 상용 API의 약관이 다르다는 게 자주 혼동되는데, 이 둘은 완전히 별개의 계약이었어요.</p>
+    <p>그래서 판단의 기준은 제품 이름이 아니라 네 가지 질문이 돼야 했어요 — 내가 입력한 문자열이 실제로 어느 물리적 위치의 서버까지 이동하는가, 그 서버에서 얼마나 오래 저장되는가(저장을 끌 수 있는가), 저장된 걸 누가 볼 수 있는가, 그 답변들이 문서나 계약으로 확인 가능한가 아니면 마케팅 문구인가. 이제 "로컬이 좋은가 클라우드가 좋은가"는 잘못된 질문이었어요. 좋은 질문은 이 워크로드가 다루는 데이터는 어느 경계를 넘어도 되는가, 이 워크로드의 호출량에서는 어느 쪽 비용 구조가 유리한가, 이 시스템의 통제권을 누가 쥐고 있어야 하는가였어요. 각각 데이터, 비용, 주권이라는 세 축이에요. 다음 글에서는 첫 번째 축, 데이터를 자세히 볼게요.</p>
+
+    <a class="post-nav" href="where-does-your-data-stay.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">데이터는 어디에 남는가 — 학습에 안 쓴다는 안 남는다는 다른 말</span>
+    </a>
+
+    <hr>
+
+    <h3>"LLM과 로컬 실행 - 클라우드 API vs 로컬" 시리즈</h3>
+    <a class="post-nav" href="training-vs-inference-memory.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">내 노트북에서도 LLM이 돌아갈까 — 학습과 추론은 다른 일이다</span>
+    </a>
+    <a class="post-nav" href="quantization-why-it-still-works.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">양자화 — 정밀도를 깎아도 왜 멀쩡할까</span>
+    </a>
+    <a class="post-nav" href="kv-cache-and-vram-budget.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">KV 캐시와 VRAM — 내 컴퓨터에 들어갈지 계산하기</span>
+    </a>
+    <a class="post-nav" href="running-local-llm-with-ollama.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">직접 Ollama로 로컬 LLM 돌려보기</span>
+    </a>
+    <p class="post-date">(5) 로컬이냐 API냐는 틀린 질문 — 세 갈래와 품질 격차 (이 글)</p>
+    <a class="post-nav" href="where-does-your-data-stay.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">데이터는 어디에 남는가 — 학습에 안 쓴다는 안 남는다는 다른 말</span>
+    </a>
+    <a class="post-nav" href="cost-and-control-of-local-llm.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">비용과 통제권 — 손익분기 계산과 누가 바꾸는가</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
