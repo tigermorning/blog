@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>데이터베이스가 뭔가요 — 도서관과 마법 상자 - Tigermorning</title>
+  <meta name="description" content="새로고침하면 사라지는 메모리와 달리 데이터를 영구히 남기는 데이터베이스의 정의, 엑셀과의 세 가지 차이, 그리고 미국 의회도서관과 CERN의 초대형 데이터베이스 사례까지 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="데이터베이스가 뭔가요 — 도서관과 마법 상자">
+  <meta property="og:description" content="새로고침하면 사라지는 메모리와 달리 데이터를 영구히 남기는 데이터베이스의 정의, 엑셀과의 세 가지 차이, 그리고 미국 의회도서관과 CERN의 초대형 데이터베이스 사례까지 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/why-database-needed.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>데이터베이스가 뭔가요 — 도서관과 마법 상자</h1>
+    <p class="post-date">2026. 7. 21.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="connecting-frontend-backend.html">
+      <span class="post-nav-label">← 이전 시리즈</span>
+      <span class="post-nav-title">AI로 프론트-백엔드 연결하기</span>
+    </a>
+
+    <hr>
+
+    <p><a href="what-backend-actually-does.html">지난 시리즈</a>에서 백엔드(눈에 안 보이는 주방)가 요청을 받아 처리하는 걸 봤어요. 그런데 한 가지가 빠져 있었어요 — 처리한 데이터를 대체 어디에 두는 걸까요? 지금까지 다뤘던 목업 데이터는 컴퓨터의 잠깐 기억(메모리)에만 있었어요. 그래서 껐다 켜거나 새로고침하면 사라졌어요. 서비스가 되려면 데이터가 남아 있어야 하는데, 그 "영구 창고"가 바로 오늘 다룰 데이터베이스(DB)예요.</p>
+
+    <h2>도서관, 그리고 마법 장난감 상자</h2>
+    <p>데이터베이스가 뭔지는 두 가지 그림이면 충분했어요. 첫째는 <strong>도서관</strong>이에요. 도서관에는 책이 수만 권 있지만 원하는 책을 금방 찾을 수 있어요. 데이터베이스 = 도서관, 데이터 = 책, 그걸 관리하는 소프트웨어 = 사서인 셈이에요. 둘째는 <strong>마법 장난감 상자</strong>예요. 장난감을 마구 넣어도, "파란색 자동차만 다 꺼내 줘"라고 하면 정리해서 딱 그것만 꺼내 줘요.</p>
+    <p>핵심은 이거예요 — 데이터베이스는 그냥 쌓아 두는 곳이 아니라, <strong>원하는 것만 빠르게 찾아 주는 곳</strong>이라는 것. 저장 자체보다 "필요할 때 정확히 꺼낼 수 있다"는 게 진짜 가치였어요.</p>
+
+    <h2>그럼 엑셀·메모장이랑 뭐가 다른가요</h2>
+    <p>좋은 질문이었어요. 작을 때는 엑셀로도 충분해요. 하지만 데이터베이스는 세 가지가 달랐어요. 첫째, <strong>규칙(스키마)</strong>이 있어요 — "이 표에는 이름·가격·분류가 들어간다"처럼 모양을 미리 정해 둬서, 데이터가 뒤죽박죽 섞이는 걸 막아줘요. 엑셀은 아무 칸에나 아무 값이나 넣을 수 있지만, 대부분의 데이터베이스는 이 규칙을 강제해요. 둘째, <strong>수만 건에서도 순식간에 찾아요</strong> — 엑셀은 데이터가 커지면 느려지고 멈추지만, DB는 애초에 그러라고 만들어졌어요. 셋째, <strong>여러 사람이 동시에 안전하게 쓸 수 있어요</strong> — 서비스에는 필수인 조건이에요.</p>
+    <p>여기서도 마찬가지였어요. DB에 넣고 꺼내는 코드는 AI가 써줘요. 제가 판단할 건 "무엇을 어떤 모양으로 저장할지"와 "어떤 DB를 고를지"뿐이었어요.</p>
+
+    <h2>세상에서 가장 큰 데이터베이스는 얼마나 클까</h2>
+    <p>"데이터베이스가 크다"는 게 얼마나 큰 건지 감이 잘 안 왔는데, 두 가지 사례를 보고 확 와닿았어요. <strong>미국 의회도서관</strong>은 세계에서 가장 큰 도서관으로, 책·사진·지도·녹음·필름 등 1억 7,800만 점 이상을 소장해요. 책장을 늘어놓으면 약 838마일이라고 하니, 서울에서 부산을 몇 번 왕복할 거리예요. 매일 약 1만 5천 점을 받아 1만여 점을 새로 소장하고, 디지털로 보존하는 자료만도 페타바이트(PB) 단위라고 해요.</p>
+    <p><strong>CERN(유럽입자물리연구소)</strong>의 사례는 더 인상적이었어요. LHC 입자가속기의 검출기에서는 초당 약 10억 번의 입자 충돌이 일어나서, 이론상 초당 1페타바이트의 데이터가 쏟아진다고 해요. 그런데 이걸 다 저장하는 게 아니라 '트리거'라는 장치가 의미 있는 극소수(1%도 안 되는 양)만 골라 저장해요. 그렇게 걸러 저장해도 CERN의 데이터 저장 용량은 2023년에 1엑사바이트(100만 테라바이트)를 넘어섰대요. 여기서 제가 배운 건, 데이터가 클수록 <strong>"무엇을 저장할지 고르는 일"이 저장장치 크기만큼 중요해진다</strong>는 거였어요.</p>
+    <p>재미있는 건, 예전엔 "얼마나 크냐"로 기술력을 자랑했지만 요즘은 클라우드 덕분에 저 같은 비전공자도 이런 거대한 기술을 무료로 조금씩 빌려 쓸 수 있다는 점이에요. 규모의 문제가 아니라, 이제는 누구나 쓸 수 있는 도구가 된 거예요. 다음 글에서는 이 데이터베이스가 왜 이렇게 종류가 많은지, 60년에 걸친 역사를 따라가볼게요.</p>
+
+    <a class="post-nav" href="database-history-sql-nosql.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">데이터베이스는 왜 이렇게 종류가 많을까 — SQL과 NoSQL의 역사</span>
+    </a>
+
+    <hr>
+
+    <h3>"데이터베이스 - 고객의 데이터는 어떻게 관리될까" 시리즈</h3>
+    <p class="post-date">(1) 데이터베이스가 뭔가요 — 도서관과 마법 상자 (이 글)</p>
+    <a class="post-nav" href="database-history-sql-nosql.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">데이터베이스는 왜 이렇게 종류가 많을까 — SQL과 NoSQL의 역사</span>
+    </a>
+    <a class="post-nav" href="sql-basics-and-table-design.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">SQL 구경하기 — 표, 관계, 그리고 빠른 이유</span>
+    </a>
+    <a class="post-nav" href="transactions-normalization-nosql-types.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">트랜잭션, 정규화, 그리고 NoSQL 네 가지</span>
+    </a>
+    <a class="post-nav" href="user-accounts-sessions-and-cache.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">회원가입과 로그인을 데이터로 보면</span>
+    </a>
+    <a class="post-nav" href="sql-injection-and-backup-basics.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">Little Bobby Tables — SQL 주입과 백업</span>
+    </a>
+    <a class="post-nav" href="choosing-a-free-database.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">무료로 쓸 수 있는 데이터베이스 고르기</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
