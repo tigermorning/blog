@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>지시 실패, 진단하고 고치기 (4) - Tigermorning</title>
+  <meta name="description" content="'답이 별로다'는 고칠 자리를 알려주지 않는다. 모호함·과잉·누락·충돌·형식 드리프트 다섯 가지 실패 유형으로 원인을 좁히고, 한 번에 한 조건만 바꿔 다시 재는 워크북 방법을 초보자 눈높이로 정리했다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="지시 실패, 진단하고 고치기 (4)">
+  <meta property="og:description" content="'답이 별로다'는 고칠 자리를 알려주지 않는다. 모호함·과잉·누락·충돌·형식 드리프트 다섯 가지 실패 유형으로 원인을 좁히고, 한 번에 한 조건만 바꿔 다시 재는 워크북 방법을 초보자 눈높이로 정리했다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/instruction-failure-types.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>지시 실패, 진단하고 고치기 (4)</h1>
+    <p class="post-date">2026. 8. 26.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="output-format-and-metrics.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">답의 모양과 채점법</span>
+    </a>
+
+    <hr>
+
+    <p><a href="output-format-and-metrics.html">지난 글</a>에서 답을 어떻게 재는지 정리했다. 그런데 막상 재보면 통과 못 하는 경우가 나온다. 이번 글은 그 실패를 어떻게 <strong>이름 붙이고</strong>, 어떻게 <strong>최소한으로</strong> 고치는지 다룬다.</p>
+
+    <h2>"답이 별로다"는 이름이 아니다</h2>
+    <p>지시 하나가 어떤 입력에선 잘 되다가 다른 입력에선 무너지는 건 흔한 일이다. 이때 "답이 나빴다"고만 적고 지시 전체를 다시 쓰면, 뭘 고쳤고 어느 부품 때문에 결과가 달라졌는지 알 수 없다. 실패에는 다섯 가지 이름이 있다.</p>
+
+    <table>
+      <thead><tr><th>유형</th><th>증상</th><th>최소 처방</th></tr></thead>
+      <tbody>
+        <tr><td><strong>모호함</strong></td><td>같은 표현을 서로 다르게 해석한다</td><td>모호한 낱말 하나를 판정 규칙으로 바꾼다</td></tr>
+        <tr><td><strong>과잉</strong></td><td>조건끼리 싸우거나 답이 불필요하게 길어진다</td><td>실패와 무관한 조건 하나를 뺀다</td></tr>
+        <tr><td><strong>누락</strong></td><td>필수 항목·예외 처리·근거가 빠진다</td><td>빠진 항목 하나를 필수 필드로 더한다</td></tr>
+        <tr><td><strong>충돌</strong></td><td>지시와 자료, 또는 두 지시가 다른 행동을 요구한다</td><td>어느 출처가 우선인지 한 줄로 못 박는다</td></tr>
+        <tr><td><strong>형식 드리프트</strong></td><td>필드 이름·순서·자료형이 흔들리며 파서가 멈춘다</td><td>스키마로 필드·허용값을 고정하고 별도 검사한다</td></tr>
+      </tbody>
+    </table>
+
+    <p>구체적인 예로 감이 잡힌다. "배송일을 알려주세요"에 주문번호가 없는데 모델이 날짜를 지어냈다면 — 이건 <strong>모호함</strong>(정보 없을 때 뭘 할지가 안 정해짐)이거나 <strong>누락</strong>(그 행동 자체가 지시에 없음)이다. JSON 앞뒤에 인사말이 붙었다면 <strong>형식 드리프트</strong>다. "두 문장으로 답하되 모든 예외를 자세히 설명하라"처럼 동시에 만족 못 할 조건을 넣었다면 <strong>과잉</strong>이다.</p>
+
+    <h2>증상에서 유형으로 — 판별 순서</h2>
+    <p>실패한 결과 원문을 놓고 순서대로 묻는다.</p>
+
+    <figure>
+      <svg viewBox="0 0 640 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="fig1title">
+        <title id="fig1title">지시 실패 유형 판별 순서도</title>
+        <style>
+          .f-box{stroke:var(--accent);stroke-width:2;fill:none;}
+          .f-t{font-family:var(--font-body);fill:var(--ink);font-size:13px;}
+          .f-h{font-family:var(--font-heading);font-weight:700;fill:var(--accent);font-size:14px;}
+          .f-a{stroke:var(--border);stroke-width:2;fill:none;}
+        </style>
+        <defs>
+          <marker id="fa" markerWidth="9" markerHeight="9" refX="4.5" refY="4.5" orient="auto">
+            <path d="M0,0 L9,4.5 L0,9 z" fill="var(--border)"/>
+          </marker>
+        </defs>
+        <rect x="15" y="10" width="610" height="42" rx="6" class="f-box"/>
+        <text x="30" y="35" class="f-t">여러 해석이 가능한 표현이 남았는가? → <tspan class="f-h">모호함</tspan></text>
+        <path d="M320,52 L320,68" class="f-a" marker-end="url(#fa)"/>
+        <rect x="15" y="70" width="610" height="42" rx="6" class="f-box"/>
+        <text x="30" y="95" class="f-t">있어야 할 사실·질문·필드가 빠졌는가? → <tspan class="f-h">누락</tspan></text>
+        <path d="M320,112 L320,128" class="f-a" marker-end="url(#fa)"/>
+        <rect x="15" y="130" width="610" height="42" rx="6" class="f-box"/>
+        <text x="30" y="155" class="f-t">두 조건이 한 결과 안에서 서로 어긋나는가? → <tspan class="f-h">충돌</tspan></text>
+        <path d="M320,172 L320,188" class="f-a" marker-end="url(#fa)"/>
+        <rect x="15" y="190" width="610" height="42" rx="6" class="f-box"/>
+        <text x="30" y="215" class="f-t">조건이 너무 많아 우선순위를 못 정하는가? → <tspan class="f-h">과잉</tspan></text>
+        <path d="M320,232 L320,238" class="f-a" marker-end="url(#fa)"/>
+      </svg>
+      <figcaption>마지막으로 출력 자체가 약속한 모양(키·순서·자료형)을 벗어났는지 보면 형식 드리프트를 가려낼 수 있다.</figcaption>
+    </figure>
+
+    <p>두 유형이 동시에 보일 수도 있다. 그럴 땐 증상에 제일 가까운 유형 하나를 먼저 고르고, 나머지 가능성은 기록만 해둔다. 목적은 완벽한 분류가 아니라 <strong>다음에 고칠 문장 하나를 고르는 것</strong>이다.</p>
+
+    <h2>한 번에 한 조건만 바꿔서 다시 잰다</h2>
+    <p>실패 유형을 찾았으면, 이제 고칠 차례다. 여기서 제일 중요한 규칙: <strong>한 번에 딱 하나만 바꾼다.</strong> 모델명, 입력, 채점 기준, 나머지 문장은 전부 그대로 두고 문장 하나 또는 필드 하나만 바꾼다.</p>
+    <p>예를 들어 근거 없는 날짜가 문제였다면, "입력에 없는 배송일을 추정하거나 단정하지 말라"는 문장 하나만 추가한다. 이때 JSON 형식이나 역할 설명, 예시를 같이 더하지 않는다. 그리고 다시 실행해서 <strong>기존 기준을 그대로</strong> 재확인한다.</p>
+    <table>
+      <thead><tr><th>변경 전 지시</th><th>변경한 조건</th><th>기대</th><th>판정</th></tr></thead>
+      <tbody>
+        <tr><td>배송일을 안내합니다.</td><td>입력에 없는 배송일은 단정 말고 주문번호만 질문</td><td>근거 없는 날짜가 사라진다</td><td>안전: 실패→통과</td></tr>
+      </tbody>
+    </table>
+
+    <p>왜 이렇게까지 해야 할까. 답이 나빠 보이면 역할·제약·예시·형식을 <strong>한꺼번에</strong> 고치고 싶어진다. 그런데 그렇게 해서 결과가 좋아져도 <strong>어느 변경이 효과를 냈는지 알 수 없다.</strong> 이걸 <strong>대조 붕괴</strong>라고 부른다 — 비교 양쪽이 너무 많이 달라져서 결과 차이를 원인 하나에 연결할 다리가 사라진 상태다. 다음에 같은 문제가 다시 나타나면, 이미 뒤섞어놓은 조건들을 다시 통째로 만져야 한다.</p>
+    <p>물론 급한 서비스 장애 복구처럼 여러 수정을 한꺼번에 배포해야 할 때도 있다. 그럴 땐 실험 기록에 <strong>"묶음 변경"</strong>이라고 분명히 표시하고, 안정된 뒤에 조건을 하나씩 되돌리거나 다시 넣어서 어느 게 진짜 필요했는지 확인한다.</p>
+
+    <h2>정리 — 실패도, 무변화도 기록에 남긴다</h2>
+    <p>로그에는 성공한 수정만 남기면 안 된다. <strong>효과가 없었던 시도, 새로 생긴 실패도 다 기록</strong>해야 다음번에 같은 헛수고를 반복하지 않는다. 반대로 여러 입력에서 반복해서 통과한 최소 변경은, 다음 지시를 쓸 때 역할·근거·제약·형식 중 뭘 먼저 점검할지 알려주는 재료가 된다.</p>
+    <p>지금까지 부품, 우선권, 가설 검증, 형식과 채점, 실패 진단까지 다뤘다. 마지막 글에서는 이 모든 걸 하나의 점검 순서로 묶어 정리한다.</p>
+
+    <a class="post-nav" href="instruction-design-principles.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">지시 설계 원칙 정리</span>
+    </a>
+
+    <hr>
+
+    <h3>"지시 설계" 시리즈</h3>
+    <a class="post-nav" href="instruction-design-basics.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">지시 설계란 무엇인가</span>
+    </a>
+    <a class="post-nav" href="instruction-priority-and-testing.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">지시 우선권과 검증</span>
+    </a>
+    <a class="post-nav" href="output-format-and-metrics.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">답의 모양과 채점법</span>
+    </a>
+    <p class="post-date">(4) 지시 실패, 진단하고 고치기 (이 글)</p>
+    <a class="post-nav" href="instruction-design-principles.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">지시 설계 원칙 정리</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
