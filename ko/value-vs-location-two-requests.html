@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>금요일 오후에 도착한 두 개의 요청 — 값과 위치는 다른 답이다 - Tigermorning</title>
+  <meta name="description" content="계약서에서 금액을 뽑는 일과 사진에서 흠집 위치를 짚는 일이 왜 완전히 다른 문제인지, 자료형과 검증 방법이 갈리는 이유, 그리고 사람은 한 덩어리로 하는 문서 읽기를 기계는 왜 여러 조각으로 쪼개 정복해야 했는지 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="금요일 오후에 도착한 두 개의 요청 — 값과 위치는 다른 답이다">
+  <meta property="og:description" content="계약서에서 금액을 뽑는 일과 사진에서 흠집 위치를 짚는 일이 왜 완전히 다른 문제인지, 자료형과 검증 방법이 갈리는 이유, 그리고 사람은 한 덩어리로 하는 문서 읽기를 기계는 왜 여러 조각으로 쪼개 정복해야 했는지 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/value-vs-location-two-requests.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>금요일 오후에 도착한 두 개의 요청 — 값과 위치는 다른 답이다</h1>
+    <p class="post-date">2026. 8. 9.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="cost-and-control-of-local-llm.html">
+      <span class="post-nav-label">← 이전 시리즈</span>
+      <span class="post-nav-title">비용과 통제권 — 손익분기 계산과 누가 바꾸는가</span>
+    </a>
+
+    <hr>
+
+    <p>금요일 오후, 재무팀에서 PDF 한 뭉치가 도착하는 상황을 상상해봤어요. 지난 분기에 체결한 하도급 계약서 스물세 건을 스캔한 파일이고, 요청은 간단해 보여요. "각 계약서에서 계약 상대방, 계약 금액, 계약 기간만 뽑아서 표로 정리해주세요." 코딩 에이전트에게 시켰더니 표가 나왔는데, 열어보니 이상해요. 어떤 계약서는 "금 삼천이백만원정(₩32,000,000)"이라고 적힌 자리에서 3200000이라는 값이 나왔어요 — 0이 하나 빠졌어요. 다른 계약서에서는 "계약 금액 32,000,000"이 아니라 그 아래 줄의 "부가세 3,200,000"이 계약 금액으로 잡혀 있었어요.</p>
+    <p>여기서 흔히 나오는 반응은 "AI가 아직 멍청하다"인데, 실제로 벌어진 일은 훨씬 구체적이었어요. 기계는 글자를 거의 다 맞게 읽었어요. 3, 2, 쉼표, 0, 0, 0 전부 정확했어요. 실패한 건 글자 인식이 아니라 <strong>어느 숫자가 어느 항목에 속하는가라는 판단</strong>이었어요. 그리고 이 판단은 글자를 읽는 일과는 완전히 다른 종류의 문제였어요.</p>
+
+    <h2>한 장의 사진, 네 개의 질문, 네 개의 다른 출력</h2>
+    <p>같은 날 오후, 옆 부서 메신저에는 조립 라인 천장 카메라가 찍은 사진 한 장이 올라와요. 품질팀은 "3번 하우징 쪽에 흠집 같은 게 보이는데, 정확히 어느 위치예요?"라고 묻고, 안전팀은 "저 사진에 안전모 안 쓴 사람 몇 명이죠?"라고 묻고, 설비팀은 "컨베이어 벨트 마모된 부분 면적이 지난달보다 얼마나 늘었는지 숫자로 뽑아주실 수 있나요?"라고 묻고, 홍보팀은 "비슷한 분위기의 라인 이미지를 한 장 만들어주시면 좋겠어요"라고 해요.</p>
+    <p>한 장의 사진에 네 개의 질문인데, 이 넷은 어려움의 정도만 다른 게 아니었어요. <strong>답의 생김새 자체가 달랐어요.</strong> 품질팀에게는 "여기"라고 짚어주는 좌표가, 안전팀에게는 숫자 하나가, 설비팀에게는 픽셀을 세어 실제 길이로 환산한 면적이, 홍보팀에게는 그 사진 안에 존재하지도 않는 새 이미지가 답이었어요. 프로그램에서 값의 종류와 담는 방식을 가리키는 말을 <strong>자료형</strong>이라고 하는데, 출력의 자료형이 다르면 뒤에 붙는 코드가 다르고, 틀렸을 때 확인하는 방법도 다르고, 책임 소재도 달랐어요.</p>
+
+    <h2>둘 다 "읽기"라고 부르는데 받는 답이 다르다</h2>
+    <p>두 장면은 같은 문장으로 시작했어요. "이 파일 좀 읽어주세요." 그런데 돌아와야 하는 답을 나란히 놓으면 종류가 달랐어요. 계약서에서 원하는 답은 <strong>값</strong>이에요. 32,000,000이라는 숫자 하나, 2026-03-14라는 날짜 하나. 반대로 라인 사진에서 원하는 답은 <strong>위치와 경계</strong>예요. 품질팀에게는 흠집이 "어디"인지가 답이고, 설비팀에게는 마모가 "어디까지"인지가 답이에요. 여기서 좌표는 도중에 쓰고 버리는 재료가 아니라 결과물 그 자체였어요.</p>
+    <p>답이 다르니 틀렸는지 확인하는 방법도 갈렸어요. 값이 답인 쪽은 검산할 수 있어요. 단가에 수량을 곱한 값이 합계와 맞는지, 부가세가 본체 금액의 십분의 일인지 보는 거예요. 위치가 답인 쪽에는 그런 우회로가 없어요. 다시 계산해서 나올 좌표라는 게 없기 때문이에요. 대신 사람이 정답이라고 정해둔 영역과 기계가 내놓은 영역이 얼마나 겹치는지를 재요. 이 한 줄이 앞으로 계속 따라와요 — <strong>같은 파일을 넣어도 받는 답의 성격이 다르고, 답이 다르면 검증도 다르다.</strong></p>
+
+    <h2>사람은 한 덩어리로 하는데, 기계는 조각내어 정복했다</h2>
+    <p>두 장면 다 사람에게 시키면 아무 일도 아니에요. 계약서에서 금액을 찾는 데 삼 초, 사진에서 안전모 안 쓴 사람을 세는 데 삼 초예요. 그 삼 초를 느리게 늘려보면 안에 서로 다른 일이 여러 개 들어 있어요. 계약서 쪽에는 네 가지가 있어요 — 글자를 알아보고, 구조를 파악하고(어디가 표인지), 항목과 값을 잇고(계약 금액↔32,000,000), 뜻을 이해해요(부가세 별도인지). 사진 쪽에는 다섯 가지가 있어요 — 알아보고, 짚고(위치), 경계를 긋고, 영상이면 따라가고, 요청받으면 없는 걸 그려요.</p>
+    <p>사람은 이 목록을 목록으로 겪지 않아요. 문서를 훑는 동안 구조 파악이 글자 인식을 돕고, "계약 금액"이라는 맥락이 그 옆의 흐릿한 글자를 숫자로 복원해줘요. 정보가 사방으로 흘러요. 그런데 기계는 그럴 수 없었어요. 컴퓨터에게 읽히고 보이게 만들려던 지난 백 년의 역사는, <strong>뭉쳐 있던 일을 하나씩 떼어내서 각각 정복하는 과정</strong>이었어요. 문서 쪽에서 가장 먼저 정복된 게 글자를 알아보는 일이고, 이 문제만 떼어내서 푸는 기술에 붙은 이름이 <strong>OCR</strong>이에요. 사진 쪽도 이름표를 다는 일, 위치를 짚는 일, 경계를 긋는 일이 서로 다른 연구 갈래로 갈라졌어요.</p>
+    <p>문제는 떼어낸 조각을 다시 붙일 때 생겼어요. 사람의 머릿속에서는 정보가 사방으로 오가지만, 독립 단계가 차례로 이어지는 순차형 파이프라인에서는 앞 단계의 출력이 뒤 단계의 입력으로 한 방향으로만 흘러요. 이런 구성에서는 앞에서 잘못 자른 조각을 뒤 단계가 복구하기 어려워요. 계약서에서 벌어진 일이 정확히 이것이었어요. 다음 글에서는 이 문서 쪽 길을 끝까지 따라가, 스캔된 계약서가 금액 표가 되기까지 기계 안에서 무슨 일이 벌어지는지 볼게요.</p>
+
+    <a class="post-nav" href="why-cant-ai-read-this-pdf.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">PDF인데 왜 AI가 못 읽나요 — OCR의 역사</span>
+    </a>
+
+    <hr>
+
+    <h3>"AI는 문서와 사진에서 무엇을 꺼낼까?" 시리즈</h3>
+    <p class="post-date">(1) 금요일 오후에 도착한 두 개의 요청 — 값과 위치는 다른 답이다 (이 글)</p>
+    <a class="post-nav" href="why-cant-ai-read-this-pdf.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">PDF인데 왜 AI가 못 읽나요 — OCR의 역사</span>
+    </a>
+    <a class="post-nav" href="ocr-assembly-line-and-error-propagation.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">글자를 찾고 읽는 조립 라인 — 전처리부터 레이아웃까지</span>
+    </a>
+    <a class="post-nav" href="object-detection-and-iou.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">물체 찾기와 IoU — 탐지 결과를 믿는 법</span>
+    </a>
+    <a class="post-nav" href="segmentation-and-sam.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">박스로 안 되는 일 — 분할과 SAM</span>
+    </a>
+    <a class="post-nav" href="vision-language-models.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">이미지와 언어를 함께 보는 모델 — VLM</span>
+    </a>
+    <a class="post-nav" href="choosing-ai-tools-and-yolo-practice.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">AI에게 도구 선택을 상담하는 법, 그리고 YOLO 실습</span>
+    </a>
+    <a class="post-nav" href="outsourced-labor-kept-decisions.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">넘긴 것은 노동이고 남은 것은 결정입니다</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>

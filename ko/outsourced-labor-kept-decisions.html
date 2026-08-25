@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>넘긴 것은 노동이고 남은 것은 결정입니다 - Tigermorning</title>
+  <meta name="description" content="OCR·문서 VLM·범용 멀티모달 모델·탐지·분할·포즈 여섯 도구의 자료형과 근거 추적 방법을 한 표로 정리하고, 읽고 보는 노동은 위임할 수 있지만 결과를 믿기로 한 결정은 위임되지 않는다는 이 노드 전체의 결론을 마무리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="넘긴 것은 노동이고 남은 것은 결정입니다">
+  <meta property="og:description" content="OCR·문서 VLM·범용 멀티모달 모델·탐지·분할·포즈 여섯 도구의 자료형과 근거 추적 방법을 한 표로 정리하고, 읽고 보는 노동은 위임할 수 있지만 결과를 믿기로 한 결정은 위임되지 않는다는 이 노드 전체의 결론을 마무리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/outsourced-labor-kept-decisions.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>넘긴 것은 노동이고 남은 것은 결정입니다</h1>
+    <p class="post-date">2026. 8. 12.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="choosing-ai-tools-and-yolo-practice.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">AI에게 도구 선택을 상담하는 법, 그리고 YOLO 실습</span>
+    </a>
+
+    <hr>
+
+    <p>이 시리즈에서 저는 각 OCR, 객체탐지 도구가 어디에서 왔고 어떤 기술을 이어받았는지부터 따라갔어요. <a href="why-cant-ai-read-this-pdf.html">Tesseract</a>는 특징 기반 OCR에서 LSTM 행 인식으로 발전한 로컬 엔진이고, PaddleOCR은 탐지·방향 판별·인식을 조립하는 도구 상자였고, PaddleOCR-VL은 문서 구조를 복원하려는 VLM이고, Claude·ChatGPT는 더 넓은 질문을 받는 범용 멀티모달 제품이었어요. 사진에서는 <a href="object-detection-and-iou.html">최초 YOLO 공동 연구와 Darknet</a>, 이후 갈라진 계보, 그리고 실습에 쓴 Ultralytics YOLO가 서로 다른 주체의 공헌임을 구분했고, 동시에 박스·마스크·관절점이라는 출력 차이와 Redmon이 제기한 사생활 문제를 실제 사용 카드로 연결했어요.</p>
+
+    <h2>중요한 건 유명세가 아니라 연결된 사실들</h2>
+    <p>중요한 건 도구의 유명세가 아니라 <strong>만든 주체, 입력, 출력 자료형, 검증 방법, 실패와 사회적 영향이 서로 연결되어 있다는 사실</strong>이었어요.</p>
+    <table>
+      <thead><tr><th>도구</th><th>답의 자료형</th><th>근거를 되짚는 방법</th><th>대표 실패</th></tr></thead>
+      <tbody>
+        <tr><td>Tesseract·PaddleOCR</td><td>문자열·점수·좌표</td><td>원본 위 좌표와 중간 결과</td><td>누락·오인식·잘못된 읽기 순서</td></tr>
+        <tr><td>PaddleOCR-VL</td><td>Markdown·표·수식·구조</td><td>원문 페이지와 원시 출력 대조</td><td>구조 누락·재배열·생성</td></tr>
+        <tr><td>Claude·ChatGPT</td><td>질문에 따른 문장·구조</td><td>원문 인용 위치와 대화 기록</td><td>환각·비공개 전처리·서비스 변경</td></tr>
+        <tr><td>Detection</td><td>클래스·박스·점수</td><td>정답 박스와 IoU, 원본 시각화</td><td>미탐·오탐·위치 오차</td></tr>
+        <tr><td>Instance segmentation</td><td>개체별 마스크</td><td>정답 마스크와 IoU·경계 지표</td><td>경계 누락·개체 합침</td></tr>
+        <tr><td>Pose estimation</td><td>사람별 keypoint</td><td>기준 관절점과 원본 시각화</td><td>가림·관절 혼동·비인간 대상 무출력</td></tr>
+      </tbody>
+    </table>
+    <p>각 도구의 출처와 개발 주체를 밝힌 뒤, 실제 결과에서는 어떤 답을 주는지, 무엇과 대조할 수 있는지, 실패했을 때 누가 결정하는지를 기록하는 것 — 이게 이 시리즈 전체가 가르쳐준 습관이었어요. 오늘은 추론만 실행했고, 학습(fine-tuning)은 반복되는 도메인 실패와 권리가 확인된 라벨 데이터가 있을 때 검토하면 됐어요.</p>
+
+    <h2>넘긴 것은 노동, 남은 것은 결정</h2>
+    <p>처음 떠올렸던 문서와 사진을 다시 보면, 이제 "AI로 읽어주세요"라고 한 덩어리로 넘기기 전에 질문을 나눌 수 있게 됐어요. 글자와 좌표가 필요하면 <a href="why-cant-ai-read-this-pdf.html">OCR 엔진</a>, 표와 수식의 구조가 중요하면 <a href="vision-language-models.html">문서 VLM</a>, 열린 질문을 빠르게 시험하려면 범용 VLM, 위치와 경계와 자세가 필요하면 각각 <a href="object-detection-and-iou.html">탐지</a>·<a href="segmentation-and-sam.html">분할</a>·포즈 가중치를 고르면 됐어요.</p>
+    <p>코딩 에이전트에게는 설치와 연결, 반복 실행, 파일 저장과 UI 조립을 맡길 수 있어요. 하지만 같은 입력을 썼는지, 모델을 몰래 바꾸지 않았는지, 결과가 원문 어디에서 왔는지, 틀리면 누가 확인할지는 사람이 정해야 했어요. 그래서 이 시리즈의 결론은 도구 선택으로 끝나지 않아요. <strong>읽고 보는 노동은 위임할 수 있지만, 그 결과를 믿기로 한 결정은 위임되지 않는다.</strong> 원본 해시, 모델·버전, 원시 결과, <code>[UNCLEAR]</code>와 실패 기록이 그 결정을 감당하는 최소한의 근거였어요.</p>
+    <p>오늘 다룬 능력들은 성격이 하나로 묶여요. 전부 파일 안에 이미 들어 있는 것을 찾아내는 일이었어요. 글자를 읽어내고, 상자를 그려 짚어주고, 픽셀을 칠해 경계를 선언하는 일 모두 원본 어딘가를 가리켰어요. 원본에 대조할 근거가 남아 있고, 사람이 합의한 기준으로 정답지를 만들어 평가할 수 있었어요. 다음 시간에는 이 구조가 깨지는 자리로 갈 예정이에요 — 원본에 없던 픽셀을 만들어내는 이미지 생성이에요. 직접 대조할 원본 정답이 없으면 맞았다 틀렸다를 따지는 방식 자체가 달라지고, 던져야 할 질문도 바뀌어요.</p>
+
+    <hr>
+
+    <h3>"AI는 문서와 사진에서 무엇을 꺼낼까?" 시리즈</h3>
+    <a class="post-nav" href="value-vs-location-two-requests.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">금요일 오후에 도착한 두 개의 요청 — 값과 위치는 다른 답이다</span>
+    </a>
+    <a class="post-nav" href="why-cant-ai-read-this-pdf.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">PDF인데 왜 AI가 못 읽나요 — OCR의 역사</span>
+    </a>
+    <a class="post-nav" href="ocr-assembly-line-and-error-propagation.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">글자를 찾고 읽는 조립 라인 — 전처리부터 레이아웃까지</span>
+    </a>
+    <a class="post-nav" href="object-detection-and-iou.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">물체 찾기와 IoU — 탐지 결과를 믿는 법</span>
+    </a>
+    <a class="post-nav" href="segmentation-and-sam.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">박스로 안 되는 일 — 분할과 SAM</span>
+    </a>
+    <a class="post-nav" href="vision-language-models.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">이미지와 언어를 함께 보는 모델 — VLM</span>
+    </a>
+    <a class="post-nav" href="choosing-ai-tools-and-yolo-practice.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">AI에게 도구 선택을 상담하는 법, 그리고 YOLO 실습</span>
+    </a>
+    <p class="post-date">(8) 넘긴 것은 노동이고 남은 것은 결정입니다 (이 글)</p>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
