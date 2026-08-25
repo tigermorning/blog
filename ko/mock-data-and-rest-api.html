@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>목업 데이터와 REST API - Tigermorning</title>
+  <meta name="description" content="백엔드가 없어도 화면을 먼저 만들 수 있는 이유, 모델하우스 비유로 이해한 목업 데이터와 REST API의 네 가지 동사(GET·POST·PUT·DELETE), 그리고 GraphQL과 API 형식이 바뀌어온 역사까지 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="목업 데이터와 REST API">
+  <meta property="og:description" content="백엔드가 없어도 화면을 먼저 만들 수 있는 이유, 모델하우스 비유로 이해한 목업 데이터와 REST API의 네 가지 동사(GET·POST·PUT·DELETE), 그리고 GraphQL과 API 형식이 바뀌어온 역사까지 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/mock-data-and-rest-api.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>목업 데이터와 REST API</h1>
+    <p class="post-date">2026. 7. 17.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="choosing-a-framework.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">프레임워크 고르는 법과 AI와 기획하기</span>
+    </a>
+
+    <hr>
+
+    <p><a href="choosing-a-framework.html">지난 글</a>에서 프레임워크도 고르고 PRD도 다 썼는데, 화면을 만들려니 바로 벽에 부딪혔어요. "화면은 만들고 싶은데, 데이터를 어디서 가져오지? 백엔드 API가 아직 없는데?" 오늘은 이 질문에 대한 답 — 백엔드 없이도 화면을 먼저 만들고 테스트하는 법을 정리해요.</p>
+
+    <h2>모델하우스 — 아직 집이 없어도 구경은 할 수 있다</h2>
+    <p>아파트를 분양할 때, 진짜 건물이 다 지어지기 전에 <strong>모델하우스</strong>부터 열죠. 실제로 살 집은 아니지만, 가구를 놓아보고 동선을 걸어보면서 "이 구조가 괜찮은가"를 미리 판단할 수 있어요. 프론트엔드(화면)도 똑같아요. 진짜 데이터를 주는 백엔드(서버)가 완성되기를 기다리지 않고, <strong>가짜 데이터</strong>로 먼저 화면을 돌려볼 수 있어요. 이걸 <strong>목업 데이터(mock data)</strong>라고 불러요.</p>
+    <p>프론트엔드가 진짜 데이터를 받아올 땐 이런 코드를 써요.</p>
+    <pre>const response = await fetch('https://내서비스.com/api/experts');
+const experts = await response.json();</pre>
+    <p>문제는 이 코드가 작동하려면 <code>/api/experts</code>에 응답해줄 백엔드가 <strong>이미 있어야</strong> 한다는 거예요. 백엔드가 없으면 이 요청은 실패하고 화면은 텅 비어요. 그래서 진짜 API가 보내줄 것과 <strong>똑같은 모양</strong>의 가짜 데이터를 코드 안에 미리 적어두는 거예요.</p>
+    <pre>// mockData.js — 가짜지만 진짜 API 응답과 같은 구조
+const mockExperts = [
+  { id: 1, name: '김민준 변호사', specialty: '형사전문', years: 15 },
+  { id: 2, name: '이서연 변호사', specialty: '민사전문', years: 12 },
+];
+export default mockExperts;</pre>
+    <p>이 데이터를 컴포넌트에서 쓰면, 화면은 진짜 API에서 온 것처럼 그대로 그려져요. <strong>핵심은 화면이 "데이터 구조"만 알고 있으면, 그 데이터가 진짜든 가짜든 똑같이 동작한다</strong>는 거예요.</p>
+
+    <h2>왜 이게 실무에서 매일 쓰이나</h2>
+    <ul>
+      <li><strong>백엔드를 기다리지 않는다</strong> — 백엔드 개발이 끝나길 기다릴 필요 없이 화면부터 만들 수 있어요. 실무에서는 이걸 <strong>병렬 개발</strong>이라 부르고, 프론트엔드 팀과 백엔드 팀이 동시에 일하는 게 기본이에요.</li>
+      <li><strong>디자인과 상호작용을 먼저 검증한다</strong> — 데이터가 어떻게 들어올지만 알면, 화면 배치와 클릭 반응을 백엔드 없이도 테스트할 수 있어요.</li>
+      <li><strong>AI 코딩에서 특히 강력하다</strong> — AI에게 "이 데이터로 화면을 만들어줘"라고 하면, 백엔드 연결 없이도 완성된 화면을 바로 볼 수 있어요.</li>
+      <li><strong>나중에 진짜 API로 쉽게 바꾼다</strong> — 목업 데이터의 구조를 진짜 API 응답과 맞춰두면, 나중에 한 줄만 바꿔서 교체할 수 있어요.</li>
+    </ul>
+    <p>여기서 배운 요령 하나 — 데이터를 컴포넌트 안에 직접 박아넣으면 나중에 열 곳을 다 뒤져야 하지만, <code>mockData.js</code>처럼 <strong>별도 파일로 빼두면</strong> <code>import mockExperts</code> 한 줄을 <code>fetch('/api/experts')</code>로 바꾸는 것만으로 교체가 끝나요. 화면 코드는 하나도 안 건드리고요. 이걸 <strong>관심사의 분리(separation of concerns)</strong>라고 부르는데, 데이터를 어디서 가져오는지와 화면을 어떻게 그리는지를 서로 다른 자리에 떼어두는 원칙이에요.</p>
+
+    <h2>API가 뭔지는 <a href="what-is-api.html">지난 글</a>에서 다뤘으니, 오늘은 "동사" 얘기</h2>
+    <p>API 자체가 뭔지는 예전에 <a href="what-is-api.html">API란 무엇인가, AI와 차이</a> 글에서 이미 정리해뒀어요. 오늘은 한 겹 더 들어가서, 프론트엔드가 백엔드에 데이터를 요청할 때 가장 널리 쓰는 방식인 <strong>REST API</strong>가 실제로 어떻게 생겼는지 봐요.</p>
+    <p>REST는 <strong>HTTP의 네 가지 동사</strong>를 데이터 조작에 대응시켜요. 이 네 개만 알면 대부분의 기능을 설명할 수 있어요.</p>
+    <table>
+      <thead><tr><th>동사</th><th>예시</th><th>뜻</th></tr></thead>
+      <tbody>
+        <tr><td><strong>GET</strong></td><td><code>GET /api/experts</code></td><td>목록을 가져옵니다</td></tr>
+        <tr><td><strong>POST</strong></td><td><code>POST /api/experts</code></td><td>새 데이터를 만듭니다</td></tr>
+        <tr><td><strong>PUT</strong></td><td><code>PUT /api/experts/1</code></td><td>기존 데이터를 수정합니다</td></tr>
+        <tr><td><strong>DELETE</strong></td><td><code>DELETE /api/experts/1</code></td><td>데이터를 지웁니다</td></tr>
+      </tbody>
+    </table>
+    <p>AI에게 "이 화면에 POST 요청 추가해줘"라고 하면, AI는 이 약속을 이미 알고 있어요. 프로토타입 단계에서는 GET(가져오기)과 POST(등록하기) 두 가지가 제일 자주 쓰였어요.</p>
+
+    <h2>GraphQL — 필요한 것만 골라 받기</h2>
+    <p>REST는 하나의 주소가 정해진 데이터 덩어리를 통째로 돌려줘요. 전문가의 이름과 전문분야만 필요한데 자기소개서·연락처·사진까지 다 오면, 불필요한 데이터가 왕복하는 셈이에요. <strong>GraphQL</strong>은 "내가 필요한 필드만 골라서 달라"고 요청하는 방식이에요.</p>
+    <pre>query {
+  experts(specialty: "형사") {
+    name
+    specialty
+  }
+}
+// 응답: 요청한 필드만 정확히 옵니다</pre>
+    <p>불필요한 데이터가 안 와서 통신은 가벼워지지만, 백엔드에서 이걸 지원하려면 구조가 더 복잡해져요. <strong>첫 프로토타입에서는 REST가 기본</strong>이었어요 — 자료가 많고 AI가 훨씬 익숙하게 다루거든요. 서비스가 커져서 "요청이 너무 많다"고 느껴질 때 GraphQL을 후보에 넣으면 충분했어요.</p>
+
+    <h2>API 형식은 왜 계속 바뀌어왔나 — 짧은 역사</h2>
+    <ul>
+      <li><strong>RPC(1980년대~)</strong> — 다른 컴퓨터의 함수를 원격으로 부르는 가장 오래된 방식. 빠르지만 시스템이 커지면 어떤 함수가 있는지 파악하기 어려웠어요.</li>
+      <li><strong>SOAP(1990년대~)</strong> — XML 문서 형식으로 요청·응답을 엄격하게 규격화. 은행·의료·정부처럼 신뢰가 중요한 곳에서 여전히 쓰이지만 양식이 무거워요.</li>
+      <li><strong>REST(2000년대~)</strong> — 주소로 데이터를 가리키고 HTTP 동사로 조작하는, 단순하고 웹 친화적인 방식. 오늘날 사실상 표준이에요.</li>
+      <li><strong>GraphQL(2015년~)</strong> — Facebook(현 Meta)이 만들어 원하는 필드만 골라받게 했어요.</li>
+    </ul>
+    <p>재밌었던 건 <strong>JSON이 XML을 이긴 이유</strong>였어요. 2000년대 초까지 API 데이터 형식의 왕은 XML이었는데, <code>&lt;name&gt;김민준&lt;/name&gt;</code>처럼 태그로 감싸는 방식이라 문서로는 좋아도 프로그램이 읽기엔 무겁고 번거로웠어요. JSON(<code>"name": "김민준"</code>)은 JavaScript 객체 문법과 같아서 브라우저가 거의 가공 없이 바로 쓸 수 있었어요. <strong>가벼움과 단순함이 이긴 것</strong>이었어요.</p>
+
+    <h2>정리</h2>
+    <p>백엔드가 없어도 모델하우스 같은 목업 데이터로 화면을 먼저 만들 수 있고, 그 데이터를 진짜 API로 바꿀 땐 파일 하나만 갈아끼우면 됐어요. REST는 GET·POST·PUT·DELETE 네 동사로 데이터를 다루는 오늘날의 표준이었고, GraphQL은 필요한 것만 골라 받는 대안이었어요. 이걸로 <a href="what-is-framework.html">"바이브 코딩으로 웹 만들기 2"</a> 시리즈를 마무리해요. 다음엔 실제로 백엔드와 데이터베이스를 붙이는 이야기로 이어질 예정이에요.</p>
+
+    <hr>
+
+    <h3>"바이브 코딩으로 웹 만들기 2" 시리즈</h3>
+    <a class="post-nav" href="what-is-framework.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">프레임워크란 무엇인가</span>
+    </a>
+    <a class="post-nav" href="what-is-abstraction-modularity.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">추상화·모듈화·가상 DOM</span>
+    </a>
+    <a class="post-nav" href="choosing-a-framework.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">프레임워크 고르는 법과 AI와 기획하기</span>
+    </a>
+    <p class="post-date">(4) 목업 데이터와 REST API (이 글)</p>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
