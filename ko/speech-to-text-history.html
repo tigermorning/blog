@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>소리를 글자로 바꾸는 길 — STT 반백년의 계보 - Tigermorning</title>
+  <meta name="description" content="발음사전 13만 5천 단어로 버티던 HMM-GMM부터 2012년 딥러닝의 첫 침투, CTC의 정렬 문제 해법, wav2vec 2.0의 자기지도학습, Whisper의 68만 시간 약지도학습까지, 그리고 헤드셋과 회의실 마이크의 오류율이 두 배 갈리는 이유를 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="소리를 글자로 바꾸는 길 — STT 반백년의 계보">
+  <meta property="og:description" content="발음사전 13만 5천 단어로 버티던 HMM-GMM부터 2012년 딥러닝의 첫 침투, CTC의 정렬 문제 해법, wav2vec 2.0의 자기지도학습, Whisper의 68만 시간 약지도학습까지, 그리고 헤드셋과 회의실 마이크의 오류율이 두 배 갈리는 이유를 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/speech-to-text-history.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>소리를 글자로 바꾸는 길 — STT 반백년의 계보</h1>
+    <p class="post-date">2026. 8. 18.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="clip-and-vision-language-models.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">픽셀을 문장처럼 다룬다는 발상 — CLIP과 VLM</span>
+    </a>
+
+    <hr>
+
+    <p>소리를 글자로 바꾸는 일을 STT(Speech-to-Text)라고 불러요. 지금은 스마트폰에 대고 말하면 몇 초 만에 글자가 뜨지만, 여기까지 오는 데 반백 년 가까이 걸렸어요. 이미 <a href="transformers-beyond-language.html">트랜스포머가 언어 밖으로 퍼지는 과정</a>에서 Whisper를 잠깐 짚었는데, 오늘은 그 전 단계부터 제대로 따라가볼게요. 소리는 끊김 없이 흐르고 글자는 한 칸씩 끊어져 있다는 것, 이 둘을 맞추는 문제가 이 분야 역사 전체를 관통했어요.</p>
+
+    <h2>옛날 방식 — HMM-GMM의 네 부품</h2>
+    <p>딥러닝 이전의 표준 방식은 HMM-GMM이라 불리는 조립 구조였어요. 이름부터 딱딱한데, 실제로 네 개의 부품을 이어붙인 방식이었어요. 음향모델은 짧은 소리 조각이 어떤 발음(음소)에 해당하는지를 판단하고, 발음사전은 단어가 어떤 발음들의 나열로 이루어지는지를 정리해두고, 언어모델은 어떤 단어 다음에 어떤 단어가 올 확률이 높은지를 알고 있고, 디코더는 이 셋을 종합해 가장 그럴듯한 문장을 찾아냈어요. 당시 널리 쓰인 CMU 발음사전에는 13만 5천 개의 단어가 등재돼 있었는데, 실제 대화에서 필요한 발음 조합은 5만 5천 가지 정도였고 그중 사전에 실제로 있던 것은 1만 8천5백 가지 정도였어요. 사전에 없는 단어나 조합을 만나면 이 시스템은 속수무책이었어요. 새 단어 하나 넣으려 해도 발음사전부터 손봐야 하는 구조였던 거예요.</p>
+
+    <h2>2012년, 딥러닝이 처음 끼어들다</h2>
+    <p>2012년에 처음으로 이 네 부품 중 하나가 딥러닝으로 바뀌었어요. 통째로 갈아엎은 게 아니라 음향모델 하나만 신경망으로 교체한 거였는데, 그것만으로 단어 오류율이 27.4%에서 18.5%로 떨어졌어요. 발음사전과 언어모델, 디코더는 그대로 둔 채였어요. 이게 중요한 지점이에요. 딥러닝이 이 분야에 들어온 건 어느 날 갑자기 전체를 뒤집은 사건이 아니라, 오래된 조립 구조의 부품 하나를 슬쩍 바꿔 끼운 것으로 시작됐다는 거예요. 이 성공이 다음 부품들도 하나씩 신경망으로 바꿔보자는 흐름으로 이어졌어요.</p>
+
+    <h2>CTC와 wav2vec 2.0 — 정렬 문제를 다르게 풀다</h2>
+    <p>부품을 하나씩 바꾸는 것과 별개로, 더 근본적인 문제가 남아 있었어요. 소리 파형의 어느 구간이 글자의 어느 지점에 대응하는지, 그 정렬을 누가 정하느냐는 문제였어요. 2006년에 나온 CTC(Connectionist Temporal Classification)라는 방법이 이 문제를 다르게 풀었어요. 정렬을 하나로 딱 정해서 답으로 삼는 대신, 가능한 모든 정렬 방식을 다 더해서 확률을 계산하는 방식이었어요. "이 소리 구간이 정확히 이 글자에 대응한다"고 미리 정해두지 않고, 있을 수 있는 모든 대응 방식의 확률을 합쳐 학습시킨 거예요. 이후 2020년에 나온 wav2vec 2.0은 또 다른 방향에서 접근했어요. 자기지도학습(self-supervised learning)이라는 방식으로, 정답이 달려 있지 않은 소리 데이터만으로 먼저 모델을 학습시키고, 그다음 아주 적은 양의 정답 데이터(라벨링된 데이터)로 미세조정을 했어요. 그 결과가 인상적이었는데, 1시간 분량의 라벨링된 데이터로 학습한 것이 옛날 방식으로 100시간 분량을 학습한 것보다 더 나은 성능을 냈어요. 라벨을 다는 일이 가장 비싼 작업이라는 걸 생각하면, 이건 비용 구조 자체를 뒤집은 결과였어요.</p>
+
+    <h2>Whisper와 헤드셋 대 회의실 마이크</h2>
+    <p>2022년 OpenAI가 내놓은 Whisper는 접근 방식이 또 달랐어요. wav2vec 2.0처럼 정교한 자기지도학습 대신, 인터넷에서 긁어모은 68만 시간 분량의 소리와 그에 딸린(완벽하지 않은) 글자 자막을 그대로 학습에 썼어요. 이걸 약지도학습(weak supervision)이라고 불러요. 정답이 완벽하지 않아도 양이 압도적으로 많으면 통한다는 걸 보여준 사례예요. 실제 벤치마크에서 평균 55.2%의 오류 감소를 보였는데, 흥미로운 건 이 숫자가 벤치마크마다 다르게 나타났다는 점이에요. Whisper가 학습 때 봤을 법한 익숙한 유형의 벤치마크에서는 예전 시스템과 거의 비슷한 수준이었고, 낯선 유형의 벤치마크에서는 오류가 거의 절반으로 줄었어요. 같은 모델이라도 어떤 상황에서 재느냐에 따라 성능 차이가 이렇게 크게 보일 수 있다는 뜻이에요.</p>
+    <p>그리고 실무에서 더 중요한 발견이 하나 있었어요. 같은 회의를 녹음했는데, 참석자 각자가 헤드셋을 쓰고 녹음한 경우와 회의실에 마이크 하나를 두고 녹음한 경우를 비교했더니 단어 오류율이 16.9%와 36.4%로 두 배 넘게 차이가 났어요. 모델을 바꾼 게 아니라 마이크 위치만 바꿨을 뿐인데요. 어느 지점을 넘어서면 더 큰 모델을 쓰는 것보다 녹음 환경을 손보는 게 정확도에 더 큰 영향을 준다는 뜻이에요. 다음 글에서는 이 Whisper를 실제로 내 노트북에서 어떤 크기로, 어떤 포맷으로 돌릴지 구체적인 숫자로 따져볼게요.</p>
+
+    <a class="post-nav" href="choosing-a-local-whisper.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">내 노트북에서 돌아가는 것 고르기 — Whisper 크기와 포맷</span>
+    </a>
+
+    <hr>
+
+    <h3>"여러 입력을 함께 다루는 AI" 시리즈</h3>
+    <a class="post-nav" href="why-multimodal-one-model.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">왜 한 모델에 다 넣으려 하나 — 모달리티라는 말</span>
+    </a>
+    <a class="post-nav" href="clip-and-vision-language-models.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">픽셀을 문장처럼 다룬다는 발상 — CLIP과 VLM</span>
+    </a>
+    <p class="post-date">(3) 소리를 글자로 바꾸는 길 — STT 반백년의 계보 (이 글)</p>
+    <a class="post-nav" href="choosing-a-local-whisper.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">내 노트북에서 돌아가는 것 고르기 — Whisper 크기와 포맷</span>
+    </a>
+    <a class="post-nav" href="omni-models-and-inference-engines.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">옴니 모델과 그걸 돌리는 엔진</span>
+    </a>
+    <a class="post-nav" href="choosing-a-voice-synthesis-tool.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">같은 "오픈소스"가 아니다 — 목소리 합성기 고르는 법</span>
+    </a>
+    <a class="post-nav" href="voice-cloning-and-responsible-ai.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">그 목소리, 복제해도 됩니까 — 법과 요약의 세탁</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
