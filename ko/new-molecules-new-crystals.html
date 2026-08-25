@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>없던 분자와 없던 결정 - Tigermorning</title>
+  <meta name="description" content="창고를 뒤지는 대신 표적 단백질의 홈 모양에 맞춰 분자를 새로 그려내는 신약 설계, 원소와 좌표와 결정 격자를 함께 흩뜨렸다 되돌리는 MatterGen의 신물질 생성, 그리고 분자를 돌려놓아도 답이 똑같아야 한다는 등변성 개념을 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="없던 분자와 없던 결정">
+  <meta property="og:description" content="창고를 뒤지는 대신 표적 단백질의 홈 모양에 맞춰 분자를 새로 그려내는 신약 설계, 원소와 좌표와 결정 격자를 함께 흩뜨렸다 되돌리는 MatterGen의 신물질 생성, 그리고 분자를 돌려놓아도 답이 똑같아야 한다는 등변성 개념을 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/new-molecules-new-crystals.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>없던 분자와 없던 결정</h1>
+    <p class="post-date">2026. 8. 28.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="designing-proteins-backwards.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">방향을 뒤집다 — 없던 단백질을 짓는 법</span>
+    </a>
+
+    <hr>
+
+    <p>단백질 뼈대를 만든 것과 같은 뼈대가 두 번 더 갈아타요. 이번엔 약이 되는 분자와 새로운 물질이에요. 그림을 만드는 모델과 단백질 설계와 이 둘은 분야도 자료도 완전히 다른데 계산의 뼈대가 같아요. 무엇을 흩뜨렸다가 되돌릴지만 바뀌어요. 픽셀, 원자 좌표, 분자의 결합, 결정 격자. 그래서 새 분야에서 "확산 기반"이라는 말을 보면 무엇을 기대할지 바로 알 수 있어요. 없던 것을 만들어내되, 만든 것이 쓸 만한지는 따로 확인해야 한다는 것이에요.</p>
+
+    <h2>창고를 뒤지는 대신 맞춤으로 짓는다</h2>
+    <p>신약을 찾는 오래된 방식은 뒤지기였어요. 회사가 보유한 화합물 수십만 개를 표적 단백질에 하나씩 붙여보고 점수가 좋은 걸 고르는 가상 스크리닝, 그 계산 자체는 도킹이라고 불러요. 표적 단백질의 결합 자리는 알아냈는데 넣을 후보 화합물이 없으면, 예전엔 창고에 답이 없으면 없는 거였어요. 최근 방향이 바뀌었어요. 표적 단백질의 홈 모양을 조건으로 주고 그 자리에 들어맞는 분자를 새로 그려내요. 여기서는 분자가 회전시키거나 옮겨놓아도 같은 분자라는 성질이 중요해요. 에너지나 점수처럼 방향이 없는 답은 분자를 어떻게 돌려놔도 똑같이 나와야 하고(불변), 힘이나 좌표처럼 방향을 가진 답은 분자를 30도 돌리면 그 답도 정확히 30도 돌아 나와야 해요(등변, equivariant). 실제로 표적 홈의 좌표를 넣고 후보 분자 수백 개를 하룻밤에 생성한 다음, 합성 가능성으로 걸러 몇 개만 만들어봐요. 대표 도구인 DiffSBDD는 코드가 MIT, 가중치가 CC BY 4.0이에요. 조각을 고정한 채 나머지를 채워 넣는 방식도 있는데, 글자열에는 잡음을 조금씩 뿌릴 수 없으니 대신 글자를 무작위로 지웠다 되채우는 것으로 같은 일을 해요. 다루는 게 낱낱의 글자라서 이산(discrete) 확산이라는 이름이 붙어요.</p>
+
+    <h2>원소와 좌표와 격자를 함께 흩뜨린다</h2>
+    <p>물질을 새로 찾는 일도 오랫동안 시행착오였어요. 2010년대에 컴퓨터로 후보를 미리 계산해 걸러내는 방식이 자리 잡아 계산된 물질 수십만 건이 쌓였지만, 그것도 여전히 뒤지기였어요. 이미 아는 구조를 조금씩 바꿔보는 식이었죠. 마이크로소프트의 MatterGen(MIT)은 방향을 바꿔 결정 구조 자체를 생성해요. 어느 원소를 몇 개 놓을지, 그것들을 얼마만 한 상자 안에 어떤 좌표로 배치할지를 한꺼번에 만들고, "자기 성질이 이 정도인 물질"처럼 원하는 조건도 걸 수 있어요. 결정은 까다로운 점이 있어요. 같은 무늬가 무한히 되풀이되는 구조이고 그 무늬 하나가 담기는 상자를 단위 격자라고 부르는데, 원자 좌표는 그 상자 안에서만 뜻이 있는데 상자 자체도 늘어나거나 기울어질 수 있어요. 그래서 원자 종류와 좌표와 상자 모양 세 가지를 함께 흩뜨렸다 함께 되돌려요. 이 방향이 열린 건 후보를 걸러내려고 돌려뒀던 계산이 그대로 교재가 됐기 때문이에요. 나온 결정 구조를 판정하는 자는 하나예요. 가장 가까운 원자쌍이 0.5옹스트롬보다 멀어야 해요. 그보다 가까우면 결합이 아니라 서로 겹쳐 놓인 것이라 어떤 물질로도 만들어질 수 없어요. 잘 나온 구조는 대체로 2에서 3옹스트롬 대에 들어와요.</p>
+
+    <h2>안정해 보이는 것과 실제로 만들어지는 것</h2>
+    <p>생성된 구조가 진짜 만들어지는지는 이 도구가 답하지 않아요. 계산상 안정해 보이는 것과 실험실에서 합성되는 것은 다르고, 그 사이를 메우는 게 다음 글에서 볼 원자간 퍼텐셜이에요. 여기서 짚어둘 게 있어요. 조건이 열려 있는 도구와 오늘 당장 돌아가는 도구는 다르다는 거예요. 분자 생성 쪽 공식 코랩이 2022년 판 꾸러미에 못 박혀 있어서, 지금 코랩 파이썬 판에서는 설치 셀 열다섯 줄 중 일곱 줄이 실패해요. 라이선스가 열려 있어도 저장소가 손질을 멈추면 오늘은 못 돌아가요. 저장소를 볼 때 마지막 손질 날짜를 함께 보는 습관이 여기서 나와요. 다음 글에서는 이 그래프 신경망이라는 발상이 원자 사이의 힘을 배우는 데, 그리고 지구 표면 전체의 날씨를 배우는 데 어떻게 쓰이는지 볼게요.</p>
+
+    <a class="post-nav" href="graphs-and-interatomic-forces.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">점과 선으로 보는 세계 — 그래프 신경망과 원자 사이의 힘</span>
+    </a>
+
+    <hr>
+
+    <h3>"AI가 새로 연 곳들" 시리즈</h3>
+    <a class="post-nav" href="same-week-different-fields.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">같은 주에 다른 데서 벌어진 일들</span>
+    </a>
+    <a class="post-nav" href="foundation-models-for-tables.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">학습 없이 표를 읽는 모델</span>
+    </a>
+    <a class="post-nav" href="from-sequence-to-structure.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">서열을 읽던 모델이 간 곳 — 유전체와 구조 예측</span>
+    </a>
+    <a class="post-nav" href="designing-proteins-backwards.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">방향을 뒤집다 — 없던 단백질을 짓는 법</span>
+    </a>
+    <p class="post-date">(5) 없던 분자와 없던 결정 (이 글)</p>
+    <a class="post-nav" href="graphs-and-interatomic-forces.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">점과 선으로 보는 세계 — 그래프 신경망과 원자 사이의 힘</span>
+    </a>
+    <a class="post-nav" href="learning-the-weather-instead-of-computing-it.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">슈퍼컴퓨터가 하던 일을 배우다 — 기상 기반모델</span>
+    </a>
+    <a class="post-nav" href="a-model-with-a-body.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">몸을 얻은 모델</span>
+    </a>
+    <a class="post-nav" href="rewards-where-grading-is-possible.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">채점이 되는 곳에 걸리는 보상</span>
+    </a>
+    <a class="post-nav" href="open-versus-usable-today.html">
+      <span class="post-nav-label">(10)</span>
+      <span class="post-nav-title">공개된 것과 오늘 쓸 수 있는 것 — 라이선스 네 계단</span>
+    </a>
+    <a class="post-nav" href="knowing-where-not-to-go-is-also-a-map.html">
+      <span class="post-nav-label">(11)</span>
+      <span class="post-nav-title">안 갈 데를 아는 것도 지도입니다</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>

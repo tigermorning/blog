@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>공개된 것과 오늘 쓸 수 있는 것 — 라이선스 네 계단 - Tigermorning</title>
+  <meta name="description" content="AI 도구는 코드·가중치·기반 모델·학습 자료 넷이 각각 다른 곳에 다른 조건으로 놓여 있어, 저장소 초록 배지 하나만 보고 넘어가면 안 되는 이유를 실제 사례 열 가지와 함께 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="공개된 것과 오늘 쓸 수 있는 것 — 라이선스 네 계단">
+  <meta property="og:description" content="AI 도구는 코드·가중치·기반 모델·학습 자료 넷이 각각 다른 곳에 다른 조건으로 놓여 있어, 저장소 초록 배지 하나만 보고 넘어가면 안 되는 이유를 실제 사례 열 가지와 함께 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/open-versus-usable-today.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>공개된 것과 오늘 쓸 수 있는 것 — 라이선스 네 계단</h1>
+    <p class="post-date">2026. 8. 30.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="rewards-where-grading-is-possible.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">채점이 되는 곳에 걸리는 보상</span>
+    </a>
+
+    <hr>
+
+    <p>표 기반모델 중 가장 이름이 알려진 TabPFN은 코드는 누구나 받을 수 있고 설치도 되는데, 정작 모델 파일을 받는 데 가입과 키가 필요해 그 앞에서 멈춰요. 이 자리가 여덟 갈래를 지나오는 동안 계속 반복된 일을 요약해요. 공개되었다는 말과 오늘 내가 쓸 수 있다는 말은 달라요.</p>
+
+    <h2>넷으로 나뉘어 배포된다</h2>
+    <p>일반 소프트웨어는 저장소 하나에 코드가 있고 라이선스 파일 하나면 끝이에요. AI 도구는 배포되는 물건이 넷으로 나뉘어요. 코드(모델을 불러오고 결과를 꺼내는 프로그램), 가중치(학습이 끝난 숫자 덩어리, 대개 코드 저장소가 아니라 모델 배포 사이트에 따로 올라감), 기반 모델(요즘 모델은 대부분 다른 모델 위에 올라가 있어, 그 원래 모델의 조건이 그대로 따라옴), 학습 자료(가중치를 만드는 데 쓴 자료, 공개되지 않는 경우가 많고 공개돼도 조건이 따로). 저장소 첫 화면의 초록색 배지는 그중 코드 하나만을 말해요. <a href="famous-is-not-the-same-as-usable.html">이미 3D 가우시안 스플래팅에서 본 것</a>처럼, MIT와 BSD 3조항과 아파치 2.0은 셋 다 가져다 쓰고 고치고 팔아도 되는 느슨한 조건이라 걸릴 게 없어요. 갈리기 시작하는 건 LGPL 3.0(라이브러리를 고쳐 배포할 때만 고친 부분 공개 의무)과 비상업 조건이에요.</p>
+
+    <h2>실제로 걸린 것들</h2>
+    <p>이 노드 전체에서 실제로 걸린 사례를 유형별로 묶으면 이래요. 태그와 실제 조건이 어긋난 경우(OpenVLA는 페이지 태그가 MIT인데 저장소는 바탕 모델 약관 상속을 명시), 라이선스 항목이 아예 없는 경우(SmolVLA, DNABERT-2 — 없다는 건 허용한다는 뜻이 아니에요), 이름이 비슷한데 조건이 갈리는 경우(MACE-MP는 자유, MACE-OMAT는 학술 전용), 코드는 열렸는데 가중치만 비상업인 경우(Pangu-Weather, Nucleotide Transformer), 학습 자료가 비상업이라 가중치까지 그 조건이 따라오는지 안 적혀 있는 경우(Cellpose), 한 조직 안에서도 꾸러미마다 조건이 갈리는 경우(강화학습 도구 핵심은 아파치 2.0인데 지원 라이브러리는 LGPL 3.0), 배지와 실제 문서가 어긋나는 경우(Cellpose README 배지는 BSD 3조항인데 옆의 옛 글자는 GPL v3), 실행 경로가 낡아 조건은 열려 있어도 오늘은 안 도는 경우(2022년 판에 못 박힌 코랩), 그리고 조건이 며칠 사이에 바뀌는 경우(WeatherNext 가중치가 2026년 8월 6일에 상업 허용으로 변경). 마지막 것이 특히 중요해요. 조건이 풀리기도 하지만 반대로 처음엔 열렸다가 판이 올라가며 제한이 붙는 경우도 있어요.</p>
+
+    <h2>읽는 순서와 에이전트에게 맡기기</h2>
+    <p>새 도구를 만났을 때 순서는 이래요. 첫째, 코드 저장소의 라이선스를 봐요. 대부분의 확인이 여기서 끝나는 일반 소프트웨어와 달리, AI 도구에서는 여기가 시작이에요. 둘째, 가중치가 어디에 올라가 있는지 찾아 그 페이지를 열어요. 라이선스 항목이 없으면 그것도 정보고, 동의 화면이나 토큰이나 실명 제출이 걸려 있으면 그게 오늘 쓸 수 있는지를 갈라요. 셋째, 그 모델이 다른 모델 위에 올라간 것인지 봐요. 넷째, 학습 자료와 연습용 자료의 조건을 따로 봐요. 이 넷은 매번 같은 순서라 에이전트에게 통째로 맡기기 좋아요. "코드 저장소 라이선스, 가중치 배포처의 라이선스와 동의 절차, 바탕 모델의 조건, 학습 자료의 조건을 각각 확인한 페이지 주소와 함께 알려줘. 확인이 안 되는 건 추측하지 말고 확인 못 함으로 남겨줘"라고 시키면 돼요. 주소를 요구하는 게 제일 중요해요. 라이선스는 모델이 가장 잘 지어내는 종류의 정보라, 흔한 문자열이라 근거 없이도 술술 나와요. 주소를 못 대면 그것 자체가 답이에요. 그리고 이렇게 받은 답에는 유효기간이 있다는 것도 기억해두세요. 다음 글에서는 조건은 열려 있는데도 결국 못 열어본 도구들, 그리고 이 여덟 갈래 밑에 깔린 발상을 정리하며 이 시리즈를 마무리할게요.</p>
+
+    <a class="post-nav" href="knowing-where-not-to-go-is-also-a-map.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">안 갈 데를 아는 것도 지도입니다</span>
+    </a>
+
+    <hr>
+
+    <h3>"AI가 새로 연 곳들" 시리즈</h3>
+    <a class="post-nav" href="same-week-different-fields.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">같은 주에 다른 데서 벌어진 일들</span>
+    </a>
+    <a class="post-nav" href="foundation-models-for-tables.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">학습 없이 표를 읽는 모델</span>
+    </a>
+    <a class="post-nav" href="from-sequence-to-structure.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">서열을 읽던 모델이 간 곳 — 유전체와 구조 예측</span>
+    </a>
+    <a class="post-nav" href="designing-proteins-backwards.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">방향을 뒤집다 — 없던 단백질을 짓는 법</span>
+    </a>
+    <a class="post-nav" href="new-molecules-new-crystals.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">없던 분자와 없던 결정</span>
+    </a>
+    <a class="post-nav" href="graphs-and-interatomic-forces.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">점과 선으로 보는 세계 — 그래프 신경망과 원자 사이의 힘</span>
+    </a>
+    <a class="post-nav" href="learning-the-weather-instead-of-computing-it.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">슈퍼컴퓨터가 하던 일을 배우다 — 기상 기반모델</span>
+    </a>
+    <a class="post-nav" href="a-model-with-a-body.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">몸을 얻은 모델</span>
+    </a>
+    <a class="post-nav" href="rewards-where-grading-is-possible.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">채점이 되는 곳에 걸리는 보상</span>
+    </a>
+    <p class="post-date">(10) 공개된 것과 오늘 쓸 수 있는 것 — 라이선스 네 계단 (이 글)</p>
+    <a class="post-nav" href="knowing-where-not-to-go-is-also-a-map.html">
+      <span class="post-nav-label">(11)</span>
+      <span class="post-nav-title">안 갈 데를 아는 것도 지도입니다</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
