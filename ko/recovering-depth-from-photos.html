@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>사진에서 거리를 되찾는 법 — 시차와 깊이 추정 - Tigermorning</title>
+  <meta name="description" content="걸어 다니며 찍어야 하는 이유인 시차의 원리, 사진 한 장에서 거리를 알아내는 단안 깊이 추정과 상대 깊이·역깊이의 함정, 그리고 스물네 장을 한 좌표계에 겹쳐 카메라 위치까지 함께 얻어내는 MapAnything 모델을 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="사진에서 거리를 되찾는 법 — 시차와 깊이 추정">
+  <meta property="og:description" content="걸어 다니며 찍어야 하는 이유인 시차의 원리, 사진 한 장에서 거리를 알아내는 단안 깊이 추정과 상대 깊이·역깊이의 함정, 그리고 스물네 장을 한 좌표계에 겹쳐 카메라 위치까지 함께 얻어내는 MapAnything 모델을 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/recovering-depth-from-photos.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>사진에서 거리를 되찾는 법 — 시차와 깊이 추정</h1>
+    <p class="post-date">2026. 8. 22.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="birth-of-nerf-and-gaussian-splatting.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">장면을 외우게 하다 — NeRF와 가우시안 스플래팅의 탄생</span>
+    </a>
+
+    <hr>
+
+    <p>이제 손을 써요. 방 안을 걸어 다니며 15초에서 20초 동안 천천히 찍으면 됩니다. 제자리에 서서 몸만 돌리면 안 돼요. 이유는 시차예요.</p>
+
+    <h2>가까운 것이 더 많이 밀린다</h2>
+    <p>방을 걸어 다니면서 찍으면 같은 물건이 사진마다 조금씩 다른 곳에 찍혀요. 두 장을 놓고 같은 지점을 찾았을 때 그 둘이 서로 어긋난 양, 그것이 시차예요. 두 눈으로 볼 때 같은 물건이 좌우 눈에 조금 어긋나 보이는 것과 같은 현상인데, 여기서는 렌즈 하나가 자리를 옮겨 그 어긋남을 만들어요. 시차에는 규칙이 하나 있고, 그 규칙이 거리를 되찾는 근거예요. 가까운 물건은 화면에서 많이 밀리고 먼 물건은 조금 밀려요. 차창 밖을 볼 때 가까운 가로수는 휙휙 지나가고 먼 산은 거의 안 움직이는 그 현상이에요. 밀린 양이 물건마다 다르니, 얼마나 밀렸는지에서 얼마나 먼지가 나와요. 제자리에서 몸만 돌리면 렌즈가 안 움직이니 이 어긋남이 안 생겨요. 화면은 바뀌는데 거리를 알려주는 단서가 하나도 안 쌓이는 거예요. 시차를 재려면 두 사진에서 같은 지점을 알아볼 수 있어야 하니, 방에 넘치는 벽지 이음매·액자 모서리·책등·바닥 무늬가 전부 그 표식이 돼요. 정리되지 않은 방이 오히려 재료로는 더 좋은 이유가 여기 있어요.</p>
+
+    <h2>한쪽 눈을 감아도 앞뒤는 안다</h2>
+    <p>시차가 사라져도 사람은 여전히 무엇이 앞인지 알아요. 같은 크기인 줄 아는 물건이 작게 찍혔으면 먼 것이고, 두 물체의 윤곽이 겹칠 때 끊기지 않고 이어진 쪽이 앞이고, 바닥 무늬는 멀어질수록 촘촘해지고, 그림자가 붙은 방향과 길이도 단서예요. 사람은 이 단서들을 살면서 익혔고, 모델도 같은 방식으로 익혀요. 거리가 함께 기록된 사진을 수백만 장 보여주면서 "이렇게 생긴 장면은 대개 이런 깊이더라"를 학습시킨 거예요. 사진 한 장만 넣고 거리를 알아내는 일을 단안 깊이 추정(monocular depth estimation)이라고 불러요. 여기서 조심할 게 둘 있어요. 하나, 나오는 값은 대개 절대 거리가 아니라 상대 깊이예요. 컵이 벽보다 가깝다고만 말하지 컵이 0.3미터라고는 말 안 해요. 사진 한 장에는 크기를 정할 근거가 애초에 없기 때문이에요. 미터로 답하는 쪽은 따로 절대 깊이(metric depth)라고 불러요. 둘, 값은 대개 역깊이(inverse depth)로 나와요. 거리의 역수라 값이 클수록 가깝고, 방향을 안 뒤집고 그대로 좌표를 찍으면 방이 뒤집어져 나오고 먼 배경은 값이 0에 눌어붙어 무한대로 날아가버려요.</p>
+
+    <h2>스물네 장을 한 좌표계에 겹치기</h2>
+    <p>한 장씩 깊이를 뽑아 이어 붙이면 장마다 눈금이 제각각이라 안 맞아요. 그래서 이번 실습에서 쓰는 모델은 사진 여러 장을 함께 보고 하나의 좌표계 위에 놓아요. 메타가 2025년 공개한 MapAnything이 그 모델이에요. 사진 한 장마다 깊이 지도를 뽑고, 그것을 각 사진의 카메라 위치에 맞춰 하나의 좌표계 위로 겹쳐요. 덤으로 카메라가 어디에 있었는지도 값으로 나와요. 걸어 다닌 자취가 그대로 숫자가 되는 거예요. 위치를 모르는 사진 여러 장을 한꺼번에 풀어 각 장의 위치와 성긴 점을 얻는 일을 여러 장에서 찍은 위치 되찾기(structure from motion, SfM)라고 부르고, 그 위치를 근거로 조밀한 3차원 점을 뽑는 일을 다시점 스테레오(multi-view stereo)라고 불러요. 오래 쓰인 길은 이 둘을 차례차례 돌렸는데, MapAnything은 한 번에 함께 내놓아요. 여기서 짚어둘 게 하나 있어요. 이름 뒤에 붙은 -apache를 빼면 안 돼요. 같은 저장소가 가중치를 두 판으로 나눠 올려뒀는데, 그쪽만 Apache-2.0이고 다른 쪽은 비상업 조건이에요. <a href="quantization-why-it-still-works.html">모델을 고를 때</a> 이름 하나만 보고 넘어가면 안 되는 이유가 여기서도 똑같이 나와요. 다음 글에서는 이렇게 얻은 점을 실제로 알갱이로 바꾸는 계산을 뜯어볼게요.</p>
+
+    <a class="post-nav" href="turning-points-into-splats.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">점을 알갱이로 바꾸는 계산</span>
+    </a>
+
+    <hr>
+
+    <h3>"사진에서 공간을 되찾는 법" 시리즈</h3>
+    <a class="post-nav" href="why-photos-lose-distance.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">셔터가 닫힐 때 사라지는 것</span>
+    </a>
+    <a class="post-nav" href="four-containers-for-3d-space.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">공간을 담는 네 가지 그릇</span>
+    </a>
+    <a class="post-nav" href="birth-of-nerf-and-gaussian-splatting.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">장면을 외우게 하다 — NeRF와 가우시안 스플래팅의 탄생</span>
+    </a>
+    <p class="post-date">(4) 사진에서 거리를 되찾는 법 — 시차와 깊이 추정 (이 글)</p>
+    <a class="post-nav" href="turning-points-into-splats.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">점을 알갱이로 바꾸는 계산</span>
+    </a>
+    <a class="post-nav" href="shrinking-splat-files-for-the-web.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">파일을 줄이고 화면에 그리기</span>
+    </a>
+    <a class="post-nav" href="thirty-years-of-3d-reconstruction.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">서른 해 동안 난 길들 — 3차원 복원의 계보</span>
+    </a>
+    <a class="post-nav" href="judging-and-fixing-a-3d-scan.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">안 될 때와 더 낫게 — 스캔을 판단하고 고치는 법</span>
+    </a>
+    <a class="post-nav" href="famous-is-not-the-same-as-usable.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">유명한 것과 쓸 수 있는 것은 다르다</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
