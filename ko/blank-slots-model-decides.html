@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>같은 모델인데 결과가 갈립니다 — 빈 칸은 모델이 채운다 - Tigermorning</title>
+  <meta name="description" content="같은 모델과 시드를 고정하고 프롬프트만 바꿔본 대조 실험으로 확인한, 좋은 프롬프트는 길게 쓴 것이 아니라 빈 칸이 없는 것이라는 원칙과 읽어내는 일과 만들어내는 일이 근본적으로 다른 이유를 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="같은 모델인데 결과가 갈립니다 — 빈 칸은 모델이 채운다">
+  <meta property="og:description" content="같은 모델과 시드를 고정하고 프롬프트만 바꿔본 대조 실험으로 확인한, 좋은 프롬프트는 길게 쓴 것이 아니라 빈 칸이 없는 것이라는 원칙과 읽어내는 일과 만들어내는 일이 근본적으로 다른 이유를 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/blank-slots-model-decides.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>같은 모델인데 결과가 갈립니다 — 빈 칸은 모델이 채운다</h1>
+    <p class="post-date">2026. 8. 13.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="outsourced-labor-kept-decisions.html">
+      <span class="post-nav-label">← 이전 시리즈</span>
+      <span class="post-nav-title">넘긴 것은 노동이고 남은 것은 결정입니다</span>
+    </a>
+
+    <hr>
+
+    <p>수요일 저녁, 내일 발표할 자료의 표지가 비어 있는 상황을 상상해봤어요. 공장 점검 라인을 찍은 사진 한 장이면 되는데, 회사 사진첩엔 쓸 만한 게 없어요. 이미지 생성 도구를 열고 "a factory worker"라고 적어봤어요. 이렇게 만들고 싶은 것을 적어 넣는 문장을 <strong>프롬프트</strong>라고 불러요. 몇 초 뒤 그림이 나오는데, 사람이 화면 구석에 작게 박혀 있고 배경엔 정체 모를 기계가 잔뜩, 조명은 누런 형광등이에요. 다섯 번쯤 반복하다 이런 생각이 들어요. "이 모델이 별로인가 보다." 거의 언제나 틀린 결론이었어요.</p>
+
+    <h2>모델을 그대로 두고 문장만 바꿔봤어요</h2>
+    <p>확인할 방법이 있었어요. 모델도, 무작위 <strong>시드</strong>(생성을 시작할 때 뿌리는 무작위 잡음을 정하는 숫자)도, 계산 스텝 수도 전부 고정해놓고 프롬프트만 바꾸는 거예요. 같은 시드를 주면 같은 출발점에서 시작하니, 결과가 달라졌다면 그건 프롬프트 때문이에요. 세 단계로 적어봤어요.</p>
+    <table>
+      <thead><tr><th>단계</th><th>프롬프트</th></tr></thead>
+      <tbody>
+        <tr><td>게으르게</td><td>a factory worker (3단어)</td></tr>
+        <tr><td>피사체와 장소만</td><td>안전모를 쓰고 점검 라인에 서 있는 공장 노동자 (16단어)</td></tr>
+        <tr><td>여섯 칸을 다 채워서</td><td>미디엄 샷·고정 카메라·50mm 렌즈, 흰 안전모를 쓴 노동자가 스테인리스 점검 라인 위로 몸을 숙이고 한 손을 난간에 얹었다, 왼쪽 창에서 들어온 부드러운 아침 빛… (67단어)</td></tr>
+      </tbody>
+    </table>
+    <p>세 단어짜리는 인물이 정중앙에 서서 카메라를 봤어요. 아무도 그렇게 하라고 안 했지만, "공장 노동자"라는 말만 듣고 그릴 수 있는 가장 흔한 그림이 그거였어요. 열여섯 단어짜리는 안전모와 점검 라인이 생겼는데, 작업자가 여전히 카메라를 봤어요. 시선을 어디 두라고 안 적었으니 모델이 또 채운 거예요. 예순일곱 단어짜리는 몸을 숙이고 손을 난간에 얹었고, 빛이 상판을 따라 길게 반사되고 뒤쪽은 초점에서 풀렸어요 — 전부 적은 대로였어요. <strong>모델은 한 번도 바뀌지 않았어요. 시드도 그대로였어요. 바뀐 건 비어 있던 칸을 채웠다는 것뿐이었어요.</strong></p>
+
+    <h2>안 적은 것은 모델이 대신 정한다</h2>
+    <p>왜 이런 일이 생기는지 생각해보니 답은 단순했어요. 그림 한 장이 성립하려면 정해져야 하는 게 있어요 — 화면에 누가 있는지, 그 사람이 무엇을 하는지, 카메라가 어디서 어떤 렌즈로 보는지, 빛이 어디서 오는지, 주변에 무엇이 있는지, 전체 분위기가 어떤지. 사진작가라면 셔터를 누르기 전에 이 여섯 가지를 어떤 식으로든 정해요. 정하지 않고는 사진이 찍히지 않으니까요.</p>
+    <p>생성 모델도 마찬가지였어요. 다만 제가 안 정해주면 모델이 알아서 정했어요. 그것도 제 의도와 무관하게, 학습 데이터에서 가장 흔했던 쪽으로요. 세 단어만 적었을 때 인물이 멀리 있었던 건 모델이 게을러서가 아니라, "공장 노동자"라는 말만 듣고 그릴 수 있는 가장 평범한 그림이 그것이었기 때문이에요. 그래서 <strong>좋은 프롬프트는 길게 쓴 것이 아니라 빈 칸이 없는 것</strong>이었어요. 이 구분이 이 시리즈 전체를 관통했어요.</p>
+
+    <h2>읽어내는 일과 만들어내는 일은 다르다</h2>
+    <p><a href="value-vs-location-two-requests.html">지금까지 다뤄온 것</a>들은 전부 이미 있는 것에서 무언가를 꺼내는 일이었어요. 스캔한 문서에서 글자를 꺼내고, 사진에서 물건의 위치를 짚었어요. 이런 일에는 정답이 있어요. 계약 금액이 3,200만 원이면 3,200만 원이라고 읽어야 맞고, 아니면 틀린 거예요. 그래서 검산할 수 있었어요.</p>
+    <p>오늘부터는 없던 것을 만들어내요. 여기엔 정답이 없어요. 같은 문장을 넣어도 매번 다른 그림이 나오고, 그중 어느 것도 틀렸다고 말할 수 없어요. 대신 읽어내는 일에는 없던 두 가지가 새로 붙었어요. 첫째, <strong>무엇을 적었느냐가 결과를 거의 다 좌우해요</strong>. 읽어내는 쪽에서는 입력이 이미 정해져 있었지만, 만들어내는 쪽에서는 입력을 제가 써요. 둘째, <strong>만들어낸 것에는 책임이 남아요</strong>. 읽은 것이 틀리면 그건 오류지만, 만든 것이 실제와 혼동되면 그건 다른 종류의 문제예요. 없는 장면을 있는 것처럼 보이게 만들었을 때, 그 그림을 어디에 어떻게 쓸 수 있는지는 기술이 아니라 판단의 영역이었어요. 다음 글에서는 이 기술이 어떻게 여기까지 왔는지, GAN에서 확산 모델까지의 역사를 따라가볼게요.</p>
+
+    <a class="post-nav" href="gan-to-diffusion-models.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">노이즈에서 되돌린다는 발상 — GAN에서 확산 모델까지</span>
+    </a>
+
+    <hr>
+
+    <h3>"이미지 생성 어플리케이션 만들기" 시리즈</h3>
+    <p class="post-date">(1) 같은 모델인데 결과가 갈립니다 — 빈 칸은 모델이 채운다 (이 글)</p>
+    <a class="post-nav" href="gan-to-diffusion-models.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">노이즈에서 되돌린다는 발상 — GAN에서 확산 모델까지</span>
+    </a>
+    <a class="post-nav" href="latent-diffusion-and-distillation.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">개인 컴퓨터로 내려온 날 — 잠재 확산과 증류</span>
+    </a>
+    <a class="post-nav" href="writing-image-prompts.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">프롬프트를 쓰는 법 — 여섯 칸과 재질 하나</span>
+    </a>
+    <a class="post-nav" href="automating-image-generation.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">코드로 이미지 생성 자동화하기</span>
+    </a>
+    <a class="post-nav" href="choosing-image-generation-tools.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">무엇으로 만들 것인가 — 라이선스, ControlNet, 저작권</span>
+    </a>
+    <a class="post-nav" href="video-generation-and-empty-slots.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">동영상도 만들 수 있을까 — 빈 칸은 중립이 아니다</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>

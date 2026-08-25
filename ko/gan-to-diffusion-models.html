@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>노이즈에서 되돌린다는 발상 — GAN에서 확산 모델까지 - Tigermorning</title>
+  <meta name="description" content="그럴듯함을 채점할 수 없다는 근본 문제에서 시작해, 위조범과 감정사를 겨루게 한 2014년 GAN과 모드 붕괴, 정답이 없는 문제를 정답이 있는 문제로 바꾼 확산 모델의 발상, 그리고 CLIP이 문장을 그림 쪽으로 끌어온 과정을 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="노이즈에서 되돌린다는 발상 — GAN에서 확산 모델까지">
+  <meta property="og:description" content="그럴듯함을 채점할 수 없다는 근본 문제에서 시작해, 위조범과 감정사를 겨루게 한 2014년 GAN과 모드 붕괴, 정답이 없는 문제를 정답이 있는 문제로 바꾼 확산 모델의 발상, 그리고 CLIP이 문장을 그림 쪽으로 끌어온 과정을 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/gan-to-diffusion-models.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>노이즈에서 되돌린다는 발상 — GAN에서 확산 모델까지</h1>
+    <p class="post-date">2026. 8. 13.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="blank-slots-model-decides.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">같은 모델인데 결과가 갈립니다 — 빈 칸은 모델이 채운다</span>
+    </a>
+
+    <hr>
+
+    <p>그림을 그리는 기계를 만들려면 먼저 답해야 하는 질문이 있었어요. <strong>그럴듯함을 어떻게 채점할 것인가.</strong> <a href="how-ai-learns-from-data.html">기계 학습은 채점표가 있어야 굴러가요.</a> 답을 내놓게 하고, 그 답이 얼마나 틀렸는지 숫자로 재고, 덜 틀리는 쪽으로 조금씩 밀어주는 게 학습이에요. 그런데 "고양이 사진을 그려라"는 과제에서는 그 숫자를 어떻게 매길지가 막막했어요.</p>
+    <p>가장 먼저 떠오르는 방법은 정답 사진과 픽셀을 하나씩 비교해 차이를 재는 거예요. 이걸 시켜보면 아주 이상한 일이 벌어졌어요. 모델이 모든 고양이의 평균을 그려요. 흐릿한 회색 덩어리 하나가 어떤 고양이 사진과도 적당히 비슷하기 때문에, 픽셀 차이를 최소로 만드는 답이 바로 그 덩어리였던 거예요. 더 근본적인 문제도 있었어요. 학습이 굴러가려면 채점 결과가 숫자여야 할 뿐 아니라, 어느 쪽으로 조금 움직였을 때 그 숫자가 얼마나 좋아지는지 계산할 수 있어야 해요(<strong>미분 가능</strong>). 그런데 "그럴듯함"에는 그런 정의를 붙일 수가 없었어요.</p>
+
+    <h2>첫 번째 답, 채점관을 같이 키운다 — GAN</h2>
+    <p>2014년 이언 굿펠로와 동료들이 내놓은 답은 발상이 시원했어요. 채점 기준을 사람이 적지 말고, 채점하는 신경망을 함께 학습시키자는 거예요. 위조범 역할을 하는 신경망과 감정사 역할을 하는 신경망을 붙여놓아요. 위조범은 가짜 그림을 만들어 감정사를 속이려 하고, 감정사는 진짜와 가짜를 구별하려 해요. 둘이 서로 이기려 들면 위조범의 실력이 올라가요. 이 구조를 <strong>GAN(Generative Adversarial Network, 적대적 생성 신경망)</strong>이라고 불러요. 2018년의 StyleGAN에 이르면 사람 얼굴은 진짜와 구별하기 어려운 수준까지 갔어요.</p>
+    <p>그런데 GAN에는 고약한 실패 방식이 있었어요. 위조범이 감정사를 확실히 속이는 그림 한 장을 찾아내면, 그 뒤로는 그것만 계속 그려요. 손글씨 숫자 0부터 9까지를 학습시켰는데, 위조범이 그럴듯한 8을 그리는 법을 익히고 감정사가 그걸 못 잡아내면, 위조범 입장에서 나머지 아홉 숫자를 그릴 이유가 없어요. 8만 계속 내놓으면 계속 이기니까요. 이 현상을 <strong>모드 붕괴(mode collapse)</strong>라고 불러요. 원논문은 이 현상에 "헬베티카 시나리오"라는 별명을 붙여뒀는데, 어떤 입력을 넣어도 결국 같은 것 하나로 무너져 내린다는 뜻이었어요.</p>
+    <p>그런데 GAN이 주역 자리에서 내려온 결정적 이유는 불안정이 아니라 <strong>말로 시킬 수가 없었다</strong>는 거였어요. StyleGAN은 얼굴 사진으로 학습하면 얼굴만 만들어요. "눈 덮인 산 위의 빨간 오두막"을 시킬 통로가 그 구조 안에 없었어요. 문장을 받아들이는 입구가 애초에 설계에 없었던 거예요. 다만 GAN이 죽은 건 아니었어요 — 나중에 조연으로 다시 등장해요.</p>
+
+    <h2>두 번째 답, 채점을 아예 없앤다 — 확산 모델</h2>
+    <p>두 번째 갈래의 발상은 이랬어요. <strong>정답이 없는 문제를 정답이 있는 문제로 바꾸자.</strong> 깨끗한 사진 한 장에 우리가 직접 잡음을 조금씩 뿌려요. 수백 번 반복하면 원본이 완전히 사라지고 백색 잡음만 남아요. 이제 거꾸로 물어봐요. "이 화면에 방금 섞인 잡음이 무엇이었나?" 이건 정답이 있는 문제예요. 우리가 뿌린 잡음이니 우리가 답을 알아요. 채점관이 필요 없고, 학습하는 내내 기준이 흔들리지도 않아요. 잡음을 알아맞히는 법을 충분히 배우고 나면, 순수한 잡음에서 출발해 조금씩 걷어내는 것만으로 없던 그림이 떠올라요. 이게 <strong>확산 모델(diffusion model)</strong>이에요. 이 발상의 원논문은 2015년에 나왔는데, 비평형 열역학에서 착상을 가져왔대요.</p>
+    <p>흥미로운 게, GAN보다 겨우 반년쯤 늦게 나온 이 아이디어가 5년 가까이 묻혀 있었어요. 실제로 좋은 그림을 뽑아내게 만든 건 2020년의 DDPM(Denoising Diffusion Probabilistic Models)이고, 판도가 뒤집혔다고 선언한 논문은 그다음 해에 나와요. 제목이 그 자체로 사건이었어요 — "Diffusion Models Beat GANs on Image Synthesis". 좋은 아이디어가 나오자마자 이기는 건 아니었던 거예요. 이 방식에는 분명한 대가가 있었어요. GAN은 신경망을 한 번 통과시키면 그림이 나오는데, 확산은 수백 번에서 수천 번을 반복해야 했어요. 이 느림이 그 뒤 몇 년의 숙제가 됐어요.</p>
+
+    <h2>문장을 그림 쪽으로 데려오기 — CLIP</h2>
+    <p>잡음을 걷어내는 법은 배웠는데, 어느 방향으로 걷어낼지 말해줄 통로가 없었어요. "빨간 오두막"이라는 글자열은 픽셀과 아무 관계가 없는 기호니까요. 2021년의 <strong>CLIP</strong>이 그 통로를 열었어요. 인터넷에서 이미지와 캡션 쌍을 4억 개 모아서, "어느 캡션이 어느 이미지에 붙는가"를 맞히도록 학습시켰어요. 문장을 넣으면 숫자 몇백 개(좌표)가 나오고, 그림을 넣어도 숫자 몇백 개가 나와요. CLIP이 한 일은 그림을 좌표로 바꾸는 인코더와 문장을 좌표로 바꾸는 인코더가 <strong>같은 공간</strong>을 쓰도록 만든 거예요. 짝이 맞는 그림과 캡션은 가까운 자리에, 안 맞는 것들은 먼 자리에 놓이도록요.</p>
+    <p>같은 공간에 있다는 게 왜 결정적일까요. 거리를 잴 수 있기 때문이에요. "빨간 오두막"이라는 문장의 좌표와 지금 만들고 있는 그림의 좌표 사이 거리를 잴 수 있으면, 그 거리가 줄어드는 쪽으로 밀 수 있어요. 프롬프트가 나침반이 되는 물리적 근거가 여기 있었어요. 다음 글에서는 이 기술이 어떻게 개인 컴퓨터로 내려왔는지, 그리고 쉰 번이던 반복을 네 번으로 줄인 증류 기술을 볼게요.</p>
+
+    <a class="post-nav" href="latent-diffusion-and-distillation.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">개인 컴퓨터로 내려온 날 — 잠재 확산과 증류</span>
+    </a>
+
+    <hr>
+
+    <h3>"이미지 생성 어플리케이션 만들기" 시리즈</h3>
+    <a class="post-nav" href="blank-slots-model-decides.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">같은 모델인데 결과가 갈립니다 — 빈 칸은 모델이 채운다</span>
+    </a>
+    <p class="post-date">(2) 노이즈에서 되돌린다는 발상 — GAN에서 확산 모델까지 (이 글)</p>
+    <a class="post-nav" href="latent-diffusion-and-distillation.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">개인 컴퓨터로 내려온 날 — 잠재 확산과 증류</span>
+    </a>
+    <a class="post-nav" href="writing-image-prompts.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">프롬프트를 쓰는 법 — 여섯 칸과 재질 하나</span>
+    </a>
+    <a class="post-nav" href="automating-image-generation.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">코드로 이미지 생성 자동화하기</span>
+    </a>
+    <a class="post-nav" href="choosing-image-generation-tools.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">무엇으로 만들 것인가 — 라이선스, ControlNet, 저작권</span>
+    </a>
+    <a class="post-nav" href="video-generation-and-empty-slots.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">동영상도 만들 수 있을까 — 빈 칸은 중립이 아니다</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
