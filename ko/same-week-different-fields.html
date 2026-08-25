@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>같은 주에 다른 데서 벌어진 일들 - Tigermorning</title>
+  <meta name="description" content="없던 단백질을 그려낸 노벨상 연구, 슈퍼컴퓨터의 열흘치 기상 예보를 1분에 낸 모델, 200달러대 로봇 팔까지 챗봇 밖에서 벌어진 일들을 소개하고, 그 밑에 깔린 기반 모델·확산·그래프 신경망·검증 가능한 보상이라는 네 발상과 도구를 고르는 다섯 조건을 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="같은 주에 다른 데서 벌어진 일들">
+  <meta property="og:description" content="없던 단백질을 그려낸 노벨상 연구, 슈퍼컴퓨터의 열흘치 기상 예보를 1분에 낸 모델, 200달러대 로봇 팔까지 챗봇 밖에서 벌어진 일들을 소개하고, 그 밑에 깔린 기반 모델·확산·그래프 신경망·검증 가능한 보상이라는 네 발상과 도구를 고르는 다섯 조건을 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/same-week-different-fields.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <aside class="sidebar">
+    <h2>소개</h2>
+    <ul>
+      <li><a href="hello-world.html">인사말</a></li>
+    </ul>
+
+    <h2>글목록</h2>
+    <ul>
+      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>같은 주에 다른 데서 벌어진 일들</h1>
+    <p class="post-date">2026. 8. 26.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="famous-is-not-the-same-as-usable.html">
+      <span class="post-nav-label">← 이전 시리즈</span>
+      <span class="post-nav-title">유명한 것과 쓸 수 있는 것은 다르다</span>
+    </a>
+
+    <hr>
+
+    <p>챗봇 이야기가 오가는 동안, 전혀 다른 데서 이런 일들이 있었어요. 워싱턴대 연구팀은 자연에 존재한 적 없는 단백질을 컴퓨터로 그려냈고, 이 계산 단백질 설계를 이끈 데이비드 베이커는 2024년 노벨 화학상을 받았어요. 구글 딥마인드는 슈퍼컴퓨터가 한 시간쯤 방정식을 풀어내던 열흘치 전지구 기상 예보를 학습된 모델로 1분 안에 낸다고 보고했어요. 어느 대학원생은 부품값 200달러대 로봇 팔에 카메라를 달고 "빨간 블록을 상자에 넣어"라는 말을 알아듣고 움직이게 만들었어요. 셋 다 코드와 모델 파일이 공개되어 있고, 상당수는 무료 코랩에서 클릭 한 번으로 열려요.</p>
+
+    <h2>이름을 모르면 검색도 못한다</h2>
+    <p>이런 것들은 검색으로 마주치기 어려워요. "단백질 좀 만들어줘"라고 하면 에이전트도 헤매지만, "RFdiffusion으로 백본을 생성하고 ProteinMPNN으로 서열을 설계해줘"라고 하면 바로 붙어요. 이 노드가 다루는 여덟 갈래는 표를 읽는 기반모델, 유전체, 단백질, 분자와 재료, 원자와 기상, 세포 영상, 로봇의 행동, 그리고 채점이 되는 문제에 보상을 거는 일이에요. 큰 이름 여덟이 뼈대이고, 그 안에서 다시 갈라지는 자리는 그때그때 만나면 돼요. 목록을 이 여덟으로 좁힌 것은 화제성 순이 아니라 다섯 조건 때문이에요. 설치가 단순한가, 무료 코랩 T4(15GB)에서 돌아가는가, 라이선스 문제가 없는가, 지속적으로 관리되고 있는가, 빠르게 결과를 확인할 수 있는가. 앞의 셋은 장비와 시간을 더 들이면 넘지만, 라이선스와 유지보수 중단은 그렇지 않아요.</p>
+
+    <h2>손 모양을 가르치며 확인한 세 조건</h2>
+    <p>구글의 Teachable Machine을 열어 손바닥과 주먹 사진을 몇 초씩 찍고 학습시켜보면, 딱 삼 분 만에 분류기가 만들어져요. 이 짧은 실습이 보여주는 건 만드는 법이 아니라 딸려오는 조건 셋이에요. 첫째, 내 자료로 학습을 시켜야 시작돼요. 둘째, 자료가 적으면 결과가 흔들려요. 셋째, 일이 바뀌면 처음부터 다시예요. 손 모양 대신 컵과 병을 가르려면 찍어둔 것을 버리고 새로 찍어야 해요. 오늘 볼 여덟 갈래는 이 조건을 하나씩 무너뜨려요. 어떤 것은 학습 단계를 아예 건너뛰고, 어떤 것은 자료가 스무 줄뿐이어도 안 무너지고, 어떤 것은 하나의 모델이 표든 세포든 원자든 가리지 않고 받아요.</p>
+
+    <h2>밑에 깔린 네 개의 발상</h2>
+    <p>여덟 갈래는 저마다 달라 보이지만 밑에 깔린 발상은 넷뿐이에요. 기반 모델(foundation model)은 남의 자료를 엄청나게 미리 배워두고, 내 자료를 보여주기만 하면 학습 없이 답이 나와요(제로샷, 맥락 내 학습). 확산(diffusion)은 깨끗한 것에 잡음을 섞어 망가뜨리는 법을 거꾸로 익혀, 완전한 잡음에서 시작해 조금씩 걷어내며 없던 것을 만들어요. 그래프 신경망(graph neural network)은 자료를 점과 선으로 보고 "무엇이 무엇과 이어져 있는가"가 중요한 자료에 맞춰, 각 점이 이웃의 정보를 받아 자기 상태를 고쳐요. 검증 가능한 보상(verifiable reward)은 사람이 채점하는 대신 기계가 정답 여부를 확인할 수 있는 문제에만 보상을 걸어요. 이 넷을 알아두면 내년에 또 새 분야가 열렸을 때 그 분야가 어느 뼈대 위에 서 있는지 짐작할 수 있어요. 다음 글부터 이 발상들이 실제로 어떻게 작동하는지, 먼저 표를 읽는 기반모델부터 들어가볼게요.</p>
+
+    <a class="post-nav" href="foundation-models-for-tables.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">학습 없이 표를 읽는 모델</span>
+    </a>
+
+    <hr>
+
+    <h3>"AI가 새로 연 곳들" 시리즈</h3>
+    <p class="post-date">(1) 같은 주에 다른 데서 벌어진 일들 (이 글)</p>
+    <a class="post-nav" href="foundation-models-for-tables.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">학습 없이 표를 읽는 모델</span>
+    </a>
+    <a class="post-nav" href="from-sequence-to-structure.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">서열을 읽던 모델이 간 곳 — 유전체와 구조 예측</span>
+    </a>
+    <a class="post-nav" href="designing-proteins-backwards.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">방향을 뒤집다 — 없던 단백질을 짓는 법</span>
+    </a>
+    <a class="post-nav" href="new-molecules-new-crystals.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">없던 분자와 없던 결정</span>
+    </a>
+    <a class="post-nav" href="graphs-and-interatomic-forces.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">점과 선으로 보는 세계 — 그래프 신경망과 원자 사이의 힘</span>
+    </a>
+    <a class="post-nav" href="learning-the-weather-instead-of-computing-it.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">슈퍼컴퓨터가 하던 일을 배우다 — 기상 기반모델</span>
+    </a>
+    <a class="post-nav" href="a-model-with-a-body.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">몸을 얻은 모델</span>
+    </a>
+    <a class="post-nav" href="rewards-where-grading-is-possible.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">채점이 되는 곳에 걸리는 보상</span>
+    </a>
+    <a class="post-nav" href="open-versus-usable-today.html">
+      <span class="post-nav-label">(10)</span>
+      <span class="post-nav-title">공개된 것과 오늘 쓸 수 있는 것 — 라이선스 네 계단</span>
+    </a>
+    <a class="post-nav" href="knowing-where-not-to-go-is-also-a-map.html">
+      <span class="post-nav-label">(11)</span>
+      <span class="post-nav-title">안 갈 데를 아는 것도 지도입니다</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+</body>
+</html>
