@@ -16,6 +16,7 @@
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;600;700;900&display=swap');
 
   :root{
+    --nav-h:0px;
     --ink:#1E2530;
     --sub:#5B6472;
     --paper:#F6F7F4;
@@ -68,7 +69,7 @@
     font-family:'Noto Sans KR', -apple-system, sans-serif;
     line-height:1.7;
   }
-  .wrap{ max-width:760px; margin:0 auto; padding:48px 24px 80px; }
+  .wrap{ max-width:960px; margin:0 auto; padding:48px 32px 80px; }
 
   .kicker{
     font-family:'IBM Plex Mono', monospace;
@@ -94,6 +95,12 @@
     background:var(--card);
     border:1px solid var(--line);
     border-radius:10px;
+    position:sticky;
+    top:12px;
+    z-index:30;
+    box-shadow:0 6px 16px var(--shadow);
+    max-height:min(60vh,420px);
+    overflow-y:auto;
   }
   nav.toc a{
     font-family:'IBM Plex Mono', monospace;
@@ -127,7 +134,7 @@
     padding:24px 26px;
     margin-bottom:20px;
     box-shadow:0 1px 2px var(--shadow);
-    scroll-margin-top:16px;
+    scroll-margin-top:calc(var(--nav-h) + 16px);
   }
   .qnum{
     font-family:'IBM Plex Mono', monospace;
@@ -204,6 +211,7 @@
     padding:24px 26px;
     margin-bottom:28px;
     box-shadow:0 1px 2px var(--shadow);
+    scroll-margin-top:calc(var(--nav-h) + 16px);
   }
   .refcard h2{
     font-size:17px;
@@ -318,6 +326,8 @@
         <a href="#q2">Q2 F1 적용범위</a>
         <a href="#q3">Q3 정밀도·재현율</a>
         <a href="#q4">Q4 micro/macro</a>
+        <a href="#q13">Q13 P-R 곡선</a>
+        <a href="#q16">Q16 F1 봉우리</a>
       </div>
     </div>
     <div class="toc-row">
@@ -329,11 +339,19 @@
     </div>
     <div class="toc-row">
       <span class="toc-cat">계열4 · perplexity</span>
-      <div class="pills"><a href="#q7">Q7 perplexity</a></div>
+      <div class="pills">
+        <a href="#q7">Q7 perplexity</a>
+        <a href="#q18">Q18 perplexity 스파이크</a>
+      </div>
     </div>
     <div class="toc-row">
       <span class="toc-cat">계열5 · pass@k</span>
-      <div class="pills"><a href="#q8">Q8 pass@k</a></div>
+      <div class="pills">
+        <a href="#q8">Q8 pass@k</a>
+        <a href="#q14">Q14 pass@k 곡선</a>
+        <a href="#q15">Q15 temperature 분포</a>
+        <a href="#q19">Q19 R1-Zero 정확도·길이</a>
+      </div>
     </div>
     <div class="toc-row">
       <span class="toc-cat">계열6 · LLM-as-judge</span>
@@ -345,18 +363,7 @@
         <a href="#q10">Q10 형식 vs 내용</a>
         <a href="#q11">Q11 비용 순서</a>
         <a href="#q12">Q12 보고 원칙</a>
-      </div>
-    </div>
-    <div class="toc-row">
-      <span class="toc-cat">계열8 · 그래프 읽기</span>
-      <div class="pills">
-        <a href="#q13">Q13 P-R 곡선</a>
-        <a href="#q14">Q14 pass@k 곡선</a>
-        <a href="#q15">Q15 temperature 분포</a>
-        <a href="#q16">Q16 F1 봉우리</a>
         <a href="#q17">Q17 few-shot 그래프</a>
-        <a href="#q18">Q18 perplexity 스파이크</a>
-        <a href="#q19">Q19 R1-Zero 정확도·길이</a>
       </div>
     </div>
   </nav>
@@ -559,6 +566,52 @@
     </div>
   </div>
 
+  <div class="item" id="q13">
+    <span class="qnum">Q13</span>
+    <p class="qtext">판정 기준을 엄격하게 할수록 정밀도는 오르고 재현율은 내려가는 그래프(선 2개, 반대 방향). 이 그래프가 보여주는 것은?</p>
+    <figure class="chart">
+      <svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="정밀도-재현율 트레이드오프 곡선">
+        <line x1="40" y1="15" x2="40" y2="145" class="ax"/>
+        <line x1="40" y1="145" x2="380" y2="145" class="ax"/>
+        <text x="10" y="20" class="lbl">점수</text>
+        <text x="330" y="165" class="lbl">기준(느슨→엄격)</text>
+        <path d="M40,130 C120,115 220,60 380,25" fill="none" stroke="var(--q)" stroke-width="2.5"/>
+        <path d="M40,25 C120,55 220,110 380,135" fill="none" stroke="var(--f)" stroke-width="2.5"/>
+        <circle cx="215" cy="82" r="3.5" fill="var(--ink)"/>
+        <rect x="255" y="18" width="10" height="10" fill="var(--q)"/>
+        <text x="270" y="27" class="lgd">정밀도</text>
+        <rect x="255" y="34" width="10" height="10" fill="var(--f)"/>
+        <text x="270" y="43" class="lgd">재현율</text>
+      </svg>
+      <p class="chart-cap">기준이 엄격해질수록 정밀도↑ 재현율↓ — 교차점 부근이 균형 지점</p>
+    </figure>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>정밀도와 재현율은 동시에 최대로 만들 수 없는 <strong>트레이드오프 관계</strong>라는 것. 기준을 어디로 잡을지는 업무의 위험(놓치면 위험한지, 오탐이 위험한지)에 따라 정해야 한다.</p>
+    </div>
+  </div>
+
+  <div class="item" id="q16">
+    <span class="qnum">Q16</span>
+    <p class="qtext">판정 기준을 바꿔가며 F1 점수를 그린 그래프에 봉우리(최고점)가 하나 있다. 이 봉우리가 의미하는 것은?</p>
+    <figure class="chart">
+      <svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="F1 vs 판정기준 봉우리 곡선">
+        <line x1="40" y1="15" x2="40" y2="145" class="ax"/>
+        <line x1="40" y1="145" x2="380" y2="145" class="ax"/>
+        <text x="10" y="20" class="lbl">F1</text>
+        <text x="330" y="165" class="lbl">기준(느슨→엄격)</text>
+        <path d="M40,130 C120,90 180,30 210,28 C240,30 300,95 380,135" fill="none" stroke="var(--q)" stroke-width="2.5"/>
+        <circle cx="210" cy="28" r="4" fill="var(--a)"/>
+        <text x="188" y="18" class="lgd" fill="var(--a)">최적 지점</text>
+      </svg>
+      <p class="chart-cap">정밀도·재현율 균형이 가장 좋은 기준값에서 F1이 최고점을 찍는다</p>
+    </figure>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>정밀도와 재현율의 균형이 가장 잘 맞는 지점 — 그 기준값이 이 과업에서 F1을 최대화하는 <strong>"최적 지점"</strong>이라는 뜻.</p>
+    </div>
+  </div>
+
   <div class="fam"><span class="fam-tag">계열 3 · BLEU/ROUGE (n-gram 겹침)</span><span class="fam-line"></span></div>
 
   <div class="item" id="q5">
@@ -695,6 +748,32 @@
     </div>
   </div>
 
+  <div class="item" id="q18">
+    <span class="qnum">Q18</span>
+    <p class="qtext">perplexity 그래프에서 특정 지점이 갑자기 확 치솟았다. 이게 의미하는 것은?</p>
+    <figure class="chart">
+      <svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="perplexity 스파이크 그래프">
+        <line x1="40" y1="15" x2="40" y2="145" class="ax"/>
+        <line x1="40" y1="145" x2="380" y2="145" class="ax"/>
+        <text x="10" y="20" class="lbl">perplexity</text>
+        <text x="320" y="165" class="lbl">문장 속 단어 순서</text>
+        <path d="M40,132 L110,128 L170,130 L215,35 L260,126 L330,124 L380,120" fill="none" stroke="var(--f)" stroke-width="2.5"/>
+        <circle cx="215" cy="35" r="4.5" fill="var(--f)"/>
+        <text x="180" y="24" class="lgd" fill="var(--f)">스파이크</text>
+      </svg>
+      <p class="chart-cap">평소엔 낮게 유지되다 한 지점에서 급등 — 그 단어를 모델이 전혀 예상 못 했다는 뜻</p>
+    </figure>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>그 지점에서 모델이 <strong>크게 놀랐다(예측 실패)</strong>는 뜻 — 다음 단어에 낮은 확률을 줬는데 실제로 그 단어가 나온 경우.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문 (실무)</span>
+      <p class="fq">문장 안에서 단어별로 그린 그래프라면, 어떤 종류의 단어에서 스파이크가 자주 튈까? 학습 과정(시간)에 따라 그린 그래프라면 스파이크는 뭘 의미할까?</p>
+      <p class="fa"><strong>답</strong>: 문장 내 그래프라면 고유명사·드문 전문용어·갑작스러운 화제 전환처럼 모델이 예상 못 한 단어에서 튄다. 학습 곡선이라면 원래 꾸준히 내려가야 정상인데 중간에 튀는 건 학습률이 너무 높았거나 데이터 이상, 학습 불안정 같은 <strong>문제 신호</strong>로 읽어야 한다.</p>
+    </div>
+  </div>
+
   <div class="fam"><span class="fam-tag">계열 5 · pass@k</span><span class="fam-line"></span></div>
 
   <div class="item" id="q8">
@@ -712,6 +791,16 @@
       <span class="block-label">후속질문</span>
       <p class="fq">pass@k를 보고할 때 점수 말고 같이 적어야 할 정보 세 가지는?</p>
       <p class="fa"><strong>답</strong>: ① temperature(샘플링 다양성 설정) ② 생성한 후보 수(k) ③ 테스트 커버리지(테스트가 얼마나 꼼꼼했는지). 이 셋 없이는 다른 사람이 같은 조건으로 재현할 수 없다.</p>
+    </div>
+    <p class="addq"><span class="addq-tag">추가문제 · 재현성 vs 해석 가능성</span>그럼 pass@1 점수 자체도 이 "같이 적어야 할 정보"에 들어가야 하지 않을까? 바로 앞에서 pass@10의 의미를 판단하려면 pass@1이 필요하다고 했는데.</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>좋은 지적이지만, 이건 <strong>서로 다른 두 질문</strong>을 섞은 것이다. ① temperature·k·테스트 커버리지는 <strong>"재현 가능한가"</strong>에 대한 답 — 이 셋만 알면 남이 같은 조건으로 실험을 다시 돌려서 pass@1이든 pass@10이든 직접 뽑아낼 수 있다. ② 반면 "pass@10=0.75가 의미 있는 향상인가"는 <strong>"이 숫자를 어떻게 해석하는가"</strong>의 문제다 — pass@1을 나란히 봐야 k를 늘린 게 진짜 효과가 있었는지(pass@1부터 이미 높았던 건 아닌지) 판단할 수 있다. 즉 pass@1은 재현에 필요한 메타데이터가 아니라, 보고서에서 <strong>pass@k와 나란히 같이 적어야 할 비교값</strong>이다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문</span>
+      <p class="fq">그럼 보고서에 "재현 가능성 정보"와 "해석용 비교값"을 구분해서 적으라면, 각각 어디에 뭘 적어야 할까?</p>
+      <p class="fa"><strong>답</strong>: 재현 가능성 정보란(temperature, k, 테스트 커버리지)에는 실험을 그대로 재현할 수 있는 조건만 적는다. 해석용 비교값란에는 pass@1, pass@10처럼 <strong>여러 k값의 점수를 같이 나열</strong>해서, 읽는 사람이 "k를 늘린 게 실제로 얼마나 이득이었는지"를 스스로 판단할 수 있게 한다. 이 둘을 섞어서 하나의 목록에 넣으면 "무엇을 위한 정보인지"가 흐려진다.</p>
     </div>
     <p class="addq"><span class="addq-tag">추가문제</span>pass@k를 계산할 때 컴파일 오류나 실행 중 예외가 난 후보는 어떻게 처리하나?</p>
     <div class="block ans">
@@ -745,6 +834,144 @@
     </div>
   </div>
 
+  <div class="item" id="q14">
+    <span class="qnum">Q14</span>
+    <p class="qtext">k(후보 개수)를 늘릴수록 pass@k가 오르다가 기울기가 완만해지는 그래프(선 1개). 이게 의미하는 것은?</p>
+    <figure class="chart">
+      <svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="pass@k vs k 그래프">
+        <line x1="40" y1="15" x2="40" y2="145" class="ax"/>
+        <line x1="40" y1="145" x2="380" y2="145" class="ax"/>
+        <text x="10" y="20" class="lbl">pass@k</text>
+        <text x="350" y="165" class="lbl">k</text>
+        <path d="M40,140 C90,80 140,40 200,28 C260,20 320,17 380,15" fill="none" stroke="var(--q)" stroke-width="2.5"/>
+        <path d="M40,110 L380,108" fill="none" stroke="var(--f)" stroke-width="2.5" stroke-dasharray="5 4"/>
+        <rect x="255" y="18" width="10" height="10" fill="var(--q)"/>
+        <text x="270" y="27" class="lgd">다양성 높음</text>
+        <rect x="255" y="34" width="10" height="10" fill="var(--f)"/>
+        <text x="270" y="43" class="lgd">다양성 낮음(temp=0)</text>
+      </svg>
+      <p class="chart-cap">다양성 있으면 k 늘수록 상승 후 완만해짐, 없으면 거의 평평(pass@1≈pass@10)</p>
+    </figure>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>후보를 늘릴수록 성공 확률은 오르지만 늘어나는 속도는 둔해진다. <strong>다양성(temperature)이 낮으면 이 곡선이 거의 평평해진다</strong> — k를 늘려도 소용없다는 뜻.</p>
+    </div>
+  </div>
+
+  <div class="item" id="q15">
+    <span class="qnum">Q15</span>
+    <p class="qtext">temperature를 낮췄을 때와 높였을 때 확률분포 곡선 모양이 다르게 그려진 그래프(뾰족한 봉우리 vs 완만하게 퍼진 모양). 뭘 보여주는가?</p>
+    <p style="margin:-8px 0 16px;font-size:13.5px;color:var(--sub);"><em>※ temperature란: 모델이 다음 단어를 고를 때 후보들에 매긴 확률을, 얼마나 극단적으로(또는 고르게) 쓸지 조절하는 값. 0에 가까울수록 1등 후보를 거의 확정적으로 골라 매번 같은 답이 나오고, 값을 높일수록 후보들 사이 확률 차이가 줄어들어 다양한 답이 나온다.</em></p>
+    <figure class="chart">
+      <svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="temperature에 따른 확률분포 모양">
+        <line x1="40" y1="15" x2="40" y2="145" class="ax"/>
+        <line x1="40" y1="145" x2="380" y2="145" class="ax"/>
+        <text x="10" y="20" class="lbl">확률</text>
+        <text x="330" y="165" class="lbl">후보 단어들</text>
+        <path d="M40,143 C140,143 190,20 210,20 C230,20 280,143 380,143" fill="none" stroke="var(--q)" stroke-width="2.5"/>
+        <path d="M40,120 C120,90 160,75 210,72 C260,75 300,90 380,120" fill="none" stroke="var(--f)" stroke-width="2.5"/>
+        <rect x="255" y="18" width="10" height="10" fill="var(--q)"/>
+        <text x="270" y="27" class="lgd">temp 낮음(뾰족)</text>
+        <rect x="255" y="34" width="10" height="10" fill="var(--f)"/>
+        <text x="270" y="43" class="lgd">temp 높음(평평)</text>
+      </svg>
+      <p class="chart-cap">뾰족할수록 한 후보에 확률 집중(항상 같은 답), 평평할수록 여러 후보에 분산(답이 매번 다름)</p>
+    </figure>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>temperature 낮음 = 한 후보에 확률이 집중(뾰족한 봉우리, 항상 같은 답). temperature 높음 = 여러 후보에 확률이 고르게 퍼짐(완만한 모양, 답이 매번 다름).</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문 · Q14와 연결</span>
+      <p class="fq">이 확률분포 모양이 Q14의 pass@k 곡선과 어떻게 이어지는가?</p>
+      <figure class="chart">
+        <svg viewBox="0 0 820 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="temperature가 pass@k 곡선의 기울기를 결정하는 과정">
+          <defs>
+            <marker id="pkarrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--sub)"/>
+            </marker>
+          </defs>
+          <text x="20" y="15" class="lbl">확률분포 (원인)</text>
+          <line x1="40" y1="20" x2="40" y2="150" class="ax"/>
+          <line x1="40" y1="150" x2="280" y2="150" class="ax"/>
+          <text x="10" y="30" class="lbl">확률</text>
+          <text x="200" y="168" class="lbl">후보 단어들</text>
+          <path d="M40,145 C90,145 120,30 140,30 C160,30 190,145 280,145" fill="none" stroke="var(--q)" stroke-width="2.5"/>
+          <path d="M40,125 C90,100 120,90 140,88 C160,90 190,100 280,125" fill="none" stroke="var(--f)" stroke-width="2.5"/>
+          <rect x="40" y="185" width="10" height="10" fill="var(--q)"/>
+          <text x="55" y="194" class="lgd">temp 낮음(뾰족)</text>
+          <rect x="160" y="185" width="10" height="10" fill="var(--f)"/>
+          <text x="175" y="194" class="lgd">temp 높음(평평)</text>
+
+          <line x1="300" y1="85" x2="545" y2="85" stroke="var(--sub)" stroke-width="2" marker-end="url(#pkarrow)"/>
+          <text x="310" y="75" class="lbl">k를 늘렸을 때</text>
+          <text x="310" y="105" class="lbl">곡선 기울기를 결정</text>
+
+          <text x="560" y="15" class="lbl">pass@k 곡선 (결과, Q14)</text>
+          <line x1="580" y1="20" x2="580" y2="150" class="ax"/>
+          <line x1="580" y1="150" x2="800" y2="150" class="ax"/>
+          <text x="550" y="30" class="lbl">pass@k</text>
+          <text x="740" y="168" class="lbl">k(후보 개수)</text>
+          <path d="M580,120 C630,118 700,116 800,113" fill="none" stroke="var(--q)" stroke-width="2.5"/>
+          <path d="M580,140 C630,95 700,55 800,25" fill="none" stroke="var(--f)" stroke-width="2.5"/>
+          <rect x="580" y="185" width="10" height="10" fill="var(--q)"/>
+          <text x="595" y="194" class="lgd">temp 낮음 → 거의 평평</text>
+          <rect x="700" y="185" width="10" height="10" fill="var(--f)"/>
+          <text x="715" y="194" class="lgd">temp 높음 → 계속 상승</text>
+        </svg>
+        <p class="chart-cap">같은 temperature 값이 왼쪽 분포 모양과 오른쪽 곡선 기울기를 동시에 만든다</p>
+      </figure>
+      <p class="fa"><strong>답</strong>: temperature는 원인이고, Q14의 pass@k 곡선 모양은 그 결과다. temperature가 낮으면(왼쪽 파란 뾰족한 분포) 모델이 매번 같은 토큰을 거의 확정적으로 골라서, 후보를 몇 개 뽑든 사실상 같은 답을 반복하는 셈이 된다 — 그래서 k를 늘려도 pass@k가 거의 안 오르고 평평하게 유지된다(pass@1≈pass@10, 오른쪽 파란 선). temperature가 높으면(왼쪽 주황 평평한 분포) 매번 다른 토큰을 고를 확률이 커져서 후보마다 서로 다른 경로를 타게 되고, k를 늘릴수록 그중 하나가 정답에 걸릴 기회가 늘어나 pass@k가 계속 오른다(오른쪽 주황 선). 즉 같은 temperature 하나가 왼쪽 분포 모양과 오른쪽 곡선 기울기를 동시에 결정하는 원인이다. 다만 temperature를 무한정 올리면 개별 후보 하나하나의 품질(pass@1)이 떨어질 수 있어서 무조건 높다고 좋은 게 아니다 — 이게 <b style="color:var(--q);">고정 3원칙</b>의 "같은 실행 조건"에 temperature가 꼭 들어가야 하는 이유다.</p>
+    </div>
+  </div>
+
+  <div class="item" id="q19">
+    <span class="qnum">Q19</span>
+    <p class="qtext">왼쪽은 훈련 스텝에 따른 AIME 정확도(pass@1, cons@16), 오른쪽은 같은 훈련 스텝에 따른 평균 응답 길이 그래프다(DeepSeek-R1-Zero). 이 두 그래프를 나란히 보여주는 이유는?</p>
+    <figure class="chart">
+      <svg viewBox="0 0 820 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="DeepSeek-R1-Zero 훈련 중 정확도와 응답 길이 그래프">
+        <line x1="40" y1="15" x2="40" y2="185" class="ax"/>
+        <line x1="40" y1="185" x2="380" y2="185" class="ax"/>
+        <text x="8" y="20" class="lbl">정확도</text>
+        <text x="325" y="205" class="lbl">Steps</text>
+        <line x1="40" y1="130" x2="380" y2="122" stroke="var(--a)" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <text x="255" y="118" class="lbl" fill="var(--a)">human 기준선</text>
+        <polyline points="45,175 65,150 85,160 105,120 125,135 145,95 165,110 185,80 205,90 225,65 245,75 265,55 285,68 305,50 325,58 345,45 365,50 378,42" fill="none" stroke="var(--f)" stroke-width="2"/>
+        <polyline points="45,180 65,170 85,165 105,150 125,155 145,135 165,140 185,120 205,125 225,110 245,115 265,100 285,105 305,95 325,98 345,88 365,90 378,85" fill="none" stroke="var(--q)" stroke-width="2"/>
+        <rect x="288" y="16" width="10" height="10" fill="var(--f)"/>
+        <text x="302" y="25" class="lgd">cons@16</text>
+        <rect x="288" y="32" width="10" height="10" fill="var(--q)"/>
+        <text x="302" y="41" class="lgd">pass@1</text>
+
+        <line x1="460" y1="15" x2="460" y2="185" class="ax"/>
+        <line x1="460" y1="185" x2="800" y2="185" class="ax"/>
+        <text x="428" y="20" class="lbl">평균 길이</text>
+        <text x="745" y="205" class="lbl">Steps</text>
+        <path d="M465,183 C520,178 560,168 600,150 C640,132 660,110 700,95 C730,85 750,80 760,72 C770,80 775,90 780,85 C790,78 795,82 797,80" fill="none" stroke="var(--q)" stroke-width="2"/>
+      </svg>
+      <p class="chart-cap">왼쪽: cons@16(빨강)이 pass@1(파랑)보다 항상 위, 둘 다 우상향. 오른쪽: 같은 훈련 구간에서 응답 길이도 우상향. (DeepSeek-R1 논문, arXiv:2501.12948 Figure 2·3을 단순화해 재구성)</p>
+    </figure>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>둘 다 같은 훈련(정답 여부만 채점하는 검증 가능한 보상 + GRPO)의 결과라는 걸 보여주려는 것. 왼쪽은 그 훈련이 실제로 정확도를 끌어올렸다는 증거이고, 오른쪽은 <strong>길이에는 아무 보상도 준 적이 없는데</strong> 모델이 스스로 "더 길게 생각해야 어려운 문제를 맞힌다"는 전략을 찾아냈다는 창발적 행동의 증거다. 두 그래프를 같이 둬야 "정답률 향상"과 "의도하지 않은 능력의 등장"이 같은 훈련 과정에서 동시에 일어났다는 게 드러난다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문</span>
+      <p class="fq">cons@16이 훈련 내내 pass@1보다 위에 있는 이유는?</p>
+      <p class="fa"><strong>답</strong>: 문제 하나에 답을 16번 뽑아 다수결로 정하는 self-consistency 방식이라, 한 번 풀 때 생기는 우연한 실수가 다수결 과정에서 걸러지기 때문. 한 번만 찍는 pass@1보다 항상 유리하거나 같다.</p>
+    </div>
+    <p class="addq"><span class="addq-tag">추가문제</span>오른쪽 그래프의 길이 증가만 보고 "응답이 길수록 정확도가 높다"고 결론 내려도 될까?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p><strong>안 된다.</strong> 두 그래프는 같은 x축(훈련 스텝)에서 함께 관찰된 상관관계일 뿐, 길이가 원인이고 정확도가 결과라는 인과관계를 증명하지 않는다. 실제로 DeepSeek-R1-Zero는 정확도는 올랐지만 가독성 저하·언어 혼용 같은 부작용도 있었고, 그래서 후속 모델 R1에는 콜드스타트 SFT가 추가됐다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문 (실무)</span>
+      <p class="fq">Steps(가로축)는 정확히 무엇을 세는 단위인가?</p>
+      <p class="fa"><strong>답</strong>: 문제 하나를 풀어본 횟수가 아니라, 모델 가중치를 한 번 조정한 횟수. 한 스텝 안에서 문제 여러 개를 배치로 가져와 각 문제마다 답을 그룹(예: 16~64개)으로 샘플링하고, 그룹 내 비교(GRPO)로 어느 답을 밀고 어느 답을 누를지 정한 뒤 가중치를 딱 한 번 업데이트한다.</p>
+    </div>
+  </div>
+
   <div class="fam"><span class="fam-tag">계열 6 · LLM-as-judge</span><span class="fam-line"></span></div>
 
   <div class="item" id="q9">
@@ -757,7 +984,7 @@
     <div class="block follow">
       <span class="block-label">후속질문</span>
       <p class="fq">순서 편향을 줄이려면 실험 설계를 어떻게 바꿔야 할까?</p>
-      <p class="fa"><strong>답</strong>: 쌍대 비교의 출력 위치를 무작위로 바꿔가며 채점시킨다. 절반은 A를 먼저, 절반은 B를 먼저 보여준 뒤 두 결과를 평균 내면 순서 편향이 상쇄된다.</p>
+      <p class="fa"><strong>답</strong>: 먼저 "쌍대 비교"란 답 하나에 혼자 점수를 매기는 게 아니라, 두 답을 나란히 놓고 "뭐가 더 나아?"라고 <strong>맞대결</strong>시켜 비교하는 방식이다. 이 대결에서 순서 편향을 줄이려면, 같은 A·B 쌍을 위치만 바꿔서 두 번 채점시킨다 — 한 번은 "A를 왼쪽", 한 번은 "B를 왼쪽"에 두고 각각 채점한 뒤 두 결과를 평균 낸다. 그러면 "먼저 보여준 쪽이 유리해지는" 위치 효과가 서로 상쇄된다.</p>
     </div>
     <p class="addq"><span class="addq-tag">추가문제</span>GPT 모델이 "GPT가 낸 답"과 "Claude가 낸 답"을 비교 채점한다면 어떤 문제가 생길 수 있을까?</p>
     <div class="block ans">
@@ -778,6 +1005,16 @@
       <span class="block-label">후속질문 (실무)</span>
       <p class="fq">교육 플랫폼이 학생 논술 답안을 LLM-as-judge로 채점하는데, rubric 없이 "이 답안이 몇 점짜리인지 평가해줘"라고만 시켰다면 어떤 문제가 생길까?</p>
       <p class="fa"><strong>답</strong>: 채점 기준이 매번 달라질 수 있어서 같은 수준의 답안인데도 다른 점수를 받을 수 있고, 학생이 이의를 제기해도 "왜 이 점수인지" 구체적으로 설명할 근거가 없다. 항목별 rubric(논지 명확성, 근거 타당성 등)이 있어야 일관되고 설명 가능한 채점이 된다.</p>
+    </div>
+    <p class="addq"><span class="addq-tag">추가문제 3 (통합형 · Q5 연결)</span>Q5에서 다룬 판결문 요약 검수를 ROUGE 대신 <strong>LLM-as-judge + rubric</strong>으로 완전히 넘기면, 법리 왜곡·부정어 오독 위험이 이제 안전하게 해결될까?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p><strong>아니다.</strong> LLM-as-judge도 그 자체로 편향에서 자유롭지 않다. ① <strong>장황한 답 선호</strong> 편향 때문에, 핵심 법리를 놓친 요약이라도 길고 그럴듯하게 쓰였다는 이유만으로 더 높은 점수를 받을 수 있다. ② rubric이 있어도 <strong>심사 모델 자신이 원본 판결문을 정확히 이해했는지는 검증되지 않은 전제</strong>다 — 심사 모델이 법리를 잘못 읽으면 잘못된 기준으로 채점하는 셈이 된다. 즉 LLM-as-judge는 사람 검토 부담을 줄여주는 도구이지, 사람 검토를 완전히 대체할 만큼 신뢰할 근거는 아니다. Q11의 "①이 제일 싸고 ③으로 갈수록 비싸다"는 순서에서, 가장 비싼 ③(LLM-as-judge)조차 안전을 최종 보증하지는 않는다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문 (실무 · Q12 연결)</span>
+      <p class="fq">그럼 법률 문서처럼 오류 비용이 큰 도메인에서, LLM-as-judge를 실무에 넣는다면 어떤 역할로 넣는 게 안전할까?</p>
+      <p class="fa"><strong>답</strong>: 최종 판정자가 아니라, 사람 검토 우선순위를 정해주는 <strong>1차 필터</strong>로 쓰는 게 안전하다. LLM-as-judge가 "이 요약은 의심스럽다"고 표시한 것부터 사람이 먼저 보게 해서 전체 검토량은 줄이되, 최종 승인 권한은 사람에게 남겨둔다. Q12에서 다룬 "숫자 하나로 우열을 단정하지 않는다"는 원칙이 LLM-as-judge에도 그대로 적용되는 것.</p>
     </div>
   </div>
 
@@ -885,153 +1122,16 @@
     </div>
   </div>
 
-  <div class="fam"><span class="fam-tag">계열 8 · 그래프 읽기 (예상)</span><span class="fam-line"></span></div>
-
-  <div class="item" id="q13">
-    <span class="qnum">Q13</span>
-    <p class="qtext">판정 기준을 엄격하게 할수록 정밀도는 오르고 재현율은 내려가는 그래프(선 2개, 반대 방향). 이 그래프가 보여주는 것은?</p>
-    <figure class="chart">
-      <svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="정밀도-재현율 트레이드오프 곡선">
-        <line x1="40" y1="15" x2="40" y2="145" class="ax"/>
-        <line x1="40" y1="145" x2="380" y2="145" class="ax"/>
-        <text x="10" y="20" class="lbl">점수</text>
-        <text x="330" y="165" class="lbl">기준(느슨→엄격)</text>
-        <path d="M40,130 C120,115 220,60 380,25" fill="none" stroke="var(--q)" stroke-width="2.5"/>
-        <path d="M40,25 C120,55 220,110 380,135" fill="none" stroke="var(--f)" stroke-width="2.5"/>
-        <circle cx="215" cy="82" r="3.5" fill="var(--ink)"/>
-        <rect x="255" y="18" width="10" height="10" fill="var(--q)"/>
-        <text x="270" y="27" class="lgd">정밀도</text>
-        <rect x="255" y="34" width="10" height="10" fill="var(--f)"/>
-        <text x="270" y="43" class="lgd">재현율</text>
-      </svg>
-      <p class="chart-cap">기준이 엄격해질수록 정밀도↑ 재현율↓ — 교차점 부근이 균형 지점</p>
-    </figure>
-    <div class="block ans">
-      <span class="block-label">모범답</span>
-      <p>정밀도와 재현율은 동시에 최대로 만들 수 없는 <strong>트레이드오프 관계</strong>라는 것. 기준을 어디로 잡을지는 업무의 위험(놓치면 위험한지, 오탐이 위험한지)에 따라 정해야 한다.</p>
-    </div>
-  </div>
-
-  <div class="item" id="q14">
-    <span class="qnum">Q14</span>
-    <p class="qtext">k(후보 개수)를 늘릴수록 pass@k가 오르다가 기울기가 완만해지는 그래프(선 1개). 이게 의미하는 것은?</p>
-    <figure class="chart">
-      <svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="pass@k vs k 그래프">
-        <line x1="40" y1="15" x2="40" y2="145" class="ax"/>
-        <line x1="40" y1="145" x2="380" y2="145" class="ax"/>
-        <text x="10" y="20" class="lbl">pass@k</text>
-        <text x="350" y="165" class="lbl">k</text>
-        <path d="M40,140 C90,80 140,40 200,28 C260,20 320,17 380,15" fill="none" stroke="var(--q)" stroke-width="2.5"/>
-        <path d="M40,110 L380,108" fill="none" stroke="var(--f)" stroke-width="2.5" stroke-dasharray="5 4"/>
-        <rect x="255" y="18" width="10" height="10" fill="var(--q)"/>
-        <text x="270" y="27" class="lgd">다양성 높음</text>
-        <rect x="255" y="34" width="10" height="10" fill="var(--f)"/>
-        <text x="270" y="43" class="lgd">다양성 낮음(temp=0)</text>
-      </svg>
-      <p class="chart-cap">다양성 있으면 k 늘수록 상승 후 완만해짐, 없으면 거의 평평(pass@1≈pass@10)</p>
-    </figure>
-    <div class="block ans">
-      <span class="block-label">모범답</span>
-      <p>후보를 늘릴수록 성공 확률은 오르지만 늘어나는 속도는 둔해진다. <strong>다양성(temperature)이 낮으면 이 곡선이 거의 평평해진다</strong> — k를 늘려도 소용없다는 뜻.</p>
-    </div>
-  </div>
-
-  <div class="item" id="q15">
-    <span class="qnum">Q15</span>
-    <p class="qtext">temperature를 낮췄을 때와 높였을 때 확률분포 곡선 모양이 다르게 그려진 그래프(뾰족한 봉우리 vs 완만하게 퍼진 모양). 뭘 보여주는가?</p>
-    <figure class="chart">
-      <svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="temperature에 따른 확률분포 모양">
-        <line x1="40" y1="15" x2="40" y2="145" class="ax"/>
-        <line x1="40" y1="145" x2="380" y2="145" class="ax"/>
-        <text x="10" y="20" class="lbl">확률</text>
-        <text x="330" y="165" class="lbl">후보 단어들</text>
-        <path d="M40,143 C140,143 190,20 210,20 C230,20 280,143 380,143" fill="none" stroke="var(--q)" stroke-width="2.5"/>
-        <path d="M40,120 C120,90 160,75 210,72 C260,75 300,90 380,120" fill="none" stroke="var(--f)" stroke-width="2.5"/>
-        <rect x="255" y="18" width="10" height="10" fill="var(--q)"/>
-        <text x="270" y="27" class="lgd">temp 낮음(뾰족)</text>
-        <rect x="255" y="34" width="10" height="10" fill="var(--f)"/>
-        <text x="270" y="43" class="lgd">temp 높음(평평)</text>
-      </svg>
-      <p class="chart-cap">뾰족할수록 한 후보에 확률 집중(항상 같은 답), 평평할수록 여러 후보에 분산(답이 매번 다름)</p>
-    </figure>
-    <div class="block ans">
-      <span class="block-label">모범답</span>
-      <p>temperature 낮음 = 한 후보에 확률이 집중(뾰족한 봉우리, 항상 같은 답). temperature 높음 = 여러 후보에 확률이 고르게 퍼짐(완만한 모양, 답이 매번 다름).</p>
-    </div>
-    <div class="block follow">
-      <span class="block-label">후속질문 · Q14와 연결</span>
-      <p class="fq">이 확률분포 모양이 Q14의 pass@k 곡선과 어떻게 이어지는가?</p>
-      <figure class="chart">
-        <svg viewBox="0 0 820 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="temperature가 pass@k 곡선의 기울기를 결정하는 과정">
-          <defs>
-            <marker id="pkarrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
-              <path d="M0,0 L10,5 L0,10 z" fill="var(--sub)"/>
-            </marker>
-          </defs>
-          <text x="20" y="15" class="lbl">확률분포 (원인)</text>
-          <line x1="40" y1="20" x2="40" y2="150" class="ax"/>
-          <line x1="40" y1="150" x2="280" y2="150" class="ax"/>
-          <text x="10" y="30" class="lbl">확률</text>
-          <text x="200" y="168" class="lbl">후보 단어들</text>
-          <path d="M40,145 C90,145 120,30 140,30 C160,30 190,145 280,145" fill="none" stroke="var(--q)" stroke-width="2.5"/>
-          <path d="M40,125 C90,100 120,90 140,88 C160,90 190,100 280,125" fill="none" stroke="var(--f)" stroke-width="2.5"/>
-          <rect x="40" y="185" width="10" height="10" fill="var(--q)"/>
-          <text x="55" y="194" class="lgd">temp 낮음(뾰족)</text>
-          <rect x="160" y="185" width="10" height="10" fill="var(--f)"/>
-          <text x="175" y="194" class="lgd">temp 높음(평평)</text>
-
-          <line x1="300" y1="85" x2="545" y2="85" stroke="var(--sub)" stroke-width="2" marker-end="url(#pkarrow)"/>
-          <text x="310" y="75" class="lbl">k를 늘렸을 때</text>
-          <text x="310" y="105" class="lbl">곡선 기울기를 결정</text>
-
-          <text x="560" y="15" class="lbl">pass@k 곡선 (결과, Q14)</text>
-          <line x1="580" y1="20" x2="580" y2="150" class="ax"/>
-          <line x1="580" y1="150" x2="800" y2="150" class="ax"/>
-          <text x="550" y="30" class="lbl">pass@k</text>
-          <text x="740" y="168" class="lbl">k(후보 개수)</text>
-          <path d="M580,120 C630,118 700,116 800,113" fill="none" stroke="var(--q)" stroke-width="2.5"/>
-          <path d="M580,140 C630,95 700,55 800,25" fill="none" stroke="var(--f)" stroke-width="2.5"/>
-          <rect x="580" y="185" width="10" height="10" fill="var(--q)"/>
-          <text x="595" y="194" class="lgd">temp 낮음 → 거의 평평</text>
-          <rect x="700" y="185" width="10" height="10" fill="var(--f)"/>
-          <text x="715" y="194" class="lgd">temp 높음 → 계속 상승</text>
-        </svg>
-        <p class="chart-cap">같은 temperature 값이 왼쪽 분포 모양과 오른쪽 곡선 기울기를 동시에 만든다</p>
-      </figure>
-      <p class="fa"><strong>답</strong>: temperature는 원인이고, Q14의 pass@k 곡선 모양은 그 결과다. temperature가 낮으면(왼쪽 파란 뾰족한 분포) 모델이 매번 같은 토큰을 거의 확정적으로 골라서, 후보를 몇 개 뽑든 사실상 같은 답을 반복하는 셈이 된다 — 그래서 k를 늘려도 pass@k가 거의 안 오르고 평평하게 유지된다(pass@1≈pass@10, 오른쪽 파란 선). temperature가 높으면(왼쪽 주황 평평한 분포) 매번 다른 토큰을 고를 확률이 커져서 후보마다 서로 다른 경로를 타게 되고, k를 늘릴수록 그중 하나가 정답에 걸릴 기회가 늘어나 pass@k가 계속 오른다(오른쪽 주황 선). 즉 같은 temperature 하나가 왼쪽 분포 모양과 오른쪽 곡선 기울기를 동시에 결정하는 원인이다. 다만 temperature를 무한정 올리면 개별 후보 하나하나의 품질(pass@1)이 떨어질 수 있어서 무조건 높다고 좋은 게 아니다 — 이게 <b style="color:var(--q);">고정 3원칙</b>의 "같은 실행 조건"에 temperature가 꼭 들어가야 하는 이유다.</p>
-    </div>
-  </div>
-
-  <div class="item" id="q16">
-    <span class="qnum">Q16</span>
-    <p class="qtext">판정 기준을 바꿔가며 F1 점수를 그린 그래프에 봉우리(최고점)가 하나 있다. 이 봉우리가 의미하는 것은?</p>
-    <figure class="chart">
-      <svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="F1 vs 판정기준 봉우리 곡선">
-        <line x1="40" y1="15" x2="40" y2="145" class="ax"/>
-        <line x1="40" y1="145" x2="380" y2="145" class="ax"/>
-        <text x="10" y="20" class="lbl">F1</text>
-        <text x="330" y="165" class="lbl">기준(느슨→엄격)</text>
-        <path d="M40,130 C120,90 180,30 210,28 C240,30 300,95 380,135" fill="none" stroke="var(--q)" stroke-width="2.5"/>
-        <circle cx="210" cy="28" r="4" fill="var(--a)"/>
-        <text x="188" y="18" class="lgd" fill="var(--a)">최적 지점</text>
-      </svg>
-      <p class="chart-cap">정밀도·재현율 균형이 가장 좋은 기준값에서 F1이 최고점을 찍는다</p>
-    </figure>
-    <div class="block ans">
-      <span class="block-label">모범답</span>
-      <p>정밀도와 재현율의 균형이 가장 잘 맞는 지점 — 그 기준값이 이 과업에서 F1을 최대화하는 <strong>"최적 지점"</strong>이라는 뜻.</p>
-    </div>
-  </div>
-
   <div class="item" id="q17">
     <span class="qnum">Q17</span>
     <p class="qtext">예시 개수(0개→1개→여러 개)가 늘어날수록 정확도가 오르는 선 그래프(GPT-3 zero-shot 64.3 → one-shot 68.2 → few-shot 71.8). 이 그래프를 읽을 때 주의할 점은?</p>
+    <p style="margin:-8px 0 16px;font-size:13.5px;color:var(--sub);"><em>※ zero-shot/one-shot/few-shot이란: 모델을 다시 학습(파인튜닝)시키는 게 아니라, <strong>프롬프트 안에 예시를 몇 개 넣어주느냐</strong>의 차이다. zero-shot은 예시 없이 바로 문제만 주는 것, one-shot은 예시 1개를 먼저 보여준 뒤 문제를 주는 것, few-shot은 예시 여러 개(보통 몇 개~수십 개)를 먼저 보여준 뒤 문제를 주는 것. 아래 그래프는 "예시를 0개→1개→여러 개로 늘렸더니 GPT-3의 정확도가 64.3→68.2→71.8로 올라갔다"는 관찰을 보여준다.</em></p>
     <figure class="chart">
       <svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="예시 개수에 따른 정확도 그래프">
         <line x1="40" y1="15" x2="40" y2="145" class="ax"/>
         <line x1="40" y1="145" x2="380" y2="145" class="ax"/>
         <text x="10" y="20" class="lbl">정확도</text>
-        <text x="340" y="165" class="lbl">예시 개수</text>
+        <text x="170" y="178" class="lbl">예시 개수</text>
         <path d="M70,90 L210,62 L350,32" fill="none" stroke="var(--q)" stroke-width="2.5"/>
         <circle cx="70" cy="90" r="4" fill="var(--q)"/>
         <circle cx="210" cy="62" r="4" fill="var(--q)"/>
@@ -1041,86 +1141,13 @@
         <text x="335" y="50" class="lbl">71.8</text>
         <text x="55" y="160" class="lbl">zero</text>
         <text x="200" y="160" class="lbl">one</text>
-        <text x="330" y="160" class="lbl">few</text>
+        <text x="335" y="160" class="lbl">few</text>
       </svg>
       <p class="chart-cap">GPT-3·SuperGLUE라는 특정 조건에서 나온 값 — 다른 모델·과업에 그대로 일반화 불가</p>
     </figure>
     <div class="block ans">
       <span class="block-label">모범답</span>
-      <p>이 숫자는 특정 모델(GPT-3), 특정 과업(SuperGLUE)에서 나온 관찰이지, <strong>"예시를 늘리면 항상 좋아진다"는 보편 법칙이 아니다.</strong> 조건이 다른 모델·과업에 그대로 적용하면 안 된다.</p>
-    </div>
-  </div>
-
-  <div class="item" id="q18">
-    <span class="qnum">Q18</span>
-    <p class="qtext">perplexity 그래프에서 특정 지점이 갑자기 확 치솟았다. 이게 의미하는 것은?</p>
-    <figure class="chart">
-      <svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="perplexity 스파이크 그래프">
-        <line x1="40" y1="15" x2="40" y2="145" class="ax"/>
-        <line x1="40" y1="145" x2="380" y2="145" class="ax"/>
-        <text x="10" y="20" class="lbl">perplexity</text>
-        <text x="320" y="165" class="lbl">문장 속 단어 순서</text>
-        <path d="M40,132 L110,128 L170,130 L215,35 L260,126 L330,124 L380,120" fill="none" stroke="var(--f)" stroke-width="2.5"/>
-        <circle cx="215" cy="35" r="4.5" fill="var(--f)"/>
-        <text x="180" y="24" class="lgd" fill="var(--f)">스파이크</text>
-      </svg>
-      <p class="chart-cap">평소엔 낮게 유지되다 한 지점에서 급등 — 그 단어를 모델이 전혀 예상 못 했다는 뜻</p>
-    </figure>
-    <div class="block ans">
-      <span class="block-label">모범답</span>
-      <p>그 지점에서 모델이 <strong>크게 놀랐다(예측 실패)</strong>는 뜻 — 다음 단어에 낮은 확률을 줬는데 실제로 그 단어가 나온 경우.</p>
-    </div>
-    <div class="block follow">
-      <span class="block-label">후속질문 (실무)</span>
-      <p class="fq">문장 안에서 단어별로 그린 그래프라면, 어떤 종류의 단어에서 스파이크가 자주 튈까? 학습 과정(시간)에 따라 그린 그래프라면 스파이크는 뭘 의미할까?</p>
-      <p class="fa"><strong>답</strong>: 문장 내 그래프라면 고유명사·드문 전문용어·갑작스러운 화제 전환처럼 모델이 예상 못 한 단어에서 튄다. 학습 곡선이라면 원래 꾸준히 내려가야 정상인데 중간에 튀는 건 학습률이 너무 높았거나 데이터 이상, 학습 불안정 같은 <strong>문제 신호</strong>로 읽어야 한다.</p>
-    </div>
-  </div>
-
-  <div class="item" id="q19">
-    <span class="qnum">Q19</span>
-    <p class="qtext">왼쪽은 훈련 스텝에 따른 AIME 정확도(pass@1, cons@16), 오른쪽은 같은 훈련 스텝에 따른 평균 응답 길이 그래프다(DeepSeek-R1-Zero). 이 두 그래프를 나란히 보여주는 이유는?</p>
-    <figure class="chart">
-      <svg viewBox="0 0 820 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="DeepSeek-R1-Zero 훈련 중 정확도와 응답 길이 그래프">
-        <line x1="40" y1="15" x2="40" y2="185" class="ax"/>
-        <line x1="40" y1="185" x2="380" y2="185" class="ax"/>
-        <text x="8" y="20" class="lbl">정확도</text>
-        <text x="325" y="205" class="lbl">Steps</text>
-        <line x1="40" y1="130" x2="380" y2="122" stroke="var(--a)" stroke-width="1.5" stroke-dasharray="4 3"/>
-        <text x="255" y="118" class="lbl" fill="var(--a)">human 기준선</text>
-        <polyline points="45,175 65,150 85,160 105,120 125,135 145,95 165,110 185,80 205,90 225,65 245,75 265,55 285,68 305,50 325,58 345,45 365,50 378,42" fill="none" stroke="var(--f)" stroke-width="2"/>
-        <polyline points="45,180 65,170 85,165 105,150 125,155 145,135 165,140 185,120 205,125 225,110 245,115 265,100 285,105 305,95 325,98 345,88 365,90 378,85" fill="none" stroke="var(--q)" stroke-width="2"/>
-        <rect x="288" y="16" width="10" height="10" fill="var(--f)"/>
-        <text x="302" y="25" class="lgd">cons@16</text>
-        <rect x="288" y="32" width="10" height="10" fill="var(--q)"/>
-        <text x="302" y="41" class="lgd">pass@1</text>
-
-        <line x1="460" y1="15" x2="460" y2="185" class="ax"/>
-        <line x1="460" y1="185" x2="800" y2="185" class="ax"/>
-        <text x="428" y="20" class="lbl">평균 길이</text>
-        <text x="745" y="205" class="lbl">Steps</text>
-        <path d="M465,183 C520,178 560,168 600,150 C640,132 660,110 700,95 C730,85 750,80 760,72 C770,80 775,90 780,85 C790,78 795,82 797,80" fill="none" stroke="var(--q)" stroke-width="2"/>
-      </svg>
-      <p class="chart-cap">왼쪽: cons@16(빨강)이 pass@1(파랑)보다 항상 위, 둘 다 우상향. 오른쪽: 같은 훈련 구간에서 응답 길이도 우상향. (DeepSeek-R1 논문, arXiv:2501.12948 Figure 2·3을 단순화해 재구성)</p>
-    </figure>
-    <div class="block ans">
-      <span class="block-label">모범답</span>
-      <p>둘 다 같은 훈련(정답 여부만 채점하는 검증 가능한 보상 + GRPO)의 결과라는 걸 보여주려는 것. 왼쪽은 그 훈련이 실제로 정확도를 끌어올렸다는 증거이고, 오른쪽은 <strong>길이에는 아무 보상도 준 적이 없는데</strong> 모델이 스스로 "더 길게 생각해야 어려운 문제를 맞힌다"는 전략을 찾아냈다는 창발적 행동의 증거다. 두 그래프를 같이 둬야 "정답률 향상"과 "의도하지 않은 능력의 등장"이 같은 훈련 과정에서 동시에 일어났다는 게 드러난다.</p>
-    </div>
-    <div class="block follow">
-      <span class="block-label">후속질문</span>
-      <p class="fq">cons@16이 훈련 내내 pass@1보다 위에 있는 이유는?</p>
-      <p class="fa"><strong>답</strong>: 문제 하나에 답을 16번 뽑아 다수결로 정하는 self-consistency 방식이라, 한 번 풀 때 생기는 우연한 실수가 다수결 과정에서 걸러지기 때문. 한 번만 찍는 pass@1보다 항상 유리하거나 같다.</p>
-    </div>
-    <p class="addq"><span class="addq-tag">추가문제</span>오른쪽 그래프의 길이 증가만 보고 "응답이 길수록 정확도가 높다"고 결론 내려도 될까?</p>
-    <div class="block ans">
-      <span class="block-label">모범답</span>
-      <p><strong>안 된다.</strong> 두 그래프는 같은 x축(훈련 스텝)에서 함께 관찰된 상관관계일 뿐, 길이가 원인이고 정확도가 결과라는 인과관계를 증명하지 않는다. 실제로 DeepSeek-R1-Zero는 정확도는 올랐지만 가독성 저하·언어 혼용 같은 부작용도 있었고, 그래서 후속 모델 R1에는 콜드스타트 SFT가 추가됐다.</p>
-    </div>
-    <div class="block follow">
-      <span class="block-label">후속질문 (실무)</span>
-      <p class="fq">Steps(가로축)는 정확히 무엇을 세는 단위인가?</p>
-      <p class="fa"><strong>답</strong>: 문제 하나를 풀어본 횟수가 아니라, 모델 가중치를 한 번 조정한 횟수. 한 스텝 안에서 문제 여러 개를 배치로 가져와 각 문제마다 답을 그룹(예: 16~64개)으로 샘플링하고, 그룹 내 비교(GRPO)로 어느 답을 밀고 어느 답을 누를지 정한 뒤 가중치를 딱 한 번 업데이트한다.</p>
+      <p>64.3 → 68.2 → 71.8이라는 숫자는 <strong>GPT-3라는 한 모델</strong>을 <strong>SuperGLUE라는 한 벤치마크</strong>에 돌려서 나온 결과일 뿐이다. 이걸 보고 "예시를 많이 넣어줄수록 AI 정확도는 항상 올라간다"고 일반화하면 안 된다 — 다른 모델(예: Claude, GPT-4)이나 다른 과업(예: 창작 글쓰기, 수학 문제)에서는 예시를 늘려도 별 차이가 없거나 오히려 떨어질 수도 있다. 하나의 실험에서 관찰된 상관관계를, 조건이 다른 곳에까지 그대로 적용하면 안 된다는 게 이 그래프가 주는 경고다.</p>
     </div>
   </div>
 
@@ -1129,5 +1156,18 @@
   </div>
 
 </div>
+
+<script>
+(function(){
+  function syncNavHeight(){
+    var nav = document.querySelector('nav.toc');
+    if(!nav) return;
+    document.documentElement.style.setProperty('--nav-h', nav.offsetHeight + 'px');
+  }
+  window.addEventListener('load', syncNavHeight);
+  window.addEventListener('resize', syncNavHeight);
+  syncNavHeight();
+})();
+</script>
 </body>
 </html>
