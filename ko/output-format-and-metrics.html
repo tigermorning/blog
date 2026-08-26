@@ -177,6 +177,56 @@
 
     <p><strong>perplexity</strong>는 모델이 다음 단어를 얼마나 안 놀라워하는지 재는 내부 지표다. <a href="instruction-design-basics.html">이전 글</a>에서 temperature 0으로 낮춰도 오답을 자신 있게 반복하는 걸 봤는데, perplexity가 딱 그 얘기다. <strong>확신하는 답이 곧 맞는 답은 아니다.</strong> 그래서 프롬프트 품질 비교에 이 지표를 쓰면 안 된다.</p>
     <p><strong>pass@k</strong>는 코드 문제에서 후보 k개 중 적어도 하나가 테스트를 통과할 확률이다. k를 늘리면 점수도 대체로 오르므로, pass@1과 pass@10은 다른 조건의 점수다 — 몇 개까지 비교했는지 꼭 같이 적어야 한다.</p>
+
+    <h3>"후보"란 정확히 무엇인가</h3>
+    <p>한 문제에 대해 모델이 <strong>독립적으로</strong> 내놓은 완성된 답 하나하나가 후보다. 예를 들어 "리스트를 정렬하는 함수를 짜라"는 문제 하나를 모델에게 k=5번 다시 물어 서로 다른 코드 5개를 받았다면, 이 5개 각각이 후보다. 5개 중 하나라도 테스트를 통과하면 그 문제는 성공(1), 전부 실패하면 실패(0)로 채점하고, 이를 여러 문제에 걸쳐 평균 낸 게 pass@k 점수다. 단, 실제로는 k개만 한 번 뽑아보는 게 아니다. 문제당 훨씬 많은 후보(보통 n=200개)를 미리 뽑아두고, 그중 몇 개가 통과했는지를 바탕으로 "k개를 무작위로 뽑았을 때 적어도 하나가 통과할 확률"을 통계 공식으로 추정한다 — k개만 한 번 뽑으면 운에 따라 점수가 들쭉날쭉해지기 때문이다.</p>
+
+    <h3>temperature가 pass@k 곡선의 모양을 결정한다</h3>
+    <p>여기서 <strong>temperature</strong>(모델이 다음 단어를 고를 때 확률을 얼마나 극단적으로 쓸지 조절하는 값)가 중요해진다. temperature가 0에 가까우면 모델이 매번 같은 토큰을 거의 확정적으로 골라서, 후보를 몇 개 뽑든 사실상 같은 답을 반복하는 셈이 된다 — k를 늘려도 pass@k가 거의 안 오르고 평평하게 유지된다(pass@1≈pass@10). temperature를 높이면 매번 다른 토큰을 고를 확률이 커져서 후보마다 서로 다른 경로를 타게 되고, k를 늘릴수록 그중 하나가 정답에 걸릴 기회가 늘어나 pass@k가 계속 오른다.</p>
+    <figure class="chart">
+      <svg viewBox="0 0 680 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="fig-pk-title">
+        <title id="fig-pk-title">temperature가 pass@k 곡선의 기울기를 결정하는 과정</title>
+        <style>
+          .pk-ax{ stroke:var(--muted); stroke-width:1.2; }
+          .pk-lbl{ font-family:var(--font-body); font-size:11px; fill:var(--muted); }
+          .pk-lgd{ font-family:var(--font-body); font-size:11px; fill:var(--ink); }
+        </style>
+        <defs>
+          <marker id="pk-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
+          </marker>
+        </defs>
+        <text x="15" y="15" class="pk-lbl">확률분포 (원인)</text>
+        <line x1="35" y1="20" x2="35" y2="150" class="pk-ax"/>
+        <line x1="35" y1="150" x2="255" y2="150" class="pk-ax"/>
+        <text x="5" y="30" class="pk-lbl">확률</text>
+        <text x="180" y="168" class="pk-lbl">후보 단어들</text>
+        <path d="M35,145 C85,145 115,30 135,30 C155,30 185,145 255,145" fill="none" stroke="#2B5FA5" stroke-width="2.5"/>
+        <path d="M35,125 C85,100 115,90 135,88 C155,90 185,100 255,125" fill="none" stroke="#8A5A12" stroke-width="2.5"/>
+        <rect x="35" y="185" width="10" height="10" fill="#2B5FA5"/>
+        <text x="50" y="194" class="pk-lgd">temp 낮음(뾰족)</text>
+        <rect x="150" y="185" width="10" height="10" fill="#8A5A12"/>
+        <text x="165" y="194" class="pk-lgd">temp 높음(평평)</text>
+
+        <line x1="275" y1="85" x2="405" y2="85" stroke="var(--muted)" stroke-width="2" marker-end="url(#pk-arrow)"/>
+        <text x="280" y="75" class="pk-lbl">k를 늘렸을 때</text>
+        <text x="280" y="105" class="pk-lbl">곡선 기울기 결정</text>
+
+        <text x="420" y="15" class="pk-lbl">pass@k 곡선 (결과)</text>
+        <line x1="440" y1="20" x2="440" y2="150" class="pk-ax"/>
+        <line x1="440" y1="150" x2="660" y2="150" class="pk-ax"/>
+        <text x="410" y="30" class="pk-lbl">pass@k</text>
+        <text x="600" y="168" class="pk-lbl">k(후보 개수)</text>
+        <path d="M440,120 C480,118 550,116 660,113" fill="none" stroke="#2B5FA5" stroke-width="2.5"/>
+        <path d="M440,140 C480,95 550,55 660,25" fill="none" stroke="#8A5A12" stroke-width="2.5"/>
+        <rect x="440" y="185" width="10" height="10" fill="#2B5FA5"/>
+        <text x="455" y="194" class="pk-lgd">temp 낮음 → 거의 평평</text>
+        <rect x="440" y="203" width="10" height="10" fill="#8A5A12"/>
+        <text x="455" y="212" class="pk-lgd">temp 높음 → 계속 상승</text>
+      </svg>
+      <figcaption>같은 temperature 값이 왼쪽 분포 모양과 오른쪽 곡선 기울기를 동시에 만든다</figcaption>
+    </figure>
+    <p>즉 같은 temperature 하나가 왼쪽 분포 모양과 오른쪽 곡선 기울기를 동시에 결정하는 원인이다. 다만 temperature를 무한정 올리면 개별 후보 하나하나의 품질(pass@1)이 떨어질 수 있어서 무조건 높다고 좋은 게 아니다 — temperature가 앞서 본 "고정할 것 ② 같은 실행 조건"에 꼭 들어가야 하는 이유가 여기 있다.</p>
     <p><strong>LLM-as-judge</strong>는 강한 모델에게 채점 기준표를 주고 다른 모델의 답을 채점시키는 방법이다. 참조 답이 없을 때 1차 신호로 쓸 순 있지만, 답이 놓인 순서나 장황한 답을 선호하는 편향이 있어서 <strong>사람 표본 검토와 함께</strong> 써야 한다.</p>
 
     <h2>고정하지 않으면 숫자는 거짓말한다</h2>
