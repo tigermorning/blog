@@ -44,6 +44,7 @@
   <main id="all-posts">
     <h1 class="greeting">안녕하세요, Tigermorning입니다.</h1>
 
+    <div id="vibe-coding-section">
     <h2 id="vibe-coding">바이브코딩</h2>
 
     <div class="search-box">
@@ -53,6 +54,16 @@
         <label><input type="radio" name="search-scope" value="all"> 제목+글</label>
       </div>
       <p class="search-status" id="search-status" hidden></p>
+    </div>
+
+    <div class="page-size-control">
+      <label for="page-size">한 페이지에</label>
+      <select id="page-size">
+        <option value="10">10개</option>
+        <option value="30" selected>30개</option>
+        <option value="50">50개</option>
+        <option value="80">80개</option>
+      </select>
     </div>
 
     <ul class="title-list">
@@ -183,12 +194,17 @@
       <li><a href="instruction-design-principles.html"><span class="title-list-title">지시 설계 원칙 정리 (5)</span><span class="title-list-date">2026.08.26</span></a></li>
     </ul>
 
+    <nav class="pagination" id="pagination" aria-label="페이지 이동"></nav>
+    </div>
+
+    <div id="study-notes-section" hidden>
     <h2 id="study-notes">문답 복습노트</h2>
 
     <ul class="title-list">
       <li><a href="study-attention-transformer.html"><span class="title-list-title">어텐션·멀티모달·파운데이션모델</span><span class="title-list-date">2026.08.26</span></a></li>
       <li><a href="study-evaluation-metrics.html"><span class="title-list-title">평가지표 정리</span><span class="title-list-date">2026.08.26</span></a></li>
     </ul>
+    </div>
   </main>
   </div>
 
@@ -201,8 +217,11 @@
     (function () {
       var input = document.getElementById('post-search');
       var scopeRadios = document.getElementsByName('search-scope');
-      var items = Array.prototype.slice.call(document.querySelectorAll('.title-list li'));
+      var items = Array.prototype.slice.call(document.querySelectorAll('#vibe-coding-section .title-list li'));
       var status = document.getElementById('search-status');
+      var pageSizeSelect = document.getElementById('page-size');
+      var pagination = document.getElementById('pagination');
+      var currentPage = 1;
 
       function currentScope() {
         for (var i = 0; i < scopeRadios.length; i++) {
@@ -215,43 +234,110 @@
         return (s || '').toLowerCase();
       }
 
-      function filter() {
+      function matchedItems() {
         var query = norm(input.value.trim());
         var scope = currentScope();
-        var visibleCount = 0;
+        if (!query) return items;
 
-        items.forEach(function (li) {
+        return items.filter(function (li) {
           var a = li.querySelector('a');
           var href = a.getAttribute('href');
           var titleText = norm(a.querySelector('.title-list-title').textContent);
-          var match;
 
-          if (!query) {
-            match = true;
-          } else if (scope === 'title') {
-            match = titleText.indexOf(query) !== -1;
-          } else {
-            var data = (typeof SEARCH_DATA !== 'undefined') ? SEARCH_DATA[href] : null;
-            var bodyText = norm(data ? data.text : titleText);
-            match = bodyText.indexOf(query) !== -1;
+          if (scope === 'title') {
+            return titleText.indexOf(query) !== -1;
           }
+          var data = (typeof SEARCH_DATA !== 'undefined') ? SEARCH_DATA[href] : null;
+          var bodyText = norm(data ? data.text : titleText);
+          return bodyText.indexOf(query) !== -1;
+        });
+      }
 
-          li.hidden = !match;
-          if (match) visibleCount++;
+      function makePageButton(label, page, opts) {
+        opts = opts || {};
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = label;
+        if (opts.current) btn.setAttribute('aria-current', 'true');
+        if (opts.disabled) btn.disabled = true;
+        btn.addEventListener('click', function () {
+          currentPage = page;
+          render();
+          pagination.scrollIntoView({ block: 'nearest' });
+        });
+        return btn;
+      }
+
+      function renderPagination(totalPages) {
+        pagination.innerHTML = '';
+        if (totalPages <= 1) return;
+
+        pagination.appendChild(makePageButton('이전', currentPage - 1, { disabled: currentPage <= 1 }));
+        for (var p = 1; p <= totalPages; p++) {
+          pagination.appendChild(makePageButton(String(p), p, { current: p === currentPage }));
+        }
+        pagination.appendChild(makePageButton('다음', currentPage + 1, { disabled: currentPage >= totalPages }));
+      }
+
+      function render() {
+        var matches = matchedItems();
+        var pageSize = parseInt(pageSizeSelect.value, 10);
+        var totalPages = Math.max(1, Math.ceil(matches.length / pageSize));
+        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage < 1) currentPage = 1;
+
+        var start = (currentPage - 1) * pageSize;
+        var pageItems = matches.slice(start, start + pageSize);
+
+        items.forEach(function (li) {
+          li.hidden = pageItems.indexOf(li) === -1;
         });
 
+        var query = norm(input.value.trim());
         if (query) {
           status.hidden = false;
-          status.textContent = visibleCount > 0 ? (visibleCount + '개 글을 찾았어요.') : '일치하는 글이 없어요.';
+          status.textContent = matches.length > 0 ? (matches.length + '개 글을 찾았어요.') : '일치하는 글이 없어요.';
         } else {
           status.hidden = true;
         }
+
+        renderPagination(totalPages);
       }
 
-      input.addEventListener('input', filter);
+      input.addEventListener('input', function () {
+        currentPage = 1;
+        render();
+      });
       for (var i = 0; i < scopeRadios.length; i++) {
-        scopeRadios[i].addEventListener('change', filter);
+        scopeRadios[i].addEventListener('change', function () {
+          currentPage = 1;
+          render();
+        });
       }
+      pageSizeSelect.addEventListener('change', function () {
+        currentPage = 1;
+        render();
+      });
+
+      render();
+    })();
+
+    (function () {
+      var sections = {
+        'vibe-coding': document.getElementById('vibe-coding-section'),
+        'study-notes': document.getElementById('study-notes-section')
+      };
+
+      function syncFromHash() {
+        var hash = location.hash.replace('#', '');
+        var target = sections[hash] ? hash : 'vibe-coding';
+        Object.keys(sections).forEach(function (key) {
+          sections[key].hidden = key !== target;
+        });
+      }
+
+      window.addEventListener('hashchange', syncFromHash);
+      syncFromHash();
     })();
   </script>
 </body>
