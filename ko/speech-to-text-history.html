@@ -28,13 +28,14 @@
 
     <h2>글목록</h2>
     <ul>
-      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
-    </ul>
-
-    <h2>문답 복습노트</h2>
-    <ul>
-      <li><a href="study-attention-transformer.html">어텐션·멀티모달·파운데이션모델</a></li>
-      <li><a href="study-evaluation-metrics.html">평가지표 정리</a></li>
+      <li>
+        <a href="index.html#vibe-coding">바이브코딩</a>
+        <ul class="sub-list">
+          <li class="sub-list-label">문답 복습노트</li>
+          <li><a href="study-attention-transformer.html">어텐션·멀티모달·파운데이션모델</a></li>
+          <li><a href="study-evaluation-metrics.html">평가지표 정리</a></li>
+        </ul>
+      </li>
     </ul>
   </aside>
 
@@ -64,6 +65,12 @@
     <h2>Whisper와 헤드셋 대 회의실 마이크</h2>
     <p>2022년 OpenAI가 내놓은 Whisper는 접근 방식이 또 달랐어요. wav2vec 2.0처럼 정교한 자기지도학습 대신, 인터넷에서 긁어모은 68만 시간 분량의 소리와 그에 딸린(완벽하지 않은) 글자 자막을 그대로 학습에 썼어요. 이걸 약지도학습(weak supervision)이라고 불러요. 정답이 완벽하지 않아도 양이 압도적으로 많으면 통한다는 걸 보여준 사례예요. 실제 벤치마크에서 평균 55.2%의 오류 감소를 보였는데, 흥미로운 건 이 숫자가 벤치마크마다 다르게 나타났다는 점이에요. Whisper가 학습 때 봤을 법한 익숙한 유형의 벤치마크에서는 예전 시스템과 거의 비슷한 수준이었고, 낯선 유형의 벤치마크에서는 오류가 거의 절반으로 줄었어요. 같은 모델이라도 어떤 상황에서 재느냐에 따라 성능 차이가 이렇게 크게 보일 수 있다는 뜻이에요.</p>
     <p>그리고 실무에서 더 중요한 발견이 하나 있었어요. 같은 회의를 녹음했는데, 참석자 각자가 헤드셋을 쓰고 녹음한 경우와 회의실에 마이크 하나를 두고 녹음한 경우를 비교했더니 단어 오류율이 16.9%와 36.4%로 두 배 넘게 차이가 났어요. 모델을 바꾼 게 아니라 마이크 위치만 바꿨을 뿐인데요. 어느 지점을 넘어서면 더 큰 모델을 쓰는 것보다 녹음 환경을 손보는 게 정확도에 더 큰 영향을 준다는 뜻이에요. 다음 글에서는 이 Whisper를 실제로 내 노트북에서 어떤 크기로, 어떤 포맷으로 돌릴지 구체적인 숫자로 따져볼게요.</p>
+
+    <p>Whisper가 Omni와 어떻게 비교되는지, 왜 여전히 필요한지 문답으로 짚어보고 싶다면 아래 노트도 함께 보면 좋다.</p>
+    <a class="post-nav" href="study-attention-transformer.html">
+      <span class="post-nav-label">문답으로 복습</span>
+      <span class="post-nav-title">어텐션 · 멀티모달 · 파운데이션모델</span>
+    </a>
 
     <a class="post-nav" href="choosing-a-local-whisper.html">
       <span class="post-nav-label">다음 편 →</span>

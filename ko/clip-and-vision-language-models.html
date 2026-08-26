@@ -28,13 +28,14 @@
 
     <h2>글목록</h2>
     <ul>
-      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
-    </ul>
-
-    <h2>문답 복습노트</h2>
-    <ul>
-      <li><a href="study-attention-transformer.html">어텐션·멀티모달·파운데이션모델</a></li>
-      <li><a href="study-evaluation-metrics.html">평가지표 정리</a></li>
+      <li>
+        <a href="index.html#vibe-coding">바이브코딩</a>
+        <ul class="sub-list">
+          <li class="sub-list-label">문답 복습노트</li>
+          <li><a href="study-attention-transformer.html">어텐션·멀티모달·파운데이션모델</a></li>
+          <li><a href="study-evaluation-metrics.html">평가지표 정리</a></li>
+        </ul>
+      </li>
     </ul>
   </aside>
 
@@ -69,6 +70,12 @@
 
     <h2>내가 다루는 이미지에는 무엇이 담겨 있나</h2>
     <p>이 개념을 실무로 옮기려면 질문을 바꿔야 해요. "이 이미지가 무엇인가"가 아니라 "이 이미지에서 내가 실제로 필요한 정보는 무엇인가"를 먼저 정해야 해요. 상품 사진이라면 색상과 형태가 필요하고, 문서 스캔본이라면 글자와 배치가 필요하고, 현장 사진이라면 위험 요소의 위치가 필요해요. VLM에게 무작정 "이 사진을 설명해줘"라고 던지면 사람이 보기엔 그럴듯하지만 정작 필요한 정보는 빠진 답이 돌아오기 쉬워요. 이미지 안에 담긴 정보 중 내 업무에 필요한 것이 무엇인지를 먼저 적어두고, 그 항목을 하나씩 짚어 물어보는 습관이 여기서 나와요. 이건 <a href="vision-language-models.html">문서를 다루는 VLM</a>을 볼 때도 그대로 이어지는 습관이었어요. 다음 글에서는 언어 쪽 반대편, 소리를 글자로 바꾸는 기술이 반백 년 동안 어떤 길을 걸어왔는지 따라가볼게요.</p>
+
+    <p>CLIP의 정렬(alignment) 개념을 문답으로 다시 짚어보고 싶다면 아래 노트도 함께 보면 좋다.</p>
+    <a class="post-nav" href="study-attention-transformer.html">
+      <span class="post-nav-label">문답으로 복습</span>
+      <span class="post-nav-title">어텐션 · 멀티모달 · 파운데이션모델</span>
+    </a>
 
     <a class="post-nav" href="speech-to-text-history.html">
       <span class="post-nav-label">다음 편 →</span>
