@@ -28,13 +28,14 @@
 
     <h2>글목록</h2>
     <ul>
-      <li><a href="index.html#vibe-coding">바이브코딩</a></li>
-    </ul>
-
-    <h2>문답 복습노트</h2>
-    <ul>
-      <li><a href="study-attention-transformer.html">어텐션·멀티모달·파운데이션모델</a></li>
-      <li><a href="study-evaluation-metrics.html">평가지표 정리</a></li>
+      <li>
+        <a href="index.html#vibe-coding">바이브코딩</a>
+        <ul class="sub-list">
+          <li class="sub-list-label">문답 복습노트</li>
+          <li><a href="study-attention-transformer.html">어텐션·멀티모달·파운데이션모델</a></li>
+          <li><a href="study-evaluation-metrics.html">평가지표 정리</a></li>
+        </ul>
+      </li>
     </ul>
   </aside>
 
@@ -63,6 +64,12 @@
 
     <h2>한 모델이 다 받으면 무엇이 바뀌나</h2>
     <p>소리를 글자로 바꾸는 대신 그대로 받으면 두 가지가 바뀌어요. 하나는 중간에서 잃는 정보가 줄어들어요. 소리를 글자로 바꾸면 억양과 침묵이 사라지는데, 소리를 그대로 받는 모델에게는 그 단서가 남아 있어요. 둘은 대가예요. 검증할 자리가 줄어들어요. 받아쓰기와 요약을 나눠 두면 어느 단계에서 틀렸는지 짚을 수 있지만, 한 모델이 소리를 듣고 곧바로 결론을 말하면 그 중간 산출물이 없어요. 그래서 선택은 정확도가 아니라 무엇을 검증해야 하는가로 갈려요. 나중에 근거를 되짚어야 하는 일이라면 나눠 두는 편이 낫고, 실시간으로 상황을 파악해야 하는 일이라면 한 번에 받는 편이 나아요. 다음 글에서는 반대 방향, 글자를 소리로 바꾸는 목소리 합성 도구를 살펴볼게요.</p>
+
+    <p>Omni와 Whisper 중 무엇을 고를지, 병원·법원·SDH 같은 실무 사례로 문답을 이어가고 싶다면 아래 노트도 함께 보면 좋다.</p>
+    <a class="post-nav" href="study-attention-transformer.html">
+      <span class="post-nav-label">문답으로 복습</span>
+      <span class="post-nav-title">어텐션 · 멀티모달 · 파운데이션모델</span>
+    </a>
 
     <a class="post-nav" href="choosing-a-voice-synthesis-tool.html">
       <span class="post-nav-label">다음 편 →</span>
