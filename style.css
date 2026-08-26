@@ -8,6 +8,10 @@
   --border: #ddd0b8;
   --font-heading: 'Playfair Display', 'Gowun Batang', Georgia, serif;
   --font-body: 'EB Garamond', 'Gowun Batang', Georgia, serif;
+  --hit-bg: #d9ecd9;
+  --hit-ink: #2e5c2e;
+  --miss-bg: #f2d9d9;
+  --miss-ink: #7a2e2e;
 }
 
 html[lang="ko"] {
@@ -32,7 +36,27 @@ html[lang="zh"] {
     --muted: #b3a186;
     --accent: #d1594f;
     --border: #3a2f22;
+    --hit-bg: #234a2e;
+    --hit-ink: #b8e3c0;
+    --miss-bg: #4a2626;
+    --miss-ink: #f0bcbc;
   }
+}
+
+.ngram {
+  display: inline-block;
+  padding: 0 4px;
+  margin: 1px 2px;
+  border-radius: 3px;
+  font-family: monospace;
+}
+.ngram.ng-hit {
+  background: var(--hit-bg);
+  color: var(--hit-ink);
+}
+.ngram.ng-miss {
+  background: var(--miss-bg);
+  color: var(--miss-ink);
 }
 
 * {
