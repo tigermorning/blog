@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>평가지표 정리 노트 - Tigermorning</title>
+  <meta name="description" content="exact match·F1·BLEU·ROUGE·perplexity·pass@k·LLM-as-judge — 계열별로 묶은 문제와 실무 후속질문까지 정리한 스터디 노트.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="평가지표 정리 노트">
+  <meta property="og:description" content="exact match·F1·BLEU·ROUGE·perplexity·pass@k·LLM-as-judge — 계열별로 묶은 문제와 실무 후속질문까지 정리한 스터디 노트.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/study-evaluation-metrics.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;600;700;900&display=swap');
+
+  :root{
+    --ink:#1E2530;
+    --sub:#5B6472;
+    --paper:#F6F7F4;
+    --card:#FFFFFF;
+    --line:rgba(30,37,48,0.13);
+    --q:#2B5FA5;
+    --q-bg:#EAF0F9;
+    --a:#2E7048;
+    --a-bg:#EAF4EC;
+    --f:#8A5A12;
+    --f-bg:#FBF1DF;
+    --shadow:rgba(30,37,48,0.08);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#E8EAE4;
+      --sub:#A7AFB8;
+      --paper:#12161C;
+      --card:#1A2028;
+      --line:rgba(232,234,228,0.14);
+      --q:#7FADE6;
+      --q-bg:#1C2C42;
+      --a:#7FC697;
+      --a-bg:#1B3324;
+      --f:#E3B25E;
+      --f-bg:#3A2E14;
+      --shadow:rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#E8EAE4;
+    --sub:#A7AFB8;
+    --paper:#12161C;
+    --card:#1A2028;
+    --line:rgba(232,234,228,0.14);
+    --q:#7FADE6;
+    --q-bg:#1C2C42;
+    --a:#7FC697;
+    --a-bg:#1B3324;
+    --f:#E3B25E;
+    --f-bg:#3A2E14;
+    --shadow:rgba(0,0,0,0.35);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Noto Sans KR', -apple-system, sans-serif;
+    line-height:1.7;
+  }
+  .wrap{ max-width:760px; margin:0 auto; padding:48px 24px 80px; }
+
+  .kicker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--q);
+    display:block;
+    margin-bottom:10px;
+  }
+  h1{
+    font-size:clamp(24px,4vw,32px);
+    font-weight:900;
+    margin:0 0 8px;
+    text-wrap:balance;
+  }
+  .sub{ color:var(--sub); font-size:14.5px; margin:0 0 28px; }
+
+  nav.toc{
+    display:flex; flex-wrap:wrap; gap:8px;
+    margin-bottom:36px;
+    padding:14px 16px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:10px;
+  }
+  nav.toc a{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--sub);
+    text-decoration:none;
+    padding:4px 9px;
+    border:1px solid var(--line);
+    border-radius:6px;
+  }
+  nav.toc a:hover{ color:var(--q); border-color:var(--q); }
+  nav.toc{ flex-direction:column; align-items:stretch; gap:10px; }
+  .toc-row{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+  .toc-cat{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    font-weight:700;
+    color:var(--q);
+    background:var(--q-bg);
+    padding:3px 8px;
+    border-radius:5px;
+    white-space:nowrap;
+    flex:0 0 auto;
+  }
+  .toc-row .pills{ display:flex; flex-wrap:wrap; gap:8px; }
+
+  .item{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:24px 26px;
+    margin-bottom:20px;
+    box-shadow:0 1px 2px var(--shadow);
+    scroll-margin-top:16px;
+  }
+  .qnum{
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:700;
+    font-size:13px;
+    color:var(--q);
+    background:var(--q-bg);
+    display:inline-block;
+    padding:2px 9px;
+    border-radius:5px;
+    margin-bottom:10px;
+  }
+  .qtext{
+    font-size:16.5px;
+    font-weight:600;
+    margin:0 0 16px;
+  }
+  .block{
+    border-radius:9px;
+    padding:14px 16px;
+    margin-bottom:10px;
+  }
+  .block:last-child{ margin-bottom:0; }
+  .block-label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    display:block;
+    margin-bottom:6px;
+  }
+  .ans{ background:var(--a-bg); }
+  .ans .block-label{ color:var(--a); }
+  .ans p{ margin:0; font-size:14.5px; }
+  .ans strong{ color:var(--a); }
+
+  .addq{
+    margin:18px 0 12px;
+    padding-top:16px;
+    border-top:1px dashed var(--line);
+    font-size:16px;
+    font-weight:600;
+  }
+  .addq-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    color:var(--sub);
+    display:block;
+    margin-bottom:5px;
+    font-weight:600;
+  }
+  .follow{ background:var(--f-bg); }
+  .follow .block-label{ color:var(--f); }
+  .follow .fq{ margin:0 0 8px; font-size:14.5px; font-weight:600; }
+  .follow .fa{ margin:0; font-size:14.5px; }
+  .follow .fa strong{ color:var(--f); }
+
+  code{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    background:var(--q-bg);
+    color:var(--ink);
+    padding:1px 5px;
+    border-radius:4px;
+  }
+
+  .refcard{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:24px 26px;
+    margin-bottom:28px;
+    box-shadow:0 1px 2px var(--shadow);
+  }
+  .refcard h2{
+    font-size:17px;
+    margin:0 0 14px;
+  }
+  .refcard h3{
+    font-size:14px;
+    margin:20px 0 8px;
+    color:var(--q);
+  }
+  .tablewrap{ overflow-x:auto; }
+  table.reftable{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13.5px;
+  }
+  table.reftable th, table.reftable td{
+    text-align:left;
+    padding:9px 10px;
+    border-bottom:1px solid var(--line);
+    vertical-align:top;
+  }
+  table.reftable th{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    color:var(--sub);
+    font-weight:600;
+  }
+  table.reftable td strong{ color:var(--q); }
+  .steps{ margin:0; padding-left:0; list-style:none; }
+  .steps li{
+    padding:8px 0 8px 28px;
+    position:relative;
+    font-size:14px;
+  }
+  .steps li b{
+    font-family:'IBM Plex Mono', monospace;
+    color:var(--q);
+    position:absolute;
+    left:0;
+  }
+
+  .fam{
+    margin:32px 0 14px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .fam:first-of-type{ margin-top:0; }
+  .fam-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.04em;
+    color:var(--q);
+    white-space:nowrap;
+  }
+  .fam-sub{
+    font-size:12.5px;
+    color:var(--sub);
+  }
+  .fam-line{
+    flex:1 1 auto;
+    height:1px;
+    background:var(--line);
+  }
+
+  .chart{ margin:14px 0 18px; }
+  .chart-cap{
+    font-size:12px;
+    color:var(--sub);
+    margin-top:6px;
+    text-align:center;
+  }
+  .ax{ stroke:var(--border); stroke-width:1.5; }
+  .gl{ stroke:var(--line); stroke-width:1; }
+  .lbl{ font-family:'IBM Plex Mono', monospace; font-size:10.5px; fill:var(--sub); }
+  .lgd{ font-family:'Noto Sans KR', sans-serif; font-size:11px; fill:var(--ink); }
+
+  .closing{
+    margin-top:8px;
+    padding:18px 20px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-left:4px solid var(--q);
+    border-radius:8px;
+    font-size:14.5px;
+  }
+  .closing b{ color:var(--q); }
+</style>
+
+<div class="wrap">
+
+  <span class="kicker">지시 설계 노드 · 8강 답을 재는 방법</span>
+  <h1>평가지표 정리 노트</h1>
+  <p class="sub">exact match·F1·BLEU·ROUGE·perplexity·pass@k·LLM-as-judge — 계열별로 묶은 문제와 실무 후속질문까지 한 장에.</p>
+
+  <nav class="toc">
+    <div class="toc-row">
+      <span class="toc-cat">전체</span>
+      <div class="pills"><a href="#reftable">분류표</a><a href="#fix3">고정 3원칙</a></div>
+    </div>
+    <div class="toc-row">
+      <span class="toc-cat">계열1 · 정확일치</span>
+      <div class="pills"><a href="#q1">Q1 exact match</a></div>
+    </div>
+    <div class="toc-row">
+      <span class="toc-cat">계열2 · F1</span>
+      <div class="pills">
+        <a href="#q2">Q2 F1 적용범위</a>
+        <a href="#q3">Q3 정밀도·재현율</a>
+        <a href="#q4">Q4 micro/macro</a>
+      </div>
+    </div>
+    <div class="toc-row">
+      <span class="toc-cat">계열3 · BLEU/ROUGE</span>
+      <div class="pills">
+        <a href="#q5">Q5 BLEU vs ROUGE</a>
+        <a href="#q6">Q6 길이 벌점(BLEU)</a>
+      </div>
+    </div>
+    <div class="toc-row">
+      <span class="toc-cat">계열4 · perplexity</span>
+      <div class="pills"><a href="#q7">Q7 perplexity</a></div>
+    </div>
+    <div class="toc-row">
+      <span class="toc-cat">계열5 · pass@k</span>
+      <div class="pills"><a href="#q8">Q8 pass@k</a></div>
+    </div>
+    <div class="toc-row">
+      <span class="toc-cat">계열6 · LLM-as-judge</span>
+      <div class="pills"><a href="#q9">Q9 LLM-as-judge</a></div>
+    </div>
+    <div class="toc-row">
+      <span class="toc-cat">계열7 · 공통원칙</span>
+      <div class="pills">
+        <a href="#q10">Q10 형식 vs 내용</a>
+        <a href="#q11">Q11 비용 순서</a>
+        <a href="#q12">Q12 보고 원칙</a>
+      </div>
+    </div>
+    <div class="toc-row">
+      <span class="toc-cat">계열8 · 그래프 읽기</span>
+      <div class="pills">
+        <a href="#q13">Q13 P-R 곡선</a>
+        <a href="#q14">Q14 pass@k 곡선</a>
+        <a href="#q15">Q15 temperature 분포</a>
+        <a href="#q16">Q16 F1 봉우리</a>
+        <a href="#q17">Q17 few-shot 그래프</a>
+        <a href="#q18">Q18 perplexity 스파이크</a>
+        <a href="#q19">Q19 R1-Zero 정확도·길이</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="refcard" id="reftable">
+    <h2>과업 유형별 지표 분류표</h2>
+    <div class="tablewrap">
+      <table class="reftable">
+        <thead>
+          <tr><th>과업 유형</th><th>쓰는 지표</th><th>구체적 예시</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>정답이 하나로 고정된 분류/객체</td><td><strong>이진판정 / exact match</strong></td><td>감성분류(긍정·부정), 카테고리 분류, JSON 스키마 준수 여부</td></tr>
+          <tr><td>여러 항목을 찾아내야 하는 과업</td><td><strong>F1</strong>(정밀도+재현율)</td><td>문서에서 인명·기관명 추출, 다중 레이블 태깅, 행동항목 추출</td></tr>
+          <tr><td>번역</td><td><strong>BLEU</strong></td><td>한→영 번역 결과를 모범 번역과 비교</td></tr>
+          <tr><td>요약</td><td><strong>ROUGE</strong></td><td>회의록 요약, 뉴스 요약을 모범 요약과 비교</td></tr>
+          <tr><td>실행 가능한 코드</td><td><strong>pass@k</strong></td><td>코딩 문제, SQL 쿼리 생성 — 실제로 돌려서 테스트 통과하는지</td></tr>
+          <tr><td>정답이 없는 열린 질문</td><td><strong>LLM-as-judge</strong> + 사람 검토</td><td>챗봇 답변의 유용성, 문체, 설득력, 추천 이유의 타당성</td></tr>
+          <tr><td>(특수 목적) 같은 모델의 학습 적합도 비교</td><td><strong>perplexity</strong></td><td>파인튜닝 전후 같은 모델이 특정 문서를 얼마나 "익숙하게" 여기는지 — 사용자 대상 품질 평가엔 안 씀</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>pass@k만 콕 짚으면</h3>
+    <p style="margin:0;font-size:14px;">코드나 SQL처럼 <strong>"실제로 실행해서 맞는지 틀리는지 기계가 판정할 수 있는" 산출물</strong>에 씀. 사람이 눈으로 "잘 짰네" 판단하는 게 아니라 진짜 돌려서 테스트 통과하는지 검사하는 방식이라, 코드 생성 AI 평가(HumanEval류)에서 표준으로 쓰임. 번역·요약·분류처럼 "실행" 개념이 없는 과업엔 애초에 못 씀. 단, pass@k 통과가 코드 품질·보안까지 보장하진 않음 — 테스트 커버리지·코드리뷰가 별도로 필요.</p>
+
+    <h3>고르는 순서 (비용 순서이기도 함)</h3>
+    <ol class="steps">
+      <li><b>①</b>기계로 딱 잘라 채점 가능? → 이진판정 / exact match</li>
+      <li><b>②</b>참조 답과 비교 가능? → 항목집합=F1, 번역=BLEU, 요약=ROUGE, 코드=pass@k</li>
+      <li><b>③</b>참조 답 없이 열린 품질? → LLM-as-judge + 사람 검토</li>
+    </ol>
+    <p style="margin:10px 0 0;font-size:13.5px;color:var(--sub);">①이 제일 싸고 빠르며, ③으로 갈수록 비쌈. "이 과업엔 이 지표가 정답"이 아니라 <strong style="color:var(--ink);">"뭘 잴 수 있는 형태의 과업인가"</strong>가 지표를 결정한다.</p>
+  </div>
+
+  <div class="refcard" id="fix3">
+    <h2>고정하지 않으면 숫자는 거짓말합니다 — 어떤 지표든 쓰기 전에</h2>
+    <p style="margin:0 0 16px;font-size:14px;">위에서 어떤 지표를 골랐든, <strong style="color:var(--ink);">숫자 두 개를 비교하려면 그 전에 반드시 고정해둬야 하는 조건이 셋</strong> 있다. 이 셋을 안 고정하면 나온 숫자 차이가 지시(프롬프트)의 진짜 효과인지, 그냥 조건이 달라져서 생긴 차이인지 구분할 수 없다.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
+      <div style="flex:1 1 150px;background:var(--q-bg);border-radius:8px;padding:12px 14px;text-align:center;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--q);margin-bottom:4px;">고정 ①</div>
+        <div style="font-weight:700;font-size:14px;color:var(--ink);">같은 시험 입력</div>
+      </div>
+      <div style="flex:1 1 150px;background:var(--q-bg);border-radius:8px;padding:12px 14px;text-align:center;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--q);margin-bottom:4px;">고정 ②</div>
+        <div style="font-weight:700;font-size:14px;color:var(--ink);">같은 실행 조건</div>
+      </div>
+      <div style="flex:1 1 150px;background:var(--q-bg);border-radius:8px;padding:12px 14px;text-align:center;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--q);margin-bottom:4px;">고정 ③</div>
+        <div style="font-weight:700;font-size:14px;color:var(--ink);">같은 판정 규칙</div>
+      </div>
+    </div>
+    <ul class="steps" style="margin-bottom:14px;">
+      <li><b>①</b><strong>같은 시험 입력</strong> — 같은 문제 세트, 같은 데이터로 시험해야 한다. 지시안 A는 쉬운 문제로, B는 어려운 문제로 시험하면 점수 차이는 지시가 아니라 난이도 차이다.</li>
+      <li><b>②</b><strong>같은 실행 조건</strong> — temperature, 후보 개수(k), 디코딩 설정처럼 결과를 흔드는 값을 고정해야 한다. Q8의 pass@1=pass@10 문제, Q19의 DeepSeek-R1-Zero 그래프 모두 이 조건이 왜 중요한지 보여주는 사례다.</li>
+      <li><b>③</b><strong>같은 판정 규칙</strong> — Q4의 micro/macro/weighted, Q6의 brevity penalty·smoothing처럼 "어떻게 채점했는지"의 규칙도 같아야 한다. 규칙이 다르면 똑같은 답에도 다른 점수가 나온다.</li>
+    </ul>
+    <div class="closing" style="margin:0;">
+      셋 중 하나라도 안 고정하면, <b>숫자의 차이는 지시의 효과가 아니라 조건 차이일 수 있다.</b> 그래서 실험 하나를 보고할 때는 점수 하나만 적지 말고, 이 세 조건을 반드시 같이 적어야 한다 — 이게 8강 전체를 관통하는 가장 근본적인 원칙이다.
+    </div>
+  </div>
+
+  <div class="fam"><span class="fam-tag">계열 1 · 정확 일치</span><span class="fam-line"></span></div>
+
+  <div class="item" id="q1">
+    <span class="qnum">Q1</span>
+    <p class="qtext">정답이 딱 하나로 고정된 분류 문제엔 어떤 지표를 쓰고, 그 지표의 단점은?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p><strong>exact match(정확 일치)</strong>. 출력이 미리 정한 정답과 글자 그대로 같아야만 통과. 단점: 뜻은 같은데 표현이 다른 옳은 답도 0점 처리해버림 ("긍정적이에요" ≠ "긍정").</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문</span>
+      <p class="fq">이 단점을 줄이려면 채점 전에 뭘 미리 정해둬야 할까?</p>
+      <p class="fa"><strong>답</strong>: 정규화 규칙을 미리 정해야 함 — 대소문자·공백 처리, 허용되는 동의어/표현 목록을 채점 기준에 미리 넣어두는 것. "긍정"과 "긍정적"을 같은 답으로 인정할지 등을 사전에 문서화한다.</p>
+    </div>
+    <p class="addq"><span class="addq-tag">추가문제</span>도구 호출(함수 호출) 검증에는 왜 exact match가 오히려 적합할까?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>함수명·인자가 정확히 일치해야 실제로 실행되는 영역이라, 표현의 다양성을 인정할 필요가 없다. <code>get_weather(city='Seoul')</code>과 뜻은 비슷한 다른 표현은 실제 시스템이 다르게 처리하므로, 정확 일치가 오히려 타당한 기준이 된다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문</span>
+      <p class="fq">그 함수 호출 안에 자유서술 문자열 인자(예: 이메일 본문)가 들어있으면 어떻게 채점해야 할까?</p>
+      <p class="fa"><strong>답</strong>: 함수명·구조는 exact match로, 그 안의 자유서술 내용은 별도의 내용 검사(사람 검토나 LLM-as-judge)로 나눠서 봐야 한다. 하나의 답 안에서도 부분마다 다른 지표를 섞어 쓸 수 있다.</p>
+    </div>
+    <p class="addq"><span class="addq-tag">추가문제 2 (이론)</span>exact match를 "이진 판정"의 하위 개념으로 볼 수 있는 이유는?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>이진 판정은 "조건을 지키면 1, 아니면 0"이라는 더 넓은 채점 방식이고, exact match는 그 조건을 <strong>"정답과 글자가 완전히 같은가"</strong>로 좁힌 특수한 경우다. 즉 exact match는 이진 판정의 한 종류.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문 (실무)</span>
+      <p class="fq">은행에서 계좌번호 인증할 때 "숫자 하나라도 틀리면 실패"로 처리하는 시스템은 어떤 지표를 쓰는 게 맞을까, 그 이유는?</p>
+      <p class="fa"><strong>답</strong>: exact match. 계좌번호는 표현의 다양성을 인정하면 안 되는 값 — 한 글자만 달라도 완전히 다른 계좌이므로, 부분적으로 비슷하다고 통과시키면 절대 안 된다.</p>
+    </div>
+  </div>
+
+  <div class="fam"><span class="fam-tag">계열 2 · F1 (정밀도·재현율)</span><span class="fam-line"></span></div>
+
+  <div class="item" id="q2">
+    <span class="qnum">Q2</span>
+    <p class="qtext">F1을 쓰면 안 되는 상황은 언제인가?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>정답이 하나로 고정된 분류·객체 과업(exact match 영역)이나, 참조 답이 아예 없는 열린 질문(LLM-as-judge 영역)에는 F1이 안 맞는다. F1은 <strong>"여러 항목을 찾아내야 하는" 과업 전용</strong> 지표다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문 (실무)</span>
+      <p class="fq">콜센터가 "고객 문의를 하나의 카테고리로만 분류"하는 시스템에 F1을 적용해서 평가하고 있다면 뭐가 잘못됐을까?</p>
+      <p class="fa"><strong>답</strong>: 이건 여러 항목을 찾는 게 아니라 정답이 하나로 고정된 분류이므로 exact match(또는 카테고리별 accuracy)를 써야 한다. F1을 억지로 적용하는 건 과업 구조에 안 맞는 지표를 쓰는 것.</p>
+    </div>
+    <p class="addq"><span class="addq-tag">추가문제 (이론·판단형)</span>F1 점수 하나만 보고 배포 결정을 내리면 왜 위험한가?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>F1은 정밀도와 재현율을 하나로 뭉친 값이라, 어느 쪽 실수가 더 많이 나고 있는지를 감춘다. 두 실수의 실무적 피해 크기가 다른 경우 F1만으로는 안전한 배포인지 판단할 수 없다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문 (실무)</span>
+      <p class="fq">공항 보안 검색대 AI가 F1=0.85로 "우수하다"는 보고를 받았다면, 배포 승인 전에 반드시 따로 확인해야 할 것은?</p>
+      <p class="fa"><strong>답</strong>: 재현율을 따로 확인해야 한다. 위험물을 몇 개나 놓쳤는지가 훨씬 중요한데, 재현율이 낮고 정밀도만 높아도 F1은 비슷하게 나올 수 있어서 F1 하나로는 이 위험을 못 잡아낸다.</p>
+    </div>
+  </div>
+
+  <div class="item" id="q3">
+    <span class="qnum">Q3</span>
+    <p class="qtext">암 진단 마커 추출과 스팸 메일 차단, 각각 재현율/정밀도 중 뭘 먼저 봐야 하나?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>암 진단은 <strong>재현율</strong> 먼저(놓치면 생명이 위험하니 의심되는 건 다 짚어야 함). 스팸 차단은 <strong>정밀도</strong> 먼저(정상 메일을 스팸으로 잘못 걸러버리면 중요한 메일을 통째로 못 보는 피해가, 스팸 하나 놓치는 피해보다 큼).</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문</span>
+      <p class="fq">"회의록에서 행동 항목 추출"은 재현율과 정밀도 중 뭐가 더 중요할까, 그 이유는?</p>
+      <p class="fa"><strong>답</strong>: 재현율이 더 중요함. 행동 항목을 놓치면(재현율 실패) 그 일 자체가 아무도 안 챙기고 묻혀버려 실제 업무 사고로 이어짐. 잘못 뽑힌 항목(정밀도 실패)은 사람이 검토하며 걸러내면 그만이라 피해가 작음.</p>
+    </div>
+    <p class="addq"><span class="addq-tag">추가문제</span>어떤 이력서 스크리닝 AI가 정밀도는 100%인데 재현율이 20%라면, 실무에서 어떤 문제가 생길까?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>이 AI가 "적합하다"고 뽑은 후보는 다 진짜 적합하지만(정밀도 100%), 진짜 적합한 후보 중 80%를 놓치고 있다는 뜻. 회사는 좋은 인재를 대량으로 걸러내며 놓치고 있는데, 뽑힌 후보만 보면 다 괜찮아서 문제를 알아채기 어렵다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문</span>
+      <p class="fq">반대로 재현율 100%, 정밀도 20%인 상황이면 어떤 문제가 생길까?</p>
+      <p class="fa"><strong>답</strong>: 적합한 후보를 하나도 안 놓치지만(재현율 100%), 걸러진 후보 5명 중 4명은 부적합한 사람이 섞여있다는 뜻. 결국 사람이 다 다시 검토해야 해서 자동화의 의미가 없어진다.</p>
+    </div>
+  </div>
+
+  <div class="item" id="q4">
+    <span class="qnum">Q4</span>
+    <p class="qtext">F1을 여러 카테고리에 걸쳐 구할 때 micro/macro/weighted 평균 중 뭘 썼는지 왜 밝혀야 하나?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>세 방식이 결과를 다르게 만든다. micro는 전체 건수를 다 합쳐서 계산(흔한 카테고리가 점수를 좌우), macro는 카테고리마다 동일 비중으로 평균(드문 카테고리도 똑같이 반영), weighted는 카테고리 빈도만큼 가중치를 준다. 뭘 썼는지 안 밝히면 같은 데이터로도 완전히 다른 숫자가 나와 비교가 안 된다.</p>
+    </div>
+    <div class="block ans">
+      <span class="block-label">숫자로 보기</span>
+      <p style="margin:0 0 10px;">사과 90개·바나나 8개·포도 2개짜리 데이터에서 카테고리별 F1이 이렇게 나왔다고 하자.</p>
+      <div class="tablewrap">
+        <table class="reftable">
+          <thead><tr><th>카테고리</th><th>개수</th><th>F1</th></tr></thead>
+          <tbody>
+            <tr><td>사과</td><td>90</td><td>0.95</td></tr>
+            <tr><td>바나나</td><td>8</td><td>0.50</td></tr>
+            <tr><td>포도</td><td>2</td><td>0.00 (한 번도 못 맞힘)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin:12px 0 0;">
+        <strong>macro</strong> = (0.95+0.50+0.00)÷3 ≈ <strong>0.48</strong> — 포도를 아예 못 맞힌 게 그대로 드러남<br>
+        <strong>weighted</strong> = (0.95×90+0.50×8+0.00×2)÷100 ≈ <strong>0.90</strong> — 포도 실패가 거의 안 보임<br>
+        <strong>micro</strong> = 전체 맞힌 개수÷전체 개수 ≈ <strong>0.90</strong> — 역시 사과 성적에 좌우됨
+      </p>
+      <p style="margin:12px 0 0;">같은 모델, 같은 데이터인데 <strong>어떤 평균을 썼는지에 따라 0.48이 나올 수도 0.90이 나올 수도 있다</strong>. weighted나 micro만 보고 "F1 0.90, 우수함"이라고 보고하면, 가장 희귀한 카테고리(포도)를 100% 놓치고 있다는 사실이 완전히 가려진다 — 희귀 질병 진단이나 사기 거래 탐지처럼 희귀 카테고리가 오히려 제일 중요한 실무에서는 이 차이가 치명적이다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문</span>
+      <p class="fq">"배송" 문의가 전체의 80%, "환불사기" 문의가 1%인 분류 시스템에서, 드문 카테고리 성능도 놓치지 않으려면 micro/macro 중 뭘 써야 하나?</p>
+      <p class="fa"><strong>답</strong>: macro 평균. micro는 흔한 카테고리(배송)에 점수가 묻혀서 드문 카테고리(환불사기)의 성능 저하를 못 알아챌 수 있음. macro는 카테고리별로 동일 비중을 주니까 드문 카테고리 문제가 그대로 드러난다.</p>
+    </div>
+    <p class="addq"><span class="addq-tag">추가문제</span>weighted 평균은 micro, macro랑 어떻게 다른가?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>macro는 카테고리마다 무조건 똑같은 비중으로 평균 내지만, weighted는 각 카테고리의 <strong>등장 빈도만큼 가중치</strong>를 줘서 평균 낸다. micro(전체를 다 합쳐서 계산)와 macro(동일 비중)의 중간쯤 성격이라 보면 된다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문</span>
+      <p class="fq">weighted 평균이 macro보다 나은 상황은 언제일까?</p>
+      <p class="fa"><strong>답</strong>: 카테고리별 중요도가 "얼마나 자주 나오는가"와 어느 정도 비례한다고 볼 수 있는 상황. 흔한 카테고리의 성능이 실제 사용자 경험에 더 큰 영향을 준다면, 그 빈도를 반영하는 weighted가 더 현실적인 지표가 된다(단, 드문 카테고리를 놓치면 안 되는 상황이면 여전히 macro가 낫다).</p>
+    </div>
+    <p class="addq"><span class="addq-tag">추가문제 3 (이론)</span>micro 평균은 "전체 사례를 다 합쳐서 계산한다"고 했는데, 구체적으로 어떻게 계산하는가?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>모든 카테고리의 참양성·거짓양성·거짓음성을 각각 다 더한 다음, 그 합계로 정밀도·재현율을 <strong>딱 한 번만</strong> 계산한다. 카테고리 구분 없이 전체를 하나의 큰 문제처럼 취급하는 것.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문 (실무)</span>
+      <p class="fq">이커머스 회사가 상품 리뷰를 "배송/품질/가격/기타" 4개 카테고리로 분류하는데, "배송" 리뷰가 전체의 70%를 차지한다면, micro 평균이 "배송" 카테고리 성능에 왜 크게 좌우될까?</p>
+      <p class="fa"><strong>답</strong>: micro는 카테고리 구분 없이 전체 건수를 다 합쳐 계산하므로, 전체의 70%를 차지하는 "배송" 카테고리의 맞고 틀림이 합계에 가장 큰 비중을 차지한다. "가격"이나 "기타"처럼 적은 카테고리 성능이 나빠도 전체 micro 점수엔 잘 티가 안 난다.</p>
+    </div>
+  </div>
+
+  <div class="fam"><span class="fam-tag">계열 3 · BLEU/ROUGE (n-gram 겹침)</span><span class="fam-line"></span></div>
+
+  <div class="item" id="q5">
+    <span class="qnum">Q5</span>
+    <p class="qtext">BLEU랑 ROUGE는 둘 다 "겹치는 조각 세기"인데, 뭐가 다른가?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>BLEU는 <strong>정밀도 관점</strong>(내가 낸 조각 중 참조와 겹치는 비율) — 번역에 씀. ROUGE는 <strong>재현율 관점</strong>(참조 조각 중 내가 건진 비율) — 요약에 씀.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문</span>
+      <p class="fq">요약을 아주 길게 쓰면 ROUGE 점수가 유리해지는 이유는?</p>
+      <p class="fa"><strong>답</strong>: ROUGE는 재현율(참조 조각을 얼마나 건졌는지) 기준이라, 길게 쓸수록 참조에 있는 조각들을 우연히라도 더 많이 포함하게 돼서 점수가 부풀려질 수 있음. ROUGE가 높다고 좋은 요약이라는 보장이 안 됨.</p>
+    </div>
+    <p class="addq"><span class="addq-tag">추가문제</span>참조 "고양이가 매트 위에 앉았다", 출력 "고양이가 매트에 앉았다"일 때, 1-gram(단어 하나씩) 정밀도는?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>출력의 조각(고양이·가·매트·에·앉았다) 5개 중 참조에도 있는 조각 5개 전부 겹침 → 5/5 = <strong>1.00</strong></p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문</span>
+      <p class="fq">그럼 2-gram(두 단어씩 묶어서) 정밀도는 왜 더 낮게 나올까?</p>
+      <p class="fa"><strong>답</strong>: 2-gram은 "매트-위", "위-에"처럼 이웃한 두 단어를 묶어서 보는데, 출력엔 "위"가 빠져서 그 조합 자체가 안 생김. 출력의 2-gram 4개 중 참조와 겹치는 건 3개뿐이라 3/4=0.75. 한 단어만 빠져도 그 단어가 낀 조합들이 통째로 어긋나서, n이 커질수록 점수가 더 민감하게 떨어진다.</p>
+    </div>
+    <p class="addq"><span class="addq-tag">추가문제 2 (이론)</span>BLEU/ROUGE 계열 지표가 공통으로 갖는 근본적 한계는?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>두 지표 다 문장을 뜻으로 이해해서 비교하지 않는다. 정답 문장과 생성 문장을 잘게 자른 조각(단어·n-gram)으로 쪼갠 뒤, 그 조각들이 얼마나 겹치는지만 세는 <strong>통계적 표면 비교</strong>다. 그래서 정반대 방향으로 두 가지 오류가 생긴다. ① <strong>과소평가</strong>: 뜻이 같아도 동의어를 쓰거나("기쁘다"↔"행복하다") 어순이 바뀌면 조각이 문자 그대로 안 겹쳐서 점수가 부당하게 낮게 나온다. ② <strong>과대평가</strong>: 단어 대부분이 겹쳐도 "있다"↔"없다"처럼 부정어 하나만 바뀌면 뜻은 정반대인데 점수는 오히려 높게 나온다. 결국 <strong>표면 문자열이 비슷한 것</strong>과 <strong>실제 의미가 같은 것</strong>은 서로 다른 축인데, BLEU/ROUGE는 앞의 것만 재고 뒤의 것은 재지 못한다는 게 근본 한계다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문 (실무)</span>
+      <p class="fq">법률 문서 번역 회사가 "판결문 요약" 품질을 ROUGE 점수만으로 검수하고 배포한다면, 어떤 위험이 생길 수 있을까?</p>
+      <p class="fa"><strong>답</strong>: ROUGE가 높아도 요약이 핵심 법리를 왜곡하거나 부정어를 빠뜨려 정반대 의미가 될 수 있는데, 표면 겹침 지표는 이를 못 잡아낸다. 사실 정확성이 생명인 법률 문서에서 ROUGE만 믿으면 심각한 오독으로 이어질 수 있다.</p>
+    </div>
+    <div class="block ans">
+      <span class="block-label">공통점 · 차이점 자세히 (어순 문제를 파고들면)</span>
+      <p style="margin-bottom:10px;"><strong>공통점</strong>: 위 한계("의미가 아니라 표면 겹침만 본다")는 BLEU와 ROUGE 둘 다에게 해당한다 — 어느 쪽도 문장을 뜻으로 바꿔서 비교하지 않고, 잘게 자른 조각(n-gram)이 서로 겹치는지만 센다.</p>
+      <p style="margin-bottom:10px;"><strong>차이점</strong>: 그런데 "조각이 겹치는지"를 판정하는 방식 자체는 서로 다르다. BLEU는 n-gram이 <strong>연속(contiguous)</strong>으로 붙어 있어야 인정하고, ROUGE-L은 <strong>최장 공통 부분열(LCS)</strong>이라서 순서만 지키면 중간에 다른 단어가 끼어도 인정한다. 그래서 "어순이 흐트러졌을 때 얼마나 관대한가"가 서로 다르다.</p>
+      <div class="tablewrap">
+        <table class="reftable">
+          <thead><tr><th></th><th>BLEU (n-gram)</th><th>ROUGE-L (LCS)</th></tr></thead>
+          <tbody>
+            <tr><td>겹침 판정 방식</td><td>연속된 n개 단어가 그대로 이어져야 함</td><td>순서만 유지하면 됨, 연속 불필요</td></tr>
+            <tr><td>중간에 다른 단어가 끼면</td><td>그 조합이 깨져서 감점</td><td>영향 없음</td></tr>
+            <tr><td>어순이 완전히 뒤집히면</td><td>감점</td><td>감점 (둘 다 공통)</td></tr>
+            <tr><td>주로 쓰이는 과업</td><td>번역</td><td>요약</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-top:10px;">즉 "표면 겹침만 본다"는 근본 한계는 두 지표가 <strong>공유</strong>하지만, 그 겹침을 정확히 어떻게 세느냐는 <strong>서로 다른 알고리즘</strong>이다. 시험 답으로 정리하면: 공통점은 "의미 판정 없음 · n-gram 기반", 차이점은 "BLEU=정밀도+연속 n-gram, ROUGE-L=재현율+순서보존 LCS".</p>
+    </div>
+    <p class="addq"><span class="addq-tag">추가문제 3 (통합형 · LLM-as-judge 연결)</span>법률 문서 번역 회사가 판결문 요약 검수에 ROUGE 대신(혹은 ROUGE에 더해) <strong>BLEU도 같이</strong> 보면 이 위험이 해결될까?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p style="margin-bottom:10px;"><strong>아니다.</strong> 두 가지 이유가 있다.</p>
+      <p style="margin-bottom:10px;">① <strong>같은 근본 결함을 공유</strong> — BLEU와 ROUGE는 계산 방식(연속 n-gram vs LCS)만 다를 뿐, 둘 다 "의미를 직접 판정하지 않는" 표면 겹침 지표다. BLEU를 하나 더 붙여도 부정어 누락이나 법리 왜곡 같은 의미 오류는 여전히 못 잡는다 — 같은 종류의 자를 두 개 대는 것과 같다.</p>
+      <p>② <strong>과업 자체가 안 맞음</strong> — BLEU는 번역 평가용, ROUGE는 요약 평가용으로 설계됐다. "요약" 품질을 보는 자리에 번역용 지표를 끌어오는 건 8강 분류표의 "과업 유형별 지표" 원칙에도 어긋난다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문 (Q9 LLM-as-judge 연결)</span>
+      <p class="fq">그럼 이 상황에서 표면 겹침 지표 대신 실제로 필요한 검증은 무엇일까?</p>
+      <p class="fa"><strong>답</strong>: 지표 계열 자체를 바꿔야 한다. <strong>의미 기반 지표</strong>(BERTScore 등 임베딩 유사도, 다만 이것도 100% 신뢰하긴 부족)를 보조로 쓰거나, Q10의 "형식 vs 내용" 원칙대로 <strong>사실 대조 검증</strong>(요약의 핵심 법리·결론이 원문과 실제로 일치하는지 사람이 대조하거나 근거 문장을 원문에서 찾아 대조)을 추가해야 한다. 또는 Q9의 <strong>LLM-as-judge + rubric</strong>으로 "이 요약이 원문의 결론을 왜곡 없이 전달하는가"를 판정 기준으로 못 박아 별도 심사할 수 있다. 정리하면 ROUGE의 한계는 표면 겹침 지표를 하나 더 얹어서가 아니라, 의미 기반 평가 + 사람 검토라는 <strong>다른 종류의 검증</strong>으로 메워야 한다.</p>
+    </div>
+  </div>
+
+  <div class="item" id="q6">
+    <span class="qnum">Q6</span>
+    <p class="qtext">BLEU에 딸린 "길이 벌점(brevity penalty)"이 왜 필요한가?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p style="margin-bottom:8px;"><em style="color:var(--sub);">※ 길이 벌점은 독립된 지표가 아니라, <strong style="color:var(--a);">BLEU 계산 안에 포함된 보정 장치</strong>다 — Q5의 BLEU를 그대로 잇는 내용.</em></p>
+      <p>출력을 아주 짧게 내면 틀릴 조각 자체가 적어져서 정밀도가 부당하게 높게 나올 수 있음. 이를 막으려고, 후보가 참조보다 지나치게 짧으면 점수를 깎는 벌점을 BLEU 계산에 곱해준다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문</span>
+      <p class="fq">이 벌점이 있어도 BLEU가 여전히 "의미가 맞는지"는 못 재는 이유는?</p>
+      <p class="fa"><strong>답</strong>: 벌점은 길이만 보정할 뿐, 조사·어순이 달라 뜻은 같은데 조각이 안 겹치는 경우나, 조각은 많이 겹쳐도 부정어 하나로 뜻이 정반대가 되는 경우까지는 못 잡음. 여전히 표면 문자 겹침만 재는 것.</p>
+    </div>
+    <p class="addq"><span class="addq-tag">추가문제</span>길이 벌점은 출력이 참조보다 훨씬 "길" 때도 점수를 깎아줄까?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p><strong>아니다.</strong> brevity penalty는 출력이 참조보다 지나치게 <strong>짧을 때만</strong> 적용되는 벌점이다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문</span>
+      <p class="fq">그럼 출력이 참조보다 훨씬 길어지면 BLEU 점수는 어떻게 될까?</p>
+      <p class="fa"><strong>답</strong>: 벌점은 없지만, 불필요하게 늘어난 조각들이 정밀도의 분모(전체 출력 조각 수)를 키워서 자연스럽게 정밀도 자체가 낮아진다 — 쓸데없는 말을 많이 보탤수록 "낸 조각 중 겹치는 비율"이 희석되는 것.</p>
+    </div>
+    <p class="addq"><span class="addq-tag">추가문제 2 (이론)</span>참조 문장과 정확히 같은 길이로 출력하면 길이 벌점이 적용될까?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p><strong>아니다.</strong> brevity penalty는 출력이 참조보다 <strong>더 짧을 때만</strong> 적용된다. 길이가 같거나 길면 벌점은 안 붙는다(다만 너무 길면 정밀도 자체가 자연히 낮아질 수 있다).</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문 (실무)</span>
+      <p class="fq">상품 요약봇이 "짧고 임팩트 있게"라는 지시를 받고 핵심 단어 몇 개만 남기고 답해서 오히려 BLEU가 높게 나왔다면, 이게 실제 서비스 품질과 안 맞는 이유는?</p>
+      <p class="fa"><strong>답</strong>: 벌점 장치가 있어도 극단적 사례를 완전히 못 막을 수 있고, 정밀도가 높게 나온 게 "정보량이 부족한 답"이라는 실제 문제를 가려버릴 수 있다. 지표가 좋아 보여도 실제 사용자에게 충분한 정보인지는 사람이 따로 확인해야 한다.</p>
+    </div>
+  </div>
+
+  <div class="fam"><span class="fam-tag">계열 4 · perplexity</span><span class="fam-line"></span></div>
+
+  <div class="item" id="q7">
+    <span class="qnum">Q7</span>
+    <p class="qtext">perplexity가 낮다는 것과 답이 정답이라는 것, 같은 뜻인가?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p><strong>아니다.</strong> perplexity는 모델이 다음 단어를 얼마나 확신 있게(안 놀라며) 예측하는지를 잴 뿐이다. 모델이 오답을 아주 자신 있게, 자연스럽게 낼 수 있다 — 확신의 정도와 정답 여부는 완전히 다른 축.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문</span>
+      <p class="fq">그럼 perplexity는 실제로 어떤 상황에 쓰기 적합한 지표일까?</p>
+      <p class="fa"><strong>답</strong>: 같은 모델을, 같은 토크나이저·같은 평가 자료로, 시간에 따라(학습 전후) 비교할 때. 예: 파인튜닝 전후 모델이 특정 문서를 얼마나 익숙하게 여기는지 비교. 서로 다른 모델 비교나 프롬프트 품질 비교엔 부적합.</p>
+    </div>
+    <p class="addq"><span class="addq-tag">추가문제</span>AI가 어떤 단어에 확률 0.01(1%)을 줬는데 실제로 그 단어가 나왔다면, 이건 낮은 놀람일까 높은 놀람일까?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p><strong>높은 놀람.</strong> 확률을 낮게 준 것에 실제로 걸리면 모델이 "예상 못 했다"는 뜻이라 놀람(perplexity에 기여하는 값)이 커진다. 확률이 낮을수록 그 사건이 실제로 일어났을 때 더 놀라는 것.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문</span>
+      <p class="fq">챗봇을 "perplexity를 최대한 낮추는" 방향으로만 훈련시키면 어떤 위험이 있을까?</p>
+      <p class="fa"><strong>답</strong>: 모델이 다양성 없이 제일 흔하고 안전한(가장 예상 가능한) 표현만 반복하게 될 위험이 있다 — 새롭거나 창의적인 답, 드문 사실을 말하는 답은 확률이 낮아 "놀라운" 것으로 취급되어 회피될 수 있음. 정확성이 아니라 "무난함"만 남을 수 있다.</p>
+    </div>
+    <p class="addq"><span class="addq-tag">추가문제 2 (이론)</span>perplexity 값이 1에 가까우면 뭘 의미하나?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>모델이 다음 단어를 거의 확실하게(놀라지 않고) 예측했다는 뜻 — 사실상 정답 후보가 하나뿐인 것처럼 확신했다는 것. 값이 클수록 여러 후보 사이에서 헷갈렸다는 뜻이다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문 (실무)</span>
+      <p class="fq">두 회사가 같은 뉴스 기사 데이터로 자기 모델의 perplexity를 비교해서 "우리 모델이 더 좋다"고 광고하려 한다면, 정당한 비교가 되려면 무엇이 같아야 할까?</p>
+      <p class="fa"><strong>답</strong>: 같은 토크나이저, 같은 평가 코퍼스(데이터셋)여야 한다. 토크나이저가 다르면 조각 나누는 방식 자체가 달라 perplexity 숫자를 나란히 비교할 수 없다.</p>
+    </div>
+  </div>
+
+  <div class="fam"><span class="fam-tag">계열 5 · pass@k</span><span class="fam-line"></span></div>
+
+  <div class="item" id="q8">
+    <span class="qnum">Q8</span>
+    <p class="qtext">pass@1이 0.3, pass@10이 0.3이면 같은 성능인가?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p><strong>아니다.</strong> k(후보를 몇 개까지 허용했는지)가 다르면 애초에 다른 조건의 점수다. k가 클수록 그중 하나라도 맞을 기회가 많아져 점수가 대체로 올라가므로, 같은 숫자라도 비교 불가능하다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문</span>
+      <p class="fq">pass@k를 보고할 때 점수 말고 같이 적어야 할 정보 세 가지는?</p>
+      <p class="fa"><strong>답</strong>: ① temperature(샘플링 다양성 설정) ② 생성한 후보 수(k) ③ 테스트 커버리지(테스트가 얼마나 꼼꼼했는지). 이 셋 없이는 다른 사람이 같은 조건으로 재현할 수 없다.</p>
+    </div>
+    <p class="addq"><span class="addq-tag">추가문제</span>pass@k를 계산할 때 컴파일 오류나 실행 중 예외가 난 후보는 어떻게 처리하나?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>전부 <strong>실패(0)</strong>로 처리한다. "설명이 그럴듯하다"거나 "거의 다 맞았다"는 평가는 없고, 실제로 실행해서 테스트를 통과했는지만 본다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문</span>
+      <p class="fq">그럼 "실행 자체가 안 되는 코드"와 "실행은 되지만 답이 틀린 코드"를 pass@k 점수만으로 구분할 수 있을까?</p>
+      <p class="fa"><strong>답</strong>: 못 한다. pass@k는 둘 다 그냥 "실패"로 뭉뚱그림. 어떤 종류의 실패가 많은지 알려면 원문을 따로 읽고 실패 유형(컴파일 오류 vs 로직 오류)을 별도로 기록해야 한다.</p>
+    </div>
+    <p class="addq"><span class="addq-tag">추가문제 2 (이론)</span>pass@k에서 "독립적으로 만든" 후보라는 조건이 왜 중요할까?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>후보들이 서로 완전히 다른 시도여야 "여러 번 시도한 효과"가 의미 있기 때문. 후보들이 서로 의존적이면(앞 답을 살짝만 바꾼 거라면) k를 늘려도 진짜 새로운 시도가 아니라 사실상 재시도가 아닌 셈이 된다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문 (실무)</span>
+      <p class="fq">어떤 개발자가 "AI한테 코드를 10번 생성시켰다"고 주장하는데, 알고 보니 매번 같은 프롬프트로 temperature=0으로만 돌렸다면, 이게 진짜 "10번 독립적으로 시도한 것"이라 할 수 있을까?</p>
+      <p class="fa"><strong>답</strong>: 아니다. temperature=0이면 매번 거의 동일한 답이 나오므로 이건 "1번 시도를 10번 복사한 것"에 가깝다. 앞서 다룬 pass@1=pass@10 문제와 같은 원리 — 진짜 독립적인 시도가 되려면 다양성(temperature 등)이 있어야 한다.</p>
+    </div>
+    <p class="addq"><span class="addq-tag">추가문제 3 (판단형)</span>pass@10이 0.9로 나왔다면, 그 모델을 그대로 배포해도 될까?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p><strong>아니다.</strong> pass@k는 k가 커질수록 값이 거의 항상 오르는 구조다 — 시도 횟수가 늘수록 그중 하나가 맞을 확률은 절대 줄지 않기 때문이다. 그래서 pass@10=0.9라는 숫자만으로는 실제 배포 환경의 성능을 알 수 없다. 실제 서비스는 대부분 사용자에게 답을 하나만 준다. 사용자가 겪는 성공률은 pass@1이지 pass@10이 아니다. pass@1을 따로 확인하지 않으면 첫 시도 성공률이 0.3, 0.4밖에 안 되는 모델도 "pass@10=0.9, 우수함"으로 잘못 보고될 수 있다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문 (Q4·Q6과 연결)</span>
+      <p class="fq">이 문제가 Q4의 micro/macro/weighted 선택 문제, Q6의 brevity penalty 문제와 근본적으로 같은 이유는?</p>
+      <p class="fa"><strong>답</strong>: 셋 다 "같은 원본 데이터·모델인데 어떤 조건(k, 평균 방식, 길이 보정)을 골랐는지에 따라 완전히 다른 숫자가 나온다"는 같은 함정이다. 그래서 숫자 하나만 보고하지 말고, 그 숫자를 만든 조건까지 반드시 같이 밝혀야 다른 사람이 그 숫자를 믿고 비교할 수 있다는 8강 전체의 원칙으로 수렴한다.</p>
+    </div>
+  </div>
+
+  <div class="fam"><span class="fam-tag">계열 6 · LLM-as-judge</span><span class="fam-line"></span></div>
+
+  <div class="item" id="q9">
+    <span class="qnum">Q9</span>
+    <p class="qtext">LLM-as-judge로 채점시킬 때 조심할 두 가지 편향은?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>① <strong>순서 편향</strong> — 두 답을 나란히 놓고 비교시킬 때 어느 게 먼저 나왔는지에 따라 판정이 달라짐. ② <strong>장황한 답 선호</strong> — 내용이 부실해도 길게 쓴 답을 더 좋게 평가하는 경향.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문</span>
+      <p class="fq">순서 편향을 줄이려면 실험 설계를 어떻게 바꿔야 할까?</p>
+      <p class="fa"><strong>답</strong>: 쌍대 비교의 출력 위치를 무작위로 바꿔가며 채점시킨다. 절반은 A를 먼저, 절반은 B를 먼저 보여준 뒤 두 결과를 평균 내면 순서 편향이 상쇄된다.</p>
+    </div>
+    <p class="addq"><span class="addq-tag">추가문제</span>GPT 모델이 "GPT가 낸 답"과 "Claude가 낸 답"을 비교 채점한다면 어떤 문제가 생길 수 있을까?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p><strong>자기 모델 계열 선호(self-preference bias)</strong> — 심사하는 모델이 자기와 같은 계열의 모델이 낸 답을 은근히 더 좋게 평가하는 경향이 있을 수 있다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문</span>
+      <p class="fq">이걸 줄이려면 심사 모델을 어떻게 골라야 할까?</p>
+      <p class="fa"><strong>답</strong>: 채점 대상 모델과 다른 계열의 모델을 심사자로 쓰거나, 여러 다른 계열의 심사 모델 결과를 같이 모아서 평균 내는 방식을 쓴다.</p>
+    </div>
+    <p class="addq"><span class="addq-tag">추가문제 2 (이론)</span>LLM-as-judge가 rubric(채점 기준표)을 반드시 미리 받아야 하는 이유는?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>기준 없이 "어느 게 더 나아?"라고만 물으면 심사 모델이 무엇을 기준으로 판단했는지 알 수 없고, 실행마다 다른 기준으로 채점할 위험이 있다. rubric이 있어야 "무엇을 좋다고 볼지"가 고정되어 재현 가능한 채점이 된다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문 (실무)</span>
+      <p class="fq">교육 플랫폼이 학생 논술 답안을 LLM-as-judge로 채점하는데, rubric 없이 "이 답안이 몇 점짜리인지 평가해줘"라고만 시켰다면 어떤 문제가 생길까?</p>
+      <p class="fa"><strong>답</strong>: 채점 기준이 매번 달라질 수 있어서 같은 수준의 답안인데도 다른 점수를 받을 수 있고, 학생이 이의를 제기해도 "왜 이 점수인지" 구체적으로 설명할 근거가 없다. 항목별 rubric(논지 명확성, 근거 타당성 등)이 있어야 일관되고 설명 가능한 채점이 된다.</p>
+    </div>
+  </div>
+
+  <div class="fam"><span class="fam-tag">계열 7 · 공통 원칙</span><span class="fam-line"></span></div>
+
+  <div class="item" id="q10">
+    <span class="qnum">Q10</span>
+    <p class="qtext">"JSON 통과율 99%인데 고객 불만이 늘었다" — 뭘 놓쳤을 가능성이 큰가?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p><strong>형식 검사와 내용(사실) 검사를 하나로 합쳐서 봤을 가능성</strong>이 크다. 형식은 완벽해도 그 안의 내용(분류, 안내 사실)이 틀렸을 수 있다 — "물류강" JSON처럼, validator는 모양만 보고 사실 여부는 못 본다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문</span>
+      <p class="fq">이 회사가 다음 배포 전에 추가해야 할 검사는 구체적으로 뭘까?</p>
+      <p class="fa"><strong>답</strong>: 내용(사실) 검증 절차를 별도로 추가. 분류 결과가 실제 문의 내용과 맞는지 사람이 표본 검토하거나, 답변 안의 근거 문장이 원본 자료에 실제로 있는지 대조하는 검사.</p>
+    </div>
+    <p class="addq"><span class="addq-tag">추가문제</span>이력서 요약 AI가 <code>{"경력":"5년","직무":"백엔드 개발자"}</code>라는 완벽한 JSON을 냈는데, 실제 이력서엔 "3년"이라고 적혀 있었다면?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>형식(파싱)은 완벽히 통과. 내용은 틀림(경력 연차를 지어냄). "물류강" 사례와 똑같은 패턴 — validator는 이 오류를 절대 못 잡는다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문</span>
+      <p class="fq">이런 오류를 막으려면 validator 말고 뭘 추가해야 하나?</p>
+      <p class="fa"><strong>답</strong>: 원문 대조 검증. 예를 들어 "evidence"(근거) 필드를 같이 요구해서, 그 근거 문장이 실제 이력서 원문에 있는지 대조하는 별도 검사를 추가해야 한다.</p>
+    </div>
+    <p class="addq"><span class="addq-tag">추가문제 3 (F1 통합형)</span>"F1이 못 재는 것"은 뭘까? (형식 vs 내용 개념과 연결지어서)</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>F1은 "맞게 뽑았는지"를 판정 기준으로 삼는데, 그 판정 규칙 자체가 허술하면 <strong>형식만 맞는 오답을 정답으로 잘못 세어버릴 수 있다</strong>. F1은 매칭 규칙에 의존하는 지표라, 매칭 규칙이 부실하면 지표 전체가 왜곡된다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문 (실무)</span>
+      <p class="fq">문서에서 인명을 추출하는 AI가 "김철수" 대신 오타 섞인 "김철수2"를 뽑았는데, 채점 스크립트가 "김철수"라는 글자만 포함되면 맞은 걸로 치는 느슨한 규칙을 썼다면, F1 점수는 어떻게 왜곡될까?</p>
+      <p class="fa"><strong>답</strong>: 실제로는 틀린 답(오타)인데 느슨한 매칭 규칙 때문에 참양성으로 잘못 카운트되어 F1이 실제보다 높게 나온다. Q1에서 배운 "정규화 규칙을 미리 정해야 한다"는 원칙이 F1의 매칭 규칙에도 그대로 적용되는 것.</p>
+    </div>
+  </div>
+
+  <div class="item" id="q11">
+    <span class="qnum">Q11</span>
+    <p class="qtext">지표 고르는 첫 질문("결정적으로 채점 가능한가")을 제일 먼저 두는 이유는?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>비용 순서이기 때문. 자동 판정(테스트·validator·이진판정)이 제일 싸고 빠르고 판정자 해석 차이도 작다. 참조답 구축이나 사람 판단은 그보다 훨씬 비용이 크다. 그래서 "싼 방법으로 안 되는 부분에만" 비싼 방법을 쓰는 순서다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문</span>
+      <p class="fq">그런데 "결정적으로 채점 가능"(예: 테스트 통과)해도 완전히 안심할 수 없는 이유는?</p>
+      <p class="fa"><strong>답</strong>: 통과가 곧 전체 요구 충족까지 보장하지 않기 때문 — 형식/테스트 통과와 완전한 정확성은 다르다. 불완전한 테스트를 통과한 코드도 실제 요구를 다 만족한다는 보장은 없다.</p>
+    </div>
+    <p class="addq"><span class="addq-tag">추가문제</span>"AI 튜터가 학생 에세이에 준 피드백이 얼마나 도움이 되는지" 평가하려면, 결정트리에서 어디로 가야 할까?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p><strong>③번(참조 답 없이 열린 품질)</strong> → LLM-as-judge + 사람 검토. "도움이 되는 피드백"엔 하나의 고정된 정답이 없다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문</span>
+      <p class="fq">왜 F1이나 exact match로는 이걸 잴 수 없을까?</p>
+      <p class="fa"><strong>답</strong>: F1이나 exact match는 "정해진 정답과 얼마나 겹치는가"를 재는데, 좋은 피드백은 여러 형태로 존재할 수 있어서 미리 정한 "정답 목록"과 비교하는 방식 자체가 성립하지 않는다.</p>
+    </div>
+    <p class="addq"><span class="addq-tag">추가문제 2 (이론)</span>세 단계(자동판정→참조비교→사람판단) 중, 첫 단계를 건너뛰고 곧바로 다음 단계로 가야 하는 경우가 있을까?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>있다. 과업 특성상 애초에 결정적으로 채점할 수 없는 것(예: 창의적 글쓰기)이라면 1단계를 건너뛰고 바로 2·3단계로 가야 한다. 이 순서는 권장 절차이지, 안 맞는 과업에 억지로 1단계부터 적용하라는 뜻이 아니다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문 (실무)</span>
+      <p class="fq">광고 카피 생성 AI를 평가하는 팀이 "일단 exact match부터 시도해보자"고 한다면, 왜 시간 낭비일 가능성이 큰가?</p>
+      <p class="fa"><strong>답</strong>: 광고 카피는 정답이 하나로 고정되지 않는 창작 영역이라 애초에 exact match가 적용될 수 없는 과업이다. 과업 성격을 먼저 판단해서 처음부터 3단계(LLM-as-judge+사람검토)로 가는 게 맞다.</p>
+    </div>
+  </div>
+
+  <div class="item" id="q12">
+    <span class="qnum">Q12</span>
+    <p class="qtext">보고서에 "평균 점수 하나"만 남기면 안 되는 이유는? 같이 남겨야 할 정보는?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>평균 하나로는 어느 사례에서 뭐가 실패했는지 알 수 없다. 시험 사례 수, 입력의 경계 사례, 모델·버전, 생성 매개변수, 정규화 규칙, 지표의 분자·분모까지 남겨야 남이 재현하고 검증할 수 있다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문</span>
+      <p class="fq">지시안 A/B/C 중 하나가 이진 판정에서 근소하게 앞섰는데 사람 검토 결과와는 어긋난다면 어떻게 해야 하나?</p>
+      <p class="fa"><strong>답</strong>: 승자를 억지로 선언하지 않는다. 점수 차이가 작거나 사람 검토와 안 맞으면, 어느 사례에서 어떤 약속이 깨졌는지 원문 근거를 함께 남겨야 한다 — 숫자 하나로 우열을 단정하지 않는 것이 8강의 결론.</p>
+    </div>
+    <p class="addq"><span class="addq-tag">추가문제</span>보고서에 "F1 = 0.73"이라는 숫자만 있고 분자·분모(계산에 쓴 실제 개수)가 없다면 뭐가 문제일까?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>다른 사람이 이 실험을 재현하거나 검증할 수 없다. 같은 F1=0.73이라도 "몇 개 중 몇 개 맞았는지"의 구체적 숫자가 없으면, 표본이 너무 적어서 우연히 나온 숫자인지 정말 안정적인 성능인지 판단할 수 없다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문</span>
+      <p class="fq">표본이 3개뿐인데 F1=0.73이 나왔다면 이 숫자를 믿을 수 있을까?</p>
+      <p class="fa"><strong>답</strong>: 신뢰하기 어렵다. 표본이 너무 적으면(3개) 하나만 결과가 달라져도 점수가 크게 흔들리므로, 시험 사례 수를 반드시 같이 보고해야 그 숫자의 안정성을 판단할 수 있다.</p>
+    </div>
+    <p class="addq"><span class="addq-tag">추가문제 2 (이론)</span>"생성 매개변수(temperature 등)를 보고서에 남긴다"는 원칙이, 지표 값 자체보다 더 중요할 때가 있을까?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>있다. 같은 지표 값이라도 생성 매개변수가 다르면 재현이 안 되고, 그 값이 왜 나왔는지(다양성 때문인지 실력 때문인지)도 판단할 수 없다. 특히 결과가 불안정한 지표(pass@k 등)일수록 매개변수 기록이 점수 자체보다 중요해진다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문 (실무)</span>
+      <p class="fq">두 팀이 같은 모델로 같은 과업을 실험했는데 정확도가 5%p 차이 났다. 알고 보니 한 팀은 temperature=0, 다른 팀은 temperature=0.7로 실험했다면, 이 5%p 차이를 어떻게 해석해야 하나?</p>
+      <p class="fa"><strong>답</strong>: 이 차이를 모델 실력 차이로 해석하면 안 된다. temperature 설정 자체가 다르므로, 어느 쪽이 더 나은지 비교하려면 먼저 같은 temperature로 재실험해야 한다 — 매개변수를 안 맞추고 비교한 숫자는 애초에 비교 대상이 아니다.</p>
+    </div>
+  </div>
+
+  <div class="fam"><span class="fam-tag">계열 8 · 그래프 읽기 (예상)</span><span class="fam-line"></span></div>
+
+  <div class="item" id="q13">
+    <span class="qnum">Q13</span>
+    <p class="qtext">판정 기준을 엄격하게 할수록 정밀도는 오르고 재현율은 내려가는 그래프(선 2개, 반대 방향). 이 그래프가 보여주는 것은?</p>
+    <figure class="chart">
+      <svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="정밀도-재현율 트레이드오프 곡선">
+        <line x1="40" y1="15" x2="40" y2="145" class="ax"/>
+        <line x1="40" y1="145" x2="380" y2="145" class="ax"/>
+        <text x="10" y="20" class="lbl">점수</text>
+        <text x="330" y="165" class="lbl">기준(느슨→엄격)</text>
+        <path d="M40,130 C120,115 220,60 380,25" fill="none" stroke="var(--q)" stroke-width="2.5"/>
+        <path d="M40,25 C120,55 220,110 380,135" fill="none" stroke="var(--f)" stroke-width="2.5"/>
+        <circle cx="215" cy="82" r="3.5" fill="var(--ink)"/>
+        <rect x="255" y="18" width="10" height="10" fill="var(--q)"/>
+        <text x="270" y="27" class="lgd">정밀도</text>
+        <rect x="255" y="34" width="10" height="10" fill="var(--f)"/>
+        <text x="270" y="43" class="lgd">재현율</text>
+      </svg>
+      <p class="chart-cap">기준이 엄격해질수록 정밀도↑ 재현율↓ — 교차점 부근이 균형 지점</p>
+    </figure>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>정밀도와 재현율은 동시에 최대로 만들 수 없는 <strong>트레이드오프 관계</strong>라는 것. 기준을 어디로 잡을지는 업무의 위험(놓치면 위험한지, 오탐이 위험한지)에 따라 정해야 한다.</p>
+    </div>
+  </div>
+
+  <div class="item" id="q14">
+    <span class="qnum">Q14</span>
+    <p class="qtext">k(후보 개수)를 늘릴수록 pass@k가 오르다가 기울기가 완만해지는 그래프(선 1개). 이게 의미하는 것은?</p>
+    <figure class="chart">
+      <svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="pass@k vs k 그래프">
+        <line x1="40" y1="15" x2="40" y2="145" class="ax"/>
+        <line x1="40" y1="145" x2="380" y2="145" class="ax"/>
+        <text x="10" y="20" class="lbl">pass@k</text>
+        <text x="350" y="165" class="lbl">k</text>
+        <path d="M40,140 C90,80 140,40 200,28 C260,20 320,17 380,15" fill="none" stroke="var(--q)" stroke-width="2.5"/>
+        <path d="M40,110 L380,108" fill="none" stroke="var(--f)" stroke-width="2.5" stroke-dasharray="5 4"/>
+        <rect x="255" y="18" width="10" height="10" fill="var(--q)"/>
+        <text x="270" y="27" class="lgd">다양성 높음</text>
+        <rect x="255" y="34" width="10" height="10" fill="var(--f)"/>
+        <text x="270" y="43" class="lgd">다양성 낮음(temp=0)</text>
+      </svg>
+      <p class="chart-cap">다양성 있으면 k 늘수록 상승 후 완만해짐, 없으면 거의 평평(pass@1≈pass@10)</p>
+    </figure>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>후보를 늘릴수록 성공 확률은 오르지만 늘어나는 속도는 둔해진다. <strong>다양성(temperature)이 낮으면 이 곡선이 거의 평평해진다</strong> — k를 늘려도 소용없다는 뜻.</p>
+    </div>
+  </div>
+
+  <div class="item" id="q15">
+    <span class="qnum">Q15</span>
+    <p class="qtext">temperature를 낮췄을 때와 높였을 때 확률분포 곡선 모양이 다르게 그려진 그래프(뾰족한 봉우리 vs 완만하게 퍼진 모양). 뭘 보여주는가?</p>
+    <figure class="chart">
+      <svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="temperature에 따른 확률분포 모양">
+        <line x1="40" y1="15" x2="40" y2="145" class="ax"/>
+        <line x1="40" y1="145" x2="380" y2="145" class="ax"/>
+        <text x="10" y="20" class="lbl">확률</text>
+        <text x="330" y="165" class="lbl">후보 단어들</text>
+        <path d="M40,143 C140,143 190,20 210,20 C230,20 280,143 380,143" fill="none" stroke="var(--q)" stroke-width="2.5"/>
+        <path d="M40,120 C120,90 160,75 210,72 C260,75 300,90 380,120" fill="none" stroke="var(--f)" stroke-width="2.5"/>
+        <rect x="255" y="18" width="10" height="10" fill="var(--q)"/>
+        <text x="270" y="27" class="lgd">temp 낮음(뾰족)</text>
+        <rect x="255" y="34" width="10" height="10" fill="var(--f)"/>
+        <text x="270" y="43" class="lgd">temp 높음(평평)</text>
+      </svg>
+      <p class="chart-cap">뾰족할수록 한 후보에 확률 집중(항상 같은 답), 평평할수록 여러 후보에 분산(답이 매번 다름)</p>
+    </figure>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>temperature 낮음 = 한 후보에 확률이 집중(뾰족한 봉우리, 항상 같은 답). temperature 높음 = 여러 후보에 확률이 고르게 퍼짐(완만한 모양, 답이 매번 다름).</p>
+    </div>
+  </div>
+
+  <div class="item" id="q16">
+    <span class="qnum">Q16</span>
+    <p class="qtext">판정 기준을 바꿔가며 F1 점수를 그린 그래프에 봉우리(최고점)가 하나 있다. 이 봉우리가 의미하는 것은?</p>
+    <figure class="chart">
+      <svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="F1 vs 판정기준 봉우리 곡선">
+        <line x1="40" y1="15" x2="40" y2="145" class="ax"/>
+        <line x1="40" y1="145" x2="380" y2="145" class="ax"/>
+        <text x="10" y="20" class="lbl">F1</text>
+        <text x="330" y="165" class="lbl">기준(느슨→엄격)</text>
+        <path d="M40,130 C120,90 180,30 210,28 C240,30 300,95 380,135" fill="none" stroke="var(--q)" stroke-width="2.5"/>
+        <circle cx="210" cy="28" r="4" fill="var(--a)"/>
+        <text x="188" y="18" class="lgd" fill="var(--a)">최적 지점</text>
+      </svg>
+      <p class="chart-cap">정밀도·재현율 균형이 가장 좋은 기준값에서 F1이 최고점을 찍는다</p>
+    </figure>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>정밀도와 재현율의 균형이 가장 잘 맞는 지점 — 그 기준값이 이 과업에서 F1을 최대화하는 <strong>"최적 지점"</strong>이라는 뜻.</p>
+    </div>
+  </div>
+
+  <div class="item" id="q17">
+    <span class="qnum">Q17</span>
+    <p class="qtext">예시 개수(0개→1개→여러 개)가 늘어날수록 정확도가 오르는 선 그래프(GPT-3 zero-shot 64.3 → one-shot 68.2 → few-shot 71.8). 이 그래프를 읽을 때 주의할 점은?</p>
+    <figure class="chart">
+      <svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="예시 개수에 따른 정확도 그래프">
+        <line x1="40" y1="15" x2="40" y2="145" class="ax"/>
+        <line x1="40" y1="145" x2="380" y2="145" class="ax"/>
+        <text x="10" y="20" class="lbl">정확도</text>
+        <text x="340" y="165" class="lbl">예시 개수</text>
+        <path d="M70,90 L210,62 L350,32" fill="none" stroke="var(--q)" stroke-width="2.5"/>
+        <circle cx="70" cy="90" r="4" fill="var(--q)"/>
+        <circle cx="210" cy="62" r="4" fill="var(--q)"/>
+        <circle cx="350" cy="32" r="4" fill="var(--q)"/>
+        <text x="55" y="108" class="lbl">64.3</text>
+        <text x="195" y="80" class="lbl">68.2</text>
+        <text x="335" y="50" class="lbl">71.8</text>
+        <text x="55" y="160" class="lbl">zero</text>
+        <text x="200" y="160" class="lbl">one</text>
+        <text x="330" y="160" class="lbl">few</text>
+      </svg>
+      <p class="chart-cap">GPT-3·SuperGLUE라는 특정 조건에서 나온 값 — 다른 모델·과업에 그대로 일반화 불가</p>
+    </figure>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>이 숫자는 특정 모델(GPT-3), 특정 과업(SuperGLUE)에서 나온 관찰이지, <strong>"예시를 늘리면 항상 좋아진다"는 보편 법칙이 아니다.</strong> 조건이 다른 모델·과업에 그대로 적용하면 안 된다.</p>
+    </div>
+  </div>
+
+  <div class="item" id="q18">
+    <span class="qnum">Q18</span>
+    <p class="qtext">perplexity 그래프에서 특정 지점이 갑자기 확 치솟았다. 이게 의미하는 것은?</p>
+    <figure class="chart">
+      <svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="perplexity 스파이크 그래프">
+        <line x1="40" y1="15" x2="40" y2="145" class="ax"/>
+        <line x1="40" y1="145" x2="380" y2="145" class="ax"/>
+        <text x="10" y="20" class="lbl">perplexity</text>
+        <text x="320" y="165" class="lbl">문장 속 단어 순서</text>
+        <path d="M40,132 L110,128 L170,130 L215,35 L260,126 L330,124 L380,120" fill="none" stroke="var(--f)" stroke-width="2.5"/>
+        <circle cx="215" cy="35" r="4.5" fill="var(--f)"/>
+        <text x="180" y="24" class="lgd" fill="var(--f)">스파이크</text>
+      </svg>
+      <p class="chart-cap">평소엔 낮게 유지되다 한 지점에서 급등 — 그 단어를 모델이 전혀 예상 못 했다는 뜻</p>
+    </figure>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>그 지점에서 모델이 <strong>크게 놀랐다(예측 실패)</strong>는 뜻 — 다음 단어에 낮은 확률을 줬는데 실제로 그 단어가 나온 경우.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문 (실무)</span>
+      <p class="fq">문장 안에서 단어별로 그린 그래프라면, 어떤 종류의 단어에서 스파이크가 자주 튈까? 학습 과정(시간)에 따라 그린 그래프라면 스파이크는 뭘 의미할까?</p>
+      <p class="fa"><strong>답</strong>: 문장 내 그래프라면 고유명사·드문 전문용어·갑작스러운 화제 전환처럼 모델이 예상 못 한 단어에서 튄다. 학습 곡선이라면 원래 꾸준히 내려가야 정상인데 중간에 튀는 건 학습률이 너무 높았거나 데이터 이상, 학습 불안정 같은 <strong>문제 신호</strong>로 읽어야 한다.</p>
+    </div>
+  </div>
+
+  <div class="item" id="q19">
+    <span class="qnum">Q19</span>
+    <p class="qtext">왼쪽은 훈련 스텝에 따른 AIME 정확도(pass@1, cons@16), 오른쪽은 같은 훈련 스텝에 따른 평균 응답 길이 그래프다(DeepSeek-R1-Zero). 이 두 그래프를 나란히 보여주는 이유는?</p>
+    <figure class="chart">
+      <svg viewBox="0 0 820 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="DeepSeek-R1-Zero 훈련 중 정확도와 응답 길이 그래프">
+        <line x1="40" y1="15" x2="40" y2="185" class="ax"/>
+        <line x1="40" y1="185" x2="380" y2="185" class="ax"/>
+        <text x="8" y="20" class="lbl">정확도</text>
+        <text x="325" y="205" class="lbl">Steps</text>
+        <line x1="40" y1="130" x2="380" y2="122" stroke="var(--a)" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <text x="255" y="118" class="lbl" fill="var(--a)">human 기준선</text>
+        <polyline points="45,175 65,150 85,160 105,120 125,135 145,95 165,110 185,80 205,90 225,65 245,75 265,55 285,68 305,50 325,58 345,45 365,50 378,42" fill="none" stroke="var(--f)" stroke-width="2"/>
+        <polyline points="45,180 65,170 85,165 105,150 125,155 145,135 165,140 185,120 205,125 225,110 245,115 265,100 285,105 305,95 325,98 345,88 365,90 378,85" fill="none" stroke="var(--q)" stroke-width="2"/>
+        <rect x="288" y="16" width="10" height="10" fill="var(--f)"/>
+        <text x="302" y="25" class="lgd">cons@16</text>
+        <rect x="288" y="32" width="10" height="10" fill="var(--q)"/>
+        <text x="302" y="41" class="lgd">pass@1</text>
+
+        <line x1="460" y1="15" x2="460" y2="185" class="ax"/>
+        <line x1="460" y1="185" x2="800" y2="185" class="ax"/>
+        <text x="428" y="20" class="lbl">평균 길이</text>
+        <text x="745" y="205" class="lbl">Steps</text>
+        <path d="M465,183 C520,178 560,168 600,150 C640,132 660,110 700,95 C730,85 750,80 760,72 C770,80 775,90 780,85 C790,78 795,82 797,80" fill="none" stroke="var(--q)" stroke-width="2"/>
+      </svg>
+      <p class="chart-cap">왼쪽: cons@16(빨강)이 pass@1(파랑)보다 항상 위, 둘 다 우상향. 오른쪽: 같은 훈련 구간에서 응답 길이도 우상향. (DeepSeek-R1 논문, arXiv:2501.12948 Figure 2·3을 단순화해 재구성)</p>
+    </figure>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>둘 다 같은 훈련(정답 여부만 채점하는 검증 가능한 보상 + GRPO)의 결과라는 걸 보여주려는 것. 왼쪽은 그 훈련이 실제로 정확도를 끌어올렸다는 증거이고, 오른쪽은 <strong>길이에는 아무 보상도 준 적이 없는데</strong> 모델이 스스로 "더 길게 생각해야 어려운 문제를 맞힌다"는 전략을 찾아냈다는 창발적 행동의 증거다. 두 그래프를 같이 둬야 "정답률 향상"과 "의도하지 않은 능력의 등장"이 같은 훈련 과정에서 동시에 일어났다는 게 드러난다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문</span>
+      <p class="fq">cons@16이 훈련 내내 pass@1보다 위에 있는 이유는?</p>
+      <p class="fa"><strong>답</strong>: 문제 하나에 답을 16번 뽑아 다수결로 정하는 self-consistency 방식이라, 한 번 풀 때 생기는 우연한 실수가 다수결 과정에서 걸러지기 때문. 한 번만 찍는 pass@1보다 항상 유리하거나 같다.</p>
+    </div>
+    <p class="addq"><span class="addq-tag">추가문제</span>오른쪽 그래프의 길이 증가만 보고 "응답이 길수록 정확도가 높다"고 결론 내려도 될까?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p><strong>안 된다.</strong> 두 그래프는 같은 x축(훈련 스텝)에서 함께 관찰된 상관관계일 뿐, 길이가 원인이고 정확도가 결과라는 인과관계를 증명하지 않는다. 실제로 DeepSeek-R1-Zero는 정확도는 올랐지만 가독성 저하·언어 혼용 같은 부작용도 있었고, 그래서 후속 모델 R1에는 콜드스타트 SFT가 추가됐다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">후속질문 (실무)</span>
+      <p class="fq">Steps(가로축)는 정확히 무엇을 세는 단위인가?</p>
+      <p class="fa"><strong>답</strong>: 문제 하나를 풀어본 횟수가 아니라, 모델 가중치를 한 번 조정한 횟수. 한 스텝 안에서 문제 여러 개를 배치로 가져와 각 문제마다 답을 그룹(예: 16~64개)으로 샘플링하고, 그룹 내 비교(GRPO)로 어느 답을 밀고 어느 답을 누를지 정한 뒤 가중치를 딱 한 번 업데이트한다.</p>
+    </div>
+  </div>
+
+  <div class="closing">
+    <b>한 줄 정리</b>: 지표는 목적별로 골라 쓰고(①결정적 채점 가능? ②참조답 비교? ③열린 품질?), 형식 통과와 내용 정확은 언제나 따로 기록한다.
+  </div>
+
+</div>
+</body>
+</html>
