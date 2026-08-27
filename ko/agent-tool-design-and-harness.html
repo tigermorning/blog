@@ -96,6 +96,64 @@
     </ul>
     <p>이 넷은 나열이 아니라 <strong>포함 관계</strong>다. 모델이 에이전트라는 구성 안에 들어가고, 에이전트는 하네스를 통해 도구와 이어진다. 그리고 이 요청-실행-응답을 계속 되풀이하는 순환을, <strong>루프(loop)</strong>라 부른다.</p>
 
+    <p>실제 강의 자료에 나온 원본 도식으로 이 넷을 한 번에 겹쳐보면 이렇다. "모델과 에이전트, 하네스, 루프는 각각 어떻게 다른 의미인가요?"라는 질문에 답할 때 이 그림 하나로 설명이 된다.</p>
+
+    <figure>
+      <svg viewBox="0 0 680 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="fig0title">
+        <title id="fig0title">도구 호출의 한 바퀴 — 앱이 도구 정의를 요청에 포함하면 모델이 요청 JSON을 쓰고, 하네스·앱이 검증·실행하고, 모델이 결과를 입력받아 근거로 답을 완성한 뒤 다시 요청을 만드는 순환</title>
+        <style>
+          .o-box{stroke:var(--accent);stroke-width:2;fill:none;}
+          .o-box2{stroke:var(--muted);stroke-width:2;fill:none;stroke-dasharray:4 3;}
+          .o-t{font-family:var(--font-body);fill:var(--ink);font-size:12px;}
+          .o-h{font-family:var(--font-heading);font-weight:700;fill:var(--accent);font-size:14px;}
+          .o-a{stroke:var(--border);stroke-width:2;fill:none;}
+        </style>
+        <defs>
+          <marker id="ca0" markerWidth="9" markerHeight="9" refX="4.5" refY="4.5" orient="auto">
+            <path d="M0,0 L9,4.5 L0,9 z" fill="var(--border)"/>
+          </marker>
+        </defs>
+
+        <rect x="20" y="30" width="120" height="65" rx="8" class="o-box"/>
+        <text x="80" y="55" text-anchor="middle" class="o-h">① 앱</text>
+        <text x="80" y="75" text-anchor="middle" class="o-t">도구 정의를</text>
+        <text x="80" y="90" text-anchor="middle" class="o-t">요청에 포함</text>
+
+        <rect x="180" y="30" width="150" height="65" rx="8" class="o-box"/>
+        <text x="255" y="55" text-anchor="middle" class="o-h">② 모델</text>
+        <text x="255" y="75" text-anchor="middle" class="o-t">호출 요청 JSON 생성</text>
+        <text x="255" y="90" text-anchor="middle" class="o-t" fill="var(--muted)">— 요청만 쓰고 실행은 안 함</text>
+
+        <rect x="370" y="18" width="180" height="90" rx="8" class="o-box2"/>
+        <text x="460" y="42" text-anchor="middle" class="o-h" fill="var(--muted)">③ 하네스 · 앱</text>
+        <text x="460" y="64" text-anchor="middle" class="o-t">검증 · 실행</text>
+        <text x="460" y="82" text-anchor="middle" class="o-t" fill="var(--muted)">— 실제 실행은 여기서 —</text>
+
+        <rect x="180" y="150" width="150" height="65" rx="8" class="o-box"/>
+        <text x="255" y="175" text-anchor="middle" class="o-h">④⑤ 모델</text>
+        <text x="255" y="195" text-anchor="middle" class="o-t">결과를 입력받아</text>
+        <text x="255" y="210" text-anchor="middle" class="o-t">근거로 답 완성</text>
+
+        <path d="M140,60 L178,60" class="o-a" marker-end="url(#ca0)"/>
+        <path d="M330,60 L368,60" class="o-a" marker-end="url(#ca0)"/>
+        <path d="M440,108 L280,148" class="o-a" marker-end="url(#ca0)"/>
+        <text x="380" y="130" text-anchor="middle" class="o-t" fill="var(--accent)">결과</text>
+
+        <path d="M180,182 L20,140 L20,60" class="o-a" stroke-dasharray="3 3" marker-end="url(#ca0)"/>
+        <text x="70" y="120" text-anchor="middle" class="o-t" fill="var(--accent)">연쇄 호출 —</text>
+        <text x="70" y="135" text-anchor="middle" class="o-t" fill="var(--accent)">②에서 다시 요청</text>
+      </svg>
+      <figcaption>도구 호출의 한 바퀴(강의 원본 도식). 결과를 읽은 뒤 다시 ②에서 요청을 만드는 연쇄 호출이 곧 루프다.</figcaption>
+    </figure>
+
+    <p>이 그림에 네 낱말을 하나씩 겹쳐보면 다음과 같다.</p>
+    <ul>
+      <li><strong>모델</strong>은 ②(요청 JSON 생성)와 ④⑤(결과를 받아 답을 완성)만 담당한다. 판단만 하고, 절대 스스로 실행하지 않는다.</li>
+      <li><strong>하네스</strong>는 ③(검증·실행)을 담당한다. 그림에 "하네스·앱"이라고 함께 적힌 이유는, ①에서 도구 정의를 요청에 챙겨 넣는 일도 결국 같은 프로그램(예: Claude Code)이 하기 때문이다 — 실무에서는 앱과 하네스가 같은 프로그램인 경우가 많다.</li>
+      <li><strong>에이전트</strong>는 이 낱말 하나에 대응하는 상자가 없다. ①~⑤ 전체 순환이 함께 일어나는 구성 자체를 가리키는 이름이기 때문이다.</li>
+      <li><strong>루프</strong>는 맨 아래 점선 화살표다. ⑤에서 답을 완성한 뒤 끝나는 게 아니라, 다시 ②로 돌아가 새 요청을 만드는 이 "연쇄 호출" 구조가 루프다.</li>
+    </ul>
+
     <h2>2. 하네스가 뭔지 그림으로 보기</h2>
     <p>"하네스는 모델과 도구 사이의 실행 장치다"라는 문장만 읽으면 뭔지 감이 잘 안 온다. 실제로 무슨 일이 벌어지는지, 부산 창고 재고를 묻는 요청 하나가 처음부터 끝까지 어떻게 흘러가는지를 그대로 그려보면 이렇다.</p>
 
