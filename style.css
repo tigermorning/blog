@@ -481,6 +481,27 @@ body.list-page .site-header {
   font-style: italic;
 }
 
+.title-list li.review-item {
+  border-left: 3px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.title-list li.review-item a {
+  padding-left: 0.6rem;
+}
+
+.review-badge {
+  flex: 0 0 auto;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  padding: 0.05rem 0.55rem;
+  white-space: nowrap;
+}
+
 .post-group {
   margin-top: 2rem;
 }
