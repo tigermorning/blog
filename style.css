@@ -532,6 +532,29 @@ body.list-page .site-header {
   font-size: 0.95rem;
   color: var(--ink);
   margin: 0 0 0.2rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.post-subcategory-title::-webkit-details-marker {
+  display: none;
+}
+
+.post-subcategory-title::before {
+  content: '▸';
+  display: inline-block;
+  width: 1em;
+  margin-right: 0.2rem;
+  color: var(--accent);
+  transition: transform 0.15s ease;
+}
+
+.post-subcategory[open] > .post-subcategory-title::before {
+  transform: rotate(90deg);
+}
+
+.post-subcategory-title:hover {
+  color: var(--accent);
 }
 
 /* 사이드바가 있는 모든 페이지가 이 wrapper를 쓴다(main의 max-width는
