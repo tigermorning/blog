@@ -481,6 +481,38 @@ body.list-page .site-header {
   font-style: italic;
 }
 
+.post-group {
+  margin-top: 2rem;
+}
+
+.post-group:first-of-type {
+  margin-top: 1rem;
+}
+
+.post-group-title {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  color: var(--accent);
+  margin: 0 0 0.75rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 2px solid var(--accent);
+}
+
+.post-subcategory {
+  margin-top: 1.25rem;
+}
+
+.post-subcategory:first-of-type {
+  margin-top: 0;
+}
+
+.post-subcategory-title {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  color: var(--ink);
+  margin: 0 0 0.2rem;
+}
+
 /* 사이드바가 있는 모든 페이지가 이 wrapper를 쓴다(main의 max-width는
    아래 .page-layout main 규칙이 담당). 위쪽의 단독 main 규칙은 사이드바가
    없는 페이지가 생길 경우를 위한 폴백이다. */
