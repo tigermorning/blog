@@ -520,7 +520,7 @@ body.list-page .site-header {
 }
 
 .post-subcategory {
-  margin-top: 1.25rem;
+  margin-top: 0.6rem;
 }
 
 .post-subcategory:first-of-type {
@@ -528,6 +528,9 @@ body.list-page .site-header {
 }
 
 .post-subcategory-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   font-family: var(--font-heading);
   font-size: 0.95rem;
   color: var(--ink);
@@ -540,16 +543,18 @@ body.list-page .site-header {
   display: none;
 }
 
-.post-subcategory-title::before {
+.post-subcategory-title::after {
   content: '▸';
   display: inline-block;
   width: 1em;
-  margin-right: 0.2rem;
+  margin-left: 0.5rem;
+  font-size: 1.4rem;
+  line-height: 1;
   color: var(--accent);
   transition: transform 0.15s ease;
 }
 
-.post-subcategory[open] > .post-subcategory-title::before {
+.post-subcategory[open] > .post-subcategory-title::after {
   transform: rotate(90deg);
 }
 
