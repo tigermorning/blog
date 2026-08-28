@@ -407,6 +407,37 @@ main th {
   font-style: italic;
 }
 
+.category-filter-status {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 0.6rem 0 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.category-filter-status #category-filter-label {
+  font-weight: var(--font-body-weight, 700);
+  color: var(--ink);
+}
+
+#category-filter-clear {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  color: var(--accent);
+  background: none;
+  border: 2px solid var(--accent);
+  border-radius: 999px;
+  padding: 0.2rem 0.7rem;
+  cursor: pointer;
+}
+
+#category-filter-clear:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
 .page-size-control {
   display: flex;
   align-items: center;

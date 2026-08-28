@@ -33,6 +33,10 @@
         <label><input type="radio" name="search-scope" value="all"> 제목+글</label>
       </div>
       <p class="search-status" id="search-status" hidden></p>
+      <p class="category-filter-status" id="category-filter-status" hidden>
+        <span id="category-filter-label"></span>
+        <button type="button" id="category-filter-clear">전체 목록 보기</button>
+      </p>
       <div class="page-size-control" id="page-size-control">
         <label for="page-size">페이지당 글 수</label>
         <select id="page-size">
@@ -343,7 +347,11 @@
       var pageSizeControl = document.getElementById('page-size-control');
       var pageSizeSelect = document.getElementById('page-size');
       var pagination = document.getElementById('pagination');
+      var filterStatus = document.getElementById('category-filter-status');
+      var filterLabel = document.getElementById('category-filter-label');
+      var filterClear = document.getElementById('category-filter-clear');
       var currentPage = 1;
+      var categoryScope = null; // 사이드바 카테고리를 눌렀을 때 채워지는 .post-subcategory/.post-group
 
       function currentScope() {
         for (var i = 0; i < scopeRadios.length; i++) {
@@ -416,8 +424,16 @@
         pagination.appendChild(makeButton('다음', currentPage + 1, { disabled: currentPage === totalPages }));
       }
 
+      function categoryLabel(scope) {
+        if (scope.classList.contains('post-subcategory')) {
+          return scope.querySelector('.post-subcategory-title').textContent;
+        }
+        return scope.querySelector('.post-group-title').textContent;
+      }
+
       function render() {
         var query = norm(input.value.trim());
+        if (query) categoryScope = null;
 
         if (query) {
           var matches = matchedItems();
@@ -426,9 +442,20 @@
           });
           pagination.hidden = true;
           pageSizeControl.hidden = true;
+          filterStatus.hidden = true;
 
           status.hidden = false;
           status.textContent = matches.length > 0 ? (matches.length + '개 글을 찾았어요.') : '일치하는 글이 없어요.';
+        } else if (categoryScope) {
+          items.forEach(function (li) {
+            li.hidden = !categoryScope.contains(li);
+          });
+          pagination.hidden = true;
+          pageSizeControl.hidden = true;
+          status.hidden = true;
+
+          filterStatus.hidden = false;
+          filterLabel.textContent = '「' + categoryLabel(categoryScope) + '」만 보는 중';
         } else {
           var pageSize = currentPageSize();
           var totalPages = Math.max(1, Math.ceil(items.length / pageSize));
@@ -444,11 +471,13 @@
           pagination.hidden = totalPages <= 1;
           renderPagination(totalPages);
           status.hidden = true;
+          filterStatus.hidden = true;
         }
 
+        var forceOpen = !!query || !!categoryScope;
         subcats.forEach(function (sub) {
           sub.hidden = sub.querySelectorAll('li:not([hidden])').length === 0;
-          if (query) {
+          if (forceOpen) {
             if (!sub.hidden && !sub.open) {
               sub.dataset.autoOpened = 'true';
               sub.open = true;
@@ -479,40 +508,51 @@
         render();
       });
 
-      function goToHash() {
-        var hash = window.location.hash;
-        if (!hash) return;
+      // #id가 가리키는 곳이 글 하나(소분류)면 그 소분류만, 카테고리
+      // 제목(대분류)이면 그 그룹 전체를 필터 범위로 잡는다. "바이브코딩"
+      // 자체(#vibe-coding)처럼 범위를 못 찾으면 전체 보기로 되돌린다.
+      function scopeForHash(hash) {
+        if (!hash) return null;
         var target = document.getElementById(hash.slice(1));
-        if (!target) return;
-
-        // 소분류(글 링크) 앵커면 그 안에서, 대분류(카테고리 제목) 앵커면
-        // 그 그룹 전체에서 첫 글을 찾아 몇 페이지에 있는지 계산한다.
-        var sub = target.closest('.post-subcategory');
-        var group = target.closest('.post-group');
-        var scope = sub || group;
-        if (!scope) return;
-
-        if (input.value) input.value = '';
-
-        var firstLi = scope.querySelector('li');
-        var idx = firstLi ? items.indexOf(firstLi) : -1;
-        if (idx !== -1) {
-          currentPage = Math.floor(idx / currentPageSize()) + 1;
-        }
-        render();
-        if (sub) {
-          sub.open = true;
-        } else if (group) {
-          Array.prototype.forEach.call(group.querySelectorAll('.post-subcategory'), function (s) {
-            s.open = true;
-          });
-        }
-        target.scrollIntoView({ block: 'start' });
+        if (!target) return null;
+        return target.closest('.post-subcategory') || target.closest('.post-group') || null;
       }
 
+      function applyHash(hash) {
+        if (input.value) input.value = '';
+        categoryScope = scopeForHash(hash);
+        render();
+      }
+
+      // 사이드바 카테고리를 눌렀을 때: 페이지를 스크롤해서 찾아가는 대신
+      // 그 자리에서 오른쪽 목록만 해당 카테고리로 바꾼다.
+      document.addEventListener('click', function (e) {
+        var link = e.target.closest('.sidebar-tree a');
+        if (!link) return;
+        var href = link.getAttribute('href') || '';
+        var hashIndex = href.indexOf('#');
+        if (hashIndex === -1) return;
+        var hash = href.slice(hashIndex);
+        var id = hash.slice(1);
+        if (!document.getElementById(id)) return; // 다른 페이지로 가는 링크면 그냥 이동
+
+        e.preventDefault();
+        history.pushState(null, '', hash);
+        applyHash(hash);
+      });
+
+      filterClear.addEventListener('click', function () {
+        history.pushState(null, '', location.pathname);
+        categoryScope = null;
+        render();
+      });
+
+      window.addEventListener('popstate', function () {
+        applyHash(window.location.hash);
+      });
+
       render();
-      window.addEventListener('hashchange', goToHash);
-      goToHash();
+      applyHash(window.location.hash);
     })();
   </script>
   <script src="sidebar-loader.js"></script>
