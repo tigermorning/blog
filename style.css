@@ -647,7 +647,7 @@ body.list-page .site-header {
 
 .post-group-title {
   font-family: var(--font-heading);
-  font-size: 2.5rem;
+  font-size: 1.9rem;
   line-height: 1.15;
   font-weight: var(--font-heading-weight, 700);
   color: var(--folder-accent, var(--accent));
@@ -663,8 +663,8 @@ body.list-page .site-header {
   left: 0;
   right: 0;
   bottom: 0;
-  height: 8px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='8' viewBox='0 0 200 8'%3E%3Cpath d='M0 5 C8 1 14 7 24 4 C34 1 42 7 54 4 C66 1 76 7 88 4 C102 1 112 7 126 4 C140 1 150 7 164 4 C176 1 186 6 200 4' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E");
+  height: 12px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='12' viewBox='0 0 200 12'%3E%3Cpath d='M0 7 C8 1 14 11 24 6 C34 1 42 11 54 6 C66 1 76 11 88 6 C102 1 112 11 126 6 C140 1 150 11 164 6 C176 1 186 10 200 6' fill='none' stroke='currentColor' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: left bottom;
   background-size: 100% 100%;
@@ -686,7 +686,7 @@ body.list-page .site-header {
   gap: 0.35rem;
   font-family: var(--font-subhead);
   font-weight: var(--font-subhead-weight, 700);
-  font-size: 0.9rem;
+  font-size: 1.15rem;
   color: var(--ink);
   margin: 0 0 0.2rem;
   cursor: pointer;
