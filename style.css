@@ -164,6 +164,7 @@ main h1 {
   position: relative;
   padding-bottom: 0.6rem;
   display: inline-block;
+  text-wrap: balance;
 }
 
 main h1::after {
@@ -220,11 +221,20 @@ main h2 {
   font-size: 1.7rem;
   margin-top: 2.6rem;
   margin-bottom: 1rem;
-  color: var(--ink);
+  color: var(--accent);
   position: relative;
   padding-bottom: 0.5rem;
   display: inline-block;
 }
+
+/* 글 하나 안에서 h2가 여러 번 나올 때 매번 똑같은 빨간 물결이면
+   지루해서, 폴더 팔레트 색을 순서대로 돌려 쓴다. 제목(h1)은 이 순환에
+   안 섞이게 accent 고정. */
+main h2:nth-of-type(5n+1) { color: var(--folder-1); }
+main h2:nth-of-type(5n+2) { color: var(--folder-2); }
+main h2:nth-of-type(5n+3) { color: var(--folder-3); }
+main h2:nth-of-type(5n+4) { color: var(--folder-4); }
+main h2:nth-of-type(5n)   { color: var(--folder-5); }
 
 main h2::after {
   content: '';
@@ -233,7 +243,11 @@ main h2::after {
   right: 0;
   bottom: 0;
   height: 8px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='8' viewBox='0 0 24 8'%3E%3Cpath d='M0 4 Q3 0 6 4 T12 4 T18 4 T24 4' fill='none' stroke='%23ff5a5f' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E") repeat-x left bottom / 20px 8px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='8' viewBox='0 0 24 8'%3E%3Cpath d='M0 4 Q3 0 6 4 T12 4 T18 4 T24 4' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-position: left bottom;
+  background-size: 20px 8px;
+  color: inherit;
 }
 
 main ol,
