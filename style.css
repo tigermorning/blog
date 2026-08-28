@@ -645,6 +645,124 @@ body.list-page .site-header {
   font-size: 0.85rem;
 }
 
+/* 접었다 펼 수 있는 사이드바 트리: 1단(대분류)/2단(소분류)/3단(글 링크)을
+   서로 다른 굵기·색·들여쓰기로 구분한다. */
+.sidebar-tree {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.tree-group,
+.tree-subgroup {
+  border-left: 2px solid var(--border);
+}
+
+.tree-group {
+  border-left-width: 3px;
+  border-left-color: var(--accent);
+  padding-left: 0.75rem;
+}
+
+.tree-group-title,
+.tree-subgroup-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.tree-group-title::-webkit-details-marker,
+.tree-subgroup-title::-webkit-details-marker {
+  display: none;
+}
+
+.tree-group-title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--ink);
+}
+
+.tree-group > .tree-group-title {
+  padding: 0;
+}
+
+.tree-top-link {
+  display: block;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--ink);
+  text-decoration: none;
+  border-left: 3px solid var(--accent);
+  padding-left: 0.75rem;
+}
+
+.tree-top-link:hover {
+  color: var(--accent);
+}
+
+.tree-toggle-icon {
+  margin-left: auto;
+  flex: 0 0 auto;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--accent);
+  transition: transform 0.15s ease;
+}
+
+details[open] > summary .tree-toggle-icon {
+  transform: rotate(90deg);
+}
+
+.tree-children {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.55rem;
+  padding-left: 0.15rem;
+}
+
+.tree-subgroup {
+  padding-left: 0.7rem;
+}
+
+.tree-subgroup-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.tree-leaf-list {
+  list-style: none;
+  margin: 0.45rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.tree-leaf-list a {
+  display: block;
+  font-size: 0.83rem;
+  line-height: 1.5;
+  color: var(--ink);
+  text-decoration: none;
+  border-left: 2px solid var(--border);
+  padding-left: 0.7rem;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.tree-leaf-list a:hover {
+  color: var(--accent);
+  border-left-color: var(--accent);
+}
+
 @media (max-width: 820px) {
   .page-layout {
     flex-direction: column;
