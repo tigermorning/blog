@@ -158,12 +158,14 @@ main h1 {
   font-family: var(--font-heading);
   font-weight: var(--font-heading-weight, 700);
   font-size: 2.6rem;
+  letter-spacing: -0.01em;
   margin-bottom: 1.6rem;
   color: var(--accent);
   line-height: 1.3;
   position: relative;
   padding-bottom: 0.6rem;
   display: inline-block;
+  max-width: 100%;
   text-wrap: balance;
 }
 
@@ -616,15 +618,32 @@ body.list-page .site-header {
   font-size: 0.76rem;
   font-weight: 400;
   color: #fff;
-  background-color: var(--folder-accent, var(--accent));
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.4 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-blend-mode: multiply;
-  filter: url('assets/filters/rough.svg#crayon-rough');
+  position: relative;
+  z-index: 0;
+  background: none;
   border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
   padding: 0.1rem 0.65rem;
   white-space: nowrap;
   transform: rotate(-3deg);
   display: inline-block;
+}
+
+/* 거친 크레용 질감은 글자가 아니라 뒤에 깔린 배경 도형에만 입힌다.
+   왜곡 필터를 글자를 포함한 요소에 직접 걸면 텍스트까지 일그러져
+   못 읽게 된다 — 그래서 ::before로 배경만 따로 떼서 필터를 건다. */
+.review-badge::before,
+.tree-group-title::before,
+.sidebar a.tree-top-link::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  transform: inherit;
+  border-radius: inherit;
+  background-color: var(--folder-accent, var(--accent));
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.4 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-blend-mode: multiply;
+  filter: url('assets/filters/rough.svg#crayon-rough');
 }
 
 /* :first-of-type이 아니라 "보이는 것들 중 첫 번째"를 기준으로 여백을
@@ -842,10 +861,9 @@ body.list-page .site-header {
   font-weight: var(--font-heading-weight, 700);
   font-size: 1.7rem;
   color: #fff;
-  background-color: var(--folder-accent, var(--accent));
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.4 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-blend-mode: multiply;
-  filter: url('assets/filters/rough.svg#crayon-rough');
+  position: relative;
+  z-index: 0;
+  background: none;
   padding: 0.6rem 1.1rem;
   border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
 }
@@ -871,10 +889,9 @@ body.list-page .site-header {
   font-weight: var(--font-heading-weight, 700);
   font-size: 1.7rem;
   color: #fff;
-  background-color: var(--folder-accent, var(--accent));
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.4 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-blend-mode: multiply;
-  filter: url('assets/filters/rough.svg#crayon-rough');
+  position: relative;
+  z-index: 0;
+  background: none;
   text-decoration: none;
   padding: 0.6rem 1.1rem;
   border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
