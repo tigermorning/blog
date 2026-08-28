@@ -32,7 +32,11 @@
 
   /* 크레용으로 대충 문지른 결 — 알약·배지 배경에 soft-light로 얹는다.
      흰 스트로크라 어떤 폴더 색 위에서도 무난하게 먹힌다. */
-  --crayon-scribble: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='25' viewBox='0 0 50 25'%3E%3Cg stroke='white' stroke-linecap='round' fill='none' opacity='0.35'%3E%3Cpath d='M-5 4 Q10 1 25 5 T55 3' stroke-width='2.5'/%3E%3Cpath d='M-5 11 Q15 8 30 12 T55 10' stroke-width='2'/%3E%3Cpath d='M-5 18 Q12 15 28 19 T55 17' stroke-width='2.5'/%3E%3C/g%3E%3C/svg%3E");
+  --crayon-edge: polygon(
+    1% 22%, 4% 10%, 12% 3%, 22% 8%, 33% 2%, 44% 7%, 56% 2%, 67% 7%, 78% 2%, 89% 7%, 97% 3%, 100% 15%,
+    98% 28%, 100% 40%, 97% 52%, 100% 64%, 98% 76%, 100% 88%, 96% 97%, 86% 100%, 75% 95%, 64% 100%,
+    53% 96%, 42% 100%, 31% 95%, 20% 100%, 9% 96%, 1% 87%, 3% 74%, 0% 60%, 3% 47%, 0% 34%
+  );
 }
 
 html[lang="ko"] {
@@ -138,6 +142,8 @@ main,
   font-size: 0.92rem;
   color: var(--muted);
   white-space: nowrap;
+  padding-right: 22px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M19 2 L24 14 L36 11 L26 18 L35 27 L23 24 L21 37 L17 24 L4 27 L13 19 L3 12 L16 15 Z' fill='none' stroke='%23ff5a5f' stroke-width='4.2' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right center / 16px 16px;
 }
 
 html[lang="ko"] .site-header .container::after {
@@ -180,7 +186,7 @@ main h1::after {
   right: 0;
   bottom: 0;
   height: 16px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='16' viewBox='0 0 200 16'%3E%3Cdefs%3E%3Cpath id='p' d='M0 9 C8 2 14 15 24 8 C34 2 42 15 54 8 C66 2 76 15 88 8 C102 2 112 15 126 8 C140 2 150 15 164 8 C176 2 186 14 200 8' fill='none' stroke-linecap='round'/%3E%3C/defs%3E%3Cuse href='%23p' stroke='%23ff5a5f' stroke-width='8' opacity='0.3' transform='translate(0,-1.8)'/%3E%3Cuse href='%23p' stroke='%23ff5a5f' stroke-width='7' opacity='0.4' transform='translate(0,1.5)'/%3E%3Cuse href='%23p' stroke='%23ff5a5f' stroke-width='5.5' opacity='0.95'/%3E%3C/svg%3E") no-repeat left bottom / 100% 100%;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='16' viewBox='0 0 200 16'%3E%3Cpath d='M0 9 C8 2 14 15 24 8 C34 2 42 15 54 8 C66 2 76 15 88 8 C102 2 112 15 126 8 C140 2 150 15 164 8 C176 2 186 14 200 8' fill='none' stroke='%23ff5a5f' stroke-width='9' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat left bottom / 100% 100%;
 }
 
 main h1.greeting {
@@ -250,7 +256,7 @@ main h2::after {
   right: 0;
   bottom: 0;
   height: 14px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='14' viewBox='0 0 200 14'%3E%3Cdefs%3E%3Cpath id='p' d='M0 8 C8 2 14 13 24 7 C34 2 42 13 54 7 C66 2 76 13 88 7 C102 2 112 13 126 7 C140 2 150 13 164 7 C176 2 186 12 200 7' fill='none' stroke-linecap='round'/%3E%3C/defs%3E%3Cuse href='%23p' stroke='currentColor' stroke-width='7' opacity='0.3' transform='translate(0,-1.6)'/%3E%3Cuse href='%23p' stroke='currentColor' stroke-width='6' opacity='0.4' transform='translate(0,1.3)'/%3E%3Cuse href='%23p' stroke='currentColor' stroke-width='4.5' opacity='0.95'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='14' viewBox='0 0 200 14'%3E%3Cpath d='M0 8 C8 2 14 13 24 7 C34 2 42 13 54 7 C66 2 76 13 88 7 C102 2 112 13 126 7 C140 2 150 13 164 7 C176 2 186 12 200 7' fill='none' stroke='currentColor' stroke-width='7.5' stroke-linecap='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: left bottom;
   background-size: 100% 100%;
@@ -267,6 +273,41 @@ main ul {
 
 main li {
   margin-bottom: 0.5rem;
+}
+
+/* 본문에 이미 쓰인 강조 태그를 크레용 손그림으로 꾸민다. 137개 글을
+   안 건드리고 기존 <strong>/<em> 위에 자동으로 입혀진다. */
+main strong {
+  position: relative;
+  z-index: 0;
+}
+
+main strong::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: -4%;
+  right: -4%;
+  top: 12%;
+  bottom: 6%;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='26' viewBox='0 0 220 26'%3E%3Cpath d='M2 8 L22 4 L42 9 L62 3 L82 8 L102 4 L122 9 L142 3 L162 8 L182 4 L202 9 L218 5 L218 15 L200 19 L182 14 L164 20 L146 15 L128 21 L110 16 L92 22 L74 17 L56 21 L38 16 L20 20 L2 17 Z' fill='%23ffd94a' opacity='0.85'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
+}
+
+main em {
+  position: relative;
+  z-index: 0;
+  font-style: italic;
+}
+
+main em::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: -14%;
+  right: -14%;
+  top: -28%;
+  bottom: -22%;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='70' viewBox='0 0 160 70'%3E%3Cpath d='M14 38 C10 15 40 4 80 5 C124 6 152 16 148 36 C145 54 108 66 78 65 C42 64 12 56 16 40' fill='none' stroke='%23ff5a5f' stroke-width='8' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
 }
 
 main code {
@@ -434,7 +475,7 @@ main th {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 0.6rem;
-  margin-top: 0.6rem;
+  margin: 0.6rem 0 1.1rem;
 }
 
 #category-filter-clear {
@@ -606,12 +647,8 @@ body.list-page .site-header {
   font-weight: 400;
   color: #fff;
   background-color: var(--folder-accent, var(--accent));
-  background-image: var(--crayon-scribble);
-  background-repeat: repeat;
-  background-size: 50px 25px;
-  background-blend-mode: soft-light;
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-  padding: 0.1rem 0.65rem;
+  clip-path: var(--crayon-edge);
+  padding: 0.18rem 0.9rem;
   white-space: nowrap;
   transform: rotate(-3deg);
   display: inline-block;
@@ -656,7 +693,7 @@ body.list-page .site-header {
   right: 0;
   bottom: 0;
   height: 14px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='14' viewBox='0 0 200 14'%3E%3Cdefs%3E%3Cpath id='p' d='M0 8 C8 2 14 13 24 7 C34 2 42 13 54 7 C66 2 76 13 88 7 C102 2 112 13 126 7 C140 2 150 13 164 7 C176 2 186 12 200 7' fill='none' stroke-linecap='round'/%3E%3C/defs%3E%3Cuse href='%23p' stroke='currentColor' stroke-width='7' opacity='0.3' transform='translate(0,-1.6)'/%3E%3Cuse href='%23p' stroke='currentColor' stroke-width='6' opacity='0.4' transform='translate(0,1.3)'/%3E%3Cuse href='%23p' stroke='currentColor' stroke-width='4.5' opacity='0.95'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='14' viewBox='0 0 200 14'%3E%3Cpath d='M0 8 C8 2 14 13 24 7 C34 2 42 13 54 7 C66 2 76 13 88 7 C102 2 112 13 126 7 C140 2 150 13 164 7 C176 2 186 12 200 7' fill='none' stroke='currentColor' stroke-width='7.5' stroke-linecap='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: left bottom;
   background-size: 100% 100%;
@@ -838,12 +875,8 @@ body.list-page .site-header {
   line-height: 1.15;
   color: #fff;
   background-color: var(--folder-accent, var(--accent));
-  background-image: var(--crayon-scribble);
-  background-repeat: repeat;
-  background-size: 50px 25px;
-  background-blend-mode: soft-light;
-  padding: 0.45rem 0.85rem;
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  clip-path: var(--crayon-edge);
+  padding: 0.55rem 1.15rem;
 }
 
 .tree-group-title .tree-toggle-icon {
@@ -877,13 +910,9 @@ body.list-page .site-header {
   line-height: 1.15;
   color: #fff;
   background-color: var(--folder-accent, var(--accent));
-  background-image: var(--crayon-scribble);
-  background-repeat: repeat;
-  background-size: 50px 25px;
-  background-blend-mode: soft-light;
+  clip-path: var(--crayon-edge);
   text-decoration: none;
-  padding: 0.45rem 0.85rem;
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  padding: 0.55rem 1.15rem;
   border-left: none;
 }
 
