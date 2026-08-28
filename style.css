@@ -176,8 +176,7 @@ main h1::after {
   right: 10%;
   bottom: 0;
   height: 10px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='10' viewBox='0 0 24 10'%3E%3Cpath d='M0 5 Q3 0 6 5 T12 5 T18 5 T24 5' fill='none' stroke='%23ff5a5f' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E") repeat-x left bottom / 22px 10px;
-  filter: url('assets/filters/rough.svg#crayon-rough-thin');
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='10' viewBox='0 0 200 10'%3E%3Cpath d='M0 6 C8 2 14 9 24 5 C34 1 42 9 54 5 C66 1 76 9 88 5 C102 2 112 9 126 5 C140 2 150 9 164 5 C176 2 186 8 200 5' fill='none' stroke='%23ff5a5f' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat left bottom / 100% 100%;
 }
 
 main h1.greeting {
@@ -192,7 +191,7 @@ main h1.greeting {
 }
 
 main p {
-  font-size: 1.15rem;
+  font-size: 1.02rem;
   color: var(--ink);
   max-width: 100%;
 }
@@ -246,17 +245,16 @@ main h2::after {
   right: 0;
   bottom: 0;
   height: 8px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='8' viewBox='0 0 24 8'%3E%3Cpath d='M0 4 Q3 0 6 4 T12 4 T18 4 T24 4' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat: repeat-x;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='8' viewBox='0 0 200 8'%3E%3Cpath d='M0 5 C8 1 14 7 24 4 C34 1 42 7 54 4 C66 1 76 7 88 4 C102 1 112 7 126 4 C140 1 150 7 164 4 C176 1 186 6 200 4' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
   background-position: left bottom;
-  background-size: 20px 8px;
+  background-size: 100% 100%;
   color: inherit;
-  filter: url('assets/filters/rough.svg#crayon-rough-thin');
 }
 
 main ol,
 main ul {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: var(--ink);
   max-width: 100%;
   padding-left: 1.4rem;
@@ -618,32 +616,12 @@ body.list-page .site-header {
   font-size: 0.76rem;
   font-weight: 400;
   color: #fff;
-  position: relative;
-  z-index: 0;
-  background: none;
+  background: var(--folder-accent, var(--accent));
   border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
   padding: 0.1rem 0.65rem;
   white-space: nowrap;
   transform: rotate(-3deg);
   display: inline-block;
-}
-
-/* 거친 크레용 질감은 글자가 아니라 뒤에 깔린 배경 도형에만 입힌다.
-   왜곡 필터를 글자를 포함한 요소에 직접 걸면 텍스트까지 일그러져
-   못 읽게 된다 — 그래서 ::before로 배경만 따로 떼서 필터를 건다. */
-.review-badge::before,
-.tree-group-title::before,
-.sidebar a.tree-top-link::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  transform: inherit;
-  border-radius: inherit;
-  background-color: var(--folder-accent, var(--accent));
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.4 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-blend-mode: multiply;
-  filter: url('assets/filters/rough.svg#crayon-rough');
 }
 
 /* :first-of-type이 아니라 "보이는 것들 중 첫 번째"를 기준으로 여백을
@@ -668,7 +646,7 @@ body.list-page .site-header {
 
 .post-group-title {
   font-family: var(--font-heading);
-  font-size: 2.1rem;
+  font-size: 2.5rem;
   font-weight: var(--font-heading-weight, 700);
   color: var(--folder-accent, var(--accent));
   margin: 0 0 1rem;
@@ -684,12 +662,11 @@ body.list-page .site-header {
   right: 0;
   bottom: 0;
   height: 8px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='8' viewBox='0 0 24 8'%3E%3Cpath d='M0 4 Q3 0 6 4 T12 4 T18 4 T24 4' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat: repeat-x;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='8' viewBox='0 0 200 8'%3E%3Cpath d='M0 5 C8 1 14 7 24 4 C34 1 42 7 54 4 C66 1 76 7 88 4 C102 1 112 7 126 4 C140 1 150 7 164 4 C176 1 186 6 200 4' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
   background-position: left bottom;
-  background-size: 20px 8px;
+  background-size: 100% 100%;
   color: var(--folder-accent, var(--accent));
-  filter: url('assets/filters/rough.svg#crayon-rough-thin');
 }
 
 .post-subcategory {
@@ -859,12 +836,10 @@ body.list-page .site-header {
 .tree-group-title {
   font-family: var(--font-heading);
   font-weight: var(--font-heading-weight, 700);
-  font-size: 1.7rem;
+  font-size: 2rem;
   color: #fff;
-  position: relative;
-  z-index: 0;
-  background: none;
-  padding: 0.6rem 1.1rem;
+  background: var(--folder-accent, var(--accent));
+  padding: 0.65rem 1.2rem;
   border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
 }
 
@@ -887,13 +862,11 @@ body.list-page .site-header {
   display: block;
   font-family: var(--font-heading);
   font-weight: var(--font-heading-weight, 700);
-  font-size: 1.7rem;
+  font-size: 2rem;
   color: #fff;
-  position: relative;
-  z-index: 0;
-  background: none;
+  background: var(--folder-accent, var(--accent));
   text-decoration: none;
-  padding: 0.6rem 1.1rem;
+  padding: 0.65rem 1.2rem;
   border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
   border-left: none;
 }
