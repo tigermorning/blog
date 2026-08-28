@@ -43,6 +43,9 @@
     <p>이번 프로젝트의 완성형 참조 구현은 모두의연구소 컨퍼런스 <strong>모두콘</strong>을 안내하는 챗봇이다. <code>suncreation.github.io/moducon-chatbot</code>에서 직접 열어 동작을 확인할 수 있다. 첫 화면은 단순한 대화창이 아니라 행사 소개·연혁·프로그램·FAQ와 챗봇 상태까지 함께 보여주는 안내 공간으로 구성돼 있다.</p>
     <p>그런데 이 앱에는 눈에 잘 안 띄는 특이한 점이 하나 있다 — <strong>서버가 없다</strong>. 질문에 답하는 AI 연산을 어딘가의 클라우드 서버가 대신 해주는 게 아니라, <strong>이 페이지를 연 사용자의 컴퓨터가 직접</strong> 두 가지 일을 한다. 하나는 브라우저 안에서 질문을 숫자로 바꾸고(임베딩) 검색하는 일이고, 다른 하나는 그 사람 컴퓨터에 설치된 <strong>로컬 Ollama</strong>(qwen3.5:2b 모델)가 실제 답변 문장을 만드는 일이다.</p>
 
+    <p>이게 왜 특이한 구조인지는 보통의 AI 챗봇과 비교해보면 드러난다. 흔한 구조는 <strong>브라우저 → 내 서버 → 클라우드 LLM API</strong>다. 서버가 중간에 끼는 이유는 두 가지다. 하나는 <strong>API 키를 숨기기 위해서</strong> — LLM API 키를 브라우저 코드에 그대로 넣으면 누구나 열어서 훔쳐 쓸 수 있으니, 서버가 대신 갖고 있다가 요청을 대신 보내준다. 다른 하나는 <strong>무거운 연산을 대신 처리하기 위해서</strong> — 임베딩 계산이나 모델 추론은 계산량이 커서 보통 서버(혹은 서버 뒤의 GPU)가 떠맡는다.</p>
+    <p>그런데 이 앱이 올라가는 <strong>GitHub Pages는 정적 파일(HTML·CSS·JS)만 나눠줄 뿐, 서버 코드 자체를 돌릴 수 없는 곳</strong>이다. 그 자리를 채우는 대신, 서버가 하던 두 가지 일을 통째로 <strong>방문자 자신의 컴퓨터</strong>로 떠넘긴 것이다. 임베딩·검색은 브라우저 안 WASM이 대신 계산하고, 답변 생성은 애초에 클라우드 API를 호출하지 않고 방문자 컴퓨터의 로컬 Ollama가 처리하니 숨겨야 할 API 키도 없다. 그 결과 "AI 챗봇인데 서버 비용이 0원"인 구조가 되지만, 대가로 방문자가 임베딩 모델(약 200MB)을 내려받고 Ollama를 직접 켜둬야 하는 불편을 떠안는다.</p>
+
     <figure>
       <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="fig1title">
         <title id="fig1title">GitHub Pages는 정적 파일만 전달하고, AI 연산은 전부 방문자의 브라우저와 로컬 Ollama 안에서 일어난다</title>
@@ -248,19 +251,21 @@
       </thead>
       <tbody>
         <tr><td>1</td><td>메인 프로젝트 — RAG 가이드 챗봇을 만들고 배포하고 평가하기</td><td>이 글 (개관)</td></tr>
-        <tr><td>2</td><td>바이브 코딩의 첫 문장 — PRD를 스스로에게 질문하기</td><td>다음 노드</td></tr>
-        <tr><td>3</td><td>자료 수집과 청크 설계</td><td>예정</td></tr>
-        <tr><td>4</td><td>임베딩과 벡터스토어 구축하기</td><td>예정</td></tr>
-        <tr><td>5</td><td>가까운 청크를 고릅니다 — 하이브리드 검색</td><td>예정</td></tr>
-        <tr><td>6</td><td>프롬프트 조립과 로컬 LLM 스트리밍</td><td>예정</td></tr>
-        <tr><td>7</td><td>답을 판정합니다 — LLM-as-Judge</td><td>예정</td></tr>
-        <tr><td>8</td><td>스스로 세운 목표를 실험으로 — 프롬프트 엔지니어링</td><td>예정</td></tr>
-        <tr><td>9</td><td>내 도메인에서 동작하는 챗봇 제출하기</td><td>예정 (최종 과제 제출)</td></tr>
+        <tr><td>2</td><td><a href="rag-chatbot-prd-questions.html">바이브 코딩의 첫 문장 — PRD를 스스로에게 묻기</a></td><td>발행</td></tr>
+        <tr><td>3</td><td><a href="rag-chatbot-chunk-design.html">검색되는 자료와 답할 수 있는 자료는 다르다 — 청크 설계</a></td><td>발행</td></tr>
+        <tr><td>4</td><td><a href="rag-chatbot-embedding-vectorstore.html">브라우저 안에서 문장을 좌표로 바꾸기 — 임베딩과 벡터스토어</a></td><td>발행</td></tr>
+        <tr><td>5</td><td><a href="rag-chatbot-hybrid-search.html">가까운 청크를 고른다 — 하이브리드 검색</a></td><td>발행</td></tr>
+        <tr><td>6</td><td><a href="rag-chatbot-prompt-streaming.html">프롬프트는 근거의 경계다 — 프롬프트 조립과 로컬 LLM 스트리밍</a></td><td>발행</td></tr>
+        <tr><td>7</td><td><a href="rag-chatbot-llm-judge.html">답변 뒤에 심사위원 하나를 더 둔다 — LLM-as-a-Judge</a></td><td>발행</td></tr>
+        <tr><td>8</td><td><a href="rag-chatbot-prompt-experiment.html">감이 아니라 기록으로 — 나만의 루브릭으로 실험하기</a></td><td>발행</td></tr>
+        <tr><td>9</td><td><a href="rag-chatbot-submission.html">지도를 접고 첫걸음을 — 배포와 제출</a></td><td>발행 (최종 과제 제출)</td></tr>
       </tbody>
     </table>
 
     <h2>정리</h2>
     <p>오늘 확인한 건 결국 하나다 — 이 프로젝트가 지키려는 약속은 <strong>"내 컴퓨터 안에서, 진짜 자료에 근거해서, 그 근거와 확신도까지 같이 보여주는 챗봇"</strong>이라는 것. 임베딩·하이브리드 검색·프롬프트 조립·판정이라는 낯선 낱말들도, 전부 이 약속 하나를 지키기 위한 부품이라고 생각하면 훨씬 덜 낯설다. 다음 노드부터는 이 약속을 실제 코드로 옮기는 첫걸음, PRD를 스스로에게 질문하는 자리로 이어진다.</p>
+
+    <p class="post-date"><a href="rag-chatbot-prd-questions.html">다음 편 → 바이브 코딩의 첫 문장 — PRD를 스스로에게 묻기</a></p>
 
   </main>
   </div>
