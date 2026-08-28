@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="description" content="「에이전트 시대의 AI 시스템 설계」(Generative AI Design Patterns) 2장을 신입사원 비유로 다시 풀어쓴 개인 독서 노트. 저작권 보호를 위해 비밀번호로 가려두었습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="신입사원의 말투를 붙잡다 — 2장 정리노트 (비공개)">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/generative-ai-design-patterns-ch2.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+<title>신입사원의 말투를 붙잡다</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+<style>
+  /* ---------- tokens ---------- */
+  :root{
+    --paper: #f2f5f7;
+    --surface: #ffffff;
+    --surface-2: #e8edf1;
+    --ink: #1b2330;
+    --ink-soft: #57626f;
+    --ink-faint: #88929c;
+    --line: #d7dee4;
+    --accent: #a86a1c;        /* 토큰=동전 색, 금빛 앰버 */
+    --accent-strong: #8a5612;
+    --accent-teal: #1f7a6c;   /* 코드/구조/기술 요소 */
+    --accent-teal-soft: #e4f1ee;
+    --accent-soft: #f4e7d3;
+    --shadow: 0 1px 2px rgba(27,35,48,.04), 0 8px 24px rgba(27,35,48,.06);
+    --font-display: "Gowun Batang", "Noto Serif KR", serif;
+    --font-body: "IBM Plex Sans KR", "Noto Sans KR", -apple-system, sans-serif;
+    --font-mono: "IBM Plex Mono", "Noto Sans Mono", monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper: #10151c;
+      --surface: #171d26;
+      --surface-2: #1f2731;
+      --ink: #e7ebf0;
+      --ink-soft: #a4afbb;
+      --ink-faint: #6d7885;
+      --line: #2a3340;
+      --accent: #dda252;
+      --accent-strong: #f0b871;
+      --accent-teal: #4bb3a0;
+      --accent-teal-soft: #16302c;
+      --accent-soft: #2d2314;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper: #10151c;
+    --surface: #171d26;
+    --surface-2: #1f2731;
+    --ink: #e7ebf0;
+    --ink-soft: #a4afbb;
+    --ink-faint: #6d7885;
+    --line: #2a3340;
+    --accent: #dda252;
+    --accent-strong: #f0b871;
+    --accent-teal: #4bb3a0;
+    --accent-teal-soft: #16302c;
+    --accent-soft: #2d2314;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+  }
+
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--font-body);
+    line-height:1.75;
+    font-size:16px;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--accent-strong);}
+  a:focus-visible, button:focus-visible, input:focus-visible{
+    outline:2px solid var(--accent-teal);
+    outline-offset:3px;
+    border-radius:4px;
+  }
+  ::selection{background:var(--accent-soft); color:var(--ink);}
+
+  .page{
+    max-width:1120px; margin:0 auto; padding:0 20px 96px;
+    display:grid; grid-template-columns:226px minmax(0,760px); gap:56px;
+    align-items:start;
+  }
+  .wrap{min-width:0;}
+
+  /* ---------- side nav ---------- */
+  .side-nav{
+    position:sticky; top:28px; align-self:start;
+    max-height:calc(100vh - 56px); overflow-y:auto;
+    padding:32px 10px 32px 0;
+    font-size:13.5px;
+  }
+  .side-nav-title{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--ink-faint);
+    margin:0 0 14px; padding-bottom:12px; border-bottom:1px solid var(--line);
+  }
+  .side-nav ol{list-style:none; margin:0; padding:0;}
+  .side-nav > ol > li{margin-bottom:2px;}
+  .side-nav a{
+    display:flex; align-items:center; gap:9px;
+    text-decoration:none; color:var(--ink-soft);
+    padding:7px 9px; border-radius:7px; line-height:1.4;
+    transition:background .15s, color .15s;
+  }
+  .side-nav a:hover{background:var(--surface-2); color:var(--ink);}
+  .side-nav a.active{color:var(--accent-strong); background:var(--accent-soft); font-weight:600;}
+  .side-nav .n{font-family:var(--font-mono); font-size:11px; color:var(--accent); flex:none; width:24px;}
+  .side-nav ol.sub{margin:2px 0 8px 24px; padding-left:11px; border-left:1px solid var(--line);}
+  .side-nav ol.sub a{font-size:12.5px; padding:5px 9px; color:var(--ink-faint);}
+  .side-nav ol.sub a:hover{color:var(--ink-soft);}
+  .side-nav ol.sub a.active{color:var(--accent-strong); background:transparent; font-weight:500;}
+  @media (max-width:960px){
+    .page{grid-template-columns:1fr; gap:0;}
+    .side-nav{display:none;}
+  }
+
+  /* ---------- hero ---------- */
+  .hero{
+    padding:64px 0 40px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:40px;
+  }
+  .kicker{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--font-mono);
+    font-size:12.5px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--accent-teal);
+    margin-bottom:18px;
+  }
+  .kicker::before{
+    content:"";
+    width:16px; height:1px;
+    background:var(--accent-teal);
+  }
+  h1.title{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:clamp(34px, 6vw, 50px);
+    line-height:1.22;
+    margin:0 0 18px;
+    text-wrap:balance;
+    color:var(--ink);
+  }
+  .lede{
+    font-size:17.5px;
+    color:var(--ink-soft);
+    max-width:60ch;
+    margin:0 0 22px;
+  }
+  .meta{
+    font-family:var(--font-mono);
+    font-size:12.5px;
+    color:var(--ink-faint);
+  }
+
+  /* ---------- toc (mobile fallback) ---------- */
+  .toc{
+    display:none; flex-wrap:wrap; gap:8px;
+    margin:28px 0 0;
+    padding:0; list-style:none;
+  }
+  @media (max-width:960px){
+    .toc{display:flex;}
+  }
+  .toc a{
+    display:block;
+    text-decoration:none;
+    font-size:13.5px;
+    color:var(--ink-soft);
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:7px 14px;
+    transition:border-color .15s, color .15s;
+  }
+  .toc a:hover{border-color:var(--accent-teal); color:var(--accent-teal);}
+  .toc b{font-family:var(--font-mono); color:var(--accent); font-weight:500; margin-right:5px;}
+
+  /* ---------- section shell ---------- */
+  section.sec{margin:0 0 64px; scroll-margin-top:24px;}
+  .sec-head{
+    display:flex; align-items:baseline; gap:14px;
+    margin-bottom:20px;
+  }
+  .sec-num{
+    font-family:var(--font-mono);
+    font-size:13px; font-weight:500;
+    color:var(--surface);
+    background:var(--ink);
+    border-radius:6px;
+    padding:4px 9px;
+    flex:none;
+  }
+  h2.h2{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:26px;
+    margin:0;
+    color:var(--ink);
+  }
+  h3.h3{
+    font-family:var(--font-body);
+    font-weight:600;
+    font-size:16.5px;
+    color:var(--accent-teal);
+    margin:34px 0 10px;
+    display:flex; align-items:center; gap:8px;
+    scroll-margin-top:24px;
+  }
+  h3.h3 .tag{
+    font-family:var(--font-mono);
+    font-size:11px; color:var(--ink-faint);
+    border:1px solid var(--line);
+    border-radius:5px; padding:1px 6px;
+    font-weight:400;
+  }
+  p{margin:0 0 15px; color:var(--ink);}
+  .sub p{color:var(--ink-soft);}
+  strong{color:var(--ink); font-weight:600;}
+
+  /* ---------- etymology callout ---------- */
+  .etym{
+    display:flex; gap:14px;
+    background:var(--accent-teal-soft);
+    border-left:3px solid var(--accent-teal);
+    border-radius:0 10px 10px 0;
+    padding:16px 18px;
+    margin:18px 0 22px;
+  }
+  .etym .label{
+    font-family:var(--font-mono);
+    font-size:11px; letter-spacing:.06em;
+    color:var(--accent-teal);
+    text-transform:uppercase;
+    flex:none; padding-top:3px;
+    writing-mode:horizontal-tb;
+  }
+  .etym .body{font-size:14.5px; color:var(--ink-soft);}
+  .etym .term{
+    font-family:var(--font-display);
+    font-style:italic; font-weight:700;
+    color:var(--ink); font-size:16px;
+  }
+
+  /* ---------- generic card ---------- */
+  .card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:20px 22px;
+    box-shadow:var(--shadow);
+  }
+  .analogy{
+    background:var(--surface-2);
+    border-radius:12px;
+    padding:16px 18px;
+    margin:14px 0 20px;
+    font-size:14.5px;
+    color:var(--ink-soft);
+  }
+  .analogy b{color:var(--accent-strong); font-weight:600;}
+
+  /* ---------- flow diagram ---------- */
+  .flow{
+    display:flex; align-items:stretch; gap:6px; flex-wrap:wrap;
+    margin:20px 0 24px;
+  }
+  .flow-box{
+    flex:1 1 120px;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:14px 12px;
+    text-align:center;
+    font-size:13.5px;
+    color:var(--ink);
+    display:flex; flex-direction:column; justify-content:center; gap:3px;
+  }
+  .flow-box .label{font-weight:600;}
+  .flow-box .sub{font-size:11.5px; color:var(--ink-faint); font-family:var(--font-mono);}
+  .flow-box.accent{border-color:var(--accent); background:var(--accent-soft);}
+  .flow-arrow{
+    flex:none; display:flex; align-items:center; justify-content:center;
+    color:var(--ink-faint); font-size:18px; width:20px;
+  }
+  @media (max-width:520px){
+    .flow{flex-direction:column;}
+    .flow-arrow{transform:rotate(90deg); width:auto; padding:2px 0;}
+  }
+
+  /* ---------- coin row ---------- */
+  .coinrow{display:flex; gap:6px; align-items:center; margin:14px 0 6px; flex-wrap:wrap;}
+  .coin{
+    width:26px; height:26px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, var(--accent-strong), var(--accent));
+    flex:none;
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,.08);
+  }
+  .coinrow .note{font-size:12.5px; color:var(--ink-faint); margin-left:6px;}
+
+  /* ---------- dial demo ---------- */
+  .dial-demo{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:22px 24px;
+    margin:22px 0 20px;
+    box-shadow:var(--shadow);
+  }
+  .dial-demo .caption{font-size:13px; color:var(--ink-faint); margin-bottom:10px;}
+  .stem-box{
+    background:var(--surface-2); border-radius:10px;
+    padding:12px 16px; margin-bottom:18px;
+    font-size:14px; color:var(--ink);
+  }
+  .stem-box .stem-en{font-family:var(--font-mono); font-size:15px;}
+  .stem-box .stem-en .blank{color:var(--accent-strong); font-weight:700;}
+  .stem-box .stem-ko{font-size:12.5px; color:var(--ink-faint); margin-top:4px;}
+  .dial-slider-row{display:flex; align-items:center; gap:14px; margin-bottom:8px;}
+  .dial-slider-row .dl{font-family:var(--font-mono); font-size:12.5px; color:var(--ink-soft); flex:none; display:flex; flex-direction:column; line-height:1.35;}
+  .dial-slider-row .dl:last-child{text-align:right;}
+  .dial-slider-row .dl small{font-family:var(--font-body); font-size:10.5px; color:var(--ink-faint); font-weight:400;}
+  .t-readout{
+    text-align:center; font-family:var(--font-mono); font-size:12px;
+    color:var(--accent-strong); margin-bottom:18px;
+  }
+  input[type=range]{
+    flex:1;
+    -webkit-appearance:none; appearance:none;
+    height:6px; border-radius:999px;
+    background:var(--surface-2);
+    outline-offset:6px;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; appearance:none;
+    width:18px; height:18px; border-radius:50%;
+    background:var(--accent);
+    border:2px solid var(--surface);
+    box-shadow:0 0 0 1px var(--accent-strong);
+    cursor:pointer;
+  }
+  input[type=range]::-moz-range-thumb{
+    width:18px; height:18px; border-radius:50%;
+    background:var(--accent); border:2px solid var(--surface);
+    box-shadow:0 0 0 1px var(--accent-strong); cursor:pointer;
+  }
+  .bar-row{display:flex; align-items:center; gap:10px; margin-bottom:9px;}
+  .bar-row .w{width:38px; flex:none; font-family:var(--font-mono); font-size:13px; color:var(--ink-soft);}
+  .bar-track{flex:1; height:16px; background:var(--surface-2); border-radius:5px; overflow:hidden;}
+  .bar-fill{height:100%; background:linear-gradient(90deg, var(--accent-strong), var(--accent)); border-radius:5px; transition:width .25s ease;}
+  .bar-row .pct{width:52px; flex:none; text-align:right; font-family:var(--font-mono); font-size:12.5px; color:var(--ink-faint); font-variant-numeric:tabular-nums;}
+  .mode-readout{
+    margin-top:14px; font-size:13.5px; color:var(--accent-strong); font-weight:600;
+    font-family:var(--font-body);
+  }
+
+  /* static top-k / top-p mini bars */
+  .mini-compare{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:20px 0 22px;}
+  .mini-card{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:16px 18px;}
+  .mini-card h4{margin:0 0 4px; font-size:14px; font-family:var(--font-mono); color:var(--ink);}
+  .mini-card .d{font-size:12.5px; color:var(--ink-faint); margin-bottom:12px;}
+  .mini-bars{display:flex; align-items:flex-end; gap:6px; height:70px;}
+  .mini-bars i{flex:1; border-radius:3px 3px 0 0; background:var(--accent); display:block;}
+  .mini-bars i.off{background:var(--surface-2);}
+  @media (max-width:560px){.mini-compare{grid-template-columns:1fr;}}
+
+  /* ---------- agent loop svg ---------- */
+  .loop-wrap{display:flex; justify-content:center; margin:22px 0 8px;}
+  .loop-wrap svg{max-width:100%; height:auto;}
+  .loop-node-label{font-family:var(--font-body); font-weight:600; font-size:13px; fill:var(--ink);}
+  .loop-node-sub{font-family:var(--font-body); font-size:10.5px; fill:var(--ink-faint);}
+
+  /* ---------- compare grid (zero/few shot) ---------- */
+  .compare{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:20px 0 8px;}
+  .compare .card h4{
+    margin:0 0 4px; font-family:var(--font-mono); font-size:13px;
+    color:var(--accent-teal); text-transform:uppercase; letter-spacing:.04em;
+  }
+  .compare .card p{font-size:14.5px;}
+  .compare .snippet{
+    background:var(--surface-2); border-radius:8px; padding:10px 12px;
+    font-family:var(--font-mono); font-size:12px; color:var(--ink-soft);
+    line-height:1.6; margin-top:10px; white-space:pre-wrap;
+  }
+  @media (max-width:560px){.compare{grid-template-columns:1fr;}}
+
+  /* ---------- journey overview (1.2 relationship map) ---------- */
+  .journey{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:22px 24px 20px;
+    margin:22px 0 26px;
+    box-shadow:var(--shadow);
+  }
+  .journey-title{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.06em;
+    text-transform:uppercase; color:var(--ink-faint);
+    margin-bottom:16px;
+  }
+  .jstep{display:grid; grid-template-columns:26px 1fr; column-gap:14px; position:relative;}
+  .jstep .dot{
+    width:26px; height:26px; border-radius:50%;
+    background:var(--accent-teal-soft); border:2px solid var(--accent-teal);
+    color:var(--accent-teal); font-family:var(--font-mono); font-size:10.5px;
+    display:flex; align-items:center; justify-content:center; font-weight:600;
+    position:relative; z-index:1;
+  }
+  .jstep:not(:last-child) .dot::after{
+    content:""; position:absolute; left:50%; top:26px;
+    width:2px; height:calc(100% + 14px);
+    background:var(--line); transform:translateX(-50%);
+  }
+  .jstep .jbody{padding-bottom:22px;}
+  .jstep:last-child .jbody{padding-bottom:0;}
+  .jstep h5{margin:0 0 4px; font-size:14.5px; font-weight:600; color:var(--ink);}
+  .jstep p{margin:0; font-size:13px; color:var(--ink-soft);}
+  .jstep .why{
+    display:inline-block; margin-top:7px;
+    font-size:12px; color:var(--accent-strong);
+    background:var(--accent-soft); border-radius:6px; padding:4px 9px;
+  }
+
+  /* ---------- pipeline stage boxes ---------- */
+  .stage-list{display:flex; flex-direction:column; gap:0; margin:20px 0 22px;}
+  .stage{
+    display:flex; gap:16px; padding:16px 0;
+    border-top:1px solid var(--line);
+  }
+  .stage:first-child{border-top:none;}
+  .stage .n{
+    flex:none; width:30px; height:30px; border-radius:50%;
+    background:var(--surface-2); color:var(--ink-soft);
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-mono); font-size:13px; font-weight:500;
+  }
+  .stage .n.on{background:var(--accent); color:var(--surface);}
+  .stage h5{margin:0 0 4px; font-size:14.5px; font-weight:600;}
+  .stage p{margin:0; font-size:13.5px; color:var(--ink-soft);}
+
+  /* ---------- generated-output comparison ---------- */
+  .gen-compare{display:flex; flex-direction:column; gap:10px; margin:18px 0 8px;}
+  .gen-row{background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:14px 16px;}
+  .gen-row .t-label{
+    font-family:var(--font-mono); font-size:11.5px; color:var(--accent-strong);
+    margin-bottom:7px; display:block; font-weight:600;
+  }
+  .gen-row p{margin:0; font-size:14px; color:var(--ink); line-height:1.7;}
+
+  /* ---------- roadmap grid ---------- */
+  .roadmap{display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; margin:22px 0 6px;}
+  .rmap-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:12px;
+    padding:15px 17px;
+  }
+  .rmap-card .num{
+    font-family:var(--font-mono); font-size:12px; color:var(--accent);
+    display:block; margin-bottom:5px;
+  }
+  .rmap-card h5{margin:0 0 5px; font-size:14.5px; font-weight:600;}
+  .rmap-card p{margin:0; font-size:13px; color:var(--ink-soft);}
+  @media (max-width:560px){.roadmap{grid-template-columns:1fr;}}
+
+  /* ---------- data-to-method table ---------- */
+  .ptable{
+    width:100%; border-collapse:collapse; margin:18px 0 22px;
+    font-size:13.5px; background:var(--surface); border:1px solid var(--line);
+    border-radius:12px; overflow:hidden; box-shadow:var(--shadow);
+  }
+  .ptable th, .ptable td{ text-align:left; padding:12px 16px; border-bottom:1px solid var(--line); }
+  .ptable th{ font-family:var(--font-mono); font-size:11.5px; letter-spacing:.04em; text-transform:uppercase; color:var(--ink-faint); background:var(--surface-2); font-weight:500; }
+  .ptable tr:last-child td{ border-bottom:none; }
+  .ptable td strong{ color:var(--accent-strong); }
+  .ptable-wrap{ overflow-x:auto; }
+
+  /* ---------- qa review ---------- */
+  .qa-fam{
+    margin:28px 0 12px; font-family:var(--font-mono); font-size:11.5px; font-weight:600;
+    letter-spacing:.05em; color:var(--accent-strong); padding-bottom:8px; border-bottom:1px solid var(--line);
+  }
+  .qa-fam:first-of-type{ margin-top:6px; }
+  .qa-item{
+    border:1px solid var(--line); border-radius:12px; background:var(--surface);
+    padding:18px 20px; margin:0 0 14px; box-shadow:var(--shadow);
+  }
+  .qa-tag{
+    display:inline-block; font-family:var(--font-mono); font-size:11px; font-weight:700;
+    color:var(--accent-strong); background:var(--accent-soft); padding:2px 9px; border-radius:5px; margin-bottom:9px;
+  }
+  .qa-q{ margin:0 0 10px; font-size:15px; font-weight:600; color:var(--ink); }
+  .qa-a{ margin:0; font-size:14px; color:var(--ink-soft); }
+  .qa-a strong{ color:var(--accent-strong); }
+  .qa-a + .qa-a{ margin-top:8px; }
+  .qa-follow{
+    margin-top:12px; padding:12px 14px; border-radius:8px;
+    background:var(--accent-teal-soft); font-size:13.5px;
+  }
+  .qa-flabel{
+    display:block; font-family:var(--font-mono); font-size:10.5px; letter-spacing:.05em;
+    text-transform:uppercase; color:var(--accent-teal); margin-bottom:6px; font-weight:600;
+  }
+  .qa-follow .fq{ margin:0 0 6px; font-weight:600; color:var(--ink); }
+  .qa-follow .fa{ margin:0; color:var(--ink-soft); }
+
+  /* ---------- misc ---------- */
+  .divider-note{
+    display:flex; align-items:center; gap:10px;
+    font-size:12.5px; color:var(--ink-faint); margin:26px 0;
+  }
+  .divider-note::before, .divider-note::after{content:""; flex:1; height:1px; background:var(--line);}
+
+  footer{
+    border-top:1px solid var(--line);
+    padding-top:28px; margin-top:16px;
+    font-size:13px; color:var(--ink-faint);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+</style>
+</style>
+</head>
+<body>
+
+  <div id="lockGate" style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#f2f5f7;font-family:'IBM Plex Sans KR','Noto Sans KR',-apple-system,sans-serif;">
+    <div style="max-width:360px;width:calc(100% - 40px);padding:32px 28px;text-align:center;background:#ffffff;border:1px solid #d7dee4;border-radius:14px;box-shadow:0 8px 24px rgba(27,35,48,.08);">
+      <div style="font-size:32px;margin-bottom:10px;">🔒</div>
+      <h2 style="margin:0 0 8px;font-size:17px;color:#1b2330;">비공개 독서 노트</h2>
+      <p style="margin:0 0 18px;font-size:13px;line-height:1.6;color:#57626f;">원서 내용을 제 자신의 언어와 비유로 재구성한 개인 학습 노트입니다. 저작권 보호를 위해 비밀번호로 가려두었어요 — 아는 분만 보세요.</p>
+      <input id="lockInput" type="password" placeholder="비밀번호" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #d7dee4;border-radius:8px;font-size:14px;margin-bottom:10px;">
+      <button id="lockBtn" style="width:100%;padding:10px 12px;border:none;border-radius:8px;background:#a86a1c;color:#fff;font-size:14px;font-weight:600;cursor:pointer;">열기</button>
+      <p id="lockError" style="display:none;color:#b23b3b;font-size:12px;margin:10px 0 0;">비밀번호가 틀렸어요.</p>
+    </div>
+  </div>
+  <script>
+  (function(){
+    var PASS = "reilly2026";
+    var KEY = "unlocked-genai-design-patterns-ch2";
+    function reveal(){
+      document.getElementById("lockGate").style.display = "none";
+      document.getElementById("pageContent").style.display = "";
+    }
+    document.addEventListener("DOMContentLoaded", function(){
+      try { if (sessionStorage.getItem(KEY) === "1") { reveal(); } } catch(e){}
+    });
+    function tryUnlock(){
+      var v = document.getElementById("lockInput").value;
+      if (v === PASS) {
+        try { sessionStorage.setItem(KEY, "1"); } catch(e){}
+        reveal();
+      } else {
+        document.getElementById("lockError").style.display = "block";
+      }
+    }
+    document.getElementById("lockBtn").addEventListener("click", tryUnlock);
+    document.getElementById("lockInput").addEventListener("keydown", function(ev){ if (ev.key === "Enter") tryUnlock(); });
+  })();
+  </script>
+
+<div class="page" id="pageContent" style="display:none;">
+
+  <nav class="side-nav" aria-label="2장 목차">
+    <div class="side-nav-title">2장 목차</div>
+    <ol>
+      <li><a href="#map"><span class="n">MAP</span>한 장 지도</a></li>
+      <li><a href="#s0"><span class="n">2.0</span>말투가 제멋대로인 문제</a></li>
+      <li><a href="#s1"><span class="n">2.1</span>Logits Masking</a></li>
+      <li><a href="#s2"><span class="n">2.2</span>Grammar</a></li>
+      <li><a href="#s3"><span class="n">2.3</span>Style Transfer</a></li>
+      <li><a href="#s4"><span class="n">2.4</span>Reverse Neutralization</a></li>
+      <li><a href="#s5"><span class="n">2.5</span>Content Optimization</a></li>
+      <li><a href="#summary"><span class="n">표</span>다섯 패턴 요약</a></li>
+      <li>
+        <a href="#review"><span class="n">Q&amp;A</span>문답 복습노트</a>
+        <ol class="sub">
+          <li><a href="#q1">Q1 왜 다섯 패턴인가</a></li>
+          <li><a href="#q2">Q2 될 때까지 다시 해보기</a></li>
+          <li><a href="#q3">Q3 마스킹 vs 문법</a></li>
+          <li><a href="#q4">Q4 퓨샷 vs 파인튜닝</a></li>
+          <li><a href="#q5">Q5 역중립화가 필요한 이유</a></li>
+          <li><a href="#q6">Q6 이유 몰라도 된다</a></li>
+          <li><a href="#q7">Q7 강제력 순서</a></li>
+        </ol>
+      </li>
+    </ol>
+  </nav>
+
+  <div class="wrap">
+
+  <header class="hero">
+    <div class="kicker">생성형 AI 설계 패턴 · 2장 정리노트</div>
+    <h1 class="title">신입사원의 말투를 붙잡다 — 콘텐츠 스타일 제어</h1>
+    <p class="lede">
+      1장에서 키운 신입사원(모델)이 이제 실제로 글을 쓰기 시작했어요. 그런데 회사가 원하는 "말투"를 영
+      제멋대로예요. 2장은 이 말투를 붙잡는 다섯 가지 방법을 다뤄요. 역시 책의 설명을 그대로 옮기지 않고,
+      1장에서 쓴 신입사원 비유를 그대로 이어서 풀었어요.
+    </p>
+    <div class="meta">원서 Generative AI Design Patterns · Lakshmanan · Hapke · 번역 류광 · 한빛미디어</div>
+    <p style="margin-top:14px;"><a href="generative-ai-design-patterns-ch1.html" style="font-family:var(--font-mono); font-size:13px; color:var(--accent-strong); text-decoration:none;">← 이전 장 — 1장. 프롬프트에서 에이전트까지</a></p>
+
+    <ul class="toc">
+      <li><a href="#map"><b>MAP</b>한 장 지도</a></li>
+      <li><a href="#s0"><b>2.0</b>말투가 제멋대로인 문제</a></li>
+      <li><a href="#s1"><b>2.1</b>Logits Masking</a></li>
+      <li><a href="#s2"><b>2.2</b>Grammar</a></li>
+      <li><a href="#s3"><b>2.3</b>Style Transfer</a></li>
+      <li><a href="#s4"><b>2.4</b>Reverse Neutralization</a></li>
+      <li><a href="#s5"><b>2.5</b>Content Optimization</a></li>
+      <li><a href="#review"><b>Q&amp;A</b>문답 복습노트</a></li>
+    </ul>
+  </header>
+
+  <!-- map -->
+  <section class="sec" id="map">
+    <div class="sec-head">
+      <span class="sec-num">MAP</span>
+      <h2 class="h2">한 장 지도 — 말투를 붙잡는 다섯 가지 방법</h2>
+    </div>
+    <p>
+      다섯 패턴은 전부 "신입사원이 쓴 글의 스타일을 어떻게 회사가 원하는 대로 붙잡을까"라는 같은 질문에
+      대한 답이에요. 다만 강제력이 다르죠. 앞쪽(2.1·2.2)은 아예 못 쓰게 막는 강한 방식이고, 뒤로 갈수록
+      (2.3~2.5) 예시를 보여주며 배우게 하는 느슨한 방식이에요.
+    </p>
+    <div class="journey">
+      <div class="journey-title">강제력 순서로 보는 다섯 방법</div>
+      <div class="jstep">
+        <div class="dot">1</div>
+        <div class="jbody">
+          <h5>2.1 Logits Masking — 쓰는 도중 실시간으로 어깨너머 감독</h5>
+          <p>금지 단어를 쓰려는 바로 그 순간, 그 단어가 아예 선택되지 못하게 막아요. 가장 엄격한 방식이에요.</p>
+          <span class="why">↓ 규칙이 아주 표준적인 형식이라면, 이걸 회사(모델 제공사)에 맡길 수도 있어요</span>
+        </div>
+      </div>
+      <div class="jstep">
+        <div class="dot">2</div>
+        <div class="jbody">
+          <h5>2.2 Grammar — 아예 정해진 양식지에만 쓰게 강제</h5>
+          <p>SQL 문법이나 JSON 스키마처럼 "이 형식이어야 한다"는 틀 자체를 주고, 그 틀을 벗어난 글자는
+          애초에 못 쓰게 해요.</p>
+          <span class="why">↓ 규칙으로 못 담아내는 미묘한 뉘앙스는, 예시로 가르치는 수밖에 없어요</span>
+        </div>
+      </div>
+      <div class="jstep">
+        <div class="dot">3</div>
+        <div class="jbody">
+          <h5>2.3 Style Transfer — 본보기 편지 몇 장 보여주고 따라 쓰게 가르침</h5>
+          <p>"이렇게 써봐"라고 예시 쌍을 보여줘요. 프롬프트에 몇 개만 끼워 넣거나(퓨샷), 아예 대량으로
+          다시 훈련시켜요(파인튜닝).</p>
+          <span class="why">↓ 그런데 따라 쓸 예시 자체가 없다면요?</span>
+        </div>
+      </div>
+      <div class="jstep">
+        <div class="dot">4</div>
+        <div class="jbody">
+          <h5>2.4 Reverse Neutralization — 초안 담당과 윤문 담당, 두 직원 릴레이</h5>
+          <p>예시가 없으면 거꾸로 만들어요. 내 스타일 글을 먼저 "무난한 버전"으로 바꿔서 학습 자료로
+          쓰고, 그 반대 방향(무난한 글 → 내 스타일)으로 직원을 훈련시켜요.</p>
+          <span class="why">↓ 아예 뭐가 좋은 글인지도 모르겠다면요?</span>
+        </div>
+      </div>
+      <div class="jstep">
+        <div class="dot">5</div>
+        <div class="jbody">
+          <h5>2.5 Content Optimization — 이유는 몰라도 이긴 쪽 스타일로 계속 다듬음</h5>
+          <p>왜 좋은지 몰라도 괜찮아요. 둘 중 하나를 골라 "이긴 쪽"만 계속 훈련시키면, 직원은 점점
+          이기는 스타일로 글을 쓰게 돼요.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2.0 -->
+  <section class="sec" id="s0">
+    <div class="sec-head">
+      <span class="sec-num">2.0</span>
+      <h2 class="h2">말투가 제멋대로인 문제</h2>
+    </div>
+    <p>
+      같은 질문을 여러 회사의 신입사원(모델)에게 던져보면 답의 스타일이 완전히 제각각이에요. 책 저자들이
+      "피에로기에 곁들일 좋은 사이드 디시는? 한 문장으로 답해줘"라는 똑같은 질문을 GPT-4, 클로드, 제미나이,
+      라마, 딥시크, 미스트랄에게 던졌더니, 한 문장이라는 제약을 줬는데도 저마다 다른 재료·다른 어투로
+      답했어요.
+    </p>
+    <div class="analogy">
+      <b>비유로 보면</b> — 신입사원마다 자란 배경(학습 데이터)이 다르니, 같은 질문에도 말투가 다 달라요.
+      스타일을 아예 제한하지 않았다면 얼마나 더 제각각이었을지 상상해보세요.
+    </div>
+    <p>
+      스타일을 어떻게 붙잡을지는 목표에 달려 있어요. 톤을 잡고 싶은지, 어휘를 제한하고 싶은지, 정해진
+      서식을 지키게 하고 싶은지에 따라 방법이 달라져요. 프롬프트에 "이렇게 써줘"라고 부탁하는 것만으로도
+      어느 정도는 되지만, 이 방법은 아주 취약해요 — 모델마다 다르고, 시도할 때마다 또 달라지니까요. 2장의
+      다섯 패턴은 이 문제에 대한 더 견고한 해법들이에요.
+    </p>
+  </section>
+
+  <!-- 2.1 -->
+  <section class="sec" id="s1">
+    <div class="sec-head">
+      <span class="sec-num">2.1</span>
+      <h2 class="h2">Logits Masking — 로짓 마스킹</h2>
+    </div>
+    <p>
+      브랜딩·정확성·컴플라이언스 같은 이유로, 신입사원이 쓰는 글이 특정 규칙을 반드시 지켜야 할 때가
+      있어요. 예를 들면 이런 것들이에요.
+    </p>
+    <ul>
+      <li><strong>브랜딩</strong> — 제품 A를 이야기할 땐 "스포티한" 같은 A의 단어만 쓰고, B와 연관된 단어는 쓰지 않기.</li>
+      <li><strong>정확성</strong> — 청구서에서 인보이스 ID와 금액이 본문에 반복되지 않게 하기(반복하면 오류 위험이 커짐).</li>
+      <li><strong>컴플라이언스</strong> — 고객사 A 사례를 언급할 때 경쟁사(B·C·D)가 같이 등장하지 않게 하기.</li>
+    </ul>
+
+    <h3 class="h3" id="s1-1">안티패턴 — "될 때까지 다시 해보기"<span class="tag">왜 느린가</span></h3>
+    <p>
+      가장 순진한 방법은 일단 글을 다 쓰게 하고, 규칙에 맞는지 검사해서 안 맞으면 처음부터 다시 쓰게
+      하는 거예요. 문제는 이게 <strong>규칙을 어길 확률이 조금만 높아져도 급격히 느려진다</strong>는
+      점이에요.
+    </p>
+    <div class="ptable-wrap">
+      <table class="ptable">
+        <thead><tr><th>규칙을 지킬 확률</th><th>평균 재시도 횟수</th><th>지연 시간 증가</th></tr></thead>
+        <tbody>
+          <tr><td>90%</td><td>약 1.1회</td><td>+10%</td></tr>
+          <tr><td>30%</td><td>약 3.3회</td><td>+230%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:13.5px; color:var(--ink-faint); margin-top:-14px;">
+      게다가 "가장 운 나쁜 경우"(99분위수)는 더 심해요. 90%면 최악의 경우도 시도 2번이면 되지만, 30%로
+      떨어지면 최악의 경우 13번까지 다시 써야 할 수 있어요. 결론은 이거예요 — <strong>"될 때까지 다시
+      해보기"는 성공률이 아주 높을 때만 받아들일 만하다.</strong>
+    </p>
+
+    <h3 class="h3" id="s1-2">해법 — 쓰는 도중에 바로 막기<span class="tag">실시간 감독</span></h3>
+    <div class="analogy">
+      <b>비유로 보면</b> — Logits Masking은 신입사원이 문장을 한 글자씩 써 내려가는 동안, 상사가 어깨너머로
+      보고 있다가 금지 단어를 쓰려는 바로 그 순간 "그 단어는 안 돼"라고 막는 것과 같아요. 문장을 다 쓴
+      다음에 통째로 검사하는 게 아니라, <strong>쓰는 그 순간</strong> 막는다는 게 핵심이에요.
+    </div>
+    <p>
+      실제로는 이렇게 작동해요. 모델이 다음 글자(토큰) 후보들에 점수를 매길 때마다, 규칙에 어긋나는
+      후보의 점수를 0으로 만들어버려요. 규칙에 맞는 후보가 하나도 안 남으면, 한 단계 되돌아가서 다시
+      골라요.
+    </p>
+
+    <div class="compare">
+      <div class="card">
+        <h4>안티패턴 — 다 쓰고 검사</h4>
+        <p>전체 생성 → 규칙 검사 → 틀리면 처음부터 다시. 확률이 낮으면 지연이 폭발적으로 늘어남.</p>
+      </div>
+      <div class="card">
+        <h4>Logits Masking — 쓰는 도중 검사</h4>
+        <p>한 글자 쓸 때마다 규칙에 안 맞는 후보를 즉시 제거. 되돌아가더라도 한두 단계만.</p>
+      </div>
+    </div>
+
+    <h3 class="h3" id="s1-3">예시 — 영양보조제 광고 문구<span class="tag">금지어 피하기</span></h3>
+    <p>
+      영양 보조제 광고를 쓰는데, "quality"·"growth"·"perfect" 같은 단어를 쓰면 이커머스 사이트가 광고를
+      차단한다고 하자. 그냥 "이 단어들 쓰지 마"라고 프롬프트에 부탁만 하면, 신입사원은 여전히 실수로
+      "perfect"를 써버려요. Logits Masking을 적용하면, 좋은 단어(whey protein, nutrients)는 최대한 많이
+      쓰고 금지어는 아예 후보에서 지워버린 문장만 나와요 — quality 대신 premium을 쓰는 식으로요.
+    </p>
+
+    <h3 class="h3" id="s1-4">주의점<span class="tag">모델 선택이 제한됨</span></h3>
+    <p>
+      이 방법을 쓰려면 모델이 "다음 글자 후보 점수"(로짓)를 보여줘야 해요. 2025년 기준 오픈AI·구글·메타는
+      제공하지만, <strong>앤트로픽(클로드)은 제공하지 않아요.</strong> 그리고 매 글자마다 모델과
+      통신해야 해서, 모델이 내 컴퓨터(로컬)에 있지 않으면 지연이 크게 늘 수 있어요 — 그래서 실무에서는
+      주로 로컬 호스팅 모델에 쓰여요.
+    </p>
+  </section>
+
+  <!-- 2.2 -->
+  <section class="sec" id="s2">
+    <div class="sec-head">
+      <span class="sec-num">2.2</span>
+      <h2 class="h2">Grammar — 문법</h2>
+    </div>
+    <p>
+      SQL 문이나 JSON처럼, 신입사원이 쓴 글을 다른 프로그램이 그대로 받아 처리해야 할 때가 있어요. 이럴
+      땐 "JSON으로 출력해줘"라고 부탁만 하는 건 안티패턴이에요 — 모델 버전이 바뀌면 깨지고, 생성 자체가
+      확률적이라 불안정하고, 잘 따르는 모델은 대개 더 비싸요.
+    </p>
+    <div class="analogy">
+      <b>비유로 보면</b> — Grammar는 신입사원에게 <strong>아예 빈칸이 정해진 양식지</strong>를 주는
+      것과 같아요. "이 칸엔 숫자만, 이 칸엔 날짜만" 식으로 서식 자체가 벗어날 수 없게 만들어두면, 실수로
+      다른 걸 적을 방법이 없어요. Logits Masking을 내가 직접 하는 대신, <strong>회사(모델 제공사)가
+      서버 쪽에서 대신 해주는 버전</strong>이라고 보면 돼요.
+    </div>
+
+    <h3 class="h3" id="s2-1">세 가지 방법<span class="tag">문법 · 표준형식 · 스키마</span></h3>
+    <ul>
+      <li><strong>형식 문법(BNF)</strong> — SQL 타임스탬프, 산술식, 신용카드 번호처럼 복잡한 규칙까지 정확히 표현 가능. 예를 들어 "bill_apples + mae_apples = total_apples" 같은 산술식만 쓰게 강제하면, ">" 같은 비교 연산자로 답하는 실수 자체가 원천 차단돼요.</li>
+      <li><strong>표준 데이터 형식(JSON 모드)</strong> — API 호출에 "JSON으로"라고만 지정하면 됨. 다만 어떤 필드가 나올지는 여전히 모델의 실력에 달려 있어요.</li>
+      <li><strong>사용자 지정 스키마</strong> — 파이썬 dataclass나 Pydantic으로 "author, title, year 이 세 필드만" 이라고 정확히 못박기. 정보가 없으면 NULL을 쓰게 허용까지 지정 가능.</li>
+    </ul>
+    <p style="font-size:13.5px; color:var(--ink-faint);">
+      예를 들어 책 소개 문단에서 저자·제목·연도를 뽑을 때 스키마를 지정해두면, 원문에 제목이 영어와
+      타밀어 두 가지로 등장해도 스키마가 허용하는 한 가지 형태로만 결과가 나와요. 연도 정보가 애매하면
+      "NULL"로 채우는 것도 미리 허용해둘 수 있고요.
+    </p>
+
+    <h3 class="h3" id="s2-2">구걸하지 말 것<span class="tag">안티패턴</span></h3>
+    <p>
+      "제발 추가 설명 없이 YES 또는 NO로만, 반드시 대문자로 답해주세요" 같은 프롬프트는 안티패턴이에요.
+      모델에게 <strong>구걸</strong>하는 대신, 애초에 "YES 아니면 NO만 나올 수 있다"고 스키마로
+      못박아버리면 구걸할 필요 자체가 없어져요.
+    </p>
+
+    <h3 class="h3" id="s2-3">BNF vs 스키마, 언제 뭘 쓸까<span class="tag">고려사항</span></h3>
+    <div class="compare">
+      <div class="card">
+        <h4>BNF 문법</h4>
+        <p>훨씬 유연함(신용카드 번호 자릿수 규칙처럼 복잡한 것도 표현 가능). 다만 내 컴퓨터 쪽에서
+        처리해야 해서(로짓 접근 필요) 지연이 더 크고, 지원하는 모델이 제한적.</p>
+      </div>
+      <div class="card">
+        <h4>dataclass · Pydantic 스키마</h4>
+        <p>작성이 훨씬 쉽고, 거의 모든 최신 모델이 지원. 서버 쪽에서 처리되니 통신 왕복이 줄어 더
+        빠름. 다만 복잡한 검증 로직(신용카드 번호 형식 같은)은 표현하기 번거로움.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2.3 -->
+  <section class="sec" id="s3">
+    <div class="sec-head">
+      <span class="sec-num">2.3</span>
+      <h2 class="h2">Style Transfer — 스타일 전이</h2>
+    </div>
+    <p>
+      규칙으로는 도저히 표현하기 힘든 미묘한 뉘앙스도 있어요. 마케팅 브로슈어에 어떤 어휘가 허용되는지
+      규칙으로 딱 정하기는 어렵지만, 사람은 "이건 딱 봐도 우리 브랜드 톤이네"라고 알아보죠. 이럴 때는
+      규칙 대신 <strong>예시</strong>로 가르쳐요.
+    </p>
+    <div class="analogy">
+      <b>비유로 보면</b> — 신입사원에게 잘 쓴 편지 몇 장을 "이렇게 써봐"라며 보여주는 것과 같아요.
+      학생-교사 관계라고 생각하면 돼요. 교사(나)가 예시 몇 개를 보여주면, 학생(모델)은 그 예시를
+      본떠서 앞으로의 글을 쓰려고 해요.
+    </div>
+
+    <h3 class="h3" id="s3-1">두 가지 방법<span class="tag">퓨샷 vs 파인튜닝</span></h3>
+    <p>
+      메모를 정식 이메일로 바꾸는 예를 보자. 아무 예시도 없이 그냥 "메모를 정식 이메일로 바꿔줘"라고만
+      하면, 결과는 장황하고 플레이스홀더([Your Name]인지 [Name]인지)도 제멋대로예요.
+    </p>
+    <div class="gen-compare">
+      <div class="gen-row">
+        <span class="t-label">제로샷 — 예시 없이 그냥 부탁</span>
+        <p>Dear [Recipient], 잘 지내시길 바랍니다. 최근 회의의 회의록 준비에 긴급히 도움을 요청드리고자
+        연락드립니다... (장황하고 플레이스홀더가 제멋대로)</p>
+      </div>
+      <div class="gen-row">
+        <span class="t-label">예시로 가르친 뒤 — 원하는 스타일</span>
+        <p>Hi {name}, {deadline}까지 회의록이 필요해서 연락드립니다. 다가오는 이해관계자 발표에
+        필요합니다. 도와주실 수 있을까요? Best, {name} (더 간결하고 플레이스홀더도 일관됨)</p>
+      </div>
+    </div>
+    <table>
+      <thead><tr><th></th><th>퓨샷 러닝</th><th>파인튜닝</th></tr></thead>
+      <tbody>
+        <tr><td>준비물</td><td>예시 1~10개, 프롬프트에 바로 끼워 넣음</td><td>예시 100~1,000개, 모델을 다시 훈련</td></tr>
+        <tr><td>장점</td><td>구현이 훨씬 간단, 바로 시도 가능</td><td>충실도 높음, 추론 비용·지연 낮음(예시를 매번 안 넣어도 됨)</td></tr>
+        <tr><td>단점</td><td>강제력 약함, 예시 많아지면 컨텍스트·비용·속도 부담</td><td>데이터 큐레이션·훈련 비용·운영 전문성 필요</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="h3" id="s3-2">글에만 쓰는 게 아니에요<span class="tag">이미지에도</span></h3>
+    <p>
+      Style Transfer는 이미지에도 적용돼요. 유명한 명화 한 장의 화풍(스타일)과, 원근·인물 자세 같은
+      구도를 지켜주는 깊이 정보(제어 이미지)를 함께 주면, 완전히 다른 주제(예: 영화 캐릭터)를 그 화풍
+      그대로 그려낼 수 있어요. 구도는 원작 그대로 유지되면서 내용만 바뀌는 셈이에요.
+    </p>
+  </section>
+
+  <!-- 2.4 -->
+  <section class="sec" id="s4">
+    <div class="sec-head">
+      <span class="sec-num">2.4</span>
+      <h2 class="h2">Reverse Neutralization — 역중립화</h2>
+    </div>
+    <p>
+      Style Transfer는 "이미 누군가 변환해둔 예시 쌍"이 있어야 해요. 그런데 내 개인 문체로 항의 편지를
+      쓰고 싶은데, 그 주제로 내가 예전에 쓴 편지가 아예 없다면? 가진 건 <strong>다른 주제</strong>에 대해
+      내 문체로 쓴 이메일들뿐이에요. 예시 자체가 없으니 Style Transfer도 못 써요.
+    </p>
+    <div class="analogy">
+      <b>비유로 보면</b> — 회사에 <strong>초안 담당</strong>과 <strong>윤문 담당</strong>, 두 직원을
+      릴레이로 세우는 것과 같아요. 초안 담당은 아무 무난한 편지나 뚝딱 잘 쓰고, 윤문 담당은 그 무난한
+      초안을 내 말투로 고쳐 쓰는 일만 전문으로 훈련받아요.
+    </div>
+
+    <h3 class="h3" id="s4-1">거꾸로 학습 데이터 만들기<span class="tag">핵심 트릭</span></h3>
+    <p>이 "윤문 담당"을 훈련시키는 재료는 거꾸로 만들어내요. 세 단계예요.</p>
+    <div class="journey">
+      <div class="journey-title">역중립화로 학습 데이터 만드는 순서</div>
+      <div class="jstep">
+        <div class="dot">1</div>
+        <div class="jbody">
+          <h5>내 문체 이메일을 "무난한 버전"으로 바꾼다</h5>
+          <p>내가 이모지 잔뜩 넣어 쓴 이메일을, 모델에게 "격식 있는 업무 이메일로 바꿔줘"라고 시켜서
+          중립적인 버전을 만들어요.</p>
+        </div>
+      </div>
+      <div class="jstep">
+        <div class="dot">2</div>
+        <div class="jbody">
+          <h5>입력과 출력을 뒤집는다</h5>
+          <p>1단계에서 "내 문체 → 무난한 버전"이었다면, 학습 데이터에서는 이걸 뒤집어 "무난한 버전 →
+          내 문체"로 만들어요. 이게 이름이 "역(逆)"중립화인 이유예요.</p>
+        </div>
+      </div>
+      <div class="jstep">
+        <div class="dot">3</div>
+        <div class="jbody">
+          <h5>이 뒤집힌 데이터로 윤문 담당을 훈련시킨다(파인튜닝)</h5>
+          <p>이제 무난한 이메일을 넣으면 내 문체로 바꿔주는 전용 모델이 생겨요.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="h3" id="s4-2">실제로 쓸 때<span class="tag">2단계 릴레이</span></h3>
+    <p>
+      훈련이 끝나면, 실제 사용은 두 번의 호출로 이루어져요. ① 기본 모델이 "임원 간 소통에 어울리는
+      무난한 편지"를 쓰고 → ② 방금 훈련시킨 윤문 담당(파인튜닝 모델)이 그걸 내 문체로 바꿔요.
+    </p>
+    <p style="font-size:13.5px; color:var(--ink-faint);">
+      실제 예시를 보면 대비가 확실해요. 무난한 버전엔 "Hi Sam, 프로젝트 일정 업데이트를 요청드립니다"처럼
+      이모지가 하나도 없고, 이걸 개인 문체로 바꾼 결과는 "🌟 Exciting Update! 🚀 I'm absolutely thrilled..."처럼
+      이모지가 잔뜩 등장해요. 이모지는 장식이 아니라, "스타일이란 무엇인가"를 가장 직관적으로 보여주는
+      증거인 셈이에요.
+    </p>
+
+    <h3 class="h3" id="s4-3">주의점<span class="tag">중립 형태 고르기</span></h3>
+    <p>
+      "무난한 버전"을 뭘로 정의할지가 은근히 까다로워요. 너무 원문과 비슷하게 중립화하면 스타일이
+      안 빠지고, 너무 많이 바꾸면 원래 담긴 정보나 의도까지 사라질 수 있어요(과잉 중립화). 중립화 전후
+      내용이 그대로인지 꼭 대조해봐야 해요.
+    </p>
+  </section>
+
+  <!-- 2.5 -->
+  <section class="sec" id="s5">
+    <div class="sec-head">
+      <span class="sec-num">2.5</span>
+      <h2 class="h2">Content Optimization — 콘텐츠 최적화</h2>
+    </div>
+    <p>
+      어떤 스타일 요인이 중요한지조차 모를 때는 어떡할까요? 전통적인 A/B 테스트는 "문단 길이가 중요할
+      것 같다"처럼 <strong>미리 가설이 있어야만</strong> 돌릴 수 있어요. 가설이 없으면 세 가지 문제에
+      부딪혀요 — 뭐가 A고 뭐가 B인지 구분이 안 되고, 테스트 결과도 애매하고, 설령 이겼다 해도 왜 이겼는지
+      몰라 결과를 재현할 수 없어요.
+    </p>
+    <div class="analogy">
+      <b>비유로 보면</b> — Content Optimization은 <strong>이유는 몰라도 이긴 쪽 스타일로 계속 다듬는</strong>
+      오디션과 같아요. 신입사원 둘에게 같은 과제로 초안을 쓰게 하고, 둘 중 더 나은 쪽만 골라요. 왜 그
+      초안이 이겼는지는 몰라도 괜찮아요 — 이긴 초안 스타일로 계속 훈련시키면, 신입사원은 점점 "이기는
+      글"을 쓰게 되니까요.
+    </div>
+
+    <h3 class="h3" id="s5-1">네 단계<span class="tag">쌍 생성 → 비교 → 데이터셋 → 훈련</span></h3>
+    <div class="journey">
+      <div class="journey-title">Content Optimization 네 단계</div>
+      <div class="jstep">
+        <div class="dot">1</div>
+        <div class="jbody">
+          <h5>같은 프롬프트에서 콘텐츠 쌍을 만든다</h5>
+          <p>온도를 다르게 주거나, 프롬프트를 살짝 바꿔 쓰거나, 그냥 두 번 생성해서 스타일이 다른 두
+          결과를 얻어요.</p>
+        </div>
+      </div>
+      <div class="jstep">
+        <div class="dot">2</div>
+        <div class="jbody">
+          <h5>둘을 비교해 승자를 고른다</h5>
+          <p>사람이 직접 고르거나, 다른 AI 심판(LLM-as-judge)에게 맡기거나, 실제 성과(클릭 수 등)로
+          비교해요. <strong>이 단계가 이 패턴에서 가장 중요해요.</strong></p>
+        </div>
+      </div>
+      <div class="jstep">
+        <div class="dot">3</div>
+        <div class="jbody">
+          <h5>"선택됨 · 거부됨" 학습 데이터셋을 만든다</h5>
+          <p>같은 프롬프트에 대해 이긴 답과 진 답을 짝지어 모아요.</p>
+        </div>
+      </div>
+      <div class="jstep">
+        <div class="dot">4</div>
+        <div class="jbody">
+          <h5>선호조정(DPO)으로 신입사원을 다시 훈련시킨다</h5>
+          <p>이제부터는 이 훈련된 버전을 쓰면, 스스로 "이기는 스타일"의 글을 써요.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="h3" id="s5-2">예시 — 중고 자전거 광고<span class="tag">5억짜리 작은 모델도 쓸 만해짐</span></h3>
+    <p>
+      작은 모델(5억 파라미터)에게 중고 자전거 광고를 써달라 하면, 신제품 광고처럼 어색한 문구가 나와요.
+      이 모델에게 광고 쌍을 여러 개 만들게 하고, "명확한가·대상에 맞나·간결한가·연락처 있나·진실한가"
+      기준으로 AI 심판이 매번 승자를 고르게 한 뒤, 그 승패 데이터로 훈련시켰더니 — 신제품 광고 말투가
+      사라지고 명확하고 간결하고 연락처까지 챙기는 광고를 스스로 쓰게 됐어요.
+    </p>
+
+    <h3 class="h3" id="s5-3">"평가가 전부다"<span class="tag">주의</span></h3>
+    <p>
+      이 패턴의 성패는 2단계(비교) 하나에 달려 있어요. 재고 있으면 좋은 지표라도, 너무 좁은 지표만
+      최적화하면 모델이 그 지표만 "게임"할 수 있어요. 예를 들어 체류 시간만 늘리려 하면, 일부러 읽기
+      어렵게 써서 시간을 끄는 역효과가 날 수 있어요. 진짜 목표(교육 효과 등)에 비추어 지표를 계속
+      검증해야 해요.
+    </p>
+  </section>
+
+  <!-- summary -->
+  <section class="sec" id="summary">
+    <div class="sec-head">
+      <span class="sec-num">표</span>
+      <h2 class="h2">다섯 패턴 한눈에 보기</h2>
+    </div>
+    <div class="ptable-wrap">
+      <table class="ptable">
+        <thead>
+          <tr><th>패턴</th><th>언제 쓰나</th><th>강제력</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Logits Masking</strong></td><td>브랜드·정확성·컴플라이언스 규칙을 실시간으로 강제</td><td>매우 강함 (로짓 접근 필요)</td></tr>
+          <tr><td><strong>Grammar</strong></td><td>SQL·JSON 등 정해진 형식·스키마를 지켜야 함</td><td>강함 (모델 제공사가 대신 강제)</td></tr>
+          <tr><td><strong>Style Transfer</strong></td><td>규칙으론 표현 어려운 톤·문체를 예시로 가르침</td><td>중간 (암묵적 강제)</td></tr>
+          <tr><td><strong>Reverse Neutralization</strong></td><td>원하는 스타일 예시 자체가 없을 때</td><td>중간 (거꾸로 예시를 만들어 학습)</td></tr>
+          <tr><td><strong>Content Optimization</strong></td><td>어떤 요인이 좋은 스타일인지조차 모를 때</td><td>약함 (승패만으로 점진적 개선)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:13.5px; color:var(--ink-faint);">
+      다섯 패턴은 섞어 써도 돼요. 예를 들어 Style Transfer로 대략의 톤을 잡고, Grammar로 출력 형식을
+      마지막에 한 번 더 강제하는 식으로요.
+    </p>
+  </section>
+
+  <div class="divider-note">문답 복습노트</div>
+
+  <!-- review -->
+  <section class="sec" id="review">
+    <div class="sec-head">
+      <span class="sec-num">Q&amp;A</span>
+      <h2 class="h2">걸리기 쉬운 지점만 골라서</h2>
+    </div>
+    <p>
+      위 본문을 다 읽었으면, 아래 일곱 문항으로 걸리는 지점이 남아있는지 확인해보세요.
+    </p>
+
+    <div class="qa-fam">2.0 · 왜 스타일 통제가 필요한가</div>
+    <div class="qa-item" id="q1">
+      <span class="qa-tag">Q1</span>
+      <p class="qa-q">2장의 다섯 패턴이 다 필요한 근본 이유는?</p>
+      <p class="qa-a">모델의 응답은 확률적이라, 같은 질문에도 모델마다 그리고 같은 모델이라도 매번 답의
+      스타일이 달라진다. 프롬프트로 "이렇게 써줘"라고 부탁만 하는 건 취약해서, 브랜드·정확성·컴플라이언스
+      같은 요구를 안정적으로 지키려면 더 견고한 강제 수단이 필요하다.</p>
+    </div>
+
+    <div class="qa-fam">2.1 · Logits Masking</div>
+    <div class="qa-item" id="q2">
+      <span class="qa-tag">Q2</span>
+      <p class="qa-q">"될 때까지 다시 해보기"가 왜 나쁜 방법인가?</p>
+      <p class="qa-a">규칙을 지킬 확률이 낮아질수록 필요한 재시도 횟수가 기하급수적으로 늘어난다.
+      성공률 90%면 평균 1.1회로 충분하지만, 30%로 떨어지면 평균 3.3회, 최악의 경우(99분위수)는 13회까지
+      늘어난다. 성공률이 아주 높을 때만 받아들일 만한 방법이다.</p>
+    </div>
+
+    <div class="qa-fam">2.2 · Grammar</div>
+    <div class="qa-item" id="q3">
+      <span class="qa-tag">Q3</span>
+      <p class="qa-q">Logits Masking과 Grammar는 원리가 비슷한데, 뭐가 다른가?</p>
+      <p class="qa-a">원리(허용 안 되는 후보의 확률을 0으로 만듦)는 같다. 차이는 <strong>누가</strong>
+      그 작업을 하느냐다. Logits Masking은 내 코드가 로짓에 직접 접근해서 처리하고, Grammar는 그 작업을
+      모델 제공사가 서버 쪽에서 대신 해준다. 그래서 Grammar 쪽이 지원 모델도 많고 통신 왕복도 적다.</p>
+    </div>
+
+    <div class="qa-fam">2.3 · Style Transfer</div>
+    <div class="qa-item" id="q4">
+      <span class="qa-tag">Q4</span>
+      <p class="qa-q">퓨샷 러닝과 파인튜닝, 언제 뭘 써야 하나?</p>
+      <p class="qa-a">준수가 필수가 아니고, 원하는 스타일을 규칙으로 표현하기 어렵고, 구현 단순함이
+      중요한 프로토타입 단계라면 퓨샷 러닝이 낫다. 반대로 더 복잡한 작업이라 높은 충실도가 필요하거나,
+      추론 지연·비용을 줄이고 싶다면(예시를 매번 프롬프트에 안 넣어도 되므로) 파인튜닝이 낫다.</p>
+    </div>
+
+    <div class="qa-fam">2.4 · Reverse Neutralization</div>
+    <div class="qa-item" id="q5">
+      <span class="qa-tag">Q5</span>
+      <p class="qa-q">Style Transfer로 되는데 왜 굳이 Reverse Neutralization이 따로 필요한가?</p>
+      <p class="qa-a">Style Transfer는 "이미 누군가 변환해둔 입력-출력 예시 쌍"이 있어야 한다.
+      Reverse Neutralization은 그런 예시 쌍이 <strong>애초에 존재하지 않을 때</strong> 쓰는 방법이다 —
+      내 스타일 글을 중립화해서 거꾸로 예시 쌍을 만들어낸다는 점이 핵심 차이다.</p>
+    </div>
+
+    <div class="qa-fam">2.5 · Content Optimization</div>
+    <div class="qa-item" id="q6">
+      <span class="qa-tag">Q6</span>
+      <p class="qa-q">"왜 좋은지 몰라도 된다"는 발상이 전통적 A/B 테스트의 한계를 어떻게 우회하나?</p>
+      <p class="qa-a">전통적 A/B 테스트는 "어떤 요인이 중요한가"라는 가설이 있어야 A와 B를 구분해 만들
+      수 있다. Content Optimization은 가설 없이, 그냥 매번 콘텐츠 쌍을 만들고 이긴 쪽/진 쪽으로만
+      나눈다. 그리고 "왜 이겼는지"를 알아내는 대신, 이긴 데이터로 모델 자체를 다시 훈련시켜(DPO) 이유를
+      몰라도 결과를 재현 가능하게 만든다.</p>
+    </div>
+
+    <div class="qa-fam">종합</div>
+    <div class="qa-item" id="q7">
+      <span class="qa-tag">Q7</span>
+      <p class="qa-q">다섯 패턴을 강제력이 센 순서대로 나열하면?</p>
+      <p class="qa-a">Logits Masking(실시간 강제) → Grammar(형식·스키마 강제, 서버가 대신함) →
+      Style Transfer(예시로 암묵적 강제) → Reverse Neutralization(예시가 없을 때 거꾸로 만들어 암묵적
+      강제) → Content Optimization(이유도 모른 채 승패만으로 점진적 강제). 앞으로 갈수록 엄격하고
+      비용도 크고, 뒤로 갈수록 유연하고 구현이 쉽다.</p>
+    </div>
+
+    <div class="analogy">
+      다섯 패턴을 한 줄로 정리하면 — <b>실시간으로 막거나(1) · 양식지로 막거나(2) · 예시로 가르치거나(3) ·
+      예시를 거꾸로 만들어 가르치거나(4) · 이유 몰라도 이긴 쪽으로 다듬거나(5)</b>. 신입사원의 말투를
+      붙잡는 방법은 결국 "얼마나 엄격하게, 무엇을 근거로 통제할 것인가"의 스펙트럼 하나로 정리된다.
+    </div>
+  </section>
+
+  <div class="divider-note">여기까지가 2장이에요</div>
+
+  <footer>
+    본문 인용이 아니라, 「에이전트 시대의 AI 시스템 설계」(발리아파 락슈마난·하네스 하프케 지음, 류광 옮김,
+    한빛미디어) 2장의 내용을 컴퓨터 초보 학습자 관점에서 풀어 쓴 개인 학습 노트예요.
+  </footer>
+  </div>
+</div>
+
+<script>
+(function(){
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('.side-nav a[href^="#"]'));
+  if (!navLinks.length) return;
+  var map = {};
+  navLinks.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+  var targets = Object.keys(map)
+    .map(function(id){ return document.getElementById(id); })
+    .filter(Boolean);
+
+  function setActive(id){
+    navLinks.forEach(function(a){ a.classList.remove('active'); });
+    var link = map[id];
+    if (link) link.classList.add('active');
+  }
+
+  var observer = new IntersectionObserver(function(entries){
+    var visible = entries.filter(function(e){ return e.isIntersecting; });
+    if (visible.length){
+      visible.sort(function(a,b){ return a.boundingClientRect.top - b.boundingClientRect.top; });
+      setActive(visible[0].target.id);
+    }
+  }, { rootMargin: '-15% 0px -70% 0px', threshold: 0 });
+
+  targets.forEach(function(t){ observer.observe(t); });
+  setActive(targets[0] && targets[0].id);
+})();
+</script>
+</body>
+</html>
