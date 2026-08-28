@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Poor+Story&family=Patrick+Hand&family=Schoolbell&family=ZCOOL+KuaiLe&family=Sunflower:wght@300;500;700&family=Comic+Neue:wght@300;400;700&family=ZCOOL+XiaoWei&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Poor+Story&family=Schoolbell&family=ZCOOL+KuaiLe&family=Jua&family=Baloo+2:wght@400;700&family=ZCOOL+XiaoWei&family=Gowun+Dodum&family=Quicksand:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700&display=swap');
 
 :root {
   --bg: #fffefb;
@@ -6,12 +6,15 @@
   --muted: #8a8177;
   --accent: #ff5a5f;
   --border: #ece4d6;
-  /* 제목(--font-heading)은 크레용 손글씨로 귀엽게, 본문·글 목록·UI
-     텍스트(--font-body)는 같은 유치원 감성이면서 더 잘 읽히는 폰트로
-     나눈다. */
-  --font-heading: 'Gaegu', 'Patrick Hand', sans-serif;
-  --font-body: 'Sunflower', 'Comic Neue', sans-serif;
-  --font-body-weight: 500;
+  /* 글자를 3단으로 나눈다.
+     --font-heading  제목·대분류 : 삐뚤빼뚤 크레파스 손글씨, 큼직하게
+     --font-subhead  소분류      : 여전히 귀엽지만 더 가지런하게
+     --font-body     본문·UI     : 가장 단정하고 눈이 편한 폰트 */
+  --font-heading: 'Gaegu', sans-serif;
+  --font-subhead: 'Jua', sans-serif;
+  --font-subhead-weight: 400;
+  --font-body: 'Gowun Dodum', sans-serif;
+  --font-body-weight: 400;
   --hit-bg: #dff7ea;
   --hit-ink: #1f7a52;
   --miss-bg: #ffe3e4;
@@ -27,19 +30,25 @@
 
 html[lang="ko"] {
   --font-heading: 'Gaegu', sans-serif;
-  --font-body: 'Sunflower', sans-serif;
-  --font-body-weight: 500;
+  --font-subhead: 'Jua', sans-serif;
+  --font-subhead-weight: 400;
+  --font-body: 'Gowun Dodum', sans-serif;
+  --font-body-weight: 400;
 }
 
 html[lang="en"] {
-  --font-heading: 'Schoolbell', 'Patrick Hand', sans-serif;
-  --font-body: 'Comic Neue', sans-serif;
-  --font-body-weight: 400;
+  --font-heading: 'Schoolbell', sans-serif;
+  --font-subhead: 'Baloo 2', sans-serif;
+  --font-subhead-weight: 700;
+  --font-body: 'Quicksand', sans-serif;
+  --font-body-weight: 500;
 }
 
 html[lang="zh"] {
   --font-heading: 'ZCOOL KuaiLe', sans-serif;
-  --font-body: 'ZCOOL XiaoWei', sans-serif;
+  --font-subhead: 'ZCOOL XiaoWei', sans-serif;
+  --font-subhead-weight: 400;
+  --font-body: 'Noto Sans SC', sans-serif;
   --font-body-weight: 400;
 }
 
@@ -259,8 +268,8 @@ main pre code {
 }
 
 main h3 {
-  font-family: var(--font-heading);
-  font-weight: 700;
+  font-family: var(--font-subhead);
+  font-weight: var(--font-subhead-weight, 700);
   font-size: 1.3rem;
   margin-top: 1.75rem;
   margin-bottom: 0.5rem;
@@ -305,8 +314,8 @@ main td {
 
 main th {
   background: color-mix(in srgb, var(--accent) 10%, var(--bg));
-  font-family: var(--font-heading);
-  font-weight: 700;
+  font-family: var(--font-subhead);
+  font-weight: var(--font-subhead-weight, 700);
 }
 
 .post-nav {
@@ -617,9 +626,9 @@ body.list-page .site-header {
   align-items: center;
   justify-content: flex-start;
   gap: 0.35rem;
-  font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: 1.02rem;
+  font-family: var(--font-subhead);
+  font-weight: var(--font-subhead-weight, 700);
+  font-size: 1.05rem;
   color: var(--ink);
   margin: 0 0 0.2rem;
   cursor: pointer;
@@ -836,8 +845,9 @@ details[open] > summary .tree-toggle-icon {
 }
 
 .tree-subgroup-title {
-  font-size: 0.98rem;
-  font-weight: 700;
+  font-family: var(--font-subhead);
+  font-weight: var(--font-subhead-weight, 700);
+  font-size: 1.02rem;
   color: var(--folder-accent, var(--muted));
 }
 
