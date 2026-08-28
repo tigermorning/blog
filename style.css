@@ -276,7 +276,7 @@ main pre code {
 main h3 {
   font-family: var(--font-subhead);
   font-weight: var(--font-subhead-weight, 700);
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   margin-top: 1.75rem;
   margin-bottom: 0.5rem;
   color: var(--accent);
@@ -572,7 +572,7 @@ body.list-page .site-header {
   text-overflow: ellipsis;
   font-family: var(--font-body);
   font-weight: var(--font-body-weight, 400);
-  font-size: 1.05rem;
+  font-size: 0.92rem;
   line-height: 1.4;
   color: var(--ink);
 }
@@ -608,12 +608,15 @@ body.list-page .site-header {
   display: inline-block;
 }
 
+/* :first-of-type이 아니라 "보이는 것들 중 첫 번째"를 기준으로 여백을
+   준다 — 카테고리 필터로 중간 그룹 하나만 보일 때도 위 여백이 안
+   남도록. */
 .post-group {
-  margin-top: 2.4rem;
+  margin-top: 0;
 }
 
-.post-group:first-of-type {
-  margin-top: 1rem;
+.post-group:not([hidden]) ~ .post-group:not([hidden]) {
+  margin-top: 2.4rem;
 }
 
 /* 대분류마다 다른 크레용 색 — 사이드바 폴더 색과 동일한 순서.
@@ -651,11 +654,11 @@ body.list-page .site-header {
 }
 
 .post-subcategory {
-  margin-top: 0.6rem;
+  margin-top: 0;
 }
 
-.post-subcategory:first-of-type {
-  margin-top: 0;
+.post-subcategory:not([hidden]) ~ .post-subcategory:not([hidden]) {
+  margin-top: 0.6rem;
 }
 
 .post-subcategory-title {
@@ -665,7 +668,7 @@ body.list-page .site-header {
   gap: 0.35rem;
   font-family: var(--font-subhead);
   font-weight: var(--font-subhead-weight, 700);
-  font-size: 1.05rem;
+  font-size: 0.9rem;
   color: var(--ink);
   margin: 0 0 0.2rem;
   cursor: pointer;
@@ -884,7 +887,7 @@ details[open] > summary .tree-toggle-icon {
 .tree-subgroup-title {
   font-family: var(--font-subhead);
   font-weight: var(--font-subhead-weight, 700);
-  font-size: 1.02rem;
+  font-size: 0.85rem;
   color: var(--folder-accent, var(--muted));
 }
 
