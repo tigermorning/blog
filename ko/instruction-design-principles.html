@@ -20,22 +20,7 @@
   </header>
 
   <div class="page-layout">
-  <aside class="sidebar">
-    <h2>소개</h2>
-    <ul>
-      <li><a href="hello-world.html">인사말</a></li>
-    </ul>
-
-    <h2>글목록</h2>
-    <ul>
-      <li>
-        <a href="posts.html#vibe-coding">바이브코딩</a>
-        <ul class="sub-list">
-          <li><a href="posts.html#study-notes">문답 복습노트</a></li>
-        </ul>
-      </li>
-    </ul>
-  </aside>
+  <div id="sidebar-mount"></div>
 
   <main>
     <h1>지시 설계 원칙 정리 (5)</h1>
@@ -122,6 +107,11 @@
 
     <p style="margin-top:1.5rem;"><strong>더 읽기</strong>: InstructGPT(사람 피드백으로 지시 따르기를 학습시킨 설계), FLAN(다양한 지시 과업으로 미세조정한 모델의 일반화), The Prompt Report(프롬프트 기법·용어 정리), OpenAI Evals guide(평가 데이터와 기준 구성법).</p>
 
+    <a class="post-nav" href="context-window-budget.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">컨텍스트 창은 왜 유한한가</span>
+    </a>
+
     <hr>
 
     <h3>"지시 설계" 시리즈</h3>
@@ -148,5 +138,6 @@
   <footer class="site-footer">
     &copy; 2026 Tigermorning
   </footer>
+  <script src="sidebar-loader.js"></script>
 </body>
 </html>
