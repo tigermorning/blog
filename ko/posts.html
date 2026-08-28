@@ -24,7 +24,6 @@
 
   <main id="all-posts">
     <div id="vibe-coding-section">
-    <h2 id="vibe-coding">바이브코딩</h2>
 
     <div class="search-box">
       <input type="search" id="post-search" placeholder="글 검색" aria-label="글 검색">
@@ -33,18 +32,17 @@
         <label><input type="radio" name="search-scope" value="all"> 제목+글</label>
       </div>
       <p class="search-status" id="search-status" hidden></p>
-      <p class="category-filter-status" id="category-filter-status" hidden>
-        <span id="category-filter-label"></span>
-        <button type="button" id="category-filter-clear">전체 목록 보기</button>
-      </p>
-      <div class="page-size-control" id="page-size-control">
-        <label for="page-size">페이지당 글 수</label>
-        <select id="page-size">
-          <option value="20" selected>20개</option>
-          <option value="50">50개</option>
-          <option value="100">100개</option>
-          <option value="all">전체보기</option>
-        </select>
+      <div class="list-controls" id="list-controls">
+        <button type="button" id="category-filter-clear" hidden>전체 목록 보기</button>
+        <div class="page-size-control" id="page-size-control">
+          <label for="page-size">페이지당 글 수</label>
+          <select id="page-size">
+            <option value="20" selected>20개</option>
+            <option value="50">50개</option>
+            <option value="100">100개</option>
+            <option value="all">전체보기</option>
+          </select>
+        </div>
       </div>
     </div>
 
@@ -362,8 +360,6 @@
       var pageSizeControl = document.getElementById('page-size-control');
       var pageSizeSelect = document.getElementById('page-size');
       var pagination = document.getElementById('pagination');
-      var filterStatus = document.getElementById('category-filter-status');
-      var filterLabel = document.getElementById('category-filter-label');
       var filterClear = document.getElementById('category-filter-clear');
       var currentPage = 1;
       var categoryScope = null; // 사이드바 카테고리를 눌렀을 때 채워지는 .post-subcategory/.post-group
@@ -439,13 +435,6 @@
         pagination.appendChild(makeButton('다음', currentPage + 1, { disabled: currentPage === totalPages }));
       }
 
-      function categoryLabel(scope) {
-        if (scope.classList.contains('post-subcategory')) {
-          return scope.querySelector('.post-subcategory-title').textContent;
-        }
-        return scope.querySelector('.post-group-title').textContent;
-      }
-
       function render() {
         var query = norm(input.value.trim());
         if (query) categoryScope = null;
@@ -457,7 +446,7 @@
           });
           pagination.hidden = true;
           pageSizeControl.hidden = true;
-          filterStatus.hidden = true;
+          filterClear.hidden = true;
 
           status.hidden = false;
           status.textContent = matches.length > 0 ? (matches.length + '개 글을 찾았어요.') : '일치하는 글이 없어요.';
@@ -469,8 +458,7 @@
           pageSizeControl.hidden = true;
           status.hidden = true;
 
-          filterStatus.hidden = false;
-          filterLabel.textContent = '「' + categoryLabel(categoryScope) + '」만 보는 중';
+          filterClear.hidden = false;
         } else {
           var pageSize = currentPageSize();
           var totalPages = Math.max(1, Math.ceil(items.length / pageSize));
@@ -486,7 +474,7 @@
           pagination.hidden = totalPages <= 1;
           renderPagination(totalPages);
           status.hidden = true;
-          filterStatus.hidden = true;
+          filterClear.hidden = true;
         }
 
         var forceOpen = !!query || !!categoryScope;
