@@ -20,61 +20,7 @@
   </header>
 
   <div class="page-layout">
-  <aside class="sidebar">
-    <h2>소개</h2>
-    <ul>
-      <li><a href="hello-world.html">인사말</a></li>
-    </ul>
-
-    <h2>글목록</h2>
-    <ul>
-      <li>
-        <a href="posts.html#vibe-coding">바이브코딩</a>
-        <ul class="sub-list">
-          <li>
-            <span class="sub-list-label">웹 개발 기초</span>
-            <ul class="sub-list">
-              <li><a href="posts.html#git-github">Git·GitHub 입문</a></li>
-              <li><a href="posts.html#ai-coding-setup">AI 코딩 환경 세팅</a></li>
-              <li><a href="posts.html#web-frontend">웹 구조와 프론트엔드</a></li>
-              <li><a href="posts.html#backend-deploy">백엔드와 배포</a></li>
-              <li><a href="posts.html#database">데이터베이스</a></li>
-            </ul>
-          </li>
-          <li>
-            <span class="sub-list-label">AI 에이전트·도구 활용</span>
-            <ul class="sub-list">
-              <li><a href="posts.html#agent-tools">에이전트와 협업 도구</a></li>
-            </ul>
-          </li>
-          <li>
-            <span class="sub-list-label">AI 원리와 모델 구조</span>
-            <ul class="sub-list">
-              <li><a href="posts.html#ml-basics">머신러닝 기초</a></li>
-              <li><a href="posts.html#llm-theory">트랜스포머와 LLM 이론</a></li>
-              <li><a href="posts.html#local-llm">로컬 LLM과 경량화</a></li>
-              <li><a href="posts.html#vision-ocr">비전과 문서 인식</a></li>
-              <li><a href="posts.html#image-video-gen">이미지·영상 생성</a></li>
-              <li><a href="posts.html#multimodal-voice">멀티모달과 음성</a></li>
-              <li><a href="posts.html#three-d-reconstruction">3D 복원과 스플래팅</a></li>
-              <li><a href="posts.html#science-ai">과학·물리 AI</a></li>
-            </ul>
-          </li>
-          <li>
-            <span class="sub-list-label">프롬프트·에이전트 심화 시리즈</span>
-            <ul class="sub-list">
-              <li><a href="posts.html#prompt-agent-concepts">프롬프트와 에이전트 개념</a></li>
-              <li><a href="posts.html#instruction-design">지시 설계</a></li>
-              <li><a href="posts.html#context-engineering">컨텍스트 엔지니어링</a></li>
-              <li><a href="posts.html#tool-design">도구 설계</a></li>
-              <li><a href="posts.html#chatbot-project">나만의 챗봇 만들기</a></li>
-            </ul>
-          </li>
-        </ul>
-      </li>
-      <li><a href="posts.html#book-notes">책 정리노트</a></li>
-    </ul>
-  </aside>
+  <div id="sidebar-mount"></div>
 
   <main>
     <h1>길게 넣어도 안 읽힐 수 있다 (2)</h1>
@@ -147,5 +93,6 @@
   <footer class="site-footer">
     &copy; 2026 Tigermorning
   </footer>
+  <script src="sidebar-loader.js"></script>
 </body>
 </html>
