@@ -725,6 +725,15 @@
         시도해야 할 수도 있어요. 결론: 이 방식은 성공률이 아주 높을 때만 허용해야 해요.
       </p>
     </div>
+    <div class="ptable-wrap">
+      <table class="ptable">
+        <thead><tr><th>규칙을 지킬 확률</th><th>평균 재시도 횟수</th><th>지연시간 증가</th><th>최악의 경우(99백분위수)</th></tr></thead>
+        <tbody>
+          <tr><td>90%</td><td>약 1.1회</td><td>+10%</td><td>2회</td></tr>
+          <tr><td>30%</td><td>약 3.3회</td><td>+230%</td><td>13회</td></tr>
+        </tbody>
+      </table>
+    </div>
 
     <h3 class="h3" id="s1-2"><span class="tag">2.1.2</span>해법 — 표집 과정에 끼어들기</h3>
     <p>
@@ -1135,6 +1144,16 @@ num ::= [0-9]+ ws
         필요해요.</p>
       </div>
     </div>
+    <div class="ptable-wrap">
+      <table class="ptable">
+        <thead><tr><th></th><th>퓨샷 학습</th><th>미세조정</th></tr></thead>
+        <tbody>
+          <tr><td>준비물</td><td>예시 1~10개, 프롬프트에 바로 끼워 넣음</td><td>예시 100~1,000개, 모델을 다시 훈련</td></tr>
+          <tr><td>장점</td><td>구현이 간단, 바로 시도 가능</td><td>충실도 높음, 예시를 매번 안 넣어도 되니 추론 비용·지연시간이 낮음</td></tr>
+          <tr><td>단점</td><td>강제력이 약함, 예시가 늘수록 컨텍스트·비용·속도 부담</td><td>데이터 큐레이션·훈련 비용·운영 전문성 필요</td></tr>
+        </tbody>
+      </table>
+    </div>
     <div class="gen-compare">
       <div class="gen-row bad">
         <span class="t-label">제로샷 결과</span>
@@ -1217,6 +1236,11 @@ output = pipe(prompt="붉은 광선검을 든 스타워즈의 다스베이더",
     </p>
 
     <h3 class="h3" id="s4-2"><span class="tag">2.4.2</span>해법 — 세 단계, 그리고 왜 "역"인가</h3>
+    <div class="analogy">
+      <b>비유로 보면</b> — 회사에 <strong>초안 담당</strong>과 <strong>윤문 담당</strong>, 두 직원을
+      릴레이로 세우는 것과 같아요. 초안 담당(기초 모델)은 아무 무난한 편지나 뚝딱 잘 쓰고, 윤문
+      담당(미세조정 모델)은 그 무난한 초안을 내 말투로 고쳐 쓰는 일만 전문으로 훈련받아요.
+    </div>
     <div class="journey">
       <div class="journey-title">역중립화의 세 단계</div>
       <div class="jstep">
@@ -1294,6 +1318,10 @@ output = pipe(prompt="붉은 광선검을 든 스타워즈의 다스베이더",
         말투 변환 자체는 정확히 재현됐다.</p>
       </div>
     </div>
+    <p style="font-size:13px; color:var(--ink-faint); margin-top:-8px;">
+      중립 버전엔 이모지가 하나도 없다가, 개인화 버전엔 🎉🌈⭐처럼 잔뜩 등장하는 게 눈에 띄어요. 이모지는
+      장식이 아니라, "스타일이란 결국 무엇인가"를 가장 직관적으로 보여주는 증거인 셈이에요.
+    </p>
 
     <h3 class="h3" id="s4-4"><span class="tag">2.4.4</span>고려사항</h3>
     <ul class="plain">
