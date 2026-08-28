@@ -14,7 +14,6 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 
 <style>
-<style>
   /* ---------- tokens ---------- */
   :root{
     --paper: #f2f5f7;
@@ -227,11 +226,20 @@
     border-radius:5px; padding:1px 6px;
     font-weight:400;
   }
+  h4.h4{
+    font-family:var(--font-body);
+    font-weight:600;
+    font-size:15px;
+    color:var(--ink);
+    margin:24px 0 8px;
+  }
   p{margin:0 0 15px; color:var(--ink);}
   .sub p{color:var(--ink-soft);}
   strong{color:var(--ink); font-weight:600;}
+  ul.plain, ol.plain{margin:0 0 15px; padding-left:22px; color:var(--ink);}
+  ul.plain li, ol.plain li{margin-bottom:6px;}
 
-  /* ---------- etymology callout ---------- */
+  /* ---------- etymology / term callout ---------- */
   .etym{
     display:flex; gap:14px;
     background:var(--accent-teal-soft);
@@ -246,7 +254,6 @@
     color:var(--accent-teal);
     text-transform:uppercase;
     flex:none; padding-top:3px;
-    writing-mode:horizontal-tb;
   }
   .etym .body{font-size:14.5px; color:var(--ink-soft);}
   .etym .term{
@@ -262,6 +269,7 @@
     border-radius:14px;
     padding:20px 22px;
     box-shadow:var(--shadow);
+    margin:18px 0 22px;
   }
   .analogy{
     background:var(--surface-2);
@@ -273,7 +281,33 @@
   }
   .analogy b{color:var(--accent-strong); font-weight:600;}
 
-  /* ---------- flow diagram ---------- */
+  /* ---------- code block + plain-language pairing ---------- */
+  pre.code{
+    background:#161b22; color:#d7dee4;
+    border-radius:10px; padding:16px 18px;
+    overflow-x:auto; margin:10px 0 8px;
+    font-family:var(--font-mono); font-size:12.5px; line-height:1.65;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]) pre.code{ background:#0b0e13; }
+  }
+  :root[data-theme="dark"] pre.code{ background:#0b0e13; }
+  pre.code .cm{color:#7f8ea3;}
+  .plain-lang{
+    display:flex; gap:12px;
+    background:var(--accent-soft);
+    border-radius:0 0 10px 10px;
+    padding:12px 16px;
+    margin:0 0 22px;
+    font-size:13.5px; color:var(--ink-soft);
+  }
+  .plain-lang .pl-label{
+    flex:none; font-family:var(--font-mono); font-size:10.5px; letter-spacing:.05em;
+    text-transform:uppercase; color:var(--accent-strong); font-weight:700; padding-top:2px;
+  }
+  .plain-lang strong{color:var(--accent-strong);}
+
+  /* ---------- flow diagram (simple horizontal) ---------- */
   .flow{
     display:flex; align-items:stretch; gap:6px; flex-wrap:wrap;
     margin:20px 0 24px;
@@ -301,90 +335,9 @@
     .flow-arrow{transform:rotate(90deg); width:auto; padding:2px 0;}
   }
 
-  /* ---------- coin row ---------- */
-  .coinrow{display:flex; gap:6px; align-items:center; margin:14px 0 6px; flex-wrap:wrap;}
-  .coin{
-    width:26px; height:26px; border-radius:50%;
-    background:radial-gradient(circle at 35% 30%, var(--accent-strong), var(--accent));
-    flex:none;
-    box-shadow:inset 0 0 0 1px rgba(0,0,0,.08);
-  }
-  .coinrow .note{font-size:12.5px; color:var(--ink-faint); margin-left:6px;}
-
-  /* ---------- dial demo ---------- */
-  .dial-demo{
-    background:var(--surface);
-    border:1px solid var(--line);
-    border-radius:14px;
-    padding:22px 24px;
-    margin:22px 0 20px;
-    box-shadow:var(--shadow);
-  }
-  .dial-demo .caption{font-size:13px; color:var(--ink-faint); margin-bottom:10px;}
-  .stem-box{
-    background:var(--surface-2); border-radius:10px;
-    padding:12px 16px; margin-bottom:18px;
-    font-size:14px; color:var(--ink);
-  }
-  .stem-box .stem-en{font-family:var(--font-mono); font-size:15px;}
-  .stem-box .stem-en .blank{color:var(--accent-strong); font-weight:700;}
-  .stem-box .stem-ko{font-size:12.5px; color:var(--ink-faint); margin-top:4px;}
-  .dial-slider-row{display:flex; align-items:center; gap:14px; margin-bottom:8px;}
-  .dial-slider-row .dl{font-family:var(--font-mono); font-size:12.5px; color:var(--ink-soft); flex:none; display:flex; flex-direction:column; line-height:1.35;}
-  .dial-slider-row .dl:last-child{text-align:right;}
-  .dial-slider-row .dl small{font-family:var(--font-body); font-size:10.5px; color:var(--ink-faint); font-weight:400;}
-  .t-readout{
-    text-align:center; font-family:var(--font-mono); font-size:12px;
-    color:var(--accent-strong); margin-bottom:18px;
-  }
-  input[type=range]{
-    flex:1;
-    -webkit-appearance:none; appearance:none;
-    height:6px; border-radius:999px;
-    background:var(--surface-2);
-    outline-offset:6px;
-  }
-  input[type=range]::-webkit-slider-thumb{
-    -webkit-appearance:none; appearance:none;
-    width:18px; height:18px; border-radius:50%;
-    background:var(--accent);
-    border:2px solid var(--surface);
-    box-shadow:0 0 0 1px var(--accent-strong);
-    cursor:pointer;
-  }
-  input[type=range]::-moz-range-thumb{
-    width:18px; height:18px; border-radius:50%;
-    background:var(--accent); border:2px solid var(--surface);
-    box-shadow:0 0 0 1px var(--accent-strong); cursor:pointer;
-  }
-  .bar-row{display:flex; align-items:center; gap:10px; margin-bottom:9px;}
-  .bar-row .w{width:38px; flex:none; font-family:var(--font-mono); font-size:13px; color:var(--ink-soft);}
-  .bar-track{flex:1; height:16px; background:var(--surface-2); border-radius:5px; overflow:hidden;}
-  .bar-fill{height:100%; background:linear-gradient(90deg, var(--accent-strong), var(--accent)); border-radius:5px; transition:width .25s ease;}
-  .bar-row .pct{width:52px; flex:none; text-align:right; font-family:var(--font-mono); font-size:12.5px; color:var(--ink-faint); font-variant-numeric:tabular-nums;}
-  .mode-readout{
-    margin-top:14px; font-size:13.5px; color:var(--accent-strong); font-weight:600;
-    font-family:var(--font-body);
-  }
-
-  /* static top-k / top-p mini bars */
-  .mini-compare{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:20px 0 22px;}
-  .mini-card{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:16px 18px;}
-  .mini-card h4{margin:0 0 4px; font-size:14px; font-family:var(--font-mono); color:var(--ink);}
-  .mini-card .d{font-size:12.5px; color:var(--ink-faint); margin-bottom:12px;}
-  .mini-bars{display:flex; align-items:flex-end; gap:6px; height:70px;}
-  .mini-bars i{flex:1; border-radius:3px 3px 0 0; background:var(--accent); display:block;}
-  .mini-bars i.off{background:var(--surface-2);}
-  @media (max-width:560px){.mini-compare{grid-template-columns:1fr;}}
-
-  /* ---------- agent loop svg ---------- */
-  .loop-wrap{display:flex; justify-content:center; margin:22px 0 8px;}
-  .loop-wrap svg{max-width:100%; height:auto;}
-  .loop-node-label{font-family:var(--font-body); font-weight:600; font-size:13px; fill:var(--ink);}
-  .loop-node-sub{font-family:var(--font-body); font-size:10.5px; fill:var(--ink-faint);}
-
-  /* ---------- compare grid (zero/few shot) ---------- */
+  /* ---------- compare grid ---------- */
   .compare{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:20px 0 8px;}
+  .compare .card{margin:0;}
   .compare .card h4{
     margin:0 0 4px; font-family:var(--font-mono); font-size:13px;
     color:var(--accent-teal); text-transform:uppercase; letter-spacing:.04em;
@@ -397,7 +350,7 @@
   }
   @media (max-width:560px){.compare{grid-template-columns:1fr;}}
 
-  /* ---------- journey overview (1.2 relationship map) ---------- */
+  /* ---------- journey / stepper ---------- */
   .journey{
     background:var(--surface);
     border:1px solid var(--line);
@@ -434,45 +387,16 @@
     background:var(--accent-soft); border-radius:6px; padding:4px 9px;
   }
 
-  /* ---------- pipeline stage boxes ---------- */
-  .stage-list{display:flex; flex-direction:column; gap:0; margin:20px 0 22px;}
-  .stage{
-    display:flex; gap:16px; padding:16px 0;
-    border-top:1px solid var(--line);
-  }
-  .stage:first-child{border-top:none;}
-  .stage .n{
-    flex:none; width:30px; height:30px; border-radius:50%;
-    background:var(--surface-2); color:var(--ink-soft);
-    display:flex; align-items:center; justify-content:center;
-    font-family:var(--font-mono); font-size:13px; font-weight:500;
-  }
-  .stage .n.on{background:var(--accent); color:var(--surface);}
-  .stage h5{margin:0 0 4px; font-size:14.5px; font-weight:600;}
-  .stage p{margin:0; font-size:13.5px; color:var(--ink-soft);}
-
-  /* ---------- generated-output comparison ---------- */
+  /* ---------- gen-compare (before/after model output) ---------- */
   .gen-compare{display:flex; flex-direction:column; gap:10px; margin:18px 0 8px;}
   .gen-row{background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:14px 16px;}
+  .gen-row.bad{border-left:3px solid #b23b3b;}
+  .gen-row.good{border-left:3px solid var(--accent-teal);}
   .gen-row .t-label{
     font-family:var(--font-mono); font-size:11.5px; color:var(--accent-strong);
     margin-bottom:7px; display:block; font-weight:600;
   }
   .gen-row p{margin:0; font-size:14px; color:var(--ink); line-height:1.7;}
-
-  /* ---------- roadmap grid ---------- */
-  .roadmap{display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; margin:22px 0 6px;}
-  .rmap-card{
-    background:var(--surface); border:1px solid var(--line); border-radius:12px;
-    padding:15px 17px;
-  }
-  .rmap-card .num{
-    font-family:var(--font-mono); font-size:12px; color:var(--accent);
-    display:block; margin-bottom:5px;
-  }
-  .rmap-card h5{margin:0 0 5px; font-size:14.5px; font-weight:600;}
-  .rmap-card p{margin:0; font-size:13px; color:var(--ink-soft);}
-  @media (max-width:560px){.roadmap{grid-template-columns:1fr;}}
 
   /* ---------- data-to-method table ---------- */
   .ptable{
@@ -522,6 +446,11 @@
   }
   .divider-note::before, .divider-note::after{content:""; flex:1; height:1px; background:var(--line);}
 
+  .figref{
+    font-family:var(--font-mono); font-size:11px; color:var(--ink-faint);
+    text-align:center; margin:-14px 0 22px;
+  }
+
   footer{
     border-top:1px solid var(--line);
     padding-top:28px; margin-top:16px;
@@ -532,7 +461,7 @@
     *{transition:none !important;}
   }
 </style>
-</style>
+
 </head>
 <body>
 
@@ -577,23 +506,68 @@
     <div class="side-nav-title">2장 목차</div>
     <ol>
       <li><a href="#map"><span class="n">MAP</span>한 장 지도</a></li>
-      <li><a href="#s0"><span class="n">2.0</span>말투가 제멋대로인 문제</a></li>
-      <li><a href="#s1"><span class="n">2.1</span>Logits Masking</a></li>
-      <li><a href="#s2"><span class="n">2.2</span>Grammar</a></li>
-      <li><a href="#s3"><span class="n">2.3</span>Style Transfer</a></li>
-      <li><a href="#s4"><span class="n">2.4</span>Reverse Neutralization</a></li>
-      <li><a href="#s5"><span class="n">2.5</span>Content Optimization</a></li>
-      <li><a href="#summary"><span class="n">표</span>다섯 패턴 요약</a></li>
+      <li>
+        <a href="#s1"><span class="n">2.1</span>패턴 1: 로짓 마스킹</a>
+        <ol class="sub">
+          <li><a href="#s1-1">문제</a></li>
+          <li><a href="#s1-2">해법</a></li>
+          <li><a href="#s1-3">예제 — 시퀀스 선택·재생성</a></li>
+          <li><a href="#s1-4">고려사항</a></li>
+        </ol>
+      </li>
+      <li>
+        <a href="#s2"><span class="n">2.2</span>패턴 2: 문법</a>
+        <ol class="sub">
+          <li><a href="#s2-1">문제</a></li>
+          <li><a href="#s2-2">해법 — 세 가지 옵션</a></li>
+          <li><a href="#s2-3">예제</a></li>
+          <li><a href="#s2-4">고려사항</a></li>
+        </ol>
+      </li>
+      <li>
+        <a href="#s3"><span class="n">2.3</span>패턴 3: 스타일 전이</a>
+        <ol class="sub">
+          <li><a href="#s3-1">문제</a></li>
+          <li><a href="#s3-2">해법 — 퓨샷·미세조정·이미지</a></li>
+          <li><a href="#s3-3">고려사항</a></li>
+        </ol>
+      </li>
+      <li>
+        <a href="#s4"><span class="n">2.4</span>패턴 4: 역중립화</a>
+        <ol class="sub">
+          <li><a href="#s4-1">문제</a></li>
+          <li><a href="#s4-2">해법 — 세 단계</a></li>
+          <li><a href="#s4-3">예제 1·2</a></li>
+          <li><a href="#s4-4">고려사항</a></li>
+        </ol>
+      </li>
+      <li>
+        <a href="#s5"><span class="n">2.5</span>패턴 5: 콘텐츠 최적화</a>
+        <ol class="sub">
+          <li><a href="#s5-1">문제 — A/B 테스트의 한계</a></li>
+          <li><a href="#s5-2">해법 — 네 단계</a></li>
+          <li><a href="#s5-3">예제 — 중고거래 광고 DPO</a></li>
+          <li><a href="#s5-4">고려사항</a></li>
+        </ol>
+      </li>
+      <li><a href="#s6"><span class="n">2.6</span>요약</a></li>
       <li>
         <a href="#review"><span class="n">Q&amp;A</span>문답 복습노트</a>
         <ol class="sub">
-          <li><a href="#q1">Q1 왜 다섯 패턴인가</a></li>
-          <li><a href="#q2">Q2 될 때까지 다시 해보기</a></li>
-          <li><a href="#q3">Q3 마스킹 vs 문법</a></li>
-          <li><a href="#q4">Q4 퓨샷 vs 파인튜닝</a></li>
-          <li><a href="#q5">Q5 역중립화가 필요한 이유</a></li>
-          <li><a href="#q6">Q6 이유 몰라도 된다</a></li>
-          <li><a href="#q7">Q7 강제력 순서</a></li>
+          <li><a href="#q1">Q1 로짓 마스킹</a></li>
+          <li><a href="#q2">Q2 될 때까지 재시도</a></li>
+          <li><a href="#q3">Q3 문법 vs 로짓 마스킹</a></li>
+          <li><a href="#q4">Q4 BNF vs 데이터클래스</a></li>
+          <li><a href="#q5">Q5 퓨샷 vs 미세조정</a></li>
+          <li><a href="#q6">Q6 스타일 전이 전제조건</a></li>
+          <li><a href="#q7">Q7 역중립화 vs 스타일 전이</a></li>
+          <li><a href="#q8">Q8 역중립화 세 단계</a></li>
+          <li><a href="#q9">Q9 과다 중립화</a></li>
+          <li><a href="#q10">Q10 A/B 테스트 세 문제</a></li>
+          <li><a href="#q11">Q11 선호도 데이터셋</a></li>
+          <li><a href="#q12">Q12 분포 내 요구사항</a></li>
+          <li><a href="#q13">Q13 DPO는 왜 적은 데이터로 되나</a></li>
+          <li><a href="#q14">Q14 다섯 패턴, 언제 뭘 쓰나</a></li>
         </ol>
       </li>
     </ol>
@@ -602,537 +576,1211 @@
   <div class="wrap">
 
   <header class="hero">
-    <div class="kicker">생성형 AI 설계 패턴 · 2장 정리노트</div>
-    <h1 class="title">신입사원의 말투를 붙잡다 — 콘텐츠 스타일 제어</h1>
+    <div class="kicker">생성형 AI 설계 패턴 · 2장 콘텐츠 스타일의 제어</div>
+    <h1 class="title">신입사원의 말투를 붙잡다</h1>
     <p class="lede">
-      1장에서 키운 신입사원(모델)이 이제 실제로 글을 쓰기 시작했어요. 그런데 회사가 원하는 "말투"를 영
-      제멋대로예요. 2장은 이 말투를 붙잡는 다섯 가지 방법을 다뤄요. 역시 책의 설명을 그대로 옮기지 않고,
-      1장에서 쓴 신입사원 비유를 그대로 이어서 풀었어요.
+      1장에서 뽑은 AI 신입사원이 이제 실제로 글을 쓰기 시작했어요. 그런데 매번 말투가 들쭉날쭉해요.
+      2장은 이 신입사원에게 "우리 회사 문체"를 가르치는 다섯 가지 서로 다른 방법을 다뤄요. 이번에도
+      컴퓨터를 잘 몰라도 따라올 수 있도록, 책의 설명을 그대로 옮기지 않고 일상적인 비유와 그림으로
+      다시 풀었어요.
     </p>
     <div class="meta">원서 Generative AI Design Patterns · Lakshmanan · Hapke · 번역 류광 · 한빛미디어</div>
-    <p style="margin-top:14px;"><a href="generative-ai-design-patterns-ch1.html" style="font-family:var(--font-mono); font-size:13px; color:var(--accent-strong); text-decoration:none;">← 이전 장 — 1장. 프롬프트에서 에이전트까지</a></p>
 
     <ul class="toc">
       <li><a href="#map"><b>MAP</b>한 장 지도</a></li>
-      <li><a href="#s0"><b>2.0</b>말투가 제멋대로인 문제</a></li>
-      <li><a href="#s1"><b>2.1</b>Logits Masking</a></li>
-      <li><a href="#s2"><b>2.2</b>Grammar</a></li>
-      <li><a href="#s3"><b>2.3</b>Style Transfer</a></li>
-      <li><a href="#s4"><b>2.4</b>Reverse Neutralization</a></li>
-      <li><a href="#s5"><b>2.5</b>Content Optimization</a></li>
+      <li><a href="#s1"><b>2.1</b>로짓 마스킹</a></li>
+      <li><a href="#s2"><b>2.2</b>문법</a></li>
+      <li><a href="#s3"><b>2.3</b>스타일 전이</a></li>
+      <li><a href="#s4"><b>2.4</b>역중립화</a></li>
+      <li><a href="#s5"><b>2.5</b>콘텐츠 최적화</a></li>
+      <li><a href="#s6"><b>2.6</b>요약</a></li>
       <li><a href="#review"><b>Q&amp;A</b>문답 복습노트</a></li>
     </ul>
   </header>
 
-  <!-- map -->
+  <!-- MAP -->
   <section class="sec" id="map">
     <div class="sec-head">
       <span class="sec-num">MAP</span>
-      <h2 class="h2">한 장 지도 — 말투를 붙잡는 다섯 가지 방법</h2>
+      <h2 class="h2">한 장 지도 — 다섯 가지 방법을 하나의 이야기로</h2>
     </div>
     <p>
-      다섯 패턴은 전부 "신입사원이 쓴 글의 스타일을 어떻게 회사가 원하는 대로 붙잡을까"라는 같은 질문에
-      대한 답이에요. 다만 강제력이 다르죠. 앞쪽(2.1·2.2)은 아예 못 쓰게 막는 강한 방식이고, 뒤로 갈수록
-      (2.3~2.5) 예시를 보여주며 배우게 하는 느슨한 방식이에요.
+      기초 모델은 똑같은 질문에도 매번 다른 스타일로 답해요. 저자들이 실제로 여러 모델에 "피에로기에
+      어울리는 사이드 메뉴는?"이라고 딱 한 문장으로 답하라는 조건까지 붙여서 물어봤더니, GPT-4는
+      "상큼한 그린 샐러드", 클로드는 "톡 쏘는 사워크라우트", 라마는 세 문장짜리 장문으로 답했어요.
+      조건을 하나도 안 걸었다면 얼마나 더 제각각이었을지 상상해 보세요. <strong>말투, 어휘, 서식,
+      독해 수준</strong> 중 뭘 통제하고 싶은지에 따라, 이 장은 다섯 가지 해법을 제시해요.
     </p>
+    <div class="analogy">
+      <b>비유로 보면</b> — 1장에서 뽑은 AI 신입사원이 드디어 보고서와 이메일을 쓰기 시작했어요. 그런데
+      어떤 날은 딱딱한 논문투로, 어떤 날은 이모지 잔뜩 붙인 반말로 써요. "그냥 프롬프트에 '이런
+      말투로 써줘'라고 부탁하면 되지 않나?" 싶겠지만, 그건 매번 결과가 달라지는 아주 불안정한
+      방법이에요. 이 장은 신입사원에게 회사 문체를 <strong>확실하게</strong> 붙잡아 주는 다섯 가지
+      서로 다른 방법을 소개해요.
+    </div>
     <div class="journey">
-      <div class="journey-title">강제력 순서로 보는 다섯 방법</div>
+      <div class="journey-title">다섯 패턴으로 보는 2장 전체 흐름 — 강제하는 방식에서 학습시키는 방식으로</div>
       <div class="jstep">
         <div class="dot">1</div>
         <div class="jbody">
-          <h5>2.1 Logits Masking — 쓰는 도중 실시간으로 어깨너머 감독</h5>
-          <p>금지 단어를 쓰려는 바로 그 순간, 그 단어가 아예 선택되지 못하게 막아요. 가장 엄격한 방식이에요.</p>
-          <span class="why">↓ 규칙이 아주 표준적인 형식이라면, 이걸 회사(모델 제공사)에 맡길 수도 있어요</span>
+          <h5>2.1 실시간 검열 — 로짓 마스킹</h5>
+          <p>신입사원이 글자를 한 자 한 자 쓰는 동안 어깨너머로 지켜보다가, 금지된 단어를 쓰려는 순간
+          손으로 막아요. 규칙을 사람(또는 우리 쪽 코드)이 직접, 실시간으로 강제해요.</p>
+          <span class="why">↓ 매번 규칙을 직접 감시하기 번거롭다면, 아예 정해진 서식지를 주면 어떨까요</span>
         </div>
       </div>
       <div class="jstep">
         <div class="dot">2</div>
         <div class="jbody">
-          <h5>2.2 Grammar — 아예 정해진 양식지에만 쓰게 강제</h5>
-          <p>SQL 문법이나 JSON 스키마처럼 "이 형식이어야 한다"는 틀 자체를 주고, 그 틀을 벗어난 글자는
-          애초에 못 쓰게 해요.</p>
-          <span class="why">↓ 규칙으로 못 담아내는 미묘한 뉘앙스는, 예시로 가르치는 수밖에 없어요</span>
+          <h5>2.2 정해진 서식 — 문법</h5>
+          <p>빈칸 채우기 신청서처럼, 아예 정해진 틀 안에만 글자를 채우게 해요. 원리는 로짓 마스킹과
+          똑같지만, 감시를 우리 대신 모델 제공업체(서버)가 대신 해줘요.</p>
+          <span class="why">↓ 그런데 원하는 스타일을 "규칙"으로 콕 집어 말하기 어려울 때는요?</span>
         </div>
       </div>
       <div class="jstep">
         <div class="dot">3</div>
         <div class="jbody">
-          <h5>2.3 Style Transfer — 본보기 편지 몇 장 보여주고 따라 쓰게 가르침</h5>
-          <p>"이렇게 써봐"라고 예시 쌍을 보여줘요. 프롬프트에 몇 개만 끼워 넣거나(퓨샷), 아예 대량으로
-          다시 훈련시켜요(파인튜닝).</p>
-          <span class="why">↓ 그런데 따라 쓸 예시 자체가 없다면요?</span>
+          <h5>2.3 견습 — 스타일 전이</h5>
+          <p>규칙으로 설명은 못 해도 "보면 안다" 싶은 미묘한 스타일이라면, 예시 몇 장을 보여주며
+          견습시키거나(퓨샷) 아예 그 스타일만 집중적으로 재훈련시켜요(미세조정).</p>
+          <span class="why">↓ 그런데 견습에 쓸 "예시 쌍"조차 애초에 없다면요?</span>
         </div>
       </div>
       <div class="jstep">
         <div class="dot">4</div>
         <div class="jbody">
-          <h5>2.4 Reverse Neutralization — 초안 담당과 윤문 담당, 두 직원 릴레이</h5>
-          <p>예시가 없으면 거꾸로 만들어요. 내 스타일 글을 먼저 "무난한 버전"으로 바꿔서 학습 자료로
-          쓰고, 그 반대 방향(무난한 글 → 내 스타일)으로 직원을 훈련시켜요.</p>
-          <span class="why">↓ 아예 뭐가 좋은 글인지도 모르겠다면요?</span>
+          <h5>2.4 뒤집기 요령 — 역중립화</h5>
+          <p>원하는 스타일의 글은 있는데 그 원본(변환 전 버전)이 없을 때 쓰는 요령이에요. 일단 무난한
+          버전을 만들고, 그걸 다시 내 스타일로 바꾸는 법을 거꾸로 학습시켜요.</p>
+          <span class="why">↓ 그런데 애초에 "무엇이 좋은 스타일인지"조차 말로 설명할 수 없다면요?</span>
         </div>
       </div>
       <div class="jstep">
         <div class="dot">5</div>
         <div class="jbody">
-          <h5>2.5 Content Optimization — 이유는 몰라도 이긴 쪽 스타일로 계속 다듬음</h5>
-          <p>왜 좋은지 몰라도 괜찮아요. 둘 중 하나를 골라 "이긴 쪽"만 계속 훈련시키면, 직원은 점점
-          이기는 스타일로 글을 쓰게 돼요.</p>
+          <h5>2.5 서바이벌 오디션 — 콘텐츠 최적화</h5>
+          <p>어떤 요인이 좋은 글을 만드는지 아무도 설명할 수 없어도 괜찮아요. 둘을 나란히 놓고 "이게
+          더 낫다"라고 계속 판정만 시켜서, 그 판정 기록으로 이기는 스타일을 스스로 체득하게 해요.</p>
         </div>
       </div>
     </div>
-  </section>
-
-  <!-- 2.0 -->
-  <section class="sec" id="s0">
-    <div class="sec-head">
-      <span class="sec-num">2.0</span>
-      <h2 class="h2">말투가 제멋대로인 문제</h2>
-    </div>
-    <p>
-      같은 질문을 여러 회사의 신입사원(모델)에게 던져보면 답의 스타일이 완전히 제각각이에요. 책 저자들이
-      "피에로기에 곁들일 좋은 사이드 디시는? 한 문장으로 답해줘"라는 똑같은 질문을 GPT-4, 클로드, 제미나이,
-      라마, 딥시크, 미스트랄에게 던졌더니, 한 문장이라는 제약을 줬는데도 저마다 다른 재료·다른 어투로
-      답했어요.
-    </p>
-    <div class="analogy">
-      <b>비유로 보면</b> — 신입사원마다 자란 배경(학습 데이터)이 다르니, 같은 질문에도 말투가 다 달라요.
-      스타일을 아예 제한하지 않았다면 얼마나 더 제각각이었을지 상상해보세요.
-    </div>
-    <p>
-      스타일을 어떻게 붙잡을지는 목표에 달려 있어요. 톤을 잡고 싶은지, 어휘를 제한하고 싶은지, 정해진
-      서식을 지키게 하고 싶은지에 따라 방법이 달라져요. 프롬프트에 "이렇게 써줘"라고 부탁하는 것만으로도
-      어느 정도는 되지만, 이 방법은 아주 취약해요 — 모델마다 다르고, 시도할 때마다 또 달라지니까요. 2장의
-      다섯 패턴은 이 문제에 대한 더 견고한 해법들이에요.
+    <p style="font-size:13px; color:var(--ink-faint); margin-top:-8px;">
+      다섯 패턴은 서로 배타적이지 않아요 — 규정 준수가 걸린 부분은 로짓 마스킹·문법으로 엄격하게
+      강제하고, 미묘한 어조는 스타일 전이·역중립화로, 정답이 없는 최적화는 콘텐츠 최적화로 조합해서
+      쓰는 경우가 많아요. 아래 본문을 다 읽은 뒤에는 <a href="#review">문답 복습노트</a>로 걸리는
+      지점이 남았는지 확인해보세요.
     </p>
   </section>
 
-  <!-- 2.1 -->
+  <!-- 2.1 로짓 마스킹 -->
   <section class="sec" id="s1">
     <div class="sec-head">
       <span class="sec-num">2.1</span>
-      <h2 class="h2">Logits Masking — 로짓 마스킹</h2>
+      <h2 class="h2">패턴 1: 로짓 마스킹 — 쓰는 순간 손을 막는다</h2>
     </div>
     <p>
-      브랜딩·정확성·컴플라이언스 같은 이유로, 신입사원이 쓰는 글이 특정 규칙을 반드시 지켜야 할 때가
-      있어요. 예를 들면 이런 것들이에요.
+      로짓 마스킹은 미리 정해둔 규칙에 어긋나는 단어가 나오려는 그 순간, AI가 아예 그 단어를 선택하지
+      못하게 막는 방법이에요. 규칙은 보통 고정돼 있지만, 이미 써 내려간 내용에 따라 그때그때 동적으로
+      바뀔 수도 있어요.
     </p>
-    <ul>
-      <li><strong>브랜딩</strong> — 제품 A를 이야기할 땐 "스포티한" 같은 A의 단어만 쓰고, B와 연관된 단어는 쓰지 않기.</li>
-      <li><strong>정확성</strong> — 청구서에서 인보이스 ID와 금액이 본문에 반복되지 않게 하기(반복하면 오류 위험이 커짐).</li>
-      <li><strong>컴플라이언스</strong> — 고객사 A 사례를 언급할 때 경쟁사(B·C·D)가 같이 등장하지 않게 하기.</li>
+
+    <div class="etym">
+      <span class="label">먼저 알아둘 것</span>
+      <div class="body">
+        AI(정확히는 기초 모델)는 문장을 한 번에 통째로 뱉지 않아요. <strong>토큰(대략 단어나 글자
+        조각) 하나씩</strong> 이어 붙이면서 "다음에 올 후보 토큰들"에 각각 점수를 매기고, 그 점수를
+        확률로 바꿔서 제비뽑기하듯 하나를 골라요. 이 "고르기 전 원점수"를 <span class="term">로짓
+        (logit)</span>이라고 불러요. 로짓 마스킹은 바로 이 <strong>고르기 직전 순간에 끼어들어서</strong>,
+        규칙에 어긋나는 후보의 점수를 <strong>선택될 확률 0</strong>으로 만들어 버리는 거예요.
+      </div>
+    </div>
+
+    <h3 class="h3" id="s1-1"><span class="tag">2.1.1</span>문제 — 규칙을 반드시 지켜야 할 때</h3>
+    <p>
+      브랜딩, 정확성, 규정 준수, 스타일북 같은 이유로 텍스트가 특정 규칙을 반드시 따라야 하는 경우가
+      많아요. 몇 가지 예를 들면 다음과 같아요.
+    </p>
+    <ul class="plain">
+      <li><strong>브랜딩</strong> — A 제품 설명에는 "스포티함", "고성능" 같은 단어만 쓰고, B 제품
+      연관 단어("넓은 공간", "고급스러움")는 쓰면 안 된다.</li>
+      <li><strong>정확성</strong> — 청구서 안내 편지에서 송장 ID나 금액이 두 번 반복되면 오류
+      가능성이 커지므로 반복을 막아야 한다.</li>
+      <li><strong>규정 준수</strong> — 고객사 사례 연구를 언급할 때 경쟁사(사실은 다른 고객사이기도
+      한) 이름이 딸려 나오면 안 된다.</li>
+      <li><strong>스타일북</strong> — 시카고 매뉴얼 오브 스타일이나 APA 인용 스타일처럼, 업계
+      표준 서식을 반드시 따라야 한다.</li>
     </ul>
-
-    <h3 class="h3" id="s1-1">안티패턴 — "될 때까지 다시 해보기"<span class="tag">왜 느린가</span></h3>
     <p>
-      가장 순진한 방법은 일단 글을 다 쓰게 하고, 규칙에 맞는지 검사해서 안 맞으면 처음부터 다시 쓰게
-      하는 거예요. 문제는 이게 <strong>규칙을 어길 확률이 조금만 높아져도 급격히 느려진다</strong>는
-      점이에요.
+      가장 순진한 접근법은 일단 콘텐츠를 다 생성한 다음 규칙을 어겼는지 검사하고, 어겼으면 처음부터
+      다시 생성하는 "될 때까지 재시도" 방식이에요. 하지만 이건 좋은 방법이 아니에요.
     </p>
-    <div class="ptable-wrap">
-      <table class="ptable">
-        <thead><tr><th>규칙을 지킬 확률</th><th>평균 재시도 횟수</th><th>지연 시간 증가</th></tr></thead>
-        <tbody>
-          <tr><td>90%</td><td>약 1.1회</td><td>+10%</td></tr>
-          <tr><td>30%</td><td>약 3.3회</td><td>+230%</td></tr>
-        </tbody>
-      </table>
+    <div class="card">
+      <p style="margin-bottom:0;">
+        <strong>왜 "될 때까지 재시도"가 안티패턴인가</strong> — 재시도가 필요한 경우가 10% 미만일
+        때만 그럭저럭 봐줄 만해요. 그 밖에는 반복 시도 때문에 응답 시간(지연시간)이 크게 늘어나고,
+        운이 나쁘면 끝내 규칙을 만족하는 답을 못 찾을 수도 있어요. 예를 들어 생성 성공률이 90%라면
+        평균적으로 1.1번만 다시 시도하면 되지만(지연시간 +10%), 성공률이 30%로 떨어지면 평균 3.3번을
+        다시 시도해야 하고(지연시간 +230%), 재수 없는 경우(99번째 백분위수)엔 무려 13번이나 다시
+        시도해야 할 수도 있어요. 결론: 이 방식은 성공률이 아주 높을 때만 허용해야 해요.
+      </p>
     </div>
-    <p style="font-size:13.5px; color:var(--ink-faint); margin-top:-14px;">
-      게다가 "가장 운 나쁜 경우"(99분위수)는 더 심해요. 90%면 최악의 경우도 시도 2번이면 되지만, 30%로
-      떨어지면 최악의 경우 13번까지 다시 써야 할 수 있어요. 결론은 이거예요 — <strong>"될 때까지 다시
-      해보기"는 성공률이 아주 높을 때만 받아들일 만하다.</strong>
-    </p>
 
-    <h3 class="h3" id="s1-2">해법 — 쓰는 도중에 바로 막기<span class="tag">실시간 감독</span></h3>
-    <div class="analogy">
-      <b>비유로 보면</b> — Logits Masking은 신입사원이 문장을 한 글자씩 써 내려가는 동안, 상사가 어깨너머로
-      보고 있다가 금지 단어를 쓰려는 바로 그 순간 "그 단어는 안 돼"라고 막는 것과 같아요. 문장을 다 쓴
-      다음에 통째로 검사하는 게 아니라, <strong>쓰는 그 순간</strong> 막는다는 게 핵심이에요.
-    </div>
+    <h3 class="h3" id="s1-2"><span class="tag">2.1.2</span>해법 — 표집 과정에 끼어들기</h3>
     <p>
-      실제로는 이렇게 작동해요. 모델이 다음 글자(토큰) 후보들에 점수를 매길 때마다, 규칙에 어긋나는
-      후보의 점수를 0으로 만들어버려요. 규칙에 맞는 후보가 하나도 안 남으면, 한 단계 되돌아가서 다시
-      골라요.
+      로짓 마스킹은 다음처럼 동작해요.
     </p>
-
-    <div class="compare">
-      <div class="card">
-        <h4>안티패턴 — 다 쓰고 검사</h4>
-        <p>전체 생성 → 규칙 검사 → 틀리면 처음부터 다시. 확률이 낮으면 지연이 폭발적으로 늘어남.</p>
-      </div>
-      <div class="card">
-        <h4>Logits Masking — 쓰는 도중 검사</h4>
-        <p>한 글자 쓸 때마다 규칙에 안 맞는 후보를 즉시 제거. 되돌아가더라도 한두 단계만.</p>
-      </div>
-    </div>
-
-    <h3 class="h3" id="s1-3">예시 — 영양보조제 광고 문구<span class="tag">금지어 피하기</span></h3>
-    <p>
-      영양 보조제 광고를 쓰는데, "quality"·"growth"·"perfect" 같은 단어를 쓰면 이커머스 사이트가 광고를
-      차단한다고 하자. 그냥 "이 단어들 쓰지 마"라고 프롬프트에 부탁만 하면, 신입사원은 여전히 실수로
-      "perfect"를 써버려요. Logits Masking을 적용하면, 좋은 단어(whey protein, nutrients)는 최대한 많이
-      쓰고 금지어는 아예 후보에서 지워버린 문장만 나와요 — quality 대신 premium을 쓰는 식으로요.
-    </p>
-
-    <h3 class="h3" id="s1-4">주의점<span class="tag">모델 선택이 제한됨</span></h3>
-    <p>
-      이 방법을 쓰려면 모델이 "다음 글자 후보 점수"(로짓)를 보여줘야 해요. 2025년 기준 오픈AI·구글·메타는
-      제공하지만, <strong>앤트로픽(클로드)은 제공하지 않아요.</strong> 그리고 매 글자마다 모델과
-      통신해야 해서, 모델이 내 컴퓨터(로컬)에 있지 않으면 지연이 크게 늘 수 있어요 — 그래서 실무에서는
-      주로 로컬 호스팅 모델에 쓰여요.
-    </p>
-  </section>
-
-  <!-- 2.2 -->
-  <section class="sec" id="s2">
-    <div class="sec-head">
-      <span class="sec-num">2.2</span>
-      <h2 class="h2">Grammar — 문법</h2>
-    </div>
-    <p>
-      SQL 문이나 JSON처럼, 신입사원이 쓴 글을 다른 프로그램이 그대로 받아 처리해야 할 때가 있어요. 이럴
-      땐 "JSON으로 출력해줘"라고 부탁만 하는 건 안티패턴이에요 — 모델 버전이 바뀌면 깨지고, 생성 자체가
-      확률적이라 불안정하고, 잘 따르는 모델은 대개 더 비싸요.
-    </p>
-    <div class="analogy">
-      <b>비유로 보면</b> — Grammar는 신입사원에게 <strong>아예 빈칸이 정해진 양식지</strong>를 주는
-      것과 같아요. "이 칸엔 숫자만, 이 칸엔 날짜만" 식으로 서식 자체가 벗어날 수 없게 만들어두면, 실수로
-      다른 걸 적을 방법이 없어요. Logits Masking을 내가 직접 하는 대신, <strong>회사(모델 제공사)가
-      서버 쪽에서 대신 해주는 버전</strong>이라고 보면 돼요.
-    </div>
-
-    <h3 class="h3" id="s2-1">세 가지 방법<span class="tag">문법 · 표준형식 · 스키마</span></h3>
-    <ul>
-      <li><strong>형식 문법(BNF)</strong> — SQL 타임스탬프, 산술식, 신용카드 번호처럼 복잡한 규칙까지 정확히 표현 가능. 예를 들어 "bill_apples + mae_apples = total_apples" 같은 산술식만 쓰게 강제하면, ">" 같은 비교 연산자로 답하는 실수 자체가 원천 차단돼요.</li>
-      <li><strong>표준 데이터 형식(JSON 모드)</strong> — API 호출에 "JSON으로"라고만 지정하면 됨. 다만 어떤 필드가 나올지는 여전히 모델의 실력에 달려 있어요.</li>
-      <li><strong>사용자 지정 스키마</strong> — 파이썬 dataclass나 Pydantic으로 "author, title, year 이 세 필드만" 이라고 정확히 못박기. 정보가 없으면 NULL을 쓰게 허용까지 지정 가능.</li>
-    </ul>
-    <p style="font-size:13.5px; color:var(--ink-faint);">
-      예를 들어 책 소개 문단에서 저자·제목·연도를 뽑을 때 스키마를 지정해두면, 원문에 제목이 영어와
-      타밀어 두 가지로 등장해도 스키마가 허용하는 한 가지 형태로만 결과가 나와요. 연도 정보가 애매하면
-      "NULL"로 채우는 것도 미리 허용해둘 수 있고요.
-    </p>
-
-    <h3 class="h3" id="s2-2">구걸하지 말 것<span class="tag">안티패턴</span></h3>
-    <p>
-      "제발 추가 설명 없이 YES 또는 NO로만, 반드시 대문자로 답해주세요" 같은 프롬프트는 안티패턴이에요.
-      모델에게 <strong>구걸</strong>하는 대신, 애초에 "YES 아니면 NO만 나올 수 있다"고 스키마로
-      못박아버리면 구걸할 필요 자체가 없어져요.
-    </p>
-
-    <h3 class="h3" id="s2-3">BNF vs 스키마, 언제 뭘 쓸까<span class="tag">고려사항</span></h3>
-    <div class="compare">
-      <div class="card">
-        <h4>BNF 문법</h4>
-        <p>훨씬 유연함(신용카드 번호 자릿수 규칙처럼 복잡한 것도 표현 가능). 다만 내 컴퓨터 쪽에서
-        처리해야 해서(로짓 접근 필요) 지연이 더 크고, 지원하는 모델이 제한적.</p>
-      </div>
-      <div class="card">
-        <h4>dataclass · Pydantic 스키마</h4>
-        <p>작성이 훨씬 쉽고, 거의 모든 최신 모델이 지원. 서버 쪽에서 처리되니 통신 왕복이 줄어 더
-        빠름. 다만 복잡한 검증 로직(신용카드 번호 형식 같은)은 표현하기 번거로움.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- 2.3 -->
-  <section class="sec" id="s3">
-    <div class="sec-head">
-      <span class="sec-num">2.3</span>
-      <h2 class="h2">Style Transfer — 스타일 전이</h2>
-    </div>
-    <p>
-      규칙으로는 도저히 표현하기 힘든 미묘한 뉘앙스도 있어요. 마케팅 브로슈어에 어떤 어휘가 허용되는지
-      규칙으로 딱 정하기는 어렵지만, 사람은 "이건 딱 봐도 우리 브랜드 톤이네"라고 알아보죠. 이럴 때는
-      규칙 대신 <strong>예시</strong>로 가르쳐요.
-    </p>
-    <div class="analogy">
-      <b>비유로 보면</b> — 신입사원에게 잘 쓴 편지 몇 장을 "이렇게 써봐"라며 보여주는 것과 같아요.
-      학생-교사 관계라고 생각하면 돼요. 교사(나)가 예시 몇 개를 보여주면, 학생(모델)은 그 예시를
-      본떠서 앞으로의 글을 쓰려고 해요.
-    </div>
-
-    <h3 class="h3" id="s3-1">두 가지 방법<span class="tag">퓨샷 vs 파인튜닝</span></h3>
-    <p>
-      메모를 정식 이메일로 바꾸는 예를 보자. 아무 예시도 없이 그냥 "메모를 정식 이메일로 바꿔줘"라고만
-      하면, 결과는 장황하고 플레이스홀더([Your Name]인지 [Name]인지)도 제멋대로예요.
-    </p>
-    <div class="gen-compare">
-      <div class="gen-row">
-        <span class="t-label">제로샷 — 예시 없이 그냥 부탁</span>
-        <p>Dear [Recipient], 잘 지내시길 바랍니다. 최근 회의의 회의록 준비에 긴급히 도움을 요청드리고자
-        연락드립니다... (장황하고 플레이스홀더가 제멋대로)</p>
-      </div>
-      <div class="gen-row">
-        <span class="t-label">예시로 가르친 뒤 — 원하는 스타일</span>
-        <p>Hi {name}, {deadline}까지 회의록이 필요해서 연락드립니다. 다가오는 이해관계자 발표에
-        필요합니다. 도와주실 수 있을까요? Best, {name} (더 간결하고 플레이스홀더도 일관됨)</p>
-      </div>
-    </div>
-    <table>
-      <thead><tr><th></th><th>퓨샷 러닝</th><th>파인튜닝</th></tr></thead>
-      <tbody>
-        <tr><td>준비물</td><td>예시 1~10개, 프롬프트에 바로 끼워 넣음</td><td>예시 100~1,000개, 모델을 다시 훈련</td></tr>
-        <tr><td>장점</td><td>구현이 훨씬 간단, 바로 시도 가능</td><td>충실도 높음, 추론 비용·지연 낮음(예시를 매번 안 넣어도 됨)</td></tr>
-        <tr><td>단점</td><td>강제력 약함, 예시 많아지면 컨텍스트·비용·속도 부담</td><td>데이터 큐레이션·훈련 비용·운영 전문성 필요</td></tr>
-      </tbody>
-    </table>
-
-    <h3 class="h3" id="s3-2">글에만 쓰는 게 아니에요<span class="tag">이미지에도</span></h3>
-    <p>
-      Style Transfer는 이미지에도 적용돼요. 유명한 명화 한 장의 화풍(스타일)과, 원근·인물 자세 같은
-      구도를 지켜주는 깊이 정보(제어 이미지)를 함께 주면, 완전히 다른 주제(예: 영화 캐릭터)를 그 화풍
-      그대로 그려낼 수 있어요. 구도는 원작 그대로 유지되면서 내용만 바뀌는 셈이에요.
-    </p>
-  </section>
-
-  <!-- 2.4 -->
-  <section class="sec" id="s4">
-    <div class="sec-head">
-      <span class="sec-num">2.4</span>
-      <h2 class="h2">Reverse Neutralization — 역중립화</h2>
-    </div>
-    <p>
-      Style Transfer는 "이미 누군가 변환해둔 예시 쌍"이 있어야 해요. 그런데 내 개인 문체로 항의 편지를
-      쓰고 싶은데, 그 주제로 내가 예전에 쓴 편지가 아예 없다면? 가진 건 <strong>다른 주제</strong>에 대해
-      내 문체로 쓴 이메일들뿐이에요. 예시 자체가 없으니 Style Transfer도 못 써요.
-    </p>
-    <div class="analogy">
-      <b>비유로 보면</b> — 회사에 <strong>초안 담당</strong>과 <strong>윤문 담당</strong>, 두 직원을
-      릴레이로 세우는 것과 같아요. 초안 담당은 아무 무난한 편지나 뚝딱 잘 쓰고, 윤문 담당은 그 무난한
-      초안을 내 말투로 고쳐 쓰는 일만 전문으로 훈련받아요.
-    </div>
-
-    <h3 class="h3" id="s4-1">거꾸로 학습 데이터 만들기<span class="tag">핵심 트릭</span></h3>
-    <p>이 "윤문 담당"을 훈련시키는 재료는 거꾸로 만들어내요. 세 단계예요.</p>
     <div class="journey">
-      <div class="journey-title">역중립화로 학습 데이터 만드는 순서</div>
+      <div class="journey-title">로짓 마스킹의 다섯 단계</div>
       <div class="jstep">
         <div class="dot">1</div>
-        <div class="jbody">
-          <h5>내 문체 이메일을 "무난한 버전"으로 바꾼다</h5>
-          <p>내가 이모지 잔뜩 넣어 쓴 이메일을, 모델에게 "격식 있는 업무 이메일로 바꿔줘"라고 시켜서
-          중립적인 버전을 만들어요.</p>
-        </div>
+        <div class="jbody"><h5>토큰 후보를 얻는다</h5><p>전체 글이 다 만들어질 때까지 기다리지 않고, 매 순간 "다음에 올 수 있는 후보 토큰들"을 가져온다.</p></div>
       </div>
       <div class="jstep">
         <div class="dot">2</div>
-        <div class="jbody">
-          <h5>입력과 출력을 뒤집는다</h5>
-          <p>1단계에서 "내 문체 → 무난한 버전"이었다면, 학습 데이터에서는 이걸 뒤집어 "무난한 버전 →
-          내 문체"로 만들어요. 이게 이름이 "역(逆)"중립화인 이유예요.</p>
-        </div>
+        <div class="jbody"><h5>규칙에 어긋나는 후보를 지운다</h5><p>규칙을 어기는 후보는 선택될 확률을 0으로 만든다.</p></div>
       </div>
       <div class="jstep">
         <div class="dot">3</div>
-        <div class="jbody">
-          <h5>이 뒤집힌 데이터로 윤문 담당을 훈련시킨다(파인튜닝)</h5>
-          <p>이제 무난한 이메일을 넣으면 내 문체로 바꿔주는 전용 모델이 생겨요.</p>
-        </div>
-      </div>
-    </div>
-
-    <h3 class="h3" id="s4-2">실제로 쓸 때<span class="tag">2단계 릴레이</span></h3>
-    <p>
-      훈련이 끝나면, 실제 사용은 두 번의 호출로 이루어져요. ① 기본 모델이 "임원 간 소통에 어울리는
-      무난한 편지"를 쓰고 → ② 방금 훈련시킨 윤문 담당(파인튜닝 모델)이 그걸 내 문체로 바꿔요.
-    </p>
-    <p style="font-size:13.5px; color:var(--ink-faint);">
-      실제 예시를 보면 대비가 확실해요. 무난한 버전엔 "Hi Sam, 프로젝트 일정 업데이트를 요청드립니다"처럼
-      이모지가 하나도 없고, 이걸 개인 문체로 바꾼 결과는 "🌟 Exciting Update! 🚀 I'm absolutely thrilled..."처럼
-      이모지가 잔뜩 등장해요. 이모지는 장식이 아니라, "스타일이란 무엇인가"를 가장 직관적으로 보여주는
-      증거인 셈이에요.
-    </p>
-
-    <h3 class="h3" id="s4-3">주의점<span class="tag">중립 형태 고르기</span></h3>
-    <p>
-      "무난한 버전"을 뭘로 정의할지가 은근히 까다로워요. 너무 원문과 비슷하게 중립화하면 스타일이
-      안 빠지고, 너무 많이 바꾸면 원래 담긴 정보나 의도까지 사라질 수 있어요(과잉 중립화). 중립화 전후
-      내용이 그대로인지 꼭 대조해봐야 해요.
-    </p>
-  </section>
-
-  <!-- 2.5 -->
-  <section class="sec" id="s5">
-    <div class="sec-head">
-      <span class="sec-num">2.5</span>
-      <h2 class="h2">Content Optimization — 콘텐츠 최적화</h2>
-    </div>
-    <p>
-      어떤 스타일 요인이 중요한지조차 모를 때는 어떡할까요? 전통적인 A/B 테스트는 "문단 길이가 중요할
-      것 같다"처럼 <strong>미리 가설이 있어야만</strong> 돌릴 수 있어요. 가설이 없으면 세 가지 문제에
-      부딪혀요 — 뭐가 A고 뭐가 B인지 구분이 안 되고, 테스트 결과도 애매하고, 설령 이겼다 해도 왜 이겼는지
-      몰라 결과를 재현할 수 없어요.
-    </p>
-    <div class="analogy">
-      <b>비유로 보면</b> — Content Optimization은 <strong>이유는 몰라도 이긴 쪽 스타일로 계속 다듬는</strong>
-      오디션과 같아요. 신입사원 둘에게 같은 과제로 초안을 쓰게 하고, 둘 중 더 나은 쪽만 골라요. 왜 그
-      초안이 이겼는지는 몰라도 괜찮아요 — 이긴 초안 스타일로 계속 훈련시키면, 신입사원은 점점 "이기는
-      글"을 쓰게 되니까요.
-    </div>
-
-    <h3 class="h3" id="s5-1">네 단계<span class="tag">쌍 생성 → 비교 → 데이터셋 → 훈련</span></h3>
-    <div class="journey">
-      <div class="journey-title">Content Optimization 네 단계</div>
-      <div class="jstep">
-        <div class="dot">1</div>
-        <div class="jbody">
-          <h5>같은 프롬프트에서 콘텐츠 쌍을 만든다</h5>
-          <p>온도를 다르게 주거나, 프롬프트를 살짝 바꿔 쓰거나, 그냥 두 번 생성해서 스타일이 다른 두
-          결과를 얻어요.</p>
-        </div>
-      </div>
-      <div class="jstep">
-        <div class="dot">2</div>
-        <div class="jbody">
-          <h5>둘을 비교해 승자를 고른다</h5>
-          <p>사람이 직접 고르거나, 다른 AI 심판(LLM-as-judge)에게 맡기거나, 실제 성과(클릭 수 등)로
-          비교해요. <strong>이 단계가 이 패턴에서 가장 중요해요.</strong></p>
-        </div>
-      </div>
-      <div class="jstep">
-        <div class="dot">3</div>
-        <div class="jbody">
-          <h5>"선택됨 · 거부됨" 학습 데이터셋을 만든다</h5>
-          <p>같은 프롬프트에 대해 이긴 답과 진 답을 짝지어 모아요.</p>
-        </div>
+        <div class="jbody"><h5>남은 후보 중에서 뽑는다</h5><p>규칙을 통과한 후보들 중 하나를 표집(선택)해서 이어 붙인다.</p></div>
       </div>
       <div class="jstep">
         <div class="dot">4</div>
+        <div class="jbody"><h5>막다른 길이면 최대 횟수를 확인한다</h5><p>남은 후보가 하나도 없으면, 정해둔 최대 시도 횟수를 넘었는지 본다. 넘었으면 거절 메시지를 보낸다.</p></div>
+      </div>
+      <div class="jstep">
+        <div class="dot">5</div>
+        <div class="jbody"><h5>아니면 한 걸음 물러난다 (역추적)</h5><p>방금 붙인 토큰을 취소하고 그 이전 지점으로 돌아가 다시 시도한다. 이 되감기를 <strong>역추적(backtracking)</strong>이라 부른다.</p></div>
+      </div>
+    </div>
+    <p>
+      이건 마치 체스에서 다음 수를 미리 몇 개 내다보다가(빔 탐색), 규칙에 어긋나는 수만 미리
+      가지치기해서 아예 후보에서 지워버리는 것과 같아요. 그 결과 최종 문장은 항상 규칙을 지키게 돼요.
+    </p>
+
+    <div class="etym">
+      <span class="label">참고로</span>
+      <div class="body">
+        이 절의 코드 예제는 <span class="term">허깅페이스 Transformers</span>라는 라이브러리를 써요.
+        이건 이미 훈련된 AI 모델들을 (텐서플로·파이토치 등 어떤 도구로 만들었든) 똑같은 방식으로
+        불러와 다룰 수 있게 해주는 공용 도구 상자예요. 아래 코드에서 <code>pipeline(...)</code>이라고
+        쓴 부분이 바로 "이 모델로 텍스트를 생성하는 작업 창구를 하나 만들어줘"라는 뜻이에요.
+      </div>
+    </div>
+
+    <h4 class="h4">코드로는 이렇게 생겼어요</h4>
+    <pre class="code">rules_processor = MyRulesLogitsProcessor(pipe.tokenizer, rules)
+results = pipe(input_message,
+                max_new_tokens=256,
+                do_sample=True,
+                temperature=0.8,
+                num_beams=10,
+                logits_processor=[rules_processor])</pre>
+    <div class="plain-lang">
+      <span class="pl-label">쉽게 말하면</span>
+      <p style="margin:0;">"평소처럼 글을 생성하되, <strong>MyRulesLogitsProcessor</strong>라는
+      감시자를 옆에 붙여서, 매 토큰마다 이 감시자한테 검열을 맡겨라"는 뜻이에요.
+      <strong>logits_processor</strong>가 그 감시자를 꽂는 자리예요.</p>
+    </div>
+    <pre class="code">def __call__(self, input_ids, input_logits):
+    output_logits = input_logits.clone()
+    for idx, input_id in enumerate(input_ids):
+        seq = self.tokenizer.decode(input_id)      # 토큰 → 글자로 복원
+        if not self.apply_rules(seq, self.rules):  # 규칙 검사
+            output_logits[idx] = -np.inf            # 확률을 0으로 (로짓은 음의 무한대)
+    return output_logits</pre>
+    <div class="plain-lang">
+      <span class="pl-label">쉽게 말하면</span>
+      <p style="margin:0;">이 감시자가 실제로 하는 일이 바로 이 함수예요. 후보 토큰 하나하나를 다시
+      사람이 읽을 수 있는 글자로 바꿔서(<strong>decode</strong>) 규칙에 맞는지 확인하고, 규칙을
+      어기면 그 후보의 점수를 <strong>음의 무한대(-inf)</strong>로 떨어뜨려요. 로짓은 확률의 로그
+      값이라서, "확률을 0으로 만들고 싶으면 로짓을 음의 무한대로 만든다"가 그 방법이에요.</p>
+    </div>
+
+    <h3 class="h3" id="s1-3"><span class="tag">2.1.3</span>예제 — 시퀀스 선택과 시퀀스 재생성</h3>
+    <h4 class="h4">간단한 경우: 후보 중 최선을 고르기만 하면 될 때</h4>
+    <p>
+      영양 보충제 마케터가 아마존 같은 오픈마켓에 올릴 제품 설명을 써야 한다고 해봐요. 이런 사이트는
+      "수상 경력" 같은 문구를 아예 거부하는 경향이 있어요. 반대로 SEO 담당자가 골라둔 좋은 키워드
+      ("유청 단백질" 등)는 최대한 넣고 싶고요.
+    </p>
+    <p>제로샷(예시 없이 지시만)으로 시켜보면 이렇게 나와요.</p>
+    <div class="gen-compare">
+      <div class="gen-row bad">
+        <span class="t-label">제로샷 결과 — 금지어 포함</span>
+        <p>"...고품질 유청 단백질과 필수 비타민으로 만들어진 파워부스트는... <strong>완벽한</strong>
+        방법입니다." — '유청' 같은 좋은 단어도 있지만, 오픈마켓이 싫어할 '고품질', '완벽한' 같은
+        단어도 섞여 나온다.</p>
+      </div>
+      <div class="gen-row good">
+        <span class="t-label">로짓 마스킹 적용 후</span>
+        <p>"...분리유청 단백질과 미셀라 카제인의 독특한 조합은... <strong>프리미엄</strong> 단백질
+        음료로... 인공 향료나 감미료 없이..." — '품질'이란 단어를 피하려고 모델이 알아서 '프리미엄'을
+        골랐다. 긍정 단어는 최대, 부정 단어는 최소가 되는 후보만 살아남았기 때문이다.</p>
+      </div>
+    </div>
+    <p>
+      핵심은, 점검 후 재생성 방식과 달리 로짓 마스킹은 <strong>모델이 아예 거절하는 일 없이</strong>
+      항상 결과물을 준다는 점이에요. 긍정 단어가 하나도 안 들어가는 최악의 경우라도, 남은 후보 중
+      "그나마 제일 나은" 시퀀스를 반드시 골라주거든요.
+    </p>
+
+    <h4 class="h4">복잡한 경우: 역추적이 꼭 필요할 때 — 이합체시 짓기</h4>
+    <p>
+      어린이책에 넣을 <strong>이합체시</strong>(각 행의 첫 글자를 세로로 읽으면 특정 단어가 되는
+      시)를 짓는다고 해봐요. 예를 들어 호랑이를 주제로 "BOLD"라는 단어가 세로로 읽히는 4행시를
+      지어야 해요. 원샷 예시 하나만 주고 시켜보면 실패해요 — POWER를 노렸는데 PORE가 되는 식으로,
+      모델이 스스로 앞뒤가 안 맞는 선택을 해버려요.
+    </p>
+    <p>
+      로짓 마스킹으로 이 문제를 풀려면, 매 행을 생성할 때마다 "지금까지 만든 행들의 첫 글자를 이으면
+      목표 단어의 접두사가 되는가?"를 검사해요. 후보 여러 개를 한꺼번에 만들어서(빔 탐색) 조건을
+      만족하는 것만 남기고, <strong>만족하는 후보가 하나도 없으면</strong> 마지막 행을 지우고 그
+      이전 지점으로 되감아서(역추적) 다시 시도해요. 모든 행을 지워도 안 되면 아예 처음부터(다른 시작
+      단어로) 다시 시작해요.
+    </p>
+    <div class="gen-compare">
+      <div class="gen-row good">
+        <span class="t-label">호랑이 · 시작 단어 BOLD</span>
+        <p>Boldly, the brave tiger stalks its prey,<br>Owning the forest with its might,<br>Lurking in the shadows, waiting to pounce,<br>Daring to be the king of the night</p>
+      </div>
+      <div class="gen-row good">
+        <span class="t-label">올빼미 · 시작 단어 SHARP</span>
+        <p>Silently swooping through the night<br>Hooting softly, a gentle sound<br>Alertly watching, with eyes so bright<br>Ruling the darkness, all around<br>Prowling quietly, with stealthy pace</p>
+      </div>
+    </div>
+    <p style="font-size:13.5px; color:var(--ink-soft);">
+      생성 루프를 직접 관리하면서 로짓 마스킹을 적용하면, 역추적과 재생성이 필요할 만큼 엄격한 조건도
+      만족시킬 수 있어요. 참고로 저자들은 흥미로운 응용으로 <strong>자동 완성</strong>(검색창에
+      글자를 입력할 때 후보 문구를 제시하는 기능)도 로짓 마스킹으로 구현할 수 있다고 소개해요 —
+      과거 검색 기록을 쓰면 사용자 간 정보가 유출될 위험이 있으니, 대신 문서를 컨텍스트에 담아두고
+      로짓 마스킹으로 상위 완성 후보를 뽑는 방식이에요.
+    </p>
+
+    <h3 class="h3" id="s1-4"><span class="tag">2.1.4</span>고려사항</h3>
+    <div class="compare">
+      <div class="card">
+        <h4>대안이 될 만한 것들</h4>
+        <p>규칙이 느슨해도 된다면 퓨샷 예시(패턴 3)나 더 자세한 프롬프트가 더 간단해요. 다만 강제력이
+        없어서 규칙을 어길 가능성은 남아요. 더 강력한(비싸고 느린) 모델을 쓰거나, 성공률이 충분히
+        높다면 '될 때까지 재시도'도 여전히 선택지예요. 규칙 검사기가 유용한 오류 메시지를 준다면
+        <strong>성찰 패턴</strong>(6장)으로 그 메시지를 프롬프트에 넣어 재시도할 수도 있어요.</p>
+      </div>
+      <div class="card">
+        <h4>가장 큰 제약 — 로짓 접근권</h4>
+        <p>이 패턴을 쓰려면 모델의 로짓 값에 접근할 수 있어야 해요. 2025년 기준 앤트로픽 클로드는
+        이를 제공하지 않고, 오픈AI·구글·메타는 제공하되 접근 수준이 서로 달라요. 메타 라마처럼
+        가중치가 공개된 모델을 직접 호스팅하는 경우가 가장 자유로워요. 또한 매 토큰마다 통신이
+        필요해서, 모델을 로컬(내 컴퓨터 근처)에 호스팅하지 않으면 지연시간이 감당하기 어려워질 수
+        있어요.</p>
+      </div>
+    </div>
+    <p>
+      규칙을 만족하는 후보가 <strong>아예 없는</strong> 경우, 다른 출발점에서 처음부터 다시 시작하게
+      만들기보다 그냥 오류를 내거나 요청을 거부하는 더 단순한 방법도 있어요. 프롬프트에 충분한 정보를
+      줘서 이런 상황 자체가 드물게 일어나도록 만드는 게 중요해요.
+    </p>
+    <p style="font-size:13px; color:var(--ink-faint);">
+      참고문헌 — 로짓을 0으로 만드는 이 발상은 원래 강화학습에서 <strong>유효하지 않은 행동
+      마스킹</strong>이라 불리며, 2019년 비날스 등이 게임 스타크래프트 II에서 처음 썼고 2020년 황과
+      온타뇬이 이론적 근거를 제시했어요. 2025년 로맹 플로렌츠는 유한 상태 기계를 로짓 마스킹으로 써서
+      LLM으로 소셜 그래프를 생성하는 연구를 발표했어요.
+    </p>
+  </section>
+
+  <!-- 2.2 문법 -->
+  <section class="sec" id="s2">
+    <div class="sec-head">
+      <span class="sec-num">2.2</span>
+      <h2 class="h2">패턴 2: 문법 — 감시를 서버에 맡긴다</h2>
+    </div>
+    <p>
+      문법 패턴은 로짓 마스킹과 목적이 같아요. 다만 규칙을 우리가 직접 코드로 감시하는 대신, <strong>문맥
+      자유 메타구문(BNF 등)</strong>이나 정해진 데이터 스키마로 규칙을 "선언"해두면, 모델 프레임워크가
+      그 선언을 읽고 알아서 감시해줘요.
+    </p>
+    <div class="etym">
+      <span class="label">비유로 보면</span>
+      <div class="body">
+        로짓 마스킹이 "내가 직접 옆에서 검열하는 것"이라면, 문법 패턴은 "빈칸 채우기 서식지를 인쇄소
+        (모델 제공업체)에 맡기고, 서식에 안 맞는 글자는 애초에 못 쓰게 만들어 달라고 부탁하는 것"에
+        가까워요. §2.1에서 이미 로짓 마스킹의 원리를 설명했으니, 이 패턴은 <strong>그 검열을 누가
+        대신해주느냐</strong>의 차이로 이해하면 쉬워요.
+      </div>
+    </div>
+
+    <h3 class="h3" id="s2-1"><span class="tag">2.2.1</span>문제 — 형식을 반드시 지켜야 할 때</h3>
+    <p>
+      AI 응답을 그대로 다른 프로그램(다운스트림 애플리케이션)에 넘겨야 할 때가 많아요. 이때는 CSV처럼
+      단순한 형식일 수도, SQL처럼 복잡한 형식일 수도 있어요. 흔한 대응은 "JSON으로 출력하세요" 같은
+      지시나 예시를 프롬프트에 넣고 모델이 잘 따라주길 바라는 거예요. 하지만 이건 <strong>안티패턴</strong>이에요
+      — 모델의 지시 따르기 능력은 100% 믿을 수 없고, 지금 버전에서 잘 되어도 다음 버전에서 깨질 수
+      있으며, 이 불확실성에 대비해야 하는 부담이 이 API를 호출하는 모든 사람에게 전가돼요.
+    </p>
+
+    <h3 class="h3" id="s2-2"><span class="tag">2.2.2</span>해법 — 세 가지 옵션</h3>
+    <p>
+      모델은 결국 토큰 단위로 후보를 고르며 글을 만들어요. 문법 패턴에서는 이 후보 선택에 적용할
+      "문법"을 미리 지정해두면, 프레임워크가 문법에 안 맞는 토큰의 확률을 자동으로 0으로 만들어요.
+    </p>
+    <div class="journey">
+      <div class="journey-title">세 가지 방식, 강제력이 실행되는 위치가 다르다</div>
+      <div class="jstep">
+        <div class="dot">1</div>
         <div class="jbody">
-          <h5>선호조정(DPO)으로 신입사원을 다시 훈련시킨다</h5>
-          <p>이제부터는 이 훈련된 버전을 쓰면, 스스로 "이기는 스타일"의 글을 써요.</p>
+          <h5>문법 제약 로짓 처리기 — BNF 문법</h5>
+          <p>배커스-나우르 형식(BNF)으로 원하는 구문을 정의하고, 이 문법을 로짓 처리기에 넘겨 클라이언트
+          쪽에서 강제한다. 거의 모든 표준 데이터 형식(SQL 타임스탬프, 신용카드 번호 등)에 이미 BNF
+          명세가 있어서 검색만 하면 가져다 쓸 수 있다.</p>
+        </div>
+      </div>
+      <div class="jstep">
+        <div class="dot">2</div>
+        <div class="jbody">
+          <h5>표준 데이터 형식 — JSON 모드</h5>
+          <p>원하는 형식이 모델 API가 이미 지원하는 표준(JSON 등)이라면, 그냥 그 형식을 지정해서
+          호출하면 끝난다. 단, 어떤 속성이 필요한지 구체적으로 정하진 못한다.</p>
+        </div>
+      </div>
+      <div class="jstep">
+        <div class="dot">3</div>
+        <div class="jbody">
+          <h5>사용자 지정 스키마 — 데이터클래스</h5>
+          <p>필수 속성까지 못박고 싶다면, 파이썬 데이터클래스나 JSON 스키마로 "구조적 출력"을 요청한다.
+          이 경우 로짓 마스킹을 실제로 수행하는 건 모델 제공업체(서버) 쪽이다 — 우리는 설계도만
+          건네면 된다.</p>
         </div>
       </div>
     </div>
 
-    <h3 class="h3" id="s5-2">예시 — 중고 자전거 광고<span class="tag">5억짜리 작은 모델도 쓸 만해짐</span></h3>
+    <div class="etym">
+      <span class="label">TIP</span>
+      <div class="body">
+        문법 패턴은 "모델 프레임워크가 개발자 대신 로짓 마스킹(패턴 1)을 해주는 것"이라고 생각하면
+        가장 이해가 빨라요.
+      </div>
+    </div>
+
+    <h4 class="h4">옵션 1 — BNF 문법으로 SQL 타임스탬프 강제하기</h4>
+    <pre class="code">grammar_str = """
+    timestamp_literal ::= { t 'yyyy-mm-dd hh:mi:ss' } | 'date_literal time_literal'
+    date_literal ::= { d 'yyyy-mm-dd' } | mm-dd-yyyy | mm/dd/yyyy | yyyy-mm-dd | ...
+    time_literal ::= { t 'hh:mi:ss' } | hh:mi:ss[:mls]
+    """
+grammar = IncrementalGrammarConstraint(grammar_str, "timestamp_literal", pipe.tokenizer)
+grammar_processor = GrammarConstrainedLogitsProcessor(grammar)
+results = pipe(input_message, max_new_tokens=256, do_sample=False,
+               logits_processor=[grammar_processor])</pre>
+    <div class="plain-lang">
+      <span class="pl-label">쉽게 말하면</span>
+      <p style="margin:0;"><strong>BNF</strong>는 "문장이 어떤 조각들로 이루어질 수 있는지"를 적는
+      일종의 조립 설명서예요 (예: "타임스탬프 = 날짜 + 시간"). <strong>grammar_str</strong>이 그
+      설명서고, <strong>timestamp_literal</strong>이 그 설명서에서 "이 조각부터 시작하라"고 지정한
+      루트예요. 이 설명서를 넘겨주면 모델은 설명서에 안 맞는 글자를 아예 쓸 수 없게 돼요.</p>
+    </div>
+
+    <h4 class="h4">옵션 3 — 파이썬 데이터클래스로 스키마 정하기</h4>
+    <pre class="code">@dataclass
+class LineItem:
+    description: str
+    quantity: int
+    amount: float
+
+@dataclass
+class Receipt:
+    items: list[LineItem]
+    total_amount: float</pre>
+    <div class="plain-lang">
+      <span class="pl-label">쉽게 말하면</span>
+      <p style="margin:0;"><strong>데이터클래스</strong>는 "이 데이터는 이런 항목들로 이루어져야
+      한다"고 적어두는 설계도예요. <code>@dataclass</code>는 "이 클래스는 데이터를 담는 상자다"라고
+      표시해두는 표식이고요. 위 설계도는 "영수증(Receipt)에는 품목 목록(items)과 총액(total_amount)이
+      있어야 하고, 각 품목(LineItem)에는 설명·수량·금액이 있어야 한다"는 뜻이에요. 이 설계도를 모델
+      호출에 그대로 넘기면, 결과가 반드시 이 모양을 갖추게 돼요.</p>
+    </div>
+    <pre class="code">response = client.models.generate_content(
+    model='gemini-2.0-flash',
+    contents=[f"이미지에 담긴 영수증을 파싱하세요.", image],
+    config={'response_mime_type': 'application/json', 'response_schema': Receipt},
+)
+data_obj = json.loads(response.text, object_hook=lambda args: Receipt(**args))</pre>
+    <div class="plain-lang">
+      <span class="pl-label">쉽게 말하면</span>
+      <p style="margin:0;"><strong>response_schema</strong> 자리에 방금 만든 설계도(Receipt)를
+      건네면, 모델은 그 모양의 JSON 텍스트를 돌려줘요. 마지막 줄은 "돌아온 JSON 텍스트를 다시 파이썬
+      Receipt 객체로 바꿔라"는 뜻이에요. 응답 자체는 여전히 문자열(JSON)이고, 데이터클래스는 그
+      구조를 지정하는 데만 쓰인다는 점을 기억하세요.</p>
+    </div>
+
+    <div class="card">
+      <p style="margin:0;">
+        <strong>CAUTION</strong> — 랭체인의 XML 파서는 문법 패턴이 <em>아니에요</em>. 그냥 모델의
+        지시 따르기 능력에 기대어 XML 태그를 만들 뿐, 형식을 보장해주지 않아요. 그리고 <strong>TIP</strong>:
+        "제발 형식 좀 지켜줘, 대문자로만 답해!" 같은 프롬프트로 <em>간청</em>하는 건 안티패턴이에요
+        — 그 대신 문법 패턴을 써서 애초에 다른 형식을 못 쓰게 만드세요.
+      </p>
+    </div>
+
+    <h3 class="h3" id="s2-3"><span class="tag">2.2.3</span>예제</h3>
     <p>
-      작은 모델(5억 파라미터)에게 중고 자전거 광고를 써달라 하면, 신제품 광고처럼 어색한 문구가 나와요.
-      이 모델에게 광고 쌍을 여러 개 만들게 하고, "명확한가·대상에 맞나·간결한가·연락처 있나·진실한가"
-      기준으로 AI 심판이 매번 승자를 고르게 한 뒤, 그 승패 데이터로 훈련시켰더니 — 신제품 광고 말투가
-      사라지고 명확하고 간결하고 연락처까지 챙기는 광고를 스스로 쓰게 됐어요.
+      초등 수학 학습 소프트웨어에서 모델이 정답("36")만 뱉지 않고 <code>number_of_dozens ×
+      number_per_dozen = number_of_eggs</code> 같은 <strong>수식</strong>으로 답하게 강제하고
+      싶다고 해봐요. 문법으로 이렇게 정의할 수 있어요.
+    </p>
+    <pre class="code">grammar_str = """
+root ::= (expr "=" ws term "\n")+
+expr ::= term ([-+*/] term)*
+term ::= ident | num | "(" ws expr ")" ws
+ident ::= [a-z] [a-z0-9_]* ws
+num ::= [0-9]+ ws
+"""</pre>
+    <div class="gen-compare">
+      <div class="gen-row good">
+        <span class="t-label">쉬운 문제 — "사과는 총 몇 개?"</span>
+        <p>bill_apples + mae_apples = total_apples<br>3 + 2 = 5</p>
+      </div>
+      <div class="gen-row good">
+        <span class="t-label">부등호가 필요한 문제 — "사과가 오렌지보다 많은가?"</span>
+        <p>3 + 2 = 5<br>2 + 4 = 6 — <em>문법이 '&gt;' 기호를 허용하지 않아서, 정답
+        "(3+2)&gt;(2+4)"를 절대 못 쓰고 이렇게 막힌다. 제약이 실제로 작동한다는 증거다.</em></p>
+      </div>
+    </div>
+    <p>
+      또 다른 예로, 책 소개 텍스트에서 저자·제목·출판연도를 <code>저자 | 제목 | 출판연도</code>
+      형식으로만 뽑아내는 문법도 있어요. 이 문법은 영어 알파벳과 빈칸만 허용하므로, 스페인어 소설
+      「콜레라 시대의 사랑」을 넣으면 저자 이름의 악센트 부호가 자동으로 제거된 <code>Gabriel Garcia
+      Marquez | Love in the Time of Cholera | 1985</code>가 나와요. 반면 JSON 모드만 쓰고 문법을
+      따로 정의하지 않으면, 타밀어 고전을 입력했을 때 제목이 타밀 문자 그대로 나올 수도 있어요 — 이건
+      제약이 아니라 그저 모델의 지시 따르기 실력 덕분이라서 보장이 안 되거든요.
+    </p>
+    <p>
+      송장 정보 추출처럼 더 복잡한 예도 있어요. 파이단틱(pydantic) 기반의 <code>Invoice</code>
+      데이터클래스에 용도·금액·통화를 정의해두면, "공항까지 택시비 32.30달러 환급 요청"이라는 문장을
+      넣었을 때 <code>Invoice(purpose='공항까지 택시 탑승', amount=32.3,
+      currency=CurrencyEnum.USD)</code>라는 파이썬 객체가 그대로 돌아와요.
     </p>
 
-    <h3 class="h3" id="s5-3">"평가가 전부다"<span class="tag">주의</span></h3>
+    <h3 class="h3" id="s2-4"><span class="tag">2.2.4</span>고려사항</h3>
+    <div class="compare">
+      <div class="card">
+        <h4>BNF 문법의 장점 — 유연성</h4>
+        <p>임의로 복잡한 검증 규칙을 표현할 수 있어요. 예를 들어 "비자·마스터카드·아멕스만 허용"
+        같은 신용카드 번호 규칙도 BNF로는 몇 줄이면 되지만, 데이터클래스로는 <code>Enum</code>보다
+        복잡한 검증을 표현하기 어려워요.</p>
+      </div>
+      <div class="card">
+        <h4>데이터클래스의 장점 — 편의성·속도·호환성</h4>
+        <p>작성이 훨씬 쉽고, 제약이 서버에서 실행되므로 클라이언트-모델 간 통신 횟수가 줄어 지연시간이
+        짧아요. 또한 모든 최신 모델이 지원하지만, BNF는 로그 확률에 접근할 수 있는 모델에서만
+        가능해요.</p>
+      </div>
+    </div>
     <p>
-      이 패턴의 성패는 2단계(비교) 하나에 달려 있어요. 재고 있으면 좋은 지표라도, 너무 좁은 지표만
-      최적화하면 모델이 그 지표만 "게임"할 수 있어요. 예를 들어 체류 시간만 늘리려 하면, 일부러 읽기
-      어렵게 써서 시간을 끄는 역효과가 날 수 있어요. 진짜 목표(교육 효과 등)에 비추어 지표를 계속
-      검증해야 해요.
+      문법 패턴이 실패할 때는 몇 가지 특징적인 증상이 나타나요. <strong>끝없는 공백</strong>(다른 모든
+      토큰이 규칙에 걸려 공백만 계속 나오는 경우), <strong>거부 증가</strong>(구조가 복잡할수록 규칙에
+      맞는 토큰이 하나도 없는 막다른 지점에 이를 가능성이 커짐), <strong>부정확한 결과</strong>(문법이
+      너무 빡빡하면 모델이 억지로 끼워 맞춘 답을 냄 — 이럴 땐 <code>float | Literal["Unknown"]</code>처럼
+      "모르겠다"고 답할 탈출구를 문법에 남겨두는 게 좋아요)가 그 예예요. 이 패턴은 <strong>구조적
+      출력</strong>이나 <strong>제약 디코딩</strong>이라고도 불리는데, 랭그래프처럼 "구조적 출력을
+      지원한다"고 광고해도 실은 별도의 LLM 호출로 후처리만 하는 경우가 있으니 주의해야 해요 — 그건
+      진짜 문법 패턴보다 느리고 비싸고 신뢰도도 낮아요.
     </p>
   </section>
 
-  <!-- summary -->
-  <section class="sec" id="summary">
+  <!-- 2.3 스타일 전이 -->
+  <section class="sec" id="s3">
     <div class="sec-head">
-      <span class="sec-num">표</span>
-      <h2 class="h2">다섯 패턴 한눈에 보기</h2>
+      <span class="sec-num">2.3</span>
+      <h2 class="h2">패턴 3: 스타일 전이 — 견습시킨다</h2>
     </div>
+    <p>
+      앞의 두 패턴(로짓 마스킹·문법)은 사람이 규칙을 명시적으로 적어줘야 했어요. 그런데 원하는
+      스타일이 "말로 설명하긴 어렵지만 보면 안다" 수준으로 미묘하다면 어떻게 할까요? 스타일 전이는
+      바람직한 변환을 보여주는 <strong>입력-출력 예시</strong>를 모델에게 보여줘서, 사람이 미처
+      인식하지도 못한 규칙까지 모델 스스로 추론하게 만들어요.
+    </p>
+
+    <h3 class="h3" id="s3-1"><span class="tag">2.3.1</span>문제 — 세 가지 전제조건</h3>
+    <p>다음 세 조건이 모두 맞아떨어질 때 스타일 전이가 유용해요.</p>
+    <ul class="plain">
+      <li><strong>가용 콘텐츠</strong> — 바꾸고 싶은 콘텐츠(예: 학술 논문)는 이미 많이 있다. 다만
+      원하는 어조가 아닐 뿐이다.</li>
+      <li><strong>미묘한 스타일</strong> — 원하는 스타일을 몇 가지 규칙으로 딱 잘라 표현하기 어렵다.
+      "미세조정"이란 용어를 써도 될지, "강화학습"이라고 해야 할지 — 이런 어휘 선택은 규칙화하기
+      힘들다.</li>
+      <li><strong>전이 예시 확보</strong> — 전문가가 실제로 그 콘텐츠를 원하는 스타일로 바꾼 예시를
+      몇 개라도 갖고 있다.</li>
+    </ul>
+    <p>
+      이 패턴은 학술 논문을 흥미로운 블로그로, 일반 회사 문서를 브랜드 가이드라인에 맞게, 긴 글을
+      플랫폼별(트위터·인스타그램) 형식으로, 기술 문서를 숙련도별 버전으로, 메모를 격식 있는 이메일로
+      바꾸는 등 다양한 상황에 쓰여요. 제로샷(예시 없이)으로 메모를 이메일로 바꿔보면 그럴듯해 보이지만
+      두 가지 문제가 있어요 — <strong>스타일이 회사 성격과 안 맞을 수 있고</strong>, <strong>[작성자
+      이름] 같은 자리표가 매번 다르게 나와서</strong> 다운스트림 처리가 어려워져요.
+    </p>
+
+    <h3 class="h3" id="s3-2"><span class="tag">2.3.2</span>해법 — 퓨샷 학습과 미세조정</h3>
+    <div class="compare">
+      <div class="card">
+        <h4>옵션 1 · 퓨샷 학습</h4>
+        <p>입력-출력 예시 1~10개를 프롬프트에 그대로 넣어요. 학생(모델)에게 교사(여러분)가 몇 가지
+        예시를 보여주고 "이런 식으로 풀어"라고 하는 것과 같아요. 구현이 간단하지만, 예시가 늘수록
+        프롬프트가 길어져요.</p>
+        <div class="snippet">prompt = "다음과 같은 스타일로 변환하세요:\n\nInput: {ex1_in}\nOutput: {ex1_out}\n\n...\n\nInput: {new_input}\nOutput:"</div>
+      </div>
+      <div class="card">
+        <h4>옵션 2 · 모델 미세조정</h4>
+        <p>보통 100개~수천 개의 예시로 모델 자체를 다시 훈련해요(5장 <strong>어댑터 조정</strong>
+        참고). 더 정교한 결과를 얻고 실행 비용도 낮아지지만, 데이터 큐레이션·훈련·운영 전문 역량이
+        필요해요.</p>
+      </div>
+    </div>
+    <div class="gen-compare">
+      <div class="gen-row bad">
+        <span class="t-label">제로샷 결과</span>
+        <p>"긴급: {deadline}까지 회의록 필요..." → "[수신자] 님께, 평안하시길 바랍니다..." 격식 있어
+        보이지만 원하는 회사 어조와 다를 수 있고, 자리표 형태가 매번 바뀐다.</p>
+      </div>
+      <div class="gen-row good">
+        <span class="t-label">미세조정 결과 (GPT-3.5-turbo)</span>
+        <p>"제목: 회의록 요청 / 안녕하세요, {name}님. 잘 지내시죠? {deadline}까지 회의록이 필요해서
+        연락드렸습니다..." — 격식을 덜 차렸고, 정한 자리표({name}, {deadline})를 정확히 따른다.</p>
+      </div>
+    </div>
+
+    <h4 class="h4">텍스트뿐 아니라 이미지에도 적용된다</h4>
+    <p>
+      스타워즈 포스터를 화가 카스파르 다비트 프리드리히의 「안개 바다 위의 방랑자」 화풍으로 만든다고
+      해봐요. 원본 그림 하나만으로도 되지만, 그림의 공간 구도(원근감)를 지켜주는 <strong>깊이
+      맵(depth map)</strong>을 "제어 이미지"로 함께 주면 결과가 훨씬 좋아져요. 깊이 맵은 각 픽셀이
+      카메라로부터 얼마나 먼지를 담은 흑백 이미지예요(가까울수록 밝게).
+    </p>
+    <pre class="code">pipe = StableDiffusionControlNetImg2ImgPipeline.from_pretrained(...)
+depth_estimator = pipeline("depth-estimation")
+depth_image = depth_estimator(image)["depth"]
+output = pipe(prompt="붉은 광선검을 든 스타워즈의 다스베이더",
+              image=wanderer_image, control_image=wanderer_depth_map).images[0]</pre>
+    <div class="plain-lang">
+      <span class="pl-label">쉽게 말하면</span>
+      <p style="margin:0;">"스타일을 가져올 원본 그림(image)"과 "그 그림의 원근감 뼈대(control_image)"를
+      함께 건네주고, "이런 내용(prompt)으로 그려줘"라고 요청하는 거예요. 결과는 방랑자가 다스베이더로
+      바뀌었지만 산봉우리·구름·인물 자세 등 원본 구도는 그대로 유지돼요. 다만 모델이 창의성을
+      발휘해서 지평선에 우주선을 그려 넣거나 인물을 정면으로 바꾸는 등 예상 밖의 변화도 생길 수
+      있어요 — 이런 창의성을 줄이고 싶다면 스타일 이미지와 프롬프트의 상대적 가중치를 조절하면
+      돼요.</p>
+    </div>
+
+    <h3 class="h3" id="s3-3"><span class="tag">2.3.3</span>고려사항</h3>
+    <p>
+      스타일 전이는 로짓 마스킹·문법보다 구현은 훨씬 간단하지만, 스타일이 <strong>반드시</strong>
+      지켜진다는 보장은 없어요(퓨샷은 암묵적 강제, 미세조정은 그보다 성공률이 높지만 역시 암묵적).
+      그래서 규정 준수가 필수라면 앞의 두 패턴이, 프로토타입처럼 구현 편의성이 중요하거나 스타일을
+      규칙화하기 어렵다면 스타일 전이가 더 나아요. 규정 준수 수준에 영향을 주는 요소는 다음과 같아요.
+    </p>
+    <ul class="plain">
+      <li><strong>모델이 클수록 결과도 좋다</strong> — 매개변수가 많은 모델일수록 적은 예시로도
+      스타일을 잘 일반화한다. 다만 크기와 비용·지연시간은 항상 트레이드오프 관계다.</li>
+      <li><strong>컨텍스트의 한계</strong> — 예시를 넣을수록 입력이 길어져 컨텍스트 창이 부족해지거나,
+      예시들끼리 서로 모순돼 모델을 "혼란"시킬 수 있다.</li>
+      <li><strong>모델 실행 속도</strong> — 입력이 길수록 주의(attention) 계산량이 늘어 지연시간이
+      커진다. 같은 모델이라도 퓨샷보다 미세조정 쪽이 더 빠르다.</li>
+    </ul>
+    <p style="font-size:13px; color:var(--ink-faint);">
+      참고문헌 — 이미지 스타일 전이는 2015년 가티스 등이 합성곱 신경망으로 콘텐츠와 스타일을
+      분리하면서 시작됐고(2018년 징 등이 개괄), 텍스트 스타일 전이는 2021년 라이프 등의 논문에서
+      소개됐어요. 애들리(Addlly)사는 이 패턴으로 기존 제품 설명 스타일을 신제품에 전이해서 브랜드
+      정체성을 유지해요.
+    </p>
+  </section>
+
+  <!-- 2.4 역중립화 -->
+  <section class="sec" id="s4">
+    <div class="sec-head">
+      <span class="sec-num">2.4</span>
+      <h2 class="h2">패턴 4: 역중립화 — 뒤집어서 가르친다</h2>
+    </div>
+    <p>
+      역중립화도 원하는 스타일의 콘텐츠를 생성한다는 목표는 스타일 전이와 같아요. 다른 점은, 스타일
+      전이처럼 <strong>사람이 직접 만든 입력-출력 예시 쌍이 없어도</strong> 적용할 수 있다는 거예요.
+      대신 먼저 AI로 "중립적인" 버전을 만든 뒤, 그것을 원하는 스타일로 바꾸도록 <strong>미세조정한
+      모델</strong>로 후처리해서 최종 결과를 얻어요.
+    </p>
+
+    <h3 class="h3" id="s4-1"><span class="tag">2.4.1</span>문제 — 원본조차 없을 때</h3>
+    <p>
+      여러분의 개인적인 말투로 루프트한자 항공사에 수하물 분실 항의 서한을 쓰고 싶다고 해봐요.
+      제로샷으로는 항의 서한은 만들어지겠지만 개인 스타일까지 담기지 않아요. 스타일 전이를 쓰려면
+      "루프트한자에 보낸 항의 서한을 내 스타일로 바꾼 예시"가 있어야 하는데, 그런 게 있을 리 없어요
+      — 지금 있는 건 <strong>다른 주제</strong>의 개인 스타일 이메일들뿐이에요. 더 나아가 현지
+      사법관할권에 맞는 법률 용어까지 반영하고 싶다면, 제로샷으로는 한국의 법률 용어를 기대하기 더욱
+      어려워요.
+    </p>
+
+    <h3 class="h3" id="s4-2"><span class="tag">2.4.2</span>해법 — 세 단계, 그리고 왜 "역"인가</h3>
+    <div class="journey">
+      <div class="journey-title">역중립화의 세 단계</div>
+      <div class="jstep">
+        <div class="dot">1</div>
+        <div class="jbody"><h5>중립 콘텐츠 생성</h5><p>개인 스타일 이메일 여러 개를 모아, 기초 모델에게 "서로 모르는 두 임원이 주고받는 업무 이메일 형식"처럼 무난한 버전으로 재작성해달라고 요청한다.</p></div>
+      </div>
+      <div class="jstep">
+        <div class="dot">2</div>
+        <div class="jbody"><h5>입력·출력을 뒤집는다 — 이름의 유래</h5><p>1단계의 입력(개인 스타일)과 출력(중립 스타일)을 <strong>거꾸로</strong> 뒤집는다. 즉 중립 버전을 입력, 개인 스타일 버전을 출력으로 삼아 훈련 데이터셋을 만든다. "역"중립화라는 이름이 여기서 나온다.</p></div>
+      </div>
+      <div class="jstep">
+        <div class="dot">3</div>
+        <div class="jbody"><h5>이 데이터셋으로 미세조정</h5><p>중립적인 글을 입력받으면 원하는 스타일로 바꿔서 내놓는 모델이 완성된다.</p></div>
+      </div>
+    </div>
+    <p>
+      미세조정 모델이 준비되면 실제 사용은 두 단계예요. ① 미세조정되지 않은 <strong>기초 모델</strong>로
+      아무 주제나 중립적인 초안을 만들고, ② <strong>미세조정 모델</strong>로 그 초안을 원하는 스타일로
+      바꿔요. 이 패턴은 회사 브랜드에 맞는 콘텐츠(제품 설명·고객 리뷰)는 많은데 그걸 만들 "중립
+      입력"이 부족할 때도 유용해요.
+    </p>
+
+    <h3 class="h3" id="s4-3"><span class="tag">2.4.3</span>예제 1·2 — 법률 문서와 개인 스타일</h3>
+    <h4 class="h4">예제 1 · 법률 텍스트</h4>
+    <p>법률회사가 가진 전문 용어투성이 법률 고지서를 먼저 중립화해요.</p>
+    <div class="gen-compare">
+      <div class="gen-row bad">
+        <span class="t-label">원본 — 법률 전문 문체</span>
+        <p>"원고는 규칙 56(c)에 따라 약식 판결을 신청하며, 피고의 전술한 행위가 증거자료 A에 명시된
+        계약상 의무의 중대 위반에 해당한다고 주장하므로..."</p>
+      </div>
+      <div class="gen-row good">
+        <span class="t-label">중립화 후 — 대학 신입생 수준</span>
+        <p>"소송을 제기한 사람은 법원에 정식 재판 없이 사건을 판결해 달라고 요청하고 있다. 상대방이
+        별첨 A에 명시된 계약을 위반했으므로, 이를 보상할 돈을 받아야 한다고 주장한다." — '원고'는
+        '소송을 제기한 사람'으로, '중대 위반'은 '계약을 위반했다'로, 의미는 그대로 두고 스타일만
+        빠졌다.</p>
+      </div>
+    </div>
+    <p>
+      이 중립 버전은 평범한 기초 모델로도 만들 수 있을 만큼 일반적이라서, 미세조정용 훈련 데이터셋을
+      훨씬 쉽게 확보할 수 있어요. 입력과 출력을 뒤집으면, 평범한 항의 서한을 법률 텍스트로 바꿔주는
+      미세조정 모델이 만들어져요.
+    </p>
+
+    <h4 class="h4">예제 2 · 개인 스타일 이메일 (전체 과정)</h4>
+    <div class="gen-compare">
+      <div class="gen-row good">
+        <span class="t-label">1단계 원본 — 개인 스타일(과장된 예시)</span>
+        <p>"제목: 🎉승선을 환영합니다, 에밀리!🎉 / 고객 성공팀의 가족이 되신 것을 환영합니다! ✨ 다른
+        사람을 돕고자 하는 에밀리 님의 열정과 활기찬 정신은 바로 우리가 필요로 하던 것입니다! 😊..."</p>
+      </div>
+      <div class="gen-row bad">
+        <span class="t-label">1단계 결과 — 중립화</span>
+        <p>"제목: 팀 합류를 환영합니다 / 에밀리 님 안녕하세요, 고객 성공팀의 새 일원이 되신 것을
+        진심으로 환영합니다..." — 이모지와 "함께 마법을 만들어 봐요!" 같은 개성 있는 표현이 사라졌다.</p>
+      </div>
+    </div>
+    <p>
+      2단계에서는 이 둘을 뒤집어 <code>{"messages": [{"system": "중립 이메일을 개인화된 이메일로
+      변환..."}, {"user": 중립 버전}, {"assistant": 개인 스타일 버전}]}</code> 형태의 훈련 예시를
+      만들어요. 저자들은 예시 200개로 좋은 결과를 얻었다고 해요. 3단계에서 이 데이터셋으로 미세조정한
+      뒤, 훈련 데이터셋에 <strong>없던 새 주제</strong>로 4단계(인퍼런스)를 시험해봐요.
+    </p>
+    <div class="gen-compare">
+      <div class="gen-row bad">
+        <span class="t-label">기초 모델이 만든 중립 이메일 — 새 주제(2026 FIFA 월드컵 발표 요청)</span>
+        <p>"제목: 2026 FIFA 월드컵 마케팅 캠페인 발표 초청 / 그레텔 님, 잘 지내시길 바랍니다. ...
+        귀하의 전문 지식과 통찰력은 우리 팀에 매우 귀중할 것이며..."</p>
+      </div>
+      <div class="gen-row good">
+        <span class="t-label">미세조정 모델이 개인화 — 훈련 데이터에 없던 주제인데도 성공</span>
+        <p>"제목: 🎉 멋진 기회: 2026 FIFA 월드컵에서 당신의 마케팅 마법을 펼쳐보세요! ⭐ / 그레텔,
+        안녕! 이 메시지를 받을 때쯤 기분이 최고이길 바라! 🌈..." — 훈련 때 한 번도 못 본 주제인데도
+        말투 변환 자체는 정확히 재현됐다.</p>
+      </div>
+    </div>
+
+    <h3 class="h3" id="s4-4"><span class="tag">2.4.4</span>고려사항</h3>
+    <ul class="plain">
+      <li><strong>중립 형태 선택이 관건</strong> — "임원 간의 소통"처럼 반복해서 쉽게 생성할 수 있는
+      중립 형태를 골라야 해요. '중립성'의 정의는 다소 주관적이라서 모델마다 결과가 다를 수 있으니,
+      원본과 중립 텍스트의 <strong>임베딩 코사인 유사도</strong>(의미가 얼마나 비슷한지 수치로 잰 것)를
+      확인하는 방법도 있어요. 다만 유사도가 너무 높으면 오히려 스타일이 안 바뀌었다는 뜻일 수 있으니
+      해석에 주의해야 해요.</li>
+      <li><strong>과다 중립화</strong> — 내용이 스타일과 너무 얽혀 있으면, 중립화 과정에서 의미나
+      명확성 자체가 사라질 수 있어요. 여러 중립 형태를 실험해서 가장 잘 보존되는 것을 골라야 해요.</li>
+      <li><strong>데이터셋 범위 확인</strong> — 입력 예시들이 애플리케이션이 실제로 다뤄야 할 전체
+      범위를 포괄하는지 주제 모델링 같은 기법으로 확인해야 해요. 범위가 한쪽으로 치우치면 미세조정
+      전체가 실패해요.</li>
+      <li><strong>중립화 자체가 목적이 될 수도</strong> — 개인정보 보호나 편향 완화를 위해 문체를
+      지우거나, 여러 저자의 글을 표준화할 때는 미세조정 없이 중립화 단계만 따로 써도 유용해요.</li>
+    </ul>
+    <p style="font-size:13px; color:var(--ink-faint);">
+      참고문헌 — 이 패턴은 기계번역에서 오래 쓰인 <strong>역번역(back translation)</strong>과
+      닮았어요. 영어→프랑스어 모델의 입력·출력을 뒤집어 프랑스어→영어 모델의 훈련쌍을 만드는 식이죠.
+      2018년 에두노프 등이 이 방식으로 합성 원본 문장을 활용하는 방법을 논의했어요.
+    </p>
+  </section>
+
+  <!-- 2.5 콘텐츠 최적화 -->
+  <section class="sec" id="s5">
+    <div class="sec-head">
+      <span class="sec-num">2.5</span>
+      <h2 class="h2">패턴 5: 콘텐츠 최적화 — 서바이벌 오디션</h2>
+    </div>
+    <p>
+      콘텐츠 최적화는 <strong>선호도 조정(preference tuning)</strong>으로 콘텐츠 생성 성과를
+      최적화하는 패턴이에요. 선호도 조정이란 "기각된 항목"과 "승인된 항목" 쌍으로 모델을 훈련해서,
+      기각된 쪽보다 승인된 쪽에 더 가까운 결과를 내도록 만드는 거예요. 엄밀히 말하면 이건 객관적 진실에
+      다가가는 최적화라기보다, "훌륭하다고 간주할 만한" 콘텐츠를 만들도록 모델을 <strong>해킹하는</strong>
+      편법에 가까워요 — 그리고 그게 바로 이 패턴의 강점이에요.
+    </p>
+
+    <h3 class="h3" id="s5-1"><span class="tag">2.5.1</span>문제 — 전통적인 A/B 테스트의 한계</h3>
+    <p>
+      "교육 콘텐츠는 문단이 3~4문장일 때 가장 좋다"처럼 <strong>어떤 요인이 중요한지 가설이 있을 때는</strong>
+      A/B 테스트로 충분해요. 스타일 A와 B를 만들어 절반씩 보여주고, 학습 효과 같은 결과를 측정해서
+      통계적으로 유의미한 승자를 찾으면 돼요. 하지만 <strong>가설 자체가 없다면</strong> 세 가지
+      문제가 생겨요.
+    </p>
+    <div class="compare">
+      <div class="card">
+        <h4>구별이 안 되는 집합들</h4>
+        <p>차이를 만드는 요인을 모르니 애초에 A 집합과 B 집합을 어떻게 나눠야 할지 알 수 없어요.</p>
+      </div>
+      <div class="card">
+        <h4>불확실한 테스트</h4>
+        <p>두 집합을 구분할 수 없으니 통계적으로 유의한 차이를 얻지 못할 가능성이 커요.</p>
+      </div>
+    </div>
+    <div class="card">
+      <h4 style="margin-top:0;">결과를 적용할 수 없음</h4>
+      <p style="margin-bottom:0;">설령 A가 이겼다는 게 밝혀져도, 무엇이 A를 이기게 했는지 모르면 다음
+      콘텐츠를 항상 승자 스타일로 만들 방법도 알 수 없어요.</p>
+    </div>
+
+    <h3 class="h3" id="s5-2"><span class="tag">2.5.2</span>해법 — 문제를 우회하는 네 단계</h3>
+    <div class="analogy">
+      <b>비유로 보면</b> — 이 패턴은 주짓수와 닮았어요. 정면으로 문제와 씨름하는 대신, 문제 자체를
+      재정의해서 사라지게 만들어요. "A와 B를 구별 못 한다"는 문제는 <strong>매번 콘텐츠 두 개를
+      직접 비교</strong>해서 이긴 쪽을 그때그때 A로, 진 쪽을 B로 부르는 식으로 우회해요. "통계적으로
+      불확실하다"는 문제는 애초에 "테스트 = 한 번의 비교"로 재정의해서 통계적 유의성 요구 자체를
+      없애버려요. 그리고 "결과를 적용 못 한다"는 문제는 <strong>프롬프트는 그대로 두고, 모델 자체를
+      바꿔버림</strong>으로써 해결해요 — 왜 이겼는지 몰라도, "이기는 콘텐츠를 내는 방향"으로 모델의
+      가중치를 직접 조정하면 되니까요.
+    </div>
+    <div class="journey">
+      <div class="journey-title">콘텐츠 최적화의 네 단계</div>
+      <div class="jstep">
+        <div class="dot">1</div>
+        <div class="jbody"><h5>동일한 프롬프트로 콘텐츠 쌍 생성</h5><p>같은 프롬프트로 스타일이 살짝 다른 콘텐츠 두 개를 만든다. 방법은 세 가지 — 그냥 반복 생성(온도&gt;0), 생성 설정(온도·상위P) 무작위 변경, 또는 프롬프트 자체를 LLM이 재작성하게 하기.</p></div>
+      </div>
+      <div class="jstep">
+        <div class="dot">2</div>
+        <div class="jbody"><h5>둘을 비교해서 승자를 고른다</h5><p>사람 평가, 자동 평가기(루브릭·심판형 LLM), 또는 실제 성과(클릭률 등) 중 하나로 판정한다.</p></div>
+      </div>
+      <div class="jstep">
+        <div class="dot">3</div>
+        <div class="jbody"><h5>선호도 훈련 데이터셋 생성</h5><p>{prompt, chosen(선택됨), rejected(기각됨)} 세 필드로 구성된 예시들을 모은다.</p></div>
+      </div>
+      <div class="jstep">
+        <div class="dot">4</div>
+        <div class="jbody"><h5>선호도 조정 수행 — DPO</h5><p>직접 선호도 최적화(DPO)로 모델을 훈련한다. 이후 이 조정된 모델을 그대로 배포하면, 승자 스타일이 안정적으로 나온다.</p></div>
+      </div>
+    </div>
+
+    <h4 class="h4">단계 2 — 승자를 정하는 세 가지 방법</h4>
+    <ul class="plain">
+      <li><strong>사람의 평가</strong> — 전문가 패널이나 최종 사용자에게 둘을 나란히 보여주고
+      고르게 한다.</li>
+      <li><strong>평가기 사용</strong> — SQL이라면 코드가 실제로 실행되는지 확인하는 모래상자를,
+      마케팅 문구라면 업계 표준 4P·3C 프레임워크를 심판형 LLM(6장 패턴 17)에게 채점시킨다.</li>
+      <li><strong>더 나은 결과를 내는 쪽 선택</strong> — 뉴스레터라면 실제 클릭 수를, 자동화된
+      고객지원 답변이라면 문제 해결 속도를 직접 비교한다.</li>
+    </ul>
+    <div class="etym">
+      <span class="label">TIP</span>
+      <div class="body">
+        평가(단계 2)가 이 패턴에서 가장 중요해요. "시험 위주 교육"의 함정 — 평가 기준에만 맞춰
+        최적화하면 진짜 목표에서 벗어난 콘텐츠가 나올 수 있어요. 예컨대 <strong>참여 시간</strong>만
+        극대화하려 들면 오히려 이해하기 어려운(그래서 읽는 데 오래 걸리는) 글이 될 수 있어요.
+        <strong>측정 지표(metric)</strong>와 <strong>진짜 목표(objective)</strong>는 다르다는 걸
+        항상 기억해야 해요.
+      </div>
+    </div>
+
+    <h4 class="h4">단계 3 — 데이터셋 형식</h4>
+    <pre class="code">{
+    "prompt": "'무릎반사(knee-jerk reaction)'라는 용어는 어디에서 유래했나요?",
+    "chosen": "...의료 절차에서 유래했습니다.",
+    "rejected": "...슬개건을 두드렸을 때..."
+}</pre>
+
+    <h4 class="h4">단계 4 — DPO로 실제 훈련하기</h4>
+    <div class="etym">
+      <span class="label">DPO란</span>
+      <div class="body">
+        선호도 조정은 2017년 크리스티아노 등의 논문에서 <strong>강화학습</strong> 기반으로 처음
+        나왔지만, 2023년 라파일로프 등이 제안한 <span class="term">직접 선호도 최적화(Direct
+        Preference Optimization, DPO)</span>가 훨씬 빠르고 간단해서 이 책은 DPO를 권장해요. 여기서는
+        허깅페이스 TRL 패키지의 DPO 구현을 써요.
+      </div>
+    </div>
+    <pre class="code">MODEL_ID = "Qwen/Qwen2-0.5B-Instruct"
+model = AutoModelForCausalLM.from_pretrained(MODEL_ID)
+tokenizer = AutoTokenizer.from_pretrained(MODEL_ID)
+
+training_args = DPOConfig(output_dir="Qwen-DPO")
+trainer = DPOTrainer(model=model, args=training_args,
+                      processing_class=tokenizer, train_dataset=train_dataset)
+trainer.train()
+trainer.save_model(training_args.output_dir)</pre>
+    <div class="plain-lang">
+      <span class="pl-label">쉽게 말하면</span>
+      <p style="margin:0;">① <strong>모델·토크나이저 준비</strong> — Qwen2-0.5B(매개변수 5억 개
+      규모의 비교적 작은 모델)를 불러온다. ② <strong>DPOConfig</strong> — 결과를 어디에 저장할지
+      등 훈련 설정을 담는 상자. ③ <strong>DPOTrainer</strong> — 모델·설정·데이터셋(prompt/chosen/
+      rejected 쌍들)을 한데 묶어 "훈련시킬 준비가 된 트레이너"를 만든다. ④ <strong>trainer.train()</strong>이
+      실제 훈련 버튼이고, <strong>save_model</strong>로 결과를 저장한다. 이 네 줄이 사실상 DPO
+      훈련의 전부예요 — 나머지는 전부 "무엇을 훈련시킬지"를 담은 데이터셋을 잘 만드는 일이에요.</p>
+    </div>
+
+    <h3 class="h3" id="s5-3"><span class="tag">2.5.3</span>예제 — 중고 거래 광고를 DPO로 조정하기</h3>
+    <p>
+      지연시간 때문에 작은 모델(Qwen2-0.5B, 5억 매개변수)로 중고 거래 광고를 써야 한다고 해봐요.
+      제로샷으로 "3년 된 스페셜라이즈드 자전거, $300"을 시켜보면 이렇게 나와요.
+    </p>
+    <div class="gen-compare">
+      <div class="gen-row bad">
+        <span class="t-label">제로샷 — 완전히 어긋난 톤</span>
+        <p>"스페셜라이즈드 자전거와 함께하는 모험에 오신 것을 환영합니다! ... 최신 모델인 스페셜라이즈드
+        3년형은 비교할 수 없는 성능과 내구성을 제공합니다." — 중고 개인 판매 광고가 아니라 제조사의
+        신제품 광고처럼 들린다. 작은 모델이라 이보다 나은 결과를 바로 기대하긴 어렵다.</p>
+      </div>
+    </div>
+
+    <h4 class="h4">단계 1 · 광고 쌍 생성</h4>
+    <p>
+      더 큰 모델로, 매번 온도를 무작위로 바꿔가며 같은 물건에 대해 문체가 다른 광고 두 개를 만들어요
+      — 하나는 "아이 있는 가정" 톤, 다른 하나는 "스타일리시한 출퇴근용" 톤으로 나왔어요.
+    </p>
+
+    <h4 class="h4">단계 2 · 심판형 LLM으로 비교</h4>
+    <p>경영대학원 광고학 교수 역할을 준 심판 LLM에게, 다음 다섯 기준으로 어느 광고가 더 나은지 판정하게 해요.</p>
+    <ul class="plain">
+      <li>연식·브랜드·가격·상태가 명확한가</li>
+      <li>구매할 만한 잠재고객에게 설득력이 있는가</li>
+      <li>세 문장 이내로 간결한가</li>
+      <li>연락처 정보가 있는가</li>
+      <li>사실에 기반하는가(중고임을 전제로 하는가)</li>
+    </ul>
+    <pre class="code">@dataclass
+class AdsComparison:
+    ad_a_is_better_than_ad_b: bool
+    reasoning: str</pre>
+    <div class="plain-lang">
+      <span class="pl-label">쉽게 말하면</span>
+      <p style="margin:0;">이건 §2.2에서 배운 <strong>문법 패턴</strong>의 실전 사용 예예요. 심판
+      LLM의 답변이 "true/false 하나 + 이유 문장 하나"라는 정해진 모양을 반드시 갖추도록 데이터클래스
+      설계도를 건네는 거예요. 결과는 <code>ad_a_is_better_than_ad_b=False, reasoning="가격을
+      포함한 ad_b가 약간 더 낫다..."</code> 처럼, 사람이 바로 읽고 다음 단계에 쓸 수 있는 형태로
+      돌아와요.</p>
+    </div>
+
+    <h4 class="h4">단계 3 · 훈련 데이터셋 만들기</h4>
+    <pre class="code">def create_preference_example(item, price):
+    ad1 = create_classified_ad(item, price)
+    ad2 = create_classified_ad(item, price)
+    score = score_ad(ad1, ad2)
+    example = {"prompt": f"{item}을 {price} 가격으로 판매하는 광고를 작성하세요."}
+    if score.ad_a_is_better_than_ad_b:
+        example['chosen'], example['rejected'] = ad1, ad2
+    else:
+        example['chosen'], example['rejected'] = ad2, ad1
+    return example</pre>
+    <div class="plain-lang">
+      <span class="pl-label">쉽게 말하면</span>
+      <p style="margin:0;">광고 두 개를 만들고(<strong>ad1, ad2</strong>), 심판에게 채점을
+      맡긴(<strong>score</strong>) 뒤, 이긴 쪽을 <strong>chosen</strong>, 진 쪽을 <strong>rejected</strong>
+      자리에 넣는 게 전부예요. 이 함수를 물건 목록에서 무작위로 뽑아가며 반복 호출해서 100개쯤 모으면
+      훈련 데이터셋 하나가 완성돼요.</p>
+    </div>
+
+    <h4 class="h4">단계 4 · 훈련과 인퍼런스</h4>
+    <p>
+      vCPU 8개 + GPU 한 장짜리 컴퓨터에서, 예시 100개로 훈련하는 데 약 <strong>3분</strong>밖에 안
+      걸렸어요. 훈련이 끝난 모델로 전혀 새로운 물건(책)을 광고해보면—
+    </p>
+    <div class="gen-compare">
+      <div class="gen-row good">
+        <span class="t-label">DPO 조정 후 — 책 "파친코" $5</span>
+        <p>"도박에 빠진 한 남자와 파친코 게임장에서 만난 여인과의 사랑 이야기를 그린 고전 소설입니다.
+        희귀판으로 5달러에 판매합니다. 자세한 문의나 거래 장소 관련해서는 [이름][전화번호]로 연락
+        주시면 됩니다." — 짧고, 명확하고, 연락처까지 챙겼다. 평가 기준으로 삼은 다섯 항목을 그대로
+        체득했다.</p>
+      </div>
+    </div>
+
+    <h3 class="h3" id="s5-4"><span class="tag">2.5.4</span>고려사항</h3>
+    <h4 class="h4">변형 선택 — 콘텐츠의 쓰임새에 맞춰라</h4>
+    <ul class="plain">
+      <li>최종 사용자가 자유롭게 쓸 <strong>사용자 대면 콘텐츠</strong>라면 "더 낫다"가 주관적이므로
+      사람 평가가 적합해요.</li>
+      <li>특정 행동을 유도하는 콘텐츠라면 <strong>객관적 측정</strong>(체류 시간 + 이탈률처럼 짝지은
+      지표)이 낫고요.</li>
+      <li>자동화 시스템이 소비할 콘텐츠(예: 생성된 코드)라면 <strong>목적 적합성 평가 도구</strong>가
+      가장 적절해요.</li>
+    </ul>
+    <div class="etym">
+      <span class="label">중요한 제약</span>
+      <div class="body">
+        <span class="term">분포 내 요구사항(in-distribution requirement)</span> — 콘텐츠를 생성하는
+        LLM이 만드는 결과물은, 결국 선호도 조정으로 훈련될 LLM이 낼 수 있는 범위 안의 텍스트여야
+        해요. 아무리 선호도 조정을 해도 모델에 <strong>새로운 사실이나 새 토큰을 가르칠 수는
+        없어요</strong>. <strong>쉬운 방법</strong>은 콘텐츠 생성과 선호도 조정에 같은 모델을 쓰는
+        것(이 예제가 이 방식)이고, <strong>어려운 방법</strong>은 더 큰 모델로 콘텐츠를 만든 뒤 작은
+        모델을 그 수준까지 먼저 지도학습으로 끌어올리고(지시사항 조정) 나서 DPO를 하는 거예요.
+      </div>
+    </div>
+    <p>
+      이 패턴은 이미지에도 확장돼요 — <strong>디퓨전 DPO</strong>로 확산(diffusion) 이미지 모델을
+      조정하면, 같은 프롬프트로 만든 이미지 두 개 중 뉴스레터 클릭을 더 유도하는 스타일을 선택하게
+      만들 수 있어요.
+    </p>
+    <h4 class="h4">지속적인 개선 — 세 가지 지렛대</h4>
+    <p>
+      DPO는 통상적인 딥러닝과 달리 <strong>데이터의 양보다 질</strong>이 훨씬 중요해요. 개선하려면
+      ① 더 미묘한 차이를 잡아내는 <strong>고품질 평가기</strong>, ② 배포 시 마주칠 입력 전체를
+      포괄하는 <strong>다양한 프롬프트</strong>(운영하며 수집한 피드백·이상치 프롬프트도 포함), ③
+      <strong>반복 훈련</strong>(방금 조정된 모델로 다시 콘텐츠를 생성하고 다시 평가해서 훈련
+      데이터셋 자체를 개선하는 것 — 그림 2-14처럼 루프를 돌린다)이 필요해요. 100개 예시 훈련이 몇 초
+      만에 끝나므로, 자동 평가기만 있다면 이 네 단계 전체를 몇 번이고 반복할 수 있어요. 2025년 초
+      DeepSeek-R1이 검증하기 쉬운 문제들에 반복적 DPO를 적용해 큰 성과를 낸 것도 같은 원리예요.
+    </p>
+    <p style="font-size:13px; color:var(--ink-faint);">
+      참고문헌 — 인간 피드백 기반 강화학습(RLHF)은 2017년 크리스티아노 등이 도입, 2022년 어우양 등이
+      LLM에 적용했어요. DPO는 2023년 라파일로프 등이 제안했어요.
+    </p>
+  </section>
+
+  <!-- 2.6 요약 -->
+  <section class="sec" id="s6">
+    <div class="sec-head">
+      <span class="sec-num">2.6</span>
+      <h2 class="h2">요약</h2>
+    </div>
+    <p>
+      이 장의 패턴들은 모두 모델 응답이 확률적이고 가변적이라는 문제, 즉 다운스트림 애플리케이션이
+      다양한 출력을 일관되게 처리하기 어렵다는 문제를 다뤄요. 아래 표가 다섯 패턴을 한눈에 정리해요.
+    </p>
     <div class="ptable-wrap">
       <table class="ptable">
-        <thead>
-          <tr><th>패턴</th><th>언제 쓰나</th><th>강제력</th></tr>
-        </thead>
+        <thead><tr><th>패턴</th><th>문제</th><th>해법</th><th>용례</th></tr></thead>
         <tbody>
-          <tr><td><strong>Logits Masking</strong></td><td>브랜드·정확성·컴플라이언스 규칙을 실시간으로 강제</td><td>매우 강함 (로짓 접근 필요)</td></tr>
-          <tr><td><strong>Grammar</strong></td><td>SQL·JSON 등 정해진 형식·스키마를 지켜야 함</td><td>강함 (모델 제공사가 대신 강제)</td></tr>
-          <tr><td><strong>Style Transfer</strong></td><td>규칙으론 표현 어려운 톤·문체를 예시로 가르침</td><td>중간 (암묵적 강제)</td></tr>
-          <tr><td><strong>Reverse Neutralization</strong></td><td>원하는 스타일 예시 자체가 없을 때</td><td>중간 (거꾸로 예시를 만들어 학습)</td></tr>
-          <tr><td><strong>Content Optimization</strong></td><td>어떤 요인이 좋은 스타일인지조차 모를 때</td><td>약함 (승패만으로 점진적 개선)</td></tr>
+          <tr>
+            <td><strong>로짓 마스킹</strong><br>(패턴 1)</td>
+            <td>브랜드·정확성·규정 준수 때문에 특정 스타일 규칙을 반드시 지켜야 한다.</td>
+            <td>표집 단계에 끼어들어 규칙에 안 맞는 후속 토큰의 확률을 0으로 만든다.</td>
+            <td>특정 브랜드 단어 강제, 사실 반복 방지, 스타일 가이드 준수</td>
+          </tr>
+          <tr>
+            <td><strong>문법</strong><br>(패턴 2)</td>
+            <td>후속 처리를 위해 특정 형식·데이터 스키마를 반드시 지켜야 한다.</td>
+            <td>규칙을 형식 문법(BNF)이나 스키마로 지정해서 모델 프레임워크가 토큰 생성을 제약하게 한다.</td>
+            <td>유효한 SQL 타임스탬프 생성, 정형 데이터 추출, JSON 스키마 준수</td>
+          </tr>
+          <tr>
+            <td><strong>스타일 전이</strong><br>(패턴 3)</td>
+            <td>규칙으로 표현하긴 어렵지만 예시로는 보여줄 수 있는 어조·스타일을 모방해야 한다.</td>
+            <td>퓨샷 학습이나 미세조정으로, 콘텐츠를 원하는 스타일로 바꾸는 법을 모델에게 가르친다.</td>
+            <td>브랜드 가이드 재작성, 논문→블로그 변환, 플랫폼별 콘텐츠 변형</td>
+          </tr>
+          <tr>
+            <td><strong>역중립화</strong><br>(패턴 4)</td>
+            <td>예시 콘텐츠만으로 보여줄 수 있는 스타일을 생성해야 하는데, 변환 전 원본이 없다.</td>
+            <td>LLM으로 중립 형식을 생성하고, 미세조정 LLM으로 그 중립 형식을 원하는 스타일로 바꾼다.</td>
+            <td>지역별 법률 용어 서한 작성, 개인 스타일 이메일 작성</td>
+          </tr>
+          <tr>
+            <td><strong>콘텐츠 최적화</strong><br>(패턴 5)</td>
+            <td>어떤 요인이 좋은 콘텐츠를 만드는지 모르는 채로 최적 스타일을 정해야 한다.</td>
+            <td>콘텐츠 쌍을 생성·평가해서 선호도 조정용 데이터셋을 만들고 DPO를 수행한다.</td>
+            <td>효과 요인을 알 수 없는 광고 문구·마케팅·교육 자료 최적화</td>
+          </tr>
         </tbody>
       </table>
     </div>
-    <p style="font-size:13.5px; color:var(--ink-faint);">
-      다섯 패턴은 섞어 써도 돼요. 예를 들어 Style Transfer로 대략의 톤을 잡고, Grammar로 출력 형식을
-      마지막에 한 번 더 강제하는 식으로요.
+    <p>
+      로짓 마스킹은 규칙을 동적으로 적용할 수 있지만 로짓 접근권이 필요하고, 문법은 더 구조화된
+      접근을 주지만 여전히 명시적 규칙이 필요해요. 스타일 전이는 예시만으로 미묘한 제어를 가능하게
+      하고, 역중립화는 처음 보는 주제도 다룰 수 있게 해줘요. 마지막으로 콘텐츠 최적화는 무엇이 좋은
+      콘텐츠인지조차 몰라도 최적화를 가능하게 해요. 이 다섯을 종합하면, 특정 브랜드·정확성·규정 준수
+      요구를 충족하도록 LLM 콘텐츠의 스타일을 제어하는 포괄적인 도구 모음이 완성돼요.
+    </p>
+    <p style="font-size:13.5px; color:var(--ink-soft);">
+      다음 장부터는 두 장에 걸쳐 <strong>외부 지식 공급원</strong>을 활용하는 AI 시스템 구축 방법을
+      다뤄요. 지식 단절, 기밀 데이터 접근, 환각(hallucination)처럼 지금까지의 패턴만으로는 풀 수 없는
+      근본적인 한계를 다루는 장이에요.
     </p>
   </section>
 
-  <div class="divider-note">문답 복습노트</div>
-
-  <!-- review -->
+  <!-- Q&A -->
   <section class="sec" id="review">
     <div class="sec-head">
       <span class="sec-num">Q&amp;A</span>
       <h2 class="h2">걸리기 쉬운 지점만 골라서</h2>
     </div>
     <p>
-      위 본문을 다 읽었으면, 아래 일곱 문항으로 걸리는 지점이 남아있는지 확인해보세요.
+      위 본문을 다 읽었으면, 아래 열네 문항으로 걸리는 지점이 남아있는지 확인해보세요. 정답을 보기
+      전에 먼저 스스로 답해보는 걸 추천해요.
     </p>
 
-    <div class="qa-fam">2.0 · 왜 스타일 통제가 필요한가</div>
+    <div class="qa-fam">2.1 · 로짓 마스킹</div>
     <div class="qa-item" id="q1">
       <span class="qa-tag">Q1</span>
-      <p class="qa-q">2장의 다섯 패턴이 다 필요한 근본 이유는?</p>
-      <p class="qa-a">모델의 응답은 확률적이라, 같은 질문에도 모델마다 그리고 같은 모델이라도 매번 답의
-      스타일이 달라진다. 프롬프트로 "이렇게 써줘"라고 부탁만 하는 건 취약해서, 브랜드·정확성·컴플라이언스
-      같은 요구를 안정적으로 지키려면 더 견고한 강제 수단이 필요하다.</p>
+      <p class="qa-q">로짓 마스킹이 정확히 어느 시점에, 무엇을 하는 건가?</p>
+      <p class="qa-a">모델이 다음 토큰을 <strong>고르기 직전</strong>, 후보 토큰마다 매겨진 점수(로짓)
+      중에서 규칙을 어기는 후보의 점수를 <strong>음의 무한대(선택 확률 0)</strong>로 떨어뜨린다.
+      전체 글이 다 만들어진 뒤 검사하는 게 아니라, 토큰이 하나씩 나올 때마다 실시간으로 개입한다는
+      점이 핵심이다.</p>
+      <div class="qa-follow">
+        <span class="qa-flabel">추가문제</span>
+        <p class="fq">규칙을 만족하는 후보가 하나도 안 남으면 어떻게 되나?</p>
+        <p class="fa">한 걸음 물러나(역추적) 방금 만든 토큰을 취소하고 그 이전 지점에서 다시
+        시도한다. 그래도 안 되면 최대 시도 횟수를 넘겼는지 확인하고, 넘겼으면 거절 메시지를 낸다.</p>
+      </div>
     </div>
-
-    <div class="qa-fam">2.1 · Logits Masking</div>
     <div class="qa-item" id="q2">
       <span class="qa-tag">Q2</span>
-      <p class="qa-q">"될 때까지 다시 해보기"가 왜 나쁜 방법인가?</p>
-      <p class="qa-a">규칙을 지킬 확률이 낮아질수록 필요한 재시도 횟수가 기하급수적으로 늘어난다.
-      성공률 90%면 평균 1.1회로 충분하지만, 30%로 떨어지면 평균 3.3회, 최악의 경우(99분위수)는 13회까지
-      늘어난다. 성공률이 아주 높을 때만 받아들일 만한 방법이다.</p>
+      <p class="qa-q">"될 때까지 재시도" 방식은 왜 안티패턴인가?</p>
+      <p class="qa-a">성공률이 낮아질수록 재시도 횟수가 기하급수적으로 늘어난다. 성공률 90%면 평균
+      1.1회로 괜찮지만, 30%로 떨어지면 평균 3.3회(지연시간 +230%), 운 나쁘면 13회까지 필요할 수
+      있다. 게다가 언젠가 반드시 성공한다는 보장도 없다. 성공률이 아주 높을 때만 봐줄 만한
+      방식이다.</p>
     </div>
 
-    <div class="qa-fam">2.2 · Grammar</div>
+    <div class="qa-fam">2.2 · 문법</div>
     <div class="qa-item" id="q3">
       <span class="qa-tag">Q3</span>
-      <p class="qa-q">Logits Masking과 Grammar는 원리가 비슷한데, 뭐가 다른가?</p>
-      <p class="qa-a">원리(허용 안 되는 후보의 확률을 0으로 만듦)는 같다. 차이는 <strong>누가</strong>
-      그 작업을 하느냐다. Logits Masking은 내 코드가 로짓에 직접 접근해서 처리하고, Grammar는 그 작업을
-      모델 제공사가 서버 쪽에서 대신 해준다. 그래서 Grammar 쪽이 지원 모델도 많고 통신 왕복도 적다.</p>
+      <p class="qa-q">문법 패턴은 로짓 마스킹과 원리가 같다는데, 실질적으로 뭐가 다른가?</p>
+      <p class="qa-a">원리(토큰 후보의 확률을 0으로 만든다)는 완전히 같다. 다른 건 <strong>그 검열을
+      누가 실행하느냐</strong>다. 로짓 마스킹은 우리가 직접 만든 코드가 클라이언트 쪽에서 감시하고,
+      문법 패턴은 우리가 규칙(BNF나 스키마)만 넘기면 모델 제공업체의 서버가 알아서 감시해준다.</p>
     </div>
-
-    <div class="qa-fam">2.3 · Style Transfer</div>
     <div class="qa-item" id="q4">
       <span class="qa-tag">Q4</span>
-      <p class="qa-q">퓨샷 러닝과 파인튜닝, 언제 뭘 써야 하나?</p>
-      <p class="qa-a">준수가 필수가 아니고, 원하는 스타일을 규칙으로 표현하기 어렵고, 구현 단순함이
-      중요한 프로토타입 단계라면 퓨샷 러닝이 낫다. 반대로 더 복잡한 작업이라 높은 충실도가 필요하거나,
-      추론 지연·비용을 줄이고 싶다면(예시를 매번 프롬프트에 안 넣어도 되므로) 파인튜닝이 낫다.</p>
+      <p class="qa-q">BNF 문법과 파이썬 데이터클래스, 언제 뭘 골라야 하나?</p>
+      <div class="ptable-wrap">
+        <table class="ptable">
+          <thead><tr><th>상황</th><th>선택</th></tr></thead>
+          <tbody>
+            <tr><td>단순 표현 수준을 넘는 복잡한 검증 로직이 필요할 때</td><td><strong>BNF 문법</strong></td></tr>
+            <tr><td>규칙이 동적이거나 DB·규칙엔진에서 가져와야 할 때</td><td><strong>BNF 문법</strong></td></tr>
+            <tr><td>빠르게 작성하고, 서버 쪽에서 처리해 지연시간을 줄이고 싶을 때</td><td><strong>데이터클래스</strong></td></tr>
+            <tr><td>로그 확률 접근이 안 되는 모델을 써야 할 때</td><td><strong>데이터클래스</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
-    <div class="qa-fam">2.4 · Reverse Neutralization</div>
+    <div class="qa-fam">2.3 · 스타일 전이</div>
     <div class="qa-item" id="q5">
       <span class="qa-tag">Q5</span>
-      <p class="qa-q">Style Transfer로 되는데 왜 굳이 Reverse Neutralization이 따로 필요한가?</p>
-      <p class="qa-a">Style Transfer는 "이미 누군가 변환해둔 입력-출력 예시 쌍"이 있어야 한다.
-      Reverse Neutralization은 그런 예시 쌍이 <strong>애초에 존재하지 않을 때</strong> 쓰는 방법이다 —
-      내 스타일 글을 중립화해서 거꾸로 예시 쌍을 만들어낸다는 점이 핵심 차이다.</p>
+      <p class="qa-q">퓨샷 학습과 미세조정, 트레이드오프는?</p>
+      <p class="qa-a"><strong>퓨샷</strong>은 구현이 간단하지만 예시가 늘수록 프롬프트가 길어져
+      지연시간·컨텍스트 한계에 부딪히고, 스타일 강제력도 암묵적이다. <strong>미세조정</strong>은
+      더 많은 예시(보통 100개 이상)로 더 정교하고 빠르고 저렴하게 실행되지만, 데이터 큐레이션·훈련
+      비용·전문 역량이라는 부담이 따른다.</p>
     </div>
-
-    <div class="qa-fam">2.5 · Content Optimization</div>
     <div class="qa-item" id="q6">
       <span class="qa-tag">Q6</span>
-      <p class="qa-q">"왜 좋은지 몰라도 된다"는 발상이 전통적 A/B 테스트의 한계를 어떻게 우회하나?</p>
-      <p class="qa-a">전통적 A/B 테스트는 "어떤 요인이 중요한가"라는 가설이 있어야 A와 B를 구분해 만들
-      수 있다. Content Optimization은 가설 없이, 그냥 매번 콘텐츠 쌍을 만들고 이긴 쪽/진 쪽으로만
-      나눈다. 그리고 "왜 이겼는지"를 알아내는 대신, 이긴 데이터로 모델 자체를 다시 훈련시켜(DPO) 이유를
-      몰라도 결과를 재현 가능하게 만든다.</p>
+      <p class="qa-q">스타일 전이를 쓸 수 있으려면 어떤 세 조건이 맞아야 하나?</p>
+      <p class="qa-a">① 바꾸고 싶은 원본 콘텐츠는 이미 있거나 쉽게 구할 수 있고(가용 콘텐츠), ②
+      원하는 스타일이 규칙으로 표현하기 어려울 만큼 미묘하며(미묘한 스타일), ③ 전문가가 실제로
+      변환한 입력-출력 예시를 몇 개라도 갖고 있어야(전이 예시 확보) 한다. 이 중 ③이 없다면 다음 절의
+      역중립화를 대신 써야 한다.</p>
     </div>
 
-    <div class="qa-fam">종합</div>
+    <div class="qa-fam">2.4 · 역중립화</div>
     <div class="qa-item" id="q7">
       <span class="qa-tag">Q7</span>
-      <p class="qa-q">다섯 패턴을 강제력이 센 순서대로 나열하면?</p>
-      <p class="qa-a">Logits Masking(실시간 강제) → Grammar(형식·스키마 강제, 서버가 대신함) →
-      Style Transfer(예시로 암묵적 강제) → Reverse Neutralization(예시가 없을 때 거꾸로 만들어 암묵적
-      강제) → Content Optimization(이유도 모른 채 승패만으로 점진적 강제). 앞으로 갈수록 엄격하고
-      비용도 크고, 뒤로 갈수록 유연하고 구현이 쉽다.</p>
+      <p class="qa-q">역중립화는 스타일 전이와 근본적으로 뭐가 다른가?</p>
+      <p class="qa-a">스타일 전이는 <strong>사람이 직접 만든 입력-출력 예시 쌍</strong>이 있어야
+      한다. 역중립화는 그런 쌍이 없어도 된다 — 대신 AI로 중립 버전을 먼저 만들고, 그 과정의 입력·
+      출력을 뒤집어서 훈련 데이터를 스스로 만들어낸다.</p>
+    </div>
+    <div class="qa-item" id="q8">
+      <span class="qa-tag">Q8</span>
+      <p class="qa-q">역중립화의 세 단계는? "역"이라는 이름은 어디서 왔나?</p>
+      <p class="qa-a">① 중립 콘텐츠 생성(개인 스타일 글 → 중립 버전으로 재작성), ② 입력·출력을
+      뒤집어 훈련 데이터셋 생성(중립 버전이 입력, 원래의 개인 스타일이 출력), ③ 그 데이터셋으로
+      미세조정. 1단계의 입력·출력을 2단계에서 <strong>거꾸로</strong> 뒤집기 때문에 "역"중립화라고
+      부른다.</p>
+    </div>
+    <div class="qa-item" id="q9">
+      <span class="qa-tag">Q9</span>
+      <p class="qa-q">과다 중립화란 무엇이고 왜 문제인가?</p>
+      <p class="qa-a">중립화를 지나치게 강하게 걸어서, 스타일뿐 아니라 콘텐츠의 <strong>내용이나
+      명확성 자체</strong>까지 사라지는 현상이다. 내용이 스타일과 너무 얽혀 있는 텍스트일수록 위험이
+      크므로, 여러 중립 형태를 실험해서 의미가 가장 잘 보존되는 것을 골라야 한다.</p>
+    </div>
+
+    <div class="qa-fam">2.5 · 콘텐츠 최적화</div>
+    <div class="qa-item" id="q10">
+      <span class="qa-tag">Q10</span>
+      <p class="qa-q">전통적 A/B 테스트의 세 가지 문제를, 콘텐츠 최적화는 각각 어떻게 우회하나?</p>
+      <p class="qa-a"><strong>구별 불가</strong>는 "매번 두 개를 직접 비교해서 이긴 쪽을 그때그때 A로
+      부르는" 방식으로, <strong>불확실한 테스트</strong>는 "테스트 = 한 번의 비교"로 통계적 유의성
+      요구 자체를 없애는 방식으로, <strong>결과 적용 불가</strong>는 "프롬프트는 그대로 두고 모델
+      가중치 자체를 선호도 조정으로 바꿔버리는" 방식으로 우회한다.</p>
+    </div>
+    <div class="qa-item" id="q11">
+      <span class="qa-tag">Q11</span>
+      <p class="qa-q">DPO 훈련 데이터셋 한 줄은 어떤 세 정보로 구성되나?</p>
+      <p class="qa-a"><strong>prompt</strong>(같은 프롬프트, 재작성한 경우 원본), <strong>chosen</strong>
+      (승자로 판정된 콘텐츠), <strong>rejected</strong>(패자로 판정된 콘텐츠). 이 세 필드로 이루어진
+      예시를 수십~수백 개 모은 것이 훈련 데이터셋이다.</p>
+    </div>
+    <div class="qa-item" id="q12">
+      <span class="qa-tag">Q12</span>
+      <p class="qa-q">"분포 내 요구사항"이 왜 중요한가?</p>
+      <p class="qa-a">선호도 조정은 어디까지나 <strong>이미 낼 수 있는 답들 중 어느 쪽을 더 자주
+      내느냐</strong>를 바꾸는 것이지, 모델에 <strong>새로운 사실이나 새 토큰을 가르치지는
+      못한다</strong>. 그래서 콘텐츠를 생성하는 모델이 만든 결과물은, 반드시 선호도 조정으로 훈련될
+      모델이 이미 낼 수 있는 범위 안에 있어야 한다.</p>
+      <div class="qa-follow">
+        <span class="qa-flabel">후속질문</span>
+        <p class="fq">소규모 모델이 애초에 그런 수준의 콘텐츠를 못 낸다면?</p>
+        <p class="fa">더 큰 모델로 콘텐츠를 만든 뒤, 소규모 모델을 그 콘텐츠를 낼 수 있는 수준까지
+        먼저 지도학습(지시사항 조정)으로 끌어올리고, 그다음에 DPO를 수행하는 "어려운 방법"을 쓴다.</p>
+      </div>
+    </div>
+    <div class="qa-item" id="q13">
+      <span class="qa-tag">Q13</span>
+      <p class="qa-q">DPO는 왜 예시 100개 정도의 적은 데이터로도 충분한가?</p>
+      <p class="qa-a">통상적인 딥러닝은 데이터의 <strong>양</strong>이 중요하지만, 선호도 조정은
+      데이터의 <strong>질</strong>이 훨씬 중요하다. 책의 예제에서도 예시 100개로 GPU 한 장에서
+      약 3분 만에 훈련이 끝났다. 그래서 평가만 자동화돼 있다면 네 단계 전체를 빠르게 반복해서, 매번
+      더 나아진 모델로 훈련 데이터셋 자체를 계속 개선해나갈 수 있다.</p>
+    </div>
+
+    <div class="qa-fam">2장 전체</div>
+    <div class="qa-item" id="q14">
+      <span class="qa-tag">Q14</span>
+      <p class="qa-q">다섯 패턴 중 실제로는 뭘 기준으로 골라야 하나?</p>
+      <p class="qa-a"><strong>규정 준수가 필수</strong>라면 강제력이 확실한 로짓 마스킹·문법을
+      먼저 고려한다. <strong>스타일을 규칙으로 못 박기 어렵지만 예시는 있다</strong>면 스타일
+      전이를, <strong>예시(원본)조차 없다</strong>면 역중립화를 쓴다. <strong>무엇이 좋은 스타일인지
+      아무도 설명 못 한다</strong>면 콘텐츠 최적화로 "이겼다/졌다"만 계속 판정시켜 모델이 스스로
+      찾아가게 한다. 실무에서는 이 다섯을 섞어 쓰는 경우가 많다 — 예를 들어 문법으로 형식을 강제한
+      콘텐츠끼리 콘텐츠 최적화로 문체를 겨루게 할 수도 있다.</p>
     </div>
 
     <div class="analogy">
-      다섯 패턴을 한 줄로 정리하면 — <b>실시간으로 막거나(1) · 양식지로 막거나(2) · 예시로 가르치거나(3) ·
-      예시를 거꾸로 만들어 가르치거나(4) · 이유 몰라도 이긴 쪽으로 다듬거나(5)</b>. 신입사원의 말투를
-      붙잡는 방법은 결국 "얼마나 엄격하게, 무엇을 근거로 통제할 것인가"의 스펙트럼 하나로 정리된다.
+      한 장 지도로 정리하면 — <b>실시간 검열(2.1)·정해진 서식(2.2)·견습(2.3)·뒤집기 요령(2.4)·서바이벌
+      오디션(2.5)</b>. 앞으로 갈수록 사람이 규칙을 덜 적어주고, 모델이 예시나 판정 결과로부터 스스로
+      더 많이 알아내야 하는 방향으로 나아간다는 게 이 다섯 칸의 숨은 순서예요.
     </div>
   </section>
+
+  <p style="text-align:center;">
+    <a href="generative-ai-design-patterns-ch1.html" style="font-family:var(--font-mono); font-size:13px; color:var(--accent-strong); text-decoration:none;">← 1장 — 프롬프트에서 에이전트까지</a>
+  </p>
 
   <div class="divider-note">여기까지가 2장이에요</div>
 
