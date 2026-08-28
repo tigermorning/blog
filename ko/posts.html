@@ -479,7 +479,29 @@
         render();
       });
 
+      function goToHash() {
+        var hash = window.location.hash;
+        if (!hash) return;
+        var target = document.getElementById(hash.slice(1));
+        if (!target) return;
+        var sub = target.closest('.post-subcategory');
+        if (!sub) return;
+
+        if (input.value) input.value = '';
+
+        var firstLi = sub.querySelector('li');
+        var idx = firstLi ? items.indexOf(firstLi) : -1;
+        if (idx !== -1) {
+          currentPage = Math.floor(idx / currentPageSize()) + 1;
+        }
+        render();
+        sub.open = true;
+        target.scrollIntoView({ block: 'start' });
+      }
+
       render();
+      window.addEventListener('hashchange', goToHash);
+      goToHash();
     })();
   </script>
   <script src="sidebar-loader.js"></script>
