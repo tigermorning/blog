@@ -1,4 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Poor+Story&family=Patrick+Hand&family=ZCOOL+KuaiLe&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Poor+Story&family=Patrick+Hand&family=Schoolbell&family=ZCOOL+KuaiLe&family=Sunflower:wght@300;500;700&family=Comic+Neue:wght@300;400;700&family=ZCOOL+XiaoWei&display=swap');
+
+/* 온글잎 나무체 — 구글폰트에 없어서 직접 받아 저장(assets/fonts).
+   보이저엑스 배포, 상업적 이용 무료(재판매·개작 재배포만 금지). */
+@font-face {
+  font-family: 'Ownglyph Namuche';
+  src: url('assets/fonts/OwnglyphNamuche.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
   --bg: #fffefb;
@@ -6,8 +16,12 @@
   --muted: #8a8177;
   --accent: #ff5a5f;
   --border: #ece4d6;
+  /* 제목(--font-heading)은 크레용 손글씨로 귀엽게, 본문·글 목록·UI
+     텍스트(--font-body)는 같은 유치원 감성이면서 더 잘 읽히는 폰트로
+     나눈다. */
   --font-heading: 'Gaegu', 'Patrick Hand', sans-serif;
-  --font-body: 'Gaegu', 'Patrick Hand', sans-serif;
+  --font-body: 'Sunflower', 'Comic Neue', sans-serif;
+  --font-body-weight: 500;
   --hit-bg: #dff7ea;
   --hit-ink: #1f7a52;
   --miss-bg: #ffe3e4;
@@ -22,18 +36,21 @@
 }
 
 html[lang="ko"] {
-  --font-heading: 'Gaegu', sans-serif;
-  --font-body: 'Gaegu', sans-serif;
+  --font-heading: 'Ownglyph Namuche', 'Gaegu', sans-serif;
+  --font-body: 'Sunflower', sans-serif;
+  --font-body-weight: 500;
 }
 
 html[lang="en"] {
-  --font-heading: 'Patrick Hand', sans-serif;
-  --font-body: 'Patrick Hand', sans-serif;
+  --font-heading: 'Schoolbell', 'Patrick Hand', sans-serif;
+  --font-body: 'Comic Neue', sans-serif;
+  --font-body-weight: 400;
 }
 
 html[lang="zh"] {
   --font-heading: 'ZCOOL KuaiLe', sans-serif;
-  --font-body: 'ZCOOL KuaiLe', sans-serif;
+  --font-body: 'ZCOOL XiaoWei', sans-serif;
+  --font-body-weight: 400;
 }
 
 .ngram {
@@ -67,6 +84,7 @@ body {
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-body);
+  font-weight: var(--font-body-weight, 400);
   line-height: 1.85;
 }
 
@@ -516,8 +534,9 @@ body.list-page .site-header {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  font-family: var(--font-heading);
-  font-size: 1.02rem;
+  font-family: var(--font-body);
+  font-weight: var(--font-body-weight, 400);
+  font-size: 1.05rem;
   line-height: 1.4;
   color: var(--ink);
 }
@@ -771,6 +790,17 @@ body.list-page .site-header {
 
 .tree-group-title .tree-toggle-icon {
   color: rgba(255, 255, 255, 0.85);
+}
+
+.tree-group-title a,
+.tree-subgroup-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.tree-group-title a:hover,
+.tree-subgroup-title a:hover {
+  text-decoration: underline;
 }
 
 .sidebar a.tree-top-link {

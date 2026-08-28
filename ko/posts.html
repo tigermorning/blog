@@ -45,7 +45,7 @@
     </div>
 
     <div class="post-group">
-      <h3 class="post-group-title">웹 개발 기초</h3>
+      <h3 class="post-group-title" id="cat-web-dev">웹 개발 기초</h3>
 
       <details class="post-subcategory" open>
         <summary class="post-subcategory-title" id="git-github">Git·GitHub 입문</summary>
@@ -122,7 +122,7 @@
     </div>
 
     <div class="post-group">
-      <h3 class="post-group-title">AI 에이전트·도구 활용</h3>
+      <h3 class="post-group-title" id="cat-agent-tools">AI 에이전트·도구 활용</h3>
 
       <details class="post-subcategory" open>
         <summary class="post-subcategory-title" id="agent-tools">에이전트와 협업 도구</summary>
@@ -139,7 +139,7 @@
     </div>
 
     <div class="post-group">
-      <h3 class="post-group-title">AI 원리와 모델 구조</h3>
+      <h3 class="post-group-title" id="cat-ai-principles">AI 원리와 모델 구조</h3>
 
       <details class="post-subcategory" open>
         <summary class="post-subcategory-title" id="ml-basics">머신러닝 기초</summary>
@@ -255,7 +255,7 @@
     </div>
 
     <div class="post-group">
-      <h3 class="post-group-title">프롬프트·에이전트 심화 시리즈</h3>
+      <h3 class="post-group-title" id="cat-prompt-agent">프롬프트·에이전트 심화 시리즈</h3>
 
       <details class="post-subcategory" open>
         <summary class="post-subcategory-title" id="prompt-agent-concepts">프롬프트와 에이전트 개념</summary>
@@ -312,7 +312,7 @@
     </div>
 
     <div class="post-group">
-      <h3 class="post-group-title">보충수업 책장</h3>
+      <h3 class="post-group-title" id="cat-book-shelf">보충수업 책장</h3>
 
       <details class="post-subcategory" open>
         <summary class="post-subcategory-title" id="book-notes">생성형 AI 설계 패턴</summary>
@@ -484,18 +484,29 @@
         if (!hash) return;
         var target = document.getElementById(hash.slice(1));
         if (!target) return;
+
+        // 소분류(글 링크) 앵커면 그 안에서, 대분류(카테고리 제목) 앵커면
+        // 그 그룹 전체에서 첫 글을 찾아 몇 페이지에 있는지 계산한다.
         var sub = target.closest('.post-subcategory');
-        if (!sub) return;
+        var group = target.closest('.post-group');
+        var scope = sub || group;
+        if (!scope) return;
 
         if (input.value) input.value = '';
 
-        var firstLi = sub.querySelector('li');
+        var firstLi = scope.querySelector('li');
         var idx = firstLi ? items.indexOf(firstLi) : -1;
         if (idx !== -1) {
           currentPage = Math.floor(idx / currentPageSize()) + 1;
         }
         render();
-        sub.open = true;
+        if (sub) {
+          sub.open = true;
+        } else if (group) {
+          Array.prototype.forEach.call(group.querySelectorAll('.post-subcategory'), function (s) {
+            s.open = true;
+          });
+        }
         target.scrollIntoView({ block: 'start' });
       }
 
