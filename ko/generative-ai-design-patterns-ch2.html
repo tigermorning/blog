@@ -468,8 +468,9 @@
   <div id="lockGate" style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#f2f5f7;font-family:'IBM Plex Sans KR','Noto Sans KR',-apple-system,sans-serif;">
     <div style="max-width:360px;width:calc(100% - 40px);padding:32px 28px;text-align:center;background:#ffffff;border:1px solid #d7dee4;border-radius:14px;box-shadow:0 8px 24px rgba(27,35,48,.08);">
       <div style="font-size:32px;margin-bottom:10px;">🔒</div>
-      <h2 style="margin:0 0 8px;font-size:17px;color:#1b2330;">비공개 독서 노트</h2>
-      <p style="margin:0 0 18px;font-size:13px;line-height:1.6;color:#57626f;">원서 내용을 제 자신의 언어와 비유로 재구성한 개인 학습 노트입니다. 저작권 보호를 위해 비밀번호로 가려두었어요 — 아는 분만 보세요.</p>
+      <h2 style="margin:0 0 8px;font-size:17px;color:#1b2330;">「에이전트 시대의 AI 시스템 설계」 비공개 독서 노트</h2>
+      <p style="margin:0 0 4px;font-size:12px;line-height:1.5;color:#88929c;">Generative AI Design Patterns · Lakshmanan · Hapke · 번역 류광 · 한빛미디어</p>
+      <p style="margin:0 0 18px;font-size:13px;line-height:1.6;color:#57626f;">원서 내용을 제 자신의 언어와 비유로 재구성한 개인 학습 노트입니다. 저작권 보호를 위해 비밀번호로 가려두었어요 — 아는 분만 보세요. 이 책의 다른 장에서 이미 비밀번호를 입력했다면 자동으로 열려요.</p>
       <input id="lockInput" type="password" placeholder="비밀번호" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #d7dee4;border-radius:8px;font-size:14px;margin-bottom:10px;">
       <button id="lockBtn" style="width:100%;padding:10px 12px;border:none;border-radius:8px;background:#a86a1c;color:#fff;font-size:14px;font-weight:600;cursor:pointer;">열기</button>
       <p id="lockError" style="display:none;color:#b23b3b;font-size:12px;margin:10px 0 0;">비밀번호가 틀렸어요.</p>
@@ -478,7 +479,7 @@
   <script>
   (function(){
     var PASS = "reilly2026";
-    var KEY = "unlocked-genai-design-patterns-ch2";
+    var KEY = "unlocked-book-agent-era-ai-system-design"; // 이 책 전체가 공유하는 키 — 장마다 다시 안 물어봄
     function reveal(){
       document.getElementById("lockGate").style.display = "none";
       document.getElementById("pageContent").style.display = "";
