@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>지도를 접고 첫걸음을 — 배포와 제출 (9) - Tigermorning</title>
+  <meta name="description" content="같은 스키마·같은 임베딩 공간 안에서 자료만 내 도메인으로 바꾸고, 배포 뒤에도 사용자의 로컬 Ollama가 답을 만든다는 사실을 다시 확인합니다. RAG 가이드 챗봇 시리즈의 마지막 편.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="지도를 접고 첫걸음을 — 배포와 제출 (9)">
+  <meta property="og:description" content="같은 스키마·같은 임베딩 공간 안에서 자료만 내 도메인으로 바꾸고, 배포 뒤에도 사용자의 로컬 Ollama가 답을 만든다는 사실을 다시 확인합니다. RAG 가이드 챗봇 시리즈의 마지막 편.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/rag-chatbot-submission.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <p class="post-date"><a href="rag-chatbot-prompt-experiment.html">← 이전 편 감이 아니라 기록으로 — 나만의 루브릭으로 실험하기</a></p>
+    <h1>지도를 접고 첫걸음을 — 배포와 제출</h1>
+    <p class="post-date">2026. 8. 28.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <p>여덟 편에 걸쳐 개관, PRD, 청크, 임베딩, 검색, 프롬프트, 판정, 실험을 지나왔다. 오늘은 이 전부를 <strong>내 도메인으로 바꾸고 실제로 세상에 내놓는 자리</strong>다. 결과보다 순서가 중요했던 하루였다.</p>
+
+    <h2>1. 설계 — PRD의 빈칸을 닫는다</h2>
+    <p>초안으로 남긴 PRD는 제출 직전에 완성본으로 닫는다. 문서의 <code>[결정 필요]</code>를 하나씩 찾아 사용자, 해결하려는 질문, 사용할 자료의 범위, 답변의 근거 표시, 실패했을 때의 안내 문구로 바꿔 적는다. 빈칸을 유지한 채 구현을 시작하면 나중의 코드 선택이 제품 약속을 대신하게 된다. 자료에 없는 질문은 그럴듯하게 넓혀 답하지 않고, 자료 범위 밖임을 밝힌 뒤 관련 자료를 요청하거나 답할 수 없다고 안내한다고 명시한다. 이 기준은 거절 횟수를 줄이려는 장치가 아니라 <strong>사용자가 답변의 경계를 이해하게 하는 약속</strong>이다.</p>
+
+    <h2>2. 구현 — 모두콘 구조를 내 자료로 바꾼다</h2>
+    <p>이제 청크 배열을 내 자료의 사실 단위로 교체한다. <code>id, text, url, section, vector</code> 스키마는 유지하고, 소개와 페이지 문구도 PRD에서 확정한 사용자와 질문으로 바꾼다. 임베딩은 embeddinggemma-300m으로 만들어 768차원 벡터 공간을 맞춘다 — 자료 벡터만 바꾸고 질의 임베딩을 다른 모델로 만들면 검색 점수는 비교할 자리를 잃는다. 검색 순서와 답변 프롬프트의 출처·거부 규칙은 그대로 두어, 바뀐 결과를 내 자료의 차이로 읽을 수 있게 한다.</p>
+    <pre><code>**스키마와 검색·프롬프트 파이프라인은 변경하지 마세요.** 모두콘 예시 코드에서 청크 데이터와 소개·페이지 문구를 [내 도메인]으로 교체해 주세요. 청크는 [자료 경로]를 근거로 만들고 `id`, `text`, `url`, `section`, `vector` 필드를 유지하세요. 임베딩은 embeddinggemma-300m의 768차원으로 통일하고, [도메인 밖 질문 처리 기준]을 문구에 반영하세요.</code></pre>
+
+    <h2>3. 실험 — 내 루브릭으로 한 바퀴</h2>
+    <p>앞에서 정한 자기 루브릭을 새 챗봇에 그대로 적용한다. 출처를 인용한 답, 도메인 밖 질문의 거부, 판정 배지의 grounded 여부, 짧은 답변에서도 근거 표시가 남는지를 고정 질문 세트로 확인한다. 질문은 자료를 직접 묻는 것, 여러 청크를 잇는 것, 자료 밖을 묻는 것을 함께 넣어 경계를 관찰한다. <code>README.md</code>에는 실행 날짜 대신 실험 이름, 바꾼 변수, 고정 질문, 각 질문의 <code>cited·refusal·grounded</code> 판정, 관찰한 근거, 채택 또는 되돌림 결정을 기록한다. 실패한 답도 지우지 않아야 다음 수정이 무엇을 보존해야 하는지 알 수 있다.</p>
+
+    <h2>4. 배포 — 내 주소로 세상에 내놓기</h2>
+    <p><code>npm run build</code>로 정적 결과물을 만들고, 생성된 <code>dist</code>를 GitHub Pages에 올린다. 프로젝트 설정의 <code>base:'./'</code>는 배포 주소 아래에서도 자산 경로를 상대적으로 찾게 한다. 그러나 정적 페이지가 답변을 대신 실행하는 건 아니다. <strong>페이지를 연 사용자의 브라우저가 <code>localhost:11434</code>에 있는 Ollama의 qwen3.5:2b를 직접 호출</strong>한다. 그래서 그 사용자 컴퓨터에서 Ollama가 실행 중이어야 하고, Pages 출처의 요청을 허용하도록 <code>OLLAMA_ORIGINS</code>를 설정해야 한다.</p>
+    <p>배포 주소에서 소개 질문과 도메인 밖 질문을 각각 입력해 자산 로드, 모델 연결, 출처 표시와 거부 안내를 확인한다. 주소가 열리는 것만으로 배포가 끝났다고 판단하지 않고, 사용 조건을 갖춘 브라우저에서 실제 경로를 따라간다. 연결에 실패했을 때는 모델이 없다는 안내와 재시도 방법이 보이는지도 확인해, 사용자가 페이지 오류와 자신의 실행 조건을 구별할 수 있게 한다.</p>
+
+    <h2>5. 제출 — 저장소와 안내 페이지</h2>
+    <p>제출 저장소에는 <code>README.md, PRD.md</code>, 코드, 배포 주소를 함께 둔다. <code>README.md</code>에는 서비스 소개, 설계 결정 요약, 실험 결과, 배포 주소와 사용 조건을 적는다. 사용 조건은 Ollama 실행, 첫 방문의 임베딩 다운로드 약 200MB, CORS 설정 필요를 숨기지 않는 항목이다. <code>PRD.md</code>는 누구의 어떤 질문을 자료 범위 안에서 다루는지와 도메인 밖 질문 처리 기준을 보여준다. 안내 페이지는 결과를 자랑하는 자리가 아니라 <strong>처음 보는 사람이 실행 전에 조건을 판단하는 자리</strong>다.</p>
+    <ol>
+      <li>배포 주소를 열고 서비스가 다루는 자료와 질문을 읽는다.</li>
+      <li>자신의 컴퓨터에서 Ollama를 실행하고 qwen3.5:2b를 준비한다.</li>
+      <li>첫 방문에는 임베딩 다운로드가 있을 수 있음을 확인하고 기다린다.</li>
+      <li>Pages 주소에서 호출하려면 <code>OLLAMA_ORIGINS</code>에 해당 출처를 허용한 뒤, 안내한 질문과 자료 밖 질문을 각각 입력한다.</li>
+    </ol>
+    <p>이 순서가 README와 안내 페이지에서 같은 말로 보이는지 마지막으로 대조한다.</p>
+
+    <h2>정리 — 제출 뒤에 남는 것</h2>
+    <p>오늘 만든 건 자료를 넣고 답을 내는 화면만이 아니다. PRD로 질문의 범위와 거절의 기준을 정하고, 같은 스키마와 임베딩 공간 안에서 자료를 교체하고, 루브릭과 고정 질문으로 답변을 판정하고, 사용 조건까지 안내하는 흐름을 한 번 연결했다. 이제 저장소의 README는 사용자의 출발점이 되고, PRD는 바꿀 수 없는 약속과 다시 검토할 결정을 가르는 기준이 되며, 실험 기록은 다음 변경을 비교할 기준이 된다. 답변 하나가 좋아 보인다는 인상보다 <strong>어떤 질문에서 어떤 근거와 판정이 나왔는지를 남긴 기록</strong>이 챗봇을 설명 가능하게 한다. 제출은 끝이 아니라, 자기 도메인에서 측정이 계속되는 시작이다.</p>
+
+    <h2>"근거를 보여주는 챗봇 만들기" 시리즈</h2>
+    <ol>
+      <li><a href="rag-chatbot-project-overview.html">근거를 보여주는 챗봇 만들기 — 프로젝트 개관</a></li>
+      <li><a href="rag-chatbot-prd-questions.html">바이브 코딩의 첫 문장 — PRD를 스스로에게 묻기</a></li>
+      <li><a href="rag-chatbot-chunk-design.html">검색되는 자료와 답할 수 있는 자료는 다르다 — 청크 설계</a></li>
+      <li><a href="rag-chatbot-embedding-vectorstore.html">브라우저 안에서 문장을 좌표로 바꾸기 — 임베딩과 벡터스토어</a></li>
+      <li><a href="rag-chatbot-hybrid-search.html">가까운 청크를 고른다 — 코사인과 BM25의 하이브리드 검색</a></li>
+      <li><a href="rag-chatbot-prompt-streaming.html">프롬프트는 근거의 경계다 — 프롬프트 조립과 로컬 LLM 스트리밍</a></li>
+      <li><a href="rag-chatbot-llm-judge.html">답변 뒤에 심사위원 하나를 더 둔다 — LLM-as-a-Judge</a></li>
+      <li><a href="rag-chatbot-prompt-experiment.html">감이 아니라 기록으로 — 나만의 루브릭으로 실험하기</a></li>
+      <li>지도를 접고 첫걸음을 — 배포와 제출 (이 글)</li>
+    </ol>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
