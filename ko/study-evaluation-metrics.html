@@ -1120,6 +1120,11 @@
       <p class="fq">두 팀이 같은 모델로 같은 과업을 실험했는데 정확도가 5%p 차이 났다. 알고 보니 한 팀은 temperature=0, 다른 팀은 temperature=0.7로 실험했다면, 이 5%p 차이를 어떻게 해석해야 하나?</p>
       <p class="fa"><strong>답</strong>: 이 차이를 모델 실력 차이로 해석하면 안 된다. temperature 설정 자체가 다르므로, 어느 쪽이 더 나은지 비교하려면 먼저 같은 temperature로 재실험해야 한다 — 매개변수를 안 맞추고 비교한 숫자는 애초에 비교 대상이 아니다.</p>
     </div>
+    <div class="block follow">
+      <span class="block-label">후속질문 (메커니즘)</span>
+      <p class="fq">그런데 temperature가 정확히 뭘 어떻게 바꾸길래 결과가 달라지는 걸까?</p>
+      <p class="fa"><strong>답</strong>: 모델은 다음 토큰 후보마다 원점수(로짓)를 매기고, 이 로짓을 <a href="softmax-and-mnist-classification.html">softmax</a>로 0~100% 확률로 바꿔서 하나를 뽑는다. temperature는 이 확률 계산 전에 로짓 값의 크기를 조절하는 값이다. 0에 가까우면 가장 높은 로짓의 토큰만 거의 항상 뽑히고(=결정적·단조로움), 1에 가까울수록 순위 낮은 토큰도 자주 뽑혀 다양해진다(=창의적이지만 오답 위험도 커짐). 그래서 temperature=0과 temperature=0.7은 같은 로짓 분포에서 출발해도 완전히 다른 확률 분포로 계산되고, 두 팀의 5%p 차이는 이 확률 재분배가 만든 차이일 수 있다.</p>
+    </div>
   </div>
 
   <div class="item" id="q17">
