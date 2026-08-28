@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>프록시 서버란 무엇인가 — API 키를 대신 들어주는 서버 - Tigermorning</title>
+  <meta name="description" content="브라우저에 API 키를 그대로 두면 왜 위험한지, 프록시 서버가 그 키를 어떻게 대신 들어주는지를 안내 데스크 비유와 실제 코드 예시(Express)로 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="프록시 서버란 무엇인가 — API 키를 대신 들어주는 서버">
+  <meta property="og:description" content="브라우저에 API 키를 그대로 두면 왜 위험한지, 프록시 서버가 그 키를 어떻게 대신 들어주는지를 안내 데스크 비유와 실제 코드 예시(Express)로 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/what-is-proxy-server.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1>프록시 서버란 무엇인가 — API 키를 대신 들어주는 서버</h1>
+    <p class="post-date">2026. 8. 28.</p>
+    <p class="post-date">※ 순순팩토리와의 미팅에서 나온 질문에 답하려고, "화면 뒤에서 일어나는 일들" 시리즈에서 한 줄로만 스쳐 지나갔던 내용을 번외로 정리했습니다.</p>
+
+    <a class="post-nav" href="connecting-frontend-backend.html">
+      <span class="post-nav-label">← 관련 글</span>
+      <span class="post-nav-title">AI로 프론트-백엔드 연결하기</span>
+    </a>
+
+    <hr>
+
+    <p><a href="connecting-frontend-backend.html">지난 글</a>에서 API 키를 프론트 코드에 넣으면 개발자 도구로 다 보인다고 했었죠. 그럼 이 키를 대체 어디에 둬야 하나 궁금했는데, 답은 의외로 간단했어요 — 브라우저가 아니라 <strong>서버가 대신 들고 있으면</strong> 돼요. 이 역할을 하는 서버를 <strong>프록시(proxy) 서버</strong>라고 불러요.</p>
+
+    <h2>안내 데스크를 거치는 이유</h2>
+    <p>회사 로비를 생각해보면 이해가 쉬워요. 방문객은 사원증이 없어서 사무실 문을 직접 못 열어요. 대신 안내 데스크에 용건만 말하면, 안내 데스크 직원이 자기 사원증으로 문을 열고 다녀와서 필요한 걸 갖다 줘요. 방문객은 그 사원증을 만져볼 일도, 구경할 일도 없어요. 프록시 서버가 정확히 이 안내 데스크 역할이에요. 브라우저(방문객)는 프록시 서버(안내 데스크)에만 요청하고, 진짜 출입증(API 키)은 프록시 서버만 들고 있다가 외부 서버에 대신 전달해요.</p>
+
+    <h2>코드로 보면 이렇게 바뀐다</h2>
+    <p>프록시가 없으면 브라우저 코드가 이런 모양이에요 — 키가 그대로 코드 안에 박혀요.</p>
+    <pre>// ❌ 브라우저에서 직접 호출 — 키가 그대로 노출됨
+const res = await fetch('https://sam.example.com/v1/generate', {
+  method: 'POST',
+  headers: { Authorization: `Bearer sk-abc123...` },
+  body: JSON.stringify({ npc: '김민준', situation: '주방에서 마주침' }),
+});</pre>
+    <p>이 코드가 배포되는 순간, 누구나 개발자 도구 네트워크 탭에서 <code>sk-abc123...</code>을 그대로 복사해 갈 수 있어요. 프록시 서버를 세우면 브라우저 코드는 이렇게 바뀌어요.</p>
+    <pre>// ✅ 우리 프록시 서버에만 요청 — 키는 안 보임
+const res = await fetch('/api/npc-line', {
+  method: 'POST',
+  body: JSON.stringify({ npc: '김민준', situation: '주방에서 마주침' }),
+});</pre>
+    <p>그리고 그 <code>/api/npc-line</code>을 받아주는 프록시 서버 쪽 코드는 이래요.</p>
+    <pre>// server.js — 프록시 서버 (Node.js + Express)
+app.post('/api/npc-line', async (req, res) => {
+  const upstream = await fetch('https://sam.example.com/v1/generate', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${process.env.SAM_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(req.body),
+  });
+  res.json(await upstream.json());
+});</pre>
+    <p>키는 <code>process.env.SAM_API_KEY</code>, 그러니까 <a href="ai-code-security-basics.html">지난 글에서 다룬</a> 환경변수 안에만 있어요. 브라우저는 이 서버 코드를 아예 받아볼 일이 없으니, 개발자 도구를 아무리 열어봐도 진짜 키는 나오지 않아요.</p>
+
+    <h2>바뀐 건 위치 하나뿐</h2>
+    <p>프록시를 세워도 "브라우저가 요청하고 서버가 응답한다"는 기본 구조는 그대로예요. 딱 한 가지, <strong>키가 어디 있느냐</strong>만 바뀌었어요. 이 서버는 딱 이 중계 역할만 하기 때문에 만들기도 어렵지 않아요 — 위 예시처럼 20~30줄이면 충분해요. 다만 이 프록시 서버도 아무 주소에서나 오는 요청을 다 받아주면 안 되는데, 그걸 정하는 규칙이 다음 번외편인 CORS예요.</p>
+
+    <a class="post-nav" href="what-is-cors.html">
+      <span class="post-nav-label">다음 번외 →</span>
+      <span class="post-nav-title">CORS — 다른 주소끼리 대화할 때 브라우저가 하는 검문</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
