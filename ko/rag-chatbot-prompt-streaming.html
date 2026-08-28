@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>프롬프트는 근거의 경계다 — 프롬프트 조립과 로컬 LLM 스트리밍 (6) - Tigermorning</title>
+  <meta name="description" content="정적 페이지를 배포해도 답변은 여전히 방문자 컴퓨터의 로컬 Ollama가 만듭니다. 프롬프트로 근거 범위를 고정하고, 스트리밍 응답을 조각으로 읽으며 CORS까지 배포 환경에서 확인합니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="프롬프트는 근거의 경계다 — 프롬프트 조립과 로컬 LLM 스트리밍 (6)">
+  <meta property="og:description" content="정적 페이지를 배포해도 답변은 여전히 방문자 컴퓨터의 로컬 Ollama가 만듭니다. 프롬프트로 근거 범위를 고정하고, 스트리밍 응답을 조각으로 읽으며 CORS까지 배포 환경에서 확인합니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/rag-chatbot-prompt-streaming.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <p class="post-date"><a href="rag-chatbot-hybrid-search.html">← 이전 편 가까운 청크를 고른다 — 코사인과 BM25의 하이브리드 검색</a></p>
+    <h1>프롬프트는 근거의 경계다 — 프롬프트 조립과 로컬 LLM 스트리밍</h1>
+    <p class="post-date">2026. 8. 28.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <p>정적 Pages에 배포한 챗봇 주소에서 질문을 보내면, 화면은 공개돼도 Ollama 호출이 막힐 수 있다. "정적 파일을 배포하면 서버가 로컬 모델 호출을 대신할 것"이라는 짐작은 틀렸다. <strong>배포된 앱은 사용자 컴퓨터의 브라우저에서 실행되고, 브라우저는 여전히 그 컴퓨터의 로컬 엔진을 직접 호출한다.</strong> 이 실행 경계를 먼저 확인한 뒤에야 프롬프트가 어떤 근거로 답해야 하는지도 정할 수 있었다.</p>
+
+    <h2>1. buildPrompt() — 근거 원칙을 문장으로 고정하기</h2>
+    <p>검색된 청크를 단순히 이어 붙이는 것만으로는 모델이 자료 밖 내용을 보태지 않도록 제한할 수 없다. <code>buildPrompt()</code>는 먼저 자료가 모두콘의 공개 문서 청크라는 소개를 두고, 이어서 근거 원칙을 명시하며, 답 안에 근거 청크의 <code>[ID]</code>를 표시하도록 요구한다. 상대 시각을 묻는 질문을 해석할 수 있도록 KST 현재 시각을 넣고, 그 뒤에만 <code>[자료]</code>와 <code>[질문]</code>을 배치한다.</p>
+    <pre><code>다음 자료는 모두의연구소의 컨퍼런스 '모두콘'에 대한 공개 문서에서 뽑은 조각입니다.
+주의: 검색된 조각의 유사도가 낮습니다. 질문과 완전히 맞는 근거가 아닐 수 있으니, 근거에 있는 내용만 짧게 답하고 자료에 없는 부분은 없다고 말합니다.
+근거가 된 조각의 [ID]를 답 안에서 표시합니다.
+현재 시각은 [KST 시각]입니다. '지금', '올해', '다음 주' 같은 상대 표현은 이 시각을 기준으로 해석합니다.
+
+[자료]
+[MC-... | 섹션] 청크 텍스트
+
+[질문]
+사용자 질문</code></pre>
+    <p>이 순서는 모델의 능력을 높이는 주문이 아니라, <strong>모델이 어떤 범위에서 답하고 무엇을 인용해야 하는지를 문장으로 고정하는 계약</strong>이다. 청크마다 <code>MC-xxx</code> 형식 ID와 section을 보존하면 사용자는 답변 문장을 원문 청크까지 되짚을 수 있고, 모델도 막연한 "자료에 따르면" 대신 검토 가능한 근거를 남긴다. 최고 검색 점수가 0.55보다 낮을 때는 더 엄격한 분기 문구가 필요하다 — 검색 결과가 존재한다는 사실과 질문에 맞는 근거라는 사실을 구별해, 모델이 빈틈을 상식으로 메우지 못하게 한다.</p>
+
+    <h2>2. Ollama 응답은 한 번에 받지 않고 조각으로 읽는다</h2>
+    <p>로컬 엔진은 <code>POST http://localhost:11434/api/chat</code>으로 <code>qwen3.5:2b</code>에 요청하며, 본문에는 <code>stream:true</code>와 <code>think:false</code>를 담는다. 스트리밍 응답은 한 개의 완성 JSON이 아니라 줄바꿈으로 구분된 JSON 조각이라, <code>ReadableStream</code>을 읽어 남은 문자열을 보관하고 줄 단위로 파싱한 뒤 각 조각의 텍스트를 화면 답변에 이어 붙여야 한다.</p>
+    <pre><code>await fetch("http://localhost:11434/api/chat", {
+  method: "POST",
+  signal: controller.signal,
+  body: JSON.stringify({
+    model: "qwen3.5:2b", stream: true, think: false, messages,
+  }),
+});</code></pre>
+    <p>이 구조에서는 토큰당 약 50ms라는 응답 감각을, 사용자가 빈 화면이 아니라 자라나는 문장으로 경험할 수 있다. 네트워크 오류와 JSON 파싱 실패는 답변 상태와 분리해 표시하고, 요청을 취소할 때는 <code>AbortSignal</code>을 전달해 이미 시작한 스트림을 멈춘다. 스트리밍은 속도 과시가 아니라, <strong>생성 중이라는 상태와 취소할 권리를 사용자에게 드러내는 인터페이스</strong>다.</p>
+
+    <h2>3. 연결 상태와 CORS를 배포 환경까지 확인한다</h2>
+    <p>채팅을 시작하기 전 <code>GET /api/tags</code>로 Ollama 상태를 확인하면, 모델이 꺼진 상황을 생성 실패처럼 보이지 않게 안내 배너와 재시도 동작으로 분리할 수 있다. 로컬 개발 서버에서 되던 요청도 GitHub Pages 배포 뒤에는 자동으로 해결되지 않는다. 정적 페이지가 서버를 대신해 호출하는 게 아니라 사용자 브라우저가 계속 자신의 <code>localhost:11434</code>로 요청하기 때문에, Ollama의 <code>OLLAMA_ORIGINS</code> 설정이 필요하다.</p>
+    <pre><code># macOS
+launchctl setenv OLLAMA_ORIGINS "https://YOUR_ID.github.io"
+
+# Windows
+setx OLLAMA_ORIGINS "https://YOUR_ID.github.io"
+
+# systemd 환경
+systemctl set-environment OLLAMA_ORIGINS="https://YOUR_ID.github.io"</code></pre>
+    <p>운영체제별 설정 뒤에는 앱을 재시작해야 하고, 실제 Pages 주소에서 상태 확인과 스트리밍을 함께 점검해야 한다. Chrome과 Edge를 권장하고, Safari에서는 Ollama 연결과 임베딩 WASM이 불안정할 수 있음을 시작 화면에 명시하는 편이 좋다. 연결 상태 배너와 재시도 동작을 남겨두면, 사용자 컴퓨터에서 로컬 엔진이 꺼져 있거나 출처 허용이 빠졌을 때 이를 검색이나 프롬프트 실패로 오해하지 않게 된다. <strong>배포 주소와 로컬 엔진 사이의 경계를 화면에 드러내는 일은 사용자가 자신의 환경에서 점검할 조건을 알게 하는 제품의 책임</strong>이다.</p>
+
+    <h2>4. 실습 — 챗봇 UI의 상태를 에이전트에게 명세하기</h2>
+    <p>UI는 입력창과 답변 말풍선만으로 완성되지 않는다. 로컬 엔진 선택 상태, Ollama 연결 여부, 임베딩 준비 상태, 검색 진행 상태, 생성 중지 동작, 출처 칩, 약한 근거 경고를 통해 사용자가 현재 답이 어느 단계에 있는지 읽을 수 있어야 한다. 스트리밍이 중단되어도 이미 받은 답변 청크를 지우지 않고, 출처 칩은 ID·section·검색 방법·점수를 보여주며 원문으로 연결할 수 있게 요구했다.</p>
+    <pre><code>Vite, React, TypeScript로 모두콘 RAG 챗봇 UI 골격을 만듭니다.
+로컬 qwen3.5:2b 엔진 선택, GET /api/tags 연결 상태 배너와 재시도,
+임베딩·하이브리드 검색·생성 단계 표시, 스트리밍 답변과 AbortSignal 중지 버튼을 구현합니다.
+각 답변에는 출처 칩을 표시하고 칩에는 MC ID, section, vector 또는 bm25 방법, 점수를 보입니다.
+최고 유사도가 0.55보다 낮으면 약한 근거 경고를 보이며, 스트리밍 오류가 나도
+이미 받은 답변과 출처는 유지합니다. Chrome과 Edge 권장, Safari 불안정 안내도 포함합니다.</code></pre>
+    <p>이 구조는 답변의 신뢰를 배지 하나에 맡기지 않고, 사용자가 근거와 과정을 직접 확인할 수 있게 만든다.</p>
+
+    <h2>정리</h2>
+    <p>오늘 확인한 건 결국 두 층의 분리였다 — <strong>배포 환경의 연결 조건</strong>(어디서 Ollama를 부르는가)과 <strong>답변 근거의 조건</strong>(무엇을 근거로 답할 수 있는가)은 서로 다른 층에서 검증해야 한다는 것. 다음 편에서는 이렇게 나온 답변을 사람이 매번 읽지 않고도 판정할 수 있게, 답변 뒤에 심사위원 하나를 더 두는 LLM-as-a-Judge로 넘어간다.</p>
+
+    <p class="post-date"><a href="rag-chatbot-llm-judge.html">다음 편 → 답변 뒤에 심사위원 하나를 더 둔다 — LLM-as-a-Judge</a></p>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
