@@ -27,52 +27,54 @@
     </ul>
 
     <h2>글목록</h2>
-    <ul>
+    <ul class="sidebar-tree">
       <li>
-        <a href="#vibe-coding">바이브코딩</a>
-        <ul class="sub-list">
-          <li>
-            <span class="sub-list-label">웹 개발 기초</span>
-            <ul class="sub-list">
-              <li><a href="#git-github">Git·GitHub 입문</a></li>
-              <li><a href="#ai-coding-setup">AI 코딩 환경 세팅</a></li>
-              <li><a href="#web-frontend">웹 구조와 프론트엔드</a></li>
-              <li><a href="#backend-deploy">백엔드와 배포</a></li>
-              <li><a href="#database">데이터베이스</a></li>
-            </ul>
-          </li>
-          <li>
-            <span class="sub-list-label">AI 에이전트·도구 활용</span>
-            <ul class="sub-list">
-              <li><a href="#agent-tools">에이전트와 협업 도구</a></li>
-            </ul>
-          </li>
-          <li>
-            <span class="sub-list-label">AI 원리와 모델 구조</span>
-            <ul class="sub-list">
-              <li><a href="#ml-basics">머신러닝 기초</a></li>
-              <li><a href="#llm-theory">트랜스포머와 LLM 이론</a></li>
-              <li><a href="#local-llm">로컬 LLM과 경량화</a></li>
-              <li><a href="#vision-ocr">비전과 문서 인식</a></li>
-              <li><a href="#image-video-gen">이미지·영상 생성</a></li>
-              <li><a href="#multimodal-voice">멀티모달과 음성</a></li>
-              <li><a href="#three-d-reconstruction">3D 복원과 스플래팅</a></li>
-              <li><a href="#science-ai">과학·물리 AI</a></li>
-            </ul>
-          </li>
-          <li>
-            <span class="sub-list-label">프롬프트·에이전트 심화 시리즈</span>
-            <ul class="sub-list">
-              <li><a href="#prompt-agent-concepts">프롬프트와 에이전트 개념</a></li>
-              <li><a href="#instruction-design">지시 설계</a></li>
-              <li><a href="#context-engineering">컨텍스트 엔지니어링</a></li>
-              <li><a href="#tool-design">도구 설계</a></li>
-              <li><a href="#chatbot-project">나만의 챗봇 만들기</a></li>
-            </ul>
-          </li>
-        </ul>
+        <details class="tree-group" open>
+          <summary class="tree-group-title">바이브코딩<span class="tree-toggle-icon">▸</span></summary>
+          <div class="tree-children">
+            <details class="tree-subgroup">
+              <summary class="tree-subgroup-title">웹 개발 기초<span class="tree-toggle-icon">▸</span></summary>
+              <ul class="tree-leaf-list">
+                <li><a href="#git-github">Git·GitHub 입문</a></li>
+                <li><a href="#ai-coding-setup">AI 코딩 환경 세팅</a></li>
+                <li><a href="#web-frontend">웹 구조와 프론트엔드</a></li>
+                <li><a href="#backend-deploy">백엔드와 배포</a></li>
+                <li><a href="#database">데이터베이스</a></li>
+              </ul>
+            </details>
+            <details class="tree-subgroup">
+              <summary class="tree-subgroup-title">AI 에이전트·도구 활용<span class="tree-toggle-icon">▸</span></summary>
+              <ul class="tree-leaf-list">
+                <li><a href="#agent-tools">에이전트와 협업 도구</a></li>
+              </ul>
+            </details>
+            <details class="tree-subgroup">
+              <summary class="tree-subgroup-title">AI 원리와 모델 구조<span class="tree-toggle-icon">▸</span></summary>
+              <ul class="tree-leaf-list">
+                <li><a href="#ml-basics">머신러닝 기초</a></li>
+                <li><a href="#llm-theory">트랜스포머와 LLM 이론</a></li>
+                <li><a href="#local-llm">로컬 LLM과 경량화</a></li>
+                <li><a href="#vision-ocr">비전과 문서 인식</a></li>
+                <li><a href="#image-video-gen">이미지·영상 생성</a></li>
+                <li><a href="#multimodal-voice">멀티모달과 음성</a></li>
+                <li><a href="#three-d-reconstruction">3D 복원과 스플래팅</a></li>
+                <li><a href="#science-ai">과학·물리 AI</a></li>
+              </ul>
+            </details>
+            <details class="tree-subgroup">
+              <summary class="tree-subgroup-title">프롬프트·에이전트 심화 시리즈<span class="tree-toggle-icon">▸</span></summary>
+              <ul class="tree-leaf-list">
+                <li><a href="#prompt-agent-concepts">프롬프트와 에이전트 개념</a></li>
+                <li><a href="#instruction-design">지시 설계</a></li>
+                <li><a href="#context-engineering">컨텍스트 엔지니어링</a></li>
+                <li><a href="#tool-design">도구 설계</a></li>
+                <li><a href="#chatbot-project">나만의 챗봇 만들기</a></li>
+              </ul>
+            </details>
+          </div>
+        </details>
       </li>
-      <li><a href="#book-notes">책 정리노트</a></li>
+      <li><a class="tree-top-link" href="#book-notes">책 정리노트</a></li>
     </ul>
   </aside>
 
@@ -87,6 +89,15 @@
         <label><input type="radio" name="search-scope" value="all"> 제목+글</label>
       </div>
       <p class="search-status" id="search-status" hidden></p>
+      <div class="page-size-control" id="page-size-control">
+        <label for="page-size">페이지당 글 수</label>
+        <select id="page-size">
+          <option value="20" selected>20개</option>
+          <option value="50">50개</option>
+          <option value="100">100개</option>
+          <option value="all">전체보기</option>
+        </select>
+      </div>
     </div>
 
     <div class="post-group">
@@ -363,9 +374,12 @@
         <summary class="post-subcategory-title" id="book-notes">생성형 AI 설계 패턴</summary>
         <ul class="title-list">
           <li><a href="generative-ai-design-patterns-ch1.html"><span class="title-list-title">🔒 프롬프트에서 에이전트까지 — 1장 정리노트 (비공개)</span><span class="title-list-date">2026.08.28</span></a></li>
+          <li><a href="generative-ai-design-patterns-ch2.html"><span class="title-list-title">🔒 신입사원의 말투를 붙잡다 — 2장 정리노트 (비공개)</span><span class="title-list-date">2026.08.28</span></a></li>
         </ul>
       </details>
     </div>
+
+    <nav class="pagination" id="pagination" aria-label="글 목록 페이지 이동"></nav>
   </main>
   </div>
 
@@ -382,6 +396,10 @@
       var subcats = Array.prototype.slice.call(document.querySelectorAll('#vibe-coding-section .post-subcategory'));
       var groups = Array.prototype.slice.call(document.querySelectorAll('#vibe-coding-section .post-group'));
       var status = document.getElementById('search-status');
+      var pageSizeControl = document.getElementById('page-size-control');
+      var pageSizeSelect = document.getElementById('page-size');
+      var pagination = document.getElementById('pagination');
+      var currentPage = 1;
 
       function currentScope() {
         for (var i = 0; i < scopeRadios.length; i++) {
@@ -392,6 +410,10 @@
 
       function norm(s) {
         return (s || '').toLowerCase();
+      }
+
+      function currentPageSize() {
+        return pageSizeSelect.value === 'all' ? items.length : parseInt(pageSizeSelect.value, 10);
       }
 
       function matchedItems() {
@@ -413,13 +435,72 @@
         });
       }
 
+      function renderPagination(totalPages) {
+        pagination.innerHTML = '';
+        if (totalPages <= 1) return;
+
+        function makeButton(label, page, opts) {
+          opts = opts || {};
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.textContent = label;
+          if (opts.current) btn.setAttribute('aria-current', 'true');
+          if (opts.disabled) btn.disabled = true;
+          btn.addEventListener('click', function () {
+            currentPage = page;
+            render();
+            document.getElementById('all-posts').scrollIntoView({ block: 'start' });
+          });
+          return btn;
+        }
+
+        pagination.appendChild(makeButton('이전', currentPage - 1, { disabled: currentPage === 1 }));
+
+        var windowSize = 2;
+        for (var p = 1; p <= totalPages; p++) {
+          var inWindow = p === 1 || p === totalPages || Math.abs(p - currentPage) <= windowSize;
+          if (inWindow) {
+            pagination.appendChild(makeButton(String(p), p, { current: p === currentPage }));
+          } else if (p === 2 || p === totalPages - 1) {
+            var ellipsis = document.createElement('span');
+            ellipsis.textContent = '…';
+            ellipsis.style.color = 'var(--muted)';
+            pagination.appendChild(ellipsis);
+          }
+        }
+
+        pagination.appendChild(makeButton('다음', currentPage + 1, { disabled: currentPage === totalPages }));
+      }
+
       function render() {
-        var matches = matchedItems();
         var query = norm(input.value.trim());
 
-        items.forEach(function (li) {
-          li.hidden = matches.indexOf(li) === -1;
-        });
+        if (query) {
+          var matches = matchedItems();
+          items.forEach(function (li) {
+            li.hidden = matches.indexOf(li) === -1;
+          });
+          pagination.hidden = true;
+          pageSizeControl.hidden = true;
+
+          status.hidden = false;
+          status.textContent = matches.length > 0 ? (matches.length + '개 글을 찾았어요.') : '일치하는 글이 없어요.';
+        } else {
+          var pageSize = currentPageSize();
+          var totalPages = Math.max(1, Math.ceil(items.length / pageSize));
+          if (currentPage > totalPages) currentPage = totalPages;
+          var start = (currentPage - 1) * pageSize;
+          var end = start + pageSize;
+
+          items.forEach(function (li, i) {
+            li.hidden = !(i >= start && i < end);
+          });
+
+          pageSizeControl.hidden = false;
+          pagination.hidden = totalPages <= 1;
+          renderPagination(totalPages);
+          status.hidden = true;
+        }
 
         subcats.forEach(function (sub) {
           sub.hidden = sub.querySelectorAll('li:not([hidden])').length === 0;
@@ -437,19 +518,22 @@
         groups.forEach(function (group) {
           group.hidden = group.querySelectorAll('.post-subcategory:not([hidden])').length === 0;
         });
-
-        if (query) {
-          status.hidden = false;
-          status.textContent = matches.length > 0 ? (matches.length + '개 글을 찾았어요.') : '일치하는 글이 없어요.';
-        } else {
-          status.hidden = true;
-        }
       }
 
-      input.addEventListener('input', render);
+      input.addEventListener('input', function () {
+        currentPage = 1;
+        render();
+      });
       for (var i = 0; i < scopeRadios.length; i++) {
-        scopeRadios[i].addEventListener('change', render);
+        scopeRadios[i].addEventListener('change', function () {
+          currentPage = 1;
+          render();
+        });
       }
+      pageSizeSelect.addEventListener('change', function () {
+        currentPage = 1;
+        render();
+      });
 
       render();
     })();
