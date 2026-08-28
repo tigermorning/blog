@@ -175,6 +175,7 @@ main h1::after {
   bottom: 0;
   height: 10px;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='10' viewBox='0 0 24 10'%3E%3Cpath d='M0 5 Q3 0 6 5 T12 5 T18 5 T24 5' fill='none' stroke='%23ff5a5f' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E") repeat-x left bottom / 22px 10px;
+  filter: url('assets/filters/rough.svg#crayon-rough-thin');
 }
 
 main h1.greeting {
@@ -248,6 +249,7 @@ main h2::after {
   background-position: left bottom;
   background-size: 20px 8px;
   color: inherit;
+  filter: url('assets/filters/rough.svg#crayon-rough-thin');
 }
 
 main ol,
@@ -614,7 +616,10 @@ body.list-page .site-header {
   font-size: 0.76rem;
   font-weight: 400;
   color: #fff;
-  background: var(--folder-accent, var(--accent));
+  background-color: var(--folder-accent, var(--accent));
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.4 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-blend-mode: multiply;
+  filter: url('assets/filters/rough.svg#crayon-rough');
   border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
   padding: 0.1rem 0.65rem;
   white-space: nowrap;
@@ -665,6 +670,7 @@ body.list-page .site-header {
   background-position: left bottom;
   background-size: 20px 8px;
   color: var(--folder-accent, var(--accent));
+  filter: url('assets/filters/rough.svg#crayon-rough-thin');
 }
 
 .post-subcategory {
@@ -836,7 +842,10 @@ body.list-page .site-header {
   font-weight: var(--font-heading-weight, 700);
   font-size: 1.7rem;
   color: #fff;
-  background: var(--folder-accent, var(--accent));
+  background-color: var(--folder-accent, var(--accent));
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.4 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-blend-mode: multiply;
+  filter: url('assets/filters/rough.svg#crayon-rough');
   padding: 0.6rem 1.1rem;
   border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
 }
@@ -862,7 +871,10 @@ body.list-page .site-header {
   font-weight: var(--font-heading-weight, 700);
   font-size: 1.7rem;
   color: #fff;
-  background: var(--folder-accent, var(--accent));
+  background-color: var(--folder-accent, var(--accent));
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.4 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-blend-mode: multiply;
+  filter: url('assets/filters/rough.svg#crayon-rough');
   text-decoration: none;
   padding: 0.6rem 1.1rem;
   border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
