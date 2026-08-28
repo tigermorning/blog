@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Poor+Story&family=Schoolbell&family=ZCOOL+KuaiLe&family=Jua&family=Baloo+2:wght@400;700&family=ZCOOL+XiaoWei&family=Gowun+Dodum&family=Quicksand:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Hi+Melody&family=Poor+Story&family=Schoolbell&family=ZCOOL+KuaiLe&family=Jua&family=Baloo+2:wght@400;700&family=ZCOOL+XiaoWei&family=Gowun+Dodum&family=Quicksand:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700&display=swap');
 
 :root {
   --bg: #fffefb;
@@ -9,8 +9,11 @@
   /* 글자를 3단으로 나눈다.
      --font-heading  제목·대분류 : 삐뚤빼뚤 크레파스 손글씨, 큼직하게
      --font-subhead  소분류      : 여전히 귀엽지만 더 가지런하게
-     --font-body     본문·UI     : 가장 단정하고 눈이 편한 폰트 */
-  --font-heading: 'Gaegu', sans-serif;
+     --font-body     본문·UI     : 가장 단정하고 눈이 편한 폰트
+     세 손글씨체 다 실제 볼드 웨이트가 없어서(단일 굵기) 700을 강제하면
+     브라우저가 가짜로 두껍게 그린다 — --font-*-weight로 진짜 굵기를 준다. */
+  --font-heading: 'Hi Melody', sans-serif;
+  --font-heading-weight: 400;
   --font-subhead: 'Jua', sans-serif;
   --font-subhead-weight: 400;
   --font-body: 'Gowun Dodum', sans-serif;
@@ -29,7 +32,8 @@
 }
 
 html[lang="ko"] {
-  --font-heading: 'Gaegu', sans-serif;
+  --font-heading: 'Hi Melody', sans-serif;
+  --font-heading-weight: 400;
   --font-subhead: 'Jua', sans-serif;
   --font-subhead-weight: 400;
   --font-body: 'Gowun Dodum', sans-serif;
@@ -38,6 +42,7 @@ html[lang="ko"] {
 
 html[lang="en"] {
   --font-heading: 'Schoolbell', sans-serif;
+  --font-heading-weight: 400;
   --font-subhead: 'Baloo 2', sans-serif;
   --font-subhead-weight: 700;
   --font-body: 'Quicksand', sans-serif;
@@ -46,6 +51,7 @@ html[lang="en"] {
 
 html[lang="zh"] {
   --font-heading: 'ZCOOL KuaiLe', sans-serif;
+  --font-heading-weight: 400;
   --font-subhead: 'ZCOOL XiaoWei', sans-serif;
   --font-subhead-weight: 400;
   --font-body: 'Noto Sans SC', sans-serif;
@@ -112,7 +118,7 @@ main,
 .site-title {
   font-family: var(--font-heading);
   font-size: 1.9rem;
-  font-weight: 700;
+  font-weight: var(--font-heading-weight, 700);
   text-decoration: none;
   color: var(--ink);
   letter-spacing: 0.02em;
@@ -150,7 +156,7 @@ main {
 
 main h1 {
   font-family: var(--font-heading);
-  font-weight: 700;
+  font-weight: var(--font-heading-weight, 700);
   font-size: 2.6rem;
   margin-bottom: 1.6rem;
   color: var(--accent);
@@ -210,7 +216,7 @@ main figcaption {
 
 main h2 {
   font-family: var(--font-heading);
-  font-weight: 700;
+  font-weight: var(--font-heading-weight, 700);
   font-size: 1.7rem;
   margin-top: 2.6rem;
   margin-bottom: 1rem;
@@ -345,7 +351,7 @@ main th {
 .post-nav .post-nav-title {
   display: block;
   font-family: var(--font-heading);
-  font-weight: 700;
+  font-weight: var(--font-heading-weight, 700);
   font-size: 1.25rem;
   color: var(--accent);
 }
@@ -590,8 +596,8 @@ body.list-page .site-header {
 
 .post-group-title {
   font-family: var(--font-heading);
-  font-size: 1.3rem;
-  font-weight: 700;
+  font-size: 1.75rem;
+  font-weight: var(--font-heading-weight, 700);
   color: var(--folder-accent, var(--accent));
   margin: 0 0 1rem;
   padding-bottom: 0.4rem;
@@ -685,7 +691,7 @@ body.list-page .site-header {
 
 .sidebar h2 {
   font-family: var(--font-heading);
-  font-weight: 700;
+  font-weight: var(--font-heading-weight, 700);
   font-size: 1.1rem;
   margin: 0 0 1rem;
   color: var(--ink);
@@ -779,11 +785,11 @@ body.list-page .site-header {
    쓰고 색만 다르니 같은 급으로 보인다. */
 .tree-group-title {
   font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: 1.1rem;
+  font-weight: var(--font-heading-weight, 700);
+  font-size: 1.45rem;
   color: #fff;
   background: var(--folder-accent, var(--accent));
-  padding: 0.5rem 0.9rem;
+  padding: 0.55rem 1rem;
   border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
 }
 
@@ -805,12 +811,12 @@ body.list-page .site-header {
 .sidebar a.tree-top-link {
   display: block;
   font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: 1.1rem;
+  font-weight: var(--font-heading-weight, 700);
+  font-size: 1.45rem;
   color: #fff;
   background: var(--folder-accent, var(--accent));
   text-decoration: none;
-  padding: 0.5rem 0.9rem;
+  padding: 0.55rem 1rem;
   border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
   border-left: none;
 }
