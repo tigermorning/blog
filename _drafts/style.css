@@ -1,0 +1,275 @@
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Playfair+Display:wght@600;700&family=EB+Garamond:wght@400;600&family=Noto+Serif+SC:wght@400;700&display=swap');
+
+:root {
+  --bg: #faf3e6;
+  --ink: #241c14;
+  --muted: #7d6b57;
+  --accent: #9c2b2b;
+  --border: #ddd0b8;
+  --font-heading: 'Playfair Display', 'Gowun Batang', Georgia, serif;
+  --font-body: 'EB Garamond', 'Gowun Batang', Georgia, serif;
+}
+
+html[lang="ko"] {
+  --font-heading: 'Gowun Batang', serif;
+  --font-body: 'Gowun Batang', serif;
+}
+
+html[lang="en"] {
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-body: 'EB Garamond', Georgia, serif;
+}
+
+html[lang="zh"] {
+  --font-heading: 'Noto Serif SC', serif;
+  --font-body: 'Noto Serif SC', serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c1712;
+    --ink: #f5ead2;
+    --muted: #b3a186;
+    --accent: #d1594f;
+    --border: #3a2f22;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  overflow-x: hidden;
+}
+
+body {
+  position: relative;
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  line-height: 1.85;
+}
+
+.site-header,
+main,
+.site-footer {
+  position: relative;
+  z-index: 1;
+}
+
+.site-header {
+  padding: 3rem 1.5rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.site-header .container {
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.site-title {
+  font-family: var(--font-heading);
+  font-size: 1.7rem;
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--ink);
+  letter-spacing: 0.02em;
+}
+
+main {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 4rem;
+}
+
+main h1 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 2.6rem;
+  margin-bottom: 1.25rem;
+  color: var(--accent);
+  line-height: 1.3;
+}
+
+main h1.greeting {
+  white-space: nowrap;
+  font-size: clamp(1.5rem, 6vw, 2.6rem);
+}
+
+main p {
+  font-size: 1.15rem;
+  color: var(--ink);
+  max-width: 34rem;
+}
+
+main figure {
+  margin: 1.5rem 0;
+  max-width: 34rem;
+}
+
+main figure img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+main figcaption {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-style: italic;
+}
+
+main h2 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.6rem;
+  margin-top: 2.5rem;
+  margin-bottom: 0.75rem;
+  color: var(--ink);
+}
+
+main ol,
+main ul {
+  font-size: 1.1rem;
+  color: var(--ink);
+  max-width: 34rem;
+  padding-left: 1.4rem;
+}
+
+main li {
+  margin-bottom: 0.5rem;
+}
+
+main code {
+  font-family: 'Consolas', 'Menlo', monospace;
+  font-size: 0.92rem;
+  background: var(--border);
+  color: var(--ink);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+}
+
+main pre {
+  background: var(--ink);
+  color: var(--bg);
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  max-width: 34rem;
+}
+
+main pre code {
+  background: none;
+  color: inherit;
+  padding: 0;
+}
+
+main h3 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin-top: 1.75rem;
+  margin-bottom: 0.5rem;
+  color: var(--accent);
+}
+
+main blockquote {
+  margin: 1.25rem 0;
+  padding: 0.9rem 1.25rem;
+  border-left: 3px solid var(--accent);
+  background: var(--border);
+  max-width: 34rem;
+  font-size: 1.02rem;
+}
+
+main blockquote p {
+  margin: 0;
+}
+
+main hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2.5rem 0;
+}
+
+main table {
+  width: 100%;
+  max-width: 34rem;
+  margin: 1.25rem 0;
+  border-collapse: collapse;
+  font-size: 1rem;
+}
+
+main th,
+main td {
+  border: 1px solid var(--border);
+  padding: 0.6rem 0.8rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+main th {
+  background: var(--border);
+  font-family: var(--font-heading);
+  font-weight: 700;
+}
+
+.post-nav {
+  display: block;
+  max-width: 34rem;
+  margin-top: 1.5rem;
+  padding: 1.1rem 1.4rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--ink);
+  transition: border-color 0.15s ease;
+}
+
+.post-nav:hover {
+  border-color: var(--accent);
+}
+
+.post-nav .post-nav-label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 0.3rem;
+}
+
+.post-nav .post-nav-title {
+  display: block;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--accent);
+}
+
+.post-date {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  font-family: var(--font-body);
+  font-style: italic;
+}
+
+.site-footer {
+  padding: 2rem 1.5rem 3rem;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-family: var(--font-body);
+  border-top: 1px solid var(--border);
+}
