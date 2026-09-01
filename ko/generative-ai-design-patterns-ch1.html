@@ -616,6 +616,7 @@
       <li>
         <a href="#review"><span class="n">Q&amp;A</span>문답 복습노트</a>
         <ol class="sub">
+          <li><a href="#review-goals">학습 목표·핵심 질문</a></li>
           <li><a href="#q1">Q1 왜 패턴집인가</a></li>
           <li><a href="#q2">Q2 프롬프트·응답</a></li>
           <li><a href="#q3">Q3 클라우드 vs 로컬</a></li>
@@ -643,7 +644,7 @@
       「에이전트 시대의 AI 시스템 설계」 1장은 본문 32가지 패턴을 읽기 전에 알아야 할 기초 개념을 다 모아둔 장이에요.
       컴퓨터를 잘 몰라도 따라올 수 있도록, 책의 설명을 그대로 옮기지 않고 일상적인 비유와 그림으로 다시 풀었어요.
     </p>
-    <div class="meta">원서 Generative AI Design Patterns · Lakshmanan · Hapke · 번역 류광 · 한빛미디어</div>
+    <div class="meta">원서 Generative AI Design Patterns · Lakshmanan · Hapke · 번역 류광 · 한빛미디어 · 저자 공식 코드 저장소 <a href="https://github.com/lakshmanok/generative-ai-design-patterns" target="_blank" rel="noopener" style="color:var(--accent-strong);">github.com/lakshmanok/generative-ai-design-patterns</a></div>
 
     <ul class="toc">
       <li><a href="#map"><b>MAP</b>한 장 지도</a></li>
@@ -1062,7 +1063,9 @@
       "재고가 100개 밑으로 떨어지면 300개를 주문해"처럼 세세한 규칙을 일일이 프로그래밍할 필요가 없어요. 에이전트는
       최근 판매량과 배송 기간을 스스로 살펴보고, 필요한 주문 수량을 계산해서 이유까지 설명해줘요. 전통적인 프로그램은
       사람이 규칙을 미리 다 적어둬야 했지만, 에이전트는 그 규칙 자체를 스스로 만들어내는 셈이에요. 책은 이런
-      성질을 <strong>자율성(autonomy)</strong>이라고 불러요.
+      성질을 <strong>자율성(autonomy)</strong> — <strong>지속적인 인간의 지시나 명시적 프로그래밍 없이 독립적으로
+      동작하는 능력</strong> — 이라고 정의하고, 이게 바로 전통적 소프트웨어와 AI 에이전트를 가르는 핵심 차이라고
+      짚어요.
     </p>
 
     <p style="font-size:13.5px; color:var(--ink-faint);">
@@ -1118,7 +1121,9 @@
       </div>
       <div class="mini-card">
         <h4 style="font-family:var(--font-body); font-size:14px;">④ 적응 및 학습</h4>
-        <div class="d">이번 판단의 결과를 다음 판단에 반영해서, 조금씩 더 나은 결정을 내리게 돼요.</div>
+        <div class="d">주문 수량 300개가 정말 맞는지 스스로 되짚어 검증해요 — 사람 재고 관리자가 "이 가정대로면
+        2주 뒤에도 재고가 안 떨어지나?"를 검산하듯이요. 6장 Reflection, 9장 Self-Check가 이 자기 점검·교정
+        능력을 다루는 패턴이에요.</div>
       </div>
     </div>
     <p style="font-size:13px; color:var(--ink-faint);">이 네 가지가 실제로는 아래처럼 한 바퀴 순환하는 구조로 맞물려 움직여요.</p>
@@ -1154,12 +1159,12 @@
         <g>
           <circle cx="46" cy="160" r="38" fill="var(--surface)" stroke="var(--accent-teal)" stroke-width="2"></circle>
           <text x="46" y="156" text-anchor="middle" class="loop-node-label">적응</text>
-          <text x="46" y="171" text-anchor="middle" class="loop-node-sub">결과로 학습</text>
+          <text x="46" y="171" text-anchor="middle" class="loop-node-sub">스스로 검증</text>
         </g>
       </svg>
     </div>
     <p style="text-align:center; font-size:12.5px; color:var(--ink-faint); margin-top:-6px;">
-      네 단계가 한 바퀴 돌면, 다음 판단은 이전 결과를 반영해 조금 더 나아져요.
+      네 단계가 한 바퀴 돌면서, 에이전트는 자기가 낸 결과를 스스로 점검하고 필요하면 고쳐요.
     </p>
     <p>
       다만 책은 솔직하게 짚어요. 지금 에이전트는 "완전히 자율적인 존재"라기보다는 그렇게 되어가는 중인 기술이에요.
@@ -1660,6 +1665,25 @@
       전에 먼저 스스로 답해보는 걸 추천해요.
     </p>
 
+    <div class="card" id="review-goals" style="margin:0 0 28px;">
+      <h3 style="margin:0 0 14px; font-family:var(--font-body); font-weight:600; font-size:15px; color:var(--ink);">학습 목표</h3>
+      <ul style="margin:0 0 26px; padding-left:20px; font-size:14px; color:var(--ink-soft); line-height:1.75;">
+        <li>이 책이 32개 패턴을 어떤 기준으로 분류하는지 말할 수 있다. 이후 모든 장이 이 지도 위에 놓인다.</li>
+        <li>기초 모델을 쓰는 네 가지 경로(제공업체 API / LLM 비종속 프레임워크 / 로컬 실행 / 내부 학습)의 트레이드오프를 구분한다.</li>
+        <li>이 책이 에이전트를 '자율성의 정도'로 정의한다는 관점을 이해하고, 에이전트와 단순 파이프라인의 경계를 자기 말로 그을 수 있다.</li>
+        <li>컨텍스트 내 학습(제로샷·퓨샷)과 사후훈련(미세조정)을 가를 자기 기준을 세운다.</li>
+      </ul>
+      <h3 style="margin:0 0 14px; font-family:var(--font-body); font-weight:600; font-size:15px; color:var(--ink);">핵심 질문</h3>
+      <ol style="margin:0; padding-left:20px; font-size:14px; color:var(--ink-soft); line-height:1.75;">
+        <li>온도를 0으로 두면 항상 같은 답이 나오는가? 그렇지 않다면 무작위성은 어디에 남아 있는가?</li>
+        <li>Top-K와 Top-P는 언제 서로 다른 결과를 만드는가? 둘을 동시에 쓰면 어떤 일이 벌어지는가?</li>
+        <li>프롬프트로 해결할 문제와 미세조정이 필요한 문제를 가르는 실질적인 기준은 무엇인가?</li>
+        <li>'자율성이 높다'는 말은 모델에게 무엇을 위임했다는 뜻인가? 우리 업무에서 위임해도 괜찮은 결정은 어디까지인가?</li>
+        <li>빔 탐색은 왜 창작적 생성보다 번역·요약에서 더 쓰이는가?</li>
+        <li>우리가 지금 만들려는 시스템은 이 책의 분류에서 어떤 장의 패턴이 가장 급하게 필요한가?</li>
+      </ol>
+    </div>
+
     <div class="qa-fam">1.1 · 설계 패턴</div>
     <div class="qa-item" id="q1">
       <span class="qa-tag">Q1</span>
@@ -1723,9 +1747,9 @@
       <span class="qa-tag">Q6</span>
       <p class="qa-q">에이전트에게 기대되는 네 가지 능력과, 이게 순환 구조라는 말은 무슨 뜻인가?</p>
       <p class="qa-a">① 목표 지향성(반응만 안 하고 목표를 향해 움직임) ② 계획 및 추론(단계를 스스로
-      쪼갬) ③ 인지 및 행동(데이터를 읽고 외부 함수를 호출함) ④ 적응 및 학습(결과를 다음 판단에
-      반영함). 이 넷이 <strong>인지→계획→행동→적응→다시 인지</strong>로 한 바퀴 돌 때마다, 다음
-      판단이 이전 결과를 반영해 조금씩 나아진다.</p>
+      쪼갬) ③ 인지 및 행동(데이터를 읽고 외부 함수를 호출함) ④ 적응 및 학습(자기 산출물이 맞는지
+      스스로 점검하고 고침 — 6장 Reflection·9장 Self-Check). 이 넷이 <strong>인지→계획→행동→적응→다시
+      인지</strong>로 한 바퀴 돌 때마다, 에이전트는 자기 결과를 스스로 검증해서 조금씩 나아진다.</p>
     </div>
     <div class="qa-item" id="q7">
       <span class="qa-tag">Q7</span>

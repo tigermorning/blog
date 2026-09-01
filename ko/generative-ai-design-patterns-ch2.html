@@ -585,7 +585,7 @@
       컴퓨터를 잘 몰라도 따라올 수 있도록, 책의 설명을 그대로 옮기지 않고 일상적인 비유와 그림으로
       다시 풀었어요.
     </p>
-    <div class="meta">원서 Generative AI Design Patterns · Lakshmanan · Hapke · 번역 류광 · 한빛미디어</div>
+    <div class="meta">원서 Generative AI Design Patterns · Lakshmanan · Hapke · 번역 류광 · 한빛미디어 · 저자 공식 코드 저장소 <a href="https://github.com/lakshmanok/generative-ai-design-patterns" target="_blank" rel="noopener" style="color:var(--accent-strong);">github.com/lakshmanok/generative-ai-design-patterns</a></div>
 
     <ul class="toc">
       <li><a href="#map"><b>MAP</b>한 장 지도</a></li>
@@ -685,6 +685,18 @@
       못하게 막는 방법이에요. 규칙은 보통 고정돼 있지만, 이미 써 내려간 내용에 따라 그때그때 동적으로
       바뀔 수도 있어요.
     </p>
+    <div class="etym">
+      <span class="label">부탁 vs 강제</span>
+      <div class="body">
+        이번 절과 다음 절(2.2)을 하나로 묶는 말이 있다면 바로 이거예요 — <strong>부탁</strong>은
+        프롬프트에 "이렇게 답해줘"라고 지시만 남기는 것, <strong>강제</strong>는 애초에 규칙에
+        어긋나는 후보를 확률 0으로 만들어 <em>고를 수조차 없게</em> 만드는 것이에요. 부탁은 모델이
+        지시를 안 따를 확률이 항상 남아 있고, 그 확률은 모델 버전이 바뀌면 예고 없이 달라져요. 강제는
+        후보 자체를 지우기 때문에 100% 결정적이에요. 로짓 마스킹(2.1)과 문법(2.2)은 강제를
+        <strong>누가 실행하느냐</strong>(내 코드 vs 모델 제공업체 서버)만 다를 뿐, 둘 다 강제
+        장치라는 점은 같아요.
+      </div>
+    </div>
 
     <div class="etym">
       <span class="label">먼저 알아둘 것</span>
@@ -1095,6 +1107,24 @@ num ::= [0-9]+ ws
       지원한다"고 광고해도 실은 별도의 LLM 호출로 후처리만 하는 경우가 있으니 주의해야 해요 — 그건
       진짜 문법 패턴보다 느리고 비싸고 신뢰도도 낮아요.
     </p>
+    <div class="card">
+      <p style="margin-bottom:10px;">
+        <strong>모델·토크나이저를 바꾸면 뭐가 먼저 깨지나</strong> — 두 패턴은 같은 원리를 쓰지만
+        <strong>토크나이저 의존도</strong>가 달라요. 로짓 마스킹(2.1)의 감시자 코드는
+        <code>self.tokenizer.decode(input_id)</code>로 후보를 <strong>사람이 읽는 글자로 되돌린
+        다음</strong> 규칙을 검사해요 — 그래서 모델·토크나이저를 바꿔도 규칙 검사 로직(<code>apply_rules</code>)
+        자체는 거의 안 건드려도 돼요.
+      </p>
+      <p style="margin:0;">
+        반면 BNF 문법은 <code>IncrementalGrammarConstraint(grammar_str, "root", pipe.tokenizer)</code>처럼
+        <strong>토크나이저 어휘집(vocab)을 직접 넘겨서</strong>, "이 문법 상태에서 어떤 토큰 ID들이
+        허용되는가"라는 매핑을 그 토크나이저 기준으로 미리 계산해둬요. 즉 모델을(그래서 토크나이저도)
+        바꾸면 이 매핑 객체를 <strong>처음부터 다시 만들어야</strong> 해요 — 코드가 안 돌아가진
+        않지만, "같은 문법이 이 모델에서도 그대로 유효한가"를 매번 재검증해야 하는 숨은 비용이
+        생겨요. 정리하면, <strong>로짓 마스킹은 텍스트 레벨이라 비교적 이식성이 좋고, 문법(BNF)은
+        토큰 레벨이라 모델을 바꿀 때 가장 먼저 깨지는 쪽</strong>이에요.
+      </p>
+    </div>
   </section>
 
   <!-- 2.3 스타일 전이 -->

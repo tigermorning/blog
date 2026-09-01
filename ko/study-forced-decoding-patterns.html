@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>로짓 마스킹 · 문법 — 강제 장치 두 가지 - Tigermorning</title>
+  <meta name="description" content="「에이전트 시대의 AI 시스템 설계」 2장 패턴1(로짓 마스킹)·패턴2(문법)를 학습목표·핵심질문 중심으로 실제 코드와 함께 정리한 문답 복습노트.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="로짓 마스킹 · 문법 — 강제 장치 두 가지">
+  <meta property="og:description" content="2장 패턴1·2를 학습목표·핵심질문 중심으로 실제 코드와 함께 정리한 문답 복습노트.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/study-forced-decoding-patterns.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;600;700;900&display=swap');
+
+  :root{
+    --ink:#1E2530;
+    --sub:#5B6472;
+    --paper:#F6F7F4;
+    --card:#FFFFFF;
+    --line:rgba(30,37,48,0.13);
+    --shadow:rgba(30,37,48,0.08);
+    --q:#2B5FA5;    --q-bg:#EAF0F9;   /* M 로짓 마스킹 */
+    --a:#2E7048;    --a-bg:#EAF4EC;   /* 모범답 계열 (의미 고정) */
+    --f:#8A5A12;    --f-bg:#FBF1DF;   /* 후속질문 계열 (의미 고정) */
+    --m:#6B4FA0;    --m-bg:#F1ECFA;   /* G 문법 */
+    --fd:#B2334A;   --fd-bg:#FBE9EC;  /* 핵심질문 (두 패턴 종합) */
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#E8EAE4; --sub:#A7AFB8; --paper:#12161C; --card:#1A2028;
+      --line:rgba(232,234,228,0.14); --shadow:rgba(0,0,0,0.35);
+      --q:#7FADE6; --q-bg:#1C2C42;
+      --a:#7FC697; --a-bg:#1B3324;
+      --f:#E3B25E; --f-bg:#3A2E14;
+      --m:#B79BE0; --m-bg:#2A2140;
+      --fd:#E58396; --fd-bg:#3A1E24;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#E8EAE4; --sub:#A7AFB8; --paper:#12161C; --card:#1A2028;
+    --line:rgba(232,234,228,0.14); --shadow:rgba(0,0,0,0.35);
+    --q:#7FADE6; --q-bg:#1C2C42;
+    --a:#7FC697; --a-bg:#1B3324;
+    --f:#E3B25E; --f-bg:#3A2E14;
+    --m:#B79BE0; --m-bg:#2A2140;
+    --fd:#E58396; --fd-bg:#3A1E24;
+  }
+
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--paper); color:var(--ink); font-family:'Noto Sans KR', -apple-system, sans-serif; line-height:1.7; }
+  .wrap{ max-width:760px; margin:0 auto; padding:48px 24px 90px; }
+
+  .kicker{ font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--q); display:block; margin-bottom:10px; }
+  h1{ font-size:clamp(24px,4vw,32px); font-weight:900; margin:0 0 8px; text-wrap:balance; }
+  .sub{ color:var(--sub); font-size:14.5px; margin:0 0 28px; max-width:62ch; }
+
+  nav.toc{ display:flex; flex-direction:column; gap:10px; margin-bottom:36px; padding:14px 16px; background:var(--card); border:1px solid var(--line); border-radius:10px; }
+  .toc-row{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+  .toc-cat{ font-family:'IBM Plex Mono', monospace; font-size:11px; font-weight:700; color:var(--q); background:var(--q-bg); padding:3px 8px; border-radius:5px; white-space:nowrap; flex:0 0 auto; }
+  .toc-cat.m{ color:var(--m); background:var(--m-bg); }
+  .toc-cat.fd{ color:var(--fd); background:var(--fd-bg); }
+  .toc-row .pills{ display:flex; flex-wrap:wrap; gap:8px; }
+  nav.toc a{ font-family:'IBM Plex Mono', monospace; font-size:12.5px; color:var(--sub); text-decoration:none; padding:4px 9px; border:1px solid var(--line); border-radius:6px; }
+  nav.toc a:hover{ color:var(--q); border-color:var(--q); }
+
+  .goals{ background:var(--card); border:1px solid var(--line); border-radius:12px; padding:20px 22px; margin-bottom:30px; box-shadow:0 1px 2px var(--shadow); }
+  .goals h2{ font-size:13px; font-family:'IBM Plex Mono', monospace; letter-spacing:.05em; text-transform:uppercase; color:var(--sub); margin:0 0 12px; }
+  .goals ul{ margin:0; padding-left:20px; }
+  .goals li{ font-size:14.5px; margin-bottom:8px; }
+  .goals li:last-child{ margin-bottom:0; }
+
+  .fam{ margin:38px 0 16px; display:flex; align-items:center; gap:12px; }
+  .fam:first-of-type{ margin-top:0; }
+  .fam-tag{ font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:700; letter-spacing:.04em; white-space:nowrap; }
+  .fam-tag.tq{ color:var(--q); } .fam-tag.tm{ color:var(--m); } .fam-tag.tfd{ color:var(--fd); }
+  .fam-sub{ font-size:12.5px; color:var(--sub); }
+  .fam-line{ flex:1 1 auto; height:1px; background:var(--line); }
+
+  .item{ background:var(--card); border:1px solid var(--line); border-radius:12px; padding:24px 26px; margin-bottom:20px; box-shadow:0 1px 2px var(--shadow); scroll-margin-top:16px; }
+  .qnum{ font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:13px; display:inline-block; padding:2px 9px; border-radius:5px; margin-bottom:10px; }
+  .qnum.qq{ color:var(--q); background:var(--q-bg); }
+  .qnum.qm{ color:var(--m); background:var(--m-bg); }
+  .qnum.qfd{ color:var(--fd); background:var(--fd-bg); }
+  .qtext{ font-size:16.5px; font-weight:600; margin:0 0 16px; }
+  .block{ border-radius:9px; padding:14px 16px; margin-bottom:10px; }
+  .block:last-child{ margin-bottom:0; }
+  .block-label{ font-family:'IBM Plex Mono', monospace; font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; display:block; margin-bottom:6px; }
+  .ans{ background:var(--a-bg); } .ans .block-label{ color:var(--a); } .ans p{ margin:0 0 8px; font-size:14.5px; } .ans p:last-child{margin-bottom:0;} .ans strong{ color:var(--a); }
+  .follow{ background:var(--f-bg); } .follow .block-label{ color:var(--f); } .follow .fq{ margin:0 0 8px; font-size:14.5px; font-weight:600; } .follow .fa{ margin:0; font-size:14.5px; } .follow .fa strong{ color:var(--f); }
+
+  code{ font-family:'IBM Plex Mono', monospace; font-size:13px; background:var(--q-bg); color:var(--ink); padding:1px 5px; border-radius:4px; }
+
+  .codebox{ background:var(--paper); border:1px solid var(--line); border-radius:9px; padding:13px 15px; margin:10px 0; overflow-x:auto; }
+  .codebox .path{ display:flex; align-items:center; gap:8px; font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:var(--sub); margin-bottom:9px; }
+  .codebox .path a{ color:var(--sub); text-decoration:none; border-bottom:1px dashed var(--line); }
+  .codebox .path a:hover{ color:var(--q); border-color:var(--q); }
+  .codebox pre{ margin:0; font-family:'IBM Plex Mono', monospace; font-size:12px; line-height:1.65; color:var(--ink); white-space:pre; }
+  .codebox .out{ margin-top:9px; padding-top:9px; border-top:1px dashed var(--line); font-size:12px; color:var(--sub); font-family:'IBM Plex Mono', monospace; white-space:pre-wrap; }
+
+  .tablewrap{ overflow-x:auto; }
+  table.reftable{ width:100%; border-collapse:collapse; font-size:13.5px; margin:8px 0 4px; }
+  table.reftable th, table.reftable td{ text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  table.reftable th{ font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.05em; text-transform:uppercase; color:var(--sub); font-weight:600; }
+  table.reftable td strong{ color:var(--q); }
+
+  .closing{ margin-top:8px; padding:18px 20px; background:var(--card); border:1px solid var(--line); border-left:4px solid var(--fd); border-radius:8px; font-size:14.5px; }
+  .closing b{ color:var(--fd); }
+  .source{ font-size:12.5px; color:var(--sub); margin:44px 0 0; padding-top:18px; border-top:1px solid var(--line); }
+</style>
+
+<div class="wrap">
+
+  <span class="kicker">「에이전트 시대의 AI 시스템 설계」 2장 · 패턴1·2 복습노트</span>
+  <h1>로짓 마스킹 · 문법 — 강제 장치 두 가지</h1>
+  <p class="sub">출력 형식을 "부탁"하는 것과 "강제"하는 것은 근본적으로 다르다 — 2장의 첫 두 패턴은 모두 강제 장치다. 저자 공식 <a href="https://github.com/lakshmanok/generative-ai-design-patterns" target="_blank" rel="noopener" style="color:var(--q);">코드 저장소</a>의 실제 노트북(01_logits_masking, 02_grammar)을 근거로 확인했다.</p>
+
+  <div class="goals">
+    <h2>학습 목표</h2>
+    <ul>
+      <li>출력 형식을 "부탁"하는 것과 "강제"하는 것의 차이를 설명한다. 이 날의 두 패턴은 모두 강제 장치다.</li>
+      <li>로짓 마스킹이 디코딩 시점에 개입한다는 사실이 왜 중요한지, 그래서 어떤 실패를 원천 봉쇄하는지 말한다.</li>
+      <li>문법 기반 제약(정규표현식·CFG·JSON 스키마)이 로짓 마스킹과 어떻게 다른지, 구현 부담은 어느 지점에 생기는지 안다.</li>
+      <li>두 패턴의 고려사항(tokenizer 의존성, 생성 속도 지연, 표현력 손실)을 우리 생산 환경의 실제 리스크로 엮는다.</li>
+    </ul>
+  </div>
+
+  <nav class="toc">
+    <div class="toc-row"><span class="toc-cat">M · 로짓 마스킹</span><div class="pills">
+      <a href="#m1">부탁 vs 강제 (코드로)</a><a href="#m2">역추적</a>
+    </div></div>
+    <div class="toc-row"><span class="toc-cat m">G · 문법</span><div class="pills">
+      <a href="#g1">BNF 실패 사례</a><a href="#g2">세 가지 방식 선택</a>
+    </div></div>
+    <div class="toc-row"><span class="toc-cat fd">핵심질문 · 두 패턴 종합</span><div class="pills">
+      <a href="#k1">K1</a><a href="#k2">K2</a><a href="#k3">K3</a><a href="#k4">K4</a><a href="#k5">K5</a><a href="#k6">K6</a>
+    </div></div>
+  </nav>
+
+  <!-- ============================================================ M ============================================================ -->
+  <div class="fam"><span class="fam-tag tq">M · 패턴1 로짓 마스킹</span><span class="fam-line"></span></div>
+
+  <div class="item" id="m1">
+    <span class="qnum qq">M1</span>
+    <p class="qtext">로짓 마스킹이 디코딩 시점에 개입한다는 게, 실제 코드에서는 정확히 어떤 모습인가?</p>
+    <div class="codebox">
+      <span class="path">📓 <a href="https://github.com/lakshmanok/generative-ai-design-patterns/blob/main/examples/01_logits_masking/0_logits_masking.ipynb" target="_blank" rel="noopener">examples/01_logits_masking/0_logits_masking.ipynb</a></span>
+      <pre>class BrandLogitsProcessor(LogitsProcessor):
+    def __call__(self, input_ids, input_logits):
+        output_logits = input_logits.clone()
+        num_matches = [0] * len(input_ids)
+        for idx, seq in enumerate(input_ids):
+            decoded = self.tokenizer.decode(seq)
+            num_matches[idx] = evaluate(decoded, self.positives, self.negatives)
+        max_matches = np.max(num_matches)
+        for idx in range(len(input_ids)):
+            if num_matches[idx] != max_matches:
+                output_logits[idx] = -10000
+        return output_logits</pre>
+    </div>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>프롬프트에 "브랜드 단어만 써줘"라고 <strong>부탁</strong>하면, 모델이 안 들을 확률이 항상
+      남는다 — 확률적 지시 따르기일 뿐이다. 로짓 마스킹은 매 토큰이 <strong>뽑히기 직전</strong>,
+      이 <code>__call__</code>이 후보 시퀀스마다 점수(<code>num_matches</code>)를 다시 계산해서
+      최고점이 아닌 후보의 로짓을 <code>-10000</code>으로 뭉갠다 — 즉 애초에 <strong>고를 수 있는
+      후보에서 빼버린다</strong>. 부탁은 "안 지켜질 수 있는 요청"이고, 강제는 "지켜지지 않는 선택지
+      자체가 없어지는 것"이라는 차이가 이 15줄 코드 안에 그대로 들어있다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">직접 확인해볼 것</span>
+      <p class="fq"><code>evaluate()</code> 함수 정의를 찾아서, <code>positives</code>·<code>negatives</code>
+      판정이 어떤 기준으로 이뤄지는지 보라 — 의미(semantic)를 보는가, 아니면 다른 방식인가?</p>
+      <p class="fa"><strong>확인 포인트</strong>: <code>num_positive = np.sum([1 for phrase in positives if phrase in descr])</code>
+      — 문자열이 <strong>그대로 포함되는지</strong>만 본다. "의미"를 이해해서 판단하는 게 아니라
+      리터럴 문자열 매칭이다. 이게 K2(아래)의 답이기도 하다.</p>
+    </div>
+  </div>
+
+  <div class="item" id="m2">
+    <span class="qnum qq">M2</span>
+    <p class="qtext">규칙을 만족하는 후보가 하나도 안 남으면(막다른 길) 로짓 마스킹은 어떻게 하나?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>ch2 본문 2.1.3의 이합체시(아크로스틱) 예제가 실제 사례다. 매 행을 만들 때마다 "지금까지 만든
+      행의 첫 글자를 이으면 목표 단어의 접두사가 되는가"를 검사하고, 만족하는 후보가 하나도 없으면
+      방금 만든 행을 지우고 그 이전 지점으로 되감는다 — 이게 <strong>역추적(backtracking)</strong>이다.
+      모든 행을 지워도 안 되면 아예 다른 시작 단어로 처음부터 다시 시작한다. 최대 시도 횟수를 넘기면
+      거절 메시지를 낸다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">직접 확인해볼 것</span>
+      <p class="fq">역추적이 "한 걸음 물러나기"라는 게 1장 D3(빔 탐색)과 어떻게 겹치는지 생각해보라 —
+      둘 다 "경로 여러 개를 미리 내다본다"는 점에서 같은 계열의 기법인가?</p>
+      <p class="fa"><strong>확인 포인트</strong>: 그렇다. 로짓 마스킹의 역추적도 내부적으로 빔 탐색처럼
+      여러 후보 경로를 동시에 유지하다가, 규칙을 어긴 경로를 가지치기(pruning)하는 방식으로 구현된다
+      — "여러 수를 미리 내다보다가 나쁜 수만 골라 지운다"는 원리가 1장부터 계속 반복되는 셈이다.</p>
+    </div>
+  </div>
+
+  <!-- ============================================================ G ============================================================ -->
+  <div class="fam"><span class="fam-tag tm">G · 패턴2 문법</span><span class="fam-line"></span></div>
+
+  <div class="item" id="g1">
+    <span class="qnum qm">G1</span>
+    <p class="qtext">문법 제약이 "형식은 맞는데 내용이 틀린" 답을 강제로 만들어내는 실제 사례가 있나?</p>
+    <div class="codebox">
+      <span class="path">📓 <a href="https://github.com/lakshmanok/generative-ai-design-patterns/blob/main/examples/02_grammar/1_applying_grammar.ipynb" target="_blank" rel="noopener">examples/02_grammar/1_applying_grammar.ipynb</a> — 실제 실행 결과</span>
+      <pre># 문법: root ::= (expr "=" ws term "\n")+   (등호(=)만 허용, 부등호 없음)
+# 질문: "Bill·Mae 중 누가 사과가 오렌지보다 많은가?" (원래 "&gt;" 비교가 필요한 문제)</pre>
+      <div class="out">1 +2 = 3
+2 +4 = 6
+
+3 = 3
+6 = 6
+
+3 = 6
+3 = 6
+3 = 6
+... (똑같은 "3 = 6" 무한 반복)</div>
+    </div>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>있다. 문법이 "등호(=)"만 허용하고 "초과(&gt;)" 기호를 아예 문법에서 뺐기 때문에, 모델은
+      정답인 <code>(3+2) &gt; (2+4)</code>를 <strong>구조적으로 쓸 수 없다</strong>. 그 결과 형식은
+      끝까지 완벽하게 지켜지면서(등호 형태 유지) 내용은 "3 = 6"이라는 명백히 틀린 문장을 반복해서
+      뱉는, 사실상 무한 루프에 가까운 실패가 난다. <strong>형식 100% 보장이 정확도 향상을 보장하지
+      않는다</strong>는 걸 실제 실행 결과로 확인할 수 있는 사례다.</p>
+    </div>
+    <div class="block follow">
+      <span class="block-label">직접 확인해볼 것</span>
+      <p class="fq">이 문법에 "탈출구"를 하나 추가한다면 어떤 규칙을 더 넣어야 이 무한반복을 막을 수 있을까?</p>
+      <p class="fa"><strong>확인 포인트</strong>: 최소한 <code>&gt;</code>·<code>&lt;</code> 비교 연산자를
+      <code>expr</code> 규칙에 추가하거나, 2.2.4 고려사항에서 나온 것처럼 <code>Literal["Unknown"]</code>류의
+      "모르겠다/이 문법으로 표현 불가" 탈출 경로를 문법에 남겨둬야 한다. 탈출구가 없으면 모델은
+      끝까지 "그 안에서 제일 그럴듯한 틀린 답"을 억지로 계속 생성한다.</p>
+    </div>
+  </div>
+
+  <div class="item" id="g2">
+    <span class="qnum qm">G2</span>
+    <p class="qtext">BNF 문법·JSON 모드·데이터클래스 세 방식 중, 실무에서 기본값으로 삼아야 할 건 어느 쪽인가?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <div class="tablewrap">
+        <table class="reftable">
+          <thead><tr><th>방식</th><th>강제 위치</th><th>강점</th><th>약점</th></tr></thead>
+          <tbody>
+            <tr><td><strong>BNF 문법</strong></td><td>클라이언트(내 코드)</td><td>임의로 복잡한 검증 규칙 표현 가능</td><td>로그 확률 접근 필요, tokenizer에 직접 종속</td></tr>
+            <tr><td>JSON 모드</td><td>서버</td><td>구현 최소</td><td>필드명·내용까지는 보장 못 함</td></tr>
+            <tr><td><strong>데이터클래스/스키마</strong></td><td>서버</td><td>쉬움·빠름·모델 호환성 넓음</td><td>Enum 이상의 복잡한 검증은 어려움</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>데이터클래스(Pydantic 등)가 "실무의 90%"를 차지하는 기본값이다. BNF는 규칙이 동적이거나,
+      DB·규칙엔진에서 그때그때 가져와야 하거나, Enum으로 못 담는 복잡한 검증(신용카드 번호 규칙 등)이
+      필요할 때만 꺼내 쓴다.</p>
+    </div>
+  </div>
+
+  <!-- ============================================================ 핵심질문 ============================================================ -->
+  <div class="fam"><span class="fam-tag tfd">핵심질문 · 두 패턴을 엮어서 보기</span><span class="fam-line"></span></div>
+
+  <div class="item" id="k1">
+    <span class="qnum qfd">K1</span>
+    <p class="qtext">프롬프트에 "JSON으로만 답해"라고 쓰는 것과 로짓 마스킹은 무엇이 근본적으로 다를까?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>"JSON으로만 답해"는 <strong>부탁</strong>이다 — 모델의 지시 따르기 능력에 기대는 확률적
+      요청이고, 모델 버전이 바뀌면 예고 없이 깨질 수 있다(2.2.1의 안티패턴 경고와 동일). 로짓 마스킹은
+      <strong>강제</strong>다 — M1에서 본 것처럼 규칙을 어기는 후보의 로짓을 <code>-10000</code>으로
+      만들어 애초에 선택 가능한 후보에서 제거한다. 전자는 "안 지킬 수도 있는 요청", 후자는 "지키지
+      않는 선택지 자체가 존재하지 않음"이라는 차이다.</p>
+    </div>
+  </div>
+
+  <div class="item" id="k2">
+    <span class="qnum qfd">K2</span>
+    <p class="qtext">특정 토큰을 마스킹으로 막았을 때, 모델이 같은 의미를 다른 토큰으로 우회해 말할 수는 없는가?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>있다 — 그리고 그게 코드 구조상 당연한 결과다. M1의 <code>evaluate()</code>가 확인해준 대로,
+      규칙 검사는 <strong>리터럴 문자열 포함 여부</strong>(<code>phrase in descr</code>)만 본다.
+      실제로 protein drink 예제에서 모델은 금지어 "품질(quality)"을 피하려고 <strong>"프리미엄
+      (premium)"</strong>이라는, 목록에 없는 동의어로 우회했다 — 책 예시에서 이건 "성공"으로
+      다뤄지지만, 뒤집어 보면 <strong>목록에 없는 단어라면 의미가 같아도 걸러지지 않는다</strong>는
+      한계이기도 하다. 진짜 의미(semantic) 기반 차단이 필요하면 임베딩 유사도 검사 등 별도 로직을
+      더해야 하고, 로짓 마스킹 하나만으로는 안 된다.</p>
+    </div>
+  </div>
+
+  <div class="item" id="k3">
+    <span class="qnum qfd">K3</span>
+    <p class="qtext">문법 제약을 걸면 정확도가 같이 오를까? 형식만 맞고 내용 품질은 반대로 나빠질 수 있는가?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>아니다, 나빠질 수 있다 — G1의 "3 = 6" 무한반복이 정확히 이 사례다. 문법은 <strong>형식(구조)만
+      보장</strong>할 뿐 <strong>내용의 진위나 논리적 타당성은 전혀 보장하지 않는다</strong>. 오히려
+      필요한 표현(예: 부등호)을 문법에서 빼먹으면, 모델은 그 문법 안에서 가장 그럴듯한 <strong>틀린
+      답</strong>을 억지로 만들어낸다 — "형식이 완벽해 보인다"는 인상이 오히려 내용 검증을 방해할 수
+      있다는 게 핵심 함정이다.</p>
+    </div>
+  </div>
+
+  <div class="item" id="k4">
+    <span class="qnum qfd">K4</span>
+    <p class="qtext">모델을 다른 것으로 바꾸거나 tokenizer가 바뀌면 이 두 패턴 중 무엇이 먼저 깨지는가?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p><strong>문법(BNF)이 먼저 깨진다.</strong> <code>IncrementalGrammarConstraint(grammar_str,
+      "root", pipe.tokenizer)</code>는 문법 상태별로 허용되는 토큰 ID 집합을 그 토크나이저의
+      어휘집 기준으로 미리 계산해둔다 — 모델(토크나이저)을 바꾸면 이 매핑을 처음부터 다시 만들어야
+      한다. 반면 로짓 마스킹은 <code>tokenizer.decode(seq)</code>로 후보를 <strong>텍스트로 되돌린
+      뒤</strong> 규칙을 검사하므로, 토크나이저가 바뀌어도 <code>apply_rules</code> 검사 로직
+      자체는 거의 그대로 재사용된다. 텍스트 레벨 vs 토큰 레벨의 차이가 이식성의 차이로 이어진다.</p>
+    </div>
+  </div>
+
+  <div class="item" id="k5">
+    <span class="qnum qfd">K5</span>
+    <p class="qtext">상용 API가 제공하는 구조화 출력 기능이 있는데도 이 패턴을 직접 구현해야 하는 상황은 언제인가?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>G2 표의 BNF 쪽 조건과 같다 — ① 규칙이 <code>Enum</code> 수준을 넘는 복잡한 검증 로직일 때
+      (신용카드 번호 패턴 등) ② 규칙이 동적이거나 DB·규칙엔진에서 그때그때 가져와야 할 때 ③ 규칙이
+      사용자 입력에 의존할 때(자동완성처럼) ④ 외부 도구·API 호출 결과에 따라 마스킹 기준이 달라질
+      때. 이럴 땐 상용 API의 <code>response_schema</code>/<code>json_object</code> 같은 고정 스키마
+      기능으로는 표현이 안 되고, 로짓 마스킹이나 BNF를 직접 구현해야 한다 — 대신 로짓 접근권이 있는
+      모델(오픈AI·구글·자체 호스팅 오픈웨이트)로 제한된다는 대가가 따른다.</p>
+    </div>
+  </div>
+
+  <div class="item" id="k6">
+    <span class="qnum qfd">K6</span>
+    <p class="qtext">형식이 100% 보장되면 다운스트림 검증 로직을 지워도 되는가? 지우면 생기는 새 위험은?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>안 된다. 문법·로짓 마스킹이 보장하는 건 <strong>"이 모양이다"</strong>이지
+      <strong>"이 내용이 맞다"</strong>가 아니다 — K3의 "3 = 6" 사례가 그 증거다. 파싱 실패(형식
+      오류)에 대비한 방어 코드는 지워도 되지만, <strong>값의 논리적 타당성·범위·업무 규칙 위반
+      여부</strong>를 확인하는 검증까지 지우면 안 된다. 새로 생기는 위험은 <strong>자동화 편향
+      (automation bias)</strong>이다 — "형식이 완벽하니 내용도 맞겠지"라고 사람이 방심해서, 형식은
+      멀쩡하지만 내용이 틀린 결과가 검증 없이 그대로 다운스트림으로 흘러가는 사고가 오히려 더 조용히
+      발생한다.</p>
+    </div>
+  </div>
+
+  <div class="closing">
+    정리하면 — <b>부탁(프롬프트)은 확률적이고, 강제(로짓 마스킹·문법)는 결정적</b>이다. 다만 강제가
+    보장하는 건 언제나 <b>형식</b>뿐이고 <b>내용의 진실성은 여전히 사람 몫</b>이다. 로짓 마스킹은
+    텍스트 레벨이라 이식성이 좋고 로직을 직접 짜야 하며, 문법은 토큰 레벨이라 모델 교체에 취약한 대신
+    서버가 대신 감시해준다 — 이 트레이드오프를 기억해두면 6개 핵심질문 어디서 막혀도 원리로 되짚어갈
+    수 있다.
+  </div>
+
+  <p class="source">
+    원문 노트: <a href="generative-ai-design-patterns-ch2.html" style="color:var(--q);">신입사원의 말투를 붙잡다 — 2장 정리노트</a> ·
+    「에이전트 시대의 AI 시스템 설계」(발리아파 락슈마난·하네스 하프케 지음, 류광 옮김, 한빛미디어) 2장 패턴1·2를 바탕으로 한 개인 학습 문답노트.
+  </p>
+
+</div>
+</body>
+</html>
