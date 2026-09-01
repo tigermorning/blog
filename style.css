@@ -845,10 +845,10 @@ body.list-page .site-header {
 
 /* 사이드바 트리 순서: 바이브코딩(1) 안의 소분류 4개가 폴더 1~4,
    두 번째 대분류(보충수업 책장)가 폴더 5. */
-.sidebar-tree > li:nth-of-type(1) .tree-subgroup:nth-of-type(1) { --folder-accent: var(--folder-1); }
-.sidebar-tree > li:nth-of-type(1) .tree-subgroup:nth-of-type(2) { --folder-accent: var(--folder-2); }
-.sidebar-tree > li:nth-of-type(1) .tree-subgroup:nth-of-type(3) { --folder-accent: var(--folder-3); }
-.sidebar-tree > li:nth-of-type(1) .tree-subgroup:nth-of-type(4) { --folder-accent: var(--folder-4); }
+.sidebar-tree > li:nth-of-type(1) .tree-subgroup:nth-child(1) { --folder-accent: var(--folder-1); }
+.sidebar-tree > li:nth-of-type(1) .tree-subgroup:nth-child(2) { --folder-accent: var(--folder-2); }
+.sidebar-tree > li:nth-of-type(1) .tree-subgroup:nth-child(3) { --folder-accent: var(--folder-3); }
+.sidebar-tree > li:nth-of-type(1) .tree-subgroup:nth-child(4) { --folder-accent: var(--folder-4); }
 .sidebar-tree > li:nth-of-type(2) .tree-group,
 .sidebar-tree > li:nth-of-type(2) .tree-subgroup { --folder-accent: var(--folder-5); }
 
