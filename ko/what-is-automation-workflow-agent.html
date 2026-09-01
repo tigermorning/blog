@@ -2,10 +2,10 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>자동화·워크플로·에이전트, 뭐가 다를까 - Tigermorning</title>
+  <title>자동화·워크플로·에이전트, 뭐가 다를까 (1) - Tigermorning</title>
   <meta name="description" content="반복 업무를 AI에게 맡길 때 자동화·워크플로·에이전트가 뭐가 다른지, '다음 행동을 누가 정하는가'라는 질문 하나로 쉽게 갈라보고, n8n으로 직접 흐름을 만들어본 경험까지 정리했습니다.">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="자동화·워크플로·에이전트, 뭐가 다를까">
+  <meta property="og:title" content="자동화·워크플로·에이전트, 뭐가 다를까 (1)">
   <meta property="og:description" content="반복 업무를 AI에게 맡길 때 자동화·워크플로·에이전트가 뭐가 다른지, '다음 행동을 누가 정하는가'라는 질문 하나로 쉽게 갈라보고, n8n으로 직접 흐름을 만들어본 경험까지 정리했습니다.">
   <meta property="og:url" content="https://tigermorning.github.io/blog/ko/what-is-automation-workflow-agent.html">
   <meta property="og:locale" content="ko_KR">
@@ -23,7 +23,7 @@
   <div id="sidebar-mount"></div>
 
   <main>
-    <h1>자동화·워크플로·에이전트, 뭐가 다를까</h1>
+    <h1>자동화·워크플로·에이전트, 뭐가 다를까 (1)</h1>
     <p class="post-date">2026. 9. 1.</p>
     <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
 
@@ -34,7 +34,7 @@
     <ul>
       <li><strong>자동화</strong> = <strong>버스 노선</strong>. 정류장과 순서가 미리 정해져 있고, 그대로만 움직여요. "이 조건이면 이렇게 한다"는 규칙이 처음부터 끝까지 고정돼 있어요.</li>
       <li><strong>워크플로</strong> = <strong>내비게이션이 그려주는 경로</strong>. 갈림길마다 조건에 따라 이 길 저 길로 갈라지긴 하는데, 그 갈림길과 조건은 전부 사람이 미리 그려둔 지도 안에 있어요. 화면에 경로가 선으로 그대로 보이니까, 어디서 왜 이 길로 갔는지 되짚기도 쉬워요.</li>
-      <li><strong>에이전트</strong> = <strong>자율주행</strong>. 지금 상황(도로 상태, 신호)을 보고 그때그때 판단해서 다음 행동을 스스로 골라요. 유연하지만, 왜 그 판단을 했는지 되짚으려면 그 순간 뭘 보고 뭘 근거로 골랐는지까지 다 확인해야 해요.</li>
+      <li><strong><a href="what-is-ai-agent.html">에이전트</a></strong> = <strong>자율주행</strong>. 지금 상황(도로 상태, 신호)을 보고 그때그때 판단해서 다음 행동을 스스로 골라요. 유연하지만, 왜 그 판단을 했는지 되짚으려면 그 순간 뭘 보고 뭘 근거로 골랐는지까지 다 확인해야 해요.</li>
     </ul>
     <p>목적지는 같아도 뭔가 잘못됐을 때 "어디를 봐야 하는지"가 완전히 달라요. 버스 노선이 잘못됐으면 노선표를 고치면 되고, 내비 경로가 이상하면 어느 갈림길 조건이 잘못됐는지 확인하면 돼요. 그런데 자율주행이 이상한 선택을 했다면, 그 순간 무슨 정보를 봤고 어떤 도구를 쓸 수 있었고 왜 그렇게 판단했는지까지 다 들여다봐야 해요. 그래서 AI에게 일을 맡기는 정도가 커질수록, "얼마나 마음대로 하게 둘지"와 "사람이 언제 멈춰 세울지"를 더 분명히 정해둬야 했어요.</p>
     <p>중요한 건 이 셋이 딱 잘라 나뉜 별개의 도구가 아니라는 거예요. 하나의 서비스 안에서도 부분마다 다를 수 있어요. 대화창으로 AI와 얘기하다가 필요할 때만 미리 만들어둔 자동화를 불러 쓸 수도 있고, 내비게이션(워크플로) 안에 자율주행 판단(에이전트)이 한 조각 끼워져 있을 수도 있어요.</p>
@@ -60,7 +60,25 @@
 
     <p>정리하면 이래요. <strong>자동화는 정해진 노선을 반복하고, 워크플로는 미리 그려둔 지도 안에서 갈림길을 타고, 에이전트는 그때그때 상황을 보고 스스로 다음 행동을 골라요.</strong> 내 업무가 "무조건·항상·매번"으로 설명되면 자동화나 워크플로로 충분하고, 매번 다른 판단이 필요하면 에이전트 쪽으로 가되 어디까지 맡길지 권한과 멈출 지점을 더 분명히 정해둬야 해요.</p>
 
-    <p class="post-date">모두의연구소 "AI Agent 파헤치기" 커리큘럼 노드는 전체 7강인데, 이 글은 그중 앞 3강(다음 행동을 누가 정하는가 / 규칙과 그래프 / n8n 실습)을 묶어 정리했어요. 나머지 4강(코딩 에이전트에게 같은 흐름 맡기기, 워크플로에서 에이전트 쓰기, 판정, 셀프 호스팅)은 다음에 이어서 정리할게요.</p>
+    <p class="post-date">모두의연구소 "AI Agent 파헤치기" 커리큘럼 노드는 전체 7강인데, 이 글은 그중 앞 3강(다음 행동을 누가 정하는가 / 규칙과 그래프 / n8n 실습)을 묶어 정리했어요. 나머지 4강(코딩 에이전트에게 같은 흐름 맡기기, 워크플로에서 에이전트 쓰기, 판정, 셀프 호스팅)은 다음 글에서 이어가요.</p>
+
+    <a class="post-nav" href="n8n-agent-delegation-and-if-node.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">코딩 에이전트에게 흐름을 맡기고, IF 노드로 갈림길 만들기</span>
+    </a>
+
+    <hr>
+
+    <h3>"자동화·워크플로·에이전트" 시리즈</h3>
+    <p class="post-date">(1) 자동화·워크플로·에이전트, 뭐가 다를까 (이 글)</p>
+    <a class="post-nav" href="n8n-agent-delegation-and-if-node.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">코딩 에이전트에게 흐름을 맡기고, IF 노드로 갈림길 만들기</span>
+    </a>
+    <a class="post-nav" href="n8n-self-hosting-options.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">n8n 직접 띄워보기 — 셀프 호스팅, 어디까지 내 책임일까</span>
+    </a>
   </main>
   </div>
 

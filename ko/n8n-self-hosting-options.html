@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>n8n 직접 띄워보기 — 셀프 호스팅, 어디까지 내 책임일까 (3) - Tigermorning</title>
+  <meta name="description" content="수업 인스턴스에서 확인한 n8n 흐름을 내 컴퓨터나 서버로 옮기려 할 때 무엇이 달라지는지, 로컬 실행부터 Docker, SQLite/PostgreSQL, Redis 큐 모드, Kubernetes까지 셀프 호스팅 선택지를 운영 책임 기준으로 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="n8n 직접 띄워보기 — 셀프 호스팅, 어디까지 내 책임일까 (3)">
+  <meta property="og:description" content="수업 인스턴스에서 확인한 n8n 흐름을 내 컴퓨터나 서버로 옮기려 할 때 무엇이 달라지는지, 로컬 실행부터 Docker, SQLite/PostgreSQL, Redis 큐 모드, Kubernetes까지 셀프 호스팅 선택지를 운영 책임 기준으로 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/n8n-self-hosting-options.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1>n8n 직접 띄워보기 — 셀프 호스팅, 어디까지 내 책임일까 (3)</h1>
+    <p class="post-date">2026. 9. 1.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="n8n-agent-delegation-and-if-node.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">코딩 에이전트에게 흐름을 맡기고, IF 노드로 갈림길 만들기</span>
+    </a>
+
+    <p><a href="what-is-automation-workflow-agent.html">1편</a>과 <a href="n8n-agent-delegation-and-if-node.html">2편</a>에서 다룬 흐름은 전부 수업용 n8n 인스턴스 위에서 움직였어요. 판정까지 마친 흐름을 정말 내 손으로 운영해보고 싶어지면, 그다음 질문은 "어느 컴퓨터에 띄울까"예요. 내 노트북에서 n8n 화면이 뜨는 모습을 상상해보면, 운영 책임도 함께 내 쪽으로 옮겨온다는 뜻이라는 걸 알 수 있어요.</p>
+
+    <h2>왜 "어디에 띄울까"가 중요할까 — 책임이 함께 옮겨와요</h2>
+    <p><strong>셀프 호스팅</strong>은 다른 회사가 운영하는 환경 대신, 내가 관리하는 컴퓨터나 서버에서 n8n을 직접 실행하는 거예요. n8n은 Sustainable Use 라이선스를 따르는 fair-code 소프트웨어라서 이 방식으로 실행할 수 있어요. n8n Cloud에서는 n8n이 인스턴스를 운영해주고, 수업 인스턴스에서는 수업 운영 환경이 관리해줬어요. 셀프 호스팅에서는 실행 환경과 데이터 보관, 업데이트, 장애 대응을 전부 제가 관리해야 해요.</p>
+    <p>접속 주소만 달라지는 게 아니에요. 워크플로 정의와 실행 기록, 연결에 쓰는 비밀값이 어디에 남는지, 백업과 삭제, 접근 권한 회수를 누가 설계하고 확인하는지도 같이 바뀌어요. 데이터가 내 컴퓨터에 있다고 해서 저절로 안전해지는 건 아니에요. 그 컴퓨터에 누가 접근하는지, 백업이 있는지, 비밀값이 어디에 저장되는지는 따로 점검해야 해요.</p>
+
+    <h2>가장 짧은 경로 — 내 컴퓨터에서 127.0.0.1:5678</h2>
+    <p>도메인 없이 내 컴퓨터에서 n8n을 실행하면 <code>127.0.0.1:5678</code>로 접속할 수 있어요. <code>127.0.0.1</code>은 지금 쓰고 있는 그 컴퓨터 자신을 가리키는 주소고, 기본 포트 <code>5678</code>이 n8n 화면으로 연결해줘요. 혼자 살펴보는 로컬 실행에는 도메인과 HTTPS가 필요 없어요. <a href="domain-http-and-packets.html">도메인과 HTTPS</a>는 다른 사람이 인터넷을 통해 접속하도록 공개할 때 주소와 통신 암호화, 접근 경계를 관리하는 장치니까요. 로컬 실행은 공개 범위를 넓히지 않는 대신, 노트북을 끄면 n8n도 함께 멈춰요.</p>
+
+    <h2>Docker로 옮기기 — 상자 하나에 환경째로 담기</h2>
+    <p>Docker는 앱과 그 실행에 필요한 환경을 <strong>컨테이너</strong>라는 독립된 상자에 함께 담아 실행해요. n8n 이미지를 내려받아 컨테이너로 띄우면, 운영체제마다 필요한 프로그램을 따로 맞추는 수고를 줄여줘요. 같은 이미지를 쓰면 내 컴퓨터와 서버에서도 비슷한 조건으로 실행되고요. 그래서 Docker는 셀프 호스팅을 시작할 때 널리 쓰여요. 집 컴퓨터를 서버로 쓰는 다른 방법들은 <a href="deploying-and-free-hosting.html">배포, 무료 호스팅, 집 컴퓨터를 서버로</a>에도 정리해뒀어요.</p>
+
+    <h2>데이터는 어디에 쌓일까 — SQLite와 PostgreSQL</h2>
+    <p>n8n은 기본으로 <strong>SQLite</strong>를 써요. 이 둘을 포함해 <a href="why-database-needed.html">데이터베이스가 뭔가요</a>와 <a href="choosing-a-free-database.html">무료로 쓸 수 있는 데이터베이스 고르기</a>에서 SQL·NoSQL 계열의 차이를 더 자세히 다뤘어요. 이 경우 데이터는 내 컴퓨터의 파일 하나에 저장돼요. 혼자 관찰하거나 가볍게 실습하는 환경이라면 이 구성으로 충분해요. <strong>PostgreSQL</strong>은 별도로 실행하는 데이터베이스 프로세스에 데이터를 저장해요. 여러 사람이 지속적으로 쓰거나 백업·복구를 운영해야 하는 환경에서는 PostgreSQL을 권장해요.</p>
+
+    <h2>실행이 겹치기 시작하면 — Redis와 queue mode</h2>
+    <p>기본 구성에서는 단일 실행 프로세스가 들어온 작업을 전부 처리해요. 실행이 겹치기 시작하면 <strong>queue mode</strong>를 검토해요. 이 모드에서는 Redis가 작업 대기열을 관리하고, 여러 실행 프로세스가 작업을 나눠 처리해요. 처리량은 늘지만, Redis와 실행 프로세스 상태, 실패한 작업 기록까지 확인해야 할 대상도 함께 늘어나요.</p>
+
+    <h2>여러 서버로 커지면 — Kubernetes</h2>
+    <p><strong>Kubernetes(k8s)</strong>는 컨테이너를 여러 서버에 배치하고, 중지된 컨테이너를 다시 실행하며, 트래픽에 따라 컨테이너 수를 조절해줘요. n8n은 Kubernetes용 Helm 차트 배포를 지원해요. 개인이 로컬에서 살펴보는 환경에는 관리 대상이 너무 많아서 이 구성을 쓰지 않아요. 여러 서버에서 지속적인 서비스를 운영하는 환경에서, 컨테이너 상태를 매번 직접 관리하지 않으려고 사용해요.</p>
+
+    <h2>코딩 에이전트에게 셀프 호스팅을 맡길 때</h2>
+    <p>이런 구성을 처음 만날 때는 코딩 에이전트에 목적과 조건을 함께 전달했어요. "로컬에서 n8n을 Docker로 띄워 줘. 포트는 5678로 열고, 데이터는 볼륨에 남겨 줘. 실행 뒤에 확인할 주소와 생성된 파일·볼륨도 설명해 줘"라고 요청하는 식이에요. 제안된 설정은 그대로 믿지 않고, 사용한 이미지와 포트, 볼륨을 다시 읽어 확인했어요.</p>
+    <p>실행 뒤에는 브라우저에서 <code>127.0.0.1:5678</code>을 열어 화면이 보이는지, Docker의 실행 목록에서 n8n 컨테이너가 계속 동작하는지 확인했어요. 화면이 열리지 않으면 포트 충돌, 컨테이너 중지, 이미지 내려받기 실패처럼 관찰할 수 있는 신호부터 확인하고요. 비밀번호나 API 키가 요청문과 터미널 기록, 공유 화면에 남지 않았는지도 챙겨야 했어요.</p>
+
+    <h2>정리 — 규모가 아니라 운영 책임으로 고른다</h2>
+    <table>
+      <thead><tr><th>상황</th><th>검토할 구성</th><th>함께 확인할 운영 책임</th></tr></thead>
+      <tbody>
+        <tr><td>혼자 관찰</td><td>로컬 실행 + SQLite</td><td>컴퓨터와 데이터 파일의 보관·백업</td></tr>
+        <tr><td>소규모 팀</td><td>Docker + PostgreSQL</td><td>접근 권한, 데이터베이스 백업, 업데이트</td></tr>
+        <tr><td>실행이 많이 겹침</td><td>Docker + PostgreSQL + Redis queue mode</td><td>대기열, 실행자 상태, 실패 작업 기록</td></tr>
+        <tr><td>여러 서버를 운영</td><td>Kubernetes 배포</td><td>배포 상태, 장애 복구, 권한과 비용</td></tr>
+      </tbody>
+    </table>
+    <p>이 표를 정답표로 쓰지는 않았어요. 더 큰 구성이 더 나은 구성인 건 아니에요. 내 워크플로가 멈췄을 때 누가 확인하고 복구할 수 있는지에 맞춰 고르면 돼요. 셀프 호스팅은 결국 n8n을 내 환경에서 실행하면서, 데이터와 실행 기록을 어디에 두고 어떤 책임을 맡을지 스스로 정하는 일이었어요.</p>
+
+    <p>1편에서 자동화·워크플로·에이전트를 가른 기준은 "다음에 뭘 할지 누가 정하느냐"였어요. 2편에서 IF 노드와 AI Agent 노드를 나눠 쓸 때도, 판정문을 쓸 때도 같은 질문이 반복됐고요. 셀프 호스팅까지 오니 질문이 하나 더 늘었어요. "누가 정하느냐"뿐 아니라 "그 결과가 멈췄을 때 누가 책임지고 복구하느냐"도 함께 정해야, 흐름 하나를 실제로 내 손에 맡길 수 있었어요.</p>
+
+    <hr>
+
+    <h3>"자동화·워크플로·에이전트" 시리즈</h3>
+    <a class="post-nav" href="what-is-automation-workflow-agent.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">자동화·워크플로·에이전트, 뭐가 다를까</span>
+    </a>
+    <a class="post-nav" href="n8n-agent-delegation-and-if-node.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">코딩 에이전트에게 흐름을 맡기고, IF 노드로 갈림길 만들기</span>
+    </a>
+    <p class="post-date">(3) n8n 직접 띄워보기 — 셀프 호스팅, 어디까지 내 책임일까 (이 글)</p>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
