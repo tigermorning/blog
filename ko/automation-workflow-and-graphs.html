@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>자동화와 워크플로 — 규칙을 정하고 그래프를 잇는다 (2) - Tigermorning</title>
+  <meta name="description" content="'무조건·항상·매번'이 붙는 일과 사람의 판단이 필요한 일을 가르는 법, 여러 행동을 잇는 그래프라는 개념, 그리고 통제·관측·이식성·비용·데이터 경로 다섯 질문으로 자동화·워크플로·에이전트를 비교하는 법을 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="자동화와 워크플로 — 규칙을 정하고 그래프를 잇는다 (2)">
+  <meta property="og:description" content="'무조건·항상·매번'이 붙는 일과 사람의 판단이 필요한 일을 가르는 법, 여러 행동을 잇는 그래프라는 개념, 그리고 통제·관측·이식성·비용·데이터 경로 다섯 질문으로 자동화·워크플로·에이전트를 비교하는 법을 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/automation-workflow-and-graphs.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1>자동화와 워크플로 — 규칙을 정하고 그래프를 잇는다 (2)</h1>
+    <p class="post-date">2026. 9. 1.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="ai-agent-who-decides-next.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">반복 업무, AI에게 맡겨도 될까 — 다음 행동을 누가 정하는가</span>
+    </a>
+
+    <hr>
+
+    <h2>이게 "규칙"인지 아닌지 가려내는 법</h2>
+    <p>자동화에 맡길 일을 고를 때는 먼저 규칙을 확인해야 해요. 일을 설명하면서 <strong>"무조건", "항상", "매번"</strong>을 쓸 수 있다면 규칙이 비교적 선명해요. 새 문의에 접수 번호를 붙이는 일, 매일 아침 전날 매출을 표에 옮기는 일, 첨부가 없는 신청서에 안내를 보내는 일 — 이런 건 조건과 결과를 그대로 이어 적을 수 있어요.</p>
+    <p>반대로 "친절하게 답합니다"나 "중요한 메일부터 봅니다"에는 사람의 판단이 끼어들어요. 규칙인지 아닌지 시험하는 방법이 하나 있는데, <strong>낯선 동료에게 이 일을 가르친다고 상상</strong>해보는 거예요. 동료가 "이 경우에는 어떻게 하나요"라고 물었을 때 "알아서 해주세요"라고 답하게 된다면, 그 부분은 아직 규칙이 아니에요. 자동화는 빈틈을 알아서 메우는 마술이 아니라, <strong>빈틈까지 적어 둔 조리법</strong>처럼 작동해요.</p>
+
+    <h2>여러 행동을 잇는 설계도, 그래프</h2>
+    <p>업무는 한 번의 행동으로 끝나지 않는 경우가 많아요. 문의를 받고 분류하고, 답을 고르고 기록하고, 필요하면 담당 부서로 넘기고요. 이렇게 여러 행동을 연결한 설계도를 <strong>그래프</strong>라고 불러요. 그래프에는 행동을 나타내는 점과 흐름을 나타내는 화살표가 있고, 조건에 따라 길이 갈라지며, 실행 기록도 각 흐름에 남아요.</p>
+    <p>그래프가 순서를 정하는 워크플로에서는 사람이 경로를 미리 정해둬요. 새 문의를 분류하고, 환불 관련 문의는 담당 부서로 보내고, 나머지는 일반 답변 흐름으로 보내는 식이에요. Anthropic은 워크플로를 <strong>"미리 정의된 코드 경로로 LLM과 도구가 조율되는 시스템"</strong>으로 정의해요(출처: <a href="https://www.anthropic.com/research/building-effective-agents" target="_blank" rel="noopener">Anthropic, Building effective agents</a>). 그러니까 워크플로의 핵심은 모델이 자유롭게 움직이는 데 있지 않아요. <strong>정해 둔 경로와 분기, 그리고 검토할 수 있는 기록</strong>에 있어요.</p>
+
+    <h2>제품 이름 대신 다섯 가지 질문으로 비교하기</h2>
+    <p>도구 소개 페이지에서는 기능 수가 먼저 눈에 들어와요. 연결 가능한 서비스 수나 모델 이름은 쉽게 확인되니까요. 그런데 기능 수는 업무의 위험과는 무관해요. 연결이 많아도 입력을 어디서 읽었는지 알 수 없다면 잘못된 결과를 고치기 어렵고, 반대로 기능이 적어도 읽기 전용 공개 데이터로 검토용 초안만 만드는 일이라면 오히려 더 안전할 수 있어요.</p>
+    <p>그래서 비교할 때는 다섯 가지 질문을 써요.</p>
+    <table>
+      <thead><tr><th>질문</th><th>확인할 것</th></tr></thead>
+      <tbody>
+        <tr><td>통제</td><td>누가 시작·중지·승인·쓰기 권한을 정하는가</td></tr>
+        <tr><td>관측</td><td>입력·도구 호출·응답·실패 지점을 기록으로 되짚을 수 있는가</td></tr>
+        <tr><td>이식성</td><td>프롬프트·연결 규칙·코드·비밀값을 다른 환경으로 옮길 때 무엇을 다시 준비해야 하는가</td></tr>
+        <tr><td>비용</td><td>구독·모델 처리량·실행 횟수처럼 어떤 단위로 요금이 계산되는가</td></tr>
+        <tr><td>데이터 경로</td><td>입력·로그·모델·결과·비밀값이 어느 서비스와 저장 위치를 지나는가</td></tr>
+      </tbody>
+    </table>
+
+    <p>예시로 "매일 아침 공개 API에서 정보를 읽고 세 문장으로 요약받는 업무"를 이 세 국면에 각각 놓아봤어요.</p>
+    <table>
+      <thead><tr><th>국면</th><th>이 업무에서 확인할 것</th></tr></thead>
+      <tbody>
+        <tr><td>사람이 하나씩 시킴</td><td>사람이 매일 대화에서 요청해요. 예약·연결 기능을 켜고 끄는 권한, 원문 응답을 따로 저장·재열람할 수 있는지, 대화 지시와 연결 설정을 다른 계정으로 옮길 수 있는지, 플랜 사용량 한도와 연결 도구 사용량이 같은 한도인지, 공개 데이터·대화 내용·연결 도구 입력이 각각 어느 제공자에게 전달되는지를 확인해요.</td></tr>
+        <tr><td>그래프가 순서를 정함</td><td>정해 둔 시각의 실행과 요약 전송을 수정·중지하는 권한, 발송 전 별도 승인 여부, 각 실행의 요청·응답·분기·오류가 실행 기록에 남는지, 워크플로를 내보낸 뒤 비밀값을 다시 넣어야 하는지, 하루 한 번의 실행이 어떤 단위로 과금되는지, 호스팅 위치와 외부 모델·API 사이의 데이터 이동을 확인해요.</td></tr>
+        <tr><td>모델이 다음을 고름</td><td>일정 설정·코드 변경·파일 저장·메시지 발송마다 필요한 승인 경로, 실행 명령·코드 변경·출력·오류를 사람이 재현할 수 있는지, 저장소 코드와 환경 변수 중 다른 컴퓨터에서 다시 준비할 내용, 계정·모델·실행 환경 비용이 각각 어떻게 잡히는지, 공개 데이터 요청부터 로컬 파일·환경 변수·모델 입력까지의 연결 경로를 확인해요.</td></tr>
+      </tbody>
+    </table>
+    <p>이 표는 제품의 승자를 가리는 도구가 아니에요. <strong>확인하지 않은 전제를 드러내는 도구</strong>로 쓰는 게 맞아요. 그래프 기반 도구도 이름만으로 판단할 수 없어요. 워크플로 전체가 한 번 실행된 걸 execution이라 부르며 그 단위로 과금하는 도구가 있는가 하면, 노드 하나하나에 과금을 매기는 도구도 있거든요. 그래서 과금 표의 숫자만 나란히 두고 비교하지 않는 게 좋아요. 코드가 저장소에 있어도 실행 환경과 비밀값을 재현하지 못하면 업무 전체를 옮길 수 없다는 것도 같은 이유예요.</p>
+    <p>이제 이 질문들을 화면에서 직접 확인해볼 차례예요. 다음 글에서는 그래프형 도구 가운데 하나인 n8n으로 트리거·연결·실행 기록이 실제로 어떻게 이어지는지 살펴볼게요.</p>
+
+    <a class="post-nav" href="observing-n8n-workflow-instance.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">그래프형 워크플로 도구를 직접 관찰하다 — n8n 실습</span>
+    </a>
+
+    <hr>
+
+    <h3>"자동화에서 에이전트까지" 시리즈</h3>
+    <a class="post-nav" href="ai-agent-who-decides-next.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">반복 업무, AI에게 맡겨도 될까 — 다음 행동을 누가 정하는가</span>
+    </a>
+    <p class="post-date">(2) 자동화와 워크플로 — 규칙을 정하고 그래프를 잇는다 (이 글)</p>
+    <a class="post-nav" href="observing-n8n-workflow-instance.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">그래프형 워크플로 도구를 직접 관찰하다 — n8n 실습</span>
+    </a>
+    <p class="post-date">이 커리큘럼 노드는 전체 7강으로, 지금은 앞 3강만 정리했어요. 나머지 4강은 다음에 이어서 정리할게요.</p>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
