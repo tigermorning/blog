@@ -552,25 +552,6 @@
         </ol>
       </li>
       <li><a href="#s6"><span class="n">2.6</span>요약</a></li>
-      <li>
-        <a href="#review"><span class="n">Q&amp;A</span>문답 복습노트</a>
-        <ol class="sub">
-          <li><a href="#q1">Q1 로짓 마스킹</a></li>
-          <li><a href="#q2">Q2 될 때까지 재시도</a></li>
-          <li><a href="#q3">Q3 문법 vs 로짓 마스킹</a></li>
-          <li><a href="#q4">Q4 BNF vs 데이터클래스</a></li>
-          <li><a href="#q5">Q5 퓨샷 vs 미세조정</a></li>
-          <li><a href="#q6">Q6 스타일 전이 전제조건</a></li>
-          <li><a href="#q7">Q7 역중립화 vs 스타일 전이</a></li>
-          <li><a href="#q8">Q8 역중립화 세 단계</a></li>
-          <li><a href="#q9">Q9 과다 중립화</a></li>
-          <li><a href="#q10">Q10 A/B 테스트 세 문제</a></li>
-          <li><a href="#q11">Q11 선호도 데이터셋</a></li>
-          <li><a href="#q12">Q12 분포 내 요구사항</a></li>
-          <li><a href="#q13">Q13 DPO는 왜 적은 데이터로 되나</a></li>
-          <li><a href="#q14">Q14 다섯 패턴, 언제 뭘 쓰나</a></li>
-        </ol>
-      </li>
     </ol>
   </nav>
 
@@ -595,7 +576,6 @@
       <li><a href="#s4"><b>2.4</b>역중립화</a></li>
       <li><a href="#s5"><b>2.5</b>콘텐츠 최적화</a></li>
       <li><a href="#s6"><b>2.6</b>요약</a></li>
-      <li><a href="#review"><b>Q&amp;A</b>문답 복습노트</a></li>
     </ul>
   </header>
 
@@ -669,7 +649,7 @@
     <p style="font-size:13px; color:var(--ink-faint); margin-top:-8px;">
       다섯 패턴은 서로 배타적이지 않아요 — 규정 준수가 걸린 부분은 로짓 마스킹·문법으로 엄격하게
       강제하고, 미묘한 어조는 스타일 전이·역중립화로, 정답이 없는 최적화는 콘텐츠 최적화로 조합해서
-      쓰는 경우가 많아요. 아래 본문을 다 읽은 뒤에는 <a href="#review">문답 복습노트</a>로 걸리는
+      쓰는 경우가 많아요. 아래 본문을 다 읽은 뒤에는 <a href="generative-ai-design-patterns-ch2-review.html">문답 복습노트</a>로 걸리는
       지점이 남았는지 확인해보세요.
     </p>
   </section>
@@ -1678,167 +1658,8 @@ class AdsComparison:
     </p>
   </section>
 
-  <!-- Q&A -->
-  <section class="sec" id="review">
-    <div class="sec-head">
-      <span class="sec-num">Q&amp;A</span>
-      <h2 class="h2">걸리기 쉬운 지점만 골라서</h2>
-    </div>
-    <p>
-      위 본문을 다 읽었으면, 아래 열네 문항으로 걸리는 지점이 남아있는지 확인해보세요. 정답을 보기
-      전에 먼저 스스로 답해보는 걸 추천해요.
-    </p>
-
-    <div class="qa-fam">2.1 · 로짓 마스킹</div>
-    <div class="qa-item" id="q1">
-      <span class="qa-tag">Q1</span>
-      <p class="qa-q">로짓 마스킹이 정확히 어느 시점에, 무엇을 하는 건가?</p>
-      <p class="qa-a">모델이 다음 토큰을 <strong>고르기 직전</strong>, 후보 토큰마다 매겨진 점수(로짓)
-      중에서 규칙을 어기는 후보의 점수를 <strong>음의 무한대(선택 확률 0)</strong>로 떨어뜨린다.
-      전체 글이 다 만들어진 뒤 검사하는 게 아니라, 토큰이 하나씩 나올 때마다 실시간으로 개입한다는
-      점이 핵심이다.</p>
-      <div class="qa-follow">
-        <span class="qa-flabel">추가문제</span>
-        <p class="fq">규칙을 만족하는 후보가 하나도 안 남으면 어떻게 되나?</p>
-        <p class="fa">한 걸음 물러나(역추적) 방금 만든 토큰을 취소하고 그 이전 지점에서 다시
-        시도한다. 그래도 안 되면 최대 시도 횟수를 넘겼는지 확인하고, 넘겼으면 거절 메시지를 낸다.</p>
-      </div>
-    </div>
-    <div class="qa-item" id="q2">
-      <span class="qa-tag">Q2</span>
-      <p class="qa-q">"될 때까지 재시도" 방식은 왜 안티패턴인가?</p>
-      <p class="qa-a">성공률이 낮아질수록 재시도 횟수가 기하급수적으로 늘어난다. 성공률 90%면 평균
-      1.1회로 괜찮지만, 30%로 떨어지면 평균 3.3회(지연시간 +230%), 운 나쁘면 13회까지 필요할 수
-      있다. 게다가 언젠가 반드시 성공한다는 보장도 없다. 성공률이 아주 높을 때만 봐줄 만한
-      방식이다.</p>
-    </div>
-
-    <div class="qa-fam">2.2 · 문법</div>
-    <div class="qa-item" id="q3">
-      <span class="qa-tag">Q3</span>
-      <p class="qa-q">문법 패턴은 로짓 마스킹과 원리가 같다는데, 실질적으로 뭐가 다른가?</p>
-      <p class="qa-a">원리(토큰 후보의 확률을 0으로 만든다)는 완전히 같다. 다른 건 <strong>그 검열을
-      누가 실행하느냐</strong>다. 로짓 마스킹은 우리가 직접 만든 코드가 클라이언트 쪽에서 감시하고,
-      문법 패턴은 우리가 규칙(BNF나 스키마)만 넘기면 모델 제공업체의 서버가 알아서 감시해준다.</p>
-    </div>
-    <div class="qa-item" id="q4">
-      <span class="qa-tag">Q4</span>
-      <p class="qa-q">BNF 문법과 파이썬 데이터클래스, 언제 뭘 골라야 하나?</p>
-      <div class="ptable-wrap">
-        <table class="ptable">
-          <thead><tr><th>상황</th><th>선택</th></tr></thead>
-          <tbody>
-            <tr><td>단순 표현 수준을 넘는 복잡한 검증 로직이 필요할 때</td><td><strong>BNF 문법</strong></td></tr>
-            <tr><td>규칙이 동적이거나 DB·규칙엔진에서 가져와야 할 때</td><td><strong>BNF 문법</strong></td></tr>
-            <tr><td>빠르게 작성하고, 서버 쪽에서 처리해 지연시간을 줄이고 싶을 때</td><td><strong>데이터클래스</strong></td></tr>
-            <tr><td>로그 확률 접근이 안 되는 모델을 써야 할 때</td><td><strong>데이터클래스</strong></td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="qa-fam">2.3 · 스타일 전이</div>
-    <div class="qa-item" id="q5">
-      <span class="qa-tag">Q5</span>
-      <p class="qa-q">퓨샷 학습과 미세조정, 트레이드오프는?</p>
-      <p class="qa-a"><strong>퓨샷</strong>은 구현이 간단하지만 예시가 늘수록 프롬프트가 길어져
-      지연시간·컨텍스트 한계에 부딪히고, 스타일 강제력도 암묵적이다. <strong>미세조정</strong>은
-      더 많은 예시(보통 100개 이상)로 더 정교하고 빠르고 저렴하게 실행되지만, 데이터 큐레이션·훈련
-      비용·전문 역량이라는 부담이 따른다.</p>
-    </div>
-    <div class="qa-item" id="q6">
-      <span class="qa-tag">Q6</span>
-      <p class="qa-q">스타일 전이를 쓸 수 있으려면 어떤 세 조건이 맞아야 하나?</p>
-      <p class="qa-a">① 바꾸고 싶은 원본 콘텐츠는 이미 있거나 쉽게 구할 수 있고(가용 콘텐츠), ②
-      원하는 스타일이 규칙으로 표현하기 어려울 만큼 미묘하며(미묘한 스타일), ③ 전문가가 실제로
-      변환한 입력-출력 예시를 몇 개라도 갖고 있어야(전이 예시 확보) 한다. 이 중 ③이 없다면 다음 절의
-      역중립화를 대신 써야 한다.</p>
-    </div>
-
-    <div class="qa-fam">2.4 · 역중립화</div>
-    <div class="qa-item" id="q7">
-      <span class="qa-tag">Q7</span>
-      <p class="qa-q">역중립화는 스타일 전이와 근본적으로 뭐가 다른가?</p>
-      <p class="qa-a">스타일 전이는 <strong>사람이 직접 만든 입력-출력 예시 쌍</strong>이 있어야
-      한다. 역중립화는 그런 쌍이 없어도 된다 — 대신 AI로 중립 버전을 먼저 만들고, 그 과정의 입력·
-      출력을 뒤집어서 훈련 데이터를 스스로 만들어낸다.</p>
-    </div>
-    <div class="qa-item" id="q8">
-      <span class="qa-tag">Q8</span>
-      <p class="qa-q">역중립화의 세 단계는? "역"이라는 이름은 어디서 왔나?</p>
-      <p class="qa-a">① 중립 콘텐츠 생성(개인 스타일 글 → 중립 버전으로 재작성), ② 입력·출력을
-      뒤집어 훈련 데이터셋 생성(중립 버전이 입력, 원래의 개인 스타일이 출력), ③ 그 데이터셋으로
-      미세조정. 1단계의 입력·출력을 2단계에서 <strong>거꾸로</strong> 뒤집기 때문에 "역"중립화라고
-      부른다.</p>
-    </div>
-    <div class="qa-item" id="q9">
-      <span class="qa-tag">Q9</span>
-      <p class="qa-q">과다 중립화란 무엇이고 왜 문제인가?</p>
-      <p class="qa-a">중립화를 지나치게 강하게 걸어서, 스타일뿐 아니라 콘텐츠의 <strong>내용이나
-      명확성 자체</strong>까지 사라지는 현상이다. 내용이 스타일과 너무 얽혀 있는 텍스트일수록 위험이
-      크므로, 여러 중립 형태를 실험해서 의미가 가장 잘 보존되는 것을 골라야 한다.</p>
-    </div>
-
-    <div class="qa-fam">2.5 · 콘텐츠 최적화</div>
-    <div class="qa-item" id="q10">
-      <span class="qa-tag">Q10</span>
-      <p class="qa-q">전통적 A/B 테스트의 세 가지 문제를, 콘텐츠 최적화는 각각 어떻게 우회하나?</p>
-      <p class="qa-a"><strong>구별 불가</strong>는 "매번 두 개를 직접 비교해서 이긴 쪽을 그때그때 A로
-      부르는" 방식으로, <strong>불확실한 테스트</strong>는 "테스트 = 한 번의 비교"로 통계적 유의성
-      요구 자체를 없애는 방식으로, <strong>결과 적용 불가</strong>는 "프롬프트는 그대로 두고 모델
-      가중치 자체를 선호도 조정으로 바꿔버리는" 방식으로 우회한다.</p>
-    </div>
-    <div class="qa-item" id="q11">
-      <span class="qa-tag">Q11</span>
-      <p class="qa-q">DPO 훈련 데이터셋 한 줄은 어떤 세 정보로 구성되나?</p>
-      <p class="qa-a"><strong>prompt</strong>(같은 프롬프트, 재작성한 경우 원본), <strong>chosen</strong>
-      (승자로 판정된 콘텐츠), <strong>rejected</strong>(패자로 판정된 콘텐츠). 이 세 필드로 이루어진
-      예시를 수십~수백 개 모은 것이 훈련 데이터셋이다.</p>
-    </div>
-    <div class="qa-item" id="q12">
-      <span class="qa-tag">Q12</span>
-      <p class="qa-q">"분포 내 요구사항"이 왜 중요한가?</p>
-      <p class="qa-a">선호도 조정은 어디까지나 <strong>이미 낼 수 있는 답들 중 어느 쪽을 더 자주
-      내느냐</strong>를 바꾸는 것이지, 모델에 <strong>새로운 사실이나 새 토큰을 가르치지는
-      못한다</strong>. 그래서 콘텐츠를 생성하는 모델이 만든 결과물은, 반드시 선호도 조정으로 훈련될
-      모델이 이미 낼 수 있는 범위 안에 있어야 한다.</p>
-      <div class="qa-follow">
-        <span class="qa-flabel">후속질문</span>
-        <p class="fq">소규모 모델이 애초에 그런 수준의 콘텐츠를 못 낸다면?</p>
-        <p class="fa">더 큰 모델로 콘텐츠를 만든 뒤, 소규모 모델을 그 콘텐츠를 낼 수 있는 수준까지
-        먼저 지도학습(지시사항 조정)으로 끌어올리고, 그다음에 DPO를 수행하는 "어려운 방법"을 쓴다.</p>
-      </div>
-    </div>
-    <div class="qa-item" id="q13">
-      <span class="qa-tag">Q13</span>
-      <p class="qa-q">DPO는 왜 예시 100개 정도의 적은 데이터로도 충분한가?</p>
-      <p class="qa-a">통상적인 딥러닝은 데이터의 <strong>양</strong>이 중요하지만, 선호도 조정은
-      데이터의 <strong>질</strong>이 훨씬 중요하다. 책의 예제에서도 예시 100개로 GPU 한 장에서
-      약 3분 만에 훈련이 끝났다. 그래서 평가만 자동화돼 있다면 네 단계 전체를 빠르게 반복해서, 매번
-      더 나아진 모델로 훈련 데이터셋 자체를 계속 개선해나갈 수 있다.</p>
-    </div>
-
-    <div class="qa-fam">2장 전체</div>
-    <div class="qa-item" id="q14">
-      <span class="qa-tag">Q14</span>
-      <p class="qa-q">다섯 패턴 중 실제로는 뭘 기준으로 골라야 하나?</p>
-      <p class="qa-a"><strong>규정 준수가 필수</strong>라면 강제력이 확실한 로짓 마스킹·문법을
-      먼저 고려한다. <strong>스타일을 규칙으로 못 박기 어렵지만 예시는 있다</strong>면 스타일
-      전이를, <strong>예시(원본)조차 없다</strong>면 역중립화를 쓴다. <strong>무엇이 좋은 스타일인지
-      아무도 설명 못 한다</strong>면 콘텐츠 최적화로 "이겼다/졌다"만 계속 판정시켜 모델이 스스로
-      찾아가게 한다. 실무에서는 이 다섯을 섞어 쓰는 경우가 많다 — 예를 들어 문법으로 형식을 강제한
-      콘텐츠끼리 콘텐츠 최적화로 문체를 겨루게 할 수도 있다.</p>
-    </div>
-
-    <div class="analogy">
-      한 장 지도로 정리하면 — <b>실시간 검열(2.1)·정해진 서식(2.2)·견습(2.3)·뒤집기 요령(2.4)·서바이벌
-      오디션(2.5)</b>. 앞으로 갈수록 사람이 규칙을 덜 적어주고, 모델이 예시나 판정 결과로부터 스스로
-      더 많이 알아내야 하는 방향으로 나아간다는 게 이 다섯 칸의 숨은 순서예요.
-    </div>
-  </section>
-
   <p style="text-align:center;">
-    <a href="generative-ai-design-patterns-ch1.html" style="font-family:var(--font-mono); font-size:13px; color:var(--accent-strong); text-decoration:none;">← 1장 — 프롬프트에서 에이전트까지</a>
+    <a href="generative-ai-design-patterns-ch2-review.html" style="font-family:var(--font-mono); font-size:13px; color:var(--accent-strong); text-decoration:none;">다음 — 2장 복습노트: 문답으로 다시 짚기 →</a>
   </p>
 
   <div class="divider-note">여기까지가 2장이에요</div>

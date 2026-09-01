@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="description" content="「에이전트 시대의 AI 시스템 설계」 2장 문답 복습노트 — 다섯 패턴을 14개 문답으로 걸리기 쉬운 지점만 골라 정리했습니다. 저작권 보호를 위해 비밀번호로 가려두었습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="2장 복습노트 — 걸리기 쉬운 지점만 골라서 (비공개)">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/generative-ai-design-patterns-ch2-review.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+<title>2장 복습노트 — 걸리기 쉬운 지점만 골라서</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+  :root{
+    --paper: #f2f5f7;
+    --surface: #ffffff;
+    --surface-2: #e8edf1;
+    --ink: #1b2330;
+    --ink-soft: #57626f;
+    --ink-faint: #88929c;
+    --line: #d7dee4;
+    --accent: #a86a1c;
+    --accent-strong: #8a5612;
+    --accent-teal: #1f7a6c;
+    --accent-teal-soft: #e4f1ee;
+    --accent-soft: #f4e7d3;
+    --shadow: 0 1px 2px rgba(27,35,48,.04), 0 8px 24px rgba(27,35,48,.06);
+    --font-display: "Gowun Batang", "Noto Serif KR", serif;
+    --font-body: "IBM Plex Sans KR", "Noto Sans KR", -apple-system, sans-serif;
+    --font-mono: "IBM Plex Mono", "Noto Sans Mono", monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper: #10151c; --surface: #171d26; --surface-2: #1f2731;
+      --ink: #e7ebf0; --ink-soft: #a4afbb; --ink-faint: #6d7885; --line: #2a3340;
+      --accent: #dda252; --accent-strong: #f0b871;
+      --accent-teal: #4bb3a0; --accent-teal-soft: #16302c; --accent-soft: #2d2314;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper: #10151c; --surface: #171d26; --surface-2: #1f2731;
+    --ink: #e7ebf0; --ink-soft: #a4afbb; --ink-faint: #6d7885; --line: #2a3340;
+    --accent: #dda252; --accent-strong: #f0b871;
+    --accent-teal: #4bb3a0; --accent-teal-soft: #16302c; --accent-soft: #2d2314;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+  }
+
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{ margin:0; background:var(--paper); color:var(--ink); font-family:var(--font-body); line-height:1.75; font-size:16px; -webkit-font-smoothing:antialiased; }
+  a{color:var(--accent-strong);}
+  a:focus-visible, button:focus-visible, input:focus-visible{ outline:2px solid var(--accent-teal); outline-offset:3px; border-radius:4px; }
+  ::selection{background:var(--accent-soft); color:var(--ink);}
+
+  .page{ max-width:1120px; margin:0 auto; padding:0 20px 96px; display:grid; grid-template-columns:226px minmax(0,760px); gap:56px; align-items:start; }
+  .wrap{min-width:0;}
+
+  .side-nav{ position:sticky; top:28px; align-self:start; max-height:calc(100vh - 56px); overflow-y:auto; padding:32px 10px 32px 0; font-size:13.5px; }
+  .side-nav-title{ font-family:var(--font-mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint); margin:0 0 14px; padding-bottom:12px; border-bottom:1px solid var(--line); }
+  .side-nav ol{list-style:none; margin:0; padding:0;}
+  .side-nav > ol > li{margin-bottom:2px;}
+  .side-nav a{ display:flex; align-items:center; gap:9px; text-decoration:none; color:var(--ink-soft); padding:7px 9px; border-radius:7px; line-height:1.4; transition:background .15s, color .15s; }
+  .side-nav a:hover{background:var(--surface-2); color:var(--ink);}
+  .side-nav a.active{color:var(--accent-strong); background:var(--accent-soft); font-weight:600;}
+  .side-nav .n{font-family:var(--font-mono); font-size:11px; color:var(--accent); flex:none; width:24px;}
+  @media (max-width:960px){ .page{grid-template-columns:1fr; gap:0;} .side-nav{display:none;} }
+
+  .hero{ padding:64px 0 40px; border-bottom:1px solid var(--line); margin-bottom:40px; }
+  .kicker{ display:inline-flex; align-items:center; gap:8px; font-family:var(--font-mono); font-size:12.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--accent-teal); margin-bottom:18px; }
+  .kicker::before{ content:""; width:16px; height:1px; background:var(--accent-teal); }
+  h1.title{ font-family:var(--font-display); font-weight:700; font-size:clamp(34px, 6vw, 50px); line-height:1.22; margin:0 0 18px; text-wrap:balance; color:var(--ink); }
+  .lede{ font-size:17.5px; color:var(--ink-soft); max-width:60ch; margin:0 0 22px; }
+  .meta{ font-family:var(--font-mono); font-size:12.5px; color:var(--ink-faint); }
+
+  section.sec{margin:0 0 64px; scroll-margin-top:24px;}
+  p{margin:0 0 15px; color:var(--ink);}
+  strong{color:var(--ink); font-weight:600;}
+
+  .ptable{ width:100%; border-collapse:collapse; margin:18px 0 22px; font-size:13.5px; background:var(--surface); border:1px solid var(--line); border-radius:12px; overflow:hidden; box-shadow:var(--shadow); }
+  .ptable th, .ptable td{ text-align:left; padding:12px 16px; border-bottom:1px solid var(--line); }
+  .ptable th{ font-family:var(--font-mono); font-size:11.5px; letter-spacing:.04em; text-transform:uppercase; color:var(--ink-faint); background:var(--surface-2); font-weight:500; }
+  .ptable tr:last-child td{ border-bottom:none; }
+  .ptable td strong{ color:var(--accent-strong); }
+  .ptable-wrap{ overflow-x:auto; }
+
+  .analogy{ background:var(--surface-2); border-radius:12px; padding:16px 18px; margin:14px 0 20px; font-size:14.5px; color:var(--ink-soft); }
+  .analogy b{color:var(--accent-strong); font-weight:600;}
+
+  .qa-fam{ margin:28px 0 12px; font-family:var(--font-mono); font-size:11.5px; font-weight:600; letter-spacing:.05em; color:var(--accent-strong); padding-bottom:8px; border-bottom:1px solid var(--line); }
+  .qa-fam:first-of-type{ margin-top:6px; }
+  .qa-item{ border:1px solid var(--line); border-radius:12px; background:var(--surface); padding:18px 20px; margin:0 0 14px; box-shadow:var(--shadow); scroll-margin-top:24px; }
+  .qa-tag{ display:inline-block; font-family:var(--font-mono); font-size:11px; font-weight:700; color:var(--accent-strong); background:var(--accent-soft); padding:2px 9px; border-radius:5px; margin-bottom:9px; }
+  .qa-q{ margin:0 0 10px; font-size:15px; font-weight:600; color:var(--ink); }
+  .qa-a{ margin:0; font-size:14px; color:var(--ink-soft); }
+  .qa-a strong{ color:var(--accent-strong); }
+  .qa-a + .qa-a{ margin-top:8px; }
+  .qa-follow{ margin-top:12px; padding:12px 14px; border-radius:8px; background:var(--accent-teal-soft); font-size:13.5px; }
+  .qa-flabel{ display:block; font-family:var(--font-mono); font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; color:var(--accent-teal); margin-bottom:6px; font-weight:600; }
+  .qa-follow .fq{ margin:0 0 6px; font-weight:600; color:var(--ink); }
+  .qa-follow .fa{ margin:0; color:var(--ink-soft); }
+
+  .divider-note{ display:flex; align-items:center; gap:10px; font-size:12.5px; color:var(--ink-faint); margin:26px 0; }
+  .divider-note::before, .divider-note::after{content:""; flex:1; height:1px; background:var(--line);}
+
+  .deeper{ background:var(--accent-teal-soft); border:1px solid var(--accent-teal); border-radius:14px; padding:20px 22px; margin:34px 0; }
+  .deeper .dl{ font-family:var(--font-mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--accent-teal); margin-bottom:8px; }
+  .deeper a{ color:var(--accent-teal); font-weight:600; }
+  .deeper .note{ font-size:12.5px; color:var(--ink-soft); margin-top:8px; }
+
+  footer{ border-top:1px solid var(--line); padding-top:28px; margin-top:16px; font-size:13px; color:var(--ink-faint); }
+
+  @media (prefers-reduced-motion: reduce){ *{transition:none !important;} }
+</style>
+
+</head>
+<body>
+
+  <div id="lockGate" style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#f2f5f7;font-family:'IBM Plex Sans KR','Noto Sans KR',-apple-system,sans-serif;">
+    <div style="max-width:360px;width:calc(100% - 40px);padding:32px 28px;text-align:center;background:#ffffff;border:1px solid #d7dee4;border-radius:14px;box-shadow:0 8px 24px rgba(27,35,48,.08);">
+      <div style="font-size:32px;margin-bottom:10px;">🔒</div>
+      <h2 style="margin:0 0 8px;font-size:17px;color:#1b2330;">「에이전트 시대의 AI 시스템 설계」 비공개 독서 노트</h2>
+      <p style="margin:0 0 4px;font-size:12px;line-height:1.5;color:#88929c;">Generative AI Design Patterns · Lakshmanan · Hapke · 번역 류광 · 한빛미디어</p>
+      <p style="margin:0 0 18px;font-size:13px;line-height:1.6;color:#57626f;">원서 내용을 제 자신의 언어와 비유로 재구성한 개인 학습 노트입니다. 저작권 보호를 위해 비밀번호로 가려두었어요 — 아는 분만 보세요. 이 책의 다른 장에서 이미 비밀번호를 입력했다면 자동으로 열려요.</p>
+      <input id="lockInput" type="password" placeholder="비밀번호" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #d7dee4;border-radius:8px;font-size:14px;margin-bottom:10px;">
+      <button id="lockBtn" style="width:100%;padding:10px 12px;border:none;border-radius:8px;background:#a86a1c;color:#fff;font-size:14px;font-weight:600;cursor:pointer;">열기</button>
+      <p id="lockError" style="display:none;color:#b23b3b;font-size:12px;margin:10px 0 0;">비밀번호가 틀렸어요.</p>
+    </div>
+  </div>
+  <script>
+  (function(){
+    var PASS = "reilly2026";
+    var KEY = "unlocked-book-agent-era-ai-system-design";
+    function reveal(){
+      document.getElementById("lockGate").style.display = "none";
+      document.getElementById("pageContent").style.display = "";
+    }
+    document.addEventListener("DOMContentLoaded", function(){
+      try { if (sessionStorage.getItem(KEY) === "1") { reveal(); } } catch(e){}
+    });
+    function tryUnlock(){
+      var v = document.getElementById("lockInput").value;
+      if (v === PASS) {
+        try { sessionStorage.setItem(KEY, "1"); } catch(e){}
+        reveal();
+      } else {
+        document.getElementById("lockError").style.display = "block";
+      }
+    }
+    document.getElementById("lockBtn").addEventListener("click", tryUnlock);
+    document.getElementById("lockInput").addEventListener("keydown", function(ev){ if (ev.key === "Enter") tryUnlock(); });
+  })();
+  </script>
+
+<div class="page" id="pageContent" style="display:none;">
+
+  <nav class="side-nav" aria-label="2장 복습노트 목차">
+    <div class="side-nav-title">2장 복습노트</div>
+    <ol>
+      <li><a href="#q1"><span class="n">Q1</span>로짓 마스킹</a></li>
+      <li><a href="#q2"><span class="n">Q2</span>될 때까지 재시도</a></li>
+      <li><a href="#q3"><span class="n">Q3</span>문법 vs 로짓 마스킹</a></li>
+      <li><a href="#q4"><span class="n">Q4</span>BNF vs 데이터클래스</a></li>
+      <li><a href="#q5"><span class="n">Q5</span>퓨샷 vs 미세조정</a></li>
+      <li><a href="#q6"><span class="n">Q6</span>스타일 전이 전제조건</a></li>
+      <li><a href="#q7"><span class="n">Q7</span>역중립화 vs 스타일 전이</a></li>
+      <li><a href="#q8"><span class="n">Q8</span>역중립화 세 단계</a></li>
+      <li><a href="#q9"><span class="n">Q9</span>과다 중립화</a></li>
+      <li><a href="#q10"><span class="n">Q10</span>A/B 테스트 세 문제</a></li>
+      <li><a href="#q11"><span class="n">Q11</span>선호도 데이터셋</a></li>
+      <li><a href="#q12"><span class="n">Q12</span>분포 내 요구사항</a></li>
+      <li><a href="#q13"><span class="n">Q13</span>DPO는 왜 적은 데이터로 되나</a></li>
+      <li><a href="#q14"><span class="n">Q14</span>다섯 패턴, 언제 뭘 쓰나</a></li>
+    </ol>
+  </nav>
+
+  <div class="wrap">
+
+  <header class="hero">
+    <div class="kicker">생성형 AI 설계 패턴 · 2장 복습노트</div>
+    <h1 class="title">걸리기 쉬운 지점만 골라서</h1>
+    <p class="lede">
+      <a href="generative-ai-design-patterns-ch2.html">2장 정리노트</a>를 다 읽었다면, 아래 열네 문항으로
+      걸리는 지점이 남아있는지 확인해보세요. 정답을 보기 전에 먼저 스스로 답해보는 걸 추천해요.
+    </p>
+    <div class="meta">원서 Generative AI Design Patterns · Lakshmanan · Hapke · 번역 류광 · 한빛미디어</div>
+  </header>
+
+  <section class="sec" id="review-body">
+
+    <div class="qa-fam">2.1 · 로짓 마스킹</div>
+    <div class="qa-item" id="q1">
+      <span class="qa-tag">Q1</span>
+      <p class="qa-q">로짓 마스킹이 정확히 어느 시점에, 무엇을 하는 건가?</p>
+      <p class="qa-a">모델이 다음 토큰을 <strong>고르기 직전</strong>, 후보 토큰마다 매겨진 점수(로짓)
+      중에서 규칙을 어기는 후보의 점수를 <strong>음의 무한대(선택 확률 0)</strong>로 떨어뜨린다.
+      전체 글이 다 만들어진 뒤 검사하는 게 아니라, 토큰이 하나씩 나올 때마다 실시간으로 개입한다는
+      점이 핵심이다.</p>
+      <div class="qa-follow">
+        <span class="qa-flabel">추가문제</span>
+        <p class="fq">규칙을 만족하는 후보가 하나도 안 남으면 어떻게 되나?</p>
+        <p class="fa">한 걸음 물러나(역추적) 방금 만든 토큰을 취소하고 그 이전 지점에서 다시
+        시도한다. 그래도 안 되면 최대 시도 횟수를 넘겼는지 확인하고, 넘겼으면 거절 메시지를 낸다.</p>
+      </div>
+    </div>
+    <div class="qa-item" id="q2">
+      <span class="qa-tag">Q2</span>
+      <p class="qa-q">"될 때까지 재시도" 방식은 왜 안티패턴인가?</p>
+      <p class="qa-a">성공률이 낮아질수록 재시도 횟수가 기하급수적으로 늘어난다. 성공률 90%면 평균
+      1.1회로 괜찮지만, 30%로 떨어지면 평균 3.3회(지연시간 +230%), 운 나쁘면 13회까지 필요할 수
+      있다. 게다가 언젠가 반드시 성공한다는 보장도 없다. 성공률이 아주 높을 때만 봐줄 만한
+      방식이다.</p>
+    </div>
+
+    <div class="qa-fam">2.2 · 문법</div>
+    <div class="qa-item" id="q3">
+      <span class="qa-tag">Q3</span>
+      <p class="qa-q">문법 패턴은 로짓 마스킹과 원리가 같다는데, 실질적으로 뭐가 다른가?</p>
+      <p class="qa-a">원리(토큰 후보의 확률을 0으로 만든다)는 완전히 같다. 다른 건 <strong>그 검열을
+      누가 실행하느냐</strong>다. 로짓 마스킹은 우리가 직접 만든 코드가 클라이언트 쪽에서 감시하고,
+      문법 패턴은 우리가 규칙(BNF나 스키마)만 넘기면 모델 제공업체의 서버가 알아서 감시해준다.</p>
+    </div>
+    <div class="qa-item" id="q4">
+      <span class="qa-tag">Q4</span>
+      <p class="qa-q">BNF 문법과 파이썬 데이터클래스, 언제 뭘 골라야 하나?</p>
+      <div class="ptable-wrap">
+        <table class="ptable">
+          <thead><tr><th>상황</th><th>선택</th></tr></thead>
+          <tbody>
+            <tr><td>단순 표현 수준을 넘는 복잡한 검증 로직이 필요할 때</td><td><strong>BNF 문법</strong></td></tr>
+            <tr><td>규칙이 동적이거나 DB·규칙엔진에서 가져와야 할 때</td><td><strong>BNF 문법</strong></td></tr>
+            <tr><td>빠르게 작성하고, 서버 쪽에서 처리해 지연시간을 줄이고 싶을 때</td><td><strong>데이터클래스</strong></td></tr>
+            <tr><td>로그 확률 접근이 안 되는 모델을 써야 할 때</td><td><strong>데이터클래스</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="qa-fam">2.3 · 스타일 전이</div>
+    <div class="qa-item" id="q5">
+      <span class="qa-tag">Q5</span>
+      <p class="qa-q">퓨샷 학습과 미세조정, 트레이드오프는?</p>
+      <p class="qa-a"><strong>퓨샷</strong>은 구현이 간단하지만 예시가 늘수록 프롬프트가 길어져
+      지연시간·컨텍스트 한계에 부딪히고, 스타일 강제력도 암묵적이다. <strong>미세조정</strong>은
+      더 많은 예시(보통 100개 이상)로 더 정교하고 빠르고 저렴하게 실행되지만, 데이터 큐레이션·훈련
+      비용·전문 역량이라는 부담이 따른다.</p>
+    </div>
+    <div class="qa-item" id="q6">
+      <span class="qa-tag">Q6</span>
+      <p class="qa-q">스타일 전이를 쓸 수 있으려면 어떤 세 조건이 맞아야 하나?</p>
+      <p class="qa-a">① 바꾸고 싶은 원본 콘텐츠는 이미 있거나 쉽게 구할 수 있고(가용 콘텐츠), ②
+      원하는 스타일이 규칙으로 표현하기 어려울 만큼 미묘하며(미묘한 스타일), ③ 전문가가 실제로
+      변환한 입력-출력 예시를 몇 개라도 갖고 있어야(전이 예시 확보) 한다. 이 중 ③이 없다면 다음 절의
+      역중립화를 대신 써야 한다.</p>
+    </div>
+
+    <div class="qa-fam">2.4 · 역중립화</div>
+    <div class="qa-item" id="q7">
+      <span class="qa-tag">Q7</span>
+      <p class="qa-q">역중립화는 스타일 전이와 근본적으로 뭐가 다른가?</p>
+      <p class="qa-a">스타일 전이는 <strong>사람이 직접 만든 입력-출력 예시 쌍</strong>이 있어야
+      한다. 역중립화는 그런 쌍이 없어도 된다 — 대신 AI로 중립 버전을 먼저 만들고, 그 과정의 입력·
+      출력을 뒤집어서 훈련 데이터를 스스로 만들어낸다.</p>
+    </div>
+    <div class="qa-item" id="q8">
+      <span class="qa-tag">Q8</span>
+      <p class="qa-q">역중립화의 세 단계는? "역"이라는 이름은 어디서 왔나?</p>
+      <p class="qa-a">① 중립 콘텐츠 생성(개인 스타일 글 → 중립 버전으로 재작성), ② 입력·출력을
+      뒤집어 훈련 데이터셋 생성(중립 버전이 입력, 원래의 개인 스타일이 출력), ③ 그 데이터셋으로
+      미세조정. 1단계의 입력·출력을 2단계에서 <strong>거꾸로</strong> 뒤집기 때문에 "역"중립화라고
+      부른다.</p>
+    </div>
+    <div class="qa-item" id="q9">
+      <span class="qa-tag">Q9</span>
+      <p class="qa-q">과다 중립화란 무엇이고 왜 문제인가?</p>
+      <p class="qa-a">중립화를 지나치게 강하게 걸어서, 스타일뿐 아니라 콘텐츠의 <strong>내용이나
+      명확성 자체</strong>까지 사라지는 현상이다. 내용이 스타일과 너무 얽혀 있는 텍스트일수록 위험이
+      크므로, 여러 중립 형태를 실험해서 의미가 가장 잘 보존되는 것을 골라야 한다.</p>
+    </div>
+
+    <div class="qa-fam">2.5 · 콘텐츠 최적화</div>
+    <div class="qa-item" id="q10">
+      <span class="qa-tag">Q10</span>
+      <p class="qa-q">전통적 A/B 테스트의 세 가지 문제를, 콘텐츠 최적화는 각각 어떻게 우회하나?</p>
+      <p class="qa-a"><strong>구별 불가</strong>는 "매번 두 개를 직접 비교해서 이긴 쪽을 그때그때 A로
+      부르는" 방식으로, <strong>불확실한 테스트</strong>는 "테스트 = 한 번의 비교"로 통계적 유의성
+      요구 자체를 없애는 방식으로, <strong>결과 적용 불가</strong>는 "프롬프트는 그대로 두고 모델
+      가중치 자체를 선호도 조정으로 바꿔버리는" 방식으로 우회한다.</p>
+    </div>
+    <div class="qa-item" id="q11">
+      <span class="qa-tag">Q11</span>
+      <p class="qa-q">DPO 훈련 데이터셋 한 줄은 어떤 세 정보로 구성되나?</p>
+      <p class="qa-a"><strong>prompt</strong>(같은 프롬프트, 재작성한 경우 원본), <strong>chosen</strong>
+      (승자로 판정된 콘텐츠), <strong>rejected</strong>(패자로 판정된 콘텐츠). 이 세 필드로 이루어진
+      예시를 수십~수백 개 모은 것이 훈련 데이터셋이다.</p>
+    </div>
+    <div class="qa-item" id="q12">
+      <span class="qa-tag">Q12</span>
+      <p class="qa-q">"분포 내 요구사항"이 왜 중요한가?</p>
+      <p class="qa-a">선호도 조정은 어디까지나 <strong>이미 낼 수 있는 답들 중 어느 쪽을 더 자주
+      내느냐</strong>를 바꾸는 것이지, 모델에 <strong>새로운 사실이나 새 토큰을 가르치지는
+      못한다</strong>. 그래서 콘텐츠를 생성하는 모델이 만든 결과물은, 반드시 선호도 조정으로 훈련될
+      모델이 이미 낼 수 있는 범위 안에 있어야 한다.</p>
+      <div class="qa-follow">
+        <span class="qa-flabel">후속질문</span>
+        <p class="fq">소규모 모델이 애초에 그런 수준의 콘텐츠를 못 낸다면?</p>
+        <p class="fa">더 큰 모델로 콘텐츠를 만든 뒤, 소규모 모델을 그 콘텐츠를 낼 수 있는 수준까지
+        먼저 지도학습(지시사항 조정)으로 끌어올리고, 그다음에 DPO를 수행하는 "어려운 방법"을 쓴다.</p>
+      </div>
+    </div>
+    <div class="qa-item" id="q13">
+      <span class="qa-tag">Q13</span>
+      <p class="qa-q">DPO는 왜 예시 100개 정도의 적은 데이터로도 충분한가?</p>
+      <p class="qa-a">통상적인 딥러닝은 데이터의 <strong>양</strong>이 중요하지만, 선호도 조정은
+      데이터의 <strong>질</strong>이 훨씬 중요하다. 책의 예제에서도 예시 100개로 GPU 한 장에서
+      약 3분 만에 훈련이 끝났다. 그래서 평가만 자동화돼 있다면 네 단계 전체를 빠르게 반복해서, 매번
+      더 나아진 모델로 훈련 데이터셋 자체를 계속 개선해나갈 수 있다.</p>
+    </div>
+
+    <div class="qa-fam">2장 전체</div>
+    <div class="qa-item" id="q14">
+      <span class="qa-tag">Q14</span>
+      <p class="qa-q">다섯 패턴 중 실제로는 뭘 기준으로 골라야 하나?</p>
+      <p class="qa-a"><strong>규정 준수가 필수</strong>라면 강제력이 확실한 로짓 마스킹·문법을
+      먼저 고려한다. <strong>스타일을 규칙으로 못 박기 어렵지만 예시는 있다</strong>면 스타일
+      전이를, <strong>예시(원본)조차 없다</strong>면 역중립화를 쓴다. <strong>무엇이 좋은 스타일인지
+      아무도 설명 못 한다</strong>면 콘텐츠 최적화로 "이겼다/졌다"만 계속 판정시켜 모델이 스스로
+      찾아가게 한다. 실무에서는 이 다섯을 섞어 쓰는 경우가 많다 — 예를 들어 문법으로 형식을 강제한
+      콘텐츠끼리 콘텐츠 최적화로 문체를 겨루게 할 수도 있다.</p>
+    </div>
+
+    <div class="analogy">
+      한 장 지도로 정리하면 — <b>실시간 검열(2.1)·정해진 서식(2.2)·견습(2.3)·뒤집기 요령(2.4)·서바이벌
+      오디션(2.5)</b>. 앞으로 갈수록 사람이 규칙을 덜 적어주고, 모델이 예시나 판정 결과로부터 스스로
+      더 많이 알아내야 하는 방향으로 나아간다는 게 이 다섯 칸의 숨은 순서예요.
+    </div>
+  </section>
+
+  <div class="deeper">
+    <div class="dl">더 깊이 파고들기</div>
+    <p style="margin:0;">이론은 다 이해했는데 "실무적으로 의미가 있나" 싶다면 —
+    <a href="study-forced-decoding-patterns.html">로짓 마스킹·문법 복습노트</a>에서 저자 공식 코드
+    저장소의 실제 노트북·실행 결과(문법이 틀린 답을 강제로 만드는 실패 사례 포함)로 다시 검증해보세요.</p>
+    <p class="note">단, 그 노트는 패턴1·2(2.1·2.2)만 다룹니다 — 패턴3~5(스타일 전이·역중립화·콘텐츠 최적화)의
+    심화 검증은 아직 없어요.</p>
+  </div>
+
+  <p style="text-align:center;">
+    <a href="generative-ai-design-patterns-ch2.html" style="font-family:var(--font-mono); font-size:13px; color:var(--accent-strong); text-decoration:none;">← 2장 정리노트로 돌아가기</a>
+    &nbsp;·&nbsp;
+    <a href="generative-ai-design-patterns-ch1.html" style="font-family:var(--font-mono); font-size:13px; color:var(--accent-strong); text-decoration:none;">1장 — 프롬프트에서 에이전트까지</a>
+  </p>
+
+  <div class="divider-note">여기까지가 2장 복습노트예요</div>
+
+  <footer>
+    본문 인용이 아니라, 「에이전트 시대의 AI 시스템 설계」(발리아파 락슈마난·하네스 하프케 지음, 류광 옮김,
+    한빛미디어) 2장의 내용을 컴퓨터 초보 학습자 관점에서 풀어 쓴 개인 학습 노트예요.
+  </footer>
+  </div>
+</div>
+
+<script>
+(function(){
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('.side-nav a[href^="#"]'));
+  if (!navLinks.length) return;
+  var map = {};
+  navLinks.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+  var targets = Object.keys(map)
+    .map(function(id){ return document.getElementById(id); })
+    .filter(Boolean);
+
+  function setActive(id){
+    navLinks.forEach(function(a){ a.classList.remove('active'); });
+    var link = map[id];
+    if (link) link.classList.add('active');
+  }
+
+  var observer = new IntersectionObserver(function(entries){
+    var visible = entries.filter(function(e){ return e.isIntersecting; });
+    if (visible.length){
+      visible.sort(function(a,b){ return a.boundingClientRect.top - b.boundingClientRect.top; });
+      setActive(visible[0].target.id);
+    }
+  }, { rootMargin: '-15% 0px -70% 0px', threshold: 0 });
+
+  targets.forEach(function(t){ observer.observe(t); });
+  setActive(targets[0] && targets[0].id);
+})();
+</script>
+</body>
+</html>

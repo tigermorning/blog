@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="description" content="「에이전트 시대의 AI 시스템 설계」 1장 문답 복습노트 — 학습목표·핵심질문과 13개 문답으로 걸리기 쉬운 지점만 골라 정리했습니다. 저작권 보호를 위해 비밀번호로 가려두었습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="1장 복습노트 — 걸리기 쉬운 지점만 골라서 (비공개)">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/generative-ai-design-patterns-ch1-review.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+<title>1장 복습노트 — 걸리기 쉬운 지점만 골라서</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+  /* ---------- tokens ---------- */
+  :root{
+    --paper: #f2f5f7;
+    --surface: #ffffff;
+    --surface-2: #e8edf1;
+    --ink: #1b2330;
+    --ink-soft: #57626f;
+    --ink-faint: #88929c;
+    --line: #d7dee4;
+    --accent: #a86a1c;
+    --accent-strong: #8a5612;
+    --accent-teal: #1f7a6c;
+    --accent-teal-soft: #e4f1ee;
+    --accent-soft: #f4e7d3;
+    --shadow: 0 1px 2px rgba(27,35,48,.04), 0 8px 24px rgba(27,35,48,.06);
+    --font-display: "Gowun Batang", "Noto Serif KR", serif;
+    --font-body: "IBM Plex Sans KR", "Noto Sans KR", -apple-system, sans-serif;
+    --font-mono: "IBM Plex Mono", "Noto Sans Mono", monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper: #10151c; --surface: #171d26; --surface-2: #1f2731;
+      --ink: #e7ebf0; --ink-soft: #a4afbb; --ink-faint: #6d7885; --line: #2a3340;
+      --accent: #dda252; --accent-strong: #f0b871;
+      --accent-teal: #4bb3a0; --accent-teal-soft: #16302c; --accent-soft: #2d2314;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper: #10151c; --surface: #171d26; --surface-2: #1f2731;
+    --ink: #e7ebf0; --ink-soft: #a4afbb; --ink-faint: #6d7885; --line: #2a3340;
+    --accent: #dda252; --accent-strong: #f0b871;
+    --accent-teal: #4bb3a0; --accent-teal-soft: #16302c; --accent-soft: #2d2314;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+  }
+
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{ margin:0; background:var(--paper); color:var(--ink); font-family:var(--font-body); line-height:1.75; font-size:16px; -webkit-font-smoothing:antialiased; }
+  a{color:var(--accent-strong);}
+  a:focus-visible, button:focus-visible, input:focus-visible{ outline:2px solid var(--accent-teal); outline-offset:3px; border-radius:4px; }
+  ::selection{background:var(--accent-soft); color:var(--ink);}
+
+  .page{ max-width:1120px; margin:0 auto; padding:0 20px 96px; display:grid; grid-template-columns:226px minmax(0,760px); gap:56px; align-items:start; }
+  .wrap{min-width:0;}
+
+  .side-nav{ position:sticky; top:28px; align-self:start; max-height:calc(100vh - 56px); overflow-y:auto; padding:32px 10px 32px 0; font-size:13.5px; }
+  .side-nav-title{ font-family:var(--font-mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint); margin:0 0 14px; padding-bottom:12px; border-bottom:1px solid var(--line); }
+  .side-nav ol{list-style:none; margin:0; padding:0;}
+  .side-nav > ol > li{margin-bottom:2px;}
+  .side-nav a{ display:flex; align-items:center; gap:9px; text-decoration:none; color:var(--ink-soft); padding:7px 9px; border-radius:7px; line-height:1.4; transition:background .15s, color .15s; }
+  .side-nav a:hover{background:var(--surface-2); color:var(--ink);}
+  .side-nav a.active{color:var(--accent-strong); background:var(--accent-soft); font-weight:600;}
+  .side-nav .n{font-family:var(--font-mono); font-size:11px; color:var(--accent); flex:none; width:24px;}
+  @media (max-width:960px){ .page{grid-template-columns:1fr; gap:0;} .side-nav{display:none;} }
+
+  .hero{ padding:64px 0 40px; border-bottom:1px solid var(--line); margin-bottom:40px; }
+  .kicker{ display:inline-flex; align-items:center; gap:8px; font-family:var(--font-mono); font-size:12.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--accent-teal); margin-bottom:18px; }
+  .kicker::before{ content:""; width:16px; height:1px; background:var(--accent-teal); }
+  h1.title{ font-family:var(--font-display); font-weight:700; font-size:clamp(34px, 6vw, 50px); line-height:1.22; margin:0 0 18px; text-wrap:balance; color:var(--ink); }
+  .lede{ font-size:17.5px; color:var(--ink-soft); max-width:60ch; margin:0 0 22px; }
+  .meta{ font-family:var(--font-mono); font-size:12.5px; color:var(--ink-faint); }
+
+  .toc{ display:none; flex-wrap:wrap; gap:8px; margin:28px 0 0; padding:0; list-style:none; }
+  @media (max-width:960px){ .toc{display:flex;} }
+  .toc a{ display:block; text-decoration:none; font-size:13.5px; color:var(--ink-soft); background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:7px 14px; transition:border-color .15s, color .15s; }
+  .toc a:hover{border-color:var(--accent-teal); color:var(--accent-teal);}
+  .toc b{font-family:var(--font-mono); color:var(--accent); font-weight:500; margin-right:5px;}
+
+  section.sec{margin:0 0 64px; scroll-margin-top:24px;}
+  .sec-head{ display:flex; align-items:baseline; gap:14px; margin-bottom:20px; }
+  .sec-num{ font-family:var(--font-mono); font-size:13px; font-weight:500; color:var(--surface); background:var(--ink); border-radius:6px; padding:4px 9px; flex:none; }
+  h2.h2{ font-family:var(--font-display); font-weight:700; font-size:26px; margin:0; color:var(--ink); }
+  h3.h3{ font-family:var(--font-body); font-weight:600; font-size:15px; margin:0 0 14px; color:var(--ink); }
+  p{margin:0 0 15px; color:var(--ink);}
+  strong{color:var(--ink); font-weight:600;}
+
+  .card{ background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:20px 22px; box-shadow:var(--shadow); }
+  .analogy{ background:var(--surface-2); border-radius:12px; padding:16px 18px; margin:14px 0 20px; font-size:14.5px; color:var(--ink-soft); }
+  .analogy b{color:var(--accent-strong); font-weight:600;}
+
+  .ptable{ width:100%; border-collapse:collapse; margin:18px 0 22px; font-size:13.5px; background:var(--surface); border:1px solid var(--line); border-radius:12px; overflow:hidden; box-shadow:var(--shadow); }
+  .ptable th, .ptable td{ text-align:left; padding:12px 16px; border-bottom:1px solid var(--line); }
+  .ptable th{ font-family:var(--font-mono); font-size:11.5px; letter-spacing:.04em; text-transform:uppercase; color:var(--ink-faint); background:var(--surface-2); font-weight:500; }
+  .ptable tr:last-child td{ border-bottom:none; }
+  .ptable td strong{ color:var(--accent-strong); }
+  .ptable-wrap{ overflow-x:auto; }
+
+  .qa-fam{ margin:28px 0 12px; font-family:var(--font-mono); font-size:11.5px; font-weight:600; letter-spacing:.05em; color:var(--accent-strong); padding-bottom:8px; border-bottom:1px solid var(--line); }
+  .qa-fam:first-of-type{ margin-top:6px; }
+  .qa-item{ border:1px solid var(--line); border-radius:12px; background:var(--surface); padding:18px 20px; margin:0 0 14px; box-shadow:var(--shadow); scroll-margin-top:24px; }
+  .qa-tag{ display:inline-block; font-family:var(--font-mono); font-size:11px; font-weight:700; color:var(--accent-strong); background:var(--accent-soft); padding:2px 9px; border-radius:5px; margin-bottom:9px; }
+  .qa-q{ margin:0 0 10px; font-size:15px; font-weight:600; color:var(--ink); }
+  .qa-a{ margin:0; font-size:14px; color:var(--ink-soft); }
+  .qa-a strong{ color:var(--accent-strong); }
+  .qa-a + .qa-a{ margin-top:8px; }
+  .qa-follow{ margin-top:12px; padding:12px 14px; border-radius:8px; background:var(--accent-teal-soft); font-size:13.5px; }
+  .qa-flabel{ display:block; font-family:var(--font-mono); font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; color:var(--accent-teal); margin-bottom:6px; font-weight:600; }
+  .qa-follow .fq{ margin:0 0 6px; font-weight:600; color:var(--ink); }
+  .qa-follow .fa{ margin:0; color:var(--ink-soft); }
+
+  .divider-note{ display:flex; align-items:center; gap:10px; font-size:12.5px; color:var(--ink-faint); margin:26px 0; }
+  .divider-note::before, .divider-note::after{content:""; flex:1; height:1px; background:var(--line);}
+
+  .deeper{ background:var(--accent-teal-soft); border:1px solid var(--accent-teal); border-radius:14px; padding:20px 22px; margin:34px 0; }
+  .deeper .dl{ font-family:var(--font-mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--accent-teal); margin-bottom:8px; }
+  .deeper a{ color:var(--accent-teal); font-weight:600; }
+
+  footer{ border-top:1px solid var(--line); padding-top:28px; margin-top:16px; font-size:13px; color:var(--ink-faint); }
+
+  @media (prefers-reduced-motion: reduce){ *{transition:none !important;} }
+</style>
+
+</head>
+<body>
+
+  <div id="lockGate" style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#f2f5f7;font-family:'IBM Plex Sans KR','Noto Sans KR',-apple-system,sans-serif;">
+    <div style="max-width:360px;width:calc(100% - 40px);padding:32px 28px;text-align:center;background:#ffffff;border:1px solid #d7dee4;border-radius:14px;box-shadow:0 8px 24px rgba(27,35,48,.08);">
+      <div style="font-size:32px;margin-bottom:10px;">🔒</div>
+      <h2 style="margin:0 0 8px;font-size:17px;color:#1b2330;">「에이전트 시대의 AI 시스템 설계」 비공개 독서 노트</h2>
+      <p style="margin:0 0 4px;font-size:12px;line-height:1.5;color:#88929c;">Generative AI Design Patterns · Lakshmanan · Hapke · 번역 류광 · 한빛미디어</p>
+      <p style="margin:0 0 18px;font-size:13px;line-height:1.6;color:#57626f;">원서 내용을 제 자신의 언어와 비유로 재구성한 개인 학습 노트입니다. 저작권 보호를 위해 비밀번호로 가려두었어요 — 아는 분만 보세요. 이 책의 다른 장에서 이미 비밀번호를 입력했다면 자동으로 열려요.</p>
+      <input id="lockInput" type="password" placeholder="비밀번호" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #d7dee4;border-radius:8px;font-size:14px;margin-bottom:10px;">
+      <button id="lockBtn" style="width:100%;padding:10px 12px;border:none;border-radius:8px;background:#a86a1c;color:#fff;font-size:14px;font-weight:600;cursor:pointer;">열기</button>
+      <p id="lockError" style="display:none;color:#b23b3b;font-size:12px;margin:10px 0 0;">비밀번호가 틀렸어요.</p>
+    </div>
+  </div>
+  <script>
+  (function(){
+    var PASS = "reilly2026";
+    var KEY = "unlocked-book-agent-era-ai-system-design";
+    function reveal(){
+      document.getElementById("lockGate").style.display = "none";
+      document.getElementById("pageContent").style.display = "";
+    }
+    document.addEventListener("DOMContentLoaded", function(){
+      try { if (sessionStorage.getItem(KEY) === "1") { reveal(); } } catch(e){}
+    });
+    function tryUnlock(){
+      var v = document.getElementById("lockInput").value;
+      if (v === PASS) {
+        try { sessionStorage.setItem(KEY, "1"); } catch(e){}
+        reveal();
+      } else {
+        document.getElementById("lockError").style.display = "block";
+      }
+    }
+    document.getElementById("lockBtn").addEventListener("click", tryUnlock);
+    document.getElementById("lockInput").addEventListener("keydown", function(ev){ if (ev.key === "Enter") tryUnlock(); });
+  })();
+  </script>
+
+<div class="page" id="pageContent" style="display:none;">
+
+  <nav class="side-nav" aria-label="1장 복습노트 목차">
+    <div class="side-nav-title">1장 복습노트</div>
+    <ol>
+      <li><a href="#goals"><span class="n">GOAL</span>학습목표·핵심질문</a></li>
+      <li><a href="#q1"><span class="n">Q1</span>왜 패턴집인가</a></li>
+      <li><a href="#q2"><span class="n">Q2</span>프롬프트·응답</a></li>
+      <li><a href="#q3"><span class="n">Q3</span>클라우드 vs 로컬</a></li>
+      <li><a href="#q4"><span class="n">Q4</span>성능·비용 지형도</a></li>
+      <li><a href="#q5"><span class="n">Q5</span>자율성</a></li>
+      <li><a href="#q6"><span class="n">Q6</span>네 가지 능력</a></li>
+      <li><a href="#q7"><span class="n">Q7</span>비결정성·환각</a></li>
+      <li><a href="#q8"><span class="n">Q8</span>온도</a></li>
+      <li><a href="#q9"><span class="n">Q9</span>상위K·상위P</a></li>
+      <li><a href="#q10"><span class="n">Q10</span>퓨샷의 정체</a></li>
+      <li><a href="#q11"><span class="n">Q11</span>CPT·SFT·RLHF</a></li>
+      <li><a href="#q12"><span class="n">Q12</span>LoRA·파국적 망각</a></li>
+      <li><a href="#q13"><span class="n">Q13</span>왜 1장이 먼저인가</a></li>
+    </ol>
+  </nav>
+
+  <div class="wrap">
+
+  <header class="hero">
+    <div class="kicker">생성형 AI 설계 패턴 · 1장 복습노트</div>
+    <h1 class="title">걸리기 쉬운 지점만 골라서</h1>
+    <p class="lede">
+      <a href="generative-ai-design-patterns-ch1.html">1장 정리노트</a>를 다 읽었다면, 아래 학습목표·핵심질문과
+      열세 개 문답으로 걸리는 지점이 남아있는지 확인해보세요. 정답을 보기 전에 먼저 스스로 답해보는 걸 추천해요.
+    </p>
+    <div class="meta">원서 Generative AI Design Patterns · Lakshmanan · Hapke · 번역 류광 · 한빛미디어</div>
+  </header>
+
+  <section class="sec" id="goals">
+    <div class="card" id="review-goals">
+      <h3 class="h3">학습 목표</h3>
+      <ul style="margin:0 0 26px; padding-left:20px; font-size:14px; color:var(--ink-soft); line-height:1.75;">
+        <li>이 책이 32개 패턴을 어떤 기준으로 분류하는지 말할 수 있다. 이후 모든 장이 이 지도 위에 놓인다.</li>
+        <li>기초 모델을 쓰는 네 가지 경로(제공업체 API / LLM 비종속 프레임워크 / 로컬 실행 / 내부 학습)의 트레이드오프를 구분한다.</li>
+        <li>이 책이 에이전트를 '자율성의 정도'로 정의한다는 관점을 이해하고, 에이전트와 단순 파이프라인의 경계를 자기 말로 그을 수 있다.</li>
+        <li>컨텍스트 내 학습(제로샷·퓨샷)과 사후훈련(미세조정)을 가를 자기 기준을 세운다.</li>
+      </ul>
+      <h3 class="h3">핵심 질문</h3>
+      <ol style="margin:0; padding-left:20px; font-size:14px; color:var(--ink-soft); line-height:1.75;">
+        <li>온도를 0으로 두면 항상 같은 답이 나오는가? 그렇지 않다면 무작위성은 어디에 남아 있는가?</li>
+        <li>Top-K와 Top-P는 언제 서로 다른 결과를 만드는가? 둘을 동시에 쓰면 어떤 일이 벌어지는가?</li>
+        <li>프롬프트로 해결할 문제와 미세조정이 필요한 문제를 가르는 실질적인 기준은 무엇인가?</li>
+        <li>'자율성이 높다'는 말은 모델에게 무엇을 위임했다는 뜻인가? 우리 업무에서 위임해도 괜찮은 결정은 어디까지인가?</li>
+        <li>빔 탐색은 왜 창작적 생성보다 번역·요약에서 더 쓰이는가?</li>
+        <li>우리가 지금 만들려는 시스템은 이 책의 분류에서 어떤 장의 패턴이 가장 급하게 필요한가?</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="sec" id="review-body">
+
+    <div class="qa-fam">1.1 · 설계 패턴</div>
+    <div class="qa-item" id="q1">
+      <span class="qa-tag">Q1</span>
+      <p class="qa-q">이 책이 "설계 패턴"이라는 틀을 쓰는 이유는? 신입사원 매뉴얼 비유가 정확히 뭘 짚어주나?</p>
+      <p class="qa-a">생성형 AI를 실제 서비스에 넣으면 같은 문제(문체 이탈, 환각, 내부 지식 부재 등)가
+      반복해서 생긴다. 그때마다 바닥부터 고민하지 말고, 이미 검증된 해법 32개를 "문제 → 해법 →
+      예시 → 고려사항" 형태로 참고서처럼 찾아 쓰라는 게 이 책의 구성이다. 회사가 신입사원을 새로 뽑을
+      때마다 "자주 겪는 문제 대응 매뉴얼"을 서랍에서 꺼내 주는 것과 같다 — 매번 바닥부터 대응법을
+      새로 고민하지 않아도 된다는 뜻이다.</p>
+      <div class="qa-follow">
+        <span class="qa-flabel">추가문제</span>
+        <p class="fq">3장 RAG 패턴은 이 틀에서 "어떤 문제"의 해법인가?</p>
+        <p class="fa">회사 내부 문서를 모르는 모델이 환각(있지도 않은 사실을 그럴듯하게 지어냄)을
+        일으키는 문제. 질문에 답하기 전에 실제 문서를 먼저 찾아보게 만드는 게 해법이다.</p>
+      </div>
+    </div>
+
+    <div class="qa-fam">1.2 · 기초 모델로 앱 만들기</div>
+    <div class="qa-item" id="q2">
+      <span class="qa-tag">Q2</span>
+      <p class="qa-q">시스템 프롬프트와 사용자 프롬프트는 뭐가 다른가?</p>
+      <p class="qa-a">시스템 프롬프트는 "너는 이런 역할, 이런 태도로 답해"라고 한 번 정해두는 규칙이고,
+      사용자 프롬프트는 그때그때 실제로 부탁하는 내용이다. prompt라는 말 자체가 연극 무대에서
+      배우에게 다음 대사를 귀띔해주는 "프롬프터"에서 왔다.</p>
+    </div>
+    <div class="qa-item" id="q3">
+      <span class="qa-tag">Q3</span>
+      <p class="qa-q">모델을 클라우드 API로 쓰는 것과 내 컴퓨터(로컬)로 돌리는 것, 로컬이 가능해지는
+      조건은 뭔가?</p>
+      <p class="qa-a">API는 인터넷 너머 회사 서버로 질문을 보내는 방식이고, 로컬은 그 "알맹이"(가중치)를
+      내 컴퓨터로 통째로 내려받아 직접 돌리는 방식이다. 로컬이 가능하려면 회사가 그 알맹이를
+      <strong>공개(오픈웨이트)</strong>해둔 경우여야 한다 — 알맹이가 안 열린 프런티어 모델은 API로만
+      접근할 수 있다.</p>
+      <div class="qa-follow">
+        <span class="qa-flabel">후속질문</span>
+        <p class="fq">"오픈웨이트"와 "로컬호스팅 가능"이 왜 서로 다른 축인가?</p>
+        <p class="fa">오픈웨이트는 라이선스상 가중치를 공개했는지의 문제고, 로컬호스팅 가능은 그걸
+        실제로 내 컴퓨터 사양으로 돌릴 수 있는지의 문제다. 공개돼 있어도 모델이 너무 크면 내 GPU로는
+        못 돌릴 수 있다.</p>
+      </div>
+    </div>
+    <div class="qa-item" id="q4">
+      <span class="qa-tag">Q4</span>
+      <p class="qa-q">기초 모델은 왜 성능과 비용을 저울질해서 골라야 하나?</p>
+      <p class="qa-a">프런티어 모델(성능 최고, 알맹이 비공개), 증류 모델(가볍고 저렴), 오픈웨이트
+      모델(공개돼서 내려받아 쓸 수 있음)로 대략 나뉘는데, 일반적으로 <strong>성능이 좋을수록 비용도
+      올라간다.</strong> 모든 작업에 제일 비싼 모델을 쓸 필요는 없고, 작업 난이도에 맞춰 골라야
+      가성비가 맞는다.</p>
+    </div>
+
+    <div class="qa-fam">1.3 · 에이전트형 AI</div>
+    <div class="qa-item" id="q5">
+      <span class="qa-tag">Q5</span>
+      <p class="qa-q">"자율성"이 정확히 뭔가? 재고 관리 예시로 설명하면?</p>
+      <p class="qa-a">"재고가 100개 밑이면 300개 주문해"처럼 세세한 규칙을 사람이 미리 프로그래밍하지
+      않고, <strong>"재고 부족 없게 적시에 주문해줘"라는 목표만 주는 것</strong>. 에이전트는 최근
+      판매량·배송 기간을 스스로 살펴보고 필요한 수량을 계산해서 이유까지 설명한다. 규칙을 사람이
+      적어두는 게 아니라, 에이전트가 그 규칙 자체를 그때그때 만들어낸다는 게 핵심이다.</p>
+    </div>
+    <div class="qa-item" id="q6">
+      <span class="qa-tag">Q6</span>
+      <p class="qa-q">에이전트에게 기대되는 네 가지 능력과, 이게 순환 구조라는 말은 무슨 뜻인가?</p>
+      <p class="qa-a">① 목표 지향성(반응만 안 하고 목표를 향해 움직임) ② 계획 및 추론(단계를 스스로
+      쪼갬) ③ 인지 및 행동(데이터를 읽고 외부 함수를 호출함) ④ 적응 및 학습(자기 산출물이 맞는지
+      스스로 점검하고 고침 — 6장 Reflection·9장 Self-Check). 이 넷이 <strong>인지→계획→행동→적응→다시
+      인지</strong>로 한 바퀴 돌 때마다, 에이전트는 자기 결과를 스스로 검증해서 조금씩 나아진다.</p>
+    </div>
+    <div class="qa-item" id="q7">
+      <span class="qa-tag">Q7</span>
+      <p class="qa-q">비결정성과 환각은 둘 다 "AI가 틀리는 문제"처럼 보이는데, 원인이 어떻게 다른가?</p>
+      <p class="qa-a"><strong>비결정성</strong>은 모델이 다음 단어·숫자 후보마다 매긴 점수(로짓)를
+      확률로 바꿔서 그 확률대로 제비뽑기하기 때문에 생긴다 — 1등(예: 300개)이 뽑힐 확률이 제일
+      높아도, 2등(280개)이 가끔 뽑힐 수 있다. 이건 계산이 틀린 게 아니라 원래 설계가 그렇게 되어
+      있는 것(창의성을 위해 일부러 넣은 무작위성)이다.</p>
+      <p class="qa-a"><strong>환각</strong>은 확률 뽑기와 무관하게, 모델에게 애초에 "이게 사실인지
+      확인하는 절차"가 없어서 생긴다. 모델은 "다음에 올 말로 그럴듯한 게 뭔가"만 계산하므로, 실제
+      데이터가 없어도 문법·맥락상 자연스러운 답(예: 존재하지 않는 배송업체 이름)의 점수가 높으면
+      그냥 뽑아버린다.</p>
+      <div class="qa-follow">
+        <span class="qa-flabel">후속질문</span>
+        <p class="fq">그럼 온도(T)를 0으로 낮추면 환각도 같이 사라지나?</p>
+        <p class="fa">아니다. T=0은 매번 1등 후보만 고르게 해서 비결정성은 거의 없앨 수 있지만, 그
+        1등 후보 자체가 사실 확인 없이 매겨진 점수라서 환각은 그대로 남을 수 있다. 둘은 서로 다른
+        층위의 문제라 하나를 고친다고 다른 게 같이 고쳐지지 않는다.</p>
+      </div>
+    </div>
+
+    <div class="qa-fam">1.4 · 세밀한 제어</div>
+    <div class="qa-item" id="q8">
+      <span class="qa-tag">Q8</span>
+      <p class="qa-q">로짓·소프트맥스·온도(T)는 각각 뭘 하는 개념인가?</p>
+      <p class="qa-a">모델의 마지막 계층은 다음 단어 후보마다 <strong>로짓</strong>(순위용 원점수)을
+      매긴다. <strong>소프트맥스</strong>는 이 로짓을 0~100% 확률로 바꾸는 계산이다.
+      <strong>온도(T)</strong>는 이 확률을 재분배하는 손잡이 — T를 0에 가깝게 두면 1등만 거의 항상
+      뽑히고(안전, 뻔함), T를 높이면 순위 낮은 후보도 뽑힐 기회가 생긴다(창의적, 대신 말이 안 될
+      위험도 커짐).</p>
+    </div>
+    <div class="qa-item" id="q9">
+      <span class="qa-tag">Q9</span>
+      <p class="qa-q">상위K 표집과 상위P 표집은 둘 다 "안전장치"라는데, 방식은 어떻게 다른가?</p>
+      <p class="qa-a"><strong>상위K</strong>는 점수 순으로 줄 세운 뒤 고정된 개수 K개만 남기고
+      나머지는 후보에서 아예 제외한다. <strong>상위P</strong>는 개수를 미리 안 정하고, 누적 확률이
+      P(예: 90%)를 넘는 지점까지만 후보로 남긴다 — 그래서 남는 후보 개수가 상황(점수 분포)에 따라
+      달라진다. 목적은 둘 다 같다 — 말이 안 되는 단어가 뽑힐 가능성을 후보에서 미리 잘라내는 것.</p>
+    </div>
+
+    <div class="qa-fam">1.5 · 컨텍스트 내 학습</div>
+    <div class="qa-item" id="q10">
+      <span class="qa-tag">Q10</span>
+      <p class="qa-q">퓨샷 학습에서 모네 그림 예시 하나로 전혀 다른 르누아르 그림까지 맞히는 게, 왜
+      "지식 주입"이 아니라는 증거인가?</p>
+      <p class="qa-a">모델은 르누아르 그림에 대한 정보를 예시에서 받은 적이 없다. 모네 그림 예시
+      하나가 가르친 건 <strong>"설명 → 작품·화가·연도·의의" 순서(패턴)</strong>뿐이고, 르누아르·1881년·벨
+      에포크 같은 실제 내용은 모델이 사전훈련 때부터 이미 알고 있던 지식이다. 즉 퓨샷 학습은
+      <strong>새 지식을 넣는 게 아니라, 이미 아는 지식을 원하는 형식으로 꺼내 쓰게 하는 것</strong>이다.
+      그래서 모델이 원래 모르는 지식이면 예시를 아무리 줘도 소용없다.</p>
+    </div>
+
+    <div class="qa-fam">1.6 · 사후훈련</div>
+    <div class="qa-item" id="q11">
+      <span class="qa-tag">Q11</span>
+      <p class="qa-q">가진 데이터 모양에 따라 CPT·SFT·RLHF(DPO·GRPO) 중 뭘 골라야 하나?</p>
+      <div class="ptable-wrap">
+        <table class="ptable">
+          <thead><tr><th>데이터 모양</th><th>방법</th><th>가르치는 것</th></tr></thead>
+          <tbody>
+            <tr><td>순수 텍스트 뭉치</td><td><strong>CPT</strong>(계속 사전훈련)</td><td>새 어휘·개념 자체</td></tr>
+            <tr><td>질문-모범답변 쌍</td><td><strong>SFT</strong>(지도학습 미세조정)</td><td>형식·태도</td></tr>
+            <tr><td>같은 입력에 답 2개 + "이게 낫다" 표시</td><td><strong>RLHF · DPO · GRPO</strong>(선호조정)</td><td>더 나은 답의 방향</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="qa-follow">
+        <span class="qa-flabel">추가문제</span>
+        <p class="fq">블룸버그의 BloombergGPT 사례는 이 표에서 무엇을 경고하나?</p>
+        <p class="fa">2023년 금융 문서로 CPT를 돌려 만든 특화 모델(BloombergGPT)이, 몇 달 뒤 나온
+        범용 기초 모델에 아무 특화 훈련 없이 성능을 추월당했다. "특화 훈련(CPT)이 항상 남는 장사는
+        아니다"는 실제 사례 — 표의 첫 줄(CPT)을 고르기 전에 정말 필요한지부터 따져봐야 한다는
+        경고다.</p>
+      </div>
+    </div>
+    <div class="qa-item" id="q12">
+      <span class="qa-tag">Q12</span>
+      <p class="qa-q">LoRA는 왜 쓰고, 파국적 망각은 왜 생기나?</p>
+      <p class="qa-a"><strong>LoRA</strong>는 수천억 개 매개변수 전체를 다시 훈련하는 대신, 원본은
+      그대로 두고 작은 "추가 메모" 층만 새로 학습시키는 방식이다(포스트잇 비유). 학습 파라미터가
+      최대 1만 배, GPU 메모리가 최대 3배까지 줄면서도 성능은 전체 재훈련과 비슷하다.</p>
+      <p class="qa-a"><strong>파국적 망각</strong>은 좁은 데이터로 너무 집중해서 재훈련하면 원래
+      잘하던 다른 일을 잊어버리는 현상이다. 컴퓨터 파일과 달리, 모델의 <strong>가중치는 여러 능력이
+      같은 숫자 자리를 겹쳐서 공유</strong>하기 때문에 생긴다 — "이 능력 버려"라고 누가 결정한 게
+      아니라, 좁은 데이터의 오차를 줄이려고 가중치를 계속 밀어붙이는 계산 과정에서 다른 능력이
+      걸려 있던 같은 숫자까지 원치 않게 같이 바뀌는 것이다.</p>
+    </div>
+
+    <div class="qa-fam">1.7 · 이 책의 구성</div>
+    <div class="qa-item" id="q13">
+      <span class="qa-tag">Q13</span>
+      <p class="qa-q">1장이 왜 나머지 8개 챕터(32개 패턴)보다 먼저 와야 하나?</p>
+      <p class="qa-a">2장부터 다루는 32개 패턴(문체 제어·RAG·추론·신뢰성·도구 호출·비용·안전·프로덕션)은
+      전부 <strong>1.2~1.6에서 다진 개념 위에서만 말이 되는 해법</strong>이다. 예를 들어 7장 도구
+      호출 패턴은 1.3의 "인지·행동" 능력을 실제로 구현하는 방법이고, RAG는 1.5 컨텍스트 내 학습의
+      응용이다. 기초 없이 패턴만 외우면 "왜 이게 해법인지"를 이해할 수 없다.</p>
+    </div>
+
+    <div class="analogy">
+      한 장 지도로 정리하면 — <b>채용(1.2)·배치(1.3)·조율(1.4)·즉석교육(1.5)·정식재교육(1.6)·실전투입(1.7)</b>.
+      이 여섯 칸 순서를 뼈대로 잡아두면, 위 열세 개 문답의 세부 내용은 "이 칸에서 걸리는 지점을 채워
+      넣는 것"으로 자연스럽게 정리된다.
+    </div>
+  </section>
+
+  <div class="deeper">
+    <div class="dl">더 깊이 파고들기</div>
+    <p style="margin:0;">이론은 다 이해했는데 "실무적으로 의미가 있나" 싶다면 —
+    <a href="study-foundation-agent-decoding.html">기초모델·에이전트·디코딩제어 복습노트</a>에서 저자
+    공식 코드 저장소의 실제 노트북 셀·실행 결과로 16개 문항을 다시 검증해보세요.</p>
+  </div>
+
+  <p style="text-align:center;">
+    <a href="generative-ai-design-patterns-ch1.html" style="font-family:var(--font-mono); font-size:13px; color:var(--accent-strong); text-decoration:none;">← 1장 정리노트로 돌아가기</a>
+    &nbsp;·&nbsp;
+    <a href="generative-ai-design-patterns-ch2.html" style="font-family:var(--font-mono); font-size:13px; color:var(--accent-strong); text-decoration:none;">다음 장 — 2장. 신입사원의 말투를 붙잡다 →</a>
+  </p>
+
+  <div class="divider-note">여기까지가 1장 복습노트예요</div>
+
+  <footer>
+    본문 인용이 아니라, 「에이전트 시대의 AI 시스템 설계」(발리아파 락슈마난·하네스 하프케 지음, 류광 옮김,
+    한빛미디어) 1장의 내용을 컴퓨터 초보 학습자 관점에서 풀어 쓴 개인 학습 노트예요.
+  </footer>
+  </div>
+</div>
+
+<script>
+(function(){
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('.side-nav a[href^="#"]'));
+  if (!navLinks.length) return;
+  var map = {};
+  navLinks.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+  var targets = Object.keys(map)
+    .map(function(id){ return document.getElementById(id); })
+    .filter(Boolean);
+
+  function setActive(id){
+    navLinks.forEach(function(a){ a.classList.remove('active'); });
+    var link = map[id];
+    if (link) link.classList.add('active');
+  }
+
+  var observer = new IntersectionObserver(function(entries){
+    var visible = entries.filter(function(e){ return e.isIntersecting; });
+    if (visible.length){
+      visible.sort(function(a,b){ return a.boundingClientRect.top - b.boundingClientRect.top; });
+      setActive(visible[0].target.id);
+    }
+  }, { rootMargin: '-15% 0px -70% 0px', threshold: 0 });
+
+  targets.forEach(function(t){ observer.observe(t); });
+  setActive(targets[0] && targets[0].id);
+})();
+</script>
+</body>
+</html>
