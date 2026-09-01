@@ -460,6 +460,37 @@
   @media (prefers-reduced-motion: reduce){
     *{transition:none !important;}
   }
+  /* ---------- code block: caption + copy button ---------- */
+  .code-wrap{ position:relative; margin:10px 0 8px; }
+  .code-wrap pre.code{ margin:0; padding-right:76px; }
+  .code-wrap .code-cap + pre.code{ border-radius:0 0 10px 10px; }
+  .code-cap{
+    display:flex; align-items:center; gap:8px;
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.04em;
+    color:var(--ink-faint); background:var(--surface-2);
+    border:1px solid var(--line); border-bottom:none;
+    border-radius:10px 10px 0 0; padding:7px 14px;
+  }
+  .code-cap b{ color:var(--accent-strong); font-weight:600; }
+  .copy-btn{
+    position:absolute; top:8px; right:8px; z-index:2;
+    font-family:var(--font-mono); font-size:10.5px; letter-spacing:.04em;
+    color:#a4afbb; background:rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.16); border-radius:6px;
+    padding:4px 9px; cursor:pointer; line-height:1.4;
+    transition:background .15s, color .15s, border-color .15s;
+  }
+  .code-wrap .code-cap ~ .copy-btn{ top:39px; }
+  .copy-btn:hover{ background:rgba(255,255,255,.15); color:#e7ebf0; }
+  .copy-btn.done{ color:#4bb3a0; border-color:#4bb3a0; background:rgba(75,179,160,.12); }
+
+  /* ---------- warning card ---------- */
+  .card.warn{ border-left:3px solid #b23b3b; }
+  .card.warn .wl{
+    display:block; font-family:var(--font-mono); font-size:11px; letter-spacing:.05em;
+    text-transform:uppercase; color:#b23b3b; font-weight:700; margin-bottom:8px;
+  }
+
 </style>
 
 </head>
@@ -514,6 +545,7 @@
           <li><a href="#s1-2">해법</a></li>
           <li><a href="#s1-3">예제 — 시퀀스 선택·재생성</a></li>
           <li><a href="#s1-4">고려사항</a></li>
+          <li><a href="#s1-5">직접 돌려보기 — 저자 노트북</a></li>
         </ol>
       </li>
       <li>
@@ -689,6 +721,72 @@
       </div>
     </div>
 
+    <h4 class="h4">숫자로 직접 보기 — 점수표에 손대면 무슨 일이 벌어지나</h4>
+    <p>
+      말로만 들으면 잘 안 잡혀서, 아주 작은 예로 직접 계산해봤어요. 모델이 아는 단어가 딱 다섯 개뿐이라고
+      치고, "이 단백질 음료는 ___" 다음에 올 후보들에 점수(로짓)가 아래처럼 매겨졌다고 해볼게요. 오픈마켓이
+      싫어하는 <code>100%</code>를 막는 게 목표예요.
+    </p>
+    <div class="ptable-wrap">
+      <table class="ptable">
+        <thead><tr><th>후보 단어</th><th>손대기 전 로짓</th><th>뽑힐 확률</th><th>손댄 뒤 로짓</th><th>뽑힐 확률</th></tr></thead>
+        <tbody>
+          <tr><td>맛있</td><td>8.2</td><td>51.80%</td><td>8.2</td><td><strong>55.31%</strong></td></tr>
+          <tr><td>건강</td><td>7.9</td><td>38.37%</td><td>7.9</td><td><strong>40.97%</strong></td></tr>
+          <tr><td>100%</td><td>6.1</td><td>6.34%</td><td><strong>-10000</strong></td><td><strong>0.00%</strong></td></tr>
+          <tr><td>순수</td><td>5.5</td><td>3.48%</td><td>5.5</td><td>3.72%</td></tr>
+          <tr><td>고양이</td><td>-3.4</td><td>0.00%</td><td>-3.4</td><td>0.00%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>여기서 두 가지가 눈에 띄어요.</p>
+    <ul class="plain">
+      <li><strong>금지어가 정말로 사라져요</strong> — 6.34%였던 확률이 0%가 됐어요. 프롬프트로 "쓰지 마"라고
+      부탁하기만 하면 100번 중 예닐곱 번은 튀어나온다는 뜻인데, 로짓을 눌러버리면 아예 나올 수가 없어요.
+      이게 <strong>부탁</strong>과 <strong>강제</strong>의 차이예요.</li>
+      <li><strong>허용된 단어가 저절로 더 잘 나와요</strong> — '맛있'이 51.80%에서 55.31%로 올랐어요. 확률의
+      총합은 언제나 100%여야 하니까, 지워진 6.34%가 남은 후보들에게 나눠진 거예요. 금지어를 막는 것만으로
+      브랜드 단어의 비중이 덤으로 올라가는 셈이에요.</li>
+    </ul>
+    <p>이 표를 만든 코드는 이게 전부예요. 넘파이만 있으면 바로 돌아가니 직접 숫자를 바꿔보세요.</p>
+    <div class="code-wrap">
+      <div class="code-cap"><b>demo_masking.py</b> · 로짓 마스킹 최소 재현</div>
+      <pre class="code">import numpy as np
+
+words  = ["맛있", "건강", "100%", "순수", "고양이"]
+logits = np.array([8.2, 7.9, 6.1, 5.5, -3.4])   # 모델이 매긴 점수
+
+def softmax(x):
+    e = np.exp(x - np.max(x))
+    return e / e.sum()
+
+print("BEFORE")
+for w, p in zip(words, softmax(logits)):
+    print(f"  {w:6s} {p*100:6.2f}%")
+
+banned = ["100%"]
+masked = logits.copy()
+for i, w in enumerate(words):
+    if w in banned:
+        masked[i] = -10000        # 금지어 점수를 바닥으로
+
+print("AFTER")
+for w, p in zip(words, softmax(masked)):
+    print(f"  {w:6s} {p*100:6.2f}%")</pre>
+    </div>
+    <div class="plain-lang">
+      <span class="pl-label">쉽게 말하면</span>
+      <p style="margin:0;"><strong>softmax</strong>는 점수를 확률로 바꿔주는 계산이에요. 점수 자체는 음수도
+      있고 합이 1도 아니라서 그대로는 제비뽑기를 못 하거든요. 로짓 마스킹은 이 <strong>softmax 직전</strong>에
+      끼어들어요 — 표의 왼쪽 절반과 오른쪽 절반 사이, 딱 그 순간이에요.</p>
+    </div>
+    <p style="font-size:13px; color:var(--ink-faint);">
+      위 숫자는 개념을 보여주려고 제가 임의로 정한 값이에요. 실제 모델은 후보가 다섯 개가 아니라 라마 3.2
+      기준 <strong>12만 8천여 개</strong>라서, 토큰 하나를 고를 때마다 길이 12만 8천짜리 점수 배열이 나와요.
+      로짓 마스킹이 손대는 대상이 바로 이 배열이에요.
+    </p>
+
+
     <h3 class="h3" id="s1-1"><span class="tag">2.1.1</span>문제 — 규칙을 반드시 지켜야 할 때</h3>
     <p>
       브랜딩, 정확성, 규정 준수, 스타일북 같은 이유로 텍스트가 특정 규칙을 반드시 따라야 하는 경우가
@@ -799,6 +897,50 @@ results = pipe(input_message,
       값이라서, "확률을 0으로 만들고 싶으면 로짓을 음의 무한대로 만든다"가 그 방법이에요.</p>
     </div>
 
+    <h4 class="h4">잠깐 — <code>pipeline(...)</code>은 정확히 뭘 만드는 걸까요</h4>
+    <p>
+      위 코드의 <code>pipe</code>는 함수가 아니라 <strong>부품 두 개가 들어 있는 조립품</strong>이에요.
+      커피 자판기를 떠올리면 쉬워요. <code>pipeline(...)</code>을 부르는 건 자판기를 조립해서 설치하는
+      일이고, <code>pipe(입력)</code>은 동전을 넣고 버튼을 누르는 일이에요. 자판기는 한 번만 조립하고,
+      버튼은 얼마든지 다시 누를 수 있죠.
+    </p>
+    <div class="ptable-wrap">
+      <table class="ptable">
+        <thead><tr><th>부품</th><th>하는 일</th><th>왜 중요한가</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>pipe.tokenizer</code></td>
+            <td>글자 ↔ 토큰 번호 변환기. <code>"protein drink"</code>를 <code>[26823, 13748]</code> 같은 번호로 바꾸고, 되돌리기도 해요.</td>
+            <td><strong>감시자가 이걸 빌려 써요.</strong> 로짓을 손볼 시점엔 글이 숫자 상태라서, 금지어를 검사하려면 다시 글자로 되돌려야 하거든요.</td>
+          </tr>
+          <tr>
+            <td><code>pipe.model</code></td>
+            <td>신경망 본체. 매 순간 <strong>점수표(로짓)를 만들어내는 놈</strong>이에요.</td>
+            <td>이 모델이 아는 토큰 개수가 곧 점수표의 길이예요. 라마 3.2는 12만 8천여 개.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="plain-lang">
+      <span class="pl-label">그래서</span>
+      <p style="margin:0;">앞 코드의 <code>MyRulesLogitsProcessor(<strong>pipe.tokenizer</strong>, rules)</code>에서
+      토크나이저를 넘겨주는 이유가 이거예요. 감시자에게 <strong>"숫자를 글자로 되돌리는 사전"</strong>을 쥐여주는
+      거예요. 이게 없으면 감시자는 지금 무슨 단어가 쓰이고 있는지 읽을 수가 없어요.</p>
+    </div>
+
+    <div class="card warn">
+      <span class="wl">코드를 직접 돌려볼 사람을 위한 주의</span>
+      <p style="margin-bottom:0;">
+        위 예제는 확률을 0으로 만들 때 <code>-np.inf</code>(음의 무한대)를 써요. 수학적으로는 이게 정답이에요.
+        그런데 <strong>저자들의 실제 저장소 코드는 <code>-10000</code>을 써요.</strong> 파이토치가 무한대를 만나면
+        계산 중에 <code>NaN</code>(숫자 아님)이 튀어나오기 쉽거든요. 저장소 주석에도 이렇게 적혀 있어요 —
+        <em>"torch doesn't like it to be -np.inf"</em>. 그래서 실무에서는 "무한대는 아니지만 사실상 절대 안 뽑힐
+        만큼 낮은 값"을 쓰는 게 관행이에요. 개념을 이해할 땐 <code>-inf</code>로, 코드를 짤 땐 <code>-10000</code>으로
+        기억하면 돼요.
+      </p>
+    </div>
+
+
     <h3 class="h3" id="s1-3"><span class="tag">2.1.3</span>예제 — 시퀀스 선택과 시퀀스 재생성</h3>
     <h4 class="h4">간단한 경우: 후보 중 최선을 고르기만 하면 될 때</h4>
     <p>
@@ -888,6 +1030,132 @@ results = pipe(input_message,
       온타뇬이 이론적 근거를 제시했어요. 2025년 로맹 플로렌츠는 유한 상태 기계를 로짓 마스킹으로 써서
       LLM으로 소셜 그래프를 생성하는 연구를 발표했어요.
     </p>
+
+    <h3 class="h3" id="s1-5"><span class="tag">2.1.5</span>직접 돌려보기 — 저자 노트북 따라가기</h3>
+    <p>
+      여기부터는 책에 없는, 제가 저자들의 공식 저장소를 직접 열어보며 정리한 내용이에요. 2.1.3에서 본
+      <strong>시퀀스 선택</strong>·<strong>시퀀스 재생성</strong>·<strong>자동 완성</strong>이 저장소에서는
+      각각 별도의 노트북 파일로 들어 있어요. 폴더 하나에 네 개가 나란히 있는데, 이 순서가 곧 이 절의 진행
+      순서예요.
+    </p>
+    <div class="ptable-wrap">
+      <table class="ptable">
+        <thead><tr><th>파일</th><th>다루는 것</th><th>본문에서는</th></tr></thead>
+        <tbody>
+          <tr><td><code>0_logits_masking.ipynb</code></td><td>제품 설명에서 금지어를 빼고 브랜드 단어를 늘리기</td><td>기본형 (2.1.3 앞부분)</td></tr>
+          <tr><td><code>1_sequence_selection.ipynb</code></td><td>두운(첫 글자 맞추기)에 맞는 후보만 남기기</td><td>시퀀스 선택</td></tr>
+          <tr><td><code>2_sequence_regeneration.ipynb</code></td><td>이합체시 — 역추적이 필요한 경우</td><td>시퀀스 재생성</td></tr>
+          <tr><td><code>3_autocomplete.ipynb</code></td><td>문서를 바탕으로 다음 문구 제안하기</td><td>자동 완성</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:13.5px; color:var(--ink-soft);">
+      파일 이름에 <code>sequence</code>(연속)라는 말이 계속 나오는 게 우연이 아니에요. 첫 노트북의 제목도
+      "생성 목표에 맞지 않는 <strong>continuation</strong>을 가려내기"예요. 이 패턴이 다루는 대상은 단어 하나가
+      아니라 <strong>이어지는 덩어리</strong>라는 걸 저자들이 계속 강조하고 있는 거예요.
+    </p>
+
+    <div class="etym">
+      <span class="label">노트북·셀·커널</span>
+      <div class="body">
+        <code>.ipynb</code> 파일을 <span class="term">주피터 노트북</span>이라고 불러요. 보통 파이썬 파일은
+        위에서 아래로 한 번에 다 실행되는데, 노트북은 코드를 여러 조각으로 나눠 담고 <strong>조각 단위로 하나씩</strong>
+        실행할 수 있어요. 그 조각 하나가 <strong>셀(cell)</strong>이에요. 셀에는 실제로 돌아가는 <strong>코드
+        셀</strong>과, 설명글만 담긴 <strong>마크다운 셀</strong> 두 종류가 있어요.<br><br>
+        노트북 뒤에서는 <strong>커널(kernel)</strong>이라는 파이썬 프로그램이 계속 켜져 있어요. 셀을 실행할 때마다
+        파이썬이 새로 시작되는 게 아니라, 하나의 파이썬이 계속 살아 있으면서 코드를 받아먹어요. 그래서 앞 셀에서
+        만든 변수가 뒤 셀에 그대로 남아 있는 거예요. 대신 <strong>커널을 다시 켜면 변수가 전부 사라져요</strong> —
+        화면엔 이전 실행 결과가 그대로 보여서 다 된 것처럼 착각하기 쉬운데, 메모리는 텅 비어 있어요.
+      </div>
+    </div>
+
+    <h4 class="h4">첫 노트북은 Before / After 실험이에요</h4>
+    <p>
+      <code>0_logits_masking.ipynb</code>는 열일곱 개 셀로 되어 있는데, 구조는 아주 단순해요.
+      <strong>같은 프롬프트로 두 번 만들고, 같은 잣대로 두 번 채점해서 비교</strong>하는 거예요.
+    </p>
+    <div class="flow">
+      <div class="flow-box"><span class="label">모델 준비</span><span class="sub">셀 8</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box"><span class="label">그냥 생성</span><span class="sub">셀 9 · Before</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box"><span class="label">채점</span><span class="sub">셀 10</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box accent"><span class="label">마스킹 생성</span><span class="sub">셀 13·14 · After</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box"><span class="label">채점</span><span class="sub">셀 15</span></div>
+    </div>
+
+    <h4 class="h4">채점표부터 — 좋은 단어 수 빼기 나쁜 단어 수</h4>
+    <p>
+      로짓 마스킹의 감시자는 "규칙을 어겼나?"를 판단할 잣대가 필요해요. 이 노트북의 잣대는 놀랄 만큼 단순해요.
+    </p>
+    <div class="code-wrap">
+      <div class="code-cap"><b>셀 10</b> · 채점 함수</div>
+      <pre class="code">def evaluate(descr, positives, negatives):
+    descr = descr.lower()
+    num_positive = np.sum([1 for phrase in positives if phrase in descr])
+    num_negative = np.sum([1 for phrase in negatives if phrase in descr])
+    return int(num_positive - num_negative)</pre>
+    </div>
+    <div class="plain-lang">
+      <span class="pl-label">쉽게 말하면</span>
+      <p style="margin:0;">"브랜드 단어가 몇 개 들어 있나 세고, 금지어가 몇 개 들어 있나 세서, <strong>빼라</strong>"가
+      전부예요. 점수가 높을수록 좋은 문장이에요. 목록을 미리 <code>set()</code>으로 바꿔두는 이유도 여기 있어요 —
+      같은 단어가 목록에 두 번 적혀 있으면 한 번 나온 걸 두 번 세서 점수가 부풀거든요. (실제로 저장소의 권장어
+      목록에는 <code>low calorie</code>가 두 번 들어 있어요.)</p>
+    </div>
+
+    <h4 class="h4">그리고 감시자 — 여기가 이 절의 심장이에요</h4>
+    <p>
+      이제 이 채점표를 감시자 안에 그대로 집어넣어요. 코드에서 가장 중요한 여덟 줄이에요.
+    </p>
+    <div class="code-wrap">
+      <div class="code-cap"><b>셀 13</b> · BrandLogitsProcessor 핵심부</div>
+      <pre class="code">for idx, seq in enumerate(input_ids):
+    decoded = self.tokenizer.decode(seq)              # 숫자 → 글자로 되돌리고
+    num_matches[idx] = evaluate(decoded, ...)         # 채점한다
+max_matches = np.max(num_matches)                     # 최고점을 찾는다
+
+for idx in range(len(input_ids)):
+    if num_matches[idx] != max_matches:
+        output_logits[idx] = -10000                   # 최고점이 아닌 줄은 통째로 죽인다</pre>
+    </div>
+    <div class="plain-lang">
+      <span class="pl-label">여기가 핵심</span>
+      <p style="margin:0;">마지막 줄을 잘 보세요. <code>output_logits[idx] = -10000</code>은 특정 <strong>단어
+      하나</strong>를 지우는 게 아니라 <strong>그 줄 전체</strong>를 지워요. 빔 탐색으로 후보 문장 열 개를 동시에
+      키우고 있는데(<code>num_beams=10</code>), 그중 <strong>점수가 최고가 아닌 후보 문장을 통째로 탈락</strong>시키는
+      거예요. 이름은 "로짓 처리기"지만 실제로 하는 일은 <strong>시퀀스 선택</strong>이에요 — 2.1.3의 제목이 왜
+      그런지가 여기서 풀려요.</p>
+    </div>
+    <p style="font-size:13px; color:var(--ink-faint);">
+      덧붙이면, <code>decode(seq)</code>가 되돌리는 글자에는 시스템 프롬프트까지 포함돼요. 그 안에 이미
+      <code>nutrition</code>이라는 권장어가 들어 있어서 모든 후보가 똑같이 1점을 깔고 시작해요. 후보끼리 비교하는
+      데는 지장이 없지만, 채점 결과를 절대 점수로 읽으면 안 되는 이유예요.
+    </p>
+
+    <div class="card warn">
+      <span class="wl">한국어 윈도우에서 돌릴 때 걸리는 두 가지</span>
+      <p>
+        <strong>1. 단어 목록을 읽는 셀이 에러로 죽어요.</strong> 저장소 코드는
+        <code>open("banned_phrases.txt")</code>처럼 인코딩을 안 적어요. 이러면 파이썬이 운영체제 기본값을 쓰는데,
+        한국어 윈도우의 기본값은 UTF-8이 아니라 <code>cp949</code>예요. 파일 안의 특수문자에서
+        <code>UnicodeDecodeError</code>가 나요. 이렇게 고치면 돼요.
+      </p>
+      <div class="code-wrap">
+        <pre class="code">with open("banned_phrases.txt", encoding="utf-8") as ifp:   # encoding 추가
+    banned_phrases = [line.strip().lower() for line in ifp.readlines()]</pre>
+      </div>
+      <p style="margin-bottom:0;">
+        <strong>2. 라이브러리 버전을 맞춰주세요.</strong> 폴더의 <code>requirements.txt</code>는
+        <code>transformers==4.52.3</code>을 고정해 두었어요. 최신 5.x에서도 이 절의 코드는 대체로 돌아가지만,
+        생성 관련 API는 메이저 버전 사이에 잘 바뀌는 편이라 처음 따라 할 땐 고정된 버전을 쓰는 게 안전해요.
+        그리고 이 패턴은 <strong>모델을 내 컴퓨터에 직접 띄워야</strong> 쓸 수 있어요 — 30억 개 파라미터 모델이
+        6GB쯤 되니, 그래픽카드 메모리 8GB 정도는 있어야 편하게 돌아가요.
+      </p>
+    </div>
+
   </section>
 
   <!-- 2.2 문법 -->
@@ -1699,5 +1967,49 @@ class AdsComparison:
   setActive(targets[0] && targets[0].id);
 })();
 </script>
+<script>
+/* 모든 코드 블록에 복사 버튼을 붙인다 */
+(function(){
+  var blocks = Array.prototype.slice.call(document.querySelectorAll('pre.code'));
+  blocks.forEach(function(pre){
+    var wrap = pre.parentNode;
+    if (!wrap || !wrap.classList || !wrap.classList.contains('code-wrap')) {
+      wrap = document.createElement('div');
+      wrap.className = 'code-wrap';
+      pre.parentNode.insertBefore(wrap, pre);
+      wrap.appendChild(pre);
+    }
+    if (wrap.querySelector('.copy-btn')) return;
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'copy-btn';
+    btn.textContent = '복사';
+    btn.setAttribute('aria-label', '코드 복사');
+    btn.addEventListener('click', function(){
+      var text = pre.innerText;
+      function done(){
+        btn.textContent = '복사됨';
+        btn.classList.add('done');
+        setTimeout(function(){ btn.textContent = '복사'; btn.classList.remove('done'); }, 1600);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, fallback);
+      } else { fallback(); }
+      function fallback(){
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); done(); } catch(e){}
+        document.body.removeChild(ta);
+      }
+    });
+    wrap.appendChild(btn);
+  });
+})();
+</script>
+
 </body>
 </html>

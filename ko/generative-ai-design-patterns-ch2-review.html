@@ -106,6 +106,13 @@
   .divider-note{ display:flex; align-items:center; gap:10px; font-size:12.5px; color:var(--ink-faint); margin:26px 0; }
   .divider-note::before, .divider-note::after{content:""; flex:1; height:1px; background:var(--line);}
 
+  .codebox{ background:var(--surface-2); border:1px solid var(--line); border-radius:9px; padding:13px 15px; margin:10px 0; overflow-x:auto; }
+  .codebox .path{ display:flex; align-items:center; gap:8px; font-family:var(--font-mono); font-size:10.5px; color:var(--ink-faint); margin-bottom:9px; }
+  .codebox .path a{ color:var(--ink-faint); text-decoration:none; border-bottom:1px dashed var(--line); }
+  .codebox .path a:hover{ color:var(--accent-teal); border-color:var(--accent-teal); }
+  .codebox pre{ margin:0; font-family:var(--font-mono); font-size:12px; line-height:1.65; color:var(--ink); white-space:pre; }
+  .codebox .out{ margin-top:9px; padding-top:9px; border-top:1px dashed var(--line); font-size:12px; color:var(--ink-faint); white-space:pre-wrap; font-family:var(--font-mono); }
+
   .deeper{ background:var(--accent-teal-soft); border:1px solid var(--accent-teal); border-radius:14px; padding:20px 22px; margin:34px 0; }
   .deeper .dl{ font-family:var(--font-mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--accent-teal); margin-bottom:8px; }
   .deeper a{ color:var(--accent-teal); font-weight:600; }
@@ -205,6 +212,25 @@
         <p class="fa">한 걸음 물러나(역추적) 방금 만든 토큰을 취소하고 그 이전 지점에서 다시
         시도한다. 그래도 안 되면 최대 시도 횟수를 넘겼는지 확인하고, 넘겼으면 거절 메시지를 낸다.</p>
       </div>
+      <div class="codebox">
+        <span class="path">📓 <a href="https://github.com/lakshmanok/generative-ai-design-patterns/blob/main/examples/01_logits_masking/0_logits_masking.ipynb" target="_blank" rel="noopener">examples/01_logits_masking/0_logits_masking.ipynb</a></span>
+        <pre>class BrandLogitsProcessor(LogitsProcessor):
+    def __call__(self, input_ids, input_logits):
+        output_logits = input_logits.clone()
+        for idx, seq in enumerate(input_ids):
+            decoded = self.tokenizer.decode(seq)
+            num_matches[idx] = evaluate(decoded, self.positives, self.negatives)
+        max_matches = np.max(num_matches)
+        for idx in range(len(input_ids)):
+            if num_matches[idx] != max_matches:
+                output_logits[idx] = -10000
+        return output_logits</pre>
+      </div>
+      <div class="qa-follow">
+        <span class="qa-flabel">직접 검증해볼 것</span>
+        <p class="fq"><code>evaluate()</code> 함수 정의를 찾아보라 — <code>positives</code>·<code>negatives</code> 판정이 의미(semantic)를 보는가, 다른 방식인가? 이걸로 "특정 토큰을 막아도 모델이 동의어로 우회할 수 있는가"에 답해보라.</p>
+        <p class="fa"><strong>확인 포인트</strong>: <code>num_positive = np.sum([1 for phrase in positives if phrase in descr])</code> — 문자열이 그대로 포함되는지(리터럴 매칭)만 본다. 실제로 책 예제에서 모델은 금지어 "품질(quality)"을 피하려 목록에 없는 "프리미엄(premium)"으로 우회했다 — 의미는 같지만 리스트에 없는 동의어라면 걸러지지 않는다는 뜻이다.</p>
+      </div>
     </div>
     <div class="qa-item" id="q2">
       <span class="qa-tag">Q2</span>
@@ -222,6 +248,19 @@
       <p class="qa-a">원리(토큰 후보의 확률을 0으로 만든다)는 완전히 같다. 다른 건 <strong>그 검열을
       누가 실행하느냐</strong>다. 로짓 마스킹은 우리가 직접 만든 코드가 클라이언트 쪽에서 감시하고,
       문법 패턴은 우리가 규칙(BNF나 스키마)만 넘기면 모델 제공업체의 서버가 알아서 감시해준다.</p>
+      <div class="codebox">
+        <span class="path">📓 두 방식의 코드 비교 — <a href="https://github.com/lakshmanok/generative-ai-design-patterns/blob/main/examples/02_grammar/1_applying_grammar.ipynb" target="_blank" rel="noopener">02_grammar/1_applying_grammar.ipynb</a></span>
+        <pre># 로짓 마스킹: 텍스트로 되돌린 뒤 검사 (모델 교체에 비교적 안전)
+decoded = self.tokenizer.decode(seq)
+
+# 문법: 토크나이저 어휘집에 직접 묶어서 매핑을 미리 계산 (모델 교체 시 재계산 필요)
+grammar = IncrementalGrammarConstraint(grammar_str, "root", pipe.tokenizer)</pre>
+      </div>
+      <div class="qa-follow">
+        <span class="qa-flabel">직접 검증해볼 것</span>
+        <p class="fq">모델(그래서 tokenizer도)을 바꾸면 이 두 패턴 중 뭐가 먼저 깨지는지, 위 두 줄만 보고 판단해보라.</p>
+        <p class="fa"><strong>확인 포인트</strong>: <strong>문법(BNF)이 먼저 깨진다.</strong> <code>IncrementalGrammarConstraint</code>는 문법 상태별 허용 토큰 ID를 그 tokenizer 어휘집 기준으로 미리 계산해두므로, 모델을 바꾸면 이 매핑을 처음부터 다시 만들어야 한다. 로짓 마스킹은 <code>decode()</code>로 텍스트를 되돌린 뒤 검사하므로 tokenizer가 바뀌어도 <code>apply_rules</code> 로직 자체는 거의 재사용된다 — 텍스트 레벨 vs 토큰 레벨의 차이가 이식성 차이로 이어진다.</p>
+      </div>
     </div>
     <div class="qa-item" id="q4">
       <span class="qa-tag">Q4</span>
@@ -236,6 +275,26 @@
             <tr><td>로그 확률 접근이 안 되는 모델을 써야 할 때</td><td><strong>데이터클래스</strong></td></tr>
           </tbody>
         </table>
+      </div>
+      <div class="codebox">
+        <span class="path">📓 <a href="https://github.com/lakshmanok/generative-ai-design-patterns/blob/main/examples/02_grammar/1_applying_grammar.ipynb" target="_blank" rel="noopener">examples/02_grammar/1_applying_grammar.ipynb</a> — 실제 실행 결과</span>
+        <pre># 문법: root ::= (expr "=" ws term "\n")+   (등호만 허용, 부등호 없음)
+# 질문: "Bill·Mae 중 누가 사과가 오렌지보다 많은가?" (원래 &gt; 비교가 필요)</pre>
+        <div class="out">1 +2 = 3
+2 +4 = 6
+
+3 = 3
+6 = 6
+
+3 = 6
+3 = 6
+3 = 6
+... ("3 = 6" 무한 반복)</div>
+      </div>
+      <div class="qa-follow">
+        <span class="qa-flabel">직접 검증해볼 것</span>
+        <p class="fq">이 결과가 왜 나왔는지 문법 정의에서 찾아보라. 그리고 "문법 제약을 걸면 정확도도 같이 오르는가?"에 답해보라.</p>
+        <p class="fa"><strong>확인 포인트</strong>: 문법이 "&gt;" 기호를 아예 안 열어줘서, 모델은 정답 <code>(3+2)&gt;(2+4)</code>를 구조적으로 쓸 수 없다 — 형식은 끝까지 완벽하게 지켜지면서 내용은 "3=6"이라는 명백히 틀린 문장을 반복한다. <strong>형식 100% 보장이 정확도 향상을 보장하지 않는다.</strong> 그래서 형식이 완벽해 보인다고 다운스트림 검증 로직(값의 논리적 타당성 확인)까지 지우면 안 된다 — 그 방심 자체가 새로운 위험(자동화 편향)이다.</p>
       </div>
     </div>
 
@@ -338,15 +397,6 @@
       더 많이 알아내야 하는 방향으로 나아간다는 게 이 다섯 칸의 숨은 순서예요.
     </div>
   </section>
-
-  <div class="deeper">
-    <div class="dl">더 깊이 파고들기</div>
-    <p style="margin:0;">이론은 다 이해했는데 "실무적으로 의미가 있나" 싶다면 —
-    <a href="study-forced-decoding-patterns.html">로짓 마스킹·문법 복습노트</a>에서 저자 공식 코드
-    저장소의 실제 노트북·실행 결과(문법이 틀린 답을 강제로 만드는 실패 사례 포함)로 다시 검증해보세요.</p>
-    <p class="note">단, 그 노트는 패턴1·2(2.1·2.2)만 다룹니다 — 패턴3~5(스타일 전이·역중립화·콘텐츠 최적화)의
-    심화 검증은 아직 없어요.</p>
-  </div>
 
   <p style="text-align:center;">
     <a href="generative-ai-design-patterns-ch2.html" style="font-family:var(--font-mono); font-size:13px; color:var(--accent-strong); text-decoration:none;">← 2장 정리노트로 돌아가기</a>

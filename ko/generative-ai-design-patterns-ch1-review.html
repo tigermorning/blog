@@ -115,6 +115,13 @@
   .qa-follow .fq{ margin:0 0 6px; font-weight:600; color:var(--ink); }
   .qa-follow .fa{ margin:0; color:var(--ink-soft); }
 
+  .codebox{ background:var(--surface-2); border:1px solid var(--line); border-radius:9px; padding:13px 15px; margin:10px 0; overflow-x:auto; }
+  .codebox .path{ display:flex; align-items:center; gap:8px; font-family:var(--font-mono); font-size:10.5px; color:var(--ink-faint); margin-bottom:9px; }
+  .codebox .path a{ color:var(--ink-faint); text-decoration:none; border-bottom:1px dashed var(--line); }
+  .codebox .path a:hover{ color:var(--accent-teal); border-color:var(--accent-teal); }
+  .codebox pre{ margin:0; font-family:var(--font-mono); font-size:12px; line-height:1.65; color:var(--ink); white-space:pre; }
+  .codebox .out{ margin-top:9px; padding-top:9px; border-top:1px dashed var(--line); font-size:12px; color:var(--ink-faint); white-space:pre-wrap; font-family:var(--font-mono); }
+
   .divider-note{ display:flex; align-items:center; gap:10px; font-size:12.5px; color:var(--ink-faint); margin:26px 0; }
   .divider-note::before, .divider-note::after{content:""; flex:1; height:1px; background:var(--line);}
 
@@ -238,6 +245,17 @@
         <p class="fa">회사 내부 문서를 모르는 모델이 환각(있지도 않은 사실을 그럴듯하게 지어냄)을
         일으키는 문제. 질문에 답하기 전에 실제 문서를 먼저 찾아보게 만드는 게 해법이다.</p>
       </div>
+      <div class="codebox">
+        <span class="path">📓 저자 공식 저장소: <a href="https://github.com/lakshmanok/generative-ai-design-patterns" target="_blank" rel="noopener">examples/</a> 폴더 구조</span>
+        <pre>00_introduction/  01_logits_masking/  02_grammar/  03_style_transfer/
+04_reverse_neutralization/  05_content_optimization/  06_basic_rag/  ...
+...  31_self_check/  32_guardrails/</pre>
+      </div>
+      <div class="qa-follow">
+        <span class="qa-flabel">직접 검증해볼 것</span>
+        <p class="fq">이 저장소의 <code>examples/</code> 폴더 목록을 직접 열어보라 — 폴더 번호·이름이 책의 32개 패턴과 정확히 1:1로 맞는지 확인하라.</p>
+        <p class="fa"><strong>확인 포인트</strong>: 정확히 맞는다. "패턴집" 구조가 책 텍스트뿐 아니라 저장소 폴더 구조 자체로 구현돼 있다 — <code>06_basic_rag</code>가 바로 RAG 패턴의 실행 가능한 코드다.</p>
+      </div>
     </div>
 
     <div class="qa-fam">1.2 · 기초 모델로 앱 만들기</div>
@@ -247,6 +265,19 @@
       <p class="qa-a">시스템 프롬프트는 "너는 이런 역할, 이런 태도로 답해"라고 한 번 정해두는 규칙이고,
       사용자 프롬프트는 그때그때 실제로 부탁하는 내용이다. prompt라는 말 자체가 연극 무대에서
       배우에게 다음 대사를 귀띔해주는 "프롬프터"에서 왔다.</p>
+      <div class="codebox">
+        <span class="path">📓 <a href="https://github.com/lakshmanok/generative-ai-design-patterns/blob/main/examples/00_introduction/agentic_ai.ipynb" target="_blank" rel="noopener">examples/00_introduction/agentic_ai.ipynb</a></span>
+        <pre>agent = Agent(f"anthropic:{MODEL_ID}",
+              system_prompt="You are an inventory manager who orders just in time.",
+              result_type=list[Reorder])
+
+result = agent.run_sync(f"Identify which of these items need to be reordered this week.\n{items}")</pre>
+      </div>
+      <div class="qa-follow">
+        <span class="qa-flabel">직접 검증해볼 것</span>
+        <p class="fq"><code>system_prompt</code>와 <code>run_sync(...)</code> 인자에 들어간 문자열의 성격이 어떻게 다른지 비교해보라.</p>
+        <p class="fa"><strong>확인 포인트</strong>: <code>system_prompt</code>엔 매번 안 바뀌는 역할("재고 관리자")이, <code>run_sync</code>엔 그때그때 바뀌는 실제 요청(재고 데이터)이 들어간다 — 책 예제 코드가 이 구분을 그대로 지킨다.</p>
+      </div>
     </div>
     <div class="qa-item" id="q3">
       <span class="qa-tag">Q3</span>
@@ -263,6 +294,22 @@
         실제로 내 컴퓨터 사양으로 돌릴 수 있는지의 문제다. 공개돼 있어도 모델이 너무 크면 내 GPU로는
         못 돌릴 수 있다.</p>
       </div>
+      <div class="codebox">
+        <span class="path">📓 저장소 비교 — <a href="https://github.com/lakshmanok/generative-ai-design-patterns/tree/main/examples/00_introduction" target="_blank" rel="noopener">00_introduction</a> vs <a href="https://github.com/lakshmanok/generative-ai-design-patterns/tree/main/examples/15_adapter_tuning" target="_blank" rel="noopener">15_adapter_tuning</a></span>
+        <pre># 00_introduction: 클라우드 API만 있으면 됨
+agent = Agent(f"anthropic:{MODEL_ID}", ...)   # ANTHROPIC_API_KEY만 필요
+
+# 15_adapter_tuning: 오픈웨이트를 통째로 로컬 GPU에 로드
+model_id = "google/gemma-3-4b-pt"
+model = AutoModelForImageTextToText.from_pretrained(model_id, **model_kwargs)
+# README: "Step 4: Get a sufficiently large machine with a GPU.
+#          We used a NVIDIA L4 with 32 GB of memory"</pre>
+      </div>
+      <div class="qa-follow">
+        <span class="qa-flabel">직접 검증해볼 것</span>
+        <p class="fq">두 폴더의 <code>keys.env</code>/README 요구사항을 비교해보라 — 오픈웨이트 모델이라고 항상 가볍게 로컬에서 돌아가는가?</p>
+        <p class="fa"><strong>확인 포인트</strong>: Gemma는 오픈웨이트지만 README가 NVIDIA L4 32GB GPU를 명시한다 — "가중치 공개"와 "내 컴퓨터에서 실제로 돌아감"이 다른 축이라는 걸 실제 하드웨어 요구사항으로 확인할 수 있다.</p>
+      </div>
     </div>
     <div class="qa-item" id="q4">
       <span class="qa-tag">Q4</span>
@@ -271,6 +318,11 @@
       모델(공개돼서 내려받아 쓸 수 있음)로 대략 나뉘는데, 일반적으로 <strong>성능이 좋을수록 비용도
       올라간다.</strong> 모든 작업에 제일 비싼 모델을 쓸 필요는 없고, 작업 난이도에 맞춰 골라야
       가성비가 맞는다.</p>
+      <div class="qa-follow">
+        <span class="qa-flabel">직접 검증해볼 것</span>
+        <p class="fq"><a href="https://lmarena.ai/leaderboard" target="_blank" rel="noopener">lmarena.ai/leaderboard</a>에서 지금 상위권 모델과, 같은 회사의 경량(증류) 라인업을 나란히 찾아보라.</p>
+        <p class="fa"><strong>확인 포인트</strong>: 리더보드 등수는 계속 바뀌지만, 상단(프런티어)과 경량 라인업(하이쿠·플래시류)이 항상 같이 존재하는 구조는 그대로다 — 작업 난이도에 맞춰 등급을 낮추는 습관이 실제 비용을 좌우한다.</p>
+      </div>
     </div>
 
     <div class="qa-fam">1.3 · 에이전트형 AI</div>
@@ -281,6 +333,22 @@
       않고, <strong>"재고 부족 없게 적시에 주문해줘"라는 목표만 주는 것</strong>. 에이전트는 최근
       판매량·배송 기간을 스스로 살펴보고 필요한 수량을 계산해서 이유까지 설명한다. 규칙을 사람이
       적어두는 게 아니라, 에이전트가 그 규칙 자체를 그때그때 만들어낸다는 게 핵심이다.</p>
+      <div class="codebox">
+        <span class="path">📓 <a href="https://github.com/lakshmanok/generative-ai-design-patterns/blob/main/examples/00_introduction/agentic_ai.ipynb" target="_blank" rel="noopener">examples/00_introduction/agentic_ai.ipynb</a> — 책의 재고 예시 원본</span>
+        <pre>items = [
+    InventoryItem("itemA", 300, [50, 70, 80, 100], 2),
+    InventoryItem("itemB", 100, [70, 80, 90, 70], 2),
+    InventoryItem("itemC", 200, [80, 70, 90, 80], 1)
+]
+agent = Agent(f"anthropic:{MODEL_ID}",
+              system_prompt="You are an inventory manager who orders just in time.",
+              result_type=list[Reorder])</pre>
+      </div>
+      <div class="qa-follow">
+        <span class="qa-flabel">직접 검증해볼 것</span>
+        <p class="fq">이 셀 어디에도 "재고 100개 밑이면 300개 주문" 같은 <code>if</code>문이 없다는 걸 코드에서 직접 확인해보라.</p>
+        <p class="fa"><strong>확인 포인트</strong>: 정말 없다. 판단은 전부 <code>system_prompt</code> 한 줄과 <code>result_type=list[Reorder]</code>(출력 형식 강제)에서 나온다 — 목표·형식만 정해주고 판단 로직 자체는 프롬프트+모델에 위임했다는 뜻이다.</p>
+      </div>
     </div>
     <div class="qa-item" id="q6">
       <span class="qa-tag">Q6</span>
@@ -289,6 +357,11 @@
       쪼갬) ③ 인지 및 행동(데이터를 읽고 외부 함수를 호출함) ④ 적응 및 학습(자기 산출물이 맞는지
       스스로 점검하고 고침 — 6장 Reflection·9장 Self-Check). 이 넷이 <strong>인지→계획→행동→적응→다시
       인지</strong>로 한 바퀴 돌 때마다, 에이전트는 자기 결과를 스스로 검증해서 조금씩 나아진다.</p>
+      <div class="qa-follow">
+        <span class="qa-flabel">직접 검증해볼 것</span>
+        <p class="fq">Q5의 <code>agentic_ai.ipynb</code>를 다시 보라 — <code>@agent.tool</code> 데코레이터나 실제 주문 API 호출 코드가 있나? <code>items</code> 데이터는 어디서 오나?</p>
+        <p class="fa"><strong>확인 포인트</strong>: 없다. <code>items</code>는 노트북에 하드코딩된 파이썬 리스트일 뿐이다. 이 예제는 ②계획·추론까지만 구현됐고, ③인지·행동(실제 재고 DB 조회, 진짜 주문 API 호출)은 빠져 있다 — 그건 7장 도구 호출 패턴(<a href="https://github.com/lakshmanok/generative-ai-design-patterns/tree/main/examples/21_tool_calling" target="_blank" rel="noopener">21_tool_calling</a>)부터 채워진다.</p>
+      </div>
     </div>
     <div class="qa-item" id="q7">
       <span class="qa-tag">Q7</span>
@@ -308,6 +381,20 @@
         1등 후보 자체가 사실 확인 없이 매겨진 점수라서 환각은 그대로 남을 수 있다. 둘은 서로 다른
         층위의 문제라 하나를 고친다고 다른 게 같이 고쳐지지 않는다.</p>
       </div>
+      <div class="codebox">
+        <span class="path">📓 <a href="https://github.com/lakshmanok/generative-ai-design-patterns/blob/main/examples/00_introduction/building_on_apis.ipynb" target="_blank" rel="noopener">examples/00_introduction/building_on_apis.ipynb</a> — 실제 출력 기록</span>
+        <pre>for T in [0, 0.2, 0.5, 0.8, 1.0]:
+    agent = Agent('anthropic:claude-3-7-sonnet-latest',
+                  model_settings={"temperature": T}, ...)
+    result = agent.run_sync("The trade war caused")</pre>
+        <div class="out">0 :   The trade war caused significant disruptions to global supply chains...
+(T=0을 여러 번 돌려도 토씨까지 똑같은 문장이 반복됨)</div>
+      </div>
+      <div class="qa-follow">
+        <span class="qa-flabel">직접 검증해볼 것</span>
+        <p class="fq">이 반복문을 <code>T=0</code>만 남겨서 3번 재실행해보라. 문장이 똑같이 나오는가?</p>
+        <p class="fa"><strong>확인 포인트</strong>: 그렇다 — 비결정성은 거의 사라진다. 하지만 그 문장이 사실인지는 T값과 무관하다. 온도는 "얼마나 다양하게 뽑을지"만 건드릴 뿐, "그 내용이 진짜인지"는 건드리지 못한다.</p>
+      </div>
     </div>
 
     <div class="qa-fam">1.4 · 세밀한 제어</div>
@@ -319,6 +406,21 @@
       <strong>온도(T)</strong>는 이 확률을 재분배하는 손잡이 — T를 0에 가깝게 두면 1등만 거의 항상
       뽑히고(안전, 뻔함), T를 높이면 순위 낮은 후보도 뽑힐 기회가 생긴다(창의적, 대신 말이 안 될
       위험도 커짐).</p>
+      <div class="codebox">
+        <span class="path">📓 <a href="https://github.com/lakshmanok/generative-ai-design-patterns/blob/main/examples/00_introduction/building_on_apis.ipynb" target="_blank" rel="noopener">examples/00_introduction/building_on_apis.ipynb</a></span>
+        <pre>def logits_to_probs(logits):
+    probs = { word: np.exp(logit) for word, logit in logits.items() }
+    sigma = np.sum(list(probs.values()))
+    return { word: value/sigma for word, value in probs.items() }
+
+def scale_logits(logits, T):
+    return { word: logit/T for word, logit in logits.items() }</pre>
+      </div>
+      <div class="qa-follow">
+        <span class="qa-flabel">직접 검증해볼 것</span>
+        <p class="fq">위 두 함수(순수 파이썬, API 호출 없음)를 그대로 돌려서 <code>scale_logits(logits, 0.01)</code>과 <code>scale_logits(logits, 1.0)</code>의 확률 분포가 어떻게 달라지는지 직접 계산해보라.</p>
+        <p class="fa"><strong>확인 포인트</strong>: T=0.01은 1등 단어 확률이 거의 100%로 몰리고, T=1.0은 5개 후보에 확률이 훨씬 고르게 퍼진다 — "온도가 로짓을 나눈 뒤 소프트맥스에 넣는다"는 정의를 숫자로 직접 확인할 수 있다.</p>
+      </div>
     </div>
     <div class="qa-item" id="q9">
       <span class="qa-tag">Q9</span>
@@ -327,6 +429,21 @@
       나머지는 후보에서 아예 제외한다. <strong>상위P</strong>는 개수를 미리 안 정하고, 누적 확률이
       P(예: 90%)를 넘는 지점까지만 후보로 남긴다 — 그래서 남는 후보 개수가 상황(점수 분포)에 따라
       달라진다. 목적은 둘 다 같다 — 말이 안 되는 단어가 뽑힐 가능성을 후보에서 미리 잘라내는 것.</p>
+      <div class="codebox">
+        <span class="path">📓 <a href="https://github.com/lakshmanok/generative-ai-design-patterns/blob/main/examples/00_introduction/building_on_apis.ipynb" target="_blank" rel="noopener">examples/00_introduction/building_on_apis.ipynb</a> — 실제 출력</span>
+        <pre>for top_k in [1, 10, 100]:
+    agent = Agent('anthropic:claude-3-7-sonnet-latest',
+                  model_settings={"temperature": 0.95, "top_k": top_k}, ...)
+    result = agent.run_sync("The spaceship")</pre>
+        <div class="out">1   :  The spaceship zoomed through the vast expanse of space...
+10  :  The spaceship glided silently through the vast emptiness of space...
+100 :  The spaceship soared through the starry expanse, its gleaming hull...</div>
+      </div>
+      <div class="qa-follow">
+        <span class="qa-flabel">직접 검증해볼 것</span>
+        <p class="fq">저장소의 <code>apply_top_p(probs, top_p)</code> 함수를 <code>{"the":5.2,"a":3.8,"an":2.1,"this":1.5,"that":0.9}</code> 같은 뾰족한 분포에 <code>top_p=0.3</code>으로 돌려서 몇 개가 남는지 세어보라.</p>
+        <p class="fa"><strong>확인 포인트</strong>: the·a 정도만 남고 나머지는 확률 0으로 잘린다 — top_k=1이 그리디 선택과 같아지는 것도 위 출력에서 확인된다.</p>
+      </div>
     </div>
 
     <div class="qa-fam">1.5 · 컨텍스트 내 학습</div>
@@ -339,6 +456,26 @@
       에포크 같은 실제 내용은 모델이 사전훈련 때부터 이미 알고 있던 지식이다. 즉 퓨샷 학습은
       <strong>새 지식을 넣는 게 아니라, 이미 아는 지식을 원하는 형식으로 꺼내 쓰게 하는 것</strong>이다.
       그래서 모델이 원래 모르는 지식이면 예시를 아무리 줘도 소용없다.</p>
+      <div class="codebox">
+        <span class="path">📓 <a href="https://github.com/lakshmanok/generative-ai-design-patterns/blob/main/examples/00_introduction/prompt_engineering.ipynb" target="_blank" rel="noopener">examples/00_introduction/prompt_engineering.ipynb</a></span>
+        <pre>agent = Agent(MODEL_ID, system_prompt=
+    "You are an expert on art history. I will describe a painting. You should identify it")
+
+result = agent.run_sync("""
+Example:
+Description: shows two small rowboats in the foreground and a red Sun.
+Answer:
+   Painting: Impression, Sunrise
+   Artist: Claude Monet
+   ...
+Description: [새로운 그림 설명]
+""")</pre>
+      </div>
+      <div class="qa-follow">
+        <span class="qa-flabel">직접 검증해볼 것</span>
+        <p class="fq">마지막 <code>Description</code>을 실존하지 않는 그림("보라색 하늘 아래 로봇 세 대가 체스를 두는 그림")으로 바꿔 재실행해보라. 모델이 "모른다"고 하는지, 형식만 맞춰 지어내는지 확인하라.</p>
+        <p class="fa"><strong>확인 포인트</strong>: 십중팔구 "모른다"고 하는 대신 형식(Painting/Artist/Year)은 정확히 맞춘 채 존재하지 않는 화가·연도를 지어낸다 — 퓨샷이 형식만 가르쳤다는 걸 역으로 증명하는 동시에, 이게 Q7의 환각이 실제로 발생하는 순간이다.</p>
+      </div>
     </div>
 
     <div class="qa-fam">1.6 · 사후훈련</div>
@@ -363,6 +500,17 @@
         아니다"는 실제 사례 — 표의 첫 줄(CPT)을 고르기 전에 정말 필요한지부터 따져봐야 한다는
         경고다.</p>
       </div>
+      <div class="codebox">
+        <span class="path">📓 <a href="https://github.com/lakshmanok/generative-ai-design-patterns/blob/main/examples/15_adapter_tuning/3_adapter_tuning.ipynb" target="_blank" rel="noopener">examples/15_adapter_tuning/</a> — 저자들이 실제로 돌린 SFT</span>
+        <pre>from trl import SFTConfig
+args = SFTConfig(output_dir="gemma-radiology", num_train_epochs=1, ...)
+# 학습 데이터: messages.jsonl — {엑스레이 이미지, 방사선 판독 캡션} 쌍</pre>
+      </div>
+      <div class="qa-follow">
+        <span class="qa-flabel">직접 검증해볼 것</span>
+        <p class="fq"><code>messages.jsonl</code>의 각 줄이 위 표의 어느 데이터 모양에 해당하는지 확인해보라.</p>
+        <p class="fa"><strong>확인 포인트</strong>: (이미지, 캡션) 쌍이라 "질문-모범답변 쌍 → SFT" 줄에 정확히 해당한다 — 실제로 이 노트북도 CPT가 아니라 <code>trl.SFTConfig</code>로 SFT를 돌린다.</p>
+      </div>
     </div>
     <div class="qa-item" id="q12">
       <span class="qa-tag">Q12</span>
@@ -375,6 +523,20 @@
       같은 숫자 자리를 겹쳐서 공유</strong>하기 때문에 생긴다 — "이 능력 버려"라고 누가 결정한 게
       아니라, 좁은 데이터의 오차를 줄이려고 가중치를 계속 밀어붙이는 계산 과정에서 다른 능력이
       걸려 있던 같은 숫자까지 원치 않게 같이 바뀌는 것이다.</p>
+      <div class="codebox">
+        <span class="path">📓 <a href="https://github.com/lakshmanok/generative-ai-design-patterns/blob/main/examples/15_adapter_tuning/3_adapter_tuning.ipynb" target="_blank" rel="noopener">examples/15_adapter_tuning/3_adapter_tuning.ipynb</a></span>
+        <pre>from peft import LoraConfig
+peft_config = LoraConfig(
+    lora_alpha=16, lora_dropout=0.05, r=16,          # 어댑터(포스트잇 층) 크기
+    target_modules="all-linear", task_type="CAUSAL_LM",
+    modules_to_save=["lm_head", "embed_tokens"],
+)</pre>
+      </div>
+      <div class="qa-follow">
+        <span class="qa-flabel">직접 검증해볼 것</span>
+        <p class="fq"><code>r=16</code>이 뭘 뜻하는지, <code>modules_to_save</code>가 왜 명시돼 있는지 찾아보라.</p>
+        <p class="fa"><strong>확인 포인트</strong>: <code>r</code>은 LoRA 어댑터의 랭크(포스트잇 크기)다. <code>lm_head</code>·<code>embed_tokens</code>까지 <code>modules_to_save</code>로 일반 파라미터처럼 함께 학습시킨 이유는 Gemma가 원래 모르던 방사선 용어를 새로 익혀야 해서다 — 이 층까지 건드리며 좁은 데이터로 오래 학습시키면 파국적 망각이 더 쉽게 생긴다.</p>
+      </div>
     </div>
 
     <div class="qa-fam">1.7 · 이 책의 구성</div>
@@ -393,13 +555,6 @@
       넣는 것"으로 자연스럽게 정리된다.
     </div>
   </section>
-
-  <div class="deeper">
-    <div class="dl">더 깊이 파고들기</div>
-    <p style="margin:0;">이론은 다 이해했는데 "실무적으로 의미가 있나" 싶다면 —
-    <a href="study-foundation-agent-decoding.html">기초모델·에이전트·디코딩제어 복습노트</a>에서 저자
-    공식 코드 저장소의 실제 노트북 셀·실행 결과로 16개 문항을 다시 검증해보세요.</p>
-  </div>
 
   <p style="text-align:center;">
     <a href="generative-ai-design-patterns-ch1.html" style="font-family:var(--font-mono); font-size:13px; color:var(--accent-strong); text-decoration:none;">← 1장 정리노트로 돌아가기</a>
