@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>기초모델 · 에이전트 · 디코딩제어 - Tigermorning</title>
+  <meta name="description" content="「에이전트 시대의 AI 시스템 설계」 1장을 이론 복습 문답과 실전 상황 후속질문으로 다시 짚은 문답 복습노트 — 기초모델 고르기, 에이전트의 자율성, 온도·상위K·상위P, 퓨샷학습과 사후훈련까지.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="기초모델 · 에이전트 · 디코딩제어">
+  <meta property="og:description" content="「에이전트 시대의 AI 시스템 설계」 1장을 이론 복습 문답과 실전 상황 후속질문으로 다시 짚은 문답 복습노트.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/study-foundation-agent-decoding.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;600;700;900&display=swap');
+
+  :root{
+    --ink:#1E2530;
+    --sub:#5B6472;
+    --paper:#F6F7F4;
+    --card:#FFFFFF;
+    --line:rgba(30,37,48,0.13);
+    --shadow:rgba(30,37,48,0.08);
+    --q:#2B5FA5;    --q-bg:#EAF0F9;   /* 기초모델 */
+    --a:#2E7048;    --a-bg:#EAF4EC;   /* 모범답 계열 (의미 고정) */
+    --f:#8A5A12;    --f-bg:#FBF1DF;   /* 후속질문 계열 (의미 고정) */
+    --m:#6B4FA0;    --m-bg:#F1ECFA;   /* 에이전트 */
+    --fd:#1C7A6E;   --fd-bg:#E4F3F1;  /* 디코딩 제어 */
+    --l:#B2562E;    --l-bg:#FBEBE2;   /* 학습 방법 */
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#E8EAE4; --sub:#A7AFB8; --paper:#12161C; --card:#1A2028;
+      --line:rgba(232,234,228,0.14); --shadow:rgba(0,0,0,0.35);
+      --q:#7FADE6; --q-bg:#1C2C42;
+      --a:#7FC697; --a-bg:#1B3324;
+      --f:#E3B25E; --f-bg:#3A2E14;
+      --m:#B79BE0; --m-bg:#2A2140;
+      --fd:#5FC9BA; --fd-bg:#122824;
+      --l:#E2916C; --l-bg:#3A2317;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#E8EAE4; --sub:#A7AFB8; --paper:#12161C; --card:#1A2028;
+    --line:rgba(232,234,228,0.14); --shadow:rgba(0,0,0,0.35);
+    --q:#7FADE6; --q-bg:#1C2C42;
+    --a:#7FC697; --a-bg:#1B3324;
+    --f:#E3B25E; --f-bg:#3A2E14;
+    --m:#B79BE0; --m-bg:#2A2140;
+    --fd:#5FC9BA; --fd-bg:#122824;
+    --l:#E2916C; --l-bg:#3A2317;
+  }
+
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--paper); color:var(--ink); font-family:'Noto Sans KR', -apple-system, sans-serif; line-height:1.7; }
+  .wrap{ max-width:760px; margin:0 auto; padding:48px 24px 90px; }
+
+  .kicker{ font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--q); display:block; margin-bottom:10px; }
+  h1{ font-size:clamp(24px,4vw,32px); font-weight:900; margin:0 0 8px; text-wrap:balance; }
+  .sub{ color:var(--sub); font-size:14.5px; margin:0 0 28px; max-width:62ch; }
+
+  nav.toc{ display:flex; flex-direction:column; gap:10px; margin-bottom:36px; padding:14px 16px; background:var(--card); border:1px solid var(--line); border-radius:10px; }
+  .toc-row{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+  .toc-cat{ font-family:'IBM Plex Mono', monospace; font-size:11px; font-weight:700; color:var(--q); background:var(--q-bg); padding:3px 8px; border-radius:5px; white-space:nowrap; flex:0 0 auto; }
+  .toc-cat.m{ color:var(--m); background:var(--m-bg); }
+  .toc-cat.fd{ color:var(--fd); background:var(--fd-bg); }
+  .toc-cat.l{ color:var(--l); background:var(--l-bg); }
+  .toc-row .pills{ display:flex; flex-wrap:wrap; gap:8px; }
+  nav.toc a{ font-family:'IBM Plex Mono', monospace; font-size:12.5px; color:var(--sub); text-decoration:none; padding:4px 9px; border:1px solid var(--line); border-radius:6px; }
+  nav.toc a:hover{ color:var(--q); border-color:var(--q); }
+
+  .fam{ margin:38px 0 16px; display:flex; align-items:center; gap:12px; }
+  .fam:first-of-type{ margin-top:0; }
+  .fam-tag{ font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:700; letter-spacing:.04em; white-space:nowrap; }
+  .fam-tag.tq{ color:var(--q); } .fam-tag.tm{ color:var(--m); } .fam-tag.tfd{ color:var(--fd); } .fam-tag.tl{ color:var(--l); }
+  .fam-sub{ font-size:12.5px; color:var(--sub); }
+  .fam-line{ flex:1 1 auto; height:1px; background:var(--line); }
+
+  .item{ background:var(--card); border:1px solid var(--line); border-radius:12px; padding:24px 26px; margin-bottom:20px; box-shadow:0 1px 2px var(--shadow); scroll-margin-top:16px; }
+  .qnum{ font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:13px; display:inline-block; padding:2px 9px; border-radius:5px; margin-bottom:10px; }
+  .qnum.qq{ color:var(--q); background:var(--q-bg); }
+  .qnum.qm{ color:var(--m); background:var(--m-bg); }
+  .qnum.qfd{ color:var(--fd); background:var(--fd-bg); }
+  .qnum.ql{ color:var(--l); background:var(--l-bg); }
+  .qtext{ font-size:16.5px; font-weight:600; margin:0 0 16px; }
+  .block{ border-radius:9px; padding:14px 16px; margin-bottom:10px; }
+  .block:last-child{ margin-bottom:0; }
+  .block-label{ font-family:'IBM Plex Mono', monospace; font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; display:block; margin-bottom:6px; }
+  .ans{ background:var(--a-bg); } .ans .block-label{ color:var(--a); } .ans p{ margin:0 0 8px; font-size:14.5px; } .ans p:last-child{margin-bottom:0;} .ans strong{ color:var(--a); }
+  .note{ background:var(--q-bg); } .note .block-label{ color:var(--q); } .note p{ margin:0; font-size:14px; }
+  .follow{ background:var(--f-bg); } .follow .block-label{ color:var(--f); } .follow .fq{ margin:0 0 8px; font-size:14.5px; font-weight:600; } .follow .fa{ margin:0; font-size:14.5px; } .follow .fa strong{ color:var(--f); }
+
+  code{ font-family:'IBM Plex Mono', monospace; font-size:13px; background:var(--q-bg); color:var(--ink); padding:1px 5px; border-radius:4px; }
+
+  .refcard{ background:var(--card); border:1px solid var(--line); border-radius:12px; padding:24px 26px; margin-bottom:20px; box-shadow:0 1px 2px var(--shadow); scroll-margin-top:16px; }
+  .refcard h2{ font-size:17px; margin:0 0 6px; }
+  .refcard .rsub{ font-size:13px; color:var(--sub); margin:0 0 16px; }
+  .refcard h3{ font-size:14px; margin:22px 0 8px; color:var(--q); }
+  .refcard h3.m{ color:var(--m); } .refcard h3.fd{ color:var(--fd); } .refcard h3.l{ color:var(--l); }
+  .refcard p{ font-size:14px; margin:0 0 10px; }
+  .refcard p:last-child{ margin-bottom:0; }
+
+  .tablewrap{ overflow-x:auto; }
+  table.reftable{ width:100%; border-collapse:collapse; font-size:13.5px; margin:8px 0 4px; }
+  table.reftable th, table.reftable td{ text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  table.reftable th{ font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.05em; text-transform:uppercase; color:var(--sub); font-weight:600; }
+  table.reftable td strong{ color:var(--q); }
+
+  .codebox{ background:var(--paper); border:1px solid var(--line); border-radius:9px; padding:13px 15px; margin:10px 0; overflow-x:auto; }
+  .codebox .path{ display:flex; align-items:center; gap:8px; font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:var(--sub); margin-bottom:9px; }
+  .codebox .path a{ color:var(--sub); text-decoration:none; border-bottom:1px dashed var(--line); }
+  .codebox .path a:hover{ color:var(--q); border-color:var(--q); }
+  .codebox pre{ margin:0; font-family:'IBM Plex Mono', monospace; font-size:12px; line-height:1.65; color:var(--ink); white-space:pre; }
+  .codebox .out{ margin-top:9px; padding-top:9px; border-top:1px dashed var(--line); font-size:12px; color:var(--sub); font-family:'IBM Plex Mono', monospace; white-space:pre-wrap; }
+  .try{ background:var(--l-bg); } .try .block-label{ color:var(--l); } .try .fq{ margin:0 0 8px; font-size:14.5px; font-weight:600; } .try .fa{ margin:0; font-size:14.5px; } .try .fa strong{ color:var(--l); }
+
+  .figure{ margin:18px 0 20px; }
+  .figure svg{ width:100%; height:auto; display:block; }
+  .figure figcaption{ font-size:12px; color:var(--sub); margin-top:8px; text-align:center; }
+  .node{ fill:var(--card); stroke:var(--line); stroke-width:1.5; }
+  .node-hl{ fill:var(--card); stroke-width:2; }
+  .node-hl.q{ stroke:var(--q); } .node-hl.m{ stroke:var(--m); } .node-hl.fd{ stroke:var(--fd); } .node-hl.l{ stroke:var(--l); }
+  .lbl-main{ font:600 12.5px 'Noto Sans KR',sans-serif; fill:var(--ink); }
+  .lbl-sub{ font:11px 'IBM Plex Mono',monospace; fill:var(--sub); }
+  .arrow{ stroke:var(--sub); stroke-width:1.5; fill:none; }
+  .arrow.m{ stroke:var(--m); } .arrow.fd{ stroke:var(--fd); }
+  .grid-line{ stroke:var(--line); stroke-width:1; }
+
+  .closing{ margin-top:8px; padding:18px 20px; background:var(--card); border:1px solid var(--line); border-left:4px solid var(--q); border-radius:8px; font-size:14.5px; }
+  .closing.m{ border-left-color:var(--m); } .closing.fd{ border-left-color:var(--fd); } .closing.l{ border-left-color:var(--l); }
+  .closing b{ color:var(--q); }
+  .closing.m b{ color:var(--m); } .closing.fd b{ color:var(--fd); } .closing.l b{ color:var(--l); }
+
+  .source{ font-size:12.5px; color:var(--sub); margin:44px 0 0; padding-top:18px; border-top:1px solid var(--line); }
+</style>
+
+<div class="wrap">
+
+  <span class="kicker">「에이전트 시대의 AI 시스템 설계」 1장 복습노트</span>
+  <h1>기초모델 · 에이전트 · 디코딩제어</h1>
+  <p class="sub">기초 모델을 고르는 법부터, 목표만 주면 알아서 판단하는 에이전트, 온도·상위K·상위P로 창의성을 조절하는 법, 퓨샷학습과 사후훈련까지 — 1장 전체를 이론 복습과 실전 후속질문으로 다시 짚었다. 후속질문은 가상의 시나리오 대신 <a href="https://github.com/lakshmanok/generative-ai-design-patterns" target="_blank" rel="noopener" style="color:var(--q);">저자 공식 코드 저장소</a>의 실제 노트북 셀·실행 결과를 근거로 삼았다.</p>
+
+  <nav class="toc">
+    <div class="toc-row"><span class="toc-cat">F · 기초모델로 앱 만들기</span><div class="pills">
+      <a href="#f1">설계패턴</a><a href="#f2">프롬프트</a><a href="#f3">API·프레임워크</a><a href="#f4">클라우드·로컬</a><a href="#f5">훈련 3단계</a><a href="#f6">모델 지형도</a>
+    </div></div>
+    <div class="toc-row"><span class="toc-cat m">A · 에이전트형 AI</span><div class="pills">
+      <a href="#a1">자율성</a><a href="#a2">네 가지 능력</a><a href="#a3">비결정성·환각</a>
+    </div></div>
+    <div class="toc-row"><span class="toc-cat fd">D · 세밀한 디코딩 제어</span><div class="pills">
+      <a href="#d1">온도</a><a href="#d2">상위K·상위P</a><a href="#d3">빔탐색</a><a href="#d4">벌점</a>
+    </div></div>
+    <div class="toc-row"><span class="toc-cat l">L · 학습 방법</span><div class="pills">
+      <a href="#l1">퓨샷학습</a><a href="#l2">CPT·SFT·RLHF</a><a href="#l3">LoRA·파국적망각</a>
+    </div></div>
+  </nav>
+
+  <!-- ============================================================ F ============================================================ -->
+  <div class="fam"><span class="fam-tag tq">F · 기초모델로 앱 만들기 (1.1~1.2)</span><span class="fam-line"></span></div>
+
+  <div class="item" id="f1">
+    <span class="qnum qq">F1</span>
+    <p class="qtext">이 책이 "설계 패턴" 32가지 틀을 쓰는 이유는? 신입사원 매뉴얼 비유가 짚는 것은?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>GenAI를 실서비스에 넣으면 같은 문제(문체 이탈, 환각, 내부 지식 부재)가 반복된다. 그때마다 바닥부터 고민하지 말고, 이미 검증된 해법을 <strong>"문제 → 해법 → 예시 → 고려사항"</strong> 형태로 찾아 쓰라는 게 이 책의 구성이다. 회사가 신입사원을 뽑을 때마다 "자주 겪는 문제 대응 매뉴얼"을 서랍에서 꺼내주는 것과 같다.</p>
+    </div>
+    <div class="block try">
+      <span class="block-label">직접 검증해볼 것</span>
+      <p class="fq">저장소의 <a href="https://github.com/lakshmanok/generative-ai-design-patterns/tree/main/examples/06_basic_rag" target="_blank" rel="noopener">06_basic_rag</a> 폴더를 열어, "문제 → 해법 → 예시 → 고려사항"이라는 발제 템플릿이 실제 코드 구성에도 그대로 나타나는지 확인해보라(README와 노트북 순서).</p>
+      <p class="fa"><strong>확인 포인트</strong>: 32개 패턴 폴더가 전부 <code>00_introduction</code>부터 <code>32_guardrails</code>까지 책의 패턴 번호·이름과 1:1로 매칭돼 있다 — "패턴집" 구조가 텍스트뿐 아니라 저장소 폴더 구조 자체로 구현돼 있는 셈이다. 사내 문서를 모르는 모델이 휴가 규정을 지어내는 사고가 나면, 바로 이 <code>06_basic_rag</code>가 "질문에 답하기 전 실제 문서를 먼저 찾아보게" 만드는 해법의 실행 가능한 코드다.</p>
+    </div>
+  </div>
+
+  <div class="item" id="f2">
+    <span class="qnum qq">F2</span>
+    <p class="qtext">시스템 프롬프트와 사용자 프롬프트는 뭐가 다른가?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p><strong>시스템 프롬프트</strong>는 "너는 이런 역할, 이런 태도로 답해"라고 한 번 정해두는 규칙이고, <strong>사용자 프롬프트</strong>는 그때그때 실제로 부탁하는 내용이다. prompt라는 말 자체가 연극 무대에서 배우에게 다음 대사를 귀띔해주는 "프롬프터"에서 왔다.</p>
+    </div>
+    <div class="block try">
+      <span class="block-label">직접 검증해볼 것</span>
+      <p class="fq">위 F3·A1·L1의 모든 예제 코드를 다시 훑어보라 — <code>Agent(MODEL_ID, system_prompt="...")</code>와 <code>agent.run_sync("...")</code>가 각각 몇 번씩 나오는지, 그 둘에 들어가는 문자열의 성격이 어떻게 다른지 비교해보라.</p>
+      <p class="fa"><strong>확인 포인트</strong>: <code>system_prompt</code>엔 "You are an inventory manager who orders just in time", "You are an expert on art history" 처럼 <strong>매번 안 바뀌는 역할·태도</strong>가 들어가고, <code>run_sync(...)</code>엔 재고 데이터·그림 설명처럼 <strong>그때그때 바뀌는 실제 요청</strong>이 들어간다 — 책 세 노트북 모두 이 구분을 코드로 그대로 지킨다. 쇼핑몰 챗봇을 짠다면 "환불 정책"은 <code>system_prompt</code>에, "3번 주문 환불해주세요"는 <code>run_sync</code> 인자로 가야 한다는 뜻이고, 이 구분이 무너지면(예: 정책을 매 요청마다 반복 삽입) 토큰 낭비와 관리 부담이 커진다.</p>
+    </div>
+  </div>
+
+  <div class="item" id="f3">
+    <span class="qnum qq">F3</span>
+    <p class="qtext">제공업체 API를 직접 호출하는 것과 LLM 비종속적 프레임워크를 쓰는 것, 차이는?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>제공업체 API 직접 호출은 그 회사가 정한 창구 양식에 딱 맞춰 코드를 짜야 한다. 프레임워크는 "채용 대행사"처럼 여러 회사의 양식 차이를 대신 흡수해준다 — 회사 이름표만 바꿔 끼워도 같은 방식으로 모델을 부를 수 있다.</p>
+    </div>
+    <div class="codebox">
+      <span class="path">📓 <a href="https://github.com/lakshmanok/generative-ai-design-patterns/blob/main/examples/00_introduction/building_on_apis.ipynb" target="_blank" rel="noopener">examples/00_introduction/building_on_apis.ipynb</a></span>
+      <pre>## 직접 호출
+import anthropic
+client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+completion = client.messages.create(
+    model="claude-3-7-sonnet-latest",
+    system="You are an expert Python programmer.",
+    max_tokens=1024, temperature=0.3,
+    messages=[{"role": "user", "content": [{"type": "text",
+        "text": "Write code to find the median of a list of integers."}]}]
+)
+print(completion.content[0].text)
+
+## PydanticAI 프레임워크
+from pydantic_ai import Agent
+agent = Agent('anthropic:claude-3-7-sonnet-latest',
+              system_prompt="You are an expert Python programmer.")
+result = agent.run_sync("Write code to find the median of a list of integers.")
+print(result.data)</pre>
+    </div>
+    <div class="block try">
+      <span class="block-label">직접 검증해볼 것</span>
+      <p class="fq">이 저장소를 클론해서 두 셀을 그대로 돌려보고, PydanticAI 쪽 모델 문자열을 <code>'anthropic:claude-3-7-sonnet-latest'</code>에서 <code>'google-gla:gemini-2.0-flash'</code>로만 바꿔 재실행해보라(<code>prompt_engineering.ipynb</code>가 이미 이 제미나이 모델로 같은 <code>Agent(...)</code> 패턴을 쓴다). <code>anthropic.Anthropic()</code> 직접 호출 쪽도 같은 방식으로 바꿀 수 있는지 코드를 보고 확인해보라.</p>
+      <p class="fa"><strong>확인 포인트</strong>: PydanticAI 쪽은 문자열 한 줄만 바꾸면 나머지 <code>Agent(...)</code>·<code>run_sync(...)</code> 코드가 그대로 재사용된다. 반면 <code>anthropic.Anthropic()</code> 직접 호출 쪽은 클라이언트 클래스 자체(<code>anthropic.Anthropic</code> → 구글 SDK의 다른 클래스)와 <code>messages.create</code>의 인자 형식까지 다 바꿔야 한다 — "이름표만 바꾸면 된다"는 비유가 코드 레벨에서 정확히 어디까지 사실인지 이 저장소로 직접 확인되는 지점이다.</p>
+    </div>
+  </div>
+
+  <div class="item" id="f4">
+    <span class="qnum qq">F4</span>
+    <p class="qtext">모델을 클라우드 API로 쓰는 것과 로컬로 돌리는 것, 로컬이 가능해지는 조건은?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>API는 인터넷 너머 회사 서버로 질문을 보내는 방식이고, 로컬은 그 "알맹이"(가중치)를 내 컴퓨터로 통째로 내려받아 직접 돌리는 방식이다. 로컬이 가능하려면 회사가 그 알맹이를 <strong>공개(오픈웨이트)</strong>해둔 경우여야 한다.</p>
+    </div>
+    <div class="codebox">
+      <span class="path">📓 <a href="https://github.com/lakshmanok/generative-ai-design-patterns/blob/main/examples/15_adapter_tuning/3_adapter_tuning.ipynb" target="_blank" rel="noopener">examples/15_adapter_tuning/3_adapter_tuning.ipynb</a> — 이 저장소에서 유일하게 "알맹이를 통째로 내려받는" 예제</span>
+      <pre># 00_introduction의 모든 예제: 클라우드 API 호출 (가중치는 안 보임)
+agent = Agent(f"anthropic:{MODEL_ID}", ...)   # ANTHROPIC_API_KEY만 있으면 됨
+
+# 15_adapter_tuning: 오픈웨이트 모델을 통째로 로컬 GPU에 로드
+model_id = "google/gemma-3-4b-pt"
+model = AutoModelForImageTextToText.from_pretrained(model_id, **model_kwargs)
+# README: "Step 4: Get a sufficiently large machine with a GPU.
+#          We used a NVIDIA L4 with 32 GB of memory"</pre>
+    </div>
+    <div class="block try">
+      <span class="block-label">직접 검증해볼 것</span>
+      <p class="fq"><code>00_introduction/</code>의 세 노트북과 <code>15_adapter_tuning/</code>의 <code>keys.env</code> 요구사항을 서로 비교해보라 — 전자는 어떤 키가 필요하고, 후자는 어떤 키·라이선스·하드웨어가 필요한가?</p>
+      <p class="fa"><strong>확인 포인트</strong>: 00_introduction 쪽은 <code>ANTHROPIC_API_KEY</code>/<code>GEMINI_API_KEY</code>만 있으면 노트북이 어떤 컴퓨터에서든 바로 돈다 — 가중치 자체는 한 번도 로컬에 안 내려온다. 반대로 15_adapter_tuning은 HuggingFace <code>HF_TOKEN</code>과 Gemma 라이선스 동의, 그리고 <strong>NVIDIA L4 32GB GPU</strong>가 명시적으로 필요하다 — 가중치가 공개(오픈웨이트)돼 있어도 내 컴퓨터/노트북 GPU로는 못 돌리는 실제 사례다. 회사 기밀 문서를 다루는 도구라면 데이터가 API로 안 나가는 로컬/사내 호스팅이 우선이지만, "오픈웨이트=쉽게 로컬 실행 가능"이 아니라는 걸 이 README의 GPU 사양이 그대로 보여준다.</p>
+    </div>
+  </div>
+
+  <div class="item" id="f5">
+    <span class="qnum qq">F5</span>
+    <p class="qtext">기초 모델은 사전훈련·SFT·RLHF 세 단계를 거친다. 각 단계가 가르치는 것은?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <div class="tablewrap">
+        <table class="reftable">
+          <thead><tr><th>단계</th><th>가르치는 것</th></tr></thead>
+          <tbody>
+            <tr><td><strong>사전훈련</strong></td><td>세상 글을 읽히며 "다음에 뭐가 나올지" 감을 몸에 배게 함</td></tr>
+            <tr><td><strong>SFT</strong></td><td>사람이 쓴 모범 응답으로 형식·태도를 따라 하게 함</td></tr>
+            <tr><td><strong>RLHF</strong></td><td>두 답 중 나은 쪽을 고르는 피드백을 쌓아 선호 말투로 다듬음</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="block follow">
+      <span class="block-label">실전 후속질문</span>
+      <p class="fq">딥시크가 SFT 없이 순수 강화학습만으로 추론 능력을 얻은 게 왜 "중대한 발견"이었나?</p>
+      <p class="fa"><strong>답</strong>: 사람이 직접 쓴 모범답(SFT 데이터)은 만드는 데 비용이 크다. SFT 없이도 강화학습만으로 추론 능력이 생긴다는 걸 처음 보여주면서, 사람이 쓴 예시에 덜 의존하고 훨씬 많은 문제로 더 오래 학습시킬 수 있는 길이 열렸다.</p>
+    </div>
+  </div>
+
+  <div class="item" id="f6">
+    <span class="qnum qq">F6</span>
+    <p class="qtext">프런티어·증류·오픈웨이트·로컬호스팅, 네 등급은 뭐로 나뉘고 비용과는 어떤 관계인가?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>블라인드 테스트(LMArena)로 매겨진 순위 기준 네 등급 — 프런티어(최고 성능, 가중치 비공개) · 증류(가볍고 저렴) · 오픈웨이트(가중치 공개) · 로컬호스팅(그중 크기가 작아 개인 컴퓨터에서도 돌아감). 성능·비용 그래프는 <strong>두 축 모두 로그 눈금</strong>이라 등급 하나만 내려가도 비용은 크게 줄어든다(예: 제미나이 플래시는 제미나이 프로보다 약 20배 저렴).</p>
+    </div>
+    <div class="block try">
+      <span class="block-label">직접 검증해볼 것</span>
+      <p class="fq"><a href="https://lmarena.ai/leaderboard" target="_blank" rel="noopener">lmarena.ai/leaderboard</a>에 직접 들어가서 지금 시점 상위권 모델과, 같은 회사의 경량(증류) 모델 순위·이름을 나란히 적어보라. F3·D1의 예제가 쓴 <code>claude-3-7-sonnet-latest</code>는 어느 급인지도 찾아보라.</p>
+      <p class="fa"><strong>확인 포인트</strong>: 리더보드는 계속 바뀌므로 등수 자체을 외울 필요는 없다 — 확인할 건 순위표 상단(프런티어)과 같은 회사의 경량 라인업(하이쿠·플래시류)이 항상 같이 존재한다는 구조다. 예제 노트북이 쓴 <code>claude-3-7-sonnet-latest</code>는 프런티어와 경량 사이의 "중간급" 모델이다 — 실무에서 노트북을 그대로 복사해 쓰기 전에, 지금 하려는 작업(문의 분류처럼 쉬운 것 vs 계약서 리스크 분석처럼 어려운 것)에 이 모델 등급이 과한지 부족한지부터 리더보드로 확인하는 습관이 실제 비용을 좌우한다.</p>
+    </div>
+  </div>
+
+  <!-- ============================================================ A ============================================================ -->
+  <div class="fam"><span class="fam-tag tm">A · 에이전트형 AI (1.3)</span><span class="fam-line"></span></div>
+
+  <div class="item" id="a1">
+    <span class="qnum qm">A1</span>
+    <p class="qtext">"자율성"이 정확히 뭔가? 재고 관리 예시로 설명하면?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>"재고가 100개 밑이면 300개 주문해"처럼 세세한 규칙을 사람이 미리 프로그래밍하지 않고, <strong>"재고 부족 없게 적시에 주문해줘"라는 목표만 주는 것</strong>. 에이전트는 최근 판매량·배송 기간을 스스로 살펴보고 필요 수량을 계산해서 이유까지 설명한다. 규칙 자체를 에이전트가 그때그때 만들어낸다는 게 핵심이다.</p>
+    </div>
+    <div class="codebox">
+      <span class="path">📓 <a href="https://github.com/lakshmanok/generative-ai-design-patterns/blob/main/examples/00_introduction/agentic_ai.ipynb" target="_blank" rel="noopener">examples/00_introduction/agentic_ai.ipynb</a> — 책의 재고 예시 원본 코드</span>
+      <pre>@dataclass
+class InventoryItem:
+    name: str
+    quantity_on_hand: int
+    weekly_quantity_sold_past_n_weeks: [int]
+    weeks_to_deliver: int
+
+@dataclass
+class Reorder:
+    name: str
+    quantity_to_order: int
+    reason_to_reorder: str
+
+items = [
+    InventoryItem("itemA", 300, [50, 70, 80, 100], 2),
+    InventoryItem("itemB", 100, [70, 80, 90, 70], 2),
+    InventoryItem("itemC", 200, [80, 70, 90, 80], 1)
+]
+
+agent = Agent(f"anthropic:{MODEL_ID}",
+              system_prompt="You are an inventory manager who orders just in time.",
+              result_type=list[Reorder])
+
+result = agent.run_sync(f"Identify which of these items need to be reordered this week.\n{items}")
+print(result.data)</pre>
+    </div>
+    <div class="block try">
+      <span class="block-label">직접 검증해볼 것</span>
+      <p class="fq">"재고가 100개 밑이면 300개 주문"류 규칙이 코드 어디에도 없다는 걸 직접 확인하라 — <code>if</code>문을 찾아봐라. 그다음 <code>InventoryItem</code>에 실제로 없는 필드(예: 재입고 리드타임이 아니라 "공급업체명")를 하나 추가하고 시스템 프롬프트는 그대로 둔 채 재실행해보라.</p>
+      <p class="fa"><strong>확인 포인트</strong>: 재주문 규칙을 만드는 <code>if</code>문은 정말 없다 — 판단은 전부 <code>system_prompt</code> 한 줄과 <code>result_type=list[Reorder]</code>(출력 형식 강제)에서 나온다. 필드를 추가해도 코드 수정 없이 에이전트가 알아서 그 정보를 판단에 반영하려 시도하는지, 아니면 무시하는지가 "자율성"의 한계를 실제로 보여준다 — 목표·출력형식만 정해주고 판단 로직 자체는 프롬프트+모델에 위임했다는 뜻이다.</p>
+    </div>
+  </div>
+
+  <div class="item" id="a2">
+    <span class="qnum qm">A2</span>
+    <p class="qtext">에이전트에게 기대되는 네 가지 능력과, 이게 순환 구조라는 말은 무슨 뜻인가?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>① 목표 지향성(반응만 안 하고 목표를 향해 움직임) ② 계획 및 추론(단계를 스스로 쪼갬) ③ 인지 및 행동(데이터를 읽고 외부 함수를 호출함) ④ 적응 및 학습(결과를 다음 판단에 반영함). 이 넷이 <strong>인지→계획→행동→적응→다시 인지</strong>로 한 바퀴 돌 때마다, 다음 판단이 이전 결과를 반영해 조금씩 나아진다.</p>
+    </div>
+
+    <figure class="figure">
+      <svg viewBox="0 0 640 190" role="img" aria-label="인지, 계획, 행동, 적응 네 단계가 순서대로 이어지고 다시 인지로 돌아가는 순환 구조">
+        <defs>
+          <marker id="aar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--m)"/></marker>
+        </defs>
+        <g>
+          <rect x="8" y="66" width="130" height="58" rx="9" class="node-hl m"/>
+          <text x="73" y="90" text-anchor="middle" class="lbl-main">인지</text>
+          <text x="73" y="108" text-anchor="middle" class="lbl-sub">재고·판매 확인</text>
+        </g>
+        <line x1="138" y1="95" x2="164" y2="95" class="arrow m" marker-end="url(#aar)"/>
+        <g>
+          <rect x="166" y="66" width="130" height="58" rx="9" class="node"/>
+          <text x="231" y="90" text-anchor="middle" class="lbl-main">계획</text>
+          <text x="231" y="108" text-anchor="middle" class="lbl-sub">주문량 추론</text>
+        </g>
+        <line x1="296" y1="95" x2="322" y2="95" class="arrow m" marker-end="url(#aar)"/>
+        <g>
+          <rect x="324" y="66" width="130" height="58" rx="9" class="node"/>
+          <text x="389" y="90" text-anchor="middle" class="lbl-main">행동</text>
+          <text x="389" y="108" text-anchor="middle" class="lbl-sub">주문 API 호출</text>
+        </g>
+        <line x1="454" y1="95" x2="480" y2="95" class="arrow m" marker-end="url(#aar)"/>
+        <g>
+          <rect x="482" y="66" width="130" height="58" rx="9" class="node"/>
+          <text x="547" y="90" text-anchor="middle" class="lbl-main">적응</text>
+          <text x="547" y="108" text-anchor="middle" class="lbl-sub">결과로 학습</text>
+        </g>
+        <path d="M 547 66 C 547 20, 73 20, 73 66" class="arrow m" marker-end="url(#aar)" fill="none"/>
+        <text x="310" y="30" text-anchor="middle" class="lbl-sub">다음 판단에 반영</text>
+      </svg>
+      <figcaption>네 단계가 한 바퀴 돌면, 다음 판단은 이전 결과를 반영해 조금 더 나아진다.</figcaption>
+    </figure>
+
+    <div class="block try">
+      <span class="block-label">직접 검증해볼 것</span>
+      <p class="fq">A1의 <code>agentic_ai.ipynb</code>를 다시 보라 — <code>@agent.tool</code> 데코레이터나 실제 주문 API 호출 코드가 있나? <code>items</code> 데이터가 어디서 오는지도 확인하라(실시간 재고 시스템 조회인가, 그냥 파이썬 변수인가).</p>
+      <p class="fa"><strong>확인 포인트</strong>: 없다. <code>items</code>는 노트북 안에 하드코딩된 파이썬 리스트고, <code>agent.run_sync(...)</code>는 그 텍스트를 프롬프트에 그대로 박아 넣을 뿐이다. 즉 이 예제는 ②계획·추론(수량 계산·이유 설명)까지만 구현됐고, ③인지·행동(실제 재고 DB 조회, 진짜 주문 API 호출)은 빠져 있다 — 책의 4대 능력 표에서 "인지 및 행동"이 코드로 채워지는 건 7장 도구 호출 패턴(<a href="https://github.com/lakshmanok/generative-ai-design-patterns/tree/main/examples/21_tool_calling" target="_blank" rel="noopener">21_tool_calling</a>)부터다. 이 노트북만 보고 "완전한 에이전트"라 생각하면 안 되는 지점이 바로 여기다.</p>
+    </div>
+  </div>
+
+  <div class="item" id="a3">
+    <span class="qnum qm">A3</span>
+    <p class="qtext">비결정성과 환각은 둘 다 "AI가 틀리는 문제"처럼 보이는데, 원인이 어떻게 다른가?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p><strong>비결정성</strong>은 모델이 후보마다 매긴 점수(로짓)를 확률로 바꿔 그 확률대로 뽑기 때문에 생긴다 — 1등이 뽑힐 확률이 제일 높아도 2등이 가끔 뽑힐 수 있다. 계산이 틀린 게 아니라 원래 설계(창의성을 위한 의도적 무작위성)다.</p>
+      <p><strong>환각</strong>은 확률 뽑기와 무관하게, 모델에게 애초에 "사실인지 확인하는 절차"가 없어서 생긴다. 실제 데이터가 없어도 문법·맥락상 그럴듯한 답의 점수가 높으면 그냥 뽑아버린다.</p>
+    </div>
+    <div class="block try">
+      <span class="block-label">직접 검증해볼 것</span>
+      <p class="fq">D1의 온도 반복문(<code>for T in [0, 0.2, 0.5, 0.8, 1.0]: ...</code>)을 <code>T=0</code> 한 줄만 남겨서 똑같이 3번 재실행해보라. 그다음 실전에서 환각을 줄이려면 온도를 낮추는 것 말고 뭘 손봐야 하는지 생각해보라.</p>
+      <p class="fa"><strong>확인 포인트</strong>: 책 저장소 출력 기록을 보면 T=0에서 5번을 돌려도 "The trade war caused significant disruptions to global supply chains..."로 <strong>토씨까지 똑같은 문장</strong>이 나온다 — 비결정성이 거의 사라진 걸 직접 확인할 수 있다. 하지만 이 문장이 사실인지(실제로 그 무역전쟁이 공급망을 어떻게 얼마나 무너뜨렸는지) T값과는 전혀 무관하다 — 온도는 "얼마나 다양하게 뽑을지"만 건드릴 뿐, "그 내용이 진짜인지"는 건드리지 못한다. 환각을 줄이려면 디코딩 설정이 아니라 3장 RAG 패턴처럼 답하기 전에 실제 문서를 찾아보게 하는 절차 자체를 바꿔야 한다.</p>
+    </div>
+  </div>
+
+  <!-- ============================================================ D ============================================================ -->
+  <div class="fam"><span class="fam-tag tfd">D · 세밀한 디코딩 제어 (1.4)</span><span class="fam-line"></span></div>
+
+  <div class="item" id="d1">
+    <span class="qnum qfd">D1</span>
+    <p class="qtext">로짓·소프트맥스·온도(T)는 각각 뭘 하는 개념인가?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>모델의 마지막 계층은 다음 단어 후보마다 <strong>로짓</strong>(순위용 원점수)을 매긴다. <strong>소프트맥스</strong>는 이 로짓을 0~100% 확률로 바꾸는 계산이다. <strong>온도(T)</strong>는 이 확률을 재분배하는 손잡이 — T를 0에 가깝게 두면 1등만 거의 항상 뽑히고(안전, 뻔함), T를 높이면 순위 낮은 후보도 뽑힐 기회가 생긴다(창의적, 위험도 커짐).</p>
+    </div>
+
+    <figure class="figure">
+      <svg viewBox="0 0 640 130" role="img" aria-label="로짓 생성부터 소프트맥스로 확률화하고 온도로 재분배하기까지 이어지는 파이프라인">
+        <defs>
+          <marker id="dar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--sub)"/></marker>
+        </defs>
+        <rect x="8" y="30" width="140" height="60" rx="9" class="node"/>
+        <text x="78" y="56" text-anchor="middle" class="lbl-main">마지막 계층</text>
+        <text x="78" y="74" text-anchor="middle" class="lbl-sub">후보별 로짓</text>
+        <line x1="148" y1="60" x2="168" y2="60" class="arrow" marker-end="url(#dar)"/>
+        <rect x="170" y="30" width="140" height="60" rx="9" class="node-hl fd"/>
+        <text x="240" y="56" text-anchor="middle" class="lbl-main">소프트맥스</text>
+        <text x="240" y="74" text-anchor="middle" class="lbl-sub">확률화 (합=1)</text>
+        <line x1="310" y1="60" x2="330" y2="60" class="arrow" marker-end="url(#dar)"/>
+        <rect x="332" y="30" width="140" height="60" rx="9" class="node"/>
+        <text x="402" y="56" text-anchor="middle" class="lbl-main">온도(T) 재분배</text>
+        <text x="402" y="74" text-anchor="middle" class="lbl-sub">낮으면 안전 · 높으면 창의적</text>
+        <line x1="472" y1="60" x2="492" y2="60" class="arrow" marker-end="url(#dar)"/>
+        <rect x="494" y="30" width="138" height="60" rx="9" class="node"/>
+        <text x="563" y="56" text-anchor="middle" class="lbl-main">상위K·상위P</text>
+        <text x="563" y="74" text-anchor="middle" class="lbl-sub">이상한 꼬리 자르기</text>
+        <text x="320" y="115" text-anchor="middle" class="lbl-sub">최종적으로 이 확률 분포에서 한 단어가 뽑힌다</text>
+      </svg>
+      <figcaption>로짓 → 소프트맥스 → 온도 → 상위K/상위P 순서로 다음 단어 하나가 정해진다.</figcaption>
+    </figure>
+
+    <div class="codebox">
+      <span class="path">📓 <a href="https://github.com/lakshmanok/generative-ai-design-patterns/blob/main/examples/00_introduction/building_on_apis.ipynb" target="_blank" rel="noopener">examples/00_introduction/building_on_apis.ipynb</a></span>
+      <pre>for T in [0, 0.2, 0.5, 0.8, 1.0]:
+    agent = Agent('anthropic:claude-3-7-sonnet-latest',
+                  model_settings={"temperature": T},
+                  system_prompt="Complete the sentence.")
+    result = agent.run_sync("The trade war caused")
+    print(T, ":  ", result.data)</pre>
+      <div class="out">0 :   The trade war caused significant disruptions to global supply chains, leading to increased prices for consumers...
+0.5 :   ...(더 길어짐) Many manufacturers were forced to reconsider their production strategies...
+1.0 :   ...(가장 길고 표현 다양) accelerated shifts in international trade patterns and renewed debates about economic nationalism...</div>
+    </div>
+    <div class="block try">
+      <span class="block-label">직접 검증해볼 것</span>
+      <p class="fq">이 반복문을 코드 생성 프롬프트("Write code to find the median of a list of integers.")로 바꿔서, T=0과 T=1.0 각각 3번씩 돌려 결과가 얼마나 다른지 비교해보라.</p>
+      <p class="fa"><strong>확인 포인트</strong>: 원본 출력 기록을 보면 T가 오를수록 <strong>문장 길이 자체가 늘고</strong> 표현이 다양해진다(T=0은 한 문장, T=1.0은 세 문장 이상). 코드 생성처럼 정답이 하나인 작업에 T를 높이면, 다양해지는 게 "창의성"이 아니라 "일관성 붕괴"로 나타난다 — 그래서 코드 생성은 T를 0~0.3, 자유 서술은 0.7~1.0로 잡는 게 실전 기준이다.</p>
+    </div>
+  </div>
+
+  <div class="item" id="d2">
+    <span class="qnum qfd">D2</span>
+    <p class="qtext">상위K 표집과 상위P 표집은 둘 다 "안전장치"라는데, 방식은 어떻게 다른가?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p><strong>상위K</strong>는 점수 순으로 줄 세운 뒤 고정된 개수 K개만 남기고 나머지는 후보에서 아예 제외한다. <strong>상위P</strong>는 개수를 미리 안 정하고, 누적 확률이 P(예: 90%)를 넘는 지점까지만 후보로 남긴다 — 남는 후보 개수가 상황(점수 분포)에 따라 달라진다. 목적은 둘 다 같다 — 말이 안 되는 단어가 뽑힐 가능성을 미리 잘라내는 것.</p>
+    </div>
+    <div class="codebox">
+      <span class="path">📓 <a href="https://github.com/lakshmanok/generative-ai-design-patterns/blob/main/examples/00_introduction/building_on_apis.ipynb" target="_blank" rel="noopener">examples/00_introduction/building_on_apis.ipynb</a></span>
+      <pre>for top_k in [1, 10, 100]:
+    agent = Agent('anthropic:claude-3-7-sonnet-latest',
+                  model_settings={"temperature": 0.95, "top_k": top_k},
+                  system_prompt="Complete the sentence.")
+    result = agent.run_sync("The spaceship")
+    print(top_k, ":  ", result.data)</pre>
+      <div class="out">1   :  The spaceship zoomed through the vast expanse of space...
+10  :  The spaceship glided silently through the vast emptiness of space...
+100 :  The spaceship soared through the starry expanse, its gleaming hull reflecting...</div>
+    </div>
+    <div class="block try">
+      <span class="block-label">직접 검증해볼 것</span>
+      <p class="fq">저장소의 <code>apply_top_p(probs, top_p)</code> 함수(순수 파이썬, API 호출 없이 로컬에서 바로 실행됨)를 <code>logits</code> 딕셔너리에 <code>top_p=0.3</code>, <code>0.8</code>로 각각 돌려서 몇 개 단어가 살아남는지 직접 세어보라.</p>
+      <p class="fa"><strong>확인 포인트</strong>: <code>logits = {"the": 5.2, "a": 3.8, "an": 2.1, "this": 1.5, "that": 0.9}</code>처럼 1등·2등에 확률이 몰린 뾰족한 분포에서는 top_p=0.3만 줘도 the·a 정도만 남고 나머지는 확률 0으로 잘린다. 고객 응대 챗봇처럼 정확한 답 하나가 중요한 경우 top_p를 낮게(0.1~0.3) 잡는 이유가, 이 함수를 직접 돌려서 "몇 개가 남는지" 눈으로 세어보면 왜 그런지 체감된다 — top_k=1이 그리디 선택과 동일해지는 것도 위 출력에서 확인 가능하다.</p>
+    </div>
+  </div>
+
+  <div class="item" id="d3">
+    <span class="qnum qfd">D3</span>
+    <p class="qtext">빔 탐색은 뭘 해결하고, 실전에서 잘 안 보이는 이유는?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>한 단어씩만 골라나가면 당장은 그럴듯해도 문장 전체로는 어색해질 수 있다. 빔 탐색은 유망한 문장 경로 여러 개(흔히 3~5개, <strong>빔 너비</strong>)를 동시에 몇 단어씩 미리 그려본 뒤, 전체 문장 점수가 가장 높은 경로를 최종으로 고른다.</p>
+    </div>
+    <div class="block try">
+      <span class="block-label">직접 검증해볼 것</span>
+      <p class="fq">D1·D2에서 쓴 <code>model_settings={"temperature": ..., "top_k": ...}</code>에 <code>"beam_width": 5</code>를 추가해서 실행해보라. 그리고 <a href="https://ai.pydantic.dev/api/settings/" target="_blank" rel="noopener">PydanticAI의 <code>ModelSettings</code> 정의</a>에 실제로 그런 필드가 있는지 확인해보라.</p>
+      <p class="fa"><strong>확인 포인트</strong>: 이 책 저장소의 어떤 노트북에도 <code>beam</code>이라는 단어 자체가 등장하지 않는다(직접 저장소를 <code>grep</code>해도 안 나온다). Anthropic·PydanticAI 모두 대화형 API에 빔 탐색 옵션을 열어주지 않기 때문이다 — 경로 여러 개를 동시에 추적하는 연산이 실시간 대화 응답 속도와 안 맞아서다. 실제로 빔 탐색이 쓰이는 곳은 번역기·자막 생성기처럼 문장 전체 정확도가 실시간성보다 중요한 로컬 추론 파이프라인(허깅페이스 <code>transformers</code>의 <code>generate(num_beams=5)</code> 등) 쪽이다 — 즉 "없다"는 사실 자체가 실전 API 설계를 보여주는 증거다.</p>
+    </div>
+  </div>
+
+  <div class="item" id="d4">
+    <span class="qnum qfd">D4</span>
+    <p class="qtext">반복 벌점과 길이 벌점은 각각 뭘 조절하나?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p><strong>반복 벌점</strong>은 같은 단어·문구 반복을 막는다(빈도 벌점: 반복할수록 더 깎음 / 출현 벌점: 한 번 나오면 그다음부터 항상 같은 만큼 깎음). <strong>길이 벌점</strong>은 문장 길이를 조절한다(최소 길이 벌점: 너무 일찍 못 끝내게 / 최대 길이 벌점: 특정 길이 넘으면 끊음 / 길이 정규화 벌점: 무조건 짧은 답만 선호하지 않게).</p>
+    </div>
+    <div class="block try">
+      <span class="block-label">직접 검증해볼 것</span>
+      <p class="fq">D1·D2와 똑같은 <code>model_settings</code> 딕셔너리에 <code>"frequency_penalty": 1.0</code>을 넣고 앤트로픽 모델로 실행해보라. 에러가 나는지, 조용히 무시되는지 직접 확인하라.</p>
+      <p class="fa"><strong>확인 포인트</strong>: <code>temperature</code>·<code>top_k</code>·<code>top_p</code>는 실제로 동작하지만, 앤트로픽 Claude API에는 반복 벌점 파라미터 자체가 없다(오픈AI·구글 Gemini API엔 있다). D1·D2 코드로 직접 이 셋을 넣어보고 안 되는 걸 확인하는 게, "회사마다 지원이 다르다"는 걸 문서만 읽는 것보다 확실하게 체감하는 방법이다. 실전 우회책은 온도·top_p로 분포를 넓히거나, 시스템 프롬프트에 "같은 표현을 반복하지 말라"는 지시를 직접 넣는 것이다.</p>
+    </div>
+  </div>
+
+  <!-- ============================================================ L ============================================================ -->
+  <div class="fam"><span class="fam-tag tl">L · 학습 방법 — 컨텍스트 내 학습과 사후훈련 (1.5~1.6)</span><span class="fam-line"></span></div>
+
+  <div class="item" id="l1">
+    <span class="qnum ql">L1</span>
+    <p class="qtext">퓨샷 학습에서 모네 그림 예시 하나로 전혀 다른 르누아르 그림까지 맞히는 게, 왜 "지식 주입"이 아니라는 증거인가?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p>모델은 르누아르 그림 정보를 예시에서 받은 적이 없다. 모네 그림 예시 하나가 가르친 건 <strong>"설명 → 작품·화가·연도·의의" 순서(패턴)</strong>뿐이고, 실제 내용은 모델이 사전훈련 때부터 이미 알던 지식이다. 즉 퓨샷 학습은 <strong>새 지식을 넣는 게 아니라, 이미 아는 지식을 원하는 형식으로 꺼내 쓰게 하는 것</strong>이다.</p>
+    </div>
+    <div class="codebox">
+      <span class="path">📓 <a href="https://github.com/lakshmanok/generative-ai-design-patterns/blob/main/examples/00_introduction/prompt_engineering.ipynb" target="_blank" rel="noopener">examples/00_introduction/prompt_engineering.ipynb</a></span>
+      <pre>## few-shot
+agent = Agent(MODEL_ID, system_prompt=
+    "You are an expert on art history. I will describe a painting. You should identify it")
+
+result = agent.run_sync("""
+Example:
+Description: shows two small rowboats in the foreground and a red Sun.
+Answer:
+   Painting: Impression, Sunrise
+   Artist: Claude Monet
+   Year: 1872
+   Significance: Gave the Impressionist movement its name...
+
+Description: The painting shows a group of people eating at a table under
+an outside tent. The men are wearing boating hats.
+""")
+print(result.output)</pre>
+    </div>
+    <div class="block try">
+      <span class="block-label">직접 검증해볼 것</span>
+      <p class="fq">이 셀의 예시(모네)는 그대로 두고, 마지막 <code>Description</code>만 실존하지 않는 그림 — "보라색 하늘 아래 로봇 세 대가 체스를 두는 그림"으로 바꿔 재실행해보라. 모델이 "모르겠다"고 하는지, 아니면 형식만 맞춰 그럴듯하게 지어내는지 확인하라.</p>
+      <p class="fa"><strong>확인 포인트</strong>: 십중팔구 모델은 "모른다"고 하는 대신 형식(Painting/Artist/Year/Significance)은 정확히 맞춘 채 <strong>존재하지 않는 화가·연도를 지어낸다</strong> — 퓨샷이 가르친 게 "형식"뿐이라는 걸 역으로 증명하는 동시에, 이게 바로 환각(A3)이 실제로 발생하는 순간이다. 사내 전용 코드명처럼 모델이 사전훈련 때 못 본 사실은 예시를 아무리 늘려도 진짜로 못 맞히고, 대신 그럴듯한 형식으로 지어낼 위험만 커진다 — 그래서 이런 지식은 프롬프트에 직접 넣어주거나(RAG) 사후훈련시켜야 한다.</p>
+    </div>
+  </div>
+
+  <div class="item" id="l2">
+    <span class="qnum ql">L2</span>
+    <p class="qtext">가진 데이터 모양에 따라 CPT·SFT·RLHF(DPO·GRPO) 중 뭘 골라야 하나?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <div class="tablewrap">
+        <table class="reftable">
+          <thead><tr><th>데이터 모양</th><th>방법</th><th>가르치는 것</th></tr></thead>
+          <tbody>
+            <tr><td>순수 텍스트 뭉치</td><td><strong>CPT</strong>(계속 사전훈련)</td><td>새 어휘·개념 자체</td></tr>
+            <tr><td>질문-모범답변 쌍</td><td><strong>SFT</strong>(지도학습 미세조정)</td><td>형식·태도</td></tr>
+            <tr><td>같은 입력에 답 2개 + "이게 낫다" 표시</td><td><strong>RLHF · DPO · GRPO</strong>(선호조정)</td><td>더 나은 답의 방향</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="codebox">
+      <span class="path">📓 <a href="https://github.com/lakshmanok/generative-ai-design-patterns/blob/main/examples/15_adapter_tuning/3_adapter_tuning.ipynb" target="_blank" rel="noopener">examples/15_adapter_tuning/</a> — 저자들이 실제로 SFT를 돌린 예제</span>
+      <pre>from trl import SFTConfig
+
+args = SFTConfig(
+    output_dir="gemma-radiology",
+    num_train_epochs=1,
+    per_device_train_batch_size=1,
+    learning_rate=2e-4,     # QLoRA 논문 기준
+    bf16=True,
+    ...
+)
+# 학습 데이터는 messages.jsonl — {질문(엑스레이 이미지), 모범답변(방사선 판독 캡션)} 쌍</pre>
+    </div>
+    <div class="block try">
+      <span class="block-label">직접 검증해볼 것</span>
+      <p class="fq"><code>examples/15_adapter_tuning/README.md</code>를 열어 "Step 4"를 찾아보라 — 실행에 어떤 하드웨어가 필요하다고 적혀 있나? 그리고 <code>messages.jsonl</code>의 각 줄이 표의 어느 데이터 모양(순수 텍스트 / 질문-모범답 쌍 / 비교 데이터)에 해당하는지 확인하라.</p>
+      <p class="fa"><strong>확인 포인트</strong>: README는 "NVIDIA L4 32GB GPU"를 명시한다 — 노트북 코드만 봐도 <code>load_in_4bit</code>·<code>bf16</code>·<code>gradient_checkpointing</code> 전부 GPU 메모리를 아끼려는 흔적이다. <code>messages.jsonl</code>은 (엑스레이 이미지, 방사선 판독 캡션) 쌍이라 표의 "질문-모범답변 쌍 → SFT" 줄에 정확히 해당하고, 실제로 이 노트북도 CPT가 아니라 <code>trl.SFTConfig</code>로 SFT를 돌린다. 우리 회사가 순수 텍스트 뭉치만 있다면 이 예제와 데이터 모양부터 다르다는 뜻이고, CPT를 택하기 전엔 BloombergGPT 사례처럼 "정말 범용 모델로는 안 되는지"부터 검증하는 게 먼저다.</p>
+    </div>
+  </div>
+
+  <div class="item" id="l3">
+    <span class="qnum ql">L3</span>
+    <p class="qtext">LoRA는 왜 쓰고, 파국적 망각은 왜 생기나?</p>
+    <div class="block ans">
+      <span class="block-label">모범답</span>
+      <p><strong>LoRA</strong>는 수천억 개 매개변수 전체를 다시 훈련하는 대신, 원본은 그대로 두고 작은 "추가 메모" 층만 새로 학습시킨다(포스트잇 비유). 학습 파라미터 최대 1만 배, GPU 메모리 최대 3배까지 줄면서도 성능은 전체 재훈련과 비슷하다.</p>
+      <p><strong>파국적 망각</strong>은 좁은 데이터로 너무 집중해서 재훈련하면 원래 잘하던 다른 일을 잊어버리는 현상이다. 컴퓨터 파일과 달리, 모델의 <strong>가중치는 여러 능력이 같은 숫자 자리를 겹쳐서 공유</strong>하기 때문에 생긴다 — 누가 "이 능력 버려"라고 결정한 게 아니라, 좁은 데이터의 오차를 줄이려 가중치를 계속 밀어붙이는 계산 과정에서 다른 능력이 걸려 있던 같은 숫자까지 원치 않게 같이 바뀌는 것이다.</p>
+    </div>
+    <div class="codebox">
+      <span class="path">📓 <a href="https://github.com/lakshmanok/generative-ai-design-patterns/blob/main/examples/15_adapter_tuning/3_adapter_tuning.ipynb" target="_blank" rel="noopener">examples/15_adapter_tuning/3_adapter_tuning.ipynb</a></span>
+      <pre>from peft import LoraConfig
+
+peft_config = LoraConfig(
+    lora_alpha=16,
+    lora_dropout=0.05,
+    r=16,                      # 어댑터(포스트잇 층)의 크기
+    bias="none",
+    target_modules="all-linear",
+    task_type="CAUSAL_LM",
+    modules_to_save=[
+        "lm_head",
+        "embed_tokens",
+    ],
+)</pre>
+    </div>
+    <div class="block try">
+      <span class="block-label">직접 검증해볼 것</span>
+      <p class="fq"><code>r=16</code>이 뭘 뜻하는지, 그리고 <code>modules_to_save=["lm_head", "embed_tokens"]</code>가 왜 굳이 명시돼 있는지 <a href="https://huggingface.co/docs/peft/main/en/conceptual_guides/lora" target="_blank" rel="noopener">peft 공식 LoRA 문서</a>에서 찾아보라.</p>
+      <p class="fa"><strong>확인 포인트</strong>: <code>r</code>은 LoRA 어댑터(포스트잇 층)의 랭크 — "포스트잇에 몇 줄까지 적을 수 있는지"에 해당하는 크기다. 이 방사선 이미지 캡션 예제에서 저자들은 <code>lm_head</code>·<code>embed_tokens</code>(출력·입력 임베딩 층)까지 <code>modules_to_save</code>로 <strong>일반 파라미터로 함께 학습</strong>되도록 명시했는데, 이건 Gemma가 원래 모르던 방사선 용어·토큰을 새로 익혀야 해서다 — 반대로 이 층까지 건드리면서 좁은 데이터로만 오래 학습시키면 파국적 망각이 더 쉽게 생긴다. 즉 "특정 고객사 스타일만 파고들다 다른 업무가 이상해졌다"는 시나리오의 실제 원인 후보 하나가 바로 이 <code>modules_to_save</code> 설정과 에폭 수(<code>num_train_epochs</code>)다 — 코드에서 직접 확인 가능한 지점이다.</p>
+    </div>
+  </div>
+
+  <div class="closing l">
+    한 장 지도로 정리하면 — <b>채용(1.2)·배치(1.3)·조율(1.4)·즉석교육(1.5)·정식재교육(1.6)</b>. 회사가 신입사원을 기초 모델로 데려와(F), 목표만 주고 판단을 맡기고(A), 판단의 과감함을 손잡이로 조절하고(D), 예시나 재훈련으로 가르치는(L) 순서 그대로다. 위 16개 문답에서 막힌 지점이 있었다면, 그 칸으로 돌아가 원문을 다시 읽어보면 된다.
+  </div>
+
+  <p class="source">
+    원문 노트: <a href="generative-ai-design-patterns-ch1.html" style="color:var(--q);">프롬프트에서 에이전트까지 — 1장 정리노트</a> ·
+    「에이전트 시대의 AI 시스템 설계」(발리아파 락슈마난·하네스 하프케 지음, 류광 옮김, 한빛미디어) 1장을 바탕으로 한 개인 학습 문답노트.
+  </p>
+
+</div>
+</body>
+</html>
