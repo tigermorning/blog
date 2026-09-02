@@ -23,13 +23,13 @@
   <div id="sidebar-mount"></div>
 
   <main>
-    <h1>프롬프트 세 경로 직접 실행해보기 — Claude SDK·LangChain·Ollama</h1>
+    <h1><span class="hl">프롬프트 세 경로 직접 실행해보기</span> — Claude SDK·LangChain·Ollama</h1>
     <p class="post-date">2026. 8. 28.</p>
     <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다. "프롬프트와 에이전트 개념" 시리즈의 실습 보충 글입니다.</p>
 
     <p><a href="prompt-engineering-history.html">프롬프트 기법의 역사</a>에서 system·이력이 답을 어떻게 바꾸는지 이론으로 봤다면, 이번엔 손으로 직접 세 가지 실행 경로를 돌려봤다. 결론부터 말하면 <strong>같은 "system 지시"라는 개념도 라이브러리마다 받는 자료형이 다르다</strong>. 인터페이스 차이를 감춰야 할 결함이 아니라, 실행 환경을 고를 때 확인할 조건으로 보는 법을 배웠다.</p>
 
-    <h2>1. 세 경로, 세 가지 자료형</h2>
+    <h2>1. <span class="hl">세 경로, 세 가지 자료형</span></h2>
     <table>
       <thead>
         <tr><th>경로</th><th>되는 것</th><th>주의할 점</th></tr>
@@ -42,7 +42,7 @@
     </table>
     <p>한쪽의 입력 모양을 다른 쪽에 억지로 옮기지 말고, 각 인터페이스가 실제로 받는 것을 읽어야 한다는 게 첫 번째 교훈이었다.</p>
 
-    <h2>2. Claude Agent SDK — 에이전트 입력 스트림 그대로 쓰기</h2>
+    <h2>2. <span class="hl">Claude Agent SDK</span> — 에이전트 입력 스트림 그대로 쓰기</h2>
     <p>Claude 경로는 Claude Code 로그인과 <code>claude-agent-sdk</code> 설치가 필요하다. 공통 지시는 <code>system_prompt</code>에, 사용자의 현재 요청은 비동기 생성기가 내보내는 user 메시지에 둔다. <code>max_turns=1</code>은 에이전트 턴 수를 제한할 뿐 답변 길이를 제한하지 않고, <code>tools=[]</code>는 도구 호출을 제외한다.</p>
     <pre><code>import asyncio
 from pathlib import Path
@@ -69,13 +69,13 @@ async def main():
 asyncio.run(main())</code></pre>
     <p>이 SDK는 앞선 assistant 답변을 입력 문자열에 role 태그로 다시 조립해 넣는 걸 지원하지 않는다. 멀티턴 효과를 role 배열로 관찰하려면 LangChain이나 Ollama 경로를 쓴다.</p>
 
-    <h2>3. system만 바꿔 재호출한 결과 — 문체 자체가 달라진다</h2>
+    <h2>3. <span class="hl">system만 바꿔 재호출한 결과</span> — 문체 자체가 달라진다</h2>
     <p>같은 질문("배송일은 언제인가요?")을 system만 바꿔 두 번 돌렸다. 실측 결과다.</p>
     <p><strong>고객 문의 톤</strong>(<code>system_prompt: 고객 문의에 정중하게 답한다</code>) — "문의해 주셔서 감사합니다. 다만 제가 지금 확인할 수 있는 주문·배송 정보가 없어서, 배송일을 바로 안내드리기 어렵습니다. 정확한 안내를 위해 아래 내용을 알려주시면 도움이 됩니다. 주문번호 또는 주문 시 사용한 이메일/연락처, 어떤 상품을 주문하셨는지, 주문 일자."</p>
     <p><strong>기술 문서 톤</strong>(<code>system_prompt: 기술 문서 톤으로 답한다</code>) — "질문에 필요한 컨텍스트가 없습니다. 현재 세션에는 주문·배송 관련 정보가 없고, 연결된 도구(캘린더, 드라이브, DB, 브라우저)에도 배송 조회용 데이터 소스가 지정되지 않았습니다. 확인이 필요한 항목입니다. 어떤 배송인가, 조회 경로, 대체 소스."</p>
     <p>둘 다 배송일을 단정하지 않았다는 점은 같다. 그러나 하나는 감사·사과와 주문자 정보 요청으로 고객 문의를 구성했고, 다른 하나는 컨텍스트·연결 도구·조회 경로로 기술적으로 분류했다. "더 좋다"가 아니라 <strong>"system 변경으로 무엇이 달라졌다"</strong>를 한 문장으로 남기는 게 이 실습의 목적이다.</p>
 
-    <h2>4. LangChain + Gemini — 메시지 객체 목록</h2>
+    <h2>4. <span class="hl">LangChain + Gemini</span> — 메시지 객체 목록</h2>
     <p><code>GEMINI_API_KEY</code>를 셸 환경 변수로 설정한 뒤, system 지시와 대화 이력을 각각 알맞은 메시지 객체로 표현한다.</p>
     <pre><code>from pathlib import Path
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
@@ -95,7 +95,7 @@ save_run("gemini-with-history.txt", [
     HumanMessage("주문번호가 없으면 무엇을 확인해야 하나요?"),
 ])</code></pre>
 
-    <h2>5. Ollama — role 딕셔너리 목록</h2>
+    <h2>5. <span class="hl">Ollama</span> — role 딕셔너리 목록</h2>
     <p>Ollama 앱을 실행하고 <code>ollama pull qwen3.5:2b</code>로 모델을 준비한 뒤, 같은 관찰을 role 딕셔너리로 표현했다.</p>
     <pre><code>from pathlib import Path
 from ollama import chat
@@ -111,10 +111,10 @@ save_run("ollama-with-history.txt", [
     {"role": "user", "content": "주문번호가 없으면 무엇을 확인해야 하나요?"},
 ])</code></pre>
 
-    <h2>6. 앞선 대화를 넣었을 때, 모델이 정말 참조하는가</h2>
+    <h2>6. <span class="hl">앞선 대화를 넣었을 때, 모델이 정말 참조하는가</span></h2>
     <p>Claude Agent SDK 경로는 이력을 assistant role 배열로 못 넣으니, 앞선 대화를 설명한 문장을 새 user 메시지에 통째로 담아 재호출한다. 이 방식으로 "주문번호 또는 운송장 번호"라는 앞선 제안이 마지막 답에서 어떻게 이어지는지 확인하는 게 핵심이었다. 참조가 안 보이면 "앞선 대화를 user 입력에 포함했으나 응답에서 분명한 참조를 확인하지 못했다"라고 그대로 기록한다 — <strong>이력이 입력이라는 사실과, 모델이 매번 이력을 원하는 방식으로 활용한다는 보장은 다르다</strong>.</p>
 
-    <h2>정리</h2>
+    <h2><span class="hl">정리</span></h2>
     <p>환경을 고르는 기준은 세 코드를 같은 모양으로 만드는 일이 아니었다. 구독 로그인으로 에이전트 실행을 관찰할지, API 키와 범용 메시지 추상화를 쓸지, 로컬 모델의 조건과 한계를 시험할지 결정하는 일이었다. 어느 경로든 비교할 질문은 같다 — user 요청을 고정하고 system만 바꿨을 때 문체·구조·추가 정보 요청이 무엇이 달라지는지, 앞선 대화 이력을 넣었을 때 새 응답이 그 이력을 실제로 반영하는지를 원문으로 확인하는 것.</p>
 
   </main>

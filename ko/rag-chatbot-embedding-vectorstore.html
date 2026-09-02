@@ -24,19 +24,19 @@
 
   <main>
     <p class="post-date"><a href="rag-chatbot-chunk-design.html">← 이전 편 검색되는 자료와 답할 수 있는 자료는 다르다 — 청크 설계</a></p>
-    <h1>브라우저 안에서 문장을 좌표로 바꾸기 — 임베딩과 벡터스토어</h1>
+    <h1><span class="hl">브라우저 안에서 문장을 좌표로 바꾸기</span> — 임베딩과 벡터스토어</h1>
     <p class="post-date">2026. 8. 28.</p>
     <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
 
     <p>과거에 쓰던 스크립트를 그대로 실행하려다 보면, 그 경로가 BGE 384차원 벡터를 남긴다는 사실을 만난다. 화면에 숫자 배열은 정상처럼 보이지만, 질문이 다른 공간에서 만들어진다면 <strong>가까움이라는 판단 자체가 성립하지 않는다</strong>. 문서와 질문의 출발점부터 맞춰야 한다는 게 오늘의 핵심이었다.</p>
 
-    <h2>1. 문장을 숫자로 바꾸는 이유</h2>
+    <h2>1. <span class="hl">문장을 숫자로 바꾸는 이유</span></h2>
     <p>모두콘 문서를 검색 가능한 형태로 바꾸려면 문장을 숫자 목록(벡터)으로 변환해야 한다. 쓰는 모델은 <code>onnx-community/embeddinggemma-300m-ONNX</code>이고, 각 문장과 질문을 768차원 벡터 하나로 바꾼다. 첫 방문에서는 모델 파일 약 200MB를 받아야 하고 첫 로드는 5~15초가 걸릴 수 있어서, 화면이 멈춘 것처럼 보이지 않게 진행 상태와 캐시 여부를 보여줘야 한다. <strong>임베딩은 답을 만드는 과정이 아니라, 답의 근거 후보를 찾기 위한 색인 과정</strong>이라는 걸 잊으면 안 된다.</p>
 
-    <h2>2. 캐시는 성능 장식이 아니라 재방문 경험의 계약</h2>
+    <h2>2. <span class="hl">캐시는 성능 장식이 아니라 재방문 경험의 계약</span></h2>
     <p>모델 파일을 매 질문마다 다시 받는 구조라면 검색을 시작하기도 전에 사용자를 기다리게 만든다. HTTP 캐시만 믿기 어려운 이유는, Hugging Face의 resolve URL이 서명된 CDN URL로 리다이렉트되며 캐시 적중이 불안정할 수 있기 때문이다. 그래서 원래 URL을 키로 삼아 <code>Cache Storage</code>에 직접 보관하고, 캐시 적중 때에는 완료 상태와 캐시 사용 여부를 즉시 알리는 편이 낫다. <code>Cache Storage</code>가 실패할 수 있으니 한 번 재시도한 뒤에도 실패하면 다운로드를 계속하는 경로를 남겨두어야 하고, 브라우저 환경에 따라 저장이 보장된다고 단정하지 않아야 한다.</p>
 
-    <h2>3. 기본 파이프라인이 멈추는 지점을 우회하기</h2>
+    <h2>3. <span class="hl">기본 파이프라인이 멈추는 지점을 우회하기</span></h2>
     <p>브라우저에서 <code>pipeline()</code>을 곧바로 호출하는 방식은 간결해 보이지만, 기본 q4/q8 경로가 선택되면 WASM ONNX Runtime이 <code>GatherBlockQuantized</code> 연산을 지원하지 않아 실패할 수 있다. 해결은 모델 전체를 포기하는 게 아니라 <strong>역할을 분리하는 것</strong>이다. 토크나이저는 transformers.js의 <code>AutoTokenizer</code>로 쓰고, 추론 세션은 <code>model_no_gather_q4.onnx</code>와 데이터 파일을 ONNX Runtime에 직접 넘긴 뒤 WASM 실행 공급자를 지정한다.</p>
     <pre><code>// rag.ts의 핵심 경로를 짧게 확인합니다.
 const tokenizer = await AutoTokenizer.from_pretrained(modelId);
@@ -45,14 +45,14 @@ const session = await ort.InferenceSession.create(modelUrl, {
 });</code></pre>
     <p>이 우회는 문서 임베딩과 브라우저 질문 임베딩이 같은 모델 계열의 계산을 거치게 하는 조건이기도 하다. 에이전트에게 오류 문구만 던지지 말고, 토크나이저와 ORT 세션을 분리해야 하는 이유와 <code>no_gather_q4</code> 파일을 써야 하는 조건을 함께 요구해야 했다.</p>
 
-    <h2>4. 평균을 만들고 길이를 맞춰야 비교가 공정해진다</h2>
+    <h2>4. <span class="hl">평균을 만들고 길이를 맞춰야 비교가 공정해진다</span></h2>
     <p>모델 출력의 <code>last_hidden_state</code>는 토큰마다 하나씩 생기므로, 문장 하나를 대표하는 벡터로 줄이는 규칙이 필요하다. <code>attention_mask</code>가 가리키는 실제 토큰만 평균내는 <strong>mean pooling</strong>을 적용한 뒤, 벡터 길이가 1이 되도록 <strong>L2 정규화</strong>를 적용한다. 이 순서가 없으면 패딩 토큰이 문장 표현에 섞이거나, 문장 길이 차이가 점수에 과도하게 영향을 줄 수 있다. 정규화된 벡터끼리는 내적이 곧 코사인 유사도로 읽히므로, 검색 단계가 별도 길이 보정을 반복하지 않아도 된다.</p>
     <p>구현을 만드는 에이전트에게는 출력 텐서의 첫 값만 쓰지 말 것, 마스크를 분모·분자에 함께 반영할 것, 0으로 나누는 경우를 방어할 것을 명시해야 한다. 숫자로 바꾸는 과정의 작은 생략이 검색 결과 전체의 편향으로 이어질 수 있다.</p>
 
-    <h2>5. 차원이 같아도 공간이 다르면 소용없다</h2>
+    <h2>5. <span class="hl">차원이 같아도 공간이 다르면 소용없다</span></h2>
     <p>과거 BGE 경로는 384차원 벡터를 만들었지만, 지금 코퍼스는 Gemma의 768차원 벡터를 쓴다. 두 결과를 섞으면 계산 자체가 실패하거나 의미 없는 거리를 만든다. 더 위험한 경우는 차원이 우연히 같아도 서로 다른 모델의 공간을 섞는 경우다. 이때는 숫자가 나오더라도 가까움의 뜻이 보장되지 않는다. 문서 벡터를 만들 때 쓴 모델, pooling 방식, 정규화 규칙을 질문 임베딩에도 똑같이 적용하고, 벡터스토어에 이 사실을 확인할 수 있는 생성 경로를 남겨야 한다.</p>
 
-    <h2>6. 실습 — 문서 벡터스토어를 에이전트와 함께 만들기</h2>
+    <h2>6. <span class="hl">실습</span> — 문서 벡터스토어를 에이전트와 함께 만들기</h2>
     <p><code>embed-docs-browser-path.mjs</code>는 Node 환경에서 같은 모델의 feature-extraction pipeline을 쓰고, <code>dtype:"q4"</code>, <code>pooling:"mean"</code>, <code>normalize:true</code> 조건으로 문서 벡터를 만들어 <code>app/public/moducon-docs.json</code>에 둔다.</p>
     <pre><code>모두콘 공개 문서 청크 배열을 읽어 브라우저 RAG용 벡터스토어를 만드는
 embed-docs-browser-path.mjs를 작성합니다. onnx-community/embeddinggemma-300m-ONNX를
@@ -62,11 +62,11 @@ app/public/moducon-docs.json에 저장합니다. 기존 BGE 384차원 경로는 
 생성 후 모든 vector가 768차원인지 검사하는 검증도 포함합니다.</code></pre>
     <p>벡터 길이를 확인했으면 과거 스크립트의 산출물을 새 파일에 섞지 않고, 문서와 질문 모두 같은 Gemma 경로를 지나게 한 뒤에야 검색 점수를 읽는다. 남는 질문은 벡터 파일이 만들어졌다는 사실이 아니라 <strong>실제 질문에서 관련 청크가 위로 올라오는지</strong>다.</p>
 
-    <h2>7. 검색 결과를 스팟체크로 읽기</h2>
+    <h2>7. <span class="hl">검색 결과를 스팟체크로 읽기</span></h2>
     <p>생성 명령이 성공했다는 메시지만으로 벡터스토어가 올바르다고 판단할 수 없다. <code>check_retrieval.py</code> 같은 점검 도구에서 예상 질문을 넣고 top-1, top-3에 어떤 청크가 놓이는지 읽어야 한다. 문서에 근거가 있는 질문은 관련 청크가 상위에 나타나는지, 문서 범위 밖 질문은 억지로 관련 청크가 정답처럼 보이지 않는지도 함께 관찰한다. top-1이 기대와 다를 때는 곧바로 임계값을 바꾸기보다, 질문과 문서가 같은 임베딩 경로를 지나갔는지, 청크의 사실 경계가 적절한지부터 역순으로 점검한다.</p>
     <pre><code>python3 check_retrieval.py</code></pre>
 
-    <h2>정리</h2>
+    <h2><span class="hl">정리</span></h2>
     <p>임베딩은 답을 만드는 단계가 아니라 근거 후보를 찾는 색인 단계라는 걸 자꾸 잊어버리기 쉽다. 질문과 문서가 같은 공간에 있어야 거리가 말을 한다 — 오늘 배운 걸 한 문장으로 압축하면 이거였다. 다음 편에서는 이렇게 만든 벡터스토어에서 실제로 가까운 청크를 고르는 하이브리드 검색으로 넘어간다.</p>
 
     <p class="post-date"><a href="rag-chatbot-hybrid-search.html">다음 편 → 가까운 청크를 고른다 — 코사인과 BM25의 하이브리드 검색</a></p>
