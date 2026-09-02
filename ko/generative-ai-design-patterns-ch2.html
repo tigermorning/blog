@@ -713,8 +713,8 @@
     <div class="etym">
       <span class="label">먼저 알아둘 것</span>
       <div class="body">
-        AI(정확히는 기초 모델)는 문장을 한 번에 통째로 뱉지 않아요. <strong>토큰(대략 단어나 글자
-        조각) 하나씩</strong> 이어 붙이면서 "다음에 올 후보 토큰들"에 각각 점수를 매기고, 그 점수를
+        AI(정확히는 기초 모델)는 문장을 한 번에 통째로 뱉지 않아요. <strong><a href="what-is-ai-token.html">토큰</a>(대략
+        단어나 글자 조각) 하나씩</strong> 이어 붙이면서 "다음에 올 후보 토큰들"에 각각 점수를 매기고, 그 점수를
         확률로 바꿔서 제비뽑기하듯 하나를 골라요. 이 "고르기 전 원점수"를 <span class="term">로짓
         (logit)</span>이라고 불러요. 로짓 마스킹은 바로 이 <strong>고르기 직전 순간에 끼어들어서</strong>,
         규칙에 어긋나는 후보의 점수를 <strong>선택될 확률 0</strong>으로 만들어 버리는 거예요.
@@ -776,7 +776,9 @@ for w, p in zip(words, softmax(masked)):
     </div>
     <div class="plain-lang">
       <span class="pl-label">쉽게 말하면</span>
-      <p style="margin:0;"><strong>softmax</strong>는 점수를 확률로 바꿔주는 계산이에요. 점수 자체는 음수도
+      <p style="margin:0;"><strong>softmax</strong>는 점수를 확률로 바꿔주는 계산이에요
+      (<a href="softmax-and-mnist-classification.html">예전에 MNIST 손글씨 분류를 하면서</a> 한 번 다뤘던 그 계산이에요).
+      점수 자체는 음수도
       있고 합이 1도 아니라서 그대로는 제비뽑기를 못 하거든요. 로짓 마스킹은 이 <strong>softmax 직전</strong>에
       끼어들어요 — 표의 왼쪽 절반과 오른쪽 절반 사이, 딱 그 순간이에요.</p>
     </div>
@@ -881,6 +883,21 @@ results = pipe(input_message,
       <p style="margin:0;">"평소처럼 글을 생성하되, <strong>MyRulesLogitsProcessor</strong>라는
       감시자를 옆에 붙여서, 매 토큰마다 이 감시자한테 검열을 맡겨라"는 뜻이에요.
       <strong>logits_processor</strong>가 그 감시자를 꽂는 자리예요.</p>
+    </div>
+
+    <div class="etym">
+      <span class="label">빔 탐색(beam search)</span>
+      <div class="body">
+        위 코드의 <code>num_beams=10</code>은 그냥 지나치기 쉬운데, 이 절에서 가장 중요한 숫자예요.
+        AI에게 글을 <strong>한 편만 쓰게 하는 게 아니라 열 편을 동시에 쓰게 하라</strong>는 뜻이거든요.<br><br>
+        등산로 찾기로 비유하면 이래요. 갈림길마다 제일 좋아 보이는 길 하나만 골라 계속 가면, 한참 뒤에 막다른
+        길이 나와도 되돌릴 수가 없어요. 대신 <strong>정찰대 열 명을 서로 다른 길로 동시에 보내 놓고</strong>
+        한참 뒤에 제일 멀리 간 사람을 채택하면 훨씬 나은 길이 나오겠죠. 이 정찰대 한 명 한 명이
+        <span class="term">빔(beam)</span>이에요.<br><br>
+        그래서 감시자에게 들어오는 <code>input_ids</code>는 문장 하나가 아니라 <strong>열 줄짜리 표</strong>예요.
+        한 줄이 정찰대 한 명이 지금까지 걸어온 길이고요. 이걸 알고 봐야 아래 코드에 붙은 <code>[idx]</code>가
+        무슨 뜻인지 보여요 — <strong>몇 번 정찰대인지</strong>를 가리키는 번호예요.
+      </div>
     </div>
     <pre class="code">def __call__(self, input_ids, input_logits):
     output_logits = input_logits.clone()
@@ -1105,6 +1122,61 @@ results = pipe(input_message,
       같은 단어가 목록에 두 번 적혀 있으면 한 번 나온 걸 두 번 세서 점수가 부풀거든요. (실제로 저장소의 권장어
       목록에는 <code>low calorie</code>가 두 번 들어 있어요.)</p>
     </div>
+    <p>
+      노트북에는 같은 계산을 하되 <strong>어떤 단어가 걸렸는지 하나씩 찍어주는</strong>
+      <code>evaluate_verbose</code>도 나란히 들어 있어요. 사람이 눈으로 확인하라고 만들어 둔 거예요. 실제로 두 번
+      돌려서 채점해 보면 이렇게 나와요. <strong>이 표가 이 절 전체의 결론</strong>이에요.
+    </p>
+    <div class="ptable-wrap">
+      <table class="ptable">
+        <thead><tr><th></th><th>Before — 그냥 생성 (셀 9·10)</th><th>After — 마스킹 생성 (셀 14·15)</th></tr></thead>
+        <tbody>
+          <tr><td>들어간 권장어</td><td>whey protein, whey</td><td>whey protein, whey, nutrients</td></tr>
+          <tr><td>들어간 금지어</td><td><strong>quality, growth, perfect</strong></td><td><strong>하나도 없음</strong></td></tr>
+          <tr><td>점수</td><td><strong>2 − 3 = −1점</strong></td><td><strong>3 − 0 = 3점</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="plain-lang">
+      <span class="pl-label">여기서 놀랄 부분</span>
+      <p style="margin:0;">걸린 금지어를 보세요 — <code>quality</code>(품질), <code>perfect</code>(완벽한),
+      <code>growth</code>(성장). 광고 문구라면 누구나 쓸 법한 평범한 단어들이에요. 그런데 오픈마켓은 이걸
+      근거 없는 과장으로 보고 막아뒀어요. <strong>모델은 자기가 뭘 잘못했는지 알 도리가 없어요.</strong>
+      광고문을 수억 개 읽고 배웠으니 광고문처럼 쓴 것뿐이거든요. "모델이 멍청해서" 생긴 문제가 아니라
+      <strong>"모델이 알 수 없는 규칙이라서"</strong> 생긴 문제 — 이게 로짓 마스킹이 필요한 진짜 이유예요.</p>
+    </div>
+
+    <h4 class="h4">그 전에 — 이 실험이 공정한 이유, 그리고 숨은 전제 하나</h4>
+    <p>
+      Before와 After를 비교하려면 <strong>바뀐 게 딱 하나여야</strong> 하죠. 그래서 셀 9와 셀 14를 나란히 놓고
+      확인해봤는데, <strong>프롬프트는 한 글자도 다르지 않아요.</strong> 시스템 프롬프트도 사용자 프롬프트도
+      완전히 똑같아요. 달라진 건 <strong>생성 설정 네 줄</strong>이 전부예요. 아래 결과는 순전히 이 네 줄이
+      만들어낸 차이라는 뜻이에요.
+    </p>
+    <div class="code-wrap">
+      <div class="code-cap"><b>셀 14</b> · 셀 9에 없던 네 줄</div>
+      <pre class="code">do_sample=True,                       # 매번 똑같이 뽑지 말고 조금씩 다르게
+temperature=0.8,                      # 얼마나 다르게 뽑을지
+num_beams=10,                         # 후보 문장 열 개를 동시에 키운다
+logits_processor=[brand_processor]    # 감시자를 꽂는다</pre>
+    </div>
+    <div class="plain-lang">
+      <span class="pl-label">네 줄이 서로 물려 있어요</span>
+      <p style="margin:0;"><code>num_beams</code>로 후보를 <strong>열 개 만들고</strong>,
+      <code>do_sample</code>·<code>temperature</code>로 그 열 개가 <strong>서로 다르게</strong> 나오게 하고,
+      그래야 감시자에게 <strong>고를 거리</strong>가 생겨요. 후보 열 개가 다 똑같이 생겼으면 골라봐야 의미가
+      없으니까요. <code>temperature</code>(온도)가 가물가물하면 <a href="eleven-ways-same-question.html">같은
+      질문을 열한 가지 방법으로 돌려봤던 글</a>에서 온도를 바꿔가며 결과가 어떻게 흔들리는지 재본 적이 있어요.</p>
+    </div>
+    <div class="card warn">
+      <span class="wl">num_beams를 빼면 이 코드는 아무 일도 하지 않아요</span>
+      <p style="margin-bottom:0;">
+        감시자가 하는 일은 "최고점이 <strong>아닌</strong> 후보를 탈락시키기"예요. 그런데 후보가 한 명뿐이면
+        <strong>그 한 명이 언제나 1등</strong>이라서 탈락자가 영원히 안 생겨요. 감시자는 채점만 열심히 하고
+        아무것도 못 막아요. 직접 돌려보다가 "감시자를 붙였는데 결과가 그대로인데?" 싶으면
+        <code>num_beams</code>부터 확인해보세요.
+      </p>
+    </div>
 
     <h4 class="h4">그리고 감시자 — 여기가 이 절의 심장이에요</h4>
     <p>
@@ -1135,6 +1207,36 @@ for idx in range(len(input_ids)):
       데는 지장이 없지만, 채점 결과를 절대 점수로 읽으면 안 되는 이유예요.
     </p>
 
+    <h4 class="h4">이 감시자의 맹점 세 가지 — 알고 봐야 오해하지 않아요</h4>
+    <p>
+      결과가 잘 나왔다고 이 코드가 만능인 건 아니에요. 직접 돌려보면 "왜 이럴 땐 안 막지?" 싶은 순간이 오는데,
+      대부분 아래 세 가지 중 하나예요.
+    </p>
+    <div class="journey">
+      <div class="journey-title">감시자가 못 하는 일</div>
+      <div class="jstep">
+        <div class="dot">1</div>
+        <div class="jbody"><h5>지나간 것만 봐요 (근시안)</h5><p>채점 대상은 <strong>지금까지 쓴 글자</strong>뿐이에요.
+        "쟤는 아직 0점이지만 다음 문장에서 만회할 것 같은데?"는 판단하지 못해요. 그래서 글 초반에는 후보 열 개가
+        전부 0점 동점이라 <strong>아무도 탈락하지 않아요.</strong> 누군가 <code>whey protein</code>을 처음 써서
+        점수가 벌어지는 순간부터 비로소 감시자가 일을 시작해요.</p></div>
+      </div>
+      <div class="jstep">
+        <div class="dot">2</div>
+        <div class="jbody"><h5>절대 기준이 아니라 상대평가예요</h5><p>"금지어를 쓴 후보를 자른다"가 아니라
+        "<strong>최고점이 아닌</strong> 후보를 자른다"예요. 그래서 후보 열 개가 똑같이 금지어를 물고 있으면
+        <strong>전원 동점이라 아무도 안 잘리고 그대로 통과</strong>해요. 2.1.3에서 "최악의 경우에도 그나마 제일
+        나은 걸 반드시 골라준다"고 한 말의 뒷면이에요 — 제일 나은 것이 여전히 나쁠 수 있어요.</p></div>
+      </div>
+      <div class="jstep">
+        <div class="dot">3</div>
+        <div class="jbody"><h5>많이 느려요</h5><p>토큰 하나 뽑을 때마다 × 후보 열 개 × (글 전체를 글자로 되돌리기
+        + 금지어 400여 개 전부 대조)를 해요. 글이 길어질수록 부담이 눈덩이처럼 불어나요. 배우는 용도로는
+        더없이 좋지만 이대로 서비스에 올리면 사용자가 기다리다 지쳐요. 실무에서는 글 전체가 아니라
+        <strong>방금 늘어난 부분만</strong> 다시 확인하도록 고쳐 써요.</p></div>
+      </div>
+    </div>
+
     <div class="card warn">
       <span class="wl">한국어 윈도우에서 돌릴 때 걸리는 두 가지</span>
       <p>
@@ -1152,7 +1254,15 @@ for idx in range(len(input_ids)):
         <code>transformers==4.52.3</code>을 고정해 두었어요. 최신 5.x에서도 이 절의 코드는 대체로 돌아가지만,
         생성 관련 API는 메이저 버전 사이에 잘 바뀌는 편이라 처음 따라 할 땐 고정된 버전을 쓰는 게 안전해요.
         그리고 이 패턴은 <strong>모델을 내 컴퓨터에 직접 띄워야</strong> 쓸 수 있어요 — 30억 개 파라미터 모델이
-        6GB쯤 되니, 그래픽카드 메모리 8GB 정도는 있어야 편하게 돌아가요.
+        6GB쯤 되니, 그래픽카드 메모리 8GB 정도는 있어야 편하게 돌아가요. 내 컴퓨터로 감당이 될지 가늠하는 방법은
+        <a href="why-gpu-and-colab-cli.html">GPU와 Colab을 다룬 글</a>과
+        <a href="kv-cache-and-vram-budget.html">VRAM을 직접 계산해 본 글</a>에서 이미 다뤘어요.
+      </p>
+      <p style="margin-bottom:0;">
+        <strong>3. 셀 14의 주석 한 줄은 그냥 무시하세요.</strong> 저장소 코드에는
+        <code># alliterate on the first letter of the animal. So, donkey would be D</code>라는 주석이 붙어 있어요.
+        이건 다음 노트북(두운 맞추기)에서 복사해 온 흔적이라 이 코드와는 아무 상관이 없어요. 따라 하다가
+        "동물? 무슨 동물?" 하고 멈추지 마세요.
       </p>
     </div>
 
