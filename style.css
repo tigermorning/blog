@@ -167,31 +167,32 @@ main {
 main h1 {
   font-family: var(--font-heading);
   font-weight: var(--font-heading-weight, 700);
-  font-size: 2.6rem;
+  font-size: clamp(1.5rem, 6vw, 2.6rem);
   letter-spacing: -0.01em;
   margin-bottom: 1.6rem;
   color: var(--accent);
-  line-height: 1.3;
-  position: relative;
-  padding-bottom: 0.6rem;
-  display: inline-block;
+  line-height: 1.4;
   max-width: 100%;
   text-wrap: balance;
 }
 
-main h1::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 20px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='20' viewBox='0 0 200 20'%3E%3Cpath d='M0 13 C10 5 17 20 27 12 C39 4 47 19 61 11 C73 4 83 19 97 11 C113 4 123 19 139 11 C153 4 163 19 179 11 C191 4 197 17 200 11' fill='none' stroke='%23ff5a5f' stroke-opacity='0.35' stroke-width='10' stroke-linecap='round'/%3E%3Cpath d='M0 9 C8 2 15 16 24 8 C35 1 44 17 56 7 C70 1 80 16 92 7 C108 1 118 16 132 7 C146 1 156 16 170 7 C182 1 190 15 200 8' fill='none' stroke='%23ff5a5f' stroke-width='7' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat left bottom / 100% 100%;
+/* 밑줄은 h1 박스 전체가 아니라 안쪽 <span class="hl">에 얹는다 — 강조하려는
+   구간(대시 앞 본문 문장, 없으면 전체)만 감싸므로 그 길이만큼만 밑줄이
+   그려진다. box-decoration-break:clone 덕분에 그 span이 줄바꿈되면 배경도
+   줄마다 새로 복제돼서, 각 줄이 실제로 자기 텍스트 폭만큼만 밑줄을 받는다
+   (짧은 마지막 줄이 다음 줄 앞부분까지 밑줄 긋는 문제 방지). */
+main h1 .hl {
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  padding-bottom: 0.3em;
+  background-repeat: no-repeat;
+  background-position: left bottom;
+  background-size: 100% 15px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='26' viewBox='0 0 200 26'%3E%3Cpath d='M4 9 C40 2 70 15 110 7 C145 1 170 12 196 6' fill='none' stroke='%23ff5a5f' stroke-opacity='0.55' stroke-width='3.5' stroke-linecap='round'/%3E%3Cpath d='M4 18 C38 23 68 13 105 19 C138 24 168 15 196 20' fill='none' stroke='%23ff5a5f' stroke-opacity='0.45' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E");
 }
 
 main h1.greeting {
   white-space: nowrap;
-  font-size: clamp(1.5rem, 6vw, 2.6rem);
 }
 
 @media (max-width: 420px) {
@@ -230,60 +231,47 @@ main figcaption {
 main h2 {
   font-family: var(--font-heading);
   font-weight: var(--font-heading-weight, 700);
-  font-size: 1.7rem;
-  line-height: 1.2;
+  font-size: clamp(1.05rem, 4.5vw, 1.7rem);
+  line-height: 1.4;
   margin-top: 2.6rem;
   margin-bottom: 1rem;
   color: var(--accent);
-  position: relative;
-  padding-bottom: 0.5rem;
-  display: inline-block;
 }
 
-/* 글 하나 안에서 h2가 여러 번 나올 때 매번 똑같은 빨간 물결이면
-   지루해서, 폴더 팔레트 색을 순서대로 돌려 쓴다. 제목(h1)은 이 순환에
-   안 섞이게 accent 고정. 밑줄 모양도 색과 같은 5주기로 돌려서
-   (매끈한 겹선 / 점선 마커 / 굵은 하이라이터 / 기울어진 겹선 / 지그재그)
-   손으로 그은 느낌을 유지하면서 반복이 지루하지 않게 한다. */
+/* 글 하나 안에서 h2가 여러 번 나올 때 매번 똑같은 색이면 지루해서,
+   폴더 팔레트 색을 순서대로 돌려 쓴다. 제목(h1)은 이 순환에 안 섞이게
+   accent 고정. h1과 마찬가지로 밑줄은 <span class="hl">(강조 구간)에만
+   얹는다. background-image의 currentColor는 SVG가 배경 이미지로 쓰일 때
+   문서 색을 상속받지 못해 검정으로만 나오는 버그가 있어서, 5색을
+   currentColor 대신 각각 직접 박아 넣었다. */
 main h2:nth-of-type(5n+1) { color: var(--folder-1); }
 main h2:nth-of-type(5n+2) { color: var(--folder-2); }
 main h2:nth-of-type(5n+3) { color: var(--folder-3); }
 main h2:nth-of-type(5n+4) { color: var(--folder-4); }
 main h2:nth-of-type(5n)   { color: var(--folder-5); }
 
-main h2::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 18px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='18' viewBox='0 0 200 18'%3E%3Cpath d='M0 12 C9 5 15 18 25 11 C36 4 44 18 58 10 C70 4 80 18 94 10 C110 4 120 18 136 10 C150 4 160 18 176 10 C188 4 194 16 200 10' fill='none' stroke='currentColor' stroke-opacity='0.35' stroke-width='9' stroke-linecap='round'/%3E%3Cpath d='M0 8 C7 2 13 13 22 7 C32 2 40 13 52 7 C64 2 74 13 86 7 C100 2 110 13 124 7 C138 2 148 13 162 7 C174 2 184 12 200 7' fill='none' stroke='currentColor' stroke-width='6.5' stroke-linecap='round'/%3E%3C/svg%3E");
+main h2 .hl {
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  padding-bottom: 0.28em;
   background-repeat: no-repeat;
   background-position: left bottom;
-  background-size: 100% 100%;
-  color: inherit;
+  background-size: 100% 13px;
 }
-
-/* 2번째 주기: 점선 마커 — 잉크가 튄 것처럼 뜨문뜨문 */
-main h2:nth-of-type(5n+2)::after {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='18' viewBox='0 0 200 18'%3E%3Cpath d='M0 8 C7 2 13 13 22 7 C32 2 40 13 52 7 C64 2 74 13 86 7 C100 2 110 13 124 7 C138 2 148 13 162 7 C174 2 184 12 200 7' fill='none' stroke='currentColor' stroke-opacity='0.3' stroke-width='9' stroke-linecap='round'/%3E%3Cpath d='M0 8 C7 2 13 13 22 7 C32 2 40 13 52 7 C64 2 74 13 86 7 C100 2 110 13 124 7 C138 2 148 13 162 7 C174 2 184 12 200 7' fill='none' stroke='currentColor' stroke-width='8' stroke-linecap='round' stroke-dasharray='1 10'/%3E%3C/svg%3E");
+main h2:nth-of-type(5n+1) .hl {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='26' viewBox='0 0 200 26'%3E%3Cpath d='M4 9 C40 2 70 15 110 7 C145 1 170 12 196 6' fill='none' stroke='%233f8fef' stroke-opacity='0.55' stroke-width='3.5' stroke-linecap='round'/%3E%3Cpath d='M4 18 C38 23 68 13 105 19 C138 24 168 15 196 20' fill='none' stroke='%233f8fef' stroke-opacity='0.45' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E");
 }
-
-/* 3번째 주기: 굵은 하이라이터 — 한 번에 죽 그은 두꺼운 획, 끝이 살짝 거칠게 */
-main h2:nth-of-type(5n+3)::after {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='18' viewBox='0 0 200 18'%3E%3Cpath d='M0 10 C20 3 30 17 50 9 C72 2 84 16 104 8 C126 2 138 16 158 8 C178 2 188 14 200 9' fill='none' stroke='currentColor' stroke-width='13' stroke-linecap='round' stroke-dasharray='24 3 16 4 30 3'/%3E%3C/svg%3E");
+main h2:nth-of-type(5n+2) .hl {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='26' viewBox='0 0 200 26'%3E%3Cpath d='M4 9 C40 2 70 15 110 7 C145 1 170 12 196 6' fill='none' stroke='%2334c98d' stroke-opacity='0.55' stroke-width='3.5' stroke-linecap='round'/%3E%3Cpath d='M4 18 C38 23 68 13 105 19 C138 24 168 15 196 20' fill='none' stroke='%2334c98d' stroke-opacity='0.45' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E");
 }
-
-/* 4번째 주기: 기본 겹선을 살짝 기울여서 — 급하게 그은 느낌 */
-main h2:nth-of-type(5n+4)::after {
-  transform: rotate(-1.6deg);
-  transform-origin: left bottom;
+main h2:nth-of-type(5n+3) .hl {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='26' viewBox='0 0 200 26'%3E%3Cpath d='M4 9 C40 2 70 15 110 7 C145 1 170 12 196 6' fill='none' stroke='%23a479f2' stroke-opacity='0.55' stroke-width='3.5' stroke-linecap='round'/%3E%3Cpath d='M4 18 C38 23 68 13 105 19 C138 24 168 15 196 20' fill='none' stroke='%23a479f2' stroke-opacity='0.45' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E");
 }
-
-/* 5번째 주기: 지그재그 — 부드러운 곡선 대신 각진 스크래치 */
-main h2:nth-of-type(5n)::after {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='18' viewBox='0 0 200 18'%3E%3Cpath d='M0 13 L14 6 L28 18 L42 7 L58 17 L74 6 L90 17 L108 7 L126 17 L146 7 L164 17 L182 7 L200 13' fill='none' stroke='currentColor' stroke-opacity='0.3' stroke-width='10' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M0 10 L14 3 L28 15 L42 4 L58 14 L74 3 L90 14 L108 4 L126 14 L146 4 L164 14 L182 4 L200 10' fill='none' stroke='currentColor' stroke-width='6.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+main h2:nth-of-type(5n+4) .hl {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='26' viewBox='0 0 200 26'%3E%3Cpath d='M4 9 C40 2 70 15 110 7 C145 1 170 12 196 6' fill='none' stroke='%23ff9f45' stroke-opacity='0.55' stroke-width='3.5' stroke-linecap='round'/%3E%3Cpath d='M4 18 C38 23 68 13 105 19 C138 24 168 15 196 20' fill='none' stroke='%23ff9f45' stroke-opacity='0.45' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+main h2:nth-of-type(5n) .hl {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='26' viewBox='0 0 200 26'%3E%3Cpath d='M4 9 C40 2 70 15 110 7 C145 1 170 12 196 6' fill='none' stroke='%23ff6fae' stroke-opacity='0.55' stroke-width='3.5' stroke-linecap='round'/%3E%3Cpath d='M4 18 C38 23 68 13 105 19 C138 24 168 15 196 20' fill='none' stroke='%23ff6fae' stroke-opacity='0.45' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E");
 }
 
 main ol,
