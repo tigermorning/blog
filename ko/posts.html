@@ -465,11 +465,27 @@
           status.hidden = false;
           status.textContent = matches.length > 0 ? (matches.length + '개 글을 찾았어요.') : '일치하는 글이 없어요.';
         } else if (categoryScope) {
-          items.forEach(function (li) {
-            li.hidden = !categoryScope.contains(li);
+          var scopeItems = items.filter(function (li) {
+            return categoryScope.contains(li);
           });
-          pagination.hidden = true;
-          pageSizeControl.hidden = true;
+          var scopePageSize = currentPageSize();
+          var scopeTotalPages = Math.max(1, Math.ceil(scopeItems.length / scopePageSize));
+          if (currentPage > scopeTotalPages) currentPage = scopeTotalPages;
+          var scopeStart = (currentPage - 1) * scopePageSize;
+          var scopeEnd = scopeStart + scopePageSize;
+
+          items.forEach(function (li) {
+            if (!categoryScope.contains(li)) {
+              li.hidden = true;
+              return;
+            }
+            var idx = scopeItems.indexOf(li);
+            li.hidden = !(idx >= scopeStart && idx < scopeEnd);
+          });
+
+          pageSizeControl.hidden = false;
+          pagination.hidden = scopeTotalPages <= 1;
+          renderPagination(scopeTotalPages);
           status.hidden = true;
 
           filterClear.hidden = false;
@@ -538,6 +554,7 @@
       function applyHash(hash) {
         if (input.value) input.value = '';
         categoryScope = scopeForHash(hash);
+        currentPage = 1;
         render();
       }
 
@@ -561,6 +578,7 @@
       filterClear.addEventListener('click', function () {
         history.pushState(null, '', location.pathname);
         categoryScope = null;
+        currentPage = 1;
         render();
       });
 
