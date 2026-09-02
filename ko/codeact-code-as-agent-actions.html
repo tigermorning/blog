@@ -24,8 +24,9 @@
 
   <main>
     <h1>도구를 하나씩 부르는 대신 코드를 쓴다 — CodeAct 논문 읽기</h1>
+    <div class="paper-source-note"><strong>원문</strong>: <a href="https://arxiv.org/abs/2402.01030" target="_blank" rel="noopener">Executable Code Actions Elicit Better LLM Agents</a> (arXiv, 2024.02.01 · Wang, Chen, Yuan 외)</div>
     <p class="post-date">2026. 9. 2.</p>
-    <p class="post-date">※ 이 글은 arXiv 논문 <a href="https://arxiv.org/abs/2402.01030" target="_blank" rel="noopener">Executable Code Actions Elicit Better LLM Agents</a>(Wang, Chen, Yuan 외, 2024, 일리노이대 어바나샴페인 중심)를 제 나름의 언어로 쉽게 풀어 정리한 것입니다.</p>
+    <p class="post-date">※ 이 글은 위 논문을 제 나름의 언어로 쉽게 풀어 정리한 것입니다.</p>
 
     <p><a href="agent-react-loop-and-autogpt.html">전에 봤던 ReAct 루프</a>는 "생각하고 → 행동하고 → 결과를 관찰하고 → 다시 생각한다"를 반복하는 순환이었어요. 그리고 <a href="tool-contract-and-schema.html">도구를 실제로 설계할 때</a>는 그 "행동" 한 번을 보통 정해진 스키마에 맞춘 JSON 형식으로 적었고요. 이번 논문은 그 "행동을 적는 형식" 자체를 건드려요 — JSON이나 자유 텍스트 대신, <strong>파이썬 코드 자체를 행동으로 쓰면 어떻게 되는가</strong>를 실험한 논문이에요.</p>
 

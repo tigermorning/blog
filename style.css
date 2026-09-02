@@ -426,6 +426,23 @@ main th {
   font-style: italic;
 }
 
+/* 논문 읽기 글 전용: 원문 제목·링크를 본문 맨 위, h1 바로 아래에서
+   눈에 띄게 보여준다. 날짜 줄과 달리 흐리게 두지 않는다. */
+.paper-source-note {
+  border-left: 3px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  padding: 0.6rem 0.9rem;
+  margin: 0 0 1rem;
+  font-size: 0.92rem;
+  color: var(--ink);
+}
+
+.paper-source-note a {
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
 .search-box {
   margin: 1rem 0 0;
   max-width: 100%;

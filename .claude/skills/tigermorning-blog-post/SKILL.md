@@ -86,6 +86,30 @@ description: tigermorning.github.io 블로그(이 저장소) 작업 중, 사용�
 10. **로컬에서 렌더를 확인한다.** `file://` 프리뷰로 새 글을 열어 표·SVG·
     시리즈 nav가 깨지지 않는지, 콘솔 에러가 없는지 확인한다.
 
+## 논문(arXiv 등) 읽기 글 규칙
+
+모두의연구소 커리큘럼이 아니라 논문을 읽고 정리하는 글(예: "책장 > 논문"
+카테고리)에는 아래 두 가지를 항상 적용한다.
+
+1. **`ko/posts.html` 목록 항목**: `title-list-title`에는 논문 원제를
+   그대로 쓰지 않고 <strong>한국어로 번역한 제목 뒤에 논문 발표일자를
+   괄호로</strong> 붙인다 — 예: `실행 가능한 코드 행동이 더 나은 LLM
+   에이전트를 만든다 (2024.02.01)`. 오른쪽 `title-list-date`는 다른 글과
+   동일하게 <strong>이 블로그 글의 발행일</strong>을 넣는다(논문
+   발표일과 다른 값이어도 그대로 둔다 — 그 칸은 항상 "이 글이 언제
+   올라왔는가"를 뜻하는 칸이고, 논문 자체의 발표일은 위 괄호가 맡는다).
+2. **글 본문**: `<h1>` 바로 아래, 다른 어떤 문단보다 먼저
+   `<div class="paper-source-note">` 박스로 논문 원제 링크를 보여준다.
+   `<p class="post-date">`(흐린 회색·이탤릭)와 달리 이 박스는 강조
+   스타일(왼쪽 색 테두리 + 옅은 배경)이라 원문 링크가 눈에 바로 띈다.
+   형식:
+   ```html
+   <div class="paper-source-note"><strong>원문</strong>: <a href="https://arxiv.org/abs/XXXX.XXXXX" target="_blank" rel="noopener">Original English Title</a> (arXiv, YYYY.MM.DD · 저자 1인 또는 대표 저자 외)</div>
+   ```
+   그 아래에 블로그 발행일(`post-date`)과, 필요하면 "※ 이 글은 위
+   논문을 제 나름의 언어로 쉽게 풀어 정리한 것입니다." 한 줄을 이어
+   붙인다.
+
 ## 자주 놓치는 것
 
 - 강의 문단을 문장 단위로 그대로 옮기는 것 — 저작권 문제이자 이 블로그의
