@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>성공은 자산으로, 실패는 설명으로 — 경험·스킬 축적과 반성 (3) - Tigermorning</title>
+  <meta name="description" content="로그를 저장했다고 경험이 되는 건 아닙니다. ExpeL·Voyager·WikiSkill 연구로 한 번의 성공을 다음 실행의 자산으로 바꾸는 법을 보고, Reflexion 연구로 실패를 다음 행동을 바꾸는 압축된 설명으로 남기되 틀린 교훈은 쌓지 않는 법을 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="성공은 자산으로, 실패는 설명으로 — 경험·스킬 축적과 반성 (3)">
+  <meta property="og:description" content="로그를 저장했다고 경험이 되는 건 아닙니다. ExpeL·Voyager·WikiSkill 연구로 한 번의 성공을 다음 실행의 자산으로 바꾸는 법을 보고, Reflexion 연구로 실패를 다음 행동을 바꾸는 압축된 설명으로 남기되 틀린 교훈은 쌓지 않는 법을 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/harness-experience-and-reflection.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1>성공은 자산으로, 실패는 설명으로 — 경험·스킬 축적과 반성 (3)</h1>
+    <p class="post-date">2026. 9. 2.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="harness-action-format-and-context.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">행동을 좁히고 문맥을 고른다 — 행동 포맷과 컨텍스트 관리</span>
+    </a>
+
+    <p>로그를 저장했다고 경험이 되는 건 아니에요. 다시 찾고 적용할 수 있는 형태여야 다음 실행의 자산이 돼요. 작업 전체를 통째로 보관하는 일과, 다음 과업에서 쓸 판단만 남기는 일은 달라요. 실패한 명령이나 현재 과업에만 맞는 해결책까지 그대로 다시 불러오면, 기록이 오히려 판단을 흐릴 수 있거든요.</p>
+
+    <h2>경험은 어떻게 다음 행동이 될까 — 세 가지 저장 방식</h2>
+    <p>같은 문제를 세 연구가 서로 다른 형태로 풀었어요.</p>
+    <ul>
+      <li><strong>ExpeL</strong>(AAAI 2024)은 한 번의 실행에서 나온 성공·실패 경험을 그대로 쌓지 않고, 여러 경험에서 반복되는 판단만 <strong>insight</strong>로 뽑아 저장해요. 새 과업이 오면 비슷한 예시를 최대 6개까지 찾아 제공하고요. GPT-4로 insight를 뽑고 GPT-3.5가 실행한 WebShop 조건에서 보상 0.701(ReAct는 0.665)을 보고했지만, <strong>잘못된 insight를 언제 고치거나 버릴지는 이 방식만으로 해결되지 않는다</strong>는 한계를 스스로 남겼어요.</li>
+      <li><strong>Voyager</strong>는 마인크래프트 세계에서 스킬을 쌓는 에이전트예요. 자연어 메모 대신 <strong>실행 가능한 코드 스킬</strong>을 라이브러리에 남기고, 새 과업에서는 필요한 스킬을 검색해 조합해요. 아이템 수 3.3배, 이동 거리 2.3배, milestone 최대 15.3배, 스킬 검색 top-1 정확도 80.2% — 다만 이건 마인크래프트라는 구체적 환경의 결과라 다른 업무에서의 재사용 효과를 보장하진 않아요.</li>
+      <li><strong>AWM</strong>(Agent Workflow Memory)은 과거 실행 궤적에서 재사용 가능한 <strong>작업 흐름(workflow)</strong>을 뽑아 메모리로 남겨요. 다음 과업에서는 후보 workflow를 골라 제공하고, 에이전트가 현재 사이트·과업에 맞춰 써요. 웹 내비게이션 평가에서 Mind2Web 24.6%, WebArena 51.1% 상대 개선을 보였는데, 역시 웹 탐색이라는 평가 환경 안의 결과예요.</li>
+    </ul>
+    <p>이 흐름을 커뮤니티에서는 <a href="compound-engineering-and-loop-engineering.html"><strong>컴파운드 엔지니어링</strong></a>이라 부르기도 해요. 한 번의 실행 결과를 다음 실행의 입력으로 남기고, 검색·조합·검토를 거치며 작업 능력을 쌓는다는 뜻이에요. 가장 최근 결과인 <strong>WikiSkill</strong>(Google Research, 2026)은 원문 궤적·축적 지식(위키)·실행 가능한 스킬을 세 층으로 분리해서 관리해요. 논문 도식은 WikiSkill이 스킬 없는 조건이나 다른 비교군보다 일관되게 우위였고, 강한 모델일수록 이점이 더 크다는 경향을 보였다고 설명하는데, 이 수치는 아직 재확인 전이라 여기 그대로 옮기진 않았어요.</p>
+    <table>
+      <thead><tr><th>남기는 형태</th><th>다음 실행에서 하는 일</th><th>먼저 확인할 질문</th></tr></thead>
+      <tbody>
+        <tr><td>원문 궤적</td><td>당시 관측과 행동의 근거를 다시 확인</td><td>어느 지점까지 믿을 수 있나</td></tr>
+        <tr><td>요약</td><td>긴 기록에서 현재 판단에 필요한 맥락을 압축</td><td>중요한 실패 조건이 빠지지 않았나</td></tr>
+        <tr><td>insight</td><td>여러 실행에서 반복된 판단을 검색해 적용</td><td>반례와 갱신 날짜가 있나</td></tr>
+        <tr><td>코드 스킬</td><td>검증한 절차를 실행 가능한 단위로 재사용</td><td>입력 조건과 되돌리는 방법이 있나</td></tr>
+      </tbody>
+    </table>
+    <p>같은 궤적이라도 이 넷은 서로 다른 비용과 위험을 만들어요. 원문은 검토하기 좋지만 길고, 요약은 빠르지만 누락될 수 있고, insight는 검색하기 좋지만 오염될 수 있고, 스킬은 바로 실행할 수 있지만 오래된 절차를 그대로 반복할 수 있어요.</p>
+    <p>이 구분이 실제 도구에서 어떻게 이어지는지는 Hermes(NousResearch가 만든 오픈소스 에이전트)로 볼 수 있어요. 대화 기록을 FTS5로 검색 가능하게 남기고, 여러 메시지 채널의 요청을 gateway로 받아 세션 이력·memory·활성 skills를 다음 맥락에 연결해요. Claude Code의 <a href="ai-skills-and-rules-files.html"><strong>skills</strong></a> 기능(반복 작업을 미리 적어 AI에게 외워 두는 파일)도 같은 기준으로 봐야 해요 — SKILL.md를 중심으로 한 지식·절차·템플릿 묶음이라는 것뿐, 스킬 파일을 추가했다는 사실 자체가 경험 축적의 끝은 아니에요. 어느 경험에서 왔고 언제 검토했으며 어떤 과업에 적용할지를 함께 남겨야 진짜 자산이 돼요.</p>
+
+    <h2>성공을 쌓기 전에 오염을 시험한다</h2>
+    <p>ExpeL이 남긴 갱신·폐기 문제가 경험 기능의 핵심 반론이에요. 그럴듯하지만 틀린 insight 하나가 검색을 통해 여러 과업에 반복 주입될 수 있고, 실행 스킬은 그 판단을 더 빠르게 행동으로 옮길 수 있어요. 그래서 <strong>스킬을 많이 모았는가</strong>보다 <strong>틀린 지식을 찾아 고치고 되돌릴 수 있는가</strong>가 실제 운영 조건이 돼요. 검증한 insight/스킬과 고의로 틀린 insight/스킬을 같은 과업·모델·예산에서 각각 주입해 보고, 출처 기록·만료 기한·반대 증거·되돌리기 정책을 하나씩 바꿔가며 성공률·토큰·오염 전파를 함께 재는 작은 실험으로 이 문제를 다룰 수 있어요.</p>
+
+    <h2>반성(Reflexion) — 실패를 압축된 피드백으로</h2>
+    <p>반성은 답을 길게 평가하는 글이 아니라, <strong>다음 행동을 바꾸는 압축된 피드백</strong>이어야 해요. 실패한 실행 기록에서 다음 시도에 바꿀 행동 하나와 그 근거를 짧게 남기는 기능이에요. "틀렸다"는 문장만 길게 반복하면 다음 도구 호출과 검색 범위는 그대로예요.</p>
+    <p><strong>Reflexion</strong>(NeurIPS 2023) 연구는 가중치를 바꾸지 않고 언어 피드백만으로 trial→error→reflection→memory 루프를 구성했어요. episodic memory만 둔 조건에 반성을 더했을 때 이점이 8%p였고, 장기 기억에는 최근 반성 1~3개만 남겨 다음 시도에 다시 넣었어요. 스탠퍼드의 <strong>Generative Agents</strong>(UIST 2023, 마을 시뮬레이션 연구)도 관찰을 memory stream에 쌓고, 시간별 반성으로 의미를 묶고, 최근성·관련성·중요도로 찾아 계획에 다시 넣는 같은 설계를 보여줬어요. 다만 이 연구의 목적은 과업 성공률이 아니라 행동의 그럴듯함이라, 코딩 하네스의 성능 우위 근거로 그대로 넓혀 쓰진 않아요.</p>
+    <p>여기서 중요한 반전이 하나 있어요. <strong>반성이 항상 성능을 높이진 않았어요.</strong> Reflexion의 MBPP 결과는 77.1%로, 반성 없는 GPT-4 기준선 80.1%보다 오히려 낮았고, WebShop에서도 개선이 없었다고 저자가 직접 밝혔어요. 실패 원인을 잘못 짚은 반성 문장이 다음 시도에 다시 들어오면, 틀린 교훈이 그대로 누적될 수 있는 거예요.</p>
+    <p>그래서 반성에는 정답처럼 보이는 결론보다 <strong>검증할 행동</strong>을 남겨야 해요. "검색이 부족했다" 대신 "다음 시도에서는 오류 난 파일의 호출 지점을 먼저 읽고, 그 뒤에만 검색 범위를 넓힌다"처럼 관찰 가능한 변경을 적고, 다음 실행 결과가 이 설명을 지지하지 않으면 반성을 수정하거나 버려요. Hermes에서 반성이 남는 자리도 새로운 기능이 아니라 앞서 본 세션 이력·memory와 같은 지속 상태예요. 그래서 반성 문장에는 작성 시각, 근거가 된 실행 기록, 다음에 바꿀 행동을 함께 연결해야 나중에 틀렸을 때 지울 수 있어요.</p>
+
+    <p>기억과 반성을 더할수록 좋아 보이지만, 그 기능 자체가 비용과 새로운 실패 지점을 만들어요. 다음 편에서는 반대로 <strong>얼마나 덜어내도 되는지</strong>, 그리고 무엇을 실행할 수 있는지 경계를 어떻게 긋는지를 봐요.</p>
+
+    <a class="post-nav" href="harness-minimal-and-permission.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">덜어내기와 경계 긋기 — 미니멀과 권한·보안</span>
+    </a>
+
+    <hr>
+
+    <h3>"에이전트 하네스 톺아보기" 시리즈</h3>
+    <a class="post-nav" href="harness-observation-and-feature-map.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">맡길 일부터 관찰까지 — 하네스 보는 법</span>
+    </a>
+    <a class="post-nav" href="harness-action-format-and-context.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">행동을 좁히고 문맥을 고른다 — 행동 포맷과 컨텍스트 관리</span>
+    </a>
+    <p class="post-date">(3) 성공은 자산으로, 실패는 설명으로 — 경험·스킬 축적과 반성 (이 글)</p>
+    <a class="post-nav" href="harness-minimal-and-permission.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">덜어내기와 경계 긋기 — 미니멀과 권한·보안</span>
+    </a>
+    <a class="post-nav" href="harness-evaluation-and-comparison.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">결과와 궤적을 함께 본다 — 평가 루프와 일곱 하네스 비교</span>
+    </a>
+    <a class="post-nav" href="harness-hypothesis-experiment.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">내 불편을 가설로 — 개선 실험 설계와 제출</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
