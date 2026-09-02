@@ -574,7 +574,7 @@ body.list-page .site-header {
 }
 
 #all-posts .title-list {
-  margin-top: 0.4rem;
+  margin-top: 0.5rem;
 }
 
 .title-list {
@@ -705,7 +705,7 @@ body.list-page .site-header {
 }
 
 .post-subcategory:not([hidden]) ~ .post-subcategory:not([hidden]) {
-  margin-top: 0.6rem;
+  margin-top: 1.8rem;
 }
 
 .post-subcategory-title {
@@ -844,13 +844,15 @@ body.list-page .site-header {
 }
 
 /* 사이드바 트리 순서: 바이브코딩(1) 안의 소분류 4개가 폴더 1~4,
-   두 번째 대분류(보충수업 책장)가 폴더 5. */
+   두 번째 대분류(보충수업 책장) 탭은 폴더 5, 그 안의 소분류 2개는
+   폴더 3·4로 대분류와 다르게 색을 준다. */
 .sidebar-tree > li:nth-of-type(1) .tree-subgroup:nth-child(1) { --folder-accent: var(--folder-1); }
 .sidebar-tree > li:nth-of-type(1) .tree-subgroup:nth-child(2) { --folder-accent: var(--folder-2); }
 .sidebar-tree > li:nth-of-type(1) .tree-subgroup:nth-child(3) { --folder-accent: var(--folder-3); }
 .sidebar-tree > li:nth-of-type(1) .tree-subgroup:nth-child(4) { --folder-accent: var(--folder-4); }
-.sidebar-tree > li:nth-of-type(2) .tree-group,
-.sidebar-tree > li:nth-of-type(2) .tree-subgroup { --folder-accent: var(--folder-5); }
+.sidebar-tree > li:nth-of-type(2) .tree-group { --folder-accent: var(--folder-5); }
+.sidebar-tree > li:nth-of-type(2) .tree-subgroup:nth-child(1) { --folder-accent: var(--folder-3); }
+.sidebar-tree > li:nth-of-type(2) .tree-subgroup:nth-child(2) { --folder-accent: var(--folder-4); }
 
 .tree-group-title,
 .tree-subgroup-title {
