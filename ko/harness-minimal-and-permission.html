@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>덜어내기와 경계 긋기 — 미니멀과 권한·보안 (4) - Tigermorning</title>
+  <meta name="description" content="더 많은 기능이 항상 더 좋은 하네스는 아닙니다. mini-swe-agent와 pi로 얼마나 덜어내도 되는지를 보고, Spotlighting·ToolEmu·CaMeL·AgentDojo 연구와 OpenClaw·Claude Code·opencode의 실제 설정으로 무엇을 실행할 수 있는지 경계를 먼저 긋는 법을 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="덜어내기와 경계 긋기 — 미니멀과 권한·보안 (4)">
+  <meta property="og:description" content="더 많은 기능이 항상 더 좋은 하네스는 아닙니다. mini-swe-agent와 pi로 얼마나 덜어내도 되는지를 보고, Spotlighting·ToolEmu·CaMeL·AgentDojo 연구와 OpenClaw·Claude Code·opencode의 실제 설정으로 무엇을 실행할 수 있는지 경계를 먼저 긋는 법을 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/harness-minimal-and-permission.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1>덜어내기와 경계 긋기 — 미니멀과 권한·보안 (4)</h1>
+    <p class="post-date">2026. 9. 2.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="harness-experience-and-reflection.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">성공은 자산으로, 실패는 설명으로 — 경험·스킬 축적과 반성</span>
+    </a>
+
+    <p><a href="harness-action-format-and-context.html">2편</a>과 <a href="harness-experience-and-reflection.html">3편</a>이 계속 "무언가를 더하는" 이야기였다면, 이번 편은 방향이 반대예요. 더 많은 기능이 항상 더 좋은 하네스를 뜻한다면 작은 루프가 살아남을 이유가 없겠죠. 얼마나 <strong>덜어내도</strong> 되는지, 그리고 반대로 무엇을 실행할 수 있는지 <strong>경계는 어떻게 그어야</strong> 하는지를 함께 봐요.</p>
+
+    <h2>미니멀 — 작은 루프도 조건 아래에서는 작동한다</h2>
+    <p>미니멀 기능은 "적게 넣는 것"을 목표로 삼지 않아요. 과업을 끝낼 수 있는 <strong>가장 작은 루프의 조건</strong>을 찾는 거예요. 기능 하나를 덜면 문맥 비용과 설정 부담은 줄지만, 필요한 행동이나 안전 경계까지 함께 빠질 수 있거든요.</p>
+    <p><strong>mini-swe-agent</strong>는 SWE-agent 팀이 만든 실험용 최소 에이전트예요. 스스로 "100줄 에이전트"라 소개하고, Bash만 쓰고 셸 상태와 선형 이력만 단순하게 다뤄요. README는 SWE-bench Verified에서 74% 초과를 보고하는데, 이건 자체 보고이고 모델과 측정 시점이 고정돼 있지 않아요. <strong>pi</strong>는 개발자 한 명(Mario Zechner)이 만든 미니멀 코딩 에이전트로, <code>read</code>·<code>write</code>·<code>edit</code>·<code>bash</code> 네 도구와 1,000토큰 미만의 <a href="agent-tool-design-and-harness.html">시스템 프롬프트</a>(모델이 매 요청마다 가장 먼저 읽는 전역 안내문)만으로 설계됐어요. 저자 스스로도 "모델이 좋아질수록 복잡한 하네스가 덜 필요할 수 있다"는 가설이라고 밝혀요 — 즉 <strong>둘 다 아직 독립 학술 검증을 거치지 않은 설계 가설</strong>이에요.</p>
+    <table>
+      <thead><tr><th>카드 칸</th><th>pi에서 확인할 내용</th></tr></thead>
+      <tbody>
+        <tr><td>입구</td><td>터미널에서 여는 대화형 코딩 CLI</td></tr>
+        <tr><td>대표 행동</td><td>read, write, edit, bash 네 도구로 파일을 읽고 바꾸고 명령을 실행</td></tr>
+        <tr><td>권한 경계</td><td>내장 permission system이 없어 컨테이너 같은 외부 격리에 맡김</td></tr>
+        <tr><td>한계</td><td>Terminal-Bench 2.0을 과업당 5회 실행했다는 언급은 있으나 측정 수치는 미확인</td></tr>
+      </tbody>
+    </table>
+    <p>SWE-agent의 풍성한 ACI와 mini-swe-agent의 100줄 Bash 루프는 단순히 기능 수만 다른 비교가 아니에요. 전자는 모델이 쓸 행동과 관측을 인터페이스로 정교하게 만들고, 후자는 그 가운데 지금 모델에서는 줄어들 수 있는 부분이 있는지 물어요. 같은 모델·과업을 고정하지 않으면 이 차이를 "하네스 효과"라고 말할 수 없다는 게 중요한 전제고요.</p>
+    <p>흥미롭게도 상용 도구에서도 같은 방향이 관찰돼요. Anthropic은 Claude Code의 시스템 프롬프트에서 80% 이상을 제거했는데도 코딩 평가에서 측정 가능한 손실이 없었다고 밝혔어요. 과거 최악의 시나리오를 막으려던 규칙이 모델이 개선된 뒤엔 필요 없어졌고, 서로 충돌하는 지시가 오히려 과잉 제약이 됐다는 거예요. 다른 사례에서는 멀티에이전트 하네스의 sprint 구조를 없애고 평가를 실행 끝 한 번으로 줄이기도 했어요. 이건 "미니멀이 항상 정답"이라는 뜻이 아니라, <strong>현재 모델이 스스로 해내는 일을 스트레스 테스트해서 불필요한 장치를 덜어낸</strong> 관찰이에요.</p>
+
+    <h2>권한·보안 — 무엇을 실행할 수 있는지 먼저 경계 짓기</h2>
+    <p>파일을 읽는 능력, 명령을 실행하는 능력, 외부 메시지를 받는 능력은 서로 다른 위험을 만들어요. (<a href="ai-permissions-local-models-and-token-cost.html">이전에 다룬</a> "매번 확인 / 자동 승인" 같은 승인 방식의 기본 감각이 여기서 더 깊어져요.) 권한·보안 기능은 이 세 행동의 입구와 실행 범위를 나눠서, 한 입력이 곧바로 모든 도구 권한으로 이어지지 않게 해요.</p>
+    <ul>
+      <li><strong>Spotlighting</strong> 연구는 외부 입력의 출처를 구분하는 변환을 적용했을 때, 공격 성공률이 50% 초과에서 2% 미만으로 내려갔다고 보고했어요. 다만 이건 저자 실험 조건의 수치라, 모든 문서·모든 공격에 같은 방어가 보장되진 않아요.</li>
+      <li><strong>ToolEmu</strong> 연구는 36개 고위험 도구·144개 사례를 만들어 안전성을 에뮬레이션으로 평가했는데, <strong>최고 성능의 에이전트도 23.9% 실패</strong>했다고 보고했어요. 안전 장치가 있어도 도구 사용의 위험이 완전히 사라지진 않는다는 뜻이에요.</li>
+      <li><strong>CaMeL</strong>(DeepMind)은 권한·데이터 흐름·제어 흐름을 구조적으로 분리해서, 외부 입력이 민감한 도구를 직접 제어하지 못하게 하는 설계예요. <strong>AgentDojo</strong>는 공격 성공률과 과업 완수율을 함께 재는 벤치마크인데, 많이 막을수록 안전해 보이지만 과업 자체를 못 끝낼 수도 있다는 걸 짚어줘요.</li>
+    </ul>
+    <p>여러 채널에서 상시 대기하는 오픈소스 에이전트 <strong>OpenClaw</strong>는 이 경계를 실제 설정으로 보여줘요. Discord·Slack·Telegram 같은 채널 메시지를 Gateway가 받고, 세 가지 설정으로 범위를 좁혀요.</p>
+    <table>
+      <thead><tr><th>설정</th><th>정하지 않으면</th><th>정하면</th></tr></thead>
+      <tbody>
+        <tr><td>pairing</td><td>처음 보는 발신자의 메시지가 신뢰된 입구인지 확인할 수 없음</td><td>짝이 맞은 발신자의 메시지만 정해진 세션으로 라우팅</td></tr>
+        <tr><td>allowFrom</td><td>채널 접근 규칙만으로는 허용 발신자가 명시적으로 좁혀지지 않음</td><td>목록 밖 발신자의 메시지는 에이전트 실행으로 이어지지 않음</td></tr>
+        <tr><td>그룹 멘션 요구</td><td>일반 대화도 처리 대상과 섞일 수 있음</td><td>에이전트를 부른 메시지만 처리, 나머지는 무시</td></tr>
+      </tbody>
+    </table>
+    <p>이 셋은 <strong>발신자와 호출을 가르는 경계</strong>지, 도구가 허용된 뒤 실행 피해를 가두는 격리 환경과는 다른 층이에요. 그 격리 층은 도구별 설정에서 또 확인해야 해요. Claude Code의 권한 모드는 어떤 도구 행동을 자동으로 허용하고 어떤 행동을 승인 대상으로 둘지 정하고, opencode의 <code>allow</code>·<code>ask</code>·<code>deny</code> 규칙은 도구·행동별로 허용·확인·거부를 정해요(같은 행동에 여러 규칙이 맞으면 마지막 매치가 적용되고, 에이전트별 규칙이 전역 규칙보다 우선해요).</p>
+    <p>여기서 꼭 구분해야 할 게 있어요. <strong>권한은 누가 무엇을 허용할지를 묻고, 격리는 허용된 실행의 피해를 어디에 가둘지를 물어요.</strong> 도구 안의 권한 규칙은 실행 전 판단을 다루고, Docker 컨테이너 같은 외부 격리 환경은 실행된 프로세스가 닿는 파일·네트워크 범위를 제한해요. 하나가 다른 하나를 대신하지 않아요. 실제로 pi는 내장 권한 체계 없이 실행 사용자 권한으로 도구를 실행하고 격리는 Docker 같은 외부 환경에 맡기는 설계인 반면, Claude Code는 권한 규칙을 도구 안에 둬서 허용·승인을 먼저 다뤄요. 같은 위험을 없애는 단일 해법이 아니라, <strong>권한 판단과 실행 환경을 서로 다르게 배치한 답</strong>인 거예요.</p>
+    <p>권한 설정은 "안전하다"는 선언으로 끝나지 않아요. 같은 과업에서 허용 규칙을 하나 바꾸고, 처리된 요청 수·승인 횟수·막힌 정상 작업·의도하지 않은 도구 호출을 함께 기록해야 다음 설정을 바꿀 근거가 생겨요. 권한을 촘촘히 할수록 공격을 덜 받는다고 바로 결론 내리지 않고, 정상 작업을 막은 비율도 함께 봐야 하는 이유예요.</p>
+
+    <p>여기까지 일곱 기능 중 다섯을 봤어요. 다음 편에서는 나머지 하나 — <strong>평가 루프</strong> — 를 보고, 지금까지 나온 일곱 개 실제 하네스(Claude Code, opencode, Aider, pi, OpenClaw, Hermes, SWE-agent)를 기능 지도 위에 한 번에 올려 비교해요.</p>
+
+    <a class="post-nav" href="harness-evaluation-and-comparison.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">결과와 궤적을 함께 본다 — 평가 루프와 일곱 하네스 비교</span>
+    </a>
+
+    <hr>
+
+    <h3>"에이전트 하네스 톺아보기" 시리즈</h3>
+    <a class="post-nav" href="harness-observation-and-feature-map.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">맡길 일부터 관찰까지 — 하네스 보는 법</span>
+    </a>
+    <a class="post-nav" href="harness-action-format-and-context.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">행동을 좁히고 문맥을 고른다 — 행동 포맷과 컨텍스트 관리</span>
+    </a>
+    <a class="post-nav" href="harness-experience-and-reflection.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">성공은 자산으로, 실패는 설명으로 — 경험·스킬 축적과 반성</span>
+    </a>
+    <p class="post-date">(4) 덜어내기와 경계 긋기 — 미니멀과 권한·보안 (이 글)</p>
+    <a class="post-nav" href="harness-evaluation-and-comparison.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">결과와 궤적을 함께 본다 — 평가 루프와 일곱 하네스 비교</span>
+    </a>
+    <a class="post-nav" href="harness-hypothesis-experiment.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">내 불편을 가설로 — 개선 실험 설계와 제출</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
