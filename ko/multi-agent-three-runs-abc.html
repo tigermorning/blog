@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>같은 버그를 세 방식으로 — 기준선·워크플로·오케스트레이션 실행 (3) - Tigermorning</title>
+  <meta name="description" content="같은 버그, 같은 모델, 같은 채점 조건을 고정하고 '다음 행동을 누가 정하는가'만 바꿔 세 번 실행합니다. 한 에이전트가 정하는 기준선(A), 파이썬 코드가 정하는 워크플로(B), 리드 모델이 정하는 오케스트레이션(C)을 Claude Agent SDK 코드와 함께 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="같은 버그를 세 방식으로 — 기준선·워크플로·오케스트레이션 실행 (3)">
+  <meta property="og:description" content="같은 버그, 같은 모델, 같은 채점 조건을 고정하고 '다음 행동을 누가 정하는가'만 바꿔 세 번 실행합니다. 한 에이전트가 정하는 기준선(A), 파이썬 코드가 정하는 워크플로(B), 리드 모델이 정하는 오케스트레이션(C)을 Claude Agent SDK 코드와 함께 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/multi-agent-three-runs-abc.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">같은 버그를 세 방식으로</span> — 기준선·워크플로·오케스트레이션 실행 (3)</h1>
+    <p class="post-date">2026. 9. 3.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="multi-agent-four-structures.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">여럿이라는 말만으론 부족하다 — 네 가지 구조와 맞는 과업</span>
+    </a>
+
+    <p><a href="multi-agent-split-gains-and-losses.html">1편</a>에서 "나누면 좋아진다"는 기대와 "비용만 는다"는 회의를 봤고, 그 판정은 남의 발표가 아니라 <strong>직접 실행한 기록</strong>으로만 할 수 있다고 했어요. 이번 편이 그 실행이에요. 같은 고장 난 장치를 세 개의 작업대로 옮겨 가며 고치되, <strong>다음 행동을 정하는 주체</strong>만 바꿔요. 문제, 모델, 저장소 준비 방식, 채점 방식은 세 실행에 똑같이 둬요.</p>
+    <p>이번 편에는 파이썬 코드가 세 덩어리 나와요. 파이썬을 모르셔도 괜찮아요. 코드는 "쓰는" 게 아니라 "읽고 넘어가는" 그림이고, 각 덩어리 아래에 한 줄씩 한국어로 풀어 둘게요. 그래도 낯설면 <a href="reading-python-code-basics.html">파이썬 코드 눈으로 읽기</a>를 먼저 보고 오면 전부 풀려요. 변수·함수·<code>async</code>·딕셔너리 같은 말이 거기 있어요.</p>
+
+    <h2><span class="hl">세 실행의 차이</span> — 다음 행동을 누가 정하는가</h2>
+    <p><a href="what-is-automation-workflow-agent.html">자동화·워크플로·에이전트, 뭐가 다를까</a>에서 셋을 가르는 기준이 딱 하나, "<strong>다음에 뭘 할지 누가 정하느냐</strong>"라고 했었죠. 이번 실험은 바로 그 기준으로 세 실행을 만들어요.</p>
+    <table>
+      <thead><tr><th>실행</th><th>다음 행동을 정하는 주체</th><th>구성</th><th>턴 예산</th></tr></thead>
+      <tbody>
+        <tr><td><strong>기준선 실행(A)</strong></td><td>에이전트 하나</td><td>한 세션이 탐색과 수정을 모두 함</td><td>최대 25턴</td></tr>
+        <tr><td><strong>워크플로 실행(B)</strong></td><td>파이썬 코드</td><td>읽기 전용 locator가 보고서를 쓰고, fixer가 새 세션에서 수정. 순서는 코드가 고정</td><td>locator 12턴 + fixer 18턴</td></tr>
+        <tr><td><strong>오케스트레이션 실행(C)</strong></td><td>리드 모델</td><td>리드 세션에 locator를 서브에이전트로 등록. 부를지 말지, 어떻게 쓸지는 리드가 결정</td><td>최대 40턴</td></tr>
+      </tbody>
+    </table>
+    <p>여기서 <strong>턴</strong>은 모델이 한 번 생각하고 도구를 한 번 부르는 왕복 한 사이클이에요. 표의 마지막 열을 보면 세 실행의 턴 예산이 <strong>서로 달라요</strong>. 이건 나중에 숫자를 읽을 때 계속 따라다니는 단서라서 지금 미리 적어 둬요.</p>
+    <p>B와 C의 차이는 오케스트라에 빗대면 선명해요. 워크플로 실행(B)은 <strong>악보</strong>에 연주 순서가 미리 고정돼 있어서 locator 다음에 fixer가 반드시 연주해요. 오케스트레이션 실행(C)은 <strong>지휘자</strong>(리드 모델)가 연주 중 상황을 보고 다음 순서를 정해요. locator를 부를 수도, 안 부를 수도 있어요.</p>
+    <figure>
+      <svg viewBox="0 0 680 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="fig3title">
+        <title id="fig3title">세 실행에서 다음 행동을 정하는 주체가 다르다</title>
+        <style>
+          .r-box{stroke:var(--border);stroke-width:1.8;fill:none;}
+          .r-lead{stroke:var(--accent);stroke-width:2.4;fill:none;}
+          .r-t{font-family:var(--font-body);fill:var(--ink);font-size:11.5px;}
+          .r-s{font-family:var(--font-body);fill:var(--muted);font-size:11px;}
+          .r-h{font-family:var(--font-heading);font-weight:700;fill:var(--ink);font-size:13px;}
+          .r-ha{font-family:var(--font-heading);font-weight:700;fill:var(--accent);font-size:12px;}
+          .r-a{stroke:var(--border);stroke-width:1.8;fill:none;}
+          .r-d{stroke:var(--accent);stroke-width:1.8;fill:none;stroke-dasharray:4 3;}
+        </style>
+        <defs>
+          <marker id="ra" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--border)"/></marker>
+          <marker id="rd" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/></marker>
+        </defs>
+
+        <text x="110" y="22" text-anchor="middle" class="r-h">기준선 실행(A)</text>
+        <text x="110" y="40" text-anchor="middle" class="r-ha">다음 행동: 한 에이전트</text>
+        <rect x="70" y="60" width="80" height="28" rx="6" class="r-box"/><text x="110" y="79" text-anchor="middle" class="r-t">질문</text>
+        <path d="M110 88 L110 108" class="r-a" marker-end="url(#ra)"/>
+        <rect x="55" y="112" width="110" height="28" rx="6" class="r-lead"/><text x="110" y="131" text-anchor="middle" class="r-t">에이전트 1회</text>
+        <path d="M110 140 L110 160" class="r-a" marker-end="url(#ra)"/>
+        <rect x="70" y="164" width="80" height="28" rx="6" class="r-box"/><text x="110" y="183" text-anchor="middle" class="r-t">결과</text>
+
+        <text x="340" y="22" text-anchor="middle" class="r-h">워크플로 실행(B)</text>
+        <text x="340" y="40" text-anchor="middle" class="r-ha">다음 행동: 파이썬 코드</text>
+        <rect x="300" y="60" width="80" height="28" rx="6" class="r-box"/><text x="340" y="79" text-anchor="middle" class="r-t">locator</text>
+        <path d="M340 88 L340 108" class="r-a" marker-end="url(#ra)"/>
+        <rect x="300" y="112" width="80" height="28" rx="6" class="r-box"/><text x="340" y="131" text-anchor="middle" class="r-t">보고서</text>
+        <path d="M340 140 L340 160" class="r-a" marker-end="url(#ra)"/>
+        <rect x="300" y="164" width="80" height="28" rx="6" class="r-box"/><text x="340" y="183" text-anchor="middle" class="r-t">fixer</text>
+        <path d="M340 192 L340 212" class="r-a" marker-end="url(#ra)"/>
+        <rect x="300" y="216" width="80" height="28" rx="6" class="r-box"/><text x="340" y="235" text-anchor="middle" class="r-t">결과</text>
+        <text x="420" y="130" class="r-s">순서는 코드가 고정</text>
+
+        <text x="570" y="22" text-anchor="middle" class="r-h">오케스트레이션 실행(C)</text>
+        <text x="570" y="40" text-anchor="middle" class="r-ha">다음 행동: 리드 모델</text>
+        <rect x="510" y="60" width="120" height="28" rx="6" class="r-lead"/><text x="570" y="79" text-anchor="middle" class="r-t">리드 모델: 판단</text>
+        <path d="M545 88 L545 130" class="r-a" marker-end="url(#ra)"/>
+        <rect x="500" y="134" width="90" height="28" rx="6" class="r-box"/><text x="545" y="153" text-anchor="middle" class="r-t">직접 수정</text>
+        <path d="M600 88 C 640 100, 640 130, 625 150" class="r-d" marker-end="url(#rd)"/>
+        <rect x="598" y="154" width="72" height="28" rx="6" class="r-box"/><text x="634" y="173" text-anchor="middle" class="r-t">locator</text>
+        <text x="634" y="200" text-anchor="middle" class="r-s">선택 호출</text>
+      </svg>
+      <figcaption>읽는 법: 실선은 반드시 지나가는 길, 점선은 리드가 <strong>골라서</strong> 갈 수도 있는 길이에요. C의 점선이 실제로 밟혔는지는 실행 뒤 기록으로만 알 수 있어요.</figcaption>
+    </figure>
+
+    <h2><span class="hl">문제 다섯 건</span> — 정답 없이 테스트로만 확인한다</h2>
+    <p>대상은 벤치마크 문제 다섯 건이에요. <strong>SWE-bench</strong>는 실제 오픈소스 저장소의 이슈를 에이전트에게 고치게 하고 테스트로 채점하는 벤치마크이고, <strong>Terminal-Bench</strong>는 터미널 안에서 끝내야 하는 과제 모음이에요. 원문은 GitHub 저장소 <code>SunCreation/d035-agent-lab</code>에 모여 있어요.</p>
+    <pre><code>git clone https://github.com/SunCreation/d035-agent-lab.git   # 저장소를 내 컴퓨터로 통째로 복사</code></pre>
+    <ul>
+      <li><strong>sympy-24909</strong> — 접두사에 단위를 곱하면 결과가 1이 되어 단위가 사라져요. <code>milli * W</code>는 정상이라면 밀리와트가 남아야 해요.</li>
+      <li><strong>sympy-24213</strong> — 가속도에 시간을 곱한 값과 속도를 더하면 같은 차원인데도 ValueError가 나요. 차원은 길이·시간·속도처럼 물리량의 종류를 뜻해요.</li>
+      <li><strong>sympy-24152</strong> — 텐서곱(두 연산 대상을 짝지어 결합하는 연산)의 인수에 덧셈이 섞였을 때 <code>expand(tensorproduct=True)</code>가 두번째 인수까지 전개하지 못해요.</li>
+      <li><strong>log-summary</strong> — 여러 서비스의 로그 파일에서 ERROR·WARNING·INFO 줄 수를 세어 summary.csv를 만들어요.</li>
+      <li><strong>bank-trans-filter</strong> — 회사명과 계좌번호에 오타가 섞인 거래 내역에서 특정 회사 거래만 골라 날짜순 output.json을 만들어요.</li>
+    </ul>
+    <p>저장소의 <code>tasks/</code> 폴더에는 문제별로 원문 이슈, 확인용 테스트 패치, 기준 커밋 정보가 들어 있어요. <strong>정답 패치는 없어요.</strong> 무엇을 맞혔는지는 오직 테스트 실행으로만 확인해요. SymPy 세 문제는 공식 도커 평가가 아니라 <strong>경량 평가</strong>예요. 저장소를 특정 커밋(<a href="git-commit-concept.html">커밋</a>은 저장소의 한 시점 스냅샷이에요)으로 고정해 받고, 에이전트가 수정한 복사본에 테스트 패치를 적용해 대상 테스트만 실행해요. 이것도 나중에 결론의 범위를 정할 때 다시 나오는 단서예요.</p>
+
+    <h2><span class="hl">왜 Claude Agent SDK인가</span> — 조건을 고정하기 가장 쉬운 길</h2>
+    <p>같은 문제를 자동으로 고치는 방법은 여럿이에요. 대화형 CLI(Claude Code, opencode)를 셸 스크립트에서 여러 번 부를 수도 있지만, 사람의 조작과 셸 환경이 끼어들어 조건을 고정하고 재현하기 어려워요. Messages API를 직접 부르면 도구 실행기·권한 승인·기록 형식을 전부 내가 만들어야 해서 실험보다 기반 공사에 시간이 가요. LangGraph 같은 범용 프레임워크는 그 프레임워크의 문법을 익혀야 하고, 정작 오늘 비교하려는 "다음 행동의 결정 주체"가 프레임워크 안에 가려져요.</p>
+    <p>그래서 이 실험은 <strong>Claude Agent SDK</strong>(<code>claude-agent-sdk</code>, SDK는 어떤 서비스를 코드에서 부를 수 있게 묶어 둔 개발용 도구 모음이에요)로 실행해요. Claude Code의 도구 실행, 권한, 세션 기록, 서브에이전트 정의, 구조화 출력을 파이썬 코드에서 그대로 쓸 수 있어요. (SDK의 <code>query()</code>를 처음 부르는 모습은 <a href="prompt-execution-three-paths.html">프롬프트 세 경로 직접 실행해보기</a>에서 봤어요.) 실험 폴더에는 전용 <strong>가상 환경</strong>(프로젝트 전용으로 파이썬과 부품을 따로 담아 두는 작은 방, 폴더 이름이 <code>.venv</code>)을 만들어요. 시스템 파이썬에 바로 설치하면 프로젝트끼리 부품이 섞이고, 최근 리눅스에서는 전역 설치 자체가 막히기도 하거든요.</p>
+
+    <h2><span class="hl">기준선 실행(A)</span> — 한 에이전트가 끝까지</h2>
+    <p>실험 스크립트 <code>arms.py</code>의 핵심은 <code>query()</code>를 한 번 부르는 도우미 함수예요. 턴을 다 써서 SDK가 오류를 던져도, 실험에서는 그게 "턴 소진"이라는 <strong>관측 결과</strong>일 뿐이라 예외로 죽지 않고 남은 상태를 그대로 채점해요.</p>
+    <pre><code>async def _run_once(prompt, options):
+    """(마지막 ResultMessage, 오류문) 반환."""
+    last = None
+    try:
+        async for m in query(prompt=prompt, options=options):
+            t = getattr(m, "subtype", None) or type(m).__name__
+            if t == "result" or type(m).__name__ == "ResultMessage":
+                last = m
+    except Exception as e:
+        return last, f"{type(e).__name__}: {str(e)[:200]}"
+    return last, None
+
+if arm == "A":
+    msg, err = await asyncio.wait_for(_run_once(
+        f"Fix this bug:\n\n{problem}",
+        ClaudeAgentOptions(cwd=str(repo), model=MODEL, max_turns=25,
+                           system_prompt=SYS_A,
+                           permission_mode="bypassPermissions")), 1500)
+    if err:
+        extra["error"] = err</code></pre>
+    <p>읽는 법이에요. 위 절반의 <code>_run_once</code>는 "AI에게 한 번 물어보고, 돌아온 메시지 중 마지막 결과만 챙기되, 중간에 오류가 나도 죽지 말고 오류 문장을 같이 돌려줘라"는 함수예요(한 줄씩 풀어 읽은 표는 <a href="reading-python-code-basics.html">파이썬 코드 눈으로 읽기</a> 10번에 있어요). 아래 절반이 이번 실행의 본체고요.</p>
+    <table>
+      <thead><tr><th>줄</th><th>한국어로</th></tr></thead>
+      <tbody>
+        <tr><td><code>if arm == "A":</code></td><td>실행 이름이 "A"라면 (명령행에서 <code>A</code>를 넘겼을 때)</td></tr>
+        <tr><td><code>msg, err = await asyncio.wait_for(_run_once(...), 1500)</code></td><td><code>_run_once</code>를 실행하고 끝날 때까지 기다리되 1500초를 넘기면 포기. 돌아온 두 값을 <code>msg</code>(결과)와 <code>err</code>(오류문)에 담음</td></tr>
+        <tr><td><code>f"Fix this bug:\n\n{problem}"</code></td><td>AI에게 보낼 질문. "이 버그를 고쳐라" 뒤에 빈 줄, 그다음 문제 원문</td></tr>
+        <tr><td><code>ClaudeAgentOptions(cwd=..., model=MODEL, max_turns=25, ...)</code></td><td>설정 묶음. 작업 폴더는 저장소, 모델은 정해 둔 것(haiku), 최대 25턴, 시스템 프롬프트는 A용</td></tr>
+        <tr><td><code>permission_mode="bypassPermissions"</code></td><td>도구를 쓸 때마다 사람에게 묻지 않음</td></tr>
+        <tr><td><code>if err: extra["error"] = err</code></td><td>오류문이 있으면 결과 기록용 사전 <code>extra</code>에 "error"라는 이름표로 저장</td></tr>
+      </tbody>
+    </table>
+    <p><code>permission_mode="bypassPermissions"</code>는 도구 실행마다 사람에게 묻지 않고 넘어가는 설정이에요(권한 모드의 뜻은 <a href="harness-minimal-and-permission.html">덜어내기와 경계 긋기</a>에서 다뤘어요). 실험을 자동으로 돌리려면 필요하지만, 그만큼 격리된 폴더 안에서만 돌려야 해요. 기준선에는 읽기 전용 도구 제한을 걸지 않아요. 그 제한은 B의 locator에만 적용돼요.</p>
+    <p>실행하고 나면 <code>runs/A-sympy__sympy-24909/result.json</code> 같은 결과 파일이 생겨요. <code>resolved</code>와 <code>invalid</code>는 테스트 채점 결과, <code>cost_usd</code>·<code>num_turns</code>·<code>wall_s</code>는 비용·턴·경과 시간 관측값, <code>final_text</code>는 마지막 응답, <code>changes.diff</code>는 실제 수정 내용이에요. 성공 여부만 보지 말고 턴 수와 변경 내용을 같이 읽어요. 실제로 한 실행에서 haiku가 25턴을 <strong>모두 소진</strong>한 관측이 있었는데, 그건 단순 오류가 아니라 어디까지 탐색했고 어디서 멈췄는지 읽어야 할 기록이에요.</p>
+
+    <h2><span class="hl">워크플로 실행(B)</span> — 코드가 순서를 고정한다</h2>
+    <p>건물 보수 현장을 떠올려 보세요. 구조조사팀이 먼저 균열을 살펴 보고서를 넘기고, 시공팀은 그 보고서를 바탕으로 보수해요. B는 이 순서와 인계 내용을 현장이 아니라 <strong>파이썬 코드가 미리 고정</strong>하는 구성이에요. locator는 읽기와 검색만 하고 파일 경로·함수 이름·진단을 구조화된 보고로 남겨요. 그 보고를 받은 fixer가 <strong>새 세션</strong>에서 수정해요.</p>
+    <pre><code>loc, err_loc = await asyncio.wait_for(_run_once(
+    f"Bug report:\n\n{problem}\n\nLocate the likely cause.",
+    ClaudeAgentOptions(cwd=str(repo), model=MODEL, max_turns=12,
+                       system_prompt=SYS_B_LOCATE,
+                       permission_mode="bypassPermissions",
+                       allowed_tools=["Read", "Grep", "Glob"])), 900)
+if err_loc:
+    extra["locator_error"] = err_loc
+locate_report = (getattr(loc, "result", "") or "").strip()
+extra["locate_report"] = locate_report[:2000]
+
+msg, err = await asyncio.wait_for(_run_once(
+    f"Bug report:\n\n{problem}\n\n"
+    f"Locator report from a previous agent:\n{locate_report}\n\n"
+    "Apply the minimal fix.",
+    ClaudeAgentOptions(cwd=str(repo), model=MODEL, max_turns=18,
+                       system_prompt=SYS_B_FIX,
+                       permission_mode="bypassPermissions")), 1200)
+if err:
+    extra["error"] = err</code></pre>
+    <table>
+      <thead><tr><th>줄</th><th>한국어로</th></tr></thead>
+      <tbody>
+        <tr><td><code>loc, err_loc = await asyncio.wait_for(_run_once(...), 900)</code></td><td>첫번째 호출. "원인을 찾아라"는 질문으로 locator를 돌리고, 결과를 <code>loc</code>에, 오류문을 <code>err_loc</code>에 담음. 900초 제한</td></tr>
+        <tr><td><code>max_turns=12</code>, <code>allowed_tools=["Read", "Grep", "Glob"]</code></td><td>12턴까지만, 쓸 수 있는 도구는 읽기·검색·파일 찾기 세 가지뿐(고치는 도구 없음)</td></tr>
+        <tr><td><code>locate_report = (getattr(loc, "result", "") or "").strip()</code></td><td><code>loc</code>에 결과 글이 있으면 꺼내고 없으면 빈 글자로, 앞뒤 공백을 지워 <code>locate_report</code>(보고서)에 담음</td></tr>
+        <tr><td><code>extra["locate_report"] = locate_report[:2000]</code></td><td>보고서 앞 2000자를 기록용 사전에 저장</td></tr>
+        <tr><td><code>msg, err = await asyncio.wait_for(_run_once(...), 1200)</code></td><td>두번째 호출. 질문 안에 <code>{locate_report}</code>로 <strong>방금 그 보고서를 끼워 넣고</strong> "최소한으로 고쳐라"라고 시킴. 18턴, 1200초 제한, 이번엔 도구 제한 없음</td></tr>
+      </tbody>
+    </table>
+    <p>읽을 지점은 하나예요. 첫 호출의 결과에서 보고서를 꺼내 변수에 담고, 두번째 호출은 그 변수의 내용을 프롬프트로 받아요. 두 세션이 같은 대화를 공유하는 게 아니라, <strong>코드가 정한 보고서만</strong> 다음 단계로 건너가요. <code>allowed_tools=["Read", "Grep", "Glob"]</code>이 locator를 읽기 전용으로 묶는 부분이고요.</p>
+    <p>이 분리는 역할 이름을 늘리는 일이 아니에요. 비교 대상은 탐색 결과가 다음 단계로 전달되는지, 탐색 담당이 파일을 고치지 않는지, 수정 담당이 그 근거를 실제로 쓰는지예요. 그리고 B의 숫자는 두 호출의 기록이 <strong>합쳐진</strong> 값이에요. A의 25턴과 B의 12+18턴을 같은 예산으로 읽으면 안 돼요.</p>
+
+    <h2><span class="hl">오케스트레이션 실행(C)</span> — 리드가 부를지 정한다</h2>
+    <p>C에도 같은 읽기 전용 locator가 있어요. 다른 점은 <code>ClaudeAgentOptions</code>의 <code>agents={"locator": ...}</code>로 이 locator를 리드 세션에 <strong>제공만</strong> 한다는 거예요. 리드는 부를지 말지, 받은 내용을 어떻게 쓸지를 스스로 정하고, 최종 수정도 직접 해요.</p>
+    <pre><code>elif arm == "C":
+    locator = AgentDefinition(
+        description="Read-only locator: finds the likely cause of a bug "
+                    "in this repo. Cannot edit files.",
+        prompt=SYS_B_LOCATE,
+        tools=["Read", "Grep", "Glob"],
+    )
+    msg, err = await asyncio.wait_for(_run_once(
+        f"Fix this bug:\n\n{problem}",
+        ClaudeAgentOptions(cwd=str(repo), model=MODEL, max_turns=40,
+                           system_prompt=SYS_C,
+                           permission_mode="bypassPermissions",
+                           agents={"locator": locator},
+                           forward_subagent_text=True)), 1500)
+    if err:
+        extra["error"] = err</code></pre>
+    <table>
+      <thead><tr><th>줄</th><th>한국어로</th></tr></thead>
+      <tbody>
+        <tr><td><code>elif arm == "C":</code></td><td>"아니면 실행 이름이 C라면"</td></tr>
+        <tr><td><code>locator = AgentDefinition(description=..., prompt=..., tools=[...])</code></td><td>"locator"라는 <strong>역할 정의서</strong>를 만들어 변수에 담음. 무슨 일을 하는지 설명, 시스템 프롬프트(B의 locator와 같은 것), 허용 도구 세 가지</td></tr>
+        <tr><td><code>agents={"locator": locator}</code></td><td>설정 묶음에 "locator"라는 이름표로 그 정의서를 <strong>붙여 둠</strong>. 부를지 말지는 리드가 정함</td></tr>
+        <tr><td><code>forward_subagent_text=True</code></td><td>서브에이전트가 낸 글도 기록에 남기도록 켬</td></tr>
+        <tr><td><code>max_turns=40</code></td><td>리드 세션은 40턴까지</td></tr>
+      </tbody>
+    </table>
+    <p>여기서 꼭 붙잡을 문장이 있어요. <strong>서브에이전트를 정의했다는 사실만으로 분업이 일어났다고 볼 수 없어요.</strong> 리드가 locator를 실제로 불렀는지, 불렀다면 그 보고가 최종 편집에 반영됐는지는 실행 뒤 세션 기록과 판정 파일의 인용으로만 확인할 수 있어요. 안 불렀다면 대신 어떤 탐색을 했는지도 기록에서 읽어야 하고요.</p>
+
+    <h2><span class="hl">바이브 코딩으로 돌리기</span> — 요약이 아니라 명령과 파일을 받는다</h2>
+    <p>이 실험 스크립트를 처음부터 손으로 다 짤 필요는 없어요. 위 코드를 참고 자료로 붙여 코딩 에이전트에게 부탁하면 돼요(<a href="what-is-vibe-coding.html">바이브 코딩</a>이 이런 거죠). 실제로 쓴 부탁은 이런 모양이었어요.</p>
+    <pre><code>https://github.com/SunCreation/d035-agent-lab 를 claude sdk 로 haiku4.5 로
+테스트 해볼 수 있게, 실험 구현을 해줘. 결과 파일에서 성공 여부, 비용,
+대화 횟수, 걸린 시간을 찾아 정리하고, 실행한 명령과 결과 파일 경로도
+보여 줘.  # 참고사항으로 위 코드 제공</code></pre>
+    <p>인스턴스 준비와 채점까지 똑같이 만들 필요는 없어요. "한 문제를 한 에이전트가 처리하고 결과 파일을 남긴다"는 구조만 같으면 돼요. 다만 위임한 뒤에 <strong>에이전트의 요약을 결과로 받아들이지 말고</strong>, 실제로 실행된 명령과 실제로 생긴 결과 파일을 함께 확인해요. C를 돌릴 때는 "리드가 locator를 실제로 불렀는지 기록에서 확인해 알려 줘"까지 부탁에 넣어요.</p>
+    <pre><code># 가상 환경의 파이썬으로 arms.py 실행. 뒤의 두 단어가 "어느 실행, 어느 문제"
+.venv/bin/python arms.py A sympy__sympy-24909
+.venv/bin/python arms.py B sympy__sympy-24909
+.venv/bin/python arms.py C sympy__sympy-24909
+
+# 세 실행을 한 번에 (쉼표로 나열)
+.venv/bin/python arms.py A,B,C
+
+# cat = 파일 내용을 화면에 그대로 출력
+cat runs/C-sympy__sympy-24909/result.json
+cat runs/C-sympy__sympy-24909/changes.diff</code></pre>
+    <p>윈도우라면 <code>.venv/bin/python</code> 대신 <code>.venv\Scripts\python</code>이에요. <code>changes.diff</code>의 <strong>diff</strong>는 "고치기 전과 후의 차이"를 줄 단위로 적은 파일이에요. 앞에 <code>-</code>가 붙은 줄은 지워진 줄, <code>+</code>가 붙은 줄은 새로 들어간 줄이에요.</p>
+    <p>러너는 이미 <code>result.json</code>이 있는 실행을 건너뛰어요. 다시 돌리기 전에 기존 결과가 있는지 확인하세요. 같은 파일을 덮어쓰고 나면 이전 기록과 무엇이 달라졌는지 비교할 길이 없어져요.</p>
+
+    <p>세 실행이 남긴 파일이 쌓였어요. 다음 편에서는 이 기록을 어떻게 채점하고, 어디까지 결론을 말할 수 있는지 봐요. "테스트가 통과했다"만으로는 왜 부족한지가 핵심이에요.</p>
+
+    <a class="post-nav" href="multi-agent-judging-records.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">통과했다는 말로는 부족하다 — 두 층 채점과 채택·축소·폐기 판정</span>
+    </a>
+
+    <hr>
+
+    <h3>"멀티 에이전트, 나눌까 말까" 시리즈</h3>
+    <a class="post-nav" href="multi-agent-split-gains-and-losses.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">나누면 좋아질까 — 멀티 에이전트의 득실과 판정표</span>
+    </a>
+    <a class="post-nav" href="multi-agent-four-structures.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">여럿이라는 말만으론 부족하다 — 네 가지 구조와 맞는 과업</span>
+    </a>
+    <p class="post-date">(3) 같은 버그를 세 방식으로 — 기준선·워크플로·오케스트레이션 실행 (이 글)</p>
+    <a class="post-nav" href="multi-agent-judging-records.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">통과했다는 말로는 부족하다 — 두 층 채점과 채택·축소·폐기 판정</span>
+    </a>
+    <a class="post-nav" href="multi-agent-ecosystem-tools.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">실험이 남긴 네 문제와 도구들 — Agent Teams·Workflows·oh-my-claudecode·herdr</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>

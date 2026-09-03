@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>나누면 좋아질까 — 멀티 에이전트의 득실과 판정표 (1) - Tigermorning</title>
+  <meta name="description" content="에이전트를 여럿으로 나누면 결과가 좋아진다는 기대와 비용·혼란만 늘어난다는 회의가 나란히 있습니다. 리드와 워커라는 구조, 나눔이 만드는 세 이점과 커지는 실패, 그리고 나눌지 말지를 가르는 여섯 가지 판정 조건을 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="나누면 좋아질까 — 멀티 에이전트의 득실과 판정표 (1)">
+  <meta property="og:description" content="에이전트를 여럿으로 나누면 결과가 좋아진다는 기대와 비용·혼란만 늘어난다는 회의가 나란히 있습니다. 리드와 워커라는 구조, 나눔이 만드는 세 이점과 커지는 실패, 그리고 나눌지 말지를 가르는 여섯 가지 판정 조건을 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/multi-agent-split-gains-and-losses.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">나누면 좋아질까</span> — 멀티 에이전트의 득실과 판정표 (1)</h1>
+    <p class="post-date">2026. 9. 3.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <p><a href="what-is-ai-agent.html">AI 에이전트</a> 하나에게 조사 과제를 통째로 맡기는 장면을 떠올려 봐요. 에이전트는 지시를 받고 검색하고, 찾은 자료와 중간 판단을 대화창에 차곡차곡 쌓아요. 그런데 어느 순간부터 처음 받은 질문은 저 위로 밀려 올라가고, 한참 전에 확인해 둔 근거도 다시 찾기 어려워져요. 여기서 누구나 자연스럽게 떠올리는 생각이 "<strong>나누면 어떨까</strong>"예요. 이번 시리즈는 그 생각을 기대나 소문이 아니라 직접 실행한 기록으로 판정해 보는 과정이에요. 첫 편에서는 나눈다는 게 정확히 무엇인지, 무엇이 좋아지고 무엇이 나빠지는지, 그리고 나눌지 말지를 어떤 잣대로 정하는지 봐요.</p>
+
+    <h2><span class="hl">멀티 에이전트란</span> — 리드가 나누고, 워커가 맡는다</h2>
+    <p>먼저 용어 하나를 짚고 갈게요. <strong>컨텍스트</strong>는 모델이 다음 행동을 고를 때 함께 읽는 지시·대화·파일·도구 결과 전체를 말해요(<a href="what-is-model-input.html">AI가 실제로 읽는 입력이란?</a>에서 다룬 그 "입력"이고, <a href="context-window-budget.html">컨텍스트 창은 왜 유한한가</a>에서 본 것처럼 크기에 한계가 있어요). 대화창을 여러 개로 나누면 각 창은 자기 몫만 다루니까, 처음의 질문과 확인된 근거를 더 오래 보존할 수 있어요.</p>
+    <p><strong>멀티 에이전트</strong>는 이 분업을 실행 구조로 만든 거예요. 하나의 과업을 여러 에이전트에게 나눠 맡기고, 각자의 결과를 합쳐 하나로 완성해요. 이때 과업을 나누고 결과를 합치는 쪽을 <strong>리드</strong>, 나뉜 몫을 수행하는 쪽을 <strong>워커</strong>라고 불러요. 조사 프로젝트 팀에 빗대면 이렇게 대응돼요.</p>
+    <table>
+      <thead><tr><th>조사 프로젝트 팀에서</th><th>멀티 에이전트에서는</th></tr></thead>
+      <tbody>
+        <tr><td>팀장이 주제를 몇 갈래로 쪼개 팀원에게 배정</td><td>리드가 과업을 나누고, 워커 역할을 파일로 미리 정의해 위임</td></tr>
+        <tr><td>팀원 각자가 자기 노트에 자기 조사만 기록</td><td>워커 각자가 자기 컨텍스트 창에서 자기 몫만 다룸</td></tr>
+        <tr><td>팀장은 요약 보고만 받아 비교·통합</td><td>리드는 워커가 간추린 결과만 받아 대조·합성</td></tr>
+        <tr><td>팀장 노트가 넘치기 전에 계획서를 따로 보관</td><td>리드 컨텍스트가 한계에 닿기 전에 계획을 별도 메모리에 저장</td></tr>
+      </tbody>
+    </table>
+    <p>핵심: 나눈다는 건 사람을 더 뽑는 게 아니라, <strong>하나의 긴 노트를 여러 개의 짧은 노트로 쪼개고 통합 책임을 한 곳에 두는 것</strong>이에요.</p>
+    <p>마지막 행은 실제 사례예요. Anthropic의 Research 시스템에서는 리드 역할인 LeadResearcher의 컨텍스트가 200,000토큰을 넘으면 잘릴 수 있어서, 시작할 때 연구 계획을 Memory에 저장한다고 밝혔어요 [벤더]. 컨텍스트가 한계에 닿기 전에 계획만은 따로 보존해 두는 방식이죠.</p>
+
+    <h2><span class="hl">기대와 회의</span> — 같은 숫자를 두고 정반대로 읽는다</h2>
+    <p>"에이전트 수를 늘릴수록 결과가 좋아진다"는 말은 개발 커뮤니티에서 오래 돌아다녔어요. 근거를 얹은 보고도 있어요. 같은 질문에 여러 에이전트의 답을 뽑아 다수결로 정하는 단순한 방법만으로도, 수를 늘릴수록 성능이 오르는 경향을 보였다는 연구예요 [학술, <em>More Agents Is All You Need</em>, arXiv 2402.05120]. 업체 발표도 힘을 보태요. Anthropic은 자사 멀티 에이전트 연구 시스템이 단일 에이전트보다 연구 성능이 90.2% 높았고, 복잡한 질의의 연구 시간을 최대 90% 줄였다고 밝혔어요 [벤더]. 둘 다 <strong>그 논문의 과제, 그 회사의 시스템</strong>에서 나온 수치라는 단서가 붙어요.</p>
+    <p>현장에서는 정반대 경험이 이어져요. 코딩 에이전트 Devin을 만든 Cognition은 "협업하는 여러 에이전트는 취약한 시스템만 만든다"며, 에이전트 사이에 문맥이 충분히 공유되지 않는다고 지적하고 단일 흐름을 권장했어요 [벤더 블로그]. 해커뉴스 토론에는 검색 에이전트 여섯 개를 띄운 서비스가 질문 하나에 약 2달러를 태웠다는 보고, 간단한 질문 하나에 3달러와 3분이 걸렸다는 사례, "에이전트 열기는 이제 가라앉았다"는 반응이 있었고요 [커뮤니티].</p>
+    <p>두 목소리를 나란히 두면 대비가 선명해요. 기대하는 쪽은 <strong>숫자가 성능을 밀어 올린다</strong>고 하고, 회의하는 쪽은 <strong>숫자가 비용과 혼란만 밀어 올린다</strong>고 해요. 어느 쪽이 맞는지는 남의 발표를 듣는 것만으로 정해지지 않아요. 나누면 같은 자료를 여러 워커가 다시 찾을 수 있고, 아무에게도 맡기지 않은 질문은 누구도 확인하지 않을 수 있고, 한 워커의 잘못된 판단이 합성 결과에 그대로 들어갈 수도 있어요. 제가 이 과정에서 가장 크게 붙잡은 문장은 이거였어요. <strong>에이전트를 나누는 건 능력을 더하는 일이 아니라, 컨텍스트와 책임을 다시 배치하는 일이다.</strong></p>
+
+    <h2><span class="hl">나누면 생기는 세 이점</span> — 병렬 탐색, 관심사 분리, 전문화</h2>
+    <ul>
+      <li><strong>병렬 탐색.</strong> 워커들이 서로 분리된 컨텍스트에서 다른 질문을 동시에 살핀 뒤, 필요한 결과만 간추려 리드에게 넘겨요. 리드는 탐색 기록 전체를 처음부터 다시 읽지 않고도 비교할 재료를 받아요.</li>
+      <li><strong>관심사 분리.</strong> 워커마다 도구·프롬프트·탐색 과정을 따로 두는 설계예요. 한 워커가 앞선 검색 결과에 끌려 다음 판단을 바꾸는 <strong>경로 의존성</strong>(먼저 본 것이 나중 판단을 좌우하는 현상)을 줄이는 데 도움이 돼요. 다만 합치는 쪽인 리드는 각 결과의 근거와 빠진 범위를 다시 확인해야 해요.</li>
+      <li><strong>전문화.</strong> 워커마다 자료 찾기, 반례 찾기, 인용 위치 확인처럼 한 가지 책임만 맡길 수 있어요. 질문과 반환 포맷이 선명할수록 이점이 커져요. 그래서 리드는 목표, 출력 포맷, 도구·출처 지침, 과업 경계를 <strong>함께</strong> 전달해야 해요.</li>
+    </ul>
+    <p>세 이점의 공통 뿌리는 하나예요. 하나의 긴 컨텍스트를 <strong>서로 독립된 증거 묶음</strong>으로 나누는 거예요. 아래 그림이 그 모양이에요.</p>
+    <figure>
+      <svg viewBox="0 0 640 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="fig1title">
+        <title id="fig1title">하나의 긴 컨텍스트가 증거 묶음 A와 B로 나뉘고, 리드가 이를 대조·합성한다</title>
+        <style>
+          .m-box{stroke:var(--border);stroke-width:2;fill:none;}
+          .m-lead{stroke:var(--accent);stroke-width:2.5;fill:none;}
+          .m-t{font-family:var(--font-body);fill:var(--ink);font-size:12.5px;}
+          .m-s{font-family:var(--font-body);fill:var(--muted);font-size:11.5px;}
+          .m-h{font-family:var(--font-heading);font-weight:700;fill:var(--ink);font-size:14px;}
+          .m-ha{font-family:var(--font-heading);font-weight:700;fill:var(--accent);font-size:14px;}
+          .m-a{stroke:var(--border);stroke-width:2;fill:none;}
+        </style>
+        <defs>
+          <marker id="ma1" markerWidth="9" markerHeight="9" refX="4.5" refY="4.5" orient="auto">
+            <path d="M0,0 L9,4.5 L0,9 z" fill="var(--border)"/>
+          </marker>
+        </defs>
+        <rect x="20" y="70" width="150" height="90" rx="8" class="m-box"/>
+        <text x="95" y="105" text-anchor="middle" class="m-h">하나의 긴</text>
+        <text x="95" y="125" text-anchor="middle" class="m-h">컨텍스트</text>
+        <text x="95" y="147" text-anchor="middle" class="m-s">질문·자료·판단이 뒤섞임</text>
+
+        <path d="M172 100 C 220 100, 220 50, 250 50" class="m-a" marker-end="url(#ma1)"/>
+        <path d="M172 130 C 220 130, 220 180, 250 180" class="m-a" marker-end="url(#ma1)"/>
+
+        <rect x="255" y="20" width="150" height="62" rx="8" class="m-box"/>
+        <text x="330" y="45" text-anchor="middle" class="m-h">증거 묶음 A</text>
+        <text x="330" y="66" text-anchor="middle" class="m-s">주장 · 직접 근거</text>
+        <rect x="255" y="150" width="150" height="62" rx="8" class="m-box"/>
+        <text x="330" y="175" text-anchor="middle" class="m-h">증거 묶음 B</text>
+        <text x="330" y="196" text-anchor="middle" class="m-s">제약 · 반례</text>
+
+        <path d="M407 51 C 450 51, 450 105, 475 105" class="m-a" marker-end="url(#ma1)"/>
+        <path d="M407 181 C 450 181, 450 127, 475 127" class="m-a" marker-end="url(#ma1)"/>
+
+        <rect x="480" y="75" width="140" height="80" rx="8" class="m-lead"/>
+        <text x="550" y="105" text-anchor="middle" class="m-ha">리드</text>
+        <text x="550" y="128" text-anchor="middle" class="m-t">대조와 합성</text>
+      </svg>
+      <figcaption>읽는 법: 왼쪽의 뒤섞인 노트 하나가 오른쪽으로 가며 두 묶음으로 갈라지고, 오른쪽 끝의 리드가 둘을 견줘요. 분리가 만드는 건 "결과의 개수"가 아니라 <strong>증거의 독립성</strong>이에요.</figcaption>
+    </figure>
+
+    <h2><span class="hl">나누면 커지는 실패</span> — 중복·누락, 오류 전파, 비용, 대기</h2>
+    <p><strong>중복과 누락</strong>은 역할 경계가 흐릴 때 한꺼번에 생겨요. 두 워커가 같은 질문을 조사하면 비용만 늘고, 경계 밖의 질문은 비어 버려요. <strong>오류</strong>는 결과 요약을 거치면서 더 그럴듯한 결론으로 번질 수 있어요. 그래서 워커의 반환물마다 근거와 불확실성을 남겨 두어야, 합성한 뒤에도 다시 확인할 수 있어요.</p>
+    <p><strong>비용</strong>은 따로 읽어야 해요. Anthropic 사례에서 멀티 에이전트 시스템은 <strong>채팅 대비</strong> 약 15배의 토큰을 썼어요 [벤더]. 이걸 "단일 에이전트 대비 15배"로 읽으면 안 돼요. 비교 대상이 일반 채팅이거든요. 어느 쪽이든 과업의 가치가 그 비용을 감당할 만큼 큰지는 같이 따져야 해요. (토큰과 비용의 기본 감각은 <a href="ai-permissions-local-models-and-token-cost.html">권한, 로컬 모델, 토큰 비용</a>에서 다뤘어요.)</p>
+    <p><strong>의존성이 큰 과업</strong>도 나눔에 맞지 않아요. 리드가 워커를 동기(하나가 끝나야 다음으로 넘어가는 방식)로 실행하면, 한 워커가 늦을 때 전체가 기다려요. 언어 모델은 아직 실시간으로 조율하고 위임하는 데 능숙하지 않아요. 서로의 중간 결과가 있어야 다음 질문을 정할 수 있다면, 한 흐름으로 처리하는 편이 나아요.</p>
+
+    <h2><span class="hl">나눌 조건과 나누지 않을 조건</span> — 여섯 줄짜리 판정표</h2>
+    <p>아래 표의 각 행은 "기대"가 아니라 <strong>확인할 조건</strong>이에요. 지금 내 과업이 어느 쪽 열에 가까운지 한 줄씩 대 봐요.</p>
+    <table>
+      <thead><tr><th>판정 항목</th><th>나눌 조건</th><th>나누지 않을 조건</th></tr></thead>
+      <tbody>
+        <tr><td>질문의 독립성</td><td>서로의 중간 결과 없이 시작할 수 있다</td><td>앞 결과가 다음 질문을 정한다</td></tr>
+        <tr><td>컨텍스트</td><td>자료가 섞이면 처음 기준이 밀린다</td><td>한 흐름에서 함께 비교해야 한다</td></tr>
+        <tr><td>책임 경계</td><td>워커별 목표와 반환 포맷을 정할 수 있다</td><td>누가 무엇을 확인할지 갈리지 않는다</td></tr>
+        <tr><td>합성 검토</td><td>근거와 불확실성을 대조할 시간이 있다</td><td>합성 비용이 조사 이득보다 크다</td></tr>
+        <tr><td>대기 위험</td><td>한 결과가 늦어도 다른 탐색이 진행된다</td><td>하나가 늦으면 전체 판단이 멈춘다</td></tr>
+        <tr><td>비용 가치</td><td>추가 토큰 비용을 감당할 이유가 있다</td><td>짧은 확인만으로 충분하다</td></tr>
+      </tbody>
+    </table>
+    <p>표의 결론을 "에이전트 수의 우열"로 읽으면 안 돼요. 판정의 핵심은 <strong>이 과업에서 분리가 확인 가능성을 높이는지, 그리고 그 이득이 조정 비용을 넘는지</strong>예요. "나누지 않기로 했다"는 판단도 비교 실험의 어엿한 결과예요.</p>
+    <p>이 물음이 과업 안에서 흐르는 순서는 세 단계예요.</p>
+    <ol>
+      <li><strong>독립적으로 탐색할 수 있는가?</strong> 그리고 <strong>결과를 독립된 기준으로 검증할 수 있는가?</strong> 두 물음을 먼저 던져요.</li>
+      <li>하나라도 "아니오"면 <strong>단일 연속 컨텍스트가 기본</strong>이에요. 둘 다 "예"면 <strong>병렬 탐색 후보</strong>가 돼요(독립 조사 과업형).</li>
+      <li>과업이나 평가셋 같은 <strong>조건이 바뀌면 다시 판정</strong>해요. 한 번의 결론이 영구적이지 않아요.</li>
+    </ol>
+
+    <h2><span class="hl">직접 해보기</span> — 내 과업 하나를 판정표에 올려 보기</h2>
+    <p>최근에 AI에게 맡겼던 일 하나를 골라 위 표의 여섯 행에 대 보세요. "나눌 조건" 쪽에 몇 개가 찍히는지 세고, 특히 <strong>질문의 독립성</strong>과 <strong>대기 위험</strong> 두 행의 답을 한 줄로 적어 두세요. 정답은 하나가 아니에요. 다음 편에서 네 가지 연결 구조를 보고 나면, 같은 과업이 "나눌지"만이 아니라 "<strong>어떤 모양으로</strong> 나눌지"까지 판정할 수 있게 돼요.</p>
+
+    <a class="post-nav" href="multi-agent-four-structures.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">여럿이라는 말만으론 부족하다 — 네 가지 구조와 맞는 과업</span>
+    </a>
+
+    <hr>
+
+    <h3>참고 자료</h3>
+    <ul>
+      <li>[학술] Li et al., <em>More Agents Is All You Need</em>, arXiv 2402.05120 (2024). 같은 질문에 여러 답을 뽑아 다수결로 정하는 방식에서 에이전트 수와 성능의 관계를 보고. 해당 과제·모델 조건에서의 경향이에요.</li>
+      <li>[벤더] Anthropic, "How we built our multi-agent research system" (2025). 단일 대비 연구 성능 90.2% 향상, 연구 시간 최대 90% 단축, 채팅 대비 약 15배 토큰. 모두 자사 시스템·자사 평가 기준의 수치예요.</li>
+      <li>[벤더 블로그] Cognition, "Don't Build Multi-Agents" (2025). 에이전트 간 문맥 공유 부족을 이유로 단일 흐름 권장.</li>
+      <li>[커뮤니티] Hacker News 토론. 질문당 2~3달러, 3분 등은 개별 사용자 보고라 조건이 서로 달라요.</li>
+    </ul>
+
+    <h3>"멀티 에이전트, 나눌까 말까" 시리즈</h3>
+    <p class="post-date">(1) 나누면 좋아질까 — 멀티 에이전트의 득실과 판정표 (이 글)</p>
+    <a class="post-nav" href="multi-agent-four-structures.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">여럿이라는 말만으론 부족하다 — 네 가지 구조와 맞는 과업</span>
+    </a>
+    <a class="post-nav" href="multi-agent-three-runs-abc.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">같은 버그를 세 방식으로 — 기준선·워크플로·오케스트레이션 실행</span>
+    </a>
+    <a class="post-nav" href="multi-agent-judging-records.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">통과했다는 말로는 부족하다 — 두 층 채점과 채택·축소·폐기 판정</span>
+    </a>
+    <a class="post-nav" href="multi-agent-ecosystem-tools.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">실험이 남긴 네 문제와 도구들 — Agent Teams·Workflows·oh-my-claudecode·herdr</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
