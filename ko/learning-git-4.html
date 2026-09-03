@@ -40,8 +40,14 @@
     <p><strong>GitHub Pages</strong>는 그 호스팅을 GitHub이 무료로 해주는 기능이에요. 서버를 따로 빌리거나 돈을 낼 필요 없이, 저장소 안에 <code>index.html</code> 파일 하나만 있으면 GitHub이 그 내용을 실제 웹사이트로 인터넷에 공개해줘요. 원래 웹사이트를 하나 띄우려면 24시간 켜져 있는 컴퓨터를 빌리고, 그 컴퓨터에 파일을 옮기고, 주소와 연결하는 설정까지 따로 해야 해요. GitHub Pages는 이미 파일을 올려둔 저장소가 있다는 이유만으로 그 과정을 통째로 건너뛰게 해주는 셈이라, 서버라는 걸 한 번도 다뤄본 적 없는 저한테는 정말 큰 문턱 하나가 사라진 거였어요. 물론 공짜인 만큼 할 수 없는 것도 있어요. 회원가입 정보를 저장하거나 결제를 처리하는 것처럼 데이터베이스가 필요한 기능은 GitHub Pages만으로는 못 만들어요. 하지만 저처럼 글을 쓰고 보여주기만 하면 되는 블로그에는 이 정도로 충분하고도 남았어요.</p>
 
     <h2>2. <span class="hl">저장소 이름을 특별하게 짓기</span></h2>
-    <p>공개해준다고 하니 다음 궁금증은 자연스럽게 "그래서 주소가 뭐가 되는데?"였어요. 이 주소는 제가 마음대로 정하는 게 아니라 <strong>저장소 이름</strong>에 따라 자동으로 결정돼요. 여기서 중요한 규칙이 하나 있어요. 저장소 이름을 정확히 <strong>내깃허브아이디.github.io</strong>로 만들면, 그 저장소는 <strong>루트 주소</strong>(예: <code>tigermorning.github.io</code>)로 바로 공개돼요.</p>
-    <p>그 외의 이름(예: <code>hello-aiffel</code>)으로 만들면, 주소 뒤에 저장소 이름이 붙어요 (예: <code>tigermorning.github.io/hello-aiffel/</code>).</p>
+    <p>공개해준다고 하니 다음 궁금증은 자연스럽게 "그래서 주소가 뭐가 되는데?"였어요. 이 주소는 제가 마음대로 정하는 게 아니라 <strong>저장소 이름</strong>에 따라 자동으로 결정돼요.</p>
+    <table>
+      <thead><tr><th>저장소 이름</th><th>결과 주소</th></tr></thead>
+      <tbody>
+        <tr><td><strong>내깃허브아이디.github.io</strong> (정확히 이 형태)</td><td>루트 주소로 바로 공개 — 예: <code>tigermorning.github.io</code></td></tr>
+        <tr><td>그 외 이름 (예: <code>hello-aiffel</code>)</td><td>주소 뒤에 저장소 이름이 붙음 — 예: <code>tigermorning.github.io/hello-aiffel/</code></td></tr>
+      </tbody>
+    </table>
 
     <blockquote>
       <p><strong>참고</strong>: 저장소 이름은 나중에 바꿀 수도 있어요. 저는 처음에 <code>tigermorning.github.io</code>로 만들었다가 <code>blog</code>로 이름을 바꿨는데, 그 순간 주소도 <code>tigermorning.github.io/blog/</code>로 자연스럽게 바뀌었어요. 삭제하고 새로 만든 게 아니라, GitHub 저장소 <strong>Settings에서 이름만 바꾼 것</strong>이라 커밋 기록도 그대로 유지돼요.</p>
