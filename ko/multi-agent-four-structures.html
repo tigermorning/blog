@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>여럿이라는 말만으론 부족하다 — 네 가지 구조와 맞는 과업 (2) - Tigermorning</title>
+  <meta name="description" content="멀티 에이전트는 몇 명이냐가 아니라 어떻게 연결됐느냐로 갈립니다. 리드를 거치는 허브형(오케스트레이터-워커, 팬아웃·합성)과 에이전트끼리 직접 주고받는 직접형(비평-수정, 인계) 네 구조가 각각 어떤 과업에 맞고 어떤 실패를 만드는지 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="여럿이라는 말만으론 부족하다 — 네 가지 구조와 맞는 과업 (2)">
+  <meta property="og:description" content="멀티 에이전트는 몇 명이냐가 아니라 어떻게 연결됐느냐로 갈립니다. 리드를 거치는 허브형(오케스트레이터-워커, 팬아웃·합성)과 에이전트끼리 직접 주고받는 직접형(비평-수정, 인계) 네 구조가 각각 어떤 과업에 맞고 어떤 실패를 만드는지 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/multi-agent-four-structures.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">여럿이라는 말만으론 부족하다</span> — 네 가지 구조와 맞는 과업 (2)</h1>
+    <p class="post-date">2026. 9. 3.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="multi-agent-split-gains-and-losses.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">나누면 좋아질까 — 멀티 에이전트의 득실과 판정표</span>
+    </a>
+
+    <p><a href="multi-agent-split-gains-and-losses.html">1편</a>에서 "나눌지 말지"를 판정하는 표를 봤어요. 그런데 나누기로 했다고 해서 설계가 끝난 건 아니에요. <strong>멀티 에이전트</strong>는 여러 <a href="what-is-ai-agent.html">에이전트</a>가 참여한다는 뜻일 뿐, 누가 일을 나누고 누가 다음 행동을 정하는지는 말해 주지 않거든요. 같은 수의 워커라도 연결 방식에 따라 중복 조사, 대기, 잘못된 인계처럼 서로 다른 실패를 만들어요. 그래서 구조를 고를 때 먼저 확인할 두 가지는 <strong>결과가 어디로 모이는가</strong>, 그리고 <strong>틀린 결과를 누가 되돌리는가</strong>예요.</p>
+
+    <h2><span class="hl">허브형과 직접형</span> — 소통 경로가 둘로 갈린다</h2>
+    <p>사무실 벽에 붙은 작업 보드를 떠올려 보세요. 카드가 "조사", "초안", "검토"처럼 역할별 칸에 나뉘어 있죠. 이 보드가 보여 주는 건 인원수가 아니라 <strong>연결된 책임</strong>이에요. 그 연결은 소통 경로에 따라 두 가지로 갈려요.</p>
+    <table>
+      <thead><tr><th>경로</th><th>누가 누구와 이야기하나</th><th>속하는 구조</th></tr></thead>
+      <tbody>
+        <tr><td><strong>허브형</strong></td><td>모든 소통이 리드를 거친다. 리드가 나누고, 받고, 합성한다</td><td>오케스트레이터-워커, 팬아웃·합성</td></tr>
+        <tr><td><strong>직접형</strong></td><td>에이전트끼리 결과와 제어권을 바로 주고받는다</td><td>비평-수정, 인계</td></tr>
+      </tbody>
+    </table>
+    <p>아래 그림에서 진한 화살표는 <strong>제어권 또는 위임</strong>이 가는 방향이고, 옅은 화살표는 <strong>탐색 결과나 검토 결과가 모이는</strong> 방향이에요.</p>
+    <figure>
+      <svg viewBox="0 0 680 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="fig2title">
+        <title id="fig2title">오케스트레이터-워커, 팬아웃·합성, 비평-수정, 인계 네 구조의 화살표 모양</title>
+        <style>
+          .s-box{stroke:var(--border);stroke-width:1.8;fill:none;}
+          .s-lead{stroke:var(--accent);stroke-width:2.4;fill:none;}
+          .s-t{font-family:var(--font-body);fill:var(--ink);font-size:11.5px;}
+          .s-h{font-family:var(--font-heading);font-weight:700;fill:var(--ink);font-size:13px;}
+          .s-c{stroke:var(--accent);stroke-width:2;fill:none;}
+          .s-r{stroke:var(--border);stroke-width:1.8;fill:none;}
+          .s-b{stroke:var(--accent);stroke-width:1.8;fill:none;stroke-dasharray:4 3;}
+        </style>
+        <defs>
+          <marker id="sc" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/></marker>
+          <marker id="sr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--border)"/></marker>
+        </defs>
+
+        <!-- 1 orchestrator-worker -->
+        <text x="85" y="22" text-anchor="middle" class="s-h">오케스트레이터-워커</text>
+        <rect x="55" y="35" width="60" height="28" rx="6" class="s-lead"/>
+        <text x="85" y="54" text-anchor="middle" class="s-t">리드</text>
+        <rect x="10" y="100" width="44" height="26" rx="6" class="s-box"/><text x="32" y="118" text-anchor="middle" class="s-t">워커</text>
+        <rect x="63" y="100" width="44" height="26" rx="6" class="s-box"/><text x="85" y="118" text-anchor="middle" class="s-t">워커</text>
+        <rect x="116" y="100" width="44" height="26" rx="6" class="s-box"/><text x="138" y="118" text-anchor="middle" class="s-t">워커</text>
+        <path d="M75 63 L36 98" class="s-c" marker-end="url(#sc)"/>
+        <path d="M85 63 L85 98" class="s-c" marker-end="url(#sc)"/>
+        <path d="M95 63 L134 98" class="s-c" marker-end="url(#sc)"/>
+        <rect x="55" y="150" width="60" height="26" rx="6" class="s-lead"/><text x="85" y="168" text-anchor="middle" class="s-t">합성</text>
+        <path d="M32 128 L72 148" class="s-r" marker-end="url(#sr)"/>
+        <path d="M85 128 L85 148" class="s-r" marker-end="url(#sr)"/>
+        <path d="M138 128 L98 148" class="s-r" marker-end="url(#sr)"/>
+
+        <!-- 2 fan-out -->
+        <text x="255" y="22" text-anchor="middle" class="s-h">팬아웃·합성</text>
+        <rect x="225" y="35" width="60" height="28" rx="6" class="s-box"/>
+        <text x="255" y="54" text-anchor="middle" class="s-t">입력</text>
+        <rect x="180" y="100" width="44" height="26" rx="6" class="s-box"/><text x="202" y="118" text-anchor="middle" class="s-t">워커</text>
+        <rect x="233" y="100" width="44" height="26" rx="6" class="s-box"/><text x="255" y="118" text-anchor="middle" class="s-t">워커</text>
+        <rect x="286" y="100" width="44" height="26" rx="6" class="s-box"/><text x="308" y="118" text-anchor="middle" class="s-t">워커</text>
+        <path d="M245 63 L206 98" class="s-c" marker-end="url(#sc)"/>
+        <path d="M255 63 L255 98" class="s-c" marker-end="url(#sc)"/>
+        <path d="M265 63 L304 98" class="s-c" marker-end="url(#sc)"/>
+        <rect x="225" y="150" width="60" height="26" rx="6" class="s-lead"/><text x="255" y="168" text-anchor="middle" class="s-t">합성</text>
+        <path d="M202 128 L242 148" class="s-r" marker-end="url(#sr)"/>
+        <path d="M255 128 L255 148" class="s-r" marker-end="url(#sr)"/>
+        <path d="M308 128 L268 148" class="s-r" marker-end="url(#sr)"/>
+
+        <!-- 3 critique-revise -->
+        <text x="425" y="22" text-anchor="middle" class="s-h">비평-수정</text>
+        <rect x="395" y="35" width="60" height="28" rx="6" class="s-box"/><text x="425" y="54" text-anchor="middle" class="s-t">초안</text>
+        <rect x="395" y="95" width="60" height="28" rx="6" class="s-lead"/><text x="425" y="114" text-anchor="middle" class="s-t">비평</text>
+        <rect x="395" y="155" width="60" height="28" rx="6" class="s-box"/><text x="425" y="174" text-anchor="middle" class="s-t">수정</text>
+        <path d="M425 63 L425 93" class="s-r" marker-end="url(#sr)"/>
+        <path d="M425 123 L425 153" class="s-c" marker-end="url(#sc)"/>
+        <path d="M457 169 C 490 169, 490 109, 458 109" class="s-b" marker-end="url(#sc)"/>
+        <text x="500" y="145" class="s-t">다시 비평</text>
+
+        <!-- 4 handoff -->
+        <text x="600" y="22" text-anchor="middle" class="s-h">인계</text>
+        <rect x="570" y="35" width="60" height="28" rx="6" class="s-box"/><text x="600" y="54" text-anchor="middle" class="s-t">접수</text>
+        <rect x="570" y="95" width="60" height="28" rx="6" class="s-box"/><text x="600" y="114" text-anchor="middle" class="s-t">담당 A</text>
+        <rect x="570" y="155" width="60" height="28" rx="6" class="s-lead"/><text x="600" y="174" text-anchor="middle" class="s-t">담당 B</text>
+        <path d="M600 63 L600 93" class="s-c" marker-end="url(#sc)"/>
+        <path d="M600 123 L600 153" class="s-c" marker-end="url(#sc)"/>
+        <path d="M632 169 C 660 169, 660 109, 633 109" class="s-b" marker-end="url(#sc)"/>
+
+        <!-- captions -->
+        <text x="85" y="210" text-anchor="middle" class="s-t">리드가 나누고,</text>
+        <text x="85" y="226" text-anchor="middle" class="s-t">합성이 모아요</text>
+        <text x="255" y="210" text-anchor="middle" class="s-t">고정 입력을 나눠 보내고,</text>
+        <text x="255" y="226" text-anchor="middle" class="s-t">합성이 모아요</text>
+        <text x="425" y="210" text-anchor="middle" class="s-t">같은 결과를 비평으로</text>
+        <text x="425" y="226" text-anchor="middle" class="s-t">다듬는 반복</text>
+        <text x="600" y="210" text-anchor="middle" class="s-t">끝낸 지점에서</text>
+        <text x="600" y="226" text-anchor="middle" class="s-t">다음 담당이 이어받아요</text>
+
+        <!-- legend -->
+        <path d="M40 285 L90 285" class="s-c" marker-end="url(#sc)"/><text x="100" y="289" class="s-t">제어·위임</text>
+        <path d="M200 285 L250 285" class="s-r" marker-end="url(#sr)"/><text x="260" y="289" class="s-t">결과 수렴·인계</text>
+        <path d="M390 285 L440 285" class="s-b" marker-end="url(#sc)"/><text x="450" y="289" class="s-t">되돌림</text>
+        <text x="40" y="315" class="s-t">왼쪽 둘은 허브형(리드를 거침), 오른쪽 둘은 직접형(서로 직접 주고받음)</text>
+      </svg>
+      <figcaption>읽는 법: 왼쪽 두 구조는 화살표가 모두 위(리드·입력)에서 퍼졌다가 아래(합성)로 다시 모여요. 오른쪽 두 구조는 화살표가 위에서 아래로 한 줄로 흐르고, 점선이 되돌아가는 길이에요.</figcaption>
+    </figure>
+
+    <h2><span class="hl">오케스트레이터-워커</span> — 리드가 나누고 합친다</h2>
+    <p>모든 소통이 리드를 지나는 허브형이에요. 리드는 전략을 세우고 과업을 위임하고, 워커는 병렬로 탐색하고, 리드는 결과를 받아 합성해요. Anthropic이 자사 연구 시스템에서 orchestrator-worker라고 부르는 구조예요. <strong>독립된 조사 질문이 여럿인 열린 과업</strong>에 맞아요.</p>
+    <p>위험은 <strong>모호한 위임</strong>이에요. 워커들이 같은 범위를 찾거나, 결과만 던지고 근거는 남기지 않을 수 있어요. 의존성이 큰 과업에서 워커를 동기로 실행하면 가장 늦게 끝나는 워커 때문에 전체가 기다려야 하고요. 그래서 목표, 출력 포맷, 도구·출처 지침, 과업 경계를 <strong>먼저 적어 두는 것</strong>으로 위험을 낮춰요.</p>
+
+    <h2><span class="hl">팬아웃·합성</span> — 같은 출발점에서 독립 조사, 리드가 비교</h2>
+    <p>역시 허브형이에요. <strong>팬아웃</strong>은 일을 여러 갈래로 펼친다는 뜻이고, 같은 입력을 받은 여러 워커가 독립적으로 조사한 뒤 리드가 비교해 합쳐요. 자료 수집이나 관점 비교처럼 <strong>중간 결과를 기다리지 않고 시작할 수 있는 과업</strong>에 맞아요.</p>
+    <p>위험은 독립성만 믿고 결과를 <strong>그대로 이어 붙이는 것</strong>이에요. 서로 다른 결과가 같은 근거를 반복하거나, 중요한 관점 하나가 통째로 빠질 수 있어요. 리드는 결과의 개수보다 <strong>근거가 얼마나 겹치는지</strong>, <strong>어떤 관점이 비어 있는지</strong>를 봐야 해요.</p>
+
+    <h2><span class="hl">비평-수정</span> — 초안을 비평으로 다듬는 반복</h2>
+    <p>에이전트끼리 직접 의견을 주고받는 직접형이에요. 초안을 만들면 비평자가 문제를 찾아 작성자에게 돌려주고, 수정이 이어져요. 반례 점검이나 설계안 검토처럼 <strong>한 결과의 약점을 찾아야 하는 과업</strong>에 맞아요. 여기서 비평의 역할은 새 답을 많이 만드는 게 아니라, 초안의 <strong>근거·누락·과도한 일반화</strong>를 점검하는 거예요.</p>
+    <p>위험은 <strong>끝없는 되돌림</strong>이에요. 비평이 확인할 항목과 되돌릴 횟수를 미리 정하지 않으면 결론이 한없이 늦어져요. 그리고 비평 결과가 초안보다 항상 더 정확하다고 봐서도 안 돼요. 비평도 틀릴 수 있어요.</p>
+
+    <h2><span class="hl">인계</span> — 제어권을 다음 담당에게 넘긴다</h2>
+    <p>직접형의 다른 모양이에요. 한 담당이 다음 담당에게 <strong>제어권</strong>(지금부터 누가 대화를 이끄는지)을 넘겨요. 문의의 성격에 따라 다른 전문 역할이 이어받아야 하는 <strong>대화형 과업</strong>에 맞아요. 다음 담당은 이미 확인된 사실과 아직 답하지 못한 질문을 함께 받아야 해요.</p>
+    <p>위험은 <strong>잘못된 인계와 반복 인계</strong>예요. 인계 기준이 흐리면 고객이 같은 설명을 또 하게 되죠. 어떤 조건에서 넘기고 어떤 조건에서 앞 담당에게 되돌릴지를 기록해 두어야 해요.</p>
+
+    <h2><span class="hl">패턴-과업 매칭표</span></h2>
+    <table>
+      <thead><tr><th>패턴</th><th>소통 경로와 구조</th><th>맞는 과업</th><th>주요 위험</th></tr></thead>
+      <tbody>
+        <tr><td>오케스트레이터-워커</td><td>허브형: 리드가 전략·위임·합성을 맡음</td><td>독립 조사가 여럿인 열린 과업</td><td>중복 조사와 대기 병목</td></tr>
+        <tr><td>팬아웃·합성</td><td>허브형: 독립 워커 결과를 리드가 비교</td><td>자료 수집과 관점 비교</td><td>근거 반복과 누락</td></tr>
+        <tr><td>비평-수정</td><td>직접형: 초안 작성자와 비평자가 의견을 주고받음</td><td>반례 점검과 설계안 검토</td><td>끝없는 되돌림</td></tr>
+        <tr><td>인계</td><td>직접형: 앞 담당이 다음 담당에게 제어권을 넘김</td><td>역할 전환이 필요한 대화</td><td>잘못된 인계와 반복</td></tr>
+      </tbody>
+    </table>
+    <p>같은 "블로그 글 초안 만들기" 과업을 두 구조로 돌리면 이렇게 달라요. <strong>팬아웃·합성</strong>으로 하면 워커 셋이 각각 다른 출처를 뒤져 사실 목록을 가져오고, 리드가 겹치는 근거를 걸러 하나로 엮어요. 출처가 빠진 관점이 있어도 리드가 안 보면 그대로 빠져요. <strong>비평-수정</strong>으로 하면 초안 하나가 먼저 나오고, 비평자가 "이 수치 출처 없음", "이 문장은 일반화가 과함" 같은 지적을 돌려주고, 작성자가 고쳐요. 출처를 새로 찾는 힘은 약하지만, 이미 있는 문장의 약점은 잘 잡아요. 어느 쪽이 좋은지는 <strong>지금 부족한 게 "재료"인지 "검토"인지</strong>에 달렸어요.</p>
+
+    <h2><span class="hl">이 시리즈의 실습 구성</span> — 그리고 네 구조 바깥의 A2A</h2>
+    <p>이 과정의 실습은 리드 하나, 병렬 워커 둘, 비평 하나를 기본 틀로 삼아요. 리드가 두 워커의 결과를 합성한 뒤 비평이 검토하는 흐름이에요. 다음 편부터는 이 발상을 실제 코드로 옮겨서, 같은 버그를 세 가지 방식으로 고쳐 보며 기록을 비교해요.</p>
+    <p>한 가지 덧붙일 게 있어요. 위 네 구조는 모두 <strong>한 실행 환경 안</strong>의 에이전트들이에요. 소유자와 프레임워크가 서로 다른 에이전트끼리 통신하는 규격으로는 <strong>A2A</strong>(Agent-to-Agent)가 따로 있는데, 이건 네 구조 격자의 바깥에서 다른 조직의 에이전트를 잇는 층이에요. 이번 시리즈의 실험은 안쪽 구조만 비교해요.</p>
+
+    <a class="post-nav" href="multi-agent-three-runs-abc.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">같은 버그를 세 방식으로 — 기준선·워크플로·오케스트레이션 실행</span>
+    </a>
+
+    <hr>
+
+    <h3>"멀티 에이전트, 나눌까 말까" 시리즈</h3>
+    <a class="post-nav" href="multi-agent-split-gains-and-losses.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">나누면 좋아질까 — 멀티 에이전트의 득실과 판정표</span>
+    </a>
+    <p class="post-date">(2) 여럿이라는 말만으론 부족하다 — 네 가지 구조와 맞는 과업 (이 글)</p>
+    <a class="post-nav" href="multi-agent-three-runs-abc.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">같은 버그를 세 방식으로 — 기준선·워크플로·오케스트레이션 실행</span>
+    </a>
+    <a class="post-nav" href="multi-agent-judging-records.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">통과했다는 말로는 부족하다 — 두 층 채점과 채택·축소·폐기 판정</span>
+    </a>
+    <a class="post-nav" href="multi-agent-ecosystem-tools.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">실험이 남긴 네 문제와 도구들 — Agent Teams·Workflows·oh-my-claudecode·herdr</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>실험이 남긴 네 문제와 도구들 — Agent Teams·Workflows·oh-my-claudecode·herdr (5) - Tigermorning</title>
+  <meta name="description" content="세 실행을 끝내면 컨텍스트가 끊기고, 재현이 안 되고, 모델을 나눌 수 없고, 상태가 안 보이는 네 문제가 남습니다. Claude Code Agent Teams, Workflows, oh-my-claudecode, herdr가 각각 어느 문제를 겨냥하는지, 붙이면 비교 조건 중 무엇이 바뀌는지, 그리고 locator 서브에이전트를 마크다운 파일 하나로 옮기는 법을 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="실험이 남긴 네 문제와 도구들 — Agent Teams·Workflows·oh-my-claudecode·herdr (5)">
+  <meta property="og:description" content="세 실행을 끝내면 컨텍스트가 끊기고, 재현이 안 되고, 모델을 나눌 수 없고, 상태가 안 보이는 네 문제가 남습니다. Claude Code Agent Teams, Workflows, oh-my-claudecode, herdr가 각각 어느 문제를 겨냥하는지, 붙이면 비교 조건 중 무엇이 바뀌는지, 그리고 locator 서브에이전트를 마크다운 파일 하나로 옮기는 법을 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/multi-agent-ecosystem-tools.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">실험이 남긴 네 문제와 도구들</span> — Agent Teams·Workflows·oh-my-claudecode·herdr (5)</h1>
+    <p class="post-date">2026. 9. 3.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="multi-agent-judging-records.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">통과했다는 말로는 부족하다 — 두 층 채점과 채택·축소·폐기 판정</span>
+    </a>
+
+    <p><a href="multi-agent-judging-records.html">4편</a>까지 세 실행의 결과표를 읽고 판정문을 썼어요. 표를 덮고 나면 어려움이 넷 남아요. 이 넷은 이번 실험만의 사정이 아니라 멀티 에이전트가 실전에서 늘 부딪히는 문제이고, 도구 제작자들도 똑같이 겪었어요. 그래서 최근 나온 도구들은 저마다 이 가운데 하나를 겨냥해요. 어느 도구가 어느 문제를 푸는지 알면 <strong>이름이 아니라 문제로</strong> 도구를 고를 수 있고, 붙였을 때 비교 조건 중 무엇이 바뀌는지도 미리 알 수 있어요.</p>
+
+    <h2><span class="hl">네 문제</span> — 실험 안에서 어디에 있었나</h2>
+    <table>
+      <thead><tr><th>문제</th><th>실험에서 실제로 일어난 일</th><th>겨냥한 도구</th><th>바꾸는 층</th></tr></thead>
+      <tbody>
+        <tr><td><strong>컨텍스트가 끊긴다</strong></td><td>워커 결과는 리드에게만 돌아와요. 워커가 둘이면 서로 무엇을 찾았는지 알 길이 없어요. C에서 리드가 locator를 정말 불렀는지를 인용으로 확인해야 했던 게 이 문제예요. <a href="multi-agent-split-gains-and-losses.html">1편</a>에서 Cognition이 지적한 "에이전트 사이 문맥 공유 부족"이 바로 여기서 일어나요.</td><td>Agent Teams</td><td>다음 행동을 팀원들이 정함</td></tr>
+        <tr><td><strong>재현이 안 된다</strong></td><td>리드가 매 턴 다음 행동을 정하는 실행은 같은 명령을 다시 돌려도 같은 경로를 밟지 않아요. 러너가 result.json이 있으면 건너뛰고, 덮어쓰면 비교가 안 된다고 일러둔 까닭이에요.</td><td>Workflows</td><td>다음 행동을 스크립트가 정함</td></tr>
+        <tr><td><strong>모델을 나눌 수 없다</strong></td><td>세 실행 모두 haiku로 고정했어요. 파일 경로를 찾는 워커와 수정 방침을 정하는 리드가 같은 모델을 써야 할 이유는 없지만, 실험에는 나눌 자리가 없었어요.</td><td>oh-my-claudecode</td><td>어느 모델이 그 행동을 하는가</td></tr>
+        <tr><td><strong>상태가 안 보인다</strong></td><td>어느 실행이 어디서 멈췄는지는 끝난 뒤 judge.py가 전사를 읽어야 알았어요. 터미널을 닫으면 작업도 사라지고요.</td><td>herdr</td><td>그 행동을 어디서 지켜보는가</td></tr>
+      </tbody>
+    </table>
+    <p>핵심: 위 두 도구는 <strong>조율</strong> 층을, 셋째는 <strong>모델</strong> 층을, 넷째는 <strong>관측</strong> 층을 바꿔요. 조율이나 모델 층이 바뀌면 기준선을 다시 세워야 하고, 관측 층은 지금 실험 위에 그대로 얹을 수 있어요.</p>
+
+    <h2><span class="hl">컨텍스트가 끊기는 문제</span> — Agent Teams</h2>
+    <p>Claude Code의 <strong>Agent Teams</strong>는 첫 문제를 겨냥한 실험적 기능이에요. 서브에이전트는 결과를 리드에게 돌려주고 끝나지만, <strong>팀원</strong>(teammate)은 각자 컨텍스트 창을 가진 독립 세션으로서 서로에게 직접 메시지를 보내고, 공유 작업 목록에서 다음 일을 스스로 가져가요. 두 팀원이 같은 작업을 동시에 잡지 않도록 파일 잠금이 막아 주고요. 공식 문서가 드는 사례 하나는 원인이 불분명한 버그를 두고 팀원 다섯이 각자 다른 가설을 맡아 <strong>서로 반박</strong>하게 하는 조사예요. 한 에이전트가 첫 가설에 묶이는 일을 팀원 사이의 반박으로 푸는 발상이죠. <code>settings.json</code>(Claude Code의 설정 파일, 프로젝트의 <code>.claude/</code> 폴더나 홈 폴더의 <code>~/.claude/</code>에 있어요)의 <code>env</code> 항목에 <code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS</code>를 <code>"1"</code>로 넣어 켜요. <code>env</code>는 환경 변수, 곧 프로그램이 시작할 때 읽는 "이름=값" 설정이에요.</p>
+    <p>대가는 셋이에요. 팀원 하나가 곧 Claude 세션 하나라 토큰이 팀원 수에 비례해 늘고, 한 세션에 팀은 하나이며 팀원이 다시 팀을 만들 수 없고, <strong>대화형 세션에서만</strong> 팀원이 만들어져요. <a href="multi-agent-three-runs-abc.html">3편</a>의 <code>arms.py</code>처럼 SDK(코드에서 서비스를 부르는 개발용 도구 모음)로 돌리는 실행에서는 켜 두어도 서브에이전트로 돌아가니 지금 실험에 바로 끼울 수는 없어요. 이 도구를 붙이면 바뀌는 조건은 <strong>다음 행동을 정하는 주체</strong>예요. 리드 하나가 아니라 팀원들이 함께 정하니, C와 나란히 놓으려면 같은 문제로 기준선을 다시 세워야 해요.</p>
+
+    <h2><span class="hl">locator를 파일 하나로 옮기기</span> — 서브에이전트 정의 파일</h2>
+    <p>3편의 locator는 <code>arms.py</code> 안에서 <code>agents={"locator": ...}</code>로 파이썬 코드가 정의했어요. 같은 역할을 터미널에서 쓰는 코딩 에이전트에는 <strong>마크다운 파일 하나</strong>로 정의할 수 있고, Agent Teams의 팀원도 이 정의 파일에서 띄워요. 그래서 역할을 파일로 적어 두면 서브에이전트로도 팀원으로도 같은 정의를 써요. (파일로 규칙을 외워 두는 발상 자체는 <a href="ai-skills-and-rules-files.html">스킬과 규칙 파일</a>에서 봤어요.)</p>
+    <p><strong>Claude Code</strong>의 서브에이전트는 프로젝트의 <code>.claude/agents/</code> 폴더에 두는 마크다운이에요. 프로젝트 폴더에 두면 저장소와 함께 버전 관리되어 팀이 같은 정의를 쓰고, <code>~/.claude/agents/</code>(<code>~/</code>는 내 홈 폴더)에 두면 내 모든 프로젝트에서 써요. 파일 머리의 YAML(설정을 "이름: 값" 꼴로 적는 형식)에서 <code>name</code>과 <code>description</code>은 필수이고, <code>tools</code>로 도구를 제한하고, <code>model</code>과 <code>maxTurns</code>로 모델과 턴 예산을 정해요. 머리 아래 본문이 그 에이전트의 시스템 프롬프트가 돼요.</p>
+    <pre><code>---
+name: locator
+description: 버그 보고를 받아 원인이 있는 파일 경로·함수 이름·진단을 구조화된 보고로 남긴다. 파일을 고치지 않는다.
+tools: Read, Grep, Glob
+model: haiku
+maxTurns: 12
+---
+
+당신은 읽기 전용 탐색 담당입니다. 저장소를 읽고 검색만 하며, 결과는
+파일 경로 · 함수 또는 클래스 이름 · 한 문단 진단의 세 항목으로 보고합니다.</code></pre>
+    <p><code>tools</code>에 Read·Grep·Glob만 적으면 파일을 고치는 도구는 빠지니, 3편에서 <code>allowed_tools</code>로 건 읽기 전용 제한과 같은 뜻이에요. Claude는 요청과 <code>description</code>을 견줘 이 서브에이전트에 맡길지 스스로 정하고, 반드시 맡기려면 프롬프트에 <code>@agent-locator</code>라고 불러요. 파일을 저장하면 몇 초 안에 반영되지만, agents 폴더를 처음 만들었을 때는 세션을 다시 시작해야 해요.</p>
+    <p><strong>OpenCode</strong>는 오픈소스 코딩 에이전트 CLI예요. 정의 파일은 <code>.opencode/agents/</code> 또는 <code>~/.config/opencode/agents/</code>에 두고, 파일 이름이 곧 에이전트 이름이에요. <code>mode</code>가 <code>primary</code>면 Tab 키로 바꿔 가며 직접 대화하는 주 에이전트, <code>subagent</code>면 주 에이전트가 필요할 때 부르거나 사용자가 <code>@이름</code>으로 부르는 보조 에이전트예요. 도구 제한은 <code>permission</code>으로 선언해요.</p>
+    <pre><code>---
+description: 버그 보고를 받아 원인이 있는 파일 경로·함수 이름·진단을 구조화된 보고로 남긴다. 파일을 고치지 않는다.
+mode: subagent
+model: anthropic/claude-haiku-4-5
+permission:
+  edit: deny
+  bash: deny
+---
+당신은 읽기 전용 탐색 담당입니다. 저장소를 읽고 검색만 하며, 결과는
+파일 경로 · 함수 또는 클래스 이름 · 한 문단 진단의 세 항목으로 보고합니다.</code></pre>
+    <p>이걸 <code>locator.md</code>로 저장하면 <code>@locator</code>로 부를 수 있어요. 모델은 "공급자/모델 ID" 꼴로 적고, ID는 설치한 OpenCode의 모델 목록에서 확인해 맞춰요. OpenCode에는 읽기 전용 탐색용 <code>explore</code> 서브에이전트가 이미 들어 있어서, 보고 포맷을 정해 줄 필요가 없다면 그냥 그걸 불러도 돼요.</p>
+    <table>
+      <thead><tr><th>담는 정보</th><th>arms.py (파이썬 인자)</th><th>Claude Code (.claude/agents/)</th><th>OpenCode (.opencode/agents/)</th></tr></thead>
+      <tbody>
+        <tr><td>이름</td><td><code>agents={"locator": ...}</code></td><td><code>name: locator</code></td><td>파일 이름 <code>locator.md</code></td></tr>
+        <tr><td>무엇을 맡기는지</td><td><code>description=</code></td><td><code>description:</code></td><td><code>description:</code></td></tr>
+        <tr><td>허용 도구</td><td><code>tools=["Read","Grep","Glob"]</code></td><td><code>tools: Read, Grep, Glob</code></td><td><code>permission: edit/bash deny</code></td></tr>
+        <tr><td>모델</td><td><code>model=MODEL</code></td><td><code>model: haiku</code></td><td><code>model: anthropic/claude-haiku-4-5</code></td></tr>
+      </tbody>
+    </table>
+    <p>핵심: 필드 이름만 다르고 담는 정보는 같아요. 다른 건 <strong>기록</strong>이에요. CLI의 서브에이전트 호출은 <code>result.json</code>과 <code>changes.diff</code>를 남기지 않으니, 이 정의로 비교 실험을 하려면 비용·턴·수정 범위를 실행 뒤 스스로 기록해야 해요.</p>
+
+    <h2><span class="hl">재현이 안 되는 문제</span> — Workflows</h2>
+    <p>3편에서 locator 다음 fixer를 부르는 순서는 사람이 파이썬으로 적었어요. Claude Code의 <strong>Workflows</strong>는 그 파이썬을 Claude가 자바스크립트로 쓰게 하고, 실행을 맡는 런타임이 스크립트를 백그라운드에서 돌려요. 반복과 분기는 스크립트에 적히고 중간 결과는 스크립트 변수에 머물며, Claude의 컨텍스트에는 <strong>최종 결과만</strong> 들어와요. 공식 문서는 서브에이전트·스킬·팀·워크플로를 "다음에 실행할 것을 누가 정하는가"로 나눠요. A·B·C를 가른 물음과 같죠. 워크플로 실행(B)을 수십 개 에이전트 규모로 키운 게 이 제품이에요.</p>
+    <p>재현 장치가 눈에 띄어요. 실행마다 스크립트와 각 에이전트의 결과가 세션 디렉터리에 남고, 같은 세션에서 다시 띄우면 이미 끝난 에이전트는 저장된 결과를 돌려주고 프롬프트가 달라진 에이전트부터 다시 실행해요. 스크립트 안에서 현재 시각이나 난수를 쓰면 오류를 내는데, 다시 돌렸을 때 같은 호출이 같은 순서로 반복되게 하려는 거예요. 3편의 러너가 result.json이 있으면 건너뛴 것과 같은 발상을 런타임이 <strong>강제</strong>하는 셈이에요. 대가는 실행 중에 사람이 끼어들 수 없다는 점이에요. 단계 사이에 승인이 필요하면 워크플로를 단계마다 따로 나눠야 해요. 한 실행이 에이전트 25개나 150만 토큰을 넘으면 경고가 뜨지만 알림일 뿐 멈추지는 않아요. 바뀌는 조건은 역시 다음 행동의 주체이고, B와 같은 층이라 B의 파이썬을 이 스크립트로 옮겨 같은 문제를 돌리면 B와 바로 견줄 수 있어요.</p>
+
+    <h2><span class="hl">모델을 나눌 수 없는 문제</span> — oh-my-claudecode</h2>
+    <p>1편에서 Anthropic의 멀티 에이전트 시스템이 채팅의 약 15배 토큰을 썼다는 수치를 봤어요 [벤더]. 워커가 늘수록 비용이 따라 늘지만, 워커마다 필요한 능력은 달라요. <strong>oh-my-claudecode</strong>는 Claude Code 위에서 도는 커뮤니티 오케스트레이션 프레임워크로(GitHub 스타 38,000 이상, 커뮤니티 자체 수치), 겨냥하는 지점이 <strong>역할별 모델 배분</strong>이에요. 단순 조회에는 Haiku, 표준 구현에는 Sonnet, 설계와 깊은 분석에는 Opus를 고르는 3단 배분이 기본이고, 그 위에 에이전트마다 어느 모델을 붙일지 적어 두는 표가 따로 있어요. 실행 모드 중 ralph는 검증이 통과할 때까지 수정을 반복해요. 4편에서 judge.py가 "검증_성실성"으로 물었던 것, 곧 끝났다고 말하기 전에 실제로 확인했는가를 도구가 강제하는 장치예요.</p>
+    <p>대가는 <strong>비교가 어려워지는 것</strong>이에요. 프레임워크가 자체 에이전트 정의와 프롬프트를 끼워 넣기 때문에 결과 차이가 모델 배분에서 왔는지 프레임워크의 프롬프트에서 왔는지 가르기 어렵고, 판이 빠르게 바뀌는 커뮤니티 프로젝트라 문서와 실제 동작이 다를 수 있어요. 바뀌는 조건은 <strong>모델</strong>이에요. 4편의 고정 조건 표에 "역할별 모델" 열을 추가하고, 그 열이 같은 실행끼리만 비용을 견줘야 해요.</p>
+
+    <h2><span class="hl">상태가 안 보이는 문제</span> — herdr</h2>
+    <p>에이전트가 셋을 넘어가면 어느 창이 일하고 있고 어느 창이 승인을 기다리며 멈춰 있는지 눈으로 좇기 어렵고, 노트북 터미널을 닫으면 돌아가던 작업이 함께 사라져요. <strong>herdr</strong>는 이 문제를 겨냥한 오픈소스 런타임이에요. 백그라운드 서버가 에이전트 CLI의 터미널을 소유하기 때문에 터미널을 닫거나 컴퓨터를 다시 켜도 작업이 이어지고, 다른 터미널이나 원격 접속으로 다시 붙을 수 있어요. 각 창에 작업 중(working)·대기(blocked)·유휴(idle) 세 상태가 표시되어 멈춘 에이전트를 바로 찾고, Claude Code뿐 아니라 다른 회사의 코딩 에이전트 CLI 20여 종을 같은 화면에 놓을 수 있어요. 한 에이전트가 다른 에이전트의 창을 띄운 뒤 그쪽이 입력을 기다리며 멈출 때까지 기다리는 동작도 지원하고요.</p>
+    <p>herdr가 푸는 건 <strong>관측과 보존</strong>이지 결과 판정이 아니에요. 창이 유휴로 바뀌었다는 표시는 실행이 끝났다는 뜻일 뿐 테스트가 통과했다는 뜻이 아니니, result.json과 judge.py 층은 그대로 필요해요. 이 도구는 비교 조건을 바꾸지 않아요. 전사로 사후에 읽던 실행 상태를 실행 중에 화면으로 보게 해 주는 층이라, 기준선을 다시 세우지 않고 지금 실험 위에 그대로 얹을 수 있어요.</p>
+
+    <h2><span class="hl">문제로 도구를 고르는 표</span></h2>
+    <table>
+      <thead><tr><th>실험이 남긴 문제</th><th>겨냥한 도구</th><th>남는 것</th></tr></thead>
+      <tbody>
+        <tr><td>컨텍스트가 끊긴다</td><td>Agent Teams</td><td>토큰이 팀원 수에 비례, 대화형 세션 전용, 조율 주체가 바뀌어 기준선을 다시 세움</td></tr>
+        <tr><td>재현이 안 된다</td><td>Workflows</td><td>실행 중 사람이 끼어들 수 없음, B와 같은 층이라 바로 견줌</td></tr>
+        <tr><td>모델을 나눌 수 없다</td><td>oh-my-claudecode</td><td>프레임워크 프롬프트가 섞여 원인 분리가 어려움, 고정 조건에 모델 열 추가</td></tr>
+        <tr><td>상태가 안 보인다</td><td>herdr</td><td>결과 판정은 하지 않음, 비교 조건은 그대로</td></tr>
+      </tbody>
+    </table>
+    <p>네 도구는 서로를 대체하는 경쟁 상대가 아니라 <strong>다른 층</strong>을 맡아요. Agent Teams와 Workflows는 "다음 행동을 누가 정하는가"를, oh-my-claudecode는 "어느 모델이 그 행동을 하는가"를, herdr는 "그 행동을 어디서 지켜보는가"를 바꿔요. <a href="multi-agent-four-structures.html">2편</a> 끝에서 잠깐 언급한 A2A는 이 격자 바깥에서 소유자가 다른 에이전트를 잇는 층이고요. 조율이나 모델 층이 바뀌면 기준선을 다시 세워야 하지만, <strong>비교하는 방법은 그대로</strong>예요. 조건을 고정하고, 기록을 남기고, 같은 방식으로 읽는 일은 도구가 바뀌어도 바뀌지 않아요. 이 도구들 중 하나를 붙일 때도 4편의 채택·축소·폐기를 같은 순서로 판정해요.</p>
+
+    <h2><span class="hl">직접 해보기</span></h2>
+    <p>지금 내 작업에서 가장 아픈 문제 하나를 위 표의 왼쪽 열에서 골라 보세요. 그 도구를 붙였을 때 4편의 "고정·조작·측정" 표에서 <strong>어느 칸이 바뀌는지</strong> 한 줄로 적고, 기준선을 다시 세워야 하는지(조율·모델 층) 아니면 그대로 얹어도 되는지(관측 층) 표시해요. 도구 이름에 끌려 붙이는 게 아니라, 문제에서 출발해 조건 변화를 먼저 적는 습관이 이 시리즈에서 남기고 싶은 전부예요.</p>
+
+    <hr>
+
+    <h3>"멀티 에이전트, 나눌까 말까" 시리즈</h3>
+    <a class="post-nav" href="multi-agent-split-gains-and-losses.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">나누면 좋아질까 — 멀티 에이전트의 득실과 판정표</span>
+    </a>
+    <a class="post-nav" href="multi-agent-four-structures.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">여럿이라는 말만으론 부족하다 — 네 가지 구조와 맞는 과업</span>
+    </a>
+    <a class="post-nav" href="multi-agent-three-runs-abc.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">같은 버그를 세 방식으로 — 기준선·워크플로·오케스트레이션 실행</span>
+    </a>
+    <a class="post-nav" href="multi-agent-judging-records.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">통과했다는 말로는 부족하다 — 두 층 채점과 채택·축소·폐기 판정</span>
+    </a>
+    <p class="post-date">(5) 실험이 남긴 네 문제와 도구들 — Agent Teams·Workflows·oh-my-claudecode·herdr (이 글)</p>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
