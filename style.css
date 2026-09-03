@@ -1038,3 +1038,65 @@ details[open] > summary .tree-toggle-icon {
   font-family: var(--font-body);
   border-top: 3px dashed var(--border);
 }
+
+/* ── 요약 노트 6규칙 전용 스타일 (.claude/skills/tigermorning-blog-post) ── */
+
+/* 1. 한 줄 정의: h1 바로 아래, 글이 다루는 개념을 딱 1문장으로 */
+.one-liner {
+  border-left: 4px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  padding: 0.8rem 1rem;
+  margin: 0 0 1.5rem;
+  font-family: var(--font-subhead);
+  font-weight: var(--font-subhead-weight, 400);
+  font-size: 1.15rem;
+  color: var(--ink);
+}
+
+/* 4. 나쁜 선택 vs 좋은 선택 대비표 */
+.choice-table td.choice-bad {
+  background: var(--miss-bg);
+  color: var(--miss-ink);
+}
+
+.choice-table td.choice-good {
+  background: var(--hit-bg);
+  color: var(--hit-ink);
+}
+
+/* 6. 전문 용어 각주 */
+.fn-ref {
+  font-size: 0.75em;
+  line-height: 0;
+}
+
+.fn-ref a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.footnotes {
+  margin-top: 2.5rem;
+  padding-top: 1rem;
+  border-top: 3px dashed var(--border);
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.footnotes ol {
+  padding-left: 1.4rem;
+}
+
+.footnotes li {
+  margin-bottom: 0.4rem;
+}
+
+.footnotes li:target {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.footnotes a {
+  color: var(--accent);
+}
