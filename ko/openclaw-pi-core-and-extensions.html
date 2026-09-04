@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>뼈대와 손 — pi 코어와 확장 기능 투어 (8) - Tigermorning</title>
+  <meta name="description" content="OpenClaw의 뼈대였던 작은 코딩 에이전트 CLI pi를 들여다보고(세 갈래 모델 연결, JSONL 세션 기록, --tools 제한, 없는 것도 설계라는 관점), 그 위에 손을 늘리는 확장 기능(브라우저 조작, 카메라·위치 노드, Talk mode, IMAP 메일 감시, 모델 페일오버, ClawHub 스킬 마켓, 모바일 앱)을 입구·상태·권한 세 기준으로 둘러봤습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="뼈대와 손 — pi 코어와 확장 기능 투어 (8)">
+  <meta property="og:description" content="OpenClaw의 뼈대였던 작은 코딩 에이전트 CLI pi를 들여다보고, 그 위에 손을 늘리는 확장 기능들을 입구·상태·권한 세 기준으로 둘러봤습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/openclaw-pi-core-and-extensions.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">뼈대와 손</span> — pi 코어와 확장 기능 투어 (8)</h1>
+    <p class="post-date">2026. 9. 4.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="openclaw-automations-scheduling.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">사람이 기억하지 않도록 — 자동화 예약과 cron</span>
+    </a>
+
+    <p class="one-liner">에이전트 툴은 마법 상자가 아니라 "작은 코어 위에 무엇을 얹을지"를 고르는 층위이고, 손을 하나 늘릴 때마다 입구·상태·권한이 함께 늘어난다.</p>
+
+    <p>마지막 편은 강의의 두 절을 묶었어요. 하나는 OpenClaw의 뼈대였던 <strong>pi</strong>라는 작은 도구를 들여다보는 절, 다른 하나는 OpenClaw에 더 붙일 수 있는 <strong>확장 기능</strong>을 지도처럼 둘러보는 절이에요. 둘 다 같은 질문이에요. "무엇이 코어에 있고, 무엇이 바깥에 얹히는가." 오늘은 아무것도 켜지 않아요. 무엇이 있는지, 무엇을 조심해야 하는지 읽고 다음에 열어 볼 지점을 정하는 편이에요.</p>
+
+    <h2><span class="hl">비유</span> — 뼈대만 있는 집과 증축</h2>
+    <p>작은 집을 하나 지었어요. 기둥과 지붕, 방 하나, 현관 하나. 필요해지면 증축해요. 차고를 붙이면 차가 드나드는 새 입구가 생기고, 창고를 붙이면 물건이 쌓이는 새 공간이 생기고, 2층을 올리면 계단 열쇠를 누구에게 줄지 정해야 해요. 증축 하나마다 입구·보관·열쇠가 함께 늘어요. 그리고 이 집의 기둥은 원래 다른 건축가가 만든 작은 규격 기둥이었는데, 나중에 자기 기둥으로 바꿨어요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>기둥과 지붕만 있는 작은 집</td><td>pi — 작은 코딩 에이전트 코어</td></tr>
+        <tr><td>다른 건축가의 규격 기둥 → 자기 기둥으로 교체</td><td>초기 OpenClaw가 pi를 엔진으로 썼다가 자체 런타임 <code>openclaw</code>로 바꾼 일</td></tr>
+        <tr><td>차고·창고·2층 같은 증축</td><td>확장 기능 — 브라우저, 카메라·위치, 음성, 메일 감시 등</td></tr>
+        <tr><td>증축마다 생기는 새 입구</td><td>새 접촉면 — 웹 페이지, 메일함, 기기 센서</td></tr>
+        <tr><td>증축마다 쌓이는 물건</td><td>새 상태·기록</td></tr>
+        <tr><td>증축마다 정해야 하는 열쇠</td><td>새 권한</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 기능이 "있는지"만 보지 말고 "어느 층에 놓였는지"를 봐야, 증축할 때 입구·상태·권한이 어떻게 늘어나는지 미리 보여요.</p>
+
+    <h2><span class="hl">전체 그림</span> — 코어와 확장의 층</h2>
+    <svg viewBox="0 0 720 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="가운데 작은 코어 위에 게이트웨이·채널·권한·자동화 층이 얹히고, 바깥에 확장 기능들이 붙는 동심원 구조">
+      <g font-family="var(--font-body)" font-size="13" fill="var(--ink)">
+        <rect x="20" y="20" width="680" height="220" rx="16" fill="none" stroke="var(--border)" stroke-width="2" stroke-dasharray="6 4"/>
+        <text x="360" y="45" text-anchor="middle" font-size="12" fill="var(--muted)">확장 — 브라우저 · 카메라/위치 노드 · Talk mode · IMAP 감시 · 페일오버 · ClawHub · 모바일 앱</text>
+        <rect x="120" y="65" width="480" height="150" rx="14" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="360" y="88" text-anchor="middle" font-size="12" fill="var(--muted)">OpenClaw 본체 — 게이트웨이 · 채널 · 권한 모드 · automations</text>
+        <rect x="230" y="110" width="260" height="85" rx="12" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <text x="360" y="140" text-anchor="middle" font-weight="700">코어 (에이전트 런타임)</text>
+        <text x="360" y="162" text-anchor="middle" font-size="11" fill="var(--muted)">모델 연결 · 도구 호출 · 세션 기록</text>
+        <text x="360" y="180" text-anchor="middle" font-size="11" fill="var(--muted)">옛날엔 pi, 지금은 openclaw</text>
+      </g>
+    </svg>
+    <p><strong>읽는 법:</strong> 안쪽 굵은 상자가 코어예요. 모델을 만나고, 도구를 부르고, 기록을 남기는 가장 작은 부분이죠. 그 바깥 상자가 이 시리즈에서 본 OpenClaw 본체이고, 점선 바깥이 오늘 둘러볼 확장이에요. 안쪽으로 갈수록 바꾸기 어렵고, 바깥으로 갈수록 붙였다 뗐다 해요.</p>
+
+    <h2><span class="hl">pi</span> — 작은 코어에서 내 도구를 만든다</h2>
+    <p><strong>pi</strong>는 터미널에서 쓰는 작은 코딩 에이전트 CLI<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>예요. 모델과 도구를 연결해 코딩 작업을 돕고, 스크립트로 확장할 자리를 열어 둬요. 강의가 pi를 소개한 까닭은 하나예요. <strong>pi를 기반으로 내 필요에 맞춘 에이전트 툴을 만들 수 있기 때문</strong>이에요. 완성된 서비스를 그대로 쓰는 데서 멈추지 않고, 필요한 입구와 기능을 코어 위에 얹는 선택도 가능해요.</p>
+    <p>이 선택은 이미 일어난 일이에요. <a href="openclaw-what-and-where-from.html">1편</a>에서 본 Warelay는 WhatsApp 게이트웨이였고, Clawdbot은 npm 패키지 설명에서 "Pi RPC agent" 위에 만든 WhatsApp 게이트웨이로 소개됐어요. pi가 에이전트 코어가 되고, 그 위에 메시지를 받는 입구가 더해져 다른 도구가 된 모습이에요. 초기 버전은 pi를 프로그램 안에 넣어(임베디드) 엔진으로 썼고, 이후 자체 코어를 갖추면서 pi 의존을 걷어냈어요. 지금 OpenClaw의 내장 런타임 이름은 <code>openclaw</code>예요. 이름은 바뀌어도 "코어 위에 채널과 기능을 조립한다"는 생각은 이어져요.</p>
+
+    <h3>pi 안을 들여다보면</h3>
+    <table>
+      <thead><tr><th>부분</th><th>pi에서는</th><th>OpenClaw와 비교하면</th></tr></thead>
+      <tbody>
+        <tr><td>화면</td><td>터미널 TUI<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup></td><td>OpenClaw는 WebChat + 채널</td></tr>
+        <tr><td>모델 연결</td><td>세 갈래 — Claude Pro/Max 구독 OAuth<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>, API 키, 로컬 Ollama 모델</td><td><a href="openclaw-install-and-first-chat.html">2편</a>의 두 경로에 <strong>로컬 모델 경로가 하나 더</strong></td></tr>
+        <tr><td>세션 기록</td><td><code>~/.pi/agent/sessions/</code>에 작업 경로마다 JSONL<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup> 파일. 첫 줄에 세션 ID·시각·작업 폴더, 이후 줄에 대화와 도구 호출 결과</td><td><a href="openclaw-session-records-and-usage.html">3편</a>의 SQLite와 형식은 다르지만 "말한 것과 실제 호출을 따로 본다"는 발상은 같음</td></tr>
+        <tr><td>도구 제한</td><td><code>--tools</code> 옵션으로 허용할 도구 목록 지정</td><td><a href="openclaw-security-boundaries.html">5편</a>의 권한 모드와 같은 질문 — "읽기만 맡길 때와 파일을 바꾸게 할 때의 경계"</td></tr>
+      </tbody>
+    </table>
+    <p>로컬 모델을 어떻게 돌리는지는 <a href="running-local-llm-with-ollama.html">직접 Ollama로 로컬 LLM 돌려보기</a>에서 해 봤어요. 같은 에이전트 화면이라도 모델을 만나는 방식은 도구마다 다르게 설계돼요. pi는 대화 화면만이 아니라, 다른 프로그램이 표준입출력<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>으로 요청과 결과를 주고받는 <strong>워커</strong>가 될 수도 있어요. 채널을 받는 입구와 작업을 처리하는 코어를 나누면 도구의 역할도 나누어 읽을 수 있어요.</p>
+
+    <h3>없는 것도 설계다</h3>
+    <p>pi에는 내장 MCP<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup> 클라이언트가 없어요. 내장 서브에이전트도 없고, 반복 작업을 정해진 시각에 돌리는 내장 스케줄러도 없어요. 이 빈자리는 "부족한 목록"으로 끝나지 않아요. <strong>무엇을 코어에 두고 무엇을 확장으로 둘지 고르는 경계</strong>예요. MCP 연결은 확장으로 더할 수 있고, 여러 pi를 함께 다루는 방식도 확장이나 별도 구성으로 설계할 수 있고, 반복 실행은 운영체제의 예약 기능이나 별도 확장이 맡을 수 있어요.</p>
+    <table>
+      <thead><tr><th>기능</th><th>OpenClaw</th><th>pi</th></tr></thead>
+      <tbody>
+        <tr><td>채널 연결</td><td>본체에 내장 (<a href="openclaw-telegram-channel-and-pairing.html">4편</a>)</td><td>없음 — 바깥에서 조립</td></tr>
+        <tr><td>권한 모드</td><td>본체에 내장 (<a href="openclaw-security-boundaries.html">5편</a>)</td><td><code>--tools</code>로 도구 목록만</td></tr>
+        <tr><td>자동화 예약</td><td>본체에 내장 (<a href="openclaw-automations-scheduling.html">7편</a>)</td><td>없음 — OS 예약 기능이나 확장</td></tr>
+        <tr><td>MCP 클라이언트</td><td>있음</td><td>없음 — 확장으로</td></tr>
+        <tr><td>서브에이전트</td><td>있음 (<a href="openclaw-multi-agent-bindings.html">6편</a>)</td><td>없음 — 별도 구성</td></tr>
+      </tbody>
+    </table>
+    <p>핵심: OpenClaw는 이 기능들을 하나의 도구에 품었고, pi는 기본으로 다 품지 않는 대신 바깥에서 조립할 여지를 남겼어요. <strong>기능이 있는지뿐 아니라 어느 층에 놓였는지</strong>도 살펴야 해요. 이 관점은 <a href="agent-tool-design-and-harness.html">에이전트가 도구를 쥔다는 것 — 모델·하네스·루프</a>에서 본 "하네스" 개념과 같아요. OpenClaw에서 본 게이트웨이, 채널, 권한은 pi 위에 내 도구를 만들 때도 다시 묻게 돼요. 어디서 메시지를 받을지, 무엇을 할 수 있게 둘지, 어느 행동에 승인을 둘지.</p>
+
+    <h2><span class="hl">확장 기능 투어</span> — 손을 늘리면 입구·상태·권한이 는다</h2>
+    <p>여기까지가 OpenClaw의 기본 몸이에요. 게이트웨이가 있고, 채널이 붙고, 권한이 있고, 사용량을 봐요. 이제 여기에 손을 더 붙이는 기능들을 지도처럼 둘러봐요. 둘러보는 기준은 셋이에요. 손이 하나 늘면 그 손이 닿는 곳이 늘고(<strong>입구</strong>), 손이 남기는 기록이 늘고(<strong>상태</strong>), 손에게 허락해야 하는 권한이 늘어요(<strong>권한</strong>).</p>
+    <table>
+      <thead><tr><th>확장</th><th>무엇을 하나</th><th>새로 생기는 입구</th><th>주의할 권한</th></tr></thead>
+      <tbody>
+        <tr><td><strong>브라우저 조작</strong></td><td>페이지 열기, 탭, 스크린샷, 클릭, 입력, PDF 저장을 하나의 서비스로</td><td>웹이 통째로 새 접촉면</td><td>방문하는 페이지의 문장은 명령이 아니다 — 5편의 "읽은 내용과 실행 요청 분리"가 더 자주 적용됨</td></tr>
+        <tr><td><strong>카메라·위치 노드</strong></td><td>연결한 폰·컴퓨터의 카메라로 사진, 위도·경도·고도·속도·위치 출처</td><td>물리 세계가 에이전트의 입력이 됨</td><td>권한 거부·기능 꺼짐·시간 초과 시의 오류까지 문서화됨. 허용과 연결이 먼저, 기능은 그다음</td></tr>
+        <tr><td><strong>Talk mode</strong></td><td>로컬 음성 인식과 합성으로 화면 없이 이어서 대화</td><td>음성 입구</td><td>소리로 듣는 승인은 흘러가기 쉬움 — 위험도 큰 작업은 발화로 정확히 다시 승인</td></tr>
+        <tr><td><strong>IMAP<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup> 메일 감시</strong></td><td>메일함을 지켜보다 인증된 메일을 <strong>분리되고 제한된 읽기 전용 reader agent</strong>에 넘김</td><td>메일함 — 검증할 수 없는 입력이 들어오는 입구</td><td>임의의 메일을 주 에이전트에 바로 넣는 기능이 <strong>아님</strong>. 입구에 처음 닿는 것을 권한이 가장 작은 별도 역할로 격리</td></tr>
+        <tr><td><strong>모델 페일오버</strong></td><td>지금 모델에 문제가 생기면 같은 제공자 안에서 인증 프로필을 바꿔 본 뒤 설정해 둔 다음 모델로</td><td>—</td><td>실패를 없애는 장치가 아니라 실패 뒤 시도할 순서. 다음 모델을 정해 두지 않으면 넘어갈 곳이 없음</td></tr>
+        <tr><td><strong>ClawHub</strong></td><td>스킬을 찾아 설치하는 배포처 — <code>openclaw skills search</code>, <code>openclaw skills install</code></td><td>남이 만든 코드가 들어오는 입구</td><td>설치할 수 있다 ≠ 안전하다. 악성 표시 배포판은 거부하지만, 감사 내용을 보여 주며 설치를 이어 가는 배포판도 있음 — 문서를 읽는 습관이 조건</td></tr>
+        <tr><td><strong>모바일 앱</strong></td><td>iOS·Android 앱이 노드로 연결되어 폰의 감각과 알림이 에이전트와 이어짐</td><td>주머니 속 입구</td><td>4편의 텔레그램 연결과 같은 원리가 앱이라는 다른 옷을 입은 것</td></tr>
+      </tbody>
+    </table>
+    <p>IMAP 감시 항목이 특히 오늘의 원칙을 그대로 보여 줘요. 문 같은 곳에는 문지기가 따로 서 있는 구조예요. 스킬 마켓의 "설치할 수 있다와 안전하다는 다르다"는 <a href="ai-skills-and-rules-files.html">스킬과 규칙 파일</a>에서 스킬이 뭔지 봤던 독자라면 "남이 쓴 스킬을 그대로 믿을 수 있나"라는 질문으로 이어져요.</p>
+
+    <h3>함께 붙는 주의점 둘</h3>
+    <ol>
+      <li><strong>실험 단계 표시</strong>가 붙은 기능은 안정적인 기본값이나 장기 계약을 보장하지 않는 미리 보기예요. 형태가 빨리 바뀔 수 있으니, 같은 일을 하는 안정 경로가 있다면 그쪽이 먼저예요.</li>
+      <li>카메라, 위치, 음성, 기기 조작은 <strong>권한을 주고 연결된 노드가 있어야</strong> 움직여요. 켜는 순서가 아니라 <strong>허용의 근거를 먼저 묻는 습관</strong>이 이 시리즈의 결론이에요.</li>
+    </ol>
+
+    <h2><span class="hl">나쁜 선택 vs 좋은 선택</span> — 증축할 때</h2>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">"메일 정리를 시키고 싶다"며 메일함 전체를 주 에이전트에 바로 연결한다 → 스팸 메일 안의 "첨부 링크를 열고 계정 정보를 보내라"는 문장이 실행 권한 있는 에이전트에 그대로 닿는다.</td>
+          <td class="choice-good">IMAP 감시가 설계한 대로, 읽기 전용 reader agent가 먼저 받고 실행이 필요한 것만 별도 승인으로 넘긴다 → 검증 안 된 입력이 실행 권한과 만나지 않는다.</td>
+        </tr>
+        <tr>
+          <td class="choice-bad">ClawHub에서 별점 높은 스킬을 문서도 안 읽고 설치한다 → 그 스킬이 어떤 도구를 쓰고 어디로 데이터를 보내는지 모른 채 내 에이전트의 손이 하나 늘어난다.</td>
+          <td class="choice-good">설치 전 스킬 문서에서 "무슨 도구를 쓰나, 무슨 권한을 요구하나"를 읽고, 감사 표시가 있으면 그 내용을 본다 → 늘어나는 입구·상태·권한을 알고 늘린다.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2><span class="hl">수치 표</span></h2>
+    <table>
+      <thead><tr><th>항목</th><th>값</th><th>조건·출처</th></tr></thead>
+      <tbody>
+        <tr><td>pi의 모델 연결 경로</td><td>3갈래</td><td>구독 OAuth · API 키 · 로컬 Ollama (OpenClaw 온보딩은 2갈래)</td></tr>
+        <tr><td>pi에 내장되지 않은 것</td><td>3가지</td><td>MCP 클라이언트 · 서브에이전트 · 스케줄러 (강의 기준)</td></tr>
+        <tr><td>둘러본 확장 기능</td><td>7종</td><td>브라우저 · 카메라/위치 · Talk · IMAP · 페일오버 · ClawHub · 모바일 앱 (오늘은 켜지 않음)</td></tr>
+      </tbody>
+    </table>
+
+    <h2><span class="hl">직접 해보기</span> — 시리즈를 닫으며</h2>
+    <p>위 확장 표에서 "다음에 켜 보고 싶은 것" 하나를 골라 세 줄을 적어 보세요. 이 손이 새로 닿는 <strong>입구</strong>는 어디인가, 새로 남기는 <strong>상태</strong>는 무엇인가, 새로 허락해야 하는 <strong>권한</strong>은 무엇인가. 세 줄이 채워지지 않으면 아직 켤 때가 아니에요. 그리고 여덟 편을 되돌아보면 질문은 계속 같았어요. 어디서 메시지를 받을지(채널), 무엇을 할 수 있게 둘지(권한), 어느 행동에 승인을 둘지(스탠딩 오더), 모델을 어떻게 만날지(인증 경로), 기록이 어디에 남는지(세션·워크스페이스). 작은 코어 위에 무엇을 얹을지 정할 때마다 편리함과 경계를 함께 설계하게 돼요. 도구를 업무에 붙일지 말지의 판단 자체는 <a href="ai-poc-and-application-judgment.html">도구에서 시작하면 아무도 안 씁니다</a>에서 다뤘어요.</p>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">CLI — 터미널에서 글자 명령으로 프로그램을 다루는 방식으로, <a href="terminal-shell-kernel-prompt.html">터미널·셸·커널·프롬프트 차이</a>에서 처음 다뤘어요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">TUI — 마우스 없이 터미널 안에서 글자로 그린 화면을 움직이는 인터페이스. <a href="#fnref2">↩</a></li>
+        <li id="fn3">OAuth — 비밀번호를 직접 주지 않고 "이 앱이 내 계정을 이만큼 쓰게 허락한다"는 방식으로 로그인 권한을 맡기는 표준. <a href="#fnref3">↩</a></li>
+        <li id="fn4">JSONL — 한 줄마다 JSON 객체 하나를 넣어 기록을 쌓는 형식으로, JSON 자체는 <a href="mock-data-and-rest-api.html">목업 데이터와 REST API</a>에서 처음 다뤘어요. <a href="#fnref4">↩</a></li>
+        <li id="fn5">표준입출력 — 프로그램이 글자를 받고 내보내는 기본 통로로, 다른 프로그램과 파이프로 이어 붙일 수 있어요. <a href="#fnref5">↩</a></li>
+        <li id="fn6">MCP — AI가 외부 도구와 데이터에 표준 방식으로 연결되는 규약으로, <a href="mcp-usb-c-for-ai.html">MCP — AI를 내 데이터에 꽂는 USB-C</a>에서 처음 다뤘어요. <a href="#fnref6">↩</a></li>
+        <li id="fn7">IMAP — 메일 서버에 있는 메일함을 프로그램이 읽어 오는 표준 방식. <a href="#fnref7">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <h3>"OpenClaw로 내 에이전트 운영하기" 시리즈</h3>
+    <a class="post-nav" href="openclaw-what-and-where-from.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">새 껍데기, 같은 바닷가재 — OpenClaw는 무엇이고 어디서 왔나</span>
+    </a>
+    <a class="post-nav" href="openclaw-install-and-first-chat.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">연습 폴더에 들이기 — 설치·온보딩·첫 대화</span>
+    </a>
+    <a class="post-nav" href="openclaw-session-records-and-usage.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">답변이 아니라 흔적을 본다 — 세션 기록과 사용량</span>
+    </a>
+    <a class="post-nav" href="openclaw-telegram-channel-and-pairing.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">폰에서 부리기 — 텔레그램 채널과 페어링</span>
+    </a>
+    <a class="post-nav" href="openclaw-security-boundaries.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">어디까지 해도 되는가 — 권한 모드·입구·인젝션·공개 권고</span>
+    </a>
+    <a class="post-nav" href="openclaw-multi-agent-bindings.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">한 게이트웨이에 여러 역할 — 바인딩·델리게이트·스탠딩 오더</span>
+    </a>
+    <a class="post-nav" href="openclaw-automations-scheduling.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">사람이 기억하지 않도록 — 자동화 예약과 cron</span>
+    </a>
+    <p class="post-date">(8) 뼈대와 손 — pi 코어와 확장 기능 투어 (이 글)</p>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>

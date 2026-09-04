@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>새 껍데기, 같은 바닷가재 — OpenClaw는 무엇이고 어디서 왔나 (1) - Tigermorning</title>
+  <meta name="description" content="OpenClaw는 내 컴퓨터에 늘 켜 두고 채팅으로 일을 맡기는 오픈소스 개인 에이전트입니다. Warelay·Clawdbot·Moltbot을 거쳐 이름이 세 번 바뀐 사연, 게이트웨이가 하는 일, 그리고 이름이 바뀐 도구의 문서를 찾는 법을 완전 초보자 눈높이로 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="새 껍데기, 같은 바닷가재 — OpenClaw는 무엇이고 어디서 왔나 (1)">
+  <meta property="og:description" content="OpenClaw는 내 컴퓨터에 늘 켜 두고 채팅으로 일을 맡기는 오픈소스 개인 에이전트입니다. Warelay·Clawdbot·Moltbot을 거쳐 이름이 세 번 바뀐 사연, 게이트웨이가 하는 일, 그리고 이름이 바뀐 도구의 문서를 찾는 법을 완전 초보자 눈높이로 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/openclaw-what-and-where-from.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">새 껍데기, 같은 바닷가재</span> — OpenClaw는 무엇이고 어디서 왔나 (1)</h1>
+    <p class="post-date">2026. 9. 4.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <p class="one-liner">OpenClaw는 내 컴퓨터에 늘 켜 두고, 채팅 한 줄로 파일·메신저·반복 작업을 맡기는 오픈소스<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup> 개인 에이전트<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>다.</p>
+
+    <p>지금까지 이 블로그에서 다룬 에이전트는 대부분 <a href="choosing-ai-coding-tools.html">터미널이나 편집기 안에서</a> 제가 부를 때만 움직였어요. 이번 시리즈의 주인공은 조금 달라요. 제 컴퓨터에서 <strong>늘 켜져 있고</strong>, 제가 텔레그램으로 말을 걸면 대신 답하고, 정해 둔 시간에 알아서 반복 일을 하는 도구예요. 이 시리즈는 그 도구를 직접 들이고, 기록을 읽고, 경계를 긋고, 역할을 나누고, 시간표를 짜 보는 여덟 편이에요. 첫 편은 "이게 뭔지, 왜 이름이 자꾸 바뀌는지"부터예요.</p>
+
+    <h2><span class="hl">비유</span> — 집에 상주하는 집사 한 명</h2>
+    <p>큰 집에 상주 집사가 한 명 있어요. 집사는 늘 집에 있고, 집 전화·문자·현관 벨 어느 쪽으로 연락이 와도 받아요. 주인이 "서재에서 지난달 영수증 찾아 줘"라고 문자하면 서재에 들어가 찾고, "매일 아침 7시에 신문 요약해 줘"라고 하면 그 시각마다 해요. 다만 집사가 들어갈 수 있는 방과 만질 수 있는 물건은 주인이 미리 정해 둔 범위 안이에요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>늘 집에 있는 집사</td><td>내 컴퓨터에서 계속 실행 중인 OpenClaw 게이트웨이</td></tr>
+        <tr><td>전화·문자·현관 벨</td><td>채널 — WebChat, 텔레그램, 디스코드 같은 메시지 입구</td></tr>
+        <tr><td>문자로 보내는 부탁</td><td>채팅 한 줄로 맡기는 작업</td></tr>
+        <tr><td>서재에 들어가 영수증을 찾는 일</td><td>파일을 읽고 도구를 쓰는 실행</td></tr>
+        <tr><td>들어갈 수 있는 방의 범위</td><td>권한 — 5편에서 다룸</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> OpenClaw는 "부를 때만 오는 도구"가 아니라 "늘 대기하면서 여러 입구로 오는 부탁을 받아 처리하는 집사"예요.</p>
+    <p>다만 여기서 비유가 끊기는 점은, 집사는 사람이라 상식으로 위험한 부탁을 거절하지만 에이전트는 <strong>정해 준 경계만큼만</strong> 거절한다는 거예요. 그래서 5편(보안)이 따로 있어요.</p>
+
+    <h2><span class="hl">이름이 세 번 바뀐 사연</span> — 바닷가재는 껍데기를 여러 번 벗는다</h2>
+    <p>제가 이 도구를 검색하면서 제일 헷갈렸던 게 이름이었어요. 같은 도구를 두고 문서마다 부르는 이름이 달라요. 사연은 이래요.</p>
+    <ol>
+      <li><strong>Warelay</strong> — 출발점이에요. 당시에는 WhatsApp(왓츠앱, 해외에서 많이 쓰는 메신저) 메시지를 에이전트에 연결해 주는 게이트웨이였어요. npm<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>의 패키지 설명에도 "WhatsApp gateway CLI with Pi RPC agent"라고 적혀 있었어요.</li>
+      <li><strong>Clawdbot</strong> — 바닷가재 마스코트 "Clawd"와 함께 붙은 이름이에요. npm에는 2026년 1월 4일부터 24일까지 39개 버전이 올라왔어요.</li>
+      <li><strong>Moltbot</strong> — 2026년 1월, Anthropic이 상표 문제로 이름 변경을 요청했고, 첫 번째로 바꾼 이름이에요. molt는 "탈피"라는 뜻이에요.</li>
+      <li><strong>OpenClaw</strong> — 2026년 1월 27일 Shelldon, Pinchy 같은 수백 개 후보를 놓고 커뮤니티 투표가 열렸고, 1월 30일에 지금 이름으로 정해졌어요. 공식 문서는 이 변화를 "New shell, same lobster"(새 껍데기, 같은 바닷가재)라고 표현해요.</li>
+    </ol>
+    <p>이 사연에서 제가 챙긴 건 두 가지예요. 하나는 상표 분쟁 때문에 이름이 바뀌어도 <strong>코드와 커뮤니티는 이어진다</strong>는 것. 다른 하나는 실용적인 건데, 이 도구의 문서나 오류 해결 글을 찾을 때는 <strong>지금 이름뿐 아니라 옛 이름으로도 검색</strong>해야 필요한 기록을 놓치지 않는다는 거예요.</p>
+    <p>이름은 바뀌어도 설치 환경에는 흔적이 남을 수 있어요. 예전 이름으로 설치했던 사람의 컴퓨터에는 <code>clawdbot-gateway</code>라는 서비스 이름이 남아 있는데, Linux와 WSL2<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>에서는 지금도 자동으로 새 이름으로 옮겨 줘요. macOS의 옛 실행 설정은 자동으로 지워지지 않고, 진단 명령이 찾아서 알려 주는 방식이에요. 처음 설치하는 저 같은 사람에겐 해당 없지만, "이 도구는 이름이 바뀐 적이 있다"는 사실이 오류 메시지를 읽을 때 힌트가 돼요.</p>
+
+    <h2><span class="hl">게이트웨이</span> — 연결과 실행을 조정하는 한 자리</h2>
+    <p>OpenClaw의 중심에는 <strong>게이트웨이</strong><sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>(gateway)가 있어요. 계속 켜 둔 프로그램 하나가 WebChat, 텔레그램 같은 채널에서 오는 메시지를 받고, 그걸 실제로 일하는 에이전트 런타임<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup>에 넘겨요. 채널이 하나면 이런 조정자가 없어도 되지만, 채널이 늘면 "어느 입구로 온 요청을 어느 대화 세션과 어느 도구로 보낼지"를 누군가 정해야 해요. OpenClaw는 그 결정을 게이트웨이 한 곳에 모아요.</p>
+    <svg viewBox="0 0 720 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="채널 세 개가 게이트웨이 하나로 모이고, 게이트웨이가 에이전트 런타임과 파일·도구로 이어지는 흐름">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <g font-family="var(--font-body)" font-size="14" fill="var(--ink)">
+        <rect x="20" y="30" width="130" height="44" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="85" y="57" text-anchor="middle">WebChat</text>
+        <rect x="20" y="108" width="130" height="44" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="85" y="135" text-anchor="middle">텔레그램</text>
+        <rect x="20" y="186" width="130" height="44" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="85" y="213" text-anchor="middle">디스코드·슬랙</text>
+
+        <rect x="270" y="90" width="170" height="80" rx="10" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <text x="355" y="123" text-anchor="middle" font-weight="700">게이트웨이</text>
+        <text x="355" y="147" text-anchor="middle" font-size="12" fill="var(--muted)">127.0.0.1:18789</text>
+
+        <rect x="560" y="50" width="140" height="44" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="630" y="77" text-anchor="middle">에이전트 런타임</text>
+        <rect x="560" y="166" width="140" height="44" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="630" y="193" text-anchor="middle">파일·도구·기록</text>
+
+        <line x1="150" y1="52" x2="268" y2="110" stroke="var(--muted)" stroke-width="2" marker-end="url(#arr)"/>
+        <line x1="150" y1="130" x2="268" y2="130" stroke="var(--muted)" stroke-width="2" marker-end="url(#arr)"/>
+        <line x1="150" y1="208" x2="268" y2="150" stroke="var(--muted)" stroke-width="2" marker-end="url(#arr)"/>
+        <line x1="440" y1="112" x2="558" y2="76" stroke="var(--muted)" stroke-width="2" marker-end="url(#arr)"/>
+        <line x1="630" y1="94" x2="630" y2="164" stroke="var(--muted)" stroke-width="2" marker-end="url(#arr)"/>
+      </g>
+    </svg>
+    <p><strong>읽는 법:</strong> 왼쪽 세 상자가 메시지가 들어오는 입구(채널), 가운데 굵은 상자가 게이트웨이, 오른쪽이 실제로 생각하고 일하는 부분이에요. 화살표는 메시지가 흐르는 방향이고, 어떤 입구로 들어와도 반드시 게이트웨이를 거쳐요. 가운데 작은 글씨 <code>127.0.0.1:18789</code>는 게이트웨이가 기본으로 자리 잡는 주소인데, 2편에서 설명해요.</p>
+
+    <h2><span class="hl">나쁜 선택 vs 좋은 선택</span> — 이름이 바뀐 도구의 문서를 찾을 때</h2>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">오류 메시지에 <code>clawdbot</code>이 보이자 "다른 프로그램이 잘못 깔렸나?" 하고 지워 버린다 → 실은 같은 도구의 옛 이름이라, 멀쩡한 설치를 망가뜨리고 원인은 그대로 남는다.</td>
+          <td class="choice-good">옛 이름 목록(Warelay·Clawdbot·Moltbot)을 메모해 두고, 오류나 문서를 검색할 때 새 이름과 옛 이름을 함께 넣어 본다 → 이름만 다른 같은 도구의 기록까지 찾아 원인을 좁힌다.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2><span class="hl">수치로 보는 이름 변경 연대기</span></h2>
+    <table>
+      <thead><tr><th>시점</th><th>사건</th><th>수치·근거</th></tr></thead>
+      <tbody>
+        <tr><td>2026.01.04 ~ 01.24</td><td>Clawdbot 이름으로 npm 배포</td><td>39개 버전 (npm 배포 기록)</td></tr>
+        <tr><td>2026.01</td><td>Anthropic의 상표 문제 제기, Moltbot으로 1차 변경</td><td>—</td></tr>
+        <tr><td>2026.01.27</td><td>새 이름 커뮤니티 투표</td><td>후보 수백 개 (공식 문서 표현)</td></tr>
+        <tr><td>2026.01.30</td><td>OpenClaw로 확정</td><td>"New shell, same lobster" (공식 문서)</td></tr>
+      </tbody>
+    </table>
+    <p class="post-date">※ 위 수치는 강의가 인용한 npm 기록과 OpenClaw 공식 문서 기준이에요. "수백 개"는 정확한 숫자가 아니라 문서의 표현을 그대로 옮긴 거예요.</p>
+
+    <h2><span class="hl">이 시리즈가 가는 길</span></h2>
+    <p>강의는 열 단계로 되어 있는데, 저는 내용 무게에 맞춰 여덟 편으로 다시 묶었어요. 순서는 이래요. 먼저 <a href="openclaw-install-and-first-chat.html">설치하고 첫 대화</a>를 나눠요. 그다음 <a href="openclaw-session-records-and-usage.html">기록과 사용량</a>을 읽는 눈을 만들어요. <a href="openclaw-telegram-channel-and-pairing.html">텔레그램을 연결</a>하고, <a href="openclaw-security-boundaries.html">경계를 긋고</a>, <a href="openclaw-multi-agent-bindings.html">역할을 나누고</a>, <a href="openclaw-automations-scheduling.html">시간표를 짜고</a>, 마지막으로 <a href="openclaw-pi-core-and-extensions.html">뼈대(pi)와 확장 기능</a>을 둘러봐요. 에이전트가 뭔지부터 궁금하다면 <a href="ai-agent-beginner-guide.html">AI 에이전트 쉽게 이해하기</a>를 먼저 읽고 오시면 편해요.</p>
+
+    <h2><span class="hl">함께 읽으면 좋은 글</span></h2>
+    <ul>
+      <li><a href="ai-agent-beginner-guide.html">AI 에이전트(Agent) 쉽게 이해하기</a> — "에이전트"라는 말 자체가 낯설다면 여기부터.</li>
+      <li><a href="what-is-automation-workflow-agent.html">자동화·워크플로·에이전트, 뭐가 다를까</a> — OpenClaw가 이 셋 중 어디에 서 있는지 가늠할 때.</li>
+      <li><a href="ai-permissions-local-models-and-token-cost.html">AI에게 컴퓨터를 맡길 때 — 권한, 로컬 모델, 토큰 비용</a> — 집사에게 방 열쇠를 주는 일의 무게.</li>
+    </ul>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">오픈소스 — 프로그램의 설계도(코드)를 누구나 읽고 고치고 다시 배포할 수 있게 공개한 소프트웨어. <a href="#fnref1">↩</a></li>
+        <li id="fn2">에이전트 — 목표를 받으면 스스로 도구를 골라 쓰며 여러 단계를 실행하는 AI 프로그램으로, <a href="ai-agent-beginner-guide.html">AI 에이전트 쉽게 이해하기</a>에서 처음 다뤘어요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">npm — Node.js용 프로그램 꾸러미(패키지)를 내려받고 설치하는 도구이자 그 저장소로, <a href="ai-agent-dev-environment-check.html">Node.js·npm 설치 확인</a>에서 처음 만났어요. <a href="#fnref3">↩</a></li>
+        <li id="fn4">WSL2 — Windows 안에서 Linux를 거의 그대로 돌리게 해 주는 기능. <a href="#fnref4">↩</a></li>
+        <li id="fn5">게이트웨이 — 여러 입구에서 오는 연결을 한 곳에서 받아 어디로 보낼지 조정하는 프로그램. <a href="#fnref5">↩</a></li>
+        <li id="fn6">런타임 — 프로그램이 실제로 실행되는 환경이나 그 실행을 맡는 부품. <a href="#fnref6">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <h3>"OpenClaw로 내 에이전트 운영하기" 시리즈</h3>
+    <p class="post-date">(1) 새 껍데기, 같은 바닷가재 — OpenClaw는 무엇이고 어디서 왔나 (이 글)</p>
+    <a class="post-nav" href="openclaw-install-and-first-chat.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">연습 폴더에 들이기 — 설치·온보딩·첫 대화</span>
+    </a>
+    <a class="post-nav" href="openclaw-session-records-and-usage.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">답변이 아니라 흔적을 본다 — 세션 기록과 사용량</span>
+    </a>
+    <a class="post-nav" href="openclaw-telegram-channel-and-pairing.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">폰에서 부리기 — 텔레그램 채널과 페어링</span>
+    </a>
+    <a class="post-nav" href="openclaw-security-boundaries.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">어디까지 해도 되는가 — 권한 모드·입구·인젝션·공개 권고</span>
+    </a>
+    <a class="post-nav" href="openclaw-multi-agent-bindings.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">한 게이트웨이에 여러 역할 — 바인딩·델리게이트·스탠딩 오더</span>
+    </a>
+    <a class="post-nav" href="openclaw-automations-scheduling.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">사람이 기억하지 않도록 — 자동화 예약과 cron</span>
+    </a>
+    <a class="post-nav" href="openclaw-pi-core-and-extensions.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">뼈대와 손 — pi 코어와 확장 기능 투어</span>
+    </a>
+
+    <a class="post-nav" href="openclaw-install-and-first-chat.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">연습 폴더에 들이기 — 설치·온보딩·첫 대화</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>사람이 기억하지 않도록 — 자동화 예약과 cron (7) - Tigermorning</title>
+  <meta name="description" content="OpenClaw의 automations(스케줄러)로 반복되는 일을 예약하는 법을 정리했습니다. 3분 뒤 일회성 알림과 5분마다 반복하는 시보를 만들고, cron 표기식 다섯 칸을 읽고, 실행 기록을 확인하고, 대화 명령 /loop로 같은 일을 시키고, 실습이 끝나면 지우는 순서까지 완전 초보자 눈높이로 적었습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="사람이 기억하지 않도록 — 자동화 예약과 cron (7)">
+  <meta property="og:description" content="OpenClaw의 automations(스케줄러)로 반복되는 일을 예약하는 법을 정리했습니다. 일회성 알림과 반복 시보, cron 표기식, 실행 기록, /loop 대화 명령, 정리까지.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/openclaw-automations-scheduling.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">사람이 기억하지 않도록</span> — 자동화 예약과 cron (7)</h1>
+    <p class="post-date">2026. 9. 4.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="openclaw-multi-agent-bindings.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">한 게이트웨이에 여러 역할 — 바인딩·델리게이트·스탠딩 오더</span>
+    </a>
+
+    <p class="one-liner">automations는 게이트웨이 안에 들어 있는 스케줄러로, 반복되는 일을 사람이 기억하지 않도록 시간표에 올려 두는 기능이다.</p>
+
+    <p><a href="openclaw-session-records-and-usage.html">3편</a>에서 지금 상태를 보는 눈을 얻었어요. 이번에는 <strong>스스로 움직이는 시간표</strong>를 만들어요. 반복되는 일을 예약하는 기능이 <strong>automations</strong>(오토메이션)예요. "자동화"라는 말이 뭘 뜻하는지, 워크플로나 에이전트와 어떻게 다른지는 <a href="what-is-automation-workflow-agent.html">자동화·워크플로·에이전트, 뭐가 다를까</a>에서 정리했어요. 이 편은 그 자동화 중 가장 단순한 "정해진 시각에 정해진 일"을 OpenClaw로 해 보는 거예요.</p>
+
+    <h2><span class="hl">비유</span> — 학교 종과 시간표</h2>
+    <p>학교에는 종이 있어요. 종은 교무실 벽의 시간표대로 울리고, 선생님이 매시간 시계를 보며 "지금 쳐야지" 하지 않아요. 시간표는 벽에 붙어 있어서 교무실 불이 꺼졌다 켜져도 그대로 남아요. 다만 <strong>종을 울리는 장치의 전원이 꺼져 있으면</strong> 시간표가 있어도 종은 안 울려요. 그리고 "오늘만 3시에 한 번" 같은 임시 알림은 울리고 나면 시간표에서 지워지고, "매시간 50분" 같은 정규 종은 계속 남아요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>종을 울리는 장치</td><td>게이트웨이 안의 스케줄러 — 게이트웨이가 켜져 있어야 동작</td></tr>
+        <tr><td>벽에 붙은 시간표</td><td>SQLite 데이터베이스에 저장된 일정 — 재시작해도 남음</td></tr>
+        <tr><td>"오늘만 3시에 한 번"</td><td>일회성 예약 (ISO 시각) — 성공하면 자동 삭제</td></tr>
+        <tr><td>"매시간 50분"</td><td>반복 예약 (cron 표기식) — 실행 뒤에도 목록에 남음</td></tr>
+        <tr><td>종이 울린 기록부</td><td><code>openclaw automations runs</code>의 실행 기록</td></tr>
+        <tr><td>시간표를 고칠 수 있는 교무 담당</td><td><code>operator.admin</code> 권한</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 시간표(일정)는 남지만 종(스케줄러)은 게이트웨이가 켜져 있을 때만 울려요.</p>
+    <p>다만 여기서 비유가 끊기는 점은, 학교 종은 소리만 내지만 OpenClaw의 예약은 <strong>프롬프트를 실행</strong>해서 에이전트가 실제 일을 한다는 거예요. 그래서 5편의 권한 경계가 예약에도 그대로 적용돼요.</p>
+
+    <h2><span class="hl">전체 흐름</span></h2>
+    <svg viewBox="0 0 720 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="빈 목록 확인, 일회성 예약, 반복 예약, 실행 기록 확인, 대화로 예약, 정리의 여섯 단계">
+      <defs>
+        <marker id="arr7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <g font-family="var(--font-body)" font-size="13" fill="var(--ink)">
+        <rect x="10" y="40" width="105" height="55" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="62" y="62" text-anchor="middle">① 빈 목록</text>
+        <text x="62" y="82" text-anchor="middle" font-size="11" fill="var(--muted)">list</text>
+        <rect x="130" y="40" width="105" height="55" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="182" y="62" text-anchor="middle">② 3분 뒤 1회</text>
+        <text x="182" y="82" text-anchor="middle" font-size="11" fill="var(--muted)">create ISO</text>
+        <rect x="250" y="40" width="105" height="55" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="302" y="62" text-anchor="middle">③ 5분마다</text>
+        <text x="302" y="82" text-anchor="middle" font-size="11" fill="var(--muted)">create cron</text>
+        <rect x="370" y="40" width="105" height="55" rx="8" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <text x="422" y="62" text-anchor="middle" font-weight="700">④ 기록 보기</text>
+        <text x="422" y="82" text-anchor="middle" font-size="11" fill="var(--muted)">runs --id</text>
+        <rect x="490" y="40" width="105" height="55" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="542" y="62" text-anchor="middle">⑤ 대화로</text>
+        <text x="542" y="82" text-anchor="middle" font-size="11" fill="var(--muted)">/loop 5m</text>
+        <rect x="610" y="40" width="100" height="55" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="660" y="62" text-anchor="middle">⑥ 정리</text>
+        <text x="660" y="82" text-anchor="middle" font-size="11" fill="var(--muted)">remove</text>
+        <line x1="115" y1="67" x2="128" y2="67" stroke="var(--muted)" stroke-width="2" marker-end="url(#arr7)"/>
+        <line x1="235" y1="67" x2="248" y2="67" stroke="var(--muted)" stroke-width="2" marker-end="url(#arr7)"/>
+        <line x1="355" y1="67" x2="368" y2="67" stroke="var(--muted)" stroke-width="2" marker-end="url(#arr7)"/>
+        <line x1="475" y1="67" x2="488" y2="67" stroke="var(--muted)" stroke-width="2" marker-end="url(#arr7)"/>
+        <line x1="595" y1="67" x2="608" y2="67" stroke="var(--muted)" stroke-width="2" marker-end="url(#arr7)"/>
+        <text x="360" y="140" text-anchor="middle" font-size="12" fill="var(--muted)">③과 ⑤로 만든 예약은 입구가 달라도 ①의 같은 목록에 나타난다</text>
+      </g>
+    </svg>
+    <p><strong>읽는 법:</strong> 왼쪽부터 순서대로 해요. 굵은 상자 ④가 3편의 "말이 아니라 기록"을 예약에 적용하는 자리예요. 종이 울렸다는 걸 채팅에 뜬 메시지로도 알 수 있지만, 실행 기록부에 두 번 적혔는지까지 봐야 확인이 끝나요.</p>
+
+    <h2><span class="hl">스케줄러는 게이트웨이 안에 있다</span></h2>
+    <p>automations는 <a href="openclaw-what-and-where-from.html">1편</a>에서 본 게이트웨이에 들어 있는 스케줄러<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>예요. <strong>모델 안에서 실행되는 기능이 아니에요.</strong> 게이트웨이 프로세스가 실행 중이어야 예약한 시각에 일이 시작돼요. 일정, 실행 상태, 실행 기록은 OpenClaw의 공유 SQLite<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup> 데이터베이스에 저장되니, 게이트웨이를 다시 시작해도 예약 자체는 사라지지 않아요. 실행 결과는 채팅 채널, 웹훅<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>, 또는 기록으로 보낼 수 있어요.</p>
+    <p>먼저 빈 시간표를 봐요. 처음 쓰는 환경이면 목록이 비어 있어요.</p>
+    <pre><code>openclaw automations list</code></pre>
+    <p><code>openclaw automations</code>는 작업을 만들고, 목록과 상세 정보, 실행 기록을 보고, 지우는 명령이에요. 짧게 <code>openclaw cron</code>이라고 써도 같아요. 작업을 만들거나 지우거나 즉시 실행하는 <strong>변경 명령에는 <code>operator.admin</code> 권한</strong>이 필요해요. 권한은 예약이 실행되는 조건과 별개로 먼저 확인해요.</p>
+
+    <h2><span class="hl">3분 뒤의 알림 하나</span> — 일회성 예약</h2>
+    <p>먼저 UTC<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>의 현재 시각을 확인하고, 거기서 3분 뒤의 ISO 시각<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>을 계산해요.</p>
+    <pre><code>date -u +%FT%TZ</code></pre>
+    <p>아래 <code>&lt;ISO시각&gt;</code> 자리에 그 값을 넣어요. <code>--session main</code>은 앞에서 연 WebChat의 main 세션으로 시스템 이벤트를 보내라는 뜻이에요.</p>
+    <pre><code>openclaw automations create "&lt;ISO시각&gt;" --name "첫 알림" --session main --system-event "3분 전에 예약한 알림이 도착했습니다"</code></pre>
+    <p>시간이 되면 main 세션에 메시지가 도착해요. WebChat을 열어 확인해요. <strong>한 번만 실행하는 작업은 성공하면 자동으로 지워져요.</strong> 명령의 순서도 정해져 있어요. 일정이 먼저, 프롬프트가 그다음. 위 명령은 프롬프트 대신 시스템 이벤트를 넣은 형태이고, 이름은 목록에서 알아보기 쉽게 붙여요.</p>
+
+    <h2><span class="hl">5분마다 울리는 시보</span> — cron 표기식</h2>
+    <p><strong>cron 표기식</strong>은 반복 시간을 다섯 칸으로 적는 방식이에요. 칸의 순서는 "분 시 일 월 요일"이에요.</p>
+    <table>
+      <thead><tr><th>칸</th><th>1번째</th><th>2번째</th><th>3번째</th><th>4번째</th><th>5번째</th></tr></thead>
+      <tbody>
+        <tr><td>뜻</td><td>분</td><td>시</td><td>일</td><td>월</td><td>요일</td></tr>
+        <tr><td><code>*/5 * * * *</code></td><td>5분마다</td><td>모든 시</td><td>모든 날</td><td>모든 달</td><td>모든 요일</td></tr>
+      </tbody>
+    </table>
+    <p><code>*</code>는 "모든"이고 <code>*/5</code>는 "5 단위마다"예요. 그래서 <code>*/5 * * * *</code>는 "5분마다, 언제든"이 돼요.</p>
+    <pre><code>openclaw automations create "*/5 * * * *" "지금 시각과 대기 중인 알림이 있으면 한 줄로 알려 줘" --name "5분 시보"</code></pre>
+    <p>몇 분 기다리며 WebChat에 시보가 두 번 도착하는지 봐요. 이 작업은 반복 일정이라 한 번 실행되어도 목록에 남고 다음 5분을 기다려요.</p>
+
+    <h2><span class="hl">실행된 기록을 본다</span></h2>
+    <p><code>openclaw automations list</code>에서 시보의 작업 ID를 확인한 뒤, 그 작업의 실행 기록을 봐요.</p>
+    <pre><code>openclaw automations runs --id &lt;job-id&gt;</code></pre>
+    <p>시보가 두 번 울렸다면 기록에도 두 번의 실행이 있어요. 일회성 작업은 실행 뒤 목록에서 사라지지만 반복 작업은 다음 실행 시각을 가진 채 남아요. 목록과 실행 기록을 나란히 보면 이 차이가 그대로 보여요. 그리고 <strong>게이트웨이를 끄면 스케줄러도 함께 멈춰요.</strong> 그동안은 예약 시각이 되어도 실행되지 않고, 다시 켠 뒤에도 SQLite에 저장한 일정과 이전 기록은 남아 있어요.</p>
+
+    <h2><span class="hl">같은 일을 대화로 시킨다</span></h2>
+    <p>다섯 칸 표기식을 외우지 않아도 예약을 만들 수 있어요. 길이 둘이에요.</p>
+    <p><strong>첫째, 반복을 알아채는 길.</strong> 같은 부탁을 여러 번 하면 에이전트가 먼저 "예약으로 바꿀까요?" 하고 제안해요. 만들기 전에 일정과 할 일을 사람의 말로 한 문장 확인해요. "매주 평일 오전 7시에 어제 밤 업데이트를 요약해 이 방에 올립니다" 같은 문장이에요. 이 문장을 확인하면 예약이 만들어져요. cron 표기식이 아니라 <strong>사람의 문장으로 확인하게 하는 설계</strong>예요.</p>
+    <p><strong>둘째, 대화 명령 <code>/loop</code>.</strong> WebChat에서 <code>/loop 5m 지금 시각을 한 줄로 알려 줘</code>를 보내면 이 대화에 묶인 5분 반복 작업이 만들어져요. 소유자만 쓸 수 있는 명령이에요. 간격을 빼면 1분에서 1시간 사이에서 에이전트가 스스로 다음 실행을 정해요. <code>/loop status</code>로 이 대화의 반복 작업을 보고 <code>/loop stop</code>으로 꺼요.</p>
+    <p>WebChat에서 <code>/loop</code>로 시보를 하나 만들고, <code>openclaw automations list</code>를 다시 실행해 보면 CLI<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup>로 만든 시보와 <code>/loop</code>로 만든 시보가 <strong>한 목록에</strong> 나타나요. 만드는 입구가 달라도 스케줄러는 하나예요.</p>
+
+    <h2><span class="hl">실습이 끝나면 시간표를 비운다</span></h2>
+    <pre><code>openclaw automations remove &lt;job-id&gt;</code></pre>
+    <p><code>/loop</code>로 만든 시보는 대화창에서 <code>/loop stop</code>으로도 지울 수 있어요. 반복 작업을 남겨 두면 게이트웨이가 켜져 있는 동안 계속 실행되고, 그때마다 토큰을 써요. 실습이 끝난 작업은 지우는 습관이 필요해요.</p>
+
+    <h2><span class="hl">나쁜 선택 vs 좋은 선택</span> — 시간표를 짤 때</h2>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">5분 시보를 만들어 두고 "잘 되네" 하고 지우지 않은 채 게이트웨이를 켜 둔다 → 밤새 12번씩 매시간 모델을 호출해 다음 날 3편의 <code>/usage cost</code>에 이유 모를 비용이 쌓여 있다.</td>
+          <td class="choice-good">실습 뒤 <code>list</code>로 남은 작업을 확인하고 <code>remove</code>로 지운다 → 시간표에 내가 아는 것만 남는다.</td>
+        </tr>
+        <tr>
+          <td class="choice-bad">시보를 만들고 채팅에 메시지가 안 떠서 "예약이 사라졌나?" 하고 다시 만든다 → 실은 게이트웨이가 꺼져 있었을 뿐이고, 켜는 순간 같은 시보 두 개가 돈다.</td>
+          <td class="choice-good">먼저 <code>openclaw gateway status</code>로 종 장치가 켜져 있는지, 그다음 <code>runs --id</code>로 기록이 있는지 본다 → 예약이 없는 건지, 스케줄러가 멈춘 건지 갈린다.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2><span class="hl">수치 표</span></h2>
+    <table>
+      <thead><tr><th>항목</th><th>값</th><th>조건·출처</th></tr></thead>
+      <tbody>
+        <tr><td>cron 표기식 칸 수</td><td>5</td><td>분·시·일·월·요일</td></tr>
+        <tr><td>실습의 일회성 알림</td><td>현재 UTC + 3분</td><td>성공 뒤 자동 삭제</td></tr>
+        <tr><td>실습의 반복 시보</td><td>5분 간격</td><td><code>*/5 * * * *</code>, 실행 뒤에도 목록에 남음</td></tr>
+        <tr><td><code>/loop</code> 간격 생략 시</td><td>1분 ~ 1시간 사이</td><td>에이전트가 스스로 정함, 소유자 전용 명령</td></tr>
+      </tbody>
+    </table>
+
+    <h2><span class="hl">직접 해보기</span></h2>
+    <p>내가 매일 손으로 하는 반복 확인 하나를 고르세요(예: "오늘 회의 목록 정리"). 그걸 cron 표기식 한 줄로 적어 보고(예: 평일 오전 8시 → <code>0 8 * * 1-5</code>), 같은 걸 "사람의 문장" 한 줄로도 적어 봐요. 그다음 5편의 권한 기준 메모를 꺼내, 이 예약이 실행될 때 에이전트가 어느 권한 모드로 도는지 확인해요. 예약은 내가 안 볼 때 실행되니, 권한 경계가 대화 때보다 더 중요해요. 이런 자동화 흐름을 화면으로 짜는 다른 도구는 <a href="n8n-agent-delegation-and-if-node.html">n8n</a>에서 봤어요. 어느 쪽이 내 일에 맞는지는 "대화로 시킬 일인가, 그림으로 그릴 일인가"로 갈려요.</p>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">스케줄러 — 정해진 시각이나 간격에 맞춰 일을 시작시키는 프로그램 부품. <a href="#fnref1">↩</a></li>
+        <li id="fn2">SQLite — 서버 없이 파일 하나로 동작하는 작은 데이터베이스로, <a href="openclaw-session-records-and-usage.html">3편</a>에서 세션 기록의 저장소로 봤어요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">웹훅 — 어떤 일이 생겼을 때 미리 정해 둔 주소로 알림을 보내는 방식으로, <a href="n8n-agent-delegation-and-if-node.html">n8n의 IF 노드</a> 글에서 다뤘어요. <a href="#fnref3">↩</a></li>
+        <li id="fn4">UTC — 시간대에 상관없이 전 세계가 공통으로 쓰는 기준 시각으로, 한국 시각보다 9시간 느려요. <a href="#fnref4">↩</a></li>
+        <li id="fn5">ISO 시각 — <code>2026-09-04T09:30:00Z</code>처럼 날짜와 시각을 국제 표준 형식으로 적은 것. <a href="#fnref5">↩</a></li>
+        <li id="fn6">CLI — 터미널에서 글자 명령으로 프로그램을 다루는 방식으로, <a href="terminal-shell-kernel-prompt.html">터미널·셸·커널·프롬프트 차이</a>에서 처음 다뤘어요. <a href="#fnref6">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <h3>"OpenClaw로 내 에이전트 운영하기" 시리즈</h3>
+    <a class="post-nav" href="openclaw-what-and-where-from.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">새 껍데기, 같은 바닷가재 — OpenClaw는 무엇이고 어디서 왔나</span>
+    </a>
+    <a class="post-nav" href="openclaw-install-and-first-chat.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">연습 폴더에 들이기 — 설치·온보딩·첫 대화</span>
+    </a>
+    <a class="post-nav" href="openclaw-session-records-and-usage.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">답변이 아니라 흔적을 본다 — 세션 기록과 사용량</span>
+    </a>
+    <a class="post-nav" href="openclaw-telegram-channel-and-pairing.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">폰에서 부리기 — 텔레그램 채널과 페어링</span>
+    </a>
+    <a class="post-nav" href="openclaw-security-boundaries.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">어디까지 해도 되는가 — 권한 모드·입구·인젝션·공개 권고</span>
+    </a>
+    <a class="post-nav" href="openclaw-multi-agent-bindings.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">한 게이트웨이에 여러 역할 — 바인딩·델리게이트·스탠딩 오더</span>
+    </a>
+    <p class="post-date">(7) 사람이 기억하지 않도록 — 자동화 예약과 cron (이 글)</p>
+    <a class="post-nav" href="openclaw-pi-core-and-extensions.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">뼈대와 손 — pi 코어와 확장 기능 투어</span>
+    </a>
+
+    <a class="post-nav" href="openclaw-pi-core-and-extensions.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">뼈대와 손 — pi 코어와 확장 기능 투어</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
