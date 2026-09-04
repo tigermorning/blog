@@ -70,7 +70,7 @@
     <p>여기서 정답성과 근거 일치를 따로 채점하는 이유가 있다. none 조건에서 "14일 이내 반품 가능"이라고 답했는데 그게 우연히 실제 정책과 같더라도, 그 답에는 회사 정책이라는 출처가 없다. 우연히 맞은 답과 근거를 갖고 맞은 답은 다른 점수를 받아야 한다.</p>
 
     <h2><span class="hl">코드로 네 조건을 똑같은 방식으로 돌려보기</span></h2>
-    <p>실습에서는 로컬에 띄운 소형 모델(qwen3.5:2b)로 langchain-ollama 라이브러리를 이용해 네 조건을 자동으로 돌렸다. 핵심만 줄이면 이런 모양이다.</p>
+    <p>실습에서는 로컬에 띄운 소형 모델(<a href="running-local-llm-with-ollama.html">Ollama</a>로 돌린 qwen3.5:2b)로 langchain-ollama 라이브러리를 이용해 네 조건을 자동으로 돌렸다. 핵심만 줄이면 이런 모양이다.</p>
     <pre>from langchain_ollama import ChatOllama
 
 MODEL, REPEATS = "qwen3.5:2b", 2
