@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>다음 주에도 통하는가 — Skill 재사용 검증하기 (9) - Tigermorning</title>
+  <meta name="description" content="8편에서 만든 SKILL.md가 진짜 재사용되는지 둘째 주 기록으로 확인합니다. 앞 대화의 정답이 섞이지 않게 새 대화를 여는 이유, Skill 선택·규칙 접근·이번 주 입력·보고서 품질 네 가지 확인 축, 같은 업무 TASK-102가 진행에서 완료로 바뀌는 이유, 비슷하지만 다른 요청(near-miss), 관찰-원인-개선 표와 기준선을 이용한 비교 실험까지 완전 초보자 눈높이로 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="다음 주에도 통하는가 — Skill 재사용 검증하기 (9)">
+  <meta property="og:description" content="같은 업무의 분류가 지난주와 달라졌다면 일관성이 없는 걸까요? 새 대화를 열고 둘째 주 기록을 맡겨, 재사용되는 것이 지난주 답이 아니라 판단 기준인지 확인해 봅니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/mcp-skill-reuse-verification.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">다음 주에도 통하는가</span> — Skill 재사용 검증하기 (9)</h1>
+    <p class="post-date">2026. 9. 7.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="mcp-skill-writing-skill-md.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">완성한 판단을 SKILL.md로 남기기</span>
+    </a>
+
+    <p class="one-liner">Skill이 잘 만들어졌는지는 결과가 그럴듯한가로 정해지지 않고, <strong>앞 대화의 도움이 하나도 없는 새 상황에서도 같은 기준이 적용됐는가</strong>로 정해진다.</p>
+
+    <p><a href="mcp-skill-writing-skill-md.html">8편</a>에서 <code>SKILL.md</code>를 한 장 만들고, 이름을 대고 불러서 읽히는 것까지 확인했어요. 그런데 그건 <strong>"파일이 제자리에 있다"</strong>까지만 확인한 거예요. 정작 우리가 원한 건 <strong>"다음 주에도 이 파일이 일을 해 준다"</strong>였잖아요.</p>
+    <p>그래서 이번 편에서는 <strong>둘째 주 업무 기록</strong>을 가져옵니다. 이 기록 안에는 낯익은 업무가 하나 들어 있어요 — <strong>TASK-102(로그인 안내 문구 개선)</strong>요. <a href="mcp-skill-first-weekly-report.html">7편</a>에서 개발은 끝났지만 배포는 안 됐다는 이유로 <strong>진행</strong>으로 분류했던 그 업무예요.</p>
+    <p>같은 업무가 다시 나왔으니 지난 보고서의 문장을 그대로 복사해도 될까요? 이 질문 하나가 이번 편 전체를 끌고 갑니다.</p>
+
+    <h2><span class="hl">비유 하나</span> — 휴가 간 사이, 인수인계 메모만 남은 자리</h2>
+    <p>사무실에서 제가 다음 주에 휴가를 갑니다. 제 자리는 대타 직원이 하루 앉게 되고, 저는 책상에 <strong>인수인계 메모 한 장</strong>을 남겨 뒀어요. 메모에는 "서류는 규정집 3장 순서대로 처리할 것"이라고 적혀 있고, 규정집은 서랍에 있어요.</p>
+    <p>여기서 두 가지 상황을 갈라 볼게요. 하나는 <strong>제가 옆에 앉아서 "지난달엔 이렇게 했어"라고 일러 주며 시키는</strong> 경우예요. 결과는 잘 나오겠죠. 그런데 그 결과가 <strong>메모 덕분인지 제 설명 덕분인지</strong>는 알 수가 없어요. 다른 하나는 <strong>제가 정말 자리를 비운</strong> 경우예요. 이때 나온 결과만이 메모의 실력이에요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>책상에 남긴 <strong>인수인계 메모</strong></td><td>8편에서 만든 <code>SKILL.md</code></td></tr>
+        <tr><td>메모가 가리키는 <strong>서랍 속 규정집</strong></td><td><code>references/team-rules.md</code> — 분류 기준이 적힌 참조 문서</td></tr>
+        <tr><td>내가 <strong>옆에 앉아 일러 주는</strong> 상황</td><td>7·8편을 진행한 <strong>그 대화에 이어서</strong> 요청하는 것</td></tr>
+        <tr><td>내가 <strong>정말 자리를 비운</strong> 상황</td><td><strong>새 대화</strong>를 열고 요청하는 것</td></tr>
+        <tr><td>이번 달에 새로 쌓인 <strong>서류 뭉치</strong></td><td>둘째 주 업무 기록(<code>data/week-two.json</code>)</td></tr>
+        <tr><td>대타가 서랍을 <strong>실제로 열었는지</strong></td><td>참조 문서를 읽은 <strong>기록</strong>이 남았는지</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 메모의 실력은 <strong>내가 옆에 없을 때</strong>만 측정할 수 있어요 — 그래서 이번 편의 첫 동작은 보고서를 쓰는 게 아니라 <strong>대화를 새로 여는 것</strong>이에요.</p>
+    <p>다만 여기서 비유가 끊기는 점이 하나 있어요. 사람 대타는 "규정집 봤어요"라고 말하면 대개 믿고 넘어가요. 그런데 우리는 그 말을 믿으면 안 돼요 — 8편에서도 이야기했듯 <strong>"스킬을 사용했습니다"는 결과지 근거가 아니거든요.</strong> 그래서 이번 편에서도 말이 아니라 <strong>호스트<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>에 남은 실행 기록</strong>을 봅니다.</p>
+
+    <h2><span class="hl">왜 새 대화</span>를 열어야 하나</h2>
+    <p>지금까지 이어 온 대화 안에는 두 가지가 함께 들어 있어요. 제가 직접 설명한 <strong>팀 규칙</strong>, 그리고 완성된 <strong>첫 주 보고서</strong>요. 이 상태에서 "둘째 주 보고서를 만들어 줘"라고 하면 어떻게 될까요?</p>
+    <p>결과는 아마 괜찮게 나와요. 문제는 <strong>왜 괜찮게 나왔는지 알 수 없다</strong>는 거예요. <strong>Skill<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>을 아예 읽지 않고도</strong> 앞 대화에 떠 있는 문장만 긁어모아 그럴듯하게 쓸 수 있거든요. 그럼 우리는 Skill이 아니라 <strong>대화 기록을 검증한 셈</strong>이 돼요.</p>
+    <p>그래서 <strong>새 대화</strong>를 엽니다. 앞의 설명도, 첫 주 보고서도 없는 자리에서 이렇게만 부탁해요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— 반드시 새 대화를 연 다음에요</span></p>
+    <pre><code>둘째 주 업무 기록을 우리 팀 주간 보고서로 정리해 줘.</code></pre>
+    <p>이 한 줄에 <strong>없는 것</strong>이 두 가지예요. <strong>Skill 이름</strong>이 없고, <strong>업무별 정답</strong>도 없어요. 8편에서는 <code>/team-weekly-report</code>처럼 이름을 대고 불렀지만, 이번엔 일부러 안 댑니다 — 실제 업무에서 우리가 하는 말이 이런 모양이니까요. 자료를 못 찾겠다고 하면 그때만 <code>data/week-two.json</code>을 알려 주면 돼요.</p>
+    <p>결과물은 <code>second-week-report.md</code>로 남기고, <strong>기존 파일은 건드리지 않습니다.</strong> 7편에서 만든 <code>first-week-report.md</code>와 <code>report-work-notes.md</code>는 그대로 둬요. 나중에 두 주를 나란히 놓고 비교할 거라서요.</p>
+
+    <h2><span class="hl">전체 흐름 그림</span> — 새 대화에서 개선까지</h2>
+    <p>이번 편에서 할 일 전체를 한 장에 그렸어요. 위에서 아래로 내려가다가, 어긋난 게 있으면 아래에서 다시 위로 돌아옵니다.</p>
+    <svg viewBox="0 0 780 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="새 대화를 열고 Skill 이름 없이 보고서를 요청한 뒤, Skill 선택·규칙 접근·이번 주 입력·보고서 품질 네 축을 각각 확인한다. 네 축이 모두 맞으면 그 결과를 기준선으로 남기고, 어긋난 축이 있으면 관찰과 원인과 개선을 거쳐 같은 둘째 주 입력으로 다시 확인하고 첫 주 입력까지 되돌려 확인한 뒤 다시 처음으로 돌아간다.">
+      <defs>
+        <marker id="arrRV" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <g font-family="var(--font-body)" font-size="11" fill="var(--ink)">
+
+        <rect x="240" y="10" width="300" height="44" rx="8" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <text x="390" y="30" text-anchor="middle" font-size="10.5" font-weight="700" font-family="var(--font-heading)">① 새 대화를 연다</text>
+        <text x="390" y="46" text-anchor="middle" font-size="9.5" fill="var(--muted)">앞 대화의 설명과 첫 주 보고서를 치운 상태</text>
+
+        <line x1="390" y1="54" x2="390" y2="72" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrRV)"/>
+
+        <rect x="175" y="76" width="430" height="48" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="390" y="97" text-anchor="middle" font-size="10.5" font-weight="700">② 이름 없이 요청</text>
+        <text x="390" y="114" text-anchor="middle" font-size="9.5" fill="var(--muted)">“둘째 주 업무 기록을 우리 팀 주간 보고서로 정리해 줘.”</text>
+
+        <line x1="390" y1="124" x2="390" y2="138" stroke="var(--muted)" stroke-width="2"/>
+        <line x1="105" y1="138" x2="675" y2="138" stroke="var(--muted)" stroke-width="2"/>
+        <line x1="105" y1="138" x2="105" y2="148" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrRV)"/>
+        <line x1="295" y1="138" x2="295" y2="148" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrRV)"/>
+        <line x1="485" y1="138" x2="485" y2="148" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrRV)"/>
+        <line x1="675" y1="138" x2="675" y2="148" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrRV)"/>
+
+        <rect x="16" y="152" width="178" height="66" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="105" y="172" text-anchor="middle" font-size="9.5" font-weight="700">축 ① Skill 선택</text>
+        <text x="105" y="189" text-anchor="middle" font-size="9" fill="var(--muted)">team-weekly-report가</text>
+        <text x="105" y="203" text-anchor="middle" font-size="9" fill="var(--muted)">불러와진 흔적이 있나</text>
+
+        <rect x="206" y="152" width="178" height="66" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="295" y="172" text-anchor="middle" font-size="9.5" font-weight="700">축 ② 규칙 접근</text>
+        <text x="295" y="189" text-anchor="middle" font-size="9" fill="var(--muted)">references/team-rules.md</text>
+        <text x="295" y="203" text-anchor="middle" font-size="9" fill="var(--muted)">까지 읽었나</text>
+
+        <rect x="396" y="152" width="178" height="66" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="485" y="172" text-anchor="middle" font-size="9.5" font-weight="700">축 ③ 이번 주 입력</text>
+        <text x="485" y="189" text-anchor="middle" font-size="9" fill="var(--muted)">둘째 주 기록과</text>
+        <text x="485" y="203" text-anchor="middle" font-size="9" fill="var(--muted)">그 안의 기준일을 썼나</text>
+
+        <rect x="586" y="152" width="178" height="66" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="675" y="172" text-anchor="middle" font-size="9.5" font-weight="700">축 ④ 보고서 품질</text>
+        <text x="675" y="189" text-anchor="middle" font-size="9" fill="var(--muted)">분류 근거와 합계가</text>
+        <text x="675" y="203" text-anchor="middle" font-size="9" fill="var(--muted)">팀 규칙과 맞나</text>
+
+        <line x1="105" y1="218" x2="105" y2="230" stroke="var(--muted)" stroke-width="2"/>
+        <line x1="295" y1="218" x2="295" y2="230" stroke="var(--muted)" stroke-width="2"/>
+        <line x1="485" y1="218" x2="485" y2="230" stroke="var(--muted)" stroke-width="2"/>
+        <line x1="675" y1="218" x2="675" y2="230" stroke="var(--muted)" stroke-width="2"/>
+        <line x1="105" y1="230" x2="675" y2="230" stroke="var(--muted)" stroke-width="2"/>
+        <line x1="390" y1="230" x2="390" y2="248" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrRV)"/>
+
+        <rect x="285" y="252" width="210" height="34" rx="8" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <text x="390" y="274" text-anchor="middle" font-size="10.5" font-weight="700">네 축이 모두 맞았나?</text>
+
+        <line x1="390" y1="286" x2="390" y2="300" stroke="var(--muted)" stroke-width="2"/>
+        <line x1="175" y1="300" x2="605" y2="300" stroke="var(--muted)" stroke-width="2"/>
+        <line x1="175" y1="300" x2="175" y2="314" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrRV)"/>
+        <line x1="605" y1="300" x2="605" y2="314" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrRV)"/>
+
+        <rect x="60" y="318" width="230" height="56" rx="8" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <text x="175" y="340" text-anchor="middle" font-size="10" font-weight="700">예 — 기준선으로 남긴다</text>
+        <text x="175" y="357" text-anchor="middle" font-size="9" fill="var(--muted)">다음 비교의 출발점이 돼요</text>
+
+        <rect x="490" y="318" width="250" height="56" rx="8" fill="none" stroke="var(--border)" stroke-width="2" stroke-dasharray="5 4"/>
+        <text x="615" y="340" text-anchor="middle" font-size="10" font-weight="700" fill="var(--muted)">아니오 — 어긋난 축 하나만</text>
+        <text x="615" y="357" text-anchor="middle" font-size="9" fill="var(--muted)">관찰 → 원인 → 개선</text>
+
+        <line x1="615" y1="374" x2="615" y2="390" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrRV)"/>
+
+        <rect x="460" y="394" width="280" height="40" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="600" y="410" text-anchor="middle" font-size="9.5" font-weight="700">③ 같은 둘째 주 입력으로 재확인</text>
+        <text x="600" y="426" text-anchor="middle" font-size="9" fill="var(--muted)">고친 부분이 이번 문제를 풀었나</text>
+
+        <line x1="600" y1="434" x2="600" y2="448" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrRV)"/>
+
+        <rect x="460" y="452" width="280" height="40" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="600" y="468" text-anchor="middle" font-size="9.5" font-weight="700">④ 첫 주 입력으로 되돌려 확인</text>
+        <text x="600" y="484" text-anchor="middle" font-size="9" fill="var(--muted)">전에 되던 것이 깨지지 않았나</text>
+
+        <line x1="460" y1="472" x2="30" y2="472" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 4"/>
+        <line x1="30" y1="472" x2="30" y2="32" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 4"/>
+        <line x1="30" y1="32" x2="240" y2="32" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#arrRV)"/>
+        <text x="245" y="466" text-anchor="middle" font-size="9" fill="var(--muted)">고쳤으면 다시 ①부터 — 확인은 늘 새 대화에서</text>
+      </g>
+    </svg>
+    <p><strong>읽는 법:</strong> 실선은 한 번의 확인이 흘러가는 길이고, <strong>왼쪽 아래를 크게 도는 점선</strong>은 <strong>고친 뒤 처음으로 돌아가는 길</strong>이에요. 가운데에서 네 갈래로 갈라지는 게 이번 편의 뼈대인데, <strong>네 축을 한 덩어리로 보지 않고 따로 보는 게 핵심</strong>이에요. "보고서가 이상하다"는 한마디로는 어디를 고쳐야 할지 알 수 없지만, "축 ②에서 끊겼다"면 고칠 자리가 바로 정해지거든요. 그리고 ④가 따로 있는 이유는, 이번 문제를 고치다가 <strong>지난주엔 잘되던 것을 망가뜨리는 일</strong>이 꽤 흔하기 때문이에요.</p>
+
+    <h2><span class="hl">네 가지 확인 축</span>을 하나씩</h2>
+    <p>결과 보고서를 열기 전에, <strong>어디를 볼지</strong>부터 정해 두는 게 좋아요. 안 그러면 보고서가 그럴듯해 보인다는 인상만 남거든요.</p>
+    <table>
+      <thead><tr><th>확인할 부분</th><th>구체적으로 살펴볼 내용</th></tr></thead>
+      <tbody>
+        <tr><td><strong>① Skill 선택</strong></td><td>호스트의 실행 기록에 <code>team-weekly-report</code>가 불러와지거나 적용된 흔적이 있나</td></tr>
+        <tr><td><strong>② 규칙 접근</strong></td><td>Skill 본문과 <code>references/team-rules.md</code>가 읽혔거나 호스트를 통해 제공됐나</td></tr>
+        <tr><td><strong>③ 이번 주 입력</strong></td><td>둘째 주 기록을 썼나, 그리고 <strong>그 안의 보고 기준일</strong>을 썼나</td></tr>
+        <tr><td><strong>④ 보고서 품질</strong></td><td>업무별 분류와 근거, 누락 정보 처리, 합계가 팀 규칙과 맞나</td></tr>
+      </tbody>
+    </table>
+    <p>축 ③은 조금 더 구체적으로 볼 수 있어요. <strong>MCP<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup></strong>를 통해 자료를 가져왔다면 요청에 담긴 값이 <code>{"week":"week-two"}</code>인지, 파일을 직접 읽었다면 <code>data/week-two.json</code>인지 보면 돼요. 이 파일을 내주는 서버는 <a href="mcp-skill-building-server.html">3편</a>에서 직접 만든 그 서버예요. 그리고 반환된 자료의 <code>report_date</code>는 <strong><code>2026-09-11</code></strong>이라, 보고서 안의 기준일이 이 값이면 통과예요. 컴퓨터의 오늘 날짜가 들어가 있으면 축 ③에서 걸린 거고요.</p>
+    <p>만약 <strong>축 ①에서부터 막혔다면</strong>, 즉 Skill을 아예 고르지 않았다면 — 또 다른 새 대화를 열어 이번엔 이름을 대고 시켜 봐요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— 앞의 것과 또 다른 새 대화에서요</span></p>
+    <pre><code>team-weekly-report Skill로 둘째 주 보고서를 작성해 줘.</code></pre>
+    <p>여기서 <strong>결과가 갈리는 게 중요한 정보</strong>예요. 이름을 대면 잘 쓰는데 자연스러운 요청에서는 못 고른다면, 문제는 Skill 본문이 아니라 <strong><code>description</code>에 적은 사용 시점</strong>이나 <strong>호스트가 이 Skill을 인식하는 상태</strong>에 있다는 뜻이거든요. 8편에서 <code>description</code>에 "쓸 상황과 안 쓸 상황"을 함께 적었던 이유가 여기서 드러나요.</p>
+
+    <h2><span class="hl">TASK-102</span> — 같은 업무, 다른 근거, 같은 규칙</h2>
+    <p>이제 이번 편에서 제일 인상 깊었던 대목이에요. 둘째 주 기록에 들어 있는 TASK-102를 떼어 보면 이래요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— <code>data/week-two.json</code> 안에서 TASK-102 부분만 떼어 본 값이에요</span></p>
+    <pre><code>{ "status": "배포 완료", "due_date": "2026-09-07", "deployed_at": "2026-09-07", "verification": "통과", "blocker": null }</code></pre>
+    <p>7편의 값과 나란히 놓으면 무엇이 달라졌는지 한눈에 보여요.</p>
+    <table>
+      <thead><tr><th>필드</th><th>첫 주 (기준일 <code>2026-09-04</code>)</th><th>둘째 주 (기준일 <code>2026-09-11</code>)</th></tr></thead>
+      <tbody>
+        <tr><td><code>status</code></td><td>개발 완료</td><td><strong>배포 완료</strong></td></tr>
+        <tr><td><code>due_date</code></td><td><code>2026-09-07</code></td><td><code>2026-09-07</code> (그대로)</td></tr>
+        <tr><td><code>deployed_at</code></td><td><code>null</code></td><td><strong><code>2026-09-07</code></strong></td></tr>
+        <tr><td><code>verification</code></td><td>미실시</td><td><strong>통과</strong></td></tr>
+        <tr><td><code>blocker</code></td><td><code>null</code></td><td><code>null</code> (그대로)</td></tr>
+        <tr><td><strong>판정</strong></td><td>진행</td><td><strong>완료</strong></td></tr>
+      </tbody>
+    </table>
+    <p>첫 주에는 비어 있던 <strong>배포 날짜와 운영 확인 결과</strong>가 이번엔 채워졌어요. 팀 규칙대로 <strong>위험 → 완료 → 진행</strong> 순서를 그대로 밟아 볼게요. 차단 요인이 없고 운영 확인도 통과라 위험이 아니고, 보고 기준일(9-11) 이전에 배포됐고 운영 확인이 통과라 <strong>완료 조건 셋을 모두 채웠어요.</strong> 그래서 이번엔 완료입니다.</p>
+    <p>여기서 한 가지 함정을 짚고 갈게요. 기한이 <strong>9월 7일</strong>인데 보고 기준일은 <strong>9월 11일</strong>이라, 날짜만 보면 "기한이 지났으니 위험 아닌가?" 싶어요. 그런데 <strong>이미 완료 조건을 채운 업무에 지연 판단을 그대로 적용하지 않습니다.</strong> 규칙의 순서가 위험부터인 이유가 여기서도 살아나요 — 위험 기준에 걸리는 건 <strong>차단 요인이 남았거나 배포 후 운영 확인이 통과하지 못한 경우</strong>지, 기한이 지났다는 사실 하나가 아니거든요.</p>
+    <p>이제 두 보고서의 TASK-102를 나란히 읽어 보세요. 첫 주엔 진행, 둘째 주엔 완료. <strong>분류가 달라지는 게 일관성 부족일까요?</strong></p>
+    <p>저는 정반대라고 봐요. <strong>새로운 근거에 같은 규칙을 적용했기 때문에 분류가 달라져야</strong> 맞아요. 만약 지난주 문장을 복사해 "여전히 진행"이라고 적었다면, 그건 일관성이 아니라 <strong>규칙을 안 돌린 것</strong>이에요. 이 편의 한 문장을 고르라면 이거예요 — <strong>재사용할 것은 지난주 답이 아니라 판단 기준이다.</strong> <a href="mcp-skill-why-skill-needed.html">6편</a>에서 "같은 기록, 다른 판정"이라고 했던 것의 거울상인 셈이에요. 이번엔 <strong>다른 기록, 같은 규칙</strong>이니까요.</p>
+
+    <h2><span class="hl">나머지 세 건</span>은 직접 판정해 보기</h2>
+    <p>둘째 주에는 새 업무 세 건이 더 있어요. 보고 기준일은 모두 <code>2026-09-11</code>이에요. 답은 적지 않을게요 — 직접 순서를 밟아 보는 게 이번 편의 연습이거든요.</p>
+    <table>
+      <thead><tr><th>업무</th><th><code>status</code></th><th><code>due_date</code></th><th><code>deployed_at</code></th><th><code>verification</code></th><th>기록된 메모</th></tr></thead>
+      <tbody>
+        <tr><td><strong>TASK-201</strong></td><td>개발 완료</td><td><code>2026-09-11</code></td><td><code>null</code></td><td>미실시</td><td>개발은 끝났지만 아직 배포하지 않았다</td></tr>
+        <tr><td><strong>TASK-202</strong></td><td>배포 완료</td><td><code>2026-09-14</code></td><td><code>2026-09-10</code></td><td>대기</td><td>배포했으며 운영 환경 확인 결과는 아직 없다</td></tr>
+        <tr><td><strong>TASK-204</strong></td><td>진행 중</td><td><code>2026-09-09</code></td><td><code>null</code></td><td>미실시</td><td>지연 원인은 기록되어 있지 않다</td></tr>
+      </tbody>
+    </table>
+    <p>세 건 모두 <code>blocker</code>는 <code>null</code>이에요. 판정할 때 <strong>상태 문구만 보지 말고</strong> 배포일·운영 확인·기한을 같이 보세요. 그리고 7편에서 TASK-104로 배운 팀의 약속 하나 — <strong>기한이 보고 기준일과 같은 날이면 지연이 아니다</strong>도 여기서 다시 쓰입니다. 세 건을 마쳤으면 앞서 판정한 TASK-102까지 넣어 <strong>완료·진행·위험 건수</strong>를 세 보세요. 합계까지가 보고서예요.</p>
+
+    <h2><span class="hl">비슷한 말, 다른 작업</span> — 가까운 다른 요청</h2>
+    <p>보고서가 잘 나왔다면 확인이 하나 더 남았어요. 이번엔 <strong>보고서와 관련은 있는데 해야 할 일이 다른</strong> 요청을 던져 봅니다.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— 하나씩 따로 시켜 보세요</span></p>
+    <pre><code>둘째 주 업무 제목만 알려 줘.
+
+팀 보고서 양식을 영어로 번역해 줘.</code></pre>
+    <p>두 요청 모두 <strong>"업무", "보고서"</strong>라는 익숙한 단어를 품고 있어요. 그런데 실제로 해야 할 일은 첫 번째가 <strong>제목 조회</strong>, 두 번째가 <strong>번역</strong>이에요. 보고서 작성이 아니죠.</p>
+    <p>제목 네 개를 물었는데 완료·진행·위험으로 나눈 <strong>보고서 전체가 돌아왔다면</strong>, 결과가 아무리 훌륭해도 그건 성공이 아니에요. <strong>사용자가 부탁한 것보다 작업 범위를 넓힌</strong> 거니까요. 인수인계 비유로 돌아가면, "서류 몇 건 있는지만 알려 줘"라고 했는데 대타가 결재까지 다 끝내 놓은 상황이에요. 고마운 것 같지만 제가 확인하려던 건 건수였고, 결재는 제가 보고 하려던 일이었을 수도 있잖아요.</p>
+    <p>이렇게 <strong>실제 사용 대상과 가까우면서도 해야 할 작업이 다른 사례</strong>를 <strong>가까운 다른 요청, near-miss<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup> 사례</strong>라고 불러요. Skill이 잘 만들어졌는지는 <strong>필요할 때 꺼내지는가</strong>만으로 정해지지 않고, <strong>필요 없을 때 안 꺼내지는가</strong>까지 봐야 정해져요.</p>
+
+    <h2><span class="hl">나쁜 선택 vs 좋은 선택</span> — 대타 직원 앞에서</h2>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">내가 옆에 앉아 "지난달엔 이렇게 했어"라고 일러 주며 시킨다 = <strong>앞 대화에 이어서</strong> 둘째 주 보고서를 요청한다 → 결과가 좋아도 <strong>메모 덕인지 내 설명 덕인지</strong> 가를 수 없다.</td>
+          <td class="choice-good">자리를 완전히 비우고 메모만 남긴다 = <strong>새 대화</strong>를 열고 Skill 이름도 대지 않는다 → 통과하면 그건 <strong>Skill의 실력</strong>이라고 말할 수 있다.</td>
+        </tr>
+        <tr>
+          <td class="choice-bad">지난달 결재 서류를 복사해 이번 달 칸에 붙인다 = <strong>"TASK-102는 진행"</strong>이라는 지난주 문장을 그대로 옮긴다 → 이미 배포되고 확인까지 끝난 업무가 <strong>진행으로 남는다</strong>.</td>
+          <td class="choice-good">이번 달 서류의 칸을 새로 읽고 규정을 적용한다 = 채워진 <code>deployed_at</code>·<code>verification</code>에 <strong>같은 순서</strong>를 다시 돌린다 → 같은 규칙에서 <strong>완료</strong>로 바뀐다.</td>
+        </tr>
+        <tr>
+          <td class="choice-bad">"서류 몇 건인지만 알려 줘"라고 했는데 결재까지 끝내 놓는다 = <strong>제목 조회</strong>에 보고서 전체를 만들어 준다 → 요청보다 <strong>범위를 넓힌</strong> 결과가 나온다.</td>
+          <td class="choice-good">물어본 만큼만 답한다 = <code>description</code>에 <strong>"단순 기록 조회에는 적용하지 않는다"</strong>를 적어 조회와 작성을 가른다 → 필요 없을 때 안 꺼내진다.</td>
+        </tr>
+        <tr>
+          <td class="choice-bad">틀린 걸 보고 메모에 <strong>"TASK-202는 위험이다"</strong>라고 답을 적어 둔다 → 다음 달 서류엔 그 업무가 아예 없어서 <strong>쓸모없는 줄</strong>이 된다.</td>
+          <td class="choice-good">규정집에 <strong>"배포했더라도 운영 확인이 통과하지 않았으면 위험으로 다룬다"</strong>를 적는다 → 업무 번호가 무엇이든 <strong>어느 주에나</strong> 적용된다.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2><span class="hl">어긋났을 때</span> — 관찰·원인·개선 표</h2>
+    <p>확인하다 보면 뭔가 어긋난 곳이 나와요. 그때 <strong>Skill 전체를 다시 쓰지 마세요.</strong> 어긋난 축 하나만 붙잡고 <strong>먼저 열어 볼 곳</strong>부터 정합니다.</p>
+    <table>
+      <thead><tr><th>관찰한 현상</th><th>먼저 확인할 곳</th><th>가능한 개선</th></tr></thead>
+      <tbody>
+        <tr><td>보고서를 요청했는데 <strong>Skill을 찾지 못함</strong></td><td>저장 위치 · 호스트의 인식 · <code>description</code>의 사용 조건</td><td>실제 업무에서 쓰는 표현으로 <strong>언제 쓰는지</strong>를 명확히 적기</td></tr>
+        <tr><td>Skill 본문만 보고 <strong>팀 규칙을 못 읽음</strong></td><td>참조 경로가 맞는지 · 그 파일이 실제로 있는지</td><td>경로를 바로잡거나 <strong>언제 그 규칙을 읽는지</strong> 본문에 적기</td></tr>
+        <tr><td><strong>첫 주 기록</strong>이나 컴퓨터의 <strong>오늘 날짜</strong>를 씀</td><td>입력을 고른 과정과 기준일 처리</td><td>지정한 주의 기록과 그 안의 <code>report_date</code>를 쓰도록 보완</td></tr>
+        <tr><td>규칙은 읽었는데 <strong>배포 상태만으로 완료 처리</strong></td><td>완료 조건과 위험 조건의 <strong>우선순위</strong></td><td>혼동하는 조건을 갈라 적고 <strong>일반화 가능한 사례</strong> 추가</td></tr>
+        <tr><td>업무별 분류는 맞는데 <strong>합계가 틀림</strong></td><td>업무의 중복·누락과 집계 방식</td><td>분류한 항목을 기준으로 <strong>수를 다시 세도록</strong> 보완</td></tr>
+        <tr><td><strong>제목 조회</strong>를 보고서 작성으로 바꿈</td><td>Skill의 <strong>적용 범위</strong> 설명</td><td>보고서 작성과 단순 조회를 <strong>구분해서</strong> 적기</td></tr>
+      </tbody>
+    </table>
+    <p>원인을 찾는 일도 같이 시킬 수 있어요. 다만 <strong>부탁하는 문장의 모양</strong>이 결과를 크게 가릅니다.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— 보고서가 나온 그 대화에 이어서요</span></p>
+    <pre><code>이 결과가 팀 규칙과 다른 이유를 찾아 줘.
+고칠 부분 하나를 정해서 다시 확인하자.</code></pre>
+    <p>여기서 <strong>"TASK-202는 위험이야"처럼 이번 입력의 정답을 넣지 않는 게</strong> 요령이에요. 그렇게 적으면 그 업무 하나는 맞게 나오지만 다음 주엔 아무 도움이 안 돼요. 대신 <strong>"배포했더라도 운영 확인이 통과하지 않았으면 위험으로 다룬다"</strong>처럼 <strong>재사용 가능한 기준</strong>을 분명하게 만드는 쪽으로 갑니다. 8편에서 "이번 주 정답"과 "다음 주에도 쓸 규칙"을 갈랐던 그 기준이 <strong>고칠 때도 똑같이 적용</strong>되는 거예요.</p>
+    <p>그리고 고친 다음이 중요해요. <strong>같은 둘째 주 입력으로 한 번 더</strong> 돌려서 문제가 풀렸는지 보고, 풀렸으면 <strong>첫 주 기록도 다시</strong> 돌려 봅니다. 이번 문제를 잡으려고 넣은 설명이, 전에는 잘 처리하던 <strong>기한 당일</strong>이나 <strong>담당자 미정</strong> 같은 사례를 망가뜨리지 않았는지 확인하는 거예요. 흐름 그림에서 ③ 다음에 ④를 따로 둔 이유가 이거예요.</p>
+
+    <h2><span class="hl">비교로만 알 수 있는 것</span> — 기준선</h2>
+    <p>"Skill이 도움이 됐나요?"라는 질문에는 결과 하나만 봐서는 답할 수 없어요. <strong>무엇과 비교했는지</strong>를 정해야 답이 나와요.</p>
+    <table>
+      <thead><tr><th>알고 싶은 것</th><th>비교할 두 조건</th></tr></thead>
+      <tbody>
+        <tr><td><strong>팀 지식을 주면 차이가 생기나</strong></td><td>같은 업무 기록 + 팀 규칙 <strong>없음</strong> ↔ 같은 기록 + 팀 규칙 <strong>있음</strong></td></tr>
+        <tr><td><strong>같은 지식을 Skill로 묶는 게 값어치가 있나</strong></td><td>같은 기록·같은 규칙을 <strong>일반 요청으로 전달</strong> ↔ <strong>Skill로 제공</strong></td></tr>
+        <tr><td><strong>내가 수정한 부분이 도움이 됐나</strong></td><td>같은 입력에 <strong>수정 전</strong> Skill ↔ <strong>수정 후</strong> Skill</td></tr>
+      </tbody>
+    </table>
+    <p>세 줄 모두 왼쪽 칸이 <strong>비교의 출발점</strong>이에요. 이렇게 남겨 두는 결과를 <strong>기준선<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup></strong>이라고 불러요. 여기서 한 가지 오해를 미리 풀어 둘게요 — 기준선은 <strong>합격해야 하는 점수선이 아니에요.</strong> "몇 점 이상이면 통과" 같은 게 아니라, "이거랑 비교해서 나아졌나"를 재기 위해 <strong>일부러 남겨 둔 이전 결과</strong>예요.</p>
+    <p>그래서 앞에서 <code>first-week-report.md</code>를 지우지 말라고 했던 거예요. 그 파일이 <strong>첫 번째 기준선</strong>이고, 이번에 만든 <code>second-week-report.md</code>가 다음 비교의 기준선이 돼요. 공식 Agent Skills 평가 안내도 같은 방식을 권해요 — <strong>실제 요청과 입력을 남겨 두고</strong>, Skill이 없는 경우나 이전 버전과 비교하고, 인상이 아니라 <strong>관찰 가능한 근거</strong>로 확인하는 방식이요.</p>
+
+    <h2><span class="hl">이번 편에 나온 구체적인 값</span></h2>
+    <table>
+      <thead><tr><th>항목</th><th>값</th><th>조건·출처</th></tr></thead>
+      <tbody>
+        <tr><td>둘째 주 보고 기준일(<code>report_date</code>)</td><td><code>2026-09-11</code></td><td><code>data/week-two.json</code> 안의 값 — 컴퓨터의 오늘 날짜가 아님</td></tr>
+        <tr><td>첫 주 보고 기준일</td><td><code>2026-09-04</code></td><td>7편에서 쓴 값 — 되돌려 확인할 때 다시 씀</td></tr>
+        <tr><td>확인 축</td><td>4개</td><td>Skill 선택 · 규칙 접근 · 이번 주 입력 · 보고서 품질</td></tr>
+        <tr><td>둘째 주 업무 건수</td><td>4건</td><td>TASK-102 · TASK-201 · TASK-202 · TASK-204</td></tr>
+        <tr><td>TASK-102에 새로 채워진 필드</td><td>2개</td><td><code>deployed_at</code> <code>2026-09-07</code> · <code>verification</code> 통과</td></tr>
+        <tr><td>TASK-102의 판정 변화</td><td>진행 → <strong>완료</strong></td><td>같은 규칙 · 달라진 근거 — 규칙을 바꾼 것이 아님</td></tr>
+        <tr><td>TASK-102 기한과 기준일 간격</td><td>4일 (9-07 → 9-11)</td><td>기한이 지났지만 <strong>완료 조건을 이미 채워</strong> 위험 아님</td></tr>
+        <tr><td>near-miss 예시 요청</td><td>2개</td><td>"제목만 알려 줘"(조회) · "양식을 영어로 번역해 줘"(번역)</td></tr>
+        <tr><td>관찰·원인·개선 항목</td><td>6가지</td><td>Skill 미선택 · 규칙 미접근 · 입력/날짜 · 조건 우선순위 · 합계 · 범위</td></tr>
+        <tr><td>고친 뒤 재확인 단계</td><td>2단계</td><td>같은 둘째 주 입력 → <strong>첫 주 입력까지</strong> 되돌려 확인</td></tr>
+        <tr><td>비교 질문</td><td>3가지</td><td>규칙 유무 · Skill 형태 여부 · 수정 전후</td></tr>
+        <tr><td>손에 남는 파일</td><td>3개</td><td><code>first-week-report.md</code> · <code>second-week-report.md</code> · <code>report-work-notes.md</code></td></tr>
+      </tbody>
+    </table>
+    <p class="post-date">※ 위 값 중 <strong>팀 규칙·업무 기록·날짜는 전부 학습용 가상 설정</strong>이에요. 그리고 <strong>실행 기록이 어디에 어떤 모양으로 남는지는 도구와 버전마다 다르니</strong>, 축 ①·②를 확인할 때는 지금 쓰는 도구가 Skill 사용 내역을 어디에 보여 주는지 한 번 찾아보고 시작하세요.</p>
+
+    <h2><span class="hl">다음 작업에 남길 기록</span></h2>
+    <p>확인이 끝나면 <code>report-work-notes.md</code>에 둘째 주 결과를 <strong>이어서</strong> 적습니다. 새 파일을 만들지 않고 이어 적는 게 포인트예요 — 첫 주와 둘째 주가 한 파일에 있어야 나중에 비교가 되거든요. 네 가지만 적으면 충분해요.</p>
+    <ul>
+      <li><strong>사용한 요청과 입력</strong> — 어떤 문장으로 시켰고, 어떤 자료를 썼는지</li>
+      <li><strong>적용된 지식</strong> — 확인한 기록과 <strong>확인하지 못한 부분</strong>까지</li>
+      <li><strong>결과의 근거</strong> — 업무별 분류 이유와 합계</li>
+      <li><strong>개선과 재확인</strong> — 무엇을 바꿨고 그 뒤에 어떻게 달라졌는지</li>
+    </ul>
+    <p>이렇게 <strong>사용한 입력과 조건을 남겨서 다른 사람이 같은 확인을 다시 해 볼 수 있게 하는 것</strong>을 <strong>재현<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup></strong>이라고 해요. 여기서 "다른 사람"에는 <strong>석 달 뒤의 나</strong>도 들어가요. 그때의 저는 이번 주에 무슨 생각으로 어떤 문장을 넣었는지 하나도 기억 못 할 테니까요.</p>
+
+    <h2><span class="hl">직접 해보기</span></h2>
+    <p>이번 연습의 목적은 <strong>보고서를 한 편 더 만드는 게 아니라, 결과를 믿을 이유를 만드는 것</strong>이에요.</p>
+    <p>① <strong>새 대화에서 이름 없이 시켜 보기.</strong> 앞 대화를 이어 쓰고 싶은 마음을 참고 새 대화를 여세요. 그리고 <strong>Skill을 골랐는지</strong>부터 기록에서 확인하세요. 못 골랐다면 또 다른 새 대화에서 이름을 대고 시켜 보고, <strong>두 결과가 어떻게 갈리는지</strong> 한 줄로 적으세요.</p>
+    <p>② <strong>네 축을 따로 채점하기.</strong> "잘 나왔다/이상하다"로 뭉뚱그리지 말고 축 ①~④에 각각 O·X를 적으세요. X가 하나면 고칠 곳이 정해지고, X가 셋이면 <strong>가장 위쪽 축부터</strong> 손봅니다 — 축 ①이 X면 아래 축은 볼 필요도 없거든요.</p>
+    <p>③ <strong>TASK-201·202·204를 손으로 판정하기.</strong> 위험 → 완료 → 진행 순서로 내려가며 <strong>어느 필드를 보고 그렇게 정했는지</strong>를 업무마다 세 줄로 적으세요. 그다음 AI가 만든 보고서와 대조합니다. 갈리는 항목이 나오면 <strong>제 판정과 AI 판정 중 어느 쪽이 규칙 문장에 더 가까운지</strong>를 규정집 문장을 짚어 가며 가리세요.</p>
+    <p>④ <strong>near-miss 요청 하나를 직접 지어내기.</strong> 예시 두 개 말고 <strong>내 업무에서 나올 법한</strong> 요청을 하나 만드세요. "보고서와 단어는 겹치는데 해야 할 일은 다른" 문장이면 돼요. 그리고 그 요청에 Skill이 꺼내지는지 확인하세요 — 꺼내진다면 <code>description</code>의 "안 쓸 상황"에 그 경우를 한 줄 추가할 차례예요.</p>
+    <p>⑤ <strong>고친 뒤 첫 주까지 되돌려 보기.</strong> 무엇 하나를 고쳤다면 둘째 주로 재확인한 다음 <strong>반드시 첫 주 기록으로도</strong> 한 번 더 돌리세요. 첫 주 결과가 이전과 달라졌다면, 이번 수정이 <strong>다른 자리를 건드린</strong> 거예요. 이걸 발견하는 게 실패가 아니라 <strong>이 연습의 성과</strong>입니다.</p>
+    <p>여기까지 하면 Skill이 <strong>내 손을 떠나서도 같은 기준을 적용한다</strong>는 근거가 파일로 남아요. 다음 편에서는 방향을 조금 틀어서, <strong>계산 과정을 실행 가능한 셀로 남기는 Colab 연결</strong>을 살펴볼게요. 지금까지는 판단을 문서로 남겼다면, 이번엔 <strong>돌려 볼 수 있는 형태</strong>로 남기는 이야기예요.</p>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">Skill — 특정 종류의 일에 쓸 지침과 자료를 한 폴더에 묶어 두고 에이전트가 이름·설명으로 용도를 파악해 필요할 때 읽게 하는 형식으로, <a href="ai-skills-and-rules-files.html">스킬과 규칙 파일</a>에서 처음 다뤘어요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">호스트 — 사용자와 대화하면서 어떤 도구나 Skill을 쓸지 정하고 실제 실행 기록을 남기는 프로그램으로, <a href="mcp-skill-protocol-roles.html">2편</a>에서 클라이언트·서버와 함께 처음 다뤘어요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">MCP — 외부 자료나 기능을 도구 형태로 에이전트에 연결하는 공통 규약이며, <a href="mcp-skill-protocol-roles.html">2편</a>에서 연결 구조를, <a href="mcp-skill-host-connection.html">4편</a>에서 실제 연결을 다뤘어요. <a href="#fnref3">↩</a></li>
+        <li id="fn4">near-miss(가까운 다른 요청) — 실제 사용 대상과 단어나 맥락이 비슷하지만 해야 할 작업은 다른 요청으로, Skill이 필요 없을 때 안 꺼내지는지 확인하는 데 씁니다. <a href="#fnref4">↩</a></li>
+        <li id="fn5">기준선(baseline) — 나중에 무엇과 견줄지 정해 두려고 일부러 남겨 둔 이전 결과이며, 합격 여부를 가르는 점수선이 아니에요. <a href="#fnref5">↩</a></li>
+        <li id="fn6">재현 — 사용한 요청·입력·조건을 남겨 두어 다른 사람이나 나중의 내가 같은 확인을 똑같이 다시 해 볼 수 있게 하는 것이에요. <a href="#fnref6">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <h3>"MCP와 Skill로 에이전트에게 업무 맡기기" 시리즈</h3>
+    <a class="post-nav" href="mcp-skill-tool-call-anatomy.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">도구 하나가 호출되기까지 — 정의·파싱·구조화 요청</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-protocol-roles.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">호스트·클라이언트·서버가 나누는 대화 — MCP 연결 구조와 메시지</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-building-server.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">업무 기록 서버 직접 만들기 — uv 환경과 Python MCP 서버</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-host-connection.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">호스트에 연결하고 첫 도구 호출 확인하기</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-context-and-search.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">도구가 많아지면 생기는 문맥 부담 — Tool Search와 Code Mode</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-why-skill-needed.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">같은 기록, 다른 판정 — Skill이 필요한 이유</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-first-weekly-report.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">팀 규칙으로 첫 주간보고서 쓰기</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-writing-skill-md.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">완성한 판단을 SKILL.md로 남기기</span>
+    </a>
+    <p class="post-date">(9) 다음 주에도 통하는가 — Skill 재사용 검증하기 (이 글)</p>
+    <a class="post-nav" href="mcp-skill-colab-notebook.html">
+      <span class="post-nav-label">(10)</span>
+      <span class="post-nav-title">계산 과정을 노트북에 남기기 — Colab MCP 연결</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-google-oauth-setup.html">
+      <span class="post-nav-label">(11)</span>
+      <span class="post-nav-title">내 표를 읽는 프로그램 만들기 — Google OAuth 준비</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-google-sheets-mcp.html">
+      <span class="post-nav-label">(12)</span>
+      <span class="post-nav-title">로그인부터 표가 반환되기까지 — 인증 코드와 MCP 서버</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-adapting-to-my-task.html">
+      <span class="post-nav-label">(13)</span>
+      <span class="post-nav-title">내 업무에 맞게 바꿔보기 — 데이터·기준·기능 나누기</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-wikiskill-research.html">
+      <span class="post-nav-label">(14)</span>
+      <span class="post-nav-title">에이전트도 경험을 쌓는다 — WikiSkill 연구가 보는 Skill</span>
+    </a>
+
+    <a class="post-nav" href="mcp-skill-colab-notebook.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">계산 과정을 노트북에 남기기 — Colab MCP 연결</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>에이전트도 경험을 쌓는다 — WikiSkill 연구가 보는 Skill (14) - Tigermorning</title>
+  <meta name="description" content="Skill은 한 번 쓰고 고정되는 문서일까요, 실행을 거치며 달라지는 물건일까요. WikiSkill 연구는 실행 경험·영속 지식 기반(위키)·실행 가능한 스킬 세 가지를 갈라 관리합니다. 이 시리즈 7·8·9편에서 실제로 겪은 보고서 작성 → SKILL.md로 남기기 → 재사용 검증 과정과 하나씩 맞춰 보고, 연구가 보고한 벤치마크 비교와 모델 사이 전이, 그리고 그 결과를 내 작업에 그대로 가져오면 안 되는 조건까지 완전 초보자 눈높이로 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="에이전트도 경험을 쌓는다 — WikiSkill 연구가 보는 Skill (14)">
+  <meta property="og:description" content="실패한 실행 하나가 곧바로 규칙이 되면 안 됩니다. 경험과 지식과 절차를 갈라 놓는 프레임을, 이 시리즈에서 직접 만든 SKILL.md와 나란히 놓고 읽어 봅니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/mcp-skill-wikiskill-research.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">에이전트도 경험을 쌓는다</span> — WikiSkill 연구가 보는 Skill (14)</h1>
+    <p class="post-date">2026. 9. 7.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="mcp-skill-adapting-to-my-task.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">내 업무에 맞게 바꿔보기 — 데이터·기준·기능 나누기</span>
+    </a>
+
+    <p class="one-liner">WikiSkill<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup> 연구는 <strong>에이전트<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>가 일하며 남긴 실행 경험, 그 경험을 추려 쌓아 둔 영속 지식 기반(위키), 지금 과업에서 그대로 따르는 실행 가능한 스킬 — 이 셋을 같은 것으로 취급하지 않고 갈라서 관리한다.</strong></p>
+
+    <p>이 시리즈에서 저는 <strong>Skill<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>은 절차 지식</strong>이라고 계속 말해 왔어요. <a href="mcp-skill-why-skill-needed.html">6편</a>에서 "도구는 자료를 가져오고 Skill은 판단을 정한다"고 갈랐고, <a href="mcp-skill-writing-skill-md.html">8편</a>에서 그 판단을 실제로 <code>SKILL.md</code> 한 장에 옮겼죠.</p>
+    <p>그런데 <a href="mcp-skill-adapting-to-my-task.html">13편</a> 마지막에 질문 하나를 남겨 뒀어요. <strong>그 절차는 한 번 써 놓으면 그대로 고정되는 문서일까요, 아니면 실행을 거치면서 달라질 수 있는 물건일까요?</strong></p>
+    <p>Google Research 등의 연구진이 발표한 <strong>WikiSkill 논문</strong>은 이 질문을 <strong>에이전트의 실행 경험</strong>으로 다뤄요. 에이전트가 일을 하며 얻은 경험을 <strong>다음 실행에도 남는 영속 지식으로 정리하고</strong>, 그 지식을 바탕으로 <strong>실행 가능한 스킬을 갱신하는</strong> 틀이에요. 핵심은 <strong>경험과 지식과 스킬을 같은 것으로 취급하지 않는다</strong>는 데 있고요.</p>
+    <p>그리고 이 얘기가 남 얘기가 아니에요. 이 시리즈의 <a href="mcp-skill-first-weekly-report.html">7편</a>·<a href="mcp-skill-writing-skill-md.html">8편</a>·<a href="mcp-skill-reuse-verification.html">9편</a>에서 <strong>제가 이미 세 단계를 손으로 통과했거든요.</strong> 이번 편에서는 그 세 편과 이 연구의 세 요소를 나란히 놓고 읽어 볼게요.</p>
+
+    <h2><span class="hl">비유</span> — 동네 자동차 정비소에 있는 세 가지 종이</h2>
+    <p>동네 자동차 정비소를 하나 떠올려 볼게요. 이 정비소에는 성격이 완전히 다른 <strong>종이 세 가지</strong>가 있어요.</p>
+    <p>첫째, 정비사가 차 한 대를 고치면서 그때그때 적는 <strong>작업 일지</strong>예요. "시동이 걸렸다 안 걸렸다 한다길래 배터리부터 봤는데 멀쩡했고, 결국 접지선이 헐거웠다. 아, 그리고 이 차는 너무 오래돼서 볼트가 안 풀려 망치로 두드렸다" 같은 게 뒤섞여 적혀요. 둘째, 사무실 책장에 꽂힌 <strong>고장 사례집</strong>이에요. 일지 수십 장을 읽고 <strong>다음에도 또 쓸 만한 것만</strong> 추려 옮겨 적은 노트죠. 셋째, 리프트 옆 벽에 붙여 놓은 <strong>점검 순서 카드</strong>예요. 지금 차 한 대를 앞에 두고 <strong>그대로 따라 하는 순서</strong>만 짧게 적혀 있어요.</p>
+    <p>여기서 제일 위험한 순간이 언제일까요. <strong>어제 일지 한 장을 그대로 벽에 붙여 버리는 것</strong>이에요. "볼트가 안 풀리면 망치로 두드린다"가 <strong>모든 차에 대한 정비소 공식 절차</strong>가 되는 거죠. 그날 그 오래된 차에서만 맞았던 임시방편인데요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>차 한 대를 고치며 적은 <strong>작업 일지</strong></td><td><strong>실행 경험</strong> — 무엇을 시도했고 어디서 실패했는지의 <strong>가공 안 된</strong> 한 번의 기록</td></tr>
+        <tr><td>일지에 섞인 <strong>그날만 통한 임시방편</strong></td><td>특정 상황에서만 맞았던 <strong>우연</strong>과 불필요한 시행 — 그대로 규칙이 되면 안 되는 것</td></tr>
+        <tr><td>책장에 꽂힌 <strong>고장 사례집</strong></td><td><strong>영속 지식 기반(위키)</strong> — 여러 실행에서 <strong>다시 쓸 판단과 절차</strong>만 남긴 지식 층</td></tr>
+        <tr><td>리프트 옆에 붙은 <strong>점검 순서 카드</strong></td><td><strong>실행 가능한 스킬</strong> — 지금 이 과업에서 <strong>그대로 따르는 절차</strong> (<a href="mcp-skill-writing-skill-md.html">SKILL.md</a>)</td></tr>
+        <tr><td>사례집을 읽고 <strong>카드 한 줄을 고치는</strong> 일</td><td>축적된 지식을 참조해 <strong>스킬을 갱신</strong>하는 일</td></tr>
+        <tr><td>고친 카드로 <strong>다른 차를 실제로 고쳐 보고</strong> 판단</td><td>수정한 스킬을 <strong>별도 검증 과제로 평가</strong>해 채택하거나 되돌리는 절차</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 일지와 사례집과 카드는 <strong>서로 다른 물건</strong>이고, 셋을 한 덩어리로 뭉개는 순간 <strong>어제 한 번 통한 임시방편이 오늘부터 모두가 따르는 절차</strong>가 돼 버려요.</p>
+    <p>다만 여기서 비유가 끊기는 점이 하나 있어요. 정비소에서는 <strong>사람이</strong> 일지를 읽고 사례집을 고쳐요. WikiSkill이 시험한 건 그 정리와 갱신까지 <strong>에이전트가 하도록 맡긴</strong> 경우예요. 그래서 사람이라면 "이건 그날만 그랬지" 하고 자연스럽게 걸러 낼 것도, 에이전트에게는 <strong>무엇을 남기고 무엇을 버릴지가 그 자체로 어려운 판단</strong>이 됩니다.</p>
+
+    <h2><span class="hl">전체 흐름 그림</span> — 세 요소가 도는 한 바퀴</h2>
+    <p>세 요소는 나란히 놓인 목록이 아니라 <strong>한 바퀴 도는 순환</strong>이에요. 그리고 그 바퀴에는 <strong>관문</strong>이 하나 달려 있어요.</p>
+    <svg viewBox="0 0 820 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="세 개의 상자가 왼쪽에서 오른쪽으로 늘어서 있고 화살표로 이어진 뒤, 아래를 지나 다시 왼쪽 첫 상자로 돌아오는 순환 그림이다. 첫째 상자는 실행 경험으로, 이번 과업에서 무엇을 시도했고 어디서 실패했는지의 날것 기록이며 유용한 관찰과 그날만 맞았던 우연이 아직 섞여 있다. 추려서 쌓기라는 화살표를 지나 둘째 상자인 영속 지식 기반, 곧 위키로 간다. 위키는 여러 실행에서 다시 쓸 판단만 남긴 계속 남는 지식 층이며 단순한 로그 보관함이 아니라 다음에 참조할 문서다. 절차로 갱신이라는 화살표를 지나 셋째 상자인 실행 가능한 스킬로 간다. 스킬은 위키 전체가 아니라 지금 과업에서 그대로 따르는 절차만 담은 실행용 한 벌이다. 셋째 상자에서 아래로 내려온 화살표는 가운데 아래에 있는 검증 관문 상자로 들어간다. 그 상자에는 고친 스킬은 별도 검증 과제로 평가해 좋아졌으면 채택하고 아니면 되돌린다고, 그래서 실패한 실행 하나가 곧바로 규칙이 되지 않는다고 적혀 있다. 관문을 지난 화살표는 왼쪽으로 나가 위로 올라가 다시 첫째 상자인 실행 경험으로 돌아온다. 맨 아래에는 세 요소를 분리해 관리하는 것이 이 프레임의 핵심이라는 문장이 적혀 있다.">
+      <defs>
+        <marker id="arrWS" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <g font-family="var(--font-body)" font-size="11" fill="var(--ink)">
+
+        <text x="410" y="20" text-anchor="middle" font-size="11" font-weight="700" font-family="var(--font-heading)">경험 · 지식 · 스킬은 나란한 목록이 아니라 한 바퀴 도는 순환이에요</text>
+
+        <rect x="20" y="45" width="215" height="130" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        <text x="127" y="75" text-anchor="middle" font-size="10.5" font-weight="700" font-family="var(--font-heading)">① 실행 경험</text>
+        <text x="127" y="99" text-anchor="middle" font-size="9" fill="var(--muted)">이번 과업에서 무엇을 시도했고</text>
+        <text x="127" y="115" text-anchor="middle" font-size="9" fill="var(--muted)">어디서 실패했는지의 날것 기록</text>
+        <text x="127" y="139" text-anchor="middle" font-size="9" fill="var(--muted)">유용한 관찰과 그날만 맞았던</text>
+        <text x="127" y="155" text-anchor="middle" font-size="9" fill="var(--muted)">우연이 아직 섞여 있어요</text>
+
+        <text x="268" y="100" text-anchor="middle" font-size="8.5" fill="var(--muted)">추려서 쌓기</text>
+        <line x1="237" y1="115" x2="299" y2="115" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrWS)"/>
+
+        <rect x="302" y="45" width="215" height="130" rx="8" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <text x="409" y="75" text-anchor="middle" font-size="10.5" font-weight="700" font-family="var(--font-heading)">② 영속 지식 기반 (위키)</text>
+        <text x="409" y="99" text-anchor="middle" font-size="9" fill="var(--muted)">여러 실행에서 다시 쓸 판단만</text>
+        <text x="409" y="115" text-anchor="middle" font-size="9" fill="var(--muted)">남긴, 계속 남는 지식 층</text>
+        <text x="409" y="139" text-anchor="middle" font-size="9" fill="var(--muted)">로그 보관함이 아니라</text>
+        <text x="409" y="155" text-anchor="middle" font-size="9" fill="var(--muted)">다음에 참조할 문서예요</text>
+
+        <text x="551" y="100" text-anchor="middle" font-size="8.5" fill="var(--muted)">절차로 갱신</text>
+        <line x1="519" y1="115" x2="582" y2="115" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrWS)"/>
+
+        <rect x="585" y="45" width="215" height="130" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        <text x="692" y="75" text-anchor="middle" font-size="10.5" font-weight="700" font-family="var(--font-heading)">③ 실행 가능한 스킬</text>
+        <text x="692" y="99" text-anchor="middle" font-size="9" fill="var(--muted)">위키 전체를 보여 주는 게 아니라</text>
+        <text x="692" y="115" text-anchor="middle" font-size="9" fill="var(--muted)">지금 과업에서 따르는 절차만</text>
+        <text x="692" y="139" text-anchor="middle" font-size="9" fill="var(--muted)">현장에서 실제로 쓰는</text>
+        <text x="692" y="155" text-anchor="middle" font-size="9" fill="var(--muted)">실행용 한 벌이에요</text>
+
+        <line x1="692" y1="175" x2="692" y2="290" stroke="var(--muted)" stroke-width="2"/>
+        <line x1="692" y1="290" x2="579" y2="290" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrWS)"/>
+        <text x="745" y="222" text-anchor="middle" font-size="8.5" fill="var(--muted)">고친 스킬은</text>
+        <text x="745" y="236" text-anchor="middle" font-size="8.5" fill="var(--muted)">바로 못 들어가요</text>
+
+        <rect x="245" y="250" width="330" height="82" rx="8" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <text x="410" y="277" text-anchor="middle" font-size="10.5" font-weight="700" font-family="var(--font-heading)">검증 관문 — 따로 평가하고 나서 결정</text>
+        <text x="410" y="299" text-anchor="middle" font-size="9" fill="var(--muted)">별도 검증 과제로 재 보고, 좋아졌으면 채택 · 아니면 되돌림</text>
+        <text x="410" y="317" text-anchor="middle" font-size="9" fill="var(--muted)">실패한 실행 하나가 곧바로 규칙이 되지 않게 막는 자리예요</text>
+
+        <line x1="243" y1="290" x2="128" y2="290" stroke="var(--muted)" stroke-width="2"/>
+        <line x1="128" y1="290" x2="128" y2="177" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrWS)"/>
+        <text x="72" y="228" text-anchor="middle" font-size="8.5" fill="var(--muted)">다시 실행으로</text>
+        <text x="72" y="242" text-anchor="middle" font-size="8.5" fill="var(--muted)">돌아가 또 쌓여요</text>
+
+        <text x="410" y="368" text-anchor="middle" font-size="10" font-weight="700">세 요소를 &#39;분리해서&#39; 관리하는 것이 이 프레임의 핵심입니다</text>
+        <text x="410" y="388" text-anchor="middle" font-size="9" fill="var(--muted)">①을 그대로 ③에 붙이는 지름길이 없다는 게 요점이에요 — 반드시 ②를 거칩니다</text>
+      </g>
+    </svg>
+    <p><strong>읽는 법:</strong> 오른쪽으로 가는 화살표 두 개가 <strong>"경험 → 지식 → 절차"</strong>의 순서예요. ①에서 ③으로 <strong>바로 가는 화살표가 없다</strong>는 게 이 그림의 핵심이고요 — 반드시 ②를 거칩니다. 아래를 지나 왼쪽으로 돌아오는 선은 <strong>고친 스킬이 다시 실행에 쓰이면서 새 경험을 낳는</strong> 순환이고, 그 길목의 굵은 상자가 <strong>검증 관문</strong>이에요. 여기서 통과 못 한 수정은 <strong>되돌립니다.</strong> ②와 관문의 테두리를 굵게 해 둔 건, 이 둘이 빠지면 순환이 그냥 <strong>"어제 겪은 일을 오늘 규칙으로 만드는 기계"</strong>가 되기 때문이에요.</p>
+
+    <h2><span class="hl">세 요소를 하나씩</span></h2>
+
+    <h3>① 실행 경험 — 아직 가공하지 않은 것</h3>
+    <p>어떤 과업에서 무엇을 시도했는지, 어느 입력에서 어떤 결과가 나왔는지, 무엇이 실패했는지가 <strong>실행이 끝난 직후의 기록</strong>으로 남아요. 여기엔 유용한 관찰도 있지만 <strong>그 상황에서만 맞았던 우연</strong>이나 <strong>안 해도 됐던 시행</strong>도 섞여 있어요.</p>
+    <p>그래서 이 경험을 <strong>그대로 다음 작업의 지시문에 길게 붙이는 것</strong>만으로는 부족해요. 받는 쪽이 <strong>이 중에 무엇을 일반화해야 하는지</strong>를 알 수가 없거든요. 지시문이 길어질수록 오히려 판단이 흐려지는 문제는 <a href="mcp-skill-context-and-search.html">5편</a>에서 도구가 많아질 때 겪었던 문맥 부담과 같은 결이에요.</p>
+
+    <h3>② 영속 지식 기반(위키) — 로그 보관함이 아니에요</h3>
+    <p>위키<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>는 실행 기록을 <strong>그냥 모아 두는 창고가 아니에요.</strong> 여러 실행에서 <strong>다시 쓸 수 있는 판단과 절차</strong>만 남겨서, 나중에 스킬을 고칠 때 참조하는 <strong>영속적인 지식 층</strong>이에요.</p>
+    <p>사람이 실험 노트와 작업 일지를 읽고 <strong>다음 번 체크리스트를 고치듯</strong>, 에이전트도 실행 경험을 지식으로 정리한 다음 <strong>그 지식에 기대어</strong> 스킬을 바꿔요. '위키'라는 이름은 <strong>사람이 지식을 문서로 보존하고, 다음 사람이 그 문서를 바탕으로 일을 이어 온 방식</strong>과 닿아 있어요.</p>
+    <p>다만 <strong>문서를 많이 쌓는 것만으로는 지식이 되지 않아요.</strong> 어떤 경험을 남길지, 무엇을 일반 규칙으로 삼을지, 언제 수정할지를 <strong>구분해야</strong> 비로소 지식 층이 됩니다.</p>
+
+    <h3>③ 실행 가능한 스킬 — 위키 자체가 아니에요</h3>
+    <p>스킬은 <strong>위키에 쌓인 관찰 전체를 보여 주는 문서가 아니에요.</strong> 지금 이 과업에서 에이전트가 <strong>따라야 할 실행 가능한 절차</strong>죠. 정비소로 치면 사례집 노트가 아니라 <strong>리프트 옆에 붙은 카드</strong>고요.</p>
+    <p>이 구분이 <a href="mcp-skill-writing-skill-md.html">8편</a>에서 <code>SKILL.md</code> 본문과 <code>references/team-rules.md</code>를 갈라 놨던 것과 정확히 같은 성격이에요. 본문은 <strong>짧고 실행 가능하게</strong>, 자세한 판정 근거는 <strong>참조 문서로</strong> 미뤄 뒀잖아요.</p>
+
+    <h2><span class="hl">이 시리즈에서 우리가 이미 통과한 세 단계</span></h2>
+    <p>여기가 이번 편에서 제가 제일 하고 싶은 얘기예요. 이 세 요소는 <strong>새로 배우는 개념이 아니라, 7·8·9편에서 이미 손으로 통과한 것</strong>이거든요.</p>
+    <table>
+      <thead><tr><th>WikiSkill의 세 요소</th><th>이 시리즈에서 실제로 한 일</th><th>그때 남은 물건</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>① 실행 경험</strong></td>
+          <td><a href="mcp-skill-first-weekly-report.html">7편</a> — 첫 주 기록으로 보고서를 쓰면서 <strong>TASK-102를 진행으로 판정</strong>하기까지의 과정을 겪었어요</td>
+          <td>보고서 한 장과 <strong>작업 메모</strong> — 왜 그렇게 판정했는지가 섞여 적힌 날것의 기록</td>
+        </tr>
+        <tr>
+          <td><strong>② 영속 지식 기반</strong></td>
+          <td><a href="mcp-skill-writing-skill-md.html">8편</a> — 그 메모에서 <strong>"이번 주 정답"과 "다음 주에도 쓸 규칙"을 갈라</strong> 규칙만 옮겨 적었어요</td>
+          <td><code>SKILL.md</code>와 <code>references/team-rules.md</code> — <strong>다음 입력에도 남는</strong> 지식 층</td>
+        </tr>
+        <tr>
+          <td><strong>③ 실행 가능한 스킬</strong></td>
+          <td><a href="mcp-skill-reuse-verification.html">9편</a> — <strong>새 대화</strong>를 열고 둘째 주 기록에 그 절차를 실제로 적용했어요</td>
+          <td>둘째 주 보고서와 <strong>실행 기록</strong> — 절차가 정말 일을 했는지의 증거</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>특히 <a href="mcp-skill-reuse-verification.html">9편</a>이 그림의 <strong>검증 관문</strong>에 해당해요. 그때 저는 <strong>앞 대화의 도움이 하나도 없는 새 상황</strong>을 일부러 만들어서, 결과가 <strong>Skill 덕분인지 대화 기록 덕분인지</strong>를 갈랐잖아요. WikiSkill 실험에서 <strong>수정한 스킬을 별도 검증 과제로 평가해 채택하거나 되돌린</strong> 것이 바로 같은 자리의 같은 동작이에요.</p>
+    <p>그러니까 이 연구의 세 요소는 <strong>제가 겪은 일에 이름을 붙여 준 것</strong>에 가까워요. 그리고 이름이 붙으니 <strong>어디를 건너뛰면 안 되는지</strong>가 보여요 — ②를 건너뛰면 7편의 작업 메모가 통째로 절차가 되고, 관문을 건너뛰면 그 절차가 <strong>맞는지 안 맞는지 모르는 채로</strong> 굴러갑니다.</p>
+
+    <h2><span class="hl">연구가 보고한 비교 결과</span></h2>
+    <p>그럼 이렇게 갈라 놓으면 실제로 더 나았을까요. 연구진은 <strong>벤치마크<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup></strong>로 비교했어요.</p>
+    <p>여러 벤치마크와 여러 모델 조건에서, <strong>위키를 거쳐 스킬을 갱신하는 방식</strong>은 <strong>스킬이 아예 없는 경우</strong>와 <strong>기존의 스킬 진화 방식</strong>보다 우위를 보였다고 보고했어요. 세 갈래를 나란히 놓고 잰 비교예요.</p>
+    <p>그리고 논문의 Figure 1에서는 <strong>강한 모델일수록 이점이 커지는 경향</strong>이 정성적으로 관찰됐어요. 이건 <strong>"모델만 좋으면 절차 같은 건 필요 없다"의 반대</strong>예요. 모델이 강할수록 <strong>축적된 지식을 읽어서 지금 과업에 맞는 절차로 써먹을 여지</strong>가 커질 수 있다는 관찰이거든요.</p>
+    <p>모델 <strong>사이</strong>의 전이도 관찰됐어요. 한 모델에서 진화한 스킬을 <strong>다른 모델에 이식</strong>했을 때, 그 모델이 <strong>자기 경험만으로</strong> 스킬을 진화시킨 경우보다 나은 결과를 보인 경우가 있었다고 해요. 정리된 지식과 실행 절차가 <strong>모델 하나의 대화 기록에만 묶이지 않을 가능성</strong>을 시험한 셈이죠.</p>
+    <p>다만 여기서 한 걸음 물러설게요. <strong>모든 스킬이 언제나 옮겨 간다는 보장은 아니에요.</strong> 이 연구가 관찰한 건 <strong>특정 벤치마크 과업과 비교 조건에서의 결과</strong>고, "경우가 있었다"는 표현은 <strong>"항상 그렇다"와 다른 말</strong>이에요.</p>
+
+    <h2><span class="hl">나쁜 선택 vs 좋은 선택</span> — 정비소에서 카드를 고칠 때</h2>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">어제 <strong>작업 일지 한 장을 그대로 벽에 붙인다</strong> = 실행 한 번에서 나온 관찰을 <strong>곧바로 Skill 본문에 규칙으로</strong> 적는다 → 그날 그 차에서만 통했던 임시방편이 <strong>모든 작업의 공식 절차</strong>가 된다.</td>
+          <td class="choice-good">일지를 <strong>사례집에 한 번 옮겨 적고</strong> 나서 카드를 고친다 = 관찰을 <strong>지식 문서에 먼저 정리</strong>하고, 거기서 <strong>반복되는 것만</strong> 절차로 올린다 → 우연과 규칙이 갈린다.</td>
+        </tr>
+        <tr>
+          <td class="choice-bad">사례집을 <strong>통째로 벽에 붙인다</strong> = 지금까지 쌓은 관찰 전부를 <strong>Skill 본문에</strong> 밀어 넣는다 → 정비사가 <strong>어디부터 봐야 할지</strong> 모른다.</td>
+          <td class="choice-good">사례집은 <strong>책장에 두고</strong> 카드에는 <strong>지금 순서만</strong> 적는다 = 판정 근거는 <a href="mcp-skill-writing-skill-md.html">references 문서</a>로 빼고 본문은 짧게 → 지금 따라야 할 게 <strong>한눈에</strong> 보인다.</td>
+        </tr>
+        <tr>
+          <td class="choice-bad">카드를 고쳐 놓고 <strong>바로 다음 차부터 그걸로 작업한다</strong> = 수정한 Skill을 <strong>확인 없이</strong> 그대로 쓴다 → 나빠졌는지 좋아졌는지 <strong>알 방법이 없다</strong>.</td>
+          <td class="choice-good">고친 카드로 <strong>따로 한 대를 먼저 봐 본다</strong> = <a href="mcp-skill-reuse-verification.html">별도 검증 과제로 평가</a>하고 <strong>나빠졌으면 되돌린다</strong> → 바뀐 절차가 <strong>정말 나은지</strong>를 말할 수 있다.</td>
+        </tr>
+        <tr>
+          <td class="choice-bad">사례집이 <strong>두꺼워지는 것</strong>을 실력이라고 여긴다 = 실행 기록을 <strong>전부 쌓아 두고</strong> 지식이 늘었다고 생각한다 → 정작 찾을 땐 <strong>무엇이 규칙인지</strong> 안 보인다.</td>
+          <td class="choice-good"><strong>무엇을 남기고 무엇을 버릴지</strong>를 정한다 = 남길 경험 · 일반 규칙으로 삼을 것 · 고칠 시점을 <strong>구분</strong>한다 → 쌓인 분량이 아니라 <strong>쓸 수 있는 문서</strong>가 남는다.</td>
+        </tr>
+        <tr>
+          <td class="choice-bad">옆 정비소 카드를 보고 <strong>우리도 무조건 된다</strong>고 옮겨 붙인다 = 논문 결과를 <strong>내 저장소에도 그대로 적용된다</strong>고 읽는다 → <strong>측정된 조건이 다른데</strong> 결론만 가져온 셈이 된다.</td>
+          <td class="choice-good">옮겨 붙이되 <strong>우리 차로 다시 재 본다</strong> = 프레임은 빌려 오고 <strong>내 조건에서 직접 확인</strong>한다 → 빌린 것이 <strong>내 것으로 검증</strong>된다.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2><span class="hl">이 연구를 어디까지 가져올 수 있나</span></h2>
+    <p>여기서 반드시 짚고 갈 게 있어요. <strong>이 연구의 우위를 제 코딩 과업에 그대로 적용할 수 있다고 말할 수는 없어요.</strong> 보고된 결과는 <strong>논문의 벤치마크 과업과 모델 조건</strong>에서 측정된 것이고, 제 저장소 구조·테스트 환경·과업 난이도는 다르니까요.</p>
+    <p>연구 조건을 세 가지로 갈라 둘게요. 이 셋을 빼놓고 결과만 옮기면 <strong>연구가 하지 않은 말</strong>을 하게 됩니다.</p>
+    <ul>
+      <li><strong>활성 Skill의 전문을 시스템 지시에 넣었어요.</strong> 즉 <strong>필요할 때만 꺼내 읽는 방식</strong>이 아니라 <strong>항상 전문이 들어가 있는</strong> 상태였어요. 그래서 이 결과는 <a href="mcp-skill-writing-skill-md.html">8편</a>에서 다룬 <strong>Skill 자동 선택</strong>이나 <strong>점진 공개<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup></strong>의 정확성까지 시험한 게 아니에요.</li>
+      <li><strong>수정한 Skill은 별도 검증 과제로 평가했어요.</strong> 고쳤다고 다 채택한 게 아니라 <strong>평가 후 채택하거나 되돌렸다</strong>는 뜻이에요. 그림의 관문이 실험 설계 안에 실제로 들어 있었던 거죠.</li>
+      <li><strong>Figure 1은 벤치마크 평균 비교예요.</strong> <strong>모든 모델·과제 조합에서 언제나 향상됐다는 뜻이 아니에요.</strong> 평균이 올라가도 개별 조합에서는 떨어진 자리가 있을 수 있어요.</li>
+    </ul>
+    <p>그리고 한 가지 더요. <strong>스킬을 잘 쓰는 일</strong>과 <strong>스킬을 축적하는 일</strong>은 서로 다른 수준의 일이에요. 앞엣것은 <strong>주어진 절차를 읽고 적용하는</strong> 일이고, 뒤엣것은 <strong>실행 기록에서 재사용할 판단을 가려 내고 절차를 갱신하는</strong> 일이거든요. 이 시리즈에서 제가 한 건 대부분 앞엣것이었고, <a href="mcp-skill-reuse-verification.html">9편</a>과 <a href="mcp-skill-adapting-to-my-task.html">13편</a>에서야 뒤엣것에 손을 댔어요.</p>
+    <p>그러니 <a href="mcp-skill-writing-skill-md.html">8편</a>에서 만든 Skill 폴더도 이 관점으로 다시 볼 수 있어요. <strong>한 번 쓰고 버리는 지시문 모음일 필요가 없어요.</strong> 실행 뒤에 확인한 실패 원인, 필요한 입력, 검증 순서, 예외 처리의 근거를 남기고 다음 절차에 반영한다면 <strong>경험이 쌓이는 지식 창고</strong>가 될 수 있어요.</p>
+
+    <h2><span class="hl">이번 편에 나온 구체적인 값</span></h2>
+    <table>
+      <thead><tr><th>항목</th><th>값</th><th>조건·출처</th></tr></thead>
+      <tbody>
+        <tr><td>WikiSkill이 갈라 놓는 요소</td><td><strong>3가지</strong></td><td>실행 경험 · 영속 지식 기반(위키) · 실행 가능한 스킬 — 이 프레임의 핵심</td></tr>
+        <tr><td>①에서 ③으로 가는 지름길</td><td><strong>없음</strong></td><td>반드시 ②를 거치는 것이 이 프레임의 설계 — 그림의 화살표가 그 뜻</td></tr>
+        <tr><td>벤치마크에서 나란히 비교한 방식</td><td>3갈래</td><td>스킬 없음 / 기존 스킬 진화 방식 / <strong>위키를 거쳐 스킬 갱신</strong></td></tr>
+        <tr><td>그중 우위를 보인 방식</td><td><strong>위키를 거쳐 갱신</strong></td><td>여러 벤치마크·여러 모델 조건에서의 비교 — 논문이 보고한 결과</td></tr>
+        <tr><td>모델 성능과 이점의 관계</td><td>강할수록 이점이 커지는 <strong>경향</strong></td><td>Figure 1에서 <strong>정성적으로 관찰</strong> — 수치로 못 박은 법칙이 아님</td></tr>
+        <tr><td>모델 사이 스킬 이식 결과</td><td>더 나은 <strong>경우가 있었음</strong></td><td>자기 경험만으로 진화시킨 경우와의 비교 — <strong>항상 옮겨 간다는 보장 아님</strong></td></tr>
+        <tr><td>실험에서 활성 Skill을 넣은 위치</td><td><strong>시스템 지시에 전문</strong></td><td>자동 선택·점진 공개의 정확성까지 시험한 결과가 <strong>아님</strong></td></tr>
+        <tr><td>수정한 Skill의 채택 판단</td><td><strong>별도 검증 과제</strong></td><td>평가 후 <strong>채택하거나 되돌림</strong> — 고쳤다고 다 쓴 것이 아님</td></tr>
+        <tr><td>Figure 1이 보여 주는 값의 성격</td><td><strong>벤치마크 평균</strong></td><td>모든 모델·과제 조합에서 향상됐다는 뜻이 <strong>아님</strong></td></tr>
+        <tr><td>이 시리즈에서 세 요소에 대응한 편</td><td>3편 (7·8·9편)</td><td>실행 경험 → 지식 정리 → 재사용 검증 순서로 이미 통과함</td></tr>
+      </tbody>
+    </table>
+    <p class="post-date">※ 위 표에서 <strong>비교 결과에 해당하는 줄들은 논문이 자기 벤치마크와 모델 조건에서 측정해 보고한 값</strong>이고, 제 컴퓨터나 여러분의 저장소에서 잰 값이 아니에요. 특히 "강할수록 이점이 커지는 경향"과 "이식이 더 나은 경우가 있었음"은 <strong>정성적 관찰과 일부 사례</strong>를 옮긴 표현이라, <strong>"항상 그렇다"로 읽으면 원문이 하지 않은 말</strong>이 됩니다.</p>
+
+    <h2><span class="hl">직접 해보기</span></h2>
+    <p>이번 편의 연습은 <strong>내 Skill 폴더를 세 요소로 갈라 보는 것</strong>이에요. 종이 한 장이면 됩니다.</p>
+    <p>① <strong>지금 내 폴더에서 셋을 찾아 적기.</strong> <strong>실행 경험</strong>에 해당하는 파일(작업 메모·대화 기록·결과물), <strong>지식</strong>에 해당하는 파일(<code>references/</code> 안의 문서), <strong>실행 절차</strong>에 해당하는 파일(<code>SKILL.md</code> 본문)을 각각 <strong>경로째</strong> 적어 보세요. <strong>비어 있는 칸이 어디인지</strong>가 이 연습의 절반이에요 — 대개 <strong>지식 칸</strong>이 비어 있고, 경험이 곧바로 절차로 올라가 있어요.</p>
+    <p>② <strong>절차에 올라가면 안 될 한 줄 찾기.</strong> <code>SKILL.md</code> 본문을 읽으면서 <strong>"이건 그때 그 입력에서만 맞았던 거 아닌가?"</strong> 싶은 문장을 <strong>딱 하나</strong>만 찾아 보세요. 못 찾으면 좋은 거고, 찾으면 그게 <strong>일지를 그대로 벽에 붙인 자리</strong>예요.</p>
+    <p>③ <strong>그 한 줄을 지식 칸으로 내리기.</strong> 지운다는 뜻이 아니에요. <strong>참조 문서에 조건과 함께 옮겨 적으세요</strong> — "이런 상황에서는 이렇게 했고, 이유는 이거였다"로요. 절차에는 <strong>여러 입력에서 반복된 것만</strong> 남깁니다.</p>
+    <p>④ <strong>고친 다음에 반드시 다시 재기.</strong> <a href="mcp-skill-reuse-verification.html">9편</a>에서 했던 것처럼 <strong>새 대화</strong>를 열고, <strong>고치기 전에 통과했던 입력</strong>을 다시 넣어 보세요. 좋아졌으면 채택하고, <strong>나빠졌으면 되돌리세요.</strong> 이 되돌리는 동작이 그림의 <strong>관문</strong>이고, 없으면 순환이 그냥 표류합니다.</p>
+    <p>⑤ <strong>"안 남길 것"도 한 줄 정하기.</strong> 무엇을 남길지만큼 <strong>무엇은 안 남길지</strong>가 중요해요. 예를 들어 <strong>한 번뿐인 환경 오류</strong>나 <strong>제가 오타를 냈던 시행</strong>은 지식이 아니에요. 이 기준을 한 줄로 적어 두면 폴더가 두꺼워지기만 하는 걸 막아 줍니다.</p>
+    <p>정답은 하나가 아니에요. 이 편이 드리는 건 <strong>연구가 쓴 결론</strong>이 아니라 <strong>경험·지식·절차를 갈라 보는 자</strong>예요. 그 자로 제 폴더를 재 보는 건 <strong>제 조건에서 직접</strong> 해야 하는 일이고요.</p>
+
+    <h2><span class="hl">열네 편을 닫으며</span></h2>
+    <p>돌아보면 이 시리즈는 <strong>도구 호출 한 번을 뜯어보는 데서</strong> 시작했어요(<a href="mcp-skill-tool-call-anatomy.html">1편</a>). 거기서 <a href="mcp-skill-protocol-roles.html">호스트·클라이언트·서버</a>로 역할을 갈랐고, <a href="mcp-skill-building-server.html">서버를 직접 만들어</a> <a href="mcp-skill-host-connection.html">첫 호출을 눈으로 확인</a>했죠. 도구가 늘면 <a href="mcp-skill-context-and-search.html">그 자체로 부담</a>이라는 것도 배웠고요.</p>
+    <p>그다음이 <strong>도구만으로는 안 되는 자리</strong>였어요. <a href="mcp-skill-why-skill-needed.html">같은 기록에서 다른 판정이 나오는 문제</a>를 만나 <a href="mcp-skill-first-weekly-report.html">첫 보고서를 쓰고</a>, 그 판단을 <a href="mcp-skill-writing-skill-md.html">SKILL.md로 남기고</a>, <a href="mcp-skill-reuse-verification.html">다음 주에도 통하는지 확인</a>했습니다. 이어서 <a href="mcp-skill-colab-notebook.html">계산을 노트북에</a> 남기고, <a href="mcp-skill-google-oauth-setup.html">인증을 준비해</a> <a href="mcp-skill-google-sheets-mcp.html">내 표를 읽는 데까지</a> 갔고요. 그리고 <a href="mcp-skill-adapting-to-my-task.html">13편</a>에서 그 한 벌을 <strong>내 과업으로</strong> 옮겼어요.</p>
+    <p>열네 편을 한 문장으로 줄이면 이래요 — <strong>도구는 자료를 가져오고, 지식은 판단을 정하고, 확인은 그 둘이 정말 일했는지를 가른다.</strong> 이번 편의 연구가 붙여 준 이름을 얹으면 <strong>경험 · 지식 · 절차</strong>죠. 이 시리즈에서 만든 폴더 하나는 그래서 <strong>끝난 결과물이 아니라 다음 실행의 재료</strong>예요. 다음에 뭘 하시든, <strong>실행 → 정리 → 갱신 → 다시 확인</strong>의 그 한 바퀴만 챙기시면 됩니다. 읽어 주셔서 고맙습니다.</p>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">WikiSkill — 에이전트의 실행 경험을 영속 지식 기반(위키)으로 정리한 뒤 그 지식으로 실행 가능한 스킬을 갱신하는 틀을 제안한 Google Research 등의 연구진의 논문이에요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">에이전트 — 모델이 스스로 도구를 골라 부르고 결과를 보고 다음 행동을 정하며 일을 진행하는 프로그램이에요(<a href="mcp-skill-tool-call-anatomy.html">1편</a>에서 도구 호출 한 번을 뜯어봤어요). <a href="#fnref2">↩</a></li>
+        <li id="fn3">Skill — 반복 적용할 판단 기준과 작업 방식을 파일에 적어 둬서 새 입력에도 같은 기준이 쓰이게 하는 방식이에요(<a href="mcp-skill-why-skill-needed.html">6편</a>에서 왜 필요한지, <a href="mcp-skill-writing-skill-md.html">8편</a>에서 어떻게 쓰는지 다뤘어요). <a href="#fnref3">↩</a></li>
+        <li id="fn4">위키(wiki) — 여러 사람이 문서를 이어서 고쳐 가며 지식을 쌓아 두는 형태의 문서 모음으로, 이 연구에서는 에이전트가 실행 경험에서 추려 계속 남기는 지식 층을 가리켜요. <a href="#fnref4">↩</a></li>
+        <li id="fn5">벤치마크 — 여러 방식의 성능을 같은 기준으로 견주려고 미리 정해 둔 시험 과제 묶음이에요. <a href="#fnref5">↩</a></li>
+        <li id="fn6">점진 공개(progressive disclosure) — 평소엔 이름·설명만 훑다가 실제로 필요할 때만 본문과 참조 자료를 읽어 오는 방식이에요(<a href="ai-skills-and-rules-files.html">스킬과 규칙 파일</a>에서 처음, <a href="mcp-skill-writing-skill-md.html">8편</a>에서 다시 다뤘어요). <a href="#fnref6">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <h3>"MCP와 Skill로 에이전트에게 업무 맡기기" 시리즈</h3>
+    <a class="post-nav" href="mcp-skill-tool-call-anatomy.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">도구 하나가 호출되기까지 — 정의·파싱·구조화 요청</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-protocol-roles.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">호스트·클라이언트·서버가 나누는 대화 — MCP 연결 구조와 메시지</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-building-server.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">업무 기록 서버 직접 만들기 — uv 환경과 Python MCP 서버</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-host-connection.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">호스트에 연결하고 첫 도구 호출 확인하기</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-context-and-search.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">도구가 많아지면 생기는 문맥 부담 — Tool Search와 Code Mode</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-why-skill-needed.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">같은 기록, 다른 판정 — Skill이 필요한 이유</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-first-weekly-report.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">팀 규칙으로 첫 주간보고서 쓰기</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-writing-skill-md.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">완성한 판단을 SKILL.md로 남기기</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-reuse-verification.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">다음 주에도 통하는가 — Skill 재사용 검증하기</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-colab-notebook.html">
+      <span class="post-nav-label">(10)</span>
+      <span class="post-nav-title">계산 과정을 노트북에 남기기 — Colab MCP 연결</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-google-oauth-setup.html">
+      <span class="post-nav-label">(11)</span>
+      <span class="post-nav-title">내 표를 읽는 프로그램 만들기 — Google OAuth 준비</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-google-sheets-mcp.html">
+      <span class="post-nav-label">(12)</span>
+      <span class="post-nav-title">로그인부터 표가 반환되기까지 — 인증 코드와 MCP 서버</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-adapting-to-my-task.html">
+      <span class="post-nav-label">(13)</span>
+      <span class="post-nav-title">내 업무에 맞게 바꿔보기 — 데이터·기준·기능 나누기</span>
+    </a>
+    <p class="post-date">(14) 에이전트도 경험을 쌓는다 — WikiSkill 연구가 보는 Skill (이 글)</p>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>

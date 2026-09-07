@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>내 업무에 맞게 바꿔보기 — 데이터·기준·기능 나누기 (13) - Tigermorning</title>
+  <meta name="description" content="지금까지 만든 주간보고서 한 벌을 내 과업으로 옮깁니다. 학습 피드백 사례 하나를 놓고, 공통 실습 안에 섞여 있는 세 가지 — 데이터(이번에 처리할 사실), 업무 지식(해석과 표현의 기준), 실행 기능(자료를 읽는 실제 동작) — 를 갈라 어디를 그대로 두고 어디를 바꿀지 정합니다. 작은 설계 표 다섯 줄, 결과 한 문장에서 원인 찾는 법, 자료 위치별 연결 선택, 그리고 다음 사람이 이어 쓸 수 있는 결과물까지 정리했어요.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="내 업무에 맞게 바꿔보기 — 데이터·기준·기능 나누기 (13)">
+  <meta property="og:description" content="자료가 달라지면 그 자료에서 읽어야 할 의미와 좋은 결과의 기준도 함께 바뀝니다. 답안만 갈아 끼우고 팀 보고서 양식을 그대로 두면, 학습자의 답안이 완료·진행·위험으로 나뉘어요.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/mcp-skill-adapting-to-my-task.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">내 업무에 맞게 바꿔보기</span> — 데이터·기준·기능 나누기 (13)</h1>
+    <p class="post-date">2026. 9. 7.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="mcp-skill-google-sheets-mcp.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">로그인부터 표가 반환되기까지 — 인증 코드와 MCP 서버</span>
+    </a>
+
+    <p class="one-liner">공통 실습을 내 과업으로 옮길 때는 <strong>거기 섞여 있는 데이터·업무 지식·실행 기능 세 가지를 먼저 갈라 놓고, 갈래마다 따로 "그대로 쓸지 바꿀지"를 정한다.</strong></p>
+
+    <p>지금까지 열두 편 동안 저는 <strong>한 제품팀의 금요일</strong>을 따라왔어요. <a href="mcp-skill-building-server.html">3편</a>에서 흩어진 업무 기록을 가져오는 서버를 만들고, <a href="mcp-skill-first-weekly-report.html">7편</a>에서 "개발 완료"와 "팀이 말하는 완료"를 구별해 보고서를 썼죠. <a href="mcp-skill-writing-skill-md.html">8편</a>에서는 그 판정 기준을 Skill<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>로 남겨서, <a href="mcp-skill-reuse-verification.html">9편</a>에서 <strong>기록이 바뀌어도 같은 기준이 적용되는지</strong> 확인했고요. <a href="mcp-skill-colab-notebook.html">10편</a>에서는 계산을 노트북에 남겼고, <a href="mcp-skill-google-oauth-setup.html">11편</a>·<a href="mcp-skill-google-sheets-mcp.html">12편</a>에서는 Google의 공유 자료를 읽는 연결까지 뚫었어요.</p>
+    <p>그런데 여기까지 만든 건 <strong>제 업무가 아니라 예제 팀의 업무</strong>예요. 이번 편에서 그걸 <strong>제 과업으로 옮깁니다.</strong> 그리고 옮기는 방법이 "이름만 바꾸기"가 아니라는 게 이 편의 전부예요.</p>
+
+    <h2><span class="hl">먼저 실패 장면 하나</span></h2>
+    <p>어떤 강사가 이 예제를 <strong>학습 피드백</strong>에 쓰고 싶다고 해 봅시다. 업무 기록이 들어가던 자리에 <strong>학습자의 답안</strong>을 넣었어요. 자료만 갈아 끼운 거죠.</p>
+    <p>그랬더니 결과가 이렇게 나옵니다 — 답안들이 <strong>'완료·진행·위험'으로 분류</strong>돼서 돌아와요. 강사가 알고 싶은 건 <strong>학습자가 무슨 생각을 했는지, 어디를 다시 연습하면 좋을지</strong>인데, 결과는 여전히 <strong>주간 업무 진행 보고서의 모양</strong>을 하고 있는 거예요.</p>
+    <p>여기서 이 편을 관통하는 문장 하나가 나옵니다 — <strong>자료가 달라지면, 그 자료에서 읽어야 할 의미와 "좋은 결과"의 기준도 함께 바뀝니다.</strong> 자료를 갈아 끼우는 건 <strong>세 가지 중 하나</strong>를 바꾼 것일 뿐이에요.</p>
+
+    <h2><span class="hl">비유</span> — 메뉴를 바꾸는 날의 주방</h2>
+    <p>동네 식당 주방을 떠올려 볼게요. 이번 주까지는 <strong>파스타</strong>를 냈는데, 다음 주부터 <strong>비빔국수</strong>를 내기로 했어요. 주방장은 무엇을 바꿔야 할까요?</p>
+    <p>먼저 <strong>재료</strong>가 바뀝니다. 토마토와 생크림 대신 오이·고추장·삶은 달걀이 들어와요. 그다음 <strong>레시피 카드</strong>가 바뀝니다 — "면은 알 덴테로 8분"이 아니라 "면은 삶고 찬물에 헹궈 물기를 뺀다"로요. 그런데 <strong>냄비·불·체·집게</strong>는요? 그대로예요. 물 끓이고 면 건지는 동작은 파스타든 비빔국수든 똑같으니까요.</p>
+    <p>여기서 제일 흔한 사고는 <strong>재료만 바꾸고 레시피 카드를 옛것 그대로 두는 것</strong>이에요. 오이와 고추장을 받아 놓고 "알 덴테로 8분, 생크림을 넣어 조린다"를 그대로 읽으면, 나오는 건 비빔국수도 파스타도 아닌 <strong>이상한 무엇</strong>이죠.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>오늘 들어온 <strong>재료</strong></td><td><strong>데이터</strong> — 이번에 처리할 사실 (업무 기록 → 문제와 답안)</td></tr>
+        <tr><td>벽에 붙은 <strong>레시피 카드</strong></td><td><strong>업무 지식</strong> — 자료를 어떻게 해석하고 결과로 표현할지 정하는 기준 (<a href="mcp-skill-writing-skill-md.html">Skill</a>)</td></tr>
+        <tr><td><strong>냄비·불·체</strong></td><td><strong>실행 기능</strong> — 자료를 읽거나 계산하는 실제 동작 (<a href="mcp-skill-building-server.html">MCP 서버의 도구</a>)</td></tr>
+        <tr><td>주방장이 <strong>완성된 접시를 보고 판단</strong>하는 일</td><td>결과를 <strong>원자료와 대조</strong>해 받아들일지 정하는 일</td></tr>
+        <tr><td>재료만 바꾸고 <strong>레시피는 그대로</strong> 둔 사고</td><td>답안을 넣고 <strong>완료·진행·위험 규칙</strong>을 그대로 돌린 결과</td></tr>
+        <tr><td>메뉴가 바뀌어도 <strong>안 바뀌는 냄비</strong></td><td>답안이 로컬 파일에 있다면 <strong>새 MCP<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup> 서버가 필요 없을 수 있음</strong></td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> <strong>바꿔야 할 것은 재료와 레시피이고, 조리 도구는 대개 그대로다</strong> — 그런데 사람들은 반대로, <strong>재료만 바꾸고 도구부터 새로 사려</strong> 합니다.</p>
+    <p>다만 여기서 비유가 끊기는 점이 하나 있어요. 주방에서는 재료가 바뀌면 <strong>눈으로 바로 보여요</strong> — 토마토 자리에 오이가 놓여 있으니까요. 그런데 <a href="mcp-skill-why-skill-needed.html">Skill</a> 안에 적힌 판정 규칙은 <strong>파일 안에 글로 적혀 있어서, 안 열어 보면 뭐가 남아 있는지 안 보여요.</strong> 그래서 "이름만 바꾸고 끝냈는데 옛 팀 규칙이 그대로 굴러가는" 일이 실제로 생깁니다.</p>
+
+    <h2><span class="hl">전체 흐름 그림</span> — 하나를 셋으로 갈라 놓기</h2>
+    <p>이 시리즈 열두 편에서 배운 것들이 여기서 <strong>한 장으로 모입니다.</strong> 공통 실습 한 벌 안에는 성격이 완전히 다른 세 가지가 섞여 있고, 갈래마다 "바꾼다/안 바꾼다"의 답이 달라요.</p>
+    <svg viewBox="0 0 820 478" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="왼쪽에 공통 실습이라는 상자 하나가 있고, 거기서 세 갈래가 갈라져 나온다. 첫째 갈래는 데이터로, 이번에 처리할 사실을 뜻하며 공통 실습에서는 week-one.json의 업무 기록이었고 내 과업에서는 문제 문장과 학습자 답안이 된다. 판정은 반드시 바꾼다이며, 새 입력을 실제로 준비해야 시작된다. 둘째 갈래는 업무 지식으로, 자료를 어떻게 해석하고 결과로 표현할지 정하는 기준을 뜻하며 공통 실습에서는 team-rules.md의 완료와 위험 조건이었고 내 과업에서는 정답과 풀이를 구분하는 피드백 기준이 된다. 판정은 반드시 바꾼다이며, 여기를 건너뛰면 옛 팀 규칙이 그대로 남는다. 셋째 갈래는 실행 기능으로, 자료를 읽거나 계산하는 실제 동작을 뜻하며 공통 실습에서는 weekly_records_server.py의 get_weekly_records 도구였고 내 과업에서는 답안이 로컬 파일에 있다면 호스트의 파일 읽기로 충분할 수 있다. 판정은 바꾸기 전에 먼저 안 바꿔도 되는지 묻는다이다. 맨 아래에는 세 갈래를 다시 합쳐 내 과업 한 벌이 되고, 결과는 반드시 원자료와 대조해 확인한다고 적혀 있다.">
+      <defs>
+        <marker id="arrAD" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <g font-family="var(--font-body)" font-size="11" fill="var(--ink)">
+
+        <text x="410" y="20" text-anchor="middle" font-size="11" font-weight="700" font-family="var(--font-heading)">공통 실습 한 벌 안에는 성격이 다른 세 가지가 섞여 있어요</text>
+
+        <rect x="15" y="170" width="170" height="118" rx="8" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <text x="100" y="205" text-anchor="middle" font-size="10.5" font-weight="700" font-family="var(--font-heading)">공통 실습</text>
+        <text x="100" y="224" text-anchor="middle" font-size="9" fill="var(--muted)">주간보고서 한 벌</text>
+        <text x="100" y="242" text-anchor="middle" font-size="9" fill="var(--muted)">(3편~12편에서</text>
+        <text x="100" y="257" text-anchor="middle" font-size="9" fill="var(--muted)">만든 것 전부)</text>
+
+        <line x1="185" y1="229" x2="200" y2="229" stroke="var(--muted)" stroke-width="2"/>
+        <line x1="200" y1="98" x2="200" y2="360" stroke="var(--muted)" stroke-width="2"/>
+        <line x1="200" y1="98" x2="216" y2="98" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrAD)"/>
+        <line x1="200" y1="229" x2="216" y2="229" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrAD)"/>
+        <line x1="200" y1="360" x2="216" y2="360" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrAD)"/>
+
+        <rect x="218" y="44" width="288" height="108" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        <text x="362" y="66" text-anchor="middle" font-size="10.5" font-weight="700">① 데이터 — 이번에 처리할 사실</text>
+        <text x="362" y="90" text-anchor="middle" font-size="9" fill="var(--muted)">공통 실습: data/week-one.json 업무 기록</text>
+        <text x="362" y="110" text-anchor="middle" font-size="9" fill="var(--muted)">내 과업: 문제 문장 + 학습자 답안 한 건</text>
+        <text x="362" y="134" text-anchor="middle" font-size="9" fill="var(--muted)">(samples/answer-one.md 같은 파일 하나)</text>
+
+        <line x1="508" y1="98" x2="528" y2="98" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrAD)"/>
+        <rect x="530" y="44" width="275" height="108" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        <text x="667" y="76" text-anchor="middle" font-size="10.5" font-weight="700" font-family="var(--font-heading)">반드시 바꾼다</text>
+        <text x="667" y="100" text-anchor="middle" font-size="9" fill="var(--muted)">새 입력을 실제로 준비해야</text>
+        <text x="667" y="118" text-anchor="middle" font-size="9" fill="var(--muted)">비로소 시작되는 갈래예요</text>
+
+        <rect x="218" y="175" width="288" height="108" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        <text x="362" y="197" text-anchor="middle" font-size="10.5" font-weight="700">② 업무 지식 — 해석·표현의 기준</text>
+        <text x="362" y="221" text-anchor="middle" font-size="9" fill="var(--muted)">공통 실습: team-rules.md의 완료·위험 조건</text>
+        <text x="362" y="241" text-anchor="middle" font-size="9" fill="var(--muted)">내 과업: 정답과 풀이를 구분하는 기준</text>
+        <text x="362" y="265" text-anchor="middle" font-size="9" fill="var(--muted)">(말투 · 좋은 피드백 예시까지 포함)</text>
+
+        <line x1="508" y1="229" x2="528" y2="229" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrAD)"/>
+        <rect x="530" y="175" width="275" height="108" rx="8" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <text x="667" y="207" text-anchor="middle" font-size="10.5" font-weight="700" font-family="var(--font-heading)">반드시 바꾼다</text>
+        <text x="667" y="231" text-anchor="middle" font-size="9" fill="var(--muted)">건너뛰기 제일 쉬운 자리 —</text>
+        <text x="667" y="249" text-anchor="middle" font-size="9" fill="var(--muted)">옛 팀 규칙이 그대로 남아요</text>
+
+        <rect x="218" y="306" width="288" height="108" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        <text x="362" y="328" text-anchor="middle" font-size="10.5" font-weight="700">③ 실행 기능 — 자료를 읽는 동작</text>
+        <text x="362" y="352" text-anchor="middle" font-size="9" fill="var(--muted)">공통 실습: get_weekly_records 도구</text>
+        <text x="362" y="372" text-anchor="middle" font-size="9" fill="var(--muted)">내 과업: 답안이 로컬 파일에 있다면</text>
+        <text x="362" y="396" text-anchor="middle" font-size="9" fill="var(--muted)">호스트의 파일 읽기로 충분할 수 있어요</text>
+
+        <line x1="508" y1="360" x2="528" y2="360" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrAD)"/>
+        <rect x="530" y="306" width="275" height="108" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        <text x="667" y="338" text-anchor="middle" font-size="10.5" font-weight="700" font-family="var(--font-heading)">먼저 "안 바꿔도 되나" 묻는다</text>
+        <text x="667" y="362" text-anchor="middle" font-size="9" fill="var(--muted)">새로 만들기 전에 이미 있는</text>
+        <text x="667" y="380" text-anchor="middle" font-size="9" fill="var(--muted)">기능으로 되는지부터 확인</text>
+
+        <text x="410" y="446" text-anchor="middle" font-size="10" font-weight="700">세 갈래를 각각 정하고 나서야 "내 과업 한 벌"이 됩니다</text>
+        <text x="410" y="466" text-anchor="middle" font-size="9" fill="var(--muted)">그리고 나온 결과는 반드시 원자료와 대조해요 — 결과가 그럴듯한 것과 맞는 것은 다른 이야기니까요</text>
+      </g>
+    </svg>
+    <p><strong>읽는 법:</strong> 왼쪽 상자 하나에서 <strong>세 갈래로 갈라지는 지점</strong>이 이 그림의 전부예요. 지금까지는 이 셋이 <strong>한 덩어리처럼</strong> 보였는데, 옮기는 순간 <strong>완전히 다른 판정을 받습니다.</strong> ①과 ②는 <strong>무조건 바꾸는 쪽</strong>이고, ③만 <strong>"안 바꿔도 되나"를 먼저 묻는 쪽</strong>이에요. 오른쪽 판정 상자 중 ②의 테두리를 굵게 해 둔 건, 여기가 <strong>제일 자주 건너뛰는 자리</strong>이기 때문이에요.</p>
+
+    <h2><span class="hl">내가 반복하는 일에서 출발하기</span></h2>
+    <p>그럼 무엇을 제 과업으로 고를까요. 기준은 딱 하나예요 — <strong>입력과 결과가 눈에 보이는 일</strong>. 매주 쓰는 문서라면 주간 업무 보고서일 수도 있지만, 학습자 피드백이나 사용자에게 보내는 변경 안내일 수도 있죠.</p>
+    <table>
+      <thead><tr><th>과업</th><th>입력 (무엇을 넣는가)</th><th>원하는 결과</th><th>이 과업에서만 필요한 판단</th></tr></thead>
+      <tbody>
+        <tr><td><strong>학습 피드백</strong></td><td>문제, 학습자의 답안, 교사의 평가 기준</td><td>답안의 근거를 짚은 강점·보완점·다음 연습</td><td><strong>정답이 맞는 것</strong>과 <strong>풀이에서 이해가 드러나는 것</strong>을 구분</td></tr>
+        <tr><td><strong>변경 안내문</strong></td><td>변경 기록, 기능 설명, 기존 안내문</td><td>사용자가 이해할 수 있는 변경 안내 초안</td><td><strong>내부 작업명</strong>을 사용자에게 보이는 변화로 번역</td></tr>
+        <tr><td><strong>주간 운영 보고</strong></td><td>업무 기록이나 운영 통계</td><td>확인된 성과와 다음 조치를 담은 보고</td><td>완료의 정의, 집계 단위, <strong>보고 대상에 맞는 강조점</strong></td></tr>
+      </tbody>
+    </table>
+    <p>세 과업의 <strong>맨 오른쪽 칸이 서로 완전히 다르다</strong>는 게 요점이에요. 저 칸이 바로 <a href="mcp-skill-why-skill-needed.html">6편</a>에서 "도구는 자료를 가져오고, Skill은 판단을 정한다"고 했던 그 <strong>판단</strong>의 자리고, 과업이 바뀌면 <strong>제일 먼저 다시 써야 하는 곳</strong>입니다.</p>
+    <p>아래에서는 <strong>학습 피드백</strong> 하나를 끝까지 같이 설계해 볼게요.</p>
+
+    <h2><span class="hl">학습 피드백의 작은 설계</span></h2>
+    <p>입력은 딱 한 건이면 충분해요. 이렇게 생겼습니다.</p>
+    <p class="run-tag">실행: samples/answer-one.md 파일로 저장 <span class="run-tag-why">— 에이전트가 읽을 입력 한 건이에요</span></p>
+    <pre><code>문제: 8, 10, 12의 평균을 구하고 계산 방법을 설명하세요.
+학습자의 답안: 10입니다.</code></pre>
+    <p>자, 여기에 뭐라고 피드백해야 할까요. 숫자 <strong>10은 맞아요.</strong> 그런데 문제는 <strong>계산 방법도 설명하라</strong>고 했고, 답안에는 <strong>그 설명이 없어요.</strong> 이 짧은 두 줄에 함정이 두 개나 있습니다.</p>
+    <table>
+      <thead><tr><th>이렇게 쓰면</th><th>무엇이 문제인가</th></tr></thead>
+      <tbody>
+        <tr><td>"평균의 개념을 <strong>정확히 이해하고 있군요</strong>"</td><td>답안에서 <strong>확인하지 못한 이해까지 추정</strong>한 말이에요. 계산 과정이 없으니 이해했는지는 아직 모릅니다.</td></tr>
+        <tr><td>"평균을 <strong>이해하지 못했습니다</strong>"</td><td>반대 방향의 같은 실수예요. 정답을 맞혔는데 <strong>못 했다고 단정할 근거</strong>도 없어요.</td></tr>
+        <tr><td>"평균을 10이라고 답한 것은 맞습니다. 다만 답안에 계산 과정이 없어 <strong>어떤 방법으로 구했는지는 아직 확인할 수 없어요.</strong> 세 수를 어떻게 사용해 10을 얻었는지 식이나 문장으로 설명해 볼까요?"</td><td>맞는 것은 <strong>맞다고 인정</strong>하고, 없는 것은 <strong>없다고만</strong> 말하고, 그다음에 <strong>확인할 질문</strong>을 남겼어요.</td></tr>
+      </tbody>
+    </table>
+    <p>여기서 중요한 건 세 번째 문장 자체가 아니라, 그 문장을 만들어 낸 <strong>기준</strong>이에요. 강사가 다음 학생, 그다음 학생에게도 <strong>재사용하고 싶은 지식</strong>은 "이 학생의 정답은 10"이 아니라 <strong>정답과 설명을 구분해 피드백한다</strong>는 규칙이거든요. 이게 <a href="mcp-skill-writing-skill-md.html">8편</a>에서 SKILL.md에 적어 남겼던 것과 정확히 같은 성격의 물건입니다.</p>
+
+    <h3>다섯 줄짜리 설계표</h3>
+    <p>과업 하나를 옮길 때 제가 실제로 적는 건 이 다섯 줄이 전부예요.</p>
+    <table>
+      <thead><tr><th>항목</th><th>학습 피드백에서는</th></tr></thead>
+      <tbody>
+        <tr><td><strong>실제 입력</strong></td><td>문제 문장과 학습자 답안 <strong>한 건</strong> (가상의 예시 말고 진짜 한 건)</td></tr>
+        <tr><td><strong>원하는 결과</strong></td><td>답안의 근거를 포함한 피드백 + 다음 연습 질문</td></tr>
+        <tr><td><strong>확인할 기준</strong></td><td>맞는 정답을 인정하는가 · 없는 풀이를 상상하지 않는가 · 다음 설명을 유도하는가</td></tr>
+        <tr><td><strong>그대로 쓸 것</strong></td><td>참고 문서를 읽고 → 결과를 원자료와 대조하고 → 새 입력에서 다시 확인하는 <strong>작업 방식</strong></td></tr>
+        <tr><td><strong>바꿀 것</strong></td><td>주간 기록 → 문제·답안 · 팀 보고 규칙 → 피드백 기준 · 보고서 결과 → 피드백 문장</td></tr>
+      </tbody>
+    </table>
+    <p><strong>"그대로 쓸 것"이 한 줄이나 들어 있다</strong>는 데 눈길이 갔으면 좋겠어요. 열두 편 동안 배운 것 중 제일 오래 남는 건 특정 코드가 아니라, <strong>읽고 → 대조하고 → 다시 확인하는 그 순서</strong>거든요. <a href="mcp-skill-reuse-verification.html">9편</a>에서 다음 주 기록으로 다시 돌려 봤던 게 바로 그 순서의 마지막 칸이었고요.</p>
+
+    <h2><span class="hl">바꿀 위치를 구분하기</span></h2>
+    <p>이제 그림의 세 갈래를 <strong>실제 파일 이름</strong>으로 내려 볼게요. 공통 실습 폴더를 열어 놓고 보면 이렇게 대응됩니다.</p>
+    <table>
+      <thead><tr><th>갈래</th><th>공통 실습에서는 (파일)</th><th>내 과업에서는 무엇을 하나</th></tr></thead>
+      <tbody>
+        <tr><td><strong>처리할 사실</strong> (데이터)</td><td><code>data/week-one.json</code> · <code>data/week-two.json</code></td><td>실제 문제·답안이나 변경 기록 등으로 <strong>새로 준비</strong></td></tr>
+        <tr><td><strong>반복 적용할 기준</strong> (업무 지식)</td><td><code>team-weekly-report</code> Skill의 본문과 <code>references/team-rules.md</code><sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup></td><td>과업에 맞는 기준과 예시를 <strong>선별해 새 Skill로 구성</strong></td></tr>
+        <tr><td><strong>자료를 가져오는 동작</strong> (실행 기능)</td><td><code>weekly_records_server.py</code>의 도구와 입력·반환값</td><td>기존 <strong>파일 읽기로 충분한지</strong>, 다른 연결이 필요한지 <strong>결정</strong></td></tr>
+      </tbody>
+    </table>
+    <p>Skill을 새로 만들 때 한 가지 요령이 있어요. <strong><code>team-weekly-report</code>는 공통 실습의 원본으로 그대로 남겨 두고</strong>, 별도의 과업 Skill(예: <code>learning-feedback</code>)을 따로 준비하는 거예요. 원본을 덮어써 버리면 나중에 "원래는 뭐였더라"를 확인할 자리가 사라지거든요.</p>
+    <p>그리고 <strong>이름과 설명만 바꾸는 데서 끝내면 안 돼요.</strong> 복사한 본문 안에 <strong>제품팀의 완료·위험 규칙</strong>이 그대로 남아 있는지 한 줄씩 읽어 봐야 합니다. 앞의 비유에서 <strong>레시피 카드가 안 보인다</strong>고 했던 게 정확히 이 지점이에요.</p>
+
+    <h2><span class="hl">AI와 함께, 필요한 부분만 만들기</span></h2>
+    <p>혼자 다 판단할 필요는 없어요. 다만 <strong>물어보는 순서</strong>가 중요합니다. "만들어 줘"가 아니라 <strong>"그대로 쓸 것과 바꿀 것부터 같이 정리하자"</strong>로 시작하세요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— 실습 폴더를 연 Claude Code나 OpenCode 대화창에서요</span></p>
+    <pre><code>이 예제를 학습 피드백 작업에 맞춰 바꾸고 싶어.
+답안과 평가 기준을 보고, 그대로 쓸 부분과 바꿀 부분부터 같이 정리해 줘.</code></pre>
+    <p>여기서 <strong>한 번 걸러야 하는 대답</strong>이 있어요. AI가 <strong>"답안을 읽는 MCP 서버부터 새로 만들겠습니다"</strong>라고 제안하는 경우예요. 그럴듯하죠 — <a href="mcp-skill-building-server.html">3편</a>에서 실제로 그렇게 만들었으니까요.</p>
+    <p>그런데 잠깐 멈춰서 물어보세요. <strong>지금 호스트<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>의 파일 읽기로 같은 입력을 가져올 수 있지 않나?</strong> 답안이 <code>samples/answer-one.md</code>라는 <strong>로컬 파일 한 개</strong>에 있다면, 대개 <strong>새 서버는 필요 없어요.</strong> <a href="mcp-skill-context-and-search.html">5편</a>에서 봤듯 도구가 늘어나면 그 자체로 문맥 부담이 되기도 하고요.</p>
+    <p>MCP 서버가 진짜 값어치를 하는 건 <strong>호스트가 혼자서는 못 닿는 곳</strong>에 자료가 있을 때예요 — <a href="mcp-skill-google-sheets-mcp.html">12편</a>의 Google 표처럼 <strong>인증을 거쳐야 하는</strong> 곳이거나, 그 기능을 <strong>여러 AI 앱에서 공용으로</strong> 쓰고 싶을 때죠.</p>
+
+    <h2><span class="hl">결과의 한 문장에서 원인 찾기</span></h2>
+    <p>기준을 넣고 돌렸는데 AI가 이렇게 썼다고 해 봅시다.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— AI가 실제로 내놓을 법한 결과 문장이에요</span></p>
+    <pre><code>평균의 개념을 정확히 이해했고 계산 과정도 잘 설명했어요.</code></pre>
+    <p>이 문장은 <strong>틀렸어요.</strong> 왜냐하면 <strong>답안에는 계산 과정이 아예 없으니까요.</strong> 결과가 <strong>원자료와 맞지 않는</strong> 거죠. <a href="mcp-skill-google-sheets-mcp.html">12편</a>에서 반환값을 브라우저 화면과 나란히 놓고 셌던 것과 같은 종류의 대조입니다.</p>
+    <p>여기서 제일 하기 쉬운 행동이 <strong>Skill에 "절대로 틀리지 마세요"를 한 줄 추가하는 것</strong>이에요. 그런데 그건 원인을 안 건드리고 <strong>부탁만 더 하는</strong> 거라 대개 같은 일이 다시 생겨요. 대신 <strong>어디서 어긋났는지를 두 갈래로 좁힙니다.</strong></p>
+    <table>
+      <thead><tr><th>확인할 것</th><th>이랬다면</th><th>고칠 자리</th></tr></thead>
+      <tbody>
+        <tr><td><strong>어떤 입력을 읽었나</strong></td><td>내가 준 답안이 아니라 <strong>다른 예시 답안</strong>을 읽었다</td><td><strong>자료를 고르는 곳</strong> — 파일 경로·범위·어느 건을 집는지</td></tr>
+        <tr><td><strong>어떤 기준을 읽었나</strong></td><td>올바른 답안은 읽었는데 <strong>강사의 기준이 전달되지 않았다</strong></td><td><strong>기준 파일의 접근 경로나 안내</strong> — Skill이 그 파일을 실제로 읽었는지</td></tr>
+      </tbody>
+    </table>
+    <p>이 두 갈래를 AI에게 같이 좁혀 달라고 할 수도 있어요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— 어긋난 결과를 눈앞에 두고 바로요</span></p>
+    <pre><code>답안에는 계산 과정이 없는데 결과에는 잘 설명했다고 되어 있어.
+어디서 이런 판단이 나왔는지 확인하고 고칠 부분을 제안해 줘.</code></pre>
+    <p>고친 뒤에는 <strong>같은 답안으로 다시 확인</strong>합니다. 그리고 한 걸음 더 나가서, 이번에는 <strong>풀이가 들어 있는 다른 답안</strong>을 넣어 보세요 — 예를 들면 <strong>"8 + 10 + 12 = 30이고, 수가 세 개이므로 30을 3으로 나누면 평균은 10입니다."</strong> 이 답안에서는 <strong>그 과정을 근거로 설명의 강점을 짚을 수 있어야</strong> 정상이에요.</p>
+    <p>같은 기준이 <strong>두 가지 다른 입력에서 각각 맞게 작동하는지</strong> 보는 것 — 이게 <a href="mcp-skill-reuse-verification.html">9편</a>에서 다음 주 기록으로 했던 검증을 제 과업에서 다시 하는 방법입니다.</p>
+
+    <h2><span class="hl">자료가 어디 있느냐에 따라 연결이 달라진다</span></h2>
+    <p>실행 기능 갈래(③)에서 뭘 고를지는 <strong>내 자료가 어디 있느냐</strong>가 거의 다 결정해요. 열두 편에서 하나씩 배운 것들이 여기 네 줄로 정리됩니다.</p>
+    <table>
+      <thead><tr><th>내 상황</th><th>고를 연결</th><th>어느 편에서 배웠나</th></tr></thead>
+      <tbody>
+        <tr><td>필요한 자료가 <strong>실습 폴더(로컬 파일)</strong>에 있다</td><td><strong>호스트의 파일 읽기 + Skill</strong>로 결과를 만들고 근거를 확인 — <strong>새로 만들 것이 없어요</strong></td><td><a href="mcp-skill-why-skill-needed.html">6편</a>·<a href="mcp-skill-writing-skill-md.html">8편</a></td></tr>
+        <tr><td>자료가 <strong>Google Sheets</strong>에 모여 있다</td><td><strong>인증과 읽기 연결</strong>을 써서 필요한 자료를 가져온 뒤 기준을 적용</td><td><a href="mcp-skill-google-oauth-setup.html">11편</a>·<a href="mcp-skill-google-sheets-mcp.html">12편</a></td></tr>
+        <tr><td>같은 <strong>집계·그래프를 반복 실행</strong>해야 한다</td><td><strong>Colab 셀</strong>에 계산을 남기고 입력과 실행 결과를 함께 확인</td><td><a href="mcp-skill-colab-notebook.html">10편</a></td></tr>
+        <tr><td>별도 시스템의 기능을 <strong>여러 AI 앱에서</strong> 써야 한다</td><td>필요한 기능을 구현하고 <strong>MCP 서버로 제공</strong>하는 구조를 검토</td><td><a href="mcp-skill-tool-call-anatomy.html">1편</a>·<a href="mcp-skill-protocol-roles.html">2편</a>·<a href="mcp-skill-building-server.html">3편</a>·<a href="mcp-skill-host-connection.html">4편</a></td></tr>
+      </tbody>
+    </table>
+    <p>그리고 하나 덧붙이면, 공통 실습에서 만든 <strong><code>weekly-records</code> 호출 기록은 지우지 말고 그대로 남겨 두세요.</strong> 제 과업을 로컬 파일만으로 진행하더라도, 그 기록에는 <strong>제가 MCP 연결을 실제로 뚫고 도구 호출을 눈으로 확인한 과정</strong>이 담겨 있어요. <a href="mcp-skill-host-connection.html">4편</a>에서 첫 호출을 확인했던 그 화면 말이에요.</p>
+
+    <h2><span class="hl">나쁜 선택 vs 좋은 선택</span> — 메뉴를 바꾸는 주방에서</h2>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">재료만 바꾸고 <strong>레시피 카드는 그대로</strong> 둔다 = 답안만 갈아 끼우고 <strong>완료·진행·위험 규칙</strong>을 그대로 돌린다 → 학습자의 답안이 <strong>업무 진행 상태로 분류</strong>돼서 나온다.</td>
+          <td class="choice-good">재료가 바뀌면 <strong>레시피부터 다시 쓴다</strong> = <strong>피드백 기준을 먼저 정하고</strong> 결과의 모양까지 새로 정한다 → 강사가 알고 싶은 <strong>강점·보완점·다음 연습</strong>이 나온다.</td>
+        </tr>
+        <tr>
+          <td class="choice-bad">비빔국수 한다고 <strong>냄비부터 새로 산다</strong> = "답안 읽는 MCP 서버부터 만들자"는 제안을 <strong>그대로 받는다</strong> → 로컬 파일 하나면 될 일에 <strong>서버 하나를 더 짊어진다</strong>.</td>
+          <td class="choice-good">있는 냄비로 되는지 <strong>먼저 끓여 본다</strong> = <strong>호스트의 파일 읽기로 같은 입력을 가져올 수 있는지</strong> 확인한다 → 안 되는 게 확인됐을 때만 새로 만든다.</td>
+        </tr>
+        <tr>
+          <td class="choice-bad">레시피 카드의 <strong>제목만 고쳐 붙인다</strong> = Skill을 복사해 <strong>이름과 설명만</strong> <code>learning-feedback</code>으로 바꾼다 → 본문 안에 <strong>제품팀 규칙이 그대로</strong> 살아 있다.</td>
+          <td class="choice-good">카드를 <strong>한 줄씩 읽으며 고친다</strong> = 원본은 남겨 두고, 새 Skill 본문에서 <strong>옛 규칙의 흔적을 찾아 지운다</strong> → 안 보이는 곳에 남은 기준이 없다.</td>
+        </tr>
+        <tr>
+          <td class="choice-bad">맛이 이상한데 <strong>"다음엔 잘해"라고 적어 붙인다</strong> = 결과가 틀리자 Skill에 <strong>"절대로 틀리지 마세요"</strong>를 추가한다 → 원인은 그대로라 <strong>같은 일이 또 생긴다</strong>.</td>
+          <td class="choice-good">어느 재료·어느 줄에서 <strong>틀어졌는지 짚는다</strong> = <strong>다른 답안을 읽었나</strong>, <strong>기준이 전달 안 됐나</strong> 두 갈래로 좁힌다 → 고칠 파일이 <strong>한 곳으로 특정</strong>된다.</td>
+        </tr>
+        <tr>
+          <td class="choice-bad">맛도 안 보고 <strong>손님상에 낸다</strong> = "평균 개념을 정확히 이해했군요"를 <strong>그대로 학습자에게</strong> 보낸다 → 답안에 <strong>없는 이해까지 있다고</strong> 말해 버린다.</td>
+          <td class="choice-good">접시와 <strong>주문서를 나란히 놓고 본다</strong> = 결과 문장을 <strong>답안 원문과 한 줄씩 대조</strong>한다 → 확인된 것만 말하고 <strong>나머지는 질문으로</strong> 남긴다.</td>
+        </tr>
+        <tr>
+          <td class="choice-bad">주방을 넘길 때 <strong>완성된 접시만 건넨다</strong> = 결과 파일만 넘기고 <strong>입력·기준·확인 기록은 안 남긴다</strong> → 다음 사람이 <strong>왜 이 결과인지</strong>부터 다시 알아내야 한다.</td>
+          <td class="choice-good">레시피·재료 목록·시식 메모를 <strong>같이 넘긴다</strong> = <strong>README에 입력·기준·결과 위치</strong>를 적어 둔다 → 다음 사람이 <strong>바로 이어서</strong> 쓴다.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2><span class="hl">다음 사람이 이어 쓸 수 있는 결과물</span></h2>
+    <p>마지막으로 <strong>남기는 방법</strong>이에요. 결과 파일 하나만 덜렁 남기면, 두 달 뒤의 제 자신조차 <strong>"이게 무슨 근거로 나온 거였지"</strong>를 못 찾습니다. 세 묶음으로 남기세요.</p>
+    <table>
+      <thead><tr><th>남길 묶음</th><th>구체적으로 무엇을</th><th>이걸 남기면 확인할 수 있는 것</th></tr></thead>
+      <tbody>
+        <tr><td><strong>기능 사용 기록</strong></td><td>공통 MCP 도구의 <strong>이름·입력·실제 반환값</strong>, 추가로 붙인 연결의 기록</td><td>어떤 기능을 <strong>어떤 자료에</strong> 사용했는지</td></tr>
+        <tr><td><strong>재사용할 지식</strong></td><td>실제로 쓰고 있는 <strong>Skill 본문</strong>과 필요한 참고 자료</td><td>어떤 지식이 <strong>새 입력에도 적용</strong>되는지</td></tr>
+        <tr><td><strong>입력·결과·확인 기록</strong></td><td>선택한 과업의 입력과 결과, 기준에 따른 확인, <strong>수정한 이유</strong></td><td>결과를 <strong>어떤 근거로 받아들였고 어디까지 확인</strong>했는지</td></tr>
+      </tbody>
+    </table>
+    <p>그리고 이 세 묶음이 어디 있는지를 폴더 맨 위의 <strong>README.md<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup></strong> 한 장에 적어 둡니다. 거창할 필요가 전혀 없어요 — <strong>네 줄</strong>이면 충분해요.</p>
+    <p class="run-tag">실행: 프로젝트에 README.md로 저장 <span class="run-tag-why">— 다음 사람이 폴더를 열었을 때 제일 먼저 읽는 파일이에요</span></p>
+    <pre><code>이 과업은 문제와 답안을 읽고 교사의 기준에 맞는 피드백을 만듭니다.
+입력은 samples/answer-one.md에 있습니다.
+피드백 기준은 learning-feedback Skill에서 확인할 수 있습니다.
+결과는 results/feedback-one.md, 확인한 근거는 work-notes.md에 있습니다.</code></pre>
+    <p>네 줄이 각각 <strong>무엇을·어디서·어떤 기준으로·어떻게 확인했는지</strong>를 하나씩 맡고 있어요. <strong>파일 경로를 실제로 적어 둔 것</strong>이 핵심이고요 — "관련 자료 참고"라고만 적힌 안내문은 없는 것과 같습니다.</p>
+    <p>단 하나 <strong>절대 같이 넣으면 안 되는 것</strong>이 있어요. <a href="mcp-skill-google-oauth-setup.html">11편</a>·<a href="mcp-skill-google-sheets-mcp.html">12편</a>의 Google 연결을 썼다면, <strong>개인 credential<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup>과 토큰 파일은 공유 결과물에 포함하지 않습니다.</strong> 그건 "내 계정으로 대신 들어갈 수 있는 열쇠"라서, 결과물에 섞여 나가면 <strong>받은 사람이 제 자료를 그대로 읽을 수</strong> 있어요.</p>
+
+    <h2><span class="hl">이번 편에 나온 구체적인 값</span></h2>
+    <table>
+      <thead><tr><th>항목</th><th>값</th><th>조건·출처</th></tr></thead>
+      <tbody>
+        <tr><td>공통 실습을 갈라 보는 갈래</td><td><strong>3가지</strong></td><td>데이터 · 업무 지식 · 실행 기능 — 이 편의 핵심 프레임</td></tr>
+        <tr><td>그중 <strong>반드시 바꾸는</strong> 갈래</td><td><strong>2가지</strong></td><td>데이터와 업무 지식 — 실행 기능만 "안 바꿔도 되나"를 먼저 물음</td></tr>
+        <tr><td>작은 설계표의 줄 수</td><td><strong>5줄</strong></td><td>실제 입력 · 원하는 결과 · 확인할 기준 · 그대로 쓸 것 · 바꿀 것</td></tr>
+        <tr><td>출발점으로 든 과업 예</td><td>3개</td><td>학습 피드백 · 변경 안내문 · 주간 운영 보고 — 이 편은 첫 번째만 끝까지 설계</td></tr>
+        <tr><td>예제 문제의 수</td><td>3개 (8 · 10 · 12)</td><td>평균은 <strong>10</strong> — 답안의 숫자는 맞고 <strong>계산 설명만 없음</strong></td></tr>
+        <tr><td>답안 한 건에서 갈라 봐야 하는 것</td><td><strong>2가지</strong></td><td>정답이 맞는가 / 풀이에서 이해가 드러나는가 — 둘을 섞으면 과잉 추정이 생김</td></tr>
+        <tr><td>결과가 어긋났을 때 좁히는 갈래</td><td><strong>2갈래</strong></td><td>어떤 입력을 읽었나 / 어떤 기준을 읽었나</td></tr>
+        <tr><td>자료 위치별 연결 선택지</td><td>4갈래</td><td>로컬 파일 · Google Sheets · Colab · 여러 앱 공용 MCP</td></tr>
+        <tr><td>답안이 로컬 파일일 때 새로 만들 MCP 서버</td><td><strong>0개일 수 있음</strong></td><td>호스트의 파일 읽기로 같은 입력을 가져올 수 있는 경우 — 먼저 확인해 볼 것</td></tr>
+        <tr><td>남길 자료 묶음</td><td>3종</td><td>기능 사용 기록 · 재사용할 지식 · 입력·결과·확인 기록</td></tr>
+        <tr><td>README 예시 줄 수</td><td>4줄</td><td>무엇을 · 어디서 · 어떤 기준으로 · 어떻게 확인했는지</td></tr>
+        <tr><td>공유 결과물에 넣지 않는 것</td><td><strong>credential · 토큰</strong></td><td>Google 연결을 쓴 경우 — 개인 계정 접근 권한이 그대로 넘어감</td></tr>
+      </tbody>
+    </table>
+    <p class="post-date">※ 위 값들은 <strong>이 실습의 설계 기준</strong>이지 측정된 성능 수치가 아니에요. 특히 "새로 만들 MCP 서버 0개"는 <strong>답안이 호스트가 읽을 수 있는 로컬 파일에 있을 때</strong>의 이야기이고, 자료가 인증 뒤에 있거나 여러 앱에서 공용으로 써야 한다면 조건이 달라집니다.</p>
+
+    <h2><span class="hl">직접 해보기</span></h2>
+    <p>여기부터는 <strong>읽는 게 아니라 적는 시간</strong>이에요. 이 편의 진짜 연습은 딱 하나 — <strong>자기 과업 하나를 골라 세 줄을 적어 보는 것</strong>입니다.</p>
+    <p>① <strong>과업 하나 고르기.</strong> 매주 또는 매달 <strong>반복해서 만드는 결과물</strong> 중 하나를 고르세요. 조건은 하나예요 — <strong>입력과 결과가 눈에 보일 것.</strong> "생각 정리"처럼 입력이 안 보이는 일은 이번엔 피하세요.</p>
+    <p>② <strong>세 줄 적기.</strong> 종이든 메모장이든 좋으니 이 세 줄만 실제로 적어 보세요.</p>
+    <ul>
+      <li><strong>실제 입력 한 건</strong> — 가상의 예시 말고 <strong>진짜로 존재하는 한 건</strong>의 내용을 그대로 붙여넣으세요.</li>
+      <li><strong>원하는 결과</strong> — "좋은 보고서"처럼 뭉뚱그리지 말고 <strong>어떤 항목이 들어 있어야 하는지</strong>까지요.</li>
+      <li><strong>확인할 기준</strong> — 나온 결과를 보고 <strong>합격·불합격을 가를 문장</strong> 두세 개요. 평균 예제에서 "없는 풀이를 상상하지 않았는가"가 그런 문장이었어요.</li>
+    </ul>
+    <p>③ <strong>세 갈래로 나눠 보기.</strong> 그 과업을 <strong>데이터 / 업무 지식 / 실행 기능</strong>으로 갈라 적어 보세요. 그리고 갈래마다 <strong>"바꾼다 / 그대로 둔다"</strong>를 적어 보세요. <strong>실행 기능 칸에 "그대로 둔다"가 적히는지</strong> 특히 눈여겨보세요 — 대부분의 경우 거기가 그대로예요.</p>
+    <p>④ <strong>한 번 돌려 보고 결과 한 문장 잡아내기.</strong> 기준을 넣고 실제로 돌린 다음, <strong>원자료로 확인되지 않는 문장 하나</strong>를 찾아보세요. 그런 문장이 <strong>하나도 없다면</strong> 기준이 잘 전달된 거고, 있다면 <strong>입력 쪽인지 기준 쪽인지</strong> 두 갈래로 좁혀 보세요.</p>
+    <p>⑤ <strong>두 번째 입력으로 다시.</strong> 성격이 조금 다른 <strong>두 번째 입력 한 건</strong>을 넣어 보세요. 평균 예제에서 <strong>풀이가 있는 답안</strong>을 넣었던 것처럼요. 같은 기준이 <strong>두 입력에서 각각 맞게 작동해야</strong> 비로소 재사용 가능한 기준이에요.</p>
+    <p>⑥ <strong>네 줄 README 쓰기.</strong> 마지막으로 위의 네 줄짜리 안내문을 <strong>제 과업 버전으로</strong> 적어 보세요. 이걸 못 적겠으면 <strong>아직 어딘가가 안 정해진 것</strong>이고, 어느 줄에서 막히는지가 <strong>다음에 뭘 해야 하는지</strong>를 알려 줍니다.</p>
+    <p>정답은 하나가 아니에요. 제 과업의 자료가 어디 있고 어떤 판단이 필요한지는 <strong>제 조건에서 직접 재 봐야</strong> 알 수 있어요. 이 편이 드리는 건 <strong>재는 자</strong>지 답이 아닙니다.</p>
+    <p><strong>다음 편에서는</strong> 여기서 남긴 재료로 한 걸음 더 나갑니다. 오늘 적은 <strong>입력과 결과, 그리고 아직 확인하고 싶은 질문</strong>이 그 작업의 출발점이 돼요 — <strong>여러 입력에서 실패와 개선이 쌓이면 에이전트가 그걸 스스로 지식으로 남길 수 있는가</strong>를 다룬 연구를 읽어 봅니다.</p>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">Skill — 반복 적용할 판단 기준과 작업 방식을 파일에 적어 둬서 새 입력에도 같은 기준이 쓰이게 하는 방식이에요(<a href="mcp-skill-why-skill-needed.html">6편</a>에서 왜 필요한지, <a href="mcp-skill-writing-skill-md.html">8편</a>에서 어떻게 쓰는지 다뤘어요). <a href="#fnref1">↩</a></li>
+        <li id="fn2">MCP — 에이전트를 도구·자료에 연결하는 공통 규약으로, 호스트·클라이언트·서버가 역할을 나눠 대화해요(<a href="mcp-skill-protocol-roles.html">2편</a>에서 구조를 다뤘어요). <a href="#fnref2">↩</a></li>
+        <li id="fn3">참고 자료(references) — Skill 본문이 길어질 때 판정 규칙이나 예시를 따로 떼어 두는 파일들로, 필요할 때만 읽히도록 분리한 것이에요(<a href="mcp-skill-writing-skill-md.html">8편</a>에서 처음 나눠 봤어요). <a href="#fnref3">↩</a></li>
+        <li id="fn4">호스트 — Claude Code나 채팅 앱처럼 모델과 도구 사이에 앉아 실제로 도구를 부르고 파일을 읽는 프로그램이에요(<a href="mcp-skill-protocol-roles.html">2편</a>에서 역할을 갈라 봤어요). <a href="#fnref4">↩</a></li>
+        <li id="fn5">README.md — 폴더를 처음 여는 사람이 무엇부터 봐야 하는지 적어 두는 안내 파일로, 이름이 관례라서 사람도 도구도 여기부터 찾아 읽어요. <a href="#fnref5">↩</a></li>
+        <li id="fn6">credential — 어떤 앱이 내 계정에 접근하겠다고 요청할 때 쓰는 신원 정보 파일로, 토큰과 함께 새어 나가면 남이 내 자료를 그대로 읽을 수 있어요(<a href="mcp-skill-google-oauth-setup.html">11편</a>에서 만들어 봤어요). <a href="#fnref6">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <h3>"MCP와 Skill로 에이전트에게 업무 맡기기" 시리즈</h3>
+    <a class="post-nav" href="mcp-skill-tool-call-anatomy.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">도구 하나가 호출되기까지 — 정의·파싱·구조화 요청</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-protocol-roles.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">호스트·클라이언트·서버가 나누는 대화 — MCP 연결 구조와 메시지</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-building-server.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">업무 기록 서버 직접 만들기 — uv 환경과 Python MCP 서버</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-host-connection.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">호스트에 연결하고 첫 도구 호출 확인하기</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-context-and-search.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">도구가 많아지면 생기는 문맥 부담 — Tool Search와 Code Mode</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-why-skill-needed.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">같은 기록, 다른 판정 — Skill이 필요한 이유</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-first-weekly-report.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">팀 규칙으로 첫 주간보고서 쓰기</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-writing-skill-md.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">완성한 판단을 SKILL.md로 남기기</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-reuse-verification.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">다음 주에도 통하는가 — Skill 재사용 검증하기</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-colab-notebook.html">
+      <span class="post-nav-label">(10)</span>
+      <span class="post-nav-title">계산 과정을 노트북에 남기기 — Colab MCP 연결</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-google-oauth-setup.html">
+      <span class="post-nav-label">(11)</span>
+      <span class="post-nav-title">내 표를 읽는 프로그램 만들기 — Google OAuth 준비</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-google-sheets-mcp.html">
+      <span class="post-nav-label">(12)</span>
+      <span class="post-nav-title">로그인부터 표가 반환되기까지 — 인증 코드와 MCP 서버</span>
+    </a>
+    <p class="post-date">(13) 내 업무에 맞게 바꿔보기 — 데이터·기준·기능 나누기 (이 글)</p>
+    <a class="post-nav" href="mcp-skill-wikiskill-research.html">
+      <span class="post-nav-label">(14)</span>
+      <span class="post-nav-title">에이전트도 경험을 쌓는다 — WikiSkill 연구가 보는 Skill</span>
+    </a>
+
+    <a class="post-nav" href="mcp-skill-wikiskill-research.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">에이전트도 경험을 쌓는다 — WikiSkill 연구가 보는 Skill</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>

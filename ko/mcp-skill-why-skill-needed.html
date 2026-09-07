@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>같은 기록, 다른 판정 — Skill이 필요한 이유 (6) - Tigermorning</title>
+  <meta name="description" content="TASK-102는 '개발 완료'인데 배포 날짜는 비어 있어요. 같은 기록 한 건을 두 팀이 서로 다르게 판정하는 이유, 일반 상식만으로는 알 수 없는 '업무 고유 지식'이란 무엇인지, 그리고 그 반복되는 판단을 SKILL.md에 적어 두는 Agent Skill이 요청 프롬프트·프로젝트 지침·MCP와 어떻게 역할이 갈리는지 완전 초보자 눈높이로 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="같은 기록, 다른 판정 — Skill이 필요한 이유 (6)">
+  <meta property="og:description" content="기록을 정확히 가져와도 '완료'인지는 아직 안 정해졌어요. 팀마다 다른 판정 기준을 어디에 적어 두는가 — Agent Skill과 SKILL.md, 그리고 프롬프트·프로젝트 지침·MCP와의 경계를 나눠 봅니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/mcp-skill-why-skill-needed.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">같은 기록, 다른 판정</span> — Skill이 필요한 이유 (6)</h1>
+    <p class="post-date">2026. 9. 7.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="mcp-skill-context-and-search.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">도구가 많아지면 생기는 문맥 부담 — Tool Search와 Code Mode</span>
+    </a>
+
+    <p class="one-liner">Skill이란 특정 종류의 일에 매번 다시 필요한 우리 팀만의 지침과 자료를 <code>SKILL.md</code>를 중심으로 한 폴더에 묶어 두고, 에이전트가 그 일을 만났을 때 꺼내 읽게 하는 형식이다.</p>
+
+    <p><a href="mcp-skill-host-connection.html">4편</a>과 <a href="mcp-skill-context-and-search.html">5편</a>에서 업무 기록을 <strong>정확히 가져오는 데</strong>까지는 왔어요. <code>get_weekly_records</code>를 호출하면 첫 주 기록 4건이 그대로 돌아와요. 그런데 거기서 딱 멈췄어요. <strong>가져온 기록을 우리 팀 보고서의 어느 칸에 넣을지</strong>는 아무도 안 정해 줬거든요.</p>
+    <p>이번 편은 그 빈칸을 채우는 이야기예요. 그리고 그 답이 <strong>Skill</strong>이에요.</p>
+    <p>먼저 하나 짚고 갈게요. <strong>스킬(Skill)이라는 말 자체는 이 블로그에서 이미 한 번 다뤘어요</strong> — <a href="ai-skills-and-rules-files.html">스킬과 규칙 파일 — 반복 작업을 AI에게 외워 두기</a>에서 "자주 하는 작업을 한 번 적어 두고 계속 꺼내 쓰는 설명서"이고, 평소엔 이름·설명만 훑다가 필요할 때만 본문을 펼치는 <strong>점진 공개<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>(progressive disclosure)</strong> 방식으로 동작한다고 정리했죠. 그 글이 <strong>"스킬이 무엇인가"</strong>였다면, 이번 편은 <strong>"내 업무에서 그게 왜 필요해지는가"</strong>예요. 개념이 아직 흐릿하면 그 글을 먼저 열어 보고 오세요 — 여기서는 겹치는 설명을 최소한만 하고 실제 업무 판정 문제로 바로 들어갈게요.</p>
+
+    <h2><span class="hl">비유</span> — 운송장 한 장, 도장 세 개</h2>
+    <p>온라인으로 물건을 하나 샀다고 해 볼게요. 주문 조회 화면에 운송장 정보가 떠요. 그 운송장에는 도장 칸이 <strong>세 개</strong> 있어요 — <strong>상품 준비</strong>, <strong>발송</strong>, <strong>수령</strong>이요.</p>
+    <p>지금은 <strong>첫 칸에만 도장이 찍혀 있어요.</strong> 가게는 상품을 다 만들어 포장까지 끝냈어요. 그런데 트럭에 싣지는 않았고, 당연히 저는 아직 못 받았죠.</p>
+    <p>이 상태를 놓고 두 곳이 서로 다른 말을 해요. 가게 내부 회의에서는 <strong>"이번 주 준비 물량, 다 끝냈습니다"</strong>라고 보고해요 — 맞는 말이에요. 그런데 같은 순간 저에게 <strong>"배송 완료됐습니다"</strong>라고 안내하면 그건 틀린 말이 되죠. 물건이 제 손에 없으니까요.</p>
+    <p>여기서 중요한 건, <strong>둘 중 누구도 운송장을 위조하지 않았다</strong>는 거예요. 운송장은 하나뿐이고 도장도 그대로예요. 다른 건 <strong>"어디까지 찍혀야 끝이라고 부를지"</strong>라는 각자의 방침이에요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>운송장 한 장</td><td>업무 기록 한 건 — <strong>TASK-102</strong></td></tr>
+        <tr><td>찍혀 있는 <strong>상품 준비</strong> 도장</td><td><code>status</code>: <strong>개발 완료</strong></td></tr>
+        <tr><td>아직 비어 있는 <strong>발송</strong> 칸</td><td><code>deployed_at</code>: <code>null</code><sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup> — 배포된 날짜가 없음</td></tr>
+        <tr><td>아직 비어 있는 <strong>수령</strong> 칸</td><td><code>verification</code>: <strong>미실시</strong> — 운영 환경 확인 안 함</td></tr>
+        <tr><td>가게 내부 회의의 "준비 물량 보고"</td><td>팀 A — <strong>개발 진척</strong> 공유</td></tr>
+        <tr><td>고객에게 나가는 배송 안내</td><td>팀 B — <strong>고객이 실제로 받은 성과</strong> 공유</td></tr>
+        <tr><td>"고객 손에 들어가야 끝"이라는 가게 방침</td><td>팀의 <strong>완료 판정 기준</strong> — 기록 어디에도 안 적힌 약속</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 도장 세 칸 중 <strong>어디에 선을 긋고 "끝"이라 부를지</strong>는 운송장이 정하는 게 아니라 <strong>가게 방침</strong>이 정해요.</p>
+    <p>다만 여기서 비유가 끊기는 점이 하나 있어요. 택배는 <strong>준비 → 발송 → 수령</strong> 순서가 물리적으로 고정돼 있지만, 업무 기록은 팀마다 <strong>칸의 개수와 이름 자체가 달라요.</strong> 어떤 팀은 '코드 리뷰 승인' 칸을 따로 두고, 어떤 팀은 배포와 확인을 한 칸으로 묶어요. 그래서 "다른 회사가 쓰는 기준"을 그대로 베껴 오면 안 맞아요.</p>
+
+    <h2><span class="hl">TASK-102</span> — 기록 하나에 사건이 셋 들어 있어요</h2>
+    <p>실제 기록을 다시 볼게요. <a href="mcp-skill-building-server.html">3편</a>에서 만든 <code>data/week-one.json</code> 안에 있는 항목이에요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 3편에서 만든 실습 자료의 한 항목을 읽기 쉽게 옮긴 것이에요</span></p>
+    <pre><code>id            : TASK-102
+title         : 로그인 안내 문구 개선
+owner         : 지우
+status        : 개발 완료
+due_date      : 2026-09-07
+deployed_at   : null
+verification  : 미실시
+blocker       : null
+note          : "코드 작성은 끝났으며 다음 배포를 기다린다."</code></pre>
+    <p>눈에 제일 먼저 들어오는 말은 <strong>개발 완료</strong>예요. 저도 처음엔 그 줄만 보고 "아, 끝난 거네" 했어요. 그런데 아래 두 줄을 같이 읽으면 그림이 달라져요.</p>
+    <ul>
+      <li><strong>개발</strong>은 기능을 <strong>구현하는</strong> 작업이에요. 이건 끝났어요.</li>
+      <li><strong>배포</strong><sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>는 그 변경을 <strong>사용자가 실제로 쓰는 환경에 반영하는</strong> 작업이에요. <code>deployed_at</code>이 <code>null</code>이니 아직이에요.</li>
+      <li><strong>운영 확인</strong>은 그 환경에서 <strong>제대로 도는지 확인한 결과</strong>예요. <code>verification</code>이 '미실시'니 근거가 없어요.</li>
+    </ul>
+    <p><code>note</code>의 "다음 배포를 기다린다"가 이 셋을 한 문장으로 요약해 줘요. <strong>같은 줄에 담겨 있지만 서로 다른 사건 셋</strong>이 있는 거예요.</p>
+    <p>그래서 같은 기록으로 두 종류의 문장이 나와요. 둘 다 거짓이 아니에요.</p>
+    <table>
+      <thead><tr><th>보고서</th><th>이 보고서가 '완료'로 세는 것</th><th>TASK-102를 이렇게 씀</th></tr></thead>
+      <tbody>
+        <tr><td><strong>팀 A</strong> — 개발 진척 공유</td><td>이번 주 <strong>구현</strong>을 끝낸 작업</td><td>"로그인 안내 문구 구현을 마쳤으며 배포를 기다리고 있습니다."</td></tr>
+        <tr><td><strong>팀 B</strong> — 고객 제공 성과 공유</td><td><strong>배포</strong>와 <strong>운영 확인</strong>까지 마친 작업</td><td>"로그인 안내 문구 개선은 진행 중입니다. 개발을 마쳤고 배포와 운영 확인이 남아 있습니다."</td></tr>
+      </tbody>
+    </table>
+    <p>어느 쪽도 기록을 바꾸지 않았어요. <strong>보고의 목적과 분류 기준이 다를 뿐</strong>이에요. 그리고 <strong>이번 공통 실습의 가상 제품팀은 팀 B 쪽 규칙</strong>을 씁니다 — 배포와 운영 확인까지 갖춘 일만 '완료'로 봐요. 앞으로 이 시리즈에서 '완료'라고 하면 그 뜻이에요.</p>
+
+    <h2><span class="hl">업무 고유 지식</span> — 일반 상식으로는 못 맞히는 정보</h2>
+    <p>AI는 <strong>일반적인 요약</strong>은 아주 잘해요. "이 기록을 짧게 정리해 줘"는 잘 되죠. 그런데 <strong>"우리 팀이 어떤 항목을 완료 건수에 넣는가"</strong>는 아무리 똑똑해도 못 맞혀요. 그건 지식이 아니라 <strong>약속</strong>이거든요. 어딘가에 적혀 있지 않으면 세상 어디에도 없는 정보예요.</p>
+    <p>이런 정보를 <strong>업무 고유 지식<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup></strong>이라고 부를게요. 종류가 대충 이래요.</p>
+    <table>
+      <thead><tr><th>업무 고유 지식의 종류</th><th>이번 실습에서는</th></tr></thead>
+      <tbody>
+        <tr><td>특정 팀에서만 쓰는 용어</td><td>'운영 확인'이 코드 리뷰가 아니라 <strong>배포 후 실제 서비스 점검</strong>을 뜻함</td></tr>
+        <tr><td>데이터 열(컬럼)의 뜻</td><td><code>verification</code>이 '미실시'면 <strong>확인을 안 한 것</strong>이지 '실패'가 아님</td></tr>
+        <tr><td>승인된 결과물 예시</td><td>지난달 팀장이 OK 한 주간 보고서 한 편</td></tr>
+        <tr><td>예외 처리 기준</td><td>배포는 됐는데 확인만 안 된 건은 '완료'인가 '진행 중'인가</td></tr>
+      </tbody>
+    </table>
+    <p>이건 <a href="mcp-skill-tool-call-anatomy.html">1편</a>에서 본 <strong>도구 정의</strong>(도구를 <em>어떻게 부르는가</em>)와도 다르고, <a href="mcp-skill-protocol-roles.html">2편</a>의 MCP 메시지 규칙(어떤 형식으로 <em>주고받는가</em>)과도 달라요. 통로가 아무리 잘 뚫려도 <strong>도착한 자료를 어떻게 판정할지</strong>는 여전히 비어 있어요.</p>
+
+    <h2><span class="hl">한 번이면 파일, 반복이면 Skill</span></h2>
+    <p>그럼 그 기준을 어디에 적을까요. 제일 간단한 방법부터 볼게요.</p>
+    <p class="run-tag">실행: AI 챗봇 대화창에 붙여넣기 <span class="run-tag-why">— claude.ai·ChatGPT 등</span></p>
+    <pre><code>이 기록을 팀 규칙에 맞춰 주간 보고서로 정리해 줘. 규칙은 이 파일에 있어.</code></pre>
+    <p>보고서를 <strong>딱 한 번</strong> 만들 거라면 이걸로 충분해요. 규칙 파일 하나 던져 주고 끝이죠.</p>
+    <p>문제는 다음 주예요. 같은 보고서를 또 만들고, <strong>다른 팀원도 새 대화에서</strong> 같은 방식으로 써야 한다면? 매번 어떤 규칙 파일을 읽힐지 설명하고, 예전 보고서를 뒤져서 찾아 주고, 빠뜨린 요구를 다시 전달하는 일이 <strong>반복</strong>돼요. <a href="ai-skills-and-rules-files.html">스킬과 규칙 파일</a>에서 <strong>재프롬프트 문제</strong>라고 불렀던 그 상황이 업무 데이터를 만나서 그대로 재현되는 거예요.</p>
+    <p>이때 쓰는 게 <strong>Agent Skill<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup></strong>이에요. <strong>특정 종류의 일을 할 때 쓸 지침과 자료를 함께 묶어 두는 형식</strong>이고, 중심에 <strong><code>SKILL.md</code><sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup></strong>라는 지침 파일이 있어요. 에이전트는 Skill의 <strong>이름과 설명</strong>으로 "이게 지금 필요한 일인가"를 먼저 판단하고, 필요할 때만 본문과 연결된 자료를 읽어요.</p>
+    <p>보고서 Skill이라면 이런 걸 한 곳에 담아 둘 수 있어요.</p>
+    <ul>
+      <li><strong>적용 조건</strong> — "이 팀의 주간 보고서를 쓸 때 사용한다"</li>
+      <li><strong>완료 판정 기준</strong> — "배포와 운영 확인까지 끝난 건만 완료로 센다"</li>
+      <li><strong>보여 줄 근거</strong> — "완료로 분류한 건은 <code>deployed_at</code>을 함께 적는다"</li>
+    </ul>
+    <p>한 가지 확실히 갈라 둘 게 있어요. <strong>이건 모델을 다시 학습시키는 것과 완전히 달라요.</strong> 모델 안의 지식을 고치는 게 아니라(그게 <strong>재학습·미세조정<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup></strong>이에요), <strong>작업할 때 읽을 자료를 미리 준비해 두는</strong> 거예요. 그래서 <strong>팀 기준이 바뀌면 Skill이 참조하는 규칙 문서를 사람이 고쳐야</strong> 해요 — 저절로 따라 바뀌지 않아요.</p>
+    <p>그리고 <a href="mcp-skill-context-and-search.html">5편</a>의 <strong>Tool Search</strong>와 닮은 구석이 있어요. 처음부터 다 읽히지 않고 <strong>필요한 걸 찾은 다음 읽는다</strong>는 점이요. 다만 <strong>찾는 대상이 달라요</strong> — Tool Search가 찾는 건 <strong>호출할 도구의 설명</strong>이고, Skill에서 읽는 건 <strong>그 과업에 쓸 지식·방법·자료</strong>예요. 둘은 경쟁이 아니라 같이 써요.</p>
+
+    <h2><span class="hl">비유 두 번째</span> — 주방 벽에 걸린 레시피 카드</h2>
+    <p>Skill의 생김새는 다른 비유가 더 잘 들어와요. 식당 주방이에요.</p>
+    <p>가게에 신입 요리사가 들어올 때마다 "우리 집은 소스를 마지막에 붓는다", "플레이팅까지 해야 완성이다"를 <strong>말로</strong> 알려 주면 사람이 바뀔 때마다 다시 해야 하고, 사람마다 기억하는 게 조금씩 달라져요. 그래서 <strong>벽에 카드를 한 장 걸어 둬요.</strong> 카드 맨 위에는 <strong>"이 카드는 언제 보는가"</strong>가 한 줄 적혀 있고, 아래에는 순서가 있어요. 카드는 "자세한 배합은 서랍 속 배합표를 볼 것"처럼 <strong>다른 자료를 가리키기도</strong> 해요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>벽에 걸린 레시피 카드 한 장</td><td><code>SKILL.md</code> — 지침 본문</td></tr>
+        <tr><td>카드 맨 위의 "언제 보는 카드인지" 한 줄</td><td>Skill의 <strong>이름과 설명</strong> — 에이전트가 꺼낼지 말지 판단하는 근거</td></tr>
+        <tr><td>카드 본문의 조리 순서</td><td>실제 작업 지침</td></tr>
+        <tr><td>서랍 속 <strong>소스 배합표</strong></td><td>참조 자료<sup class="fn-ref"><a href="#fn8" id="fnref8">8</a></sup>(references) — 작업 중 읽어 판단에 쓰는 문서</td></tr>
+        <tr><td>포장지·로고 스티커</td><td>자산<sup class="fn-ref"><a href="#fn9" id="fnref9">9</a></sup>(assets) — 결과물을 만드는 데 쓰는 파일</td></tr>
+        <tr><td>반죽기 작동 절차를 적어 붙인 쪽지</td><td>스크립트<sup class="fn-ref"><a href="#fn10" id="fnref10">10</a></sup>(scripts) — 반복 처리를 적어 둔 실행 코드</td></tr>
+        <tr><td>신입이 와도 카드만 보면 같은 접시가 나옴</td><td>새 대화·다른 팀원도 같은 기준으로 판단</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 카드는 요리사의 손을 대신하지 않아요 — <strong>무엇을 어떻게 할지 적어 둘 뿐, 불을 켜는 건 여전히 사람(과 도구)</strong>이에요.</p>
+    <p>이 마지막 줄이 나중에 크게 쓰여요. <strong>Skill 파일 자체는 명령을 실행하지도, 접근 권한을 만들어 주지도 않아요.</strong> 아래 CLI 이야기에서 다시 나와요.</p>
+
+    <h2><span class="hl">전체 흐름 그림</span> — 하나의 요청에 네 갈래가 합류해요</h2>
+    <p>이제 헷갈리기 제일 쉬운 대목이에요. 프롬프트, 프로젝트 지침, Skill, MCP — 넷 다 "AI에게 뭔가 알려 주는 것"처럼 보이거든요. 그런데 <strong>합류하는 시점과 적용 범위</strong>가 서로 달라요.</p>
+    <svg viewBox="0 0 780 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="가운데 에이전트를 두고 네 방향에서 정보가 합류하는 그림. 왼쪽에서 이번 요청의 프롬프트가 들어오고, 위에서 프로젝트 지침이 항상 적용되며, 아래 왼쪽에서 Skill이 이 과업일 때만 펼쳐지고, 아래 오른쪽에서 MCP 서버가 외부 기록을 조회해 응답한다. 오른쪽으로 보고서 초안이 나온다.">
+      <defs>
+        <marker id="arrSK" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <g font-family="var(--font-body)" font-size="11" fill="var(--ink)">
+
+        <rect x="15" y="170" width="150" height="82" rx="8" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <text x="90" y="196" text-anchor="middle" font-size="10.5" font-weight="700">이번 요청의 프롬프트</text>
+        <text x="90" y="216" text-anchor="middle" font-size="9.5" fill="var(--muted)">"이번 주 기록으로</text>
+        <text x="90" y="231" text-anchor="middle" font-size="9.5" fill="var(--muted)">주간 보고서를 써 줘"</text>
+
+        <line x1="167" y1="211" x2="274" y2="211" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrSK)"/>
+        <text x="220" y="203" text-anchor="middle" font-size="9" fill="var(--muted)">이번 한 번만</text>
+
+        <rect x="280" y="160" width="190" height="102" rx="8" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <text x="375" y="196" text-anchor="middle" font-size="11.5" font-weight="700" font-family="var(--font-heading)">에이전트</text>
+        <text x="375" y="218" text-anchor="middle" font-size="9.5" fill="var(--muted)">지금 무엇을 읽을지 고르고</text>
+        <text x="375" y="233" text-anchor="middle" font-size="9.5" fill="var(--muted)">판정 기준을 적용한다</text>
+
+        <rect x="280" y="28" width="190" height="82" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="375" y="54" text-anchor="middle" font-size="10.5" font-weight="700">프로젝트 지침</text>
+        <text x="375" y="74" text-anchor="middle" font-size="9.5" fill="var(--muted)">"문서는 한국어로 쓴다"</text>
+        <text x="375" y="94" text-anchor="middle" font-size="9.5" fill="var(--muted)">이 프로젝트의 모든 작업에</text>
+        <line x1="375" y1="112" x2="375" y2="156" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrSK)"/>
+        <text x="392" y="140" font-size="9" fill="var(--muted)">항상</text>
+
+        <line x1="472" y1="211" x2="604" y2="211" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrSK)"/>
+
+        <rect x="610" y="170" width="155" height="82" rx="8" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <text x="687" y="200" text-anchor="middle" font-size="10.5" font-weight="700">보고서 초안</text>
+        <text x="687" y="222" text-anchor="middle" font-size="9.5" fill="var(--muted)">팀 기준으로 분류된</text>
+
+        <rect x="150" y="310" width="215" height="82" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="257" y="336" text-anchor="middle" font-size="10.5" font-weight="700">Skill — 주간 보고 규칙</text>
+        <text x="257" y="356" text-anchor="middle" font-size="9.5" fill="var(--muted)">SKILL.md + 참조 자료</text>
+        <text x="257" y="376" text-anchor="middle" font-size="9.5" fill="var(--muted)">"완료 = 배포 + 운영 확인"</text>
+        <line x1="288" y1="308" x2="330" y2="266" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrSK)"/>
+        <text x="196" y="300" font-size="9" fill="var(--muted)">이 과업일 때만 펼침</text>
+
+        <rect x="415" y="310" width="215" height="82" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="522" y="336" text-anchor="middle" font-size="10.5" font-weight="700">MCP 서버</text>
+        <text x="522" y="356" text-anchor="middle" font-size="9.5" fill="var(--muted)">get_weekly_records</text>
+        <text x="522" y="376" text-anchor="middle" font-size="9.5" fill="var(--muted)">TASK-101 ~ TASK-104</text>
+        <line x1="490" y1="308" x2="446" y2="266" stroke="var(--muted)" stroke-width="2" marker-start="url(#arrSK)" marker-end="url(#arrSK)"/>
+        <text x="500" y="300" font-size="9" fill="var(--muted)">조회 · 응답</text>
+
+        <text x="390" y="288" text-anchor="middle" font-size="9.5" fill="var(--muted)">아래 둘은 필요할 때 합류한다 — 왼쪽은 판정 기준, 오른쪽은 원자료</text>
+      </g>
+    </svg>
+    <p><strong>읽는 법:</strong> 가운데 에이전트로 <strong>네 방향에서</strong> 정보가 들어와요. 화살표에 붙은 말이 핵심이에요 — 왼쪽은 <strong>이번 한 번만</strong>, 위쪽은 <strong>항상</strong>, 왼쪽 아래는 <strong>이 과업일 때만</strong>, 오른쪽 아래는 <strong>조회할 때마다</strong>예요. 그리고 아래 두 상자를 갈라 보세요. <strong>왼쪽(Skill)에서 오는 건 판정 기준이고, 오른쪽(MCP)에서 오는 건 원자료</strong>예요. 이 둘을 헷갈리면 "MCP를 붙였는데 왜 우리 팀 기준대로 안 나오지?" 하고 엉뚱한 데를 고치게 돼요.</p>
+    <p>표로도 한 번 정리할게요.</p>
+    <table>
+      <thead><tr><th>전달 방식</th><th>여기에 맡기는 내용</th><th>이번 실습의 예</th></tr></thead>
+      <tbody>
+        <tr><td><strong>이번 요청의 프롬프트</strong></td><td>이번 작업의 목적·대상·범위</td><td>"이번 주 기록으로 새 팀원이 이해할 수 있는 보고서를 써 줘"</td></tr>
+        <tr><td><strong>프로젝트 지침<sup class="fn-ref"><a href="#fn11" id="fnref11">11</a></sup></strong></td><td>이 프로젝트에서 <strong>넓게</strong> 적용할 관례</td><td>기본 용어, 문서 언어, 공통 작업 관례</td></tr>
+        <tr><td><strong>Skill</strong></td><td>특정 종류의 과업에서 <strong>반복 사용할</strong> 지식·방법·자료</td><td>주간 보고의 분류 기준과 승인된 보고서 예시</td></tr>
+        <tr><td><strong>MCP</strong></td><td>프로그램의 도구·자료를 호스트에서 <strong>표준 방식으로 연결</strong></td><td><code>get_weekly_records</code>로 요청한 주의 기록을 조회</td></tr>
+      </tbody>
+    </table>
+    <p>프로젝트 지침과 Skill의 경계가 제일 헷갈려요. 이렇게 갈라요 — <strong>"이 프로젝트의 문서는 한국어로 작성한다"</strong>는 번역이든 요약이든 <strong>여러 작업에 두루</strong> 적용되니 프로젝트 지침이고, <strong>"주간 보고의 완료 건수는 배포와 운영 확인을 기준으로 센다"</strong>는 <strong>보고서 과업 하나에 집중된</strong> 지식이니 Skill이에요.</p>
+    <p>마지막으로 <strong>과장하지 않기</strong> 위한 단서 하나. 같은 정보를 프롬프트에 통째로 붙여 넣었을 때와 Skill로 읽혔을 때 <strong>결과가 같을 수도 있어요.</strong> Skill이라는 <strong>형식 자체가 더 정확한 판단을 만들어 준다고 가정할 이유는 없어요.</strong> Skill이 바꾸는 건 <strong>같은 정보를 매번 다시 전달하지 않아도 된다는 점</strong>이에요.</p>
+
+    <h2><span class="hl">나쁜 선택 vs 좋은 선택</span> — 운송장 앞에서</h2>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">첫 칸에 <strong>상품 준비</strong> 도장이 찍힌 걸 보고 고객에게 "배송 완료"라고 안내한다 = <code>status</code>가 '개발 완료'라는 이유로 고객 성과 보고의 완료 칸에 넣는다 → 고객은 아직 아무것도 못 받았는데 완료 건수만 늘어나고, 다음 주에 그 건이 또 나타난다.</td>
+          <td class="choice-good">도장이 <strong>세 칸</strong>이라는 걸 먼저 확인하고, 이 보고서가 어느 칸까지를 끝으로 보는지 정한다 = <code>deployed_at</code>과 <code>verification</code>을 같이 읽고 팀 기준에 대입한다 → "개발은 마쳤고 배포·운영 확인이 남았다"로 정확히 적힌다.</td>
+        </tr>
+        <tr>
+          <td class="choice-bad">"모든 상황에서 완벽한 주간 보고서를 만들어 줘"라고 Skill부터 쓰기 시작한다 → 어떤 기준을 적어야 할지 손에 잡히는 게 없어서 뻔한 문장만 나열한 지침이 된다.</td>
+          <td class="choice-good">실제 보고서 <strong>한 편</strong>을 같이 만들면서 필요한 정보를 그때그때 찾아낸다 → "이 판단은 무엇을 근거로 했나"를 되짚어 그 근거들이 그대로 Skill의 재료가 된다.</td>
+        </tr>
+        <tr>
+          <td class="choice-bad">기준을 Skill에 적어 뒀으니 이제 팀 규칙이 바뀌어도 알아서 따라올 거라고 믿는다 → 규칙이 바뀐 뒤에도 옛 기준으로 몇 주치 보고서가 나가고, 아무도 눈치채지 못한다.</td>
+          <td class="choice-good">Skill은 <strong>모델을 고친 게 아니라 읽을 자료를 둔 것</strong>임을 기억하고, 기준이 바뀌면 참조 문서부터 고친다 → 다음 주 보고서부터 새 기준이 반영된다.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2><span class="hl">공식 사례 둘</span> — 남이 만든 Skill은 어떻게 생겼나</h2>
+    <p>추상적으로만 보면 잘 안 잡히니까, Anthropic이 공개한 Skill 두 개를 보고 갈게요. <a href="ai-skills-and-rules-files.html">스킬과 규칙 파일</a>에서 "잘 만든 스킬은 교본으로 자주 인용된다"고 했던 그 계열이에요.</p>
+
+    <h3>internal-comms — 유형을 먼저 고르고, 그 유형의 예시를 읽는다</h3>
+    <p><strong>internal-comms</strong>는 사내 소통 문서를 쓸 때 쓰는 Skill이에요. 재밌는 건 본문 구조예요. 지침을 한 덩어리로 다 적어 두지 않고, <strong>"이 요청이 어떤 문서 유형인지 먼저 파악하고, 그 유형에 맞는 예시 지침을 읽어라"</strong>로 안내해요. 주간 진행 공유 요청이면 <code>examples/3p-updates.md</code>로, 사내 소식 작성이면 다른 지침으로 갈라지죠.</p>
+    <p>여기서 <strong>3P<sup class="fn-ref"><a href="#fn12" id="fnref12">12</a></sup></strong>는 <strong>Progress(진행 성과) · Plans(다음 계획) · Problems(문제)</strong>를 뜻해요. 진행 상황을 이 셋으로 나눠 전하는 방식이에요.</p>
+    <p>메모 한 줄을 3P로 갈라 보면 이게 왜 쓸모 있는지 바로 보여요.</p>
+    <table>
+      <thead><tr><th>원래 메모 한 덩어리</th><th>3P로 나누면</th></tr></thead>
+      <tbody>
+        <tr><td>"검색 오류 수정을 배포했다."</td><td><strong>Progress</strong> — 이미 수행한 일</td></tr>
+        <tr><td>"다음 주에는 검색어 추천을 시험하려 한다."</td><td><strong>Plans</strong> — 앞으로 할 일</td></tr>
+        <tr><td>"시험용 데이터 사용 승인을 기다리고 있다."</td><td><strong>Problems</strong> — 진행을 막고 있는 조건</td></tr>
+      </tbody>
+    </table>
+    <p>세 문장이 뭉쳐 있을 땐 그냥 근황이었는데, <strong>시간과 역할로 갈라 놓으니</strong> 읽는 사람이 "내가 도와줘야 할 게 뭐지"를 바로 찾을 수 있어요. 우리 주간 보고서에서 <code>blocker</code>가 적힌 항목을 따로 모으는 것도 같은 발상이에요.</p>
+
+    <h3>brand-guidelines — 기준값이 있으면 선택에 근거가 생긴다</h3>
+    <p><strong>brand-guidelines</strong>는 회사의 시각적 표현 기준을 담은 Skill이에요. 여기엔 <strong>주 강조색이 <code>#d97757</code></strong>이라는 <strong>구체적인 값</strong>이 적혀 있고, 제목과 본문에 각각 쓸 글꼴과 대체 글꼴도 안내돼 있어요.</p>
+    <p>이게 왜 중요하냐면 — "브랜드 느낌으로 만들어 줘"는 매번 다른 결과가 나오지만, <strong>"강조색은 <code>#d97757</code>"</strong>은 다음 주에도, 다른 사람이 요청해도 같은 값이 나오거든요. <strong>취향이 아니라 근거</strong>가 되는 거예요. 우리 팀으로 옮기면 "완료로 셀 때는 <code>deployed_at</code>이 채워져 있어야 한다"가 딱 그 자리예요.</p>
+    <p>다만 오해하면 안 되는 게, <strong><code>#d97757</code>은 그 회사의 기준이지 일반 규칙이 아니에요.</strong> 배울 건 색상값이 아니라 <strong>"판단을 값으로 못 박아 둔다"는 태도</strong>예요.</p>
+
+    <h2><span class="hl">지침 옆에 함께 둘 것들</span></h2>
+    <p>Agent Skills 명세는 지침 본문 말고도 <strong>참조 자료·자산·스크립트</strong>를 같이 둘 수 있게 해요. 앞의 주방 카드 비유에서 배합표·포장지·기계 쪽지에 해당하죠. 우리 주간 보고 상황에 대입하면 이래요.</p>
+    <table>
+      <thead><tr><th>반복해서 필요한 것</th><th>함께 둘 자료</th><th>무엇에 쓰나</th></tr></thead>
+      <tbody>
+        <tr><td>팀만의 완료·위험 판단</td><td>팀 규칙 문서 <em>(참조 자료)</em></td><td>같은 상태값을 팀의 약속에 따라 해석</td></tr>
+        <tr><td>기대하는 설명 수준</td><td>승인된 보고서 예시 <em>(참조 자료)</em></td><td>근거를 어느 정도 보여주고 어떤 내용을 묶는지 참고</td></tr>
+        <tr><td>일정한 보고서 외형</td><td>로고와 문서 서식 파일 <em>(자산)</em></td><td>매번 머리글과 표 배치를 새로 만들지 않고 활용</td></tr>
+        <tr><td>반복되는 숫자 집계</td><td>검증한 집계용 Python 코드 <em>(스크립트)</em></td><td>같은 계산을 매번 새로 작성하는 대신 실행</td></tr>
+      </tbody>
+    </table>
+    <p>마지막 줄이 특히 마음에 들었어요. <strong>숫자를 세는 일은 모델이 매번 새로 추론할 게 아니라 코드가 할 일</strong>이잖아요. 검증해 둔 집계 코드를 옆에 두면 "이번 주는 3건, 다음 주는 왠지 4건" 같은 흔들림이 줄어요.</p>
+
+    <h2><span class="hl">CLI로 가든 MCP로 가든</span> — Skill은 '읽히는 지침'일 뿐</h2>
+    <p>업무 기록이 우리 실습처럼 JSON 파일이 아니라 <strong>Google Sheets</strong>에 있다면 어떻게 될까요. 에이전트가 <strong>Google Workspace CLI<sup class="fn-ref"><a href="#fn13" id="fnref13">13</a></sup>인 <code>gws</code></strong>를 쓸 수 있다면, <strong>MCP 연결 없이도</strong> 외부 서비스의 업무를 수행할 수 있어요.</p>
+    <table>
+      <thead><tr><th>경로</th><th>거쳐 가는 순서</th></tr></thead>
+      <tbody>
+        <tr><td><strong>CLI 경로</strong></td><td>에이전트 → 호스트의 <strong>셸 실행 도구</strong> → <code>gws</code> CLI → Google API</td></tr>
+        <tr><td><strong>MCP 경로</strong></td><td>에이전트 → 호스트의 <strong>MCP 클라이언트</strong> → MCP 서버 → 업무 API</td></tr>
+      </tbody>
+    </table>
+    <p>여기서 이번 편의 핵심 문장이 한 번 더 나와요. <strong>Skill은 두 경로 <em>모두</em>에서 그냥 "에이전트가 읽는 지침"이에요.</strong> Skill 파일이 스스로 명령을 실행하거나 API 접근 권한을 만들어 주지 않아요 — 실행은 셸 도구나 MCP 클라이언트가 하고, 권한은 계정 쪽에서 나와요. 주방 카드가 불을 켜 주지 않는 것과 같아요.</p>
+    <p>CLI 경로가 실제로 어떻게 생겼는지만 한 줄 맛보고 갈게요.</p>
+    <p class="run-tag">실행: 로컬 터미널 <span class="run-tag-why">— gws 설치와 Google 계정 인증이 끝난 뒤에만 동작해요</span></p>
+    <pre><code>gws sheets spreadsheets values get --params '{"spreadsheetId": "SPREADSHEET_ID", "range": "Sheet1!A1:C10"}'</code></pre>
+    <p>돌아오는 응답에서 세 가지만 알면 돼요. <code>range</code>는 <strong>실제로 읽은 범위</strong>, <code>majorDimension</code>은 값이 <strong>행 방향으로 묶였는지 열 방향으로 묶였는지</strong>, <code>values</code>는 <strong>실제 셀 값들</strong>이에요. 표를 잘못 읽는 사고는 대개 두 번째 항목을 안 봐서 생겨요 — 행으로 묶인 값을 열로 착각하면 머리글과 데이터가 어긋나거든요.</p>
+    <p>이걸 Skill 지침으로 적으면 이런 모양이 돼요. <strong>교육용 예시</strong>이고, 실제 파일 전체를 쓰는 건 <strong>8편</strong>에서 제대로 해요.</p>
+    <p class="run-tag">실행: SKILL.md 파일로 저장 <span class="run-tag-why">— 에이전트가 이 과업을 만났을 때 읽어요</span></p>
+    <pre><code>### Google Sheets에 있는 기록을 보고서에 사용할 때
+- 사용자가 Sheets 기록으로 주간 보고서를 요청하면 이 절차를 적용한다.
+- gws 공통 지침과 Sheets 지침을 읽고, 사용할 명령과 필요한 인자를 확인한다.
+- 문서 ID, 탭, 보고 기간, 열의 뜻을 확인한다.
+- 응답의 range와 majorDimension을 확인하고 values를 머리글과 대응시킨다.
+- 읽어 온 기록에 팀의 완료·진행·위험 기준을 적용하여 보고서 초안을 만든다.
+- 보고서 작성 요청만으로 원본 시트를 수정하지 않는다.</code></pre>
+    <p>마지막 줄을 눈여겨보세요. <strong>"하지 않을 일"을 적는 것</strong>도 지침이에요. 읽으러 갔다가 실수로 원본을 건드리는 사고를 막는 한 줄이죠. Google 계정 연결과 Sheets를 MCP로 붙이는 이야기는 <strong>11편·12편</strong>에서 본격적으로 다룰게요.</p>
+
+    <h2><span class="hl">Skill의 재료는 책상 앞이 아니라 실제 작업에서 나와요</span></h2>
+    <p>제가 이 대목에서 제일 크게 바꾼 습관이 있어요. 전에는 "쓸 만한 Skill을 하나 만들어야지" 하고 <strong>빈 문서부터 열었어요.</strong> 그러면 "모든 상황에서 완벽한 보고서를 만든다" 같은 문장만 쓰다가 막혀요. 어떤 기준을 적어야 하는지 <strong>모르는 상태</strong>니까요.</p>
+    <p>순서를 뒤집는 게 나았어요. <strong>실제 보고서 한 편을 먼저 만들고</strong>, 만드는 동안 "어? 이건 내가 정해 줘야 하네" 싶었던 지점을 모으는 거예요. 그게 그대로 Skill의 재료예요.</p>
+    <p>그리고 오해 하나. <strong>Skill을 만들려고 일부러 오류를 만들 필요는 없어요.</strong> 처음부터 결과가 괜찮았다면, "그 판단을 뒷받침한 자료가 뭐였지?"를 되짚으면 돼요. 잘된 경우에도 재료는 똑같이 나와요.</p>
+    <p>참고로 <strong>skill-creator<sup class="fn-ref"><a href="#fn14" id="fnref14">14</a></sup></strong>라는 공식 Skill도 있어요. <strong>Skill 만드는 걸 돕는 Skill</strong>이에요. 원하는 과업과 적용 상황을 물어보고, 초안을 만든 뒤, 실제 요청에 적용해 본 결과를 평가하고 고치는 흐름을 안내해요. 이 "만들고 → 써 보고 → 고친다"는 순환이 이 시리즈의 7·8·9편 구조와 정확히 같아요.</p>
+
+    <h2><span class="hl">이번 편에 나온 구체적인 값</span></h2>
+    <table>
+      <thead><tr><th>항목</th><th>값</th><th>조건·출처</th></tr></thead>
+      <tbody>
+        <tr><td>TASK-102의 핵심 상태값</td><td><code>status</code> 개발 완료 · <code>deployed_at</code> <code>null</code> · <code>verification</code> 미실시</td><td><a href="mcp-skill-building-server.html">3편</a> 실습 자료 <code>data/week-one.json</code> — 가상 제품팀</td></tr>
+        <tr><td>기록 한 건에 섞여 있는 사건</td><td>3가지 (개발 · 배포 · 운영 확인)</td><td>서로 다른 시점의 서로 다른 작업</td></tr>
+        <tr><td>같은 기록에 대한 판정</td><td>2가지 (팀 A '완료' / 팀 B '진행 중')</td><td>기록은 동일 — <strong>보고 목적과 분류 기준만 다름</strong></td></tr>
+        <tr><td>이번 실습 가상 제품팀의 완료 기준</td><td>배포 + 운영 확인까지</td><td>7편 이후 이 시리즈에서 '완료'는 이 뜻</td></tr>
+        <tr><td>지시를 전달하는 방식</td><td>4가지 (요청 프롬프트 · 프로젝트 지침 · Skill · MCP)</td><td>대체재가 아니라 <strong>합류 시점이 다른 것</strong></td></tr>
+        <tr><td>Skill과 함께 둘 수 있는 자료</td><td>3종 (참조 자료 · 자산 · 스크립트)</td><td>Agent Skills 명세 기준</td></tr>
+        <tr><td>3P의 구성</td><td>3가지 (Progress · Plans · Problems)</td><td>internal-comms의 <code>examples/3p-updates.md</code></td></tr>
+        <tr><td>brand-guidelines의 주 강조색</td><td><code>#d97757</code></td><td><strong>그 회사의 기준값</strong> — 일반 규칙이 아님</td></tr>
+        <tr><td>외부 업무를 실행하는 경로</td><td>2가지 (CLI 경로 / MCP 경로)</td><td>어느 쪽이든 Skill은 <strong>읽히는 지침</strong>일 뿐</td></tr>
+        <tr><td>이번 실습에서 연결한 도구</td><td>1개 (<code>get_weekly_records</code>)</td><td>3편에서 만든 서버를 그대로 사용</td></tr>
+      </tbody>
+    </table>
+    <p class="post-date">※ 위 값 중 <strong>TASK-102의 필드값과 팀 기준은 학습용 가상 설정</strong>이고, <strong><code>#d97757</code>과 3P는 공개된 공식 Skill의 내용</strong>이에요. 앞의 것을 다른 팀에 그대로 옮기면 안 되고, 뒤의 것도 "이 회사는 이렇게 못 박아 뒀다"는 사례로 읽어야 해요.</p>
+
+    <h2><span class="hl">직접 해보기</span></h2>
+    <p>이번 연습의 목적은 <strong>Skill을 만드는 게 아니라, 내 업무에서 "아무 데도 안 적혀 있는 기준"을 찾아내는 것</strong>이에요.</p>
+    <p>① <strong>내 업무 기록의 '완료'를 세 칸으로 쪼개 보기.</strong> 실제로 쓰는 표나 이슈 트래커를 열고, '완료'라고 표시된 항목 하나를 골라 보세요. 그 하나가 정말 한 사건인가요, 아니면 TASK-102처럼 <strong>여러 사건이 한 줄에 뭉쳐</strong> 있나요? 칸을 몇 개로 나눌 수 있는지 세어 보세요.</p>
+    <p>② <strong>같은 기록으로 서로 다른 두 문장 써 보기.</strong> 그 항목 하나를 놓고 <strong>내부 진척 보고용 문장</strong>과 <strong>고객·상급자 보고용 문장</strong>을 각각 한 줄씩 써 보세요. 두 문장이 <strong>둘 다 참인데 인상이 다르다</strong>면, 그 차이를 만든 게 바로 여러분 팀의 판정 기준이에요. 그걸 한 문장으로 적어 두세요 — 7편에서 쓸 재료예요.</p>
+    <p>③ <strong>기준을 빼고 요청해 보고, 넣고 다시 요청해 보기.</strong> AI에게 기록만 주고 "완료 몇 건인지 세 줘"라고 해 본 다음, 이번엔 "완료는 배포와 운영 확인까지 끝난 건만 센다"를 붙여서 다시 물어보세요. <strong>답이 달라지는 지점</strong>이 곧 "이건 어딘가에 적어 둬야 하는 지식"이라는 신호예요.</p>
+    <p>여기까지 오면 <strong>무엇을 적어야 하는지</strong>는 손에 잡혔어요. 다음 편에서는 가상 제품팀의 규칙 문서를 실제로 읽히고, <strong>첫 주간 보고서 한 편을 끝까지 완성</strong>해 볼게요. Skill 파일을 쓰는 건 그다음(8편)이에요 — 순서가 반대면 적을 게 없거든요.</p>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">점진 공개(progressive disclosure) — 평소엔 이름·설명만 훑다가 실제로 필요할 때만 본문을 읽어 오는 방식으로, <a href="ai-skills-and-rules-files.html">스킬과 규칙 파일</a>에서 처음 다뤘어요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">null — 값이 <strong>비어 있음</strong>을 뜻하는 표시로, <a href="mcp-skill-host-connection.html">호스트에 연결하고 첫 도구 호출 확인하기</a>에서 <code>deployed_at</code>을 대조할 때 처음 다뤘어요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">배포(deploy) — 완성한 코드 변경을 사용자가 실제로 쓰는 환경에 반영해 서비스에 나가게 하는 작업. <a href="#fnref3">↩</a></li>
+        <li id="fn4">업무 고유 지식 — 팀의 용어·데이터 열의 뜻·승인된 예시·예외 기준처럼 일반 지식만으로는 알 수 없고 그 조직에만 존재하는 정보. <a href="#fnref4">↩</a></li>
+        <li id="fn5">Agent Skill — 특정 종류의 일에 쓸 지침과 자료를 한 폴더에 묶어 두고 에이전트가 이름·설명으로 용도를 파악해 필요할 때 읽게 하는 형식으로, <a href="ai-skills-and-rules-files.html">스킬과 규칙 파일</a>에서 처음 다뤘어요. <a href="#fnref5">↩</a></li>
+        <li id="fn6">SKILL.md — Skill의 중심이 되는 지침 파일로, 맨 위에 이름·설명을 적고 그 아래에 실제 작업 지시를 적어요. <a href="#fnref6">↩</a></li>
+        <li id="fn7">재학습·미세조정(fine-tuning) — 모델 내부의 지식 자체를 추가 학습으로 바꾸는 일이며, 읽을 자료를 옆에 두는 Skill과는 완전히 다른 방법이에요. <a href="#fnref7">↩</a></li>
+        <li id="fn8">참조 자료(references) — Skill과 함께 두는 문서로, 작업 도중 읽어서 판단의 근거로 쓰는 자료예요. <a href="#fnref8">↩</a></li>
+        <li id="fn9">자산(assets) — Skill과 함께 두는 파일 중 결과물을 만드는 데 직접 쓰이는 로고·서식 같은 재료예요. <a href="#fnref9">↩</a></li>
+        <li id="fn10">스크립트(scripts) — 반복되는 처리를 미리 적어 둔 실행 코드 파일로, 매번 새로 작성하는 대신 실행해서 같은 결과를 얻어요. <a href="#fnref10">↩</a></li>
+        <li id="fn11">프로젝트 지침 — 이 프로젝트의 모든 작업에 두루 적용할 관례를 적어 두는 문서로, <code>AGENTS.md</code>·<code>CLAUDE.md</code> 형태를 <a href="ai-skills-and-rules-files.html">스킬과 규칙 파일</a>에서 처음 다뤘어요. <a href="#fnref11">↩</a></li>
+        <li id="fn12">3P — 진행 상황을 Progress(진행 성과)·Plans(다음 계획)·Problems(문제) 세 갈래로 나눠 전달하는 방식. <a href="#fnref12">↩</a></li>
+        <li id="fn13">CLI(command line interface) — 터미널에 명령을 글자로 쳐서 프로그램을 쓰는 방식으로, <a href="mcp-skill-building-server.html">업무 기록 서버 직접 만들기</a>에서 <code>uv</code> 명령을 칠 때 이미 써 봤어요. <a href="#fnref13">↩</a></li>
+        <li id="fn14">skill-creator — Skill의 제작과 개선을 돕는 공식 Skill로, 과업과 적용 상황을 정리해 초안을 만들고 실제 요청에 적용한 결과로 고치는 흐름을 안내해요. <a href="#fnref14">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <h3>"MCP와 Skill로 에이전트에게 업무 맡기기" 시리즈</h3>
+    <a class="post-nav" href="mcp-skill-tool-call-anatomy.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">도구 하나가 호출되기까지 — 정의·파싱·구조화 요청</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-protocol-roles.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">호스트·클라이언트·서버가 나누는 대화 — MCP 연결 구조와 메시지</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-building-server.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">업무 기록 서버 직접 만들기 — uv 환경과 Python MCP 서버</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-host-connection.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">호스트에 연결하고 첫 도구 호출 확인하기</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-context-and-search.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">도구가 많아지면 생기는 문맥 부담 — Tool Search와 Code Mode</span>
+    </a>
+    <p class="post-date">(6) 같은 기록, 다른 판정 — Skill이 필요한 이유 (이 글)</p>
+    <a class="post-nav" href="mcp-skill-first-weekly-report.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">팀 규칙으로 첫 주간보고서 쓰기</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-writing-skill-md.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">완성한 판단을 SKILL.md로 남기기</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-reuse-verification.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">다음 주에도 통하는가 — Skill 재사용 검증하기</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-colab-notebook.html">
+      <span class="post-nav-label">(10)</span>
+      <span class="post-nav-title">계산 과정을 노트북에 남기기 — Colab MCP 연결</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-google-oauth-setup.html">
+      <span class="post-nav-label">(11)</span>
+      <span class="post-nav-title">내 표를 읽는 프로그램 만들기 — Google OAuth 준비</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-google-sheets-mcp.html">
+      <span class="post-nav-label">(12)</span>
+      <span class="post-nav-title">로그인부터 표가 반환되기까지 — 인증 코드와 MCP 서버</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-adapting-to-my-task.html">
+      <span class="post-nav-label">(13)</span>
+      <span class="post-nav-title">내 업무에 맞게 바꿔보기 — 데이터·기준·기능 나누기</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-wikiskill-research.html">
+      <span class="post-nav-label">(14)</span>
+      <span class="post-nav-title">에이전트도 경험을 쌓는다 — WikiSkill 연구가 보는 Skill</span>
+    </a>
+
+    <a class="post-nav" href="mcp-skill-first-weekly-report.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">팀 규칙으로 첫 주간보고서 쓰기</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>

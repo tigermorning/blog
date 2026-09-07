@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>로그인부터 표가 반환되기까지 — 인증 코드와 MCP 서버 (12) - Tigermorning</title>
+  <meta name="description" content="지난 편에서 받아 둔 credentials.json으로 실제 로그인을 해 봅니다. 프로그램이 브라우저를 열고 localhost에서 결과를 기다리는 이유, 동의를 누르면 생기는 token.json, 저장된 토큰을 다시 쓰고 갱신 토큰으로 되살리는 load_token 함수, 표의 제목과 첫 시트 A1:C3을 두 번의 API 호출로 읽는 read_header 함수, 그리고 그 함수를 @mcp.tool()로 감싸 read_sheet_header 도구로 내놓는 google_sheet_reader.py까지 한 줄씩 따라갑니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="로그인부터 표가 반환되기까지 — 인증 코드와 MCP 서버 (12)">
+  <meta property="og:description" content="사람이 브라우저에서 허용을 누르는 건 딱 한 번이에요. 그다음부터는 저장된 토큰과 두 번의 API 호출이 사람 자리를 대신하고, 그 함수를 도구 하나로 감싸면 에이전트가 부를 수 있게 됩니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/mcp-skill-google-sheets-mcp.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">로그인부터 표가 반환되기까지</span> — 인증 코드와 MCP 서버 (12)</h1>
+    <p class="post-date">2026. 9. 7.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="mcp-skill-google-oauth-setup.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">내 표를 읽는 프로그램 만들기 — Google OAuth 준비</span>
+    </a>
+
+    <p class="one-liner">이번 편이 하는 일은 <strong>사람이 브라우저에서 딱 한 번 허용을 누르고, 그 결과를 파일로 남겨 그다음부터는 프로그램이 사람 없이 표를 읽게 만드는 것</strong>이다.</p>
+
+    <p><a href="mcp-skill-google-oauth-setup.html">11편</a>이 끝났을 때 손에 남은 건 <strong><code>credentials.json</code> 파일 하나</strong>였어요. 콘솔에서 프로젝트를 만들고, Google Sheets API를 켜고, 동의 화면을 만들고, <code>spreadsheets.readonly</code> 범위를 고르고, Desktop app 클라이언트를 만들어 내려받은 결과물이죠. 그런데 그 파일 하나로는 <strong>아직 아무 표도 못 읽어요.</strong> 그건 "어떤 앱이 요청하는가"를 적은 <strong>앱 설정</strong>일 뿐이고, "내가 이 앱에 내 표 읽기를 허용한다"는 <strong>동의</strong>는 아직 한 번도 일어나지 않았거든요.</p>
+    <p>이번 편에서 그 동의를 실제로 받아 봅니다. 그리고 동의만 받고 끝내지 않고, <strong>표를 읽는 함수 → 에이전트가 부를 수 있는 도구</strong>까지 이어 붙여요. <a href="mcp-skill-protocol-roles.html">2편</a>에서 배운 MCP<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup> 구조와 <a href="mcp-skill-building-server.html">3편</a>에서 직접 만들어 본 서버가 여기서 다시 쓰여요.</p>
+
+    <h2><span class="hl">실습 파일 세 개</span></h2>
+    <p>실습 자료 폴더에는 파일이 세 개 들어 있어요. 역할이 확실히 다르니 먼저 갈라 둘게요.</p>
+    <table>
+      <thead><tr><th>파일</th><th>무슨 역할인가</th><th>언제 쓰나</th></tr></thead>
+      <tbody>
+        <tr><td><code>GOOGLE_AUTH_README.md</code></td><td>이 도구를 쓰려면 무엇을 준비해야 하는지 적어 둔 <strong>안내 문서</strong></td><td>시작 전에 <strong>사람이나 에이전트가 읽는</strong> 용도</td></tr>
+        <tr><td><code>google_auth_check.py</code></td><td><strong>최초 로그인</strong>을 치르고 토큰을 저장하며, 표를 읽는 함수들도 여기 들어 있어요</td><td>터미널에서 <strong>맨 처음 한 번</strong> (이후엔 재인증할 때만)</td></tr>
+        <tr><td><code>google_sheet_reader.py</code></td><td>위 파일의 읽기 함수를 <strong>MCP 도구로 감싼 서버</strong></td><td>인증이 끝난 뒤, <strong>호스트가 실행</strong></td></tr>
+      </tbody>
+    </table>
+    <p>이 실습에서 요청하는 범위는 <code>spreadsheets.readonly</code> 하나뿐이라 <strong>읽기만 되고 쓰기는 안 돼요.</strong> 그리고 인증 확인 프로그램이 읽어 볼 대상은 제 표가 아니라 <strong>Google이 공개해 둔 시작 예제 표</strong>예요. 처음부터 내 표로 시험하면 "인증이 잘못된 건지, 표 접근 권한이 없는 건지" 원인이 두 개로 갈려서 헷갈리거든요.</p>
+    <p>읽을 범위는 <strong><code>A1:C3</code></strong>인데, <strong>A열 1행부터 C열 3행까지</strong>, 그러니까 <strong>3행 × 3열 = 아홉 칸</strong>이라는 뜻이에요. 첫 행이 헤더(열 이름 줄)면 <strong>헤더까지 포함</strong>됩니다 — 이게 나중에 결과를 볼 때 한 번 걸리는 지점이라 미리 적어 둘게요.</p>
+
+    <h2><span class="hl">비유 하나</span> — 방문증을 받아 주머니에 넣는 날</h2>
+    <p>11편의 <strong>회사 로비 방문증 데스크</strong>를 그대로 이어서 그려 볼게요. 어제 저는 데스크에 업체 등록을 마쳤어요. 오늘은 <strong>기사가 실제로 데스크 앞에 서는 날</strong>이에요.</p>
+    <p>기사가 서류를 내밀면 데스크 직원이 이렇게 말해요. "본인 확인이 필요합니다." 그러고는 <strong>내선 전화</strong>를 걸어 저를 부르죠. 제가 로비로 내려가 <strong>"네, 이 기사에게 3층 서류 열람만 허용합니다"</strong> 하고 확인하면, 그제야 <strong>방문증</strong>이 나옵니다. 기사는 그걸 <strong>주머니</strong>에 넣어요.</p>
+    <p>중요한 건 <strong>내일부터예요.</strong> 기사는 저를 다시 부르지 않아요. 주머니에서 방문증을 꺼내 보이면 되고, 유효 시간이 지났으면 <strong>재발급 티켓</strong>만 내밀어 새 방문증을 받아요. 티켓까지 잃어버렸을 때만 <strong>다시 저를 부릅니다.</strong></p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>기사가 <strong>데스크로 걸어가는</strong> 일</td><td>프로그램이 <code>credentials.json</code>을 읽고 <strong>브라우저를 여는</strong> 일</td></tr>
+        <tr><td>데스크가 저를 부르는 <strong>내선 전화</strong>가 걸려 있는 자리</td><td><strong>localhost<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup></strong> — 프로그램이 결과를 기다리는 자기 컴퓨터 주소</td></tr>
+        <tr><td>그 전화의 <strong>내선 번호</strong></td><td><strong>포트<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup></strong> — 같은 컴퓨터 안의 통신 대상을 구분하는 번호</td></tr>
+        <tr><td>제가 내려와 <strong>확인해 주는 순간</strong></td><td><strong>동의 화면</strong>에서 계정을 고르고 Continue를 누르는 순간</td></tr>
+        <tr><td>주머니에 들어간 <strong>방문증</strong></td><td><strong>접근 토큰</strong> — <code>token.json</code> 안에 저장돼요</td></tr>
+        <tr><td>시간이 지나면 내미는 <strong>재발급 티켓</strong></td><td><strong>갱신 토큰</strong> — <code>creds.refresh()</code>가 쓰는 값</td></tr>
+        <tr><td>내일부터 <strong>저를 안 부르는</strong> 것</td><td><code>load_token()</code>이 <strong>저장된 토큰을 다시 쓰는</strong> 것</td></tr>
+        <tr><td><strong>티켓까지</strong> 잃어버림</td><td>갱신 토큰이 없거나 만료·철회됨 → <strong>재로그인 필요</strong></td></tr>
+        <tr><td>방문증을 <strong>아무 데나 두지 않는</strong> 습관</td><td><code>save_private()</code> — 토큰 파일을 <strong>남에게 열리지 않게</strong> 저장</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> <strong>사람이 개입하는 건 "확인해 주는 그 한 번"뿐</strong>이고, 그다음부터는 <strong>주머니 속 방문증과 재발급 티켓이 사람 자리를 대신해요.</strong></p>
+    <p>다만 여기서 비유가 끊기는 점이 하나 있어요. 진짜 방문증은 잃어버려도 다시 내려가서 받으면 그만이지만, <strong><code>token.json</code>은 남의 손에 들어가면 그 사람이 제 동의를 그대로 써 버려요.</strong> 그래서 이 파일은 "잃어버리면 재발급"이 아니라 <strong>"애초에 새어 나가지 않게"</strong>가 원칙이에요 — 11편에서 <code>.gitignore</code> 이야기를 했던 이유가 이거예요.</p>
+
+    <h2><span class="hl">비유 둘</span> — 도서관에서 세 줄만 베껴 오기</h2>
+    <p>표를 읽는 함수 쪽에는 다른 비유가 더 잘 맞아요. 자료실에 가서 <strong>어떤 책의 첫 페이지 세 줄만 베껴 오는</strong> 심부름을 생각해 보세요.</p>
+    <p>저는 <strong>청구기호</strong> 하나만 들고 갑니다. 그런데 곧장 서가로 뛰어가지 않아요. 먼저 <strong>목록 단말기</strong>에서 그 청구기호가 <strong>무슨 책인지</strong>, 그리고 <strong>몇 권짜리 중 첫 권 제목이 무엇인지</strong> 확인해요. 그걸 알아야 서가에서 <strong>정확히 어느 책의 어느 페이지</strong>를 펼지 말할 수 있으니까요. 그다음에야 서가로 가서 세 줄을 옮겨 적고, 종이 한 장으로 정리해 돌아옵니다.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>손에 든 <strong>청구기호</strong></td><td><code>spreadsheet_id</code> — 표를 가리키는 문서 ID</td></tr>
+        <tr><td>청구기호 <strong>형식이 맞는지 먼저 훑는</strong> 것</td><td><code>re.fullmatch(...)</code> 검사 — <strong>URL 통째로</strong> 넣는 실수를 막아요</td></tr>
+        <tr><td><strong>목록 단말기</strong> 조회</td><td>첫 번째 호출 — <strong>메타데이터<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup></strong>(문서 제목 · 시트 이름)</td></tr>
+        <tr><td>확인한 <strong>책 제목 · 첫 권 이름</strong></td><td><code>title</code>(문서 제목) · <strong>첫 시트 이름</strong></td></tr>
+        <tr><td><strong>서가에서 세 줄 베끼기</strong></td><td>두 번째 호출 — <code>values().get(range="…!A1:C3")</code></td></tr>
+        <tr><td>정리해 온 <strong>종이 한 장</strong></td><td>반환 <strong>딕셔너리<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup></strong> — <code>title·sheet·range·values</code></td></tr>
+        <tr><td>나오면서 <strong>창구를 닫는</strong> 것</td><td><code>service.close()</code> — 열어 둔 연결을 정리</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> <strong>API를 두 번 부르는 이유는, 첫 번째 답(시트 이름)이 없으면 두 번째 요청의 범위 문자열 자체를 만들 수 없기 때문</strong>이에요 — 게을러서 두 번 부르는 게 아니에요.</p>
+
+    <h2><span class="hl">전체 흐름 그림</span> — 한 번뿐인 구간과 매번 도는 구간</h2>
+    <p>이번 편의 전체 모양을 한 장에 그렸어요. 윗줄과 아랫줄을 가르는 기준은 <strong>"사람이 화면 앞에 앉아 있어야 하는가"</strong>예요.</p>
+    <svg viewBox="0 0 820 448" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="위쪽은 최초 한 번만 일어나는 구간이다. 첫째 프로그램이 credentials.json을 읽고 실행되고, 둘째 브라우저가 열리며 프로그램은 localhost의 어떤 포트에서 결과를 기다리고, 셋째 내가 테스트 사용자로 등록한 계정을 골라 표 읽기 허용을 누르고, 넷째 접근 토큰과 갱신 토큰이 담긴 token.json이 개인 설정 폴더에 저장된다. 그 결과 여기까지가 사람이 나오는 유일한 구간이 된다. 아래쪽은 그다음부터 매번 도는 구간으로, 다섯째 load_token 함수가 저장된 토큰을 읽고 만료됐으면 갱신 토큰으로 새 접근 토큰을 받고, 여섯째 read_header 함수가 첫 번째 API 호출로 문서 제목과 첫 시트 이름을 가져오고, 일곱째 두 번째 API 호출로 그 시트의 A1에서 C3까지 셀 값을 읽고, 여덟째 title, sheet, range, values 네 항목을 담은 딕셔너리를 돌려준다. 마지막으로 이 함수를 골뱅이 mcp.tool 데코레이터로 감싸면 read_sheet_header라는 도구가 되어 에이전트가 부를 수 있게 된다.">
+      <defs>
+        <marker id="arrGS" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <g font-family="var(--font-body)" font-size="11" fill="var(--ink)">
+
+        <text x="410" y="20" text-anchor="middle" font-size="11" font-weight="700" font-family="var(--font-heading)">최초 한 번 — 사람이 화면 앞에 앉아 있어야 하는 구간</text>
+
+        <rect x="15" y="32" width="175" height="88" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        <text x="102" y="54" text-anchor="middle" font-size="10.5" font-weight="700">① 인증 프로그램 실행</text>
+        <text x="102" y="73" text-anchor="middle" font-size="9" fill="var(--muted)">google_auth_check.py</text>
+        <text x="102" y="88" text-anchor="middle" font-size="9" fill="var(--muted)">credentials.json을 읽고</text>
+        <text x="102" y="106" text-anchor="middle" font-size="9" fill="var(--muted)">기본 브라우저를 연다</text>
+
+        <line x1="192" y1="76" x2="213" y2="76" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrGS)"/>
+
+        <rect x="215" y="32" width="175" height="88" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        <text x="302" y="54" text-anchor="middle" font-size="10.5" font-weight="700">② localhost에서 대기</text>
+        <text x="302" y="73" text-anchor="middle" font-size="9" fill="var(--muted)">내 컴퓨터 주소 · 포트</text>
+        <text x="302" y="88" text-anchor="middle" font-size="9" fill="var(--muted)">port=0 → 빈 번호 자동 선택</text>
+        <text x="302" y="106" text-anchor="middle" font-size="9" fill="var(--muted)">로그인 결과를 돌려받을 자리</text>
+
+        <line x1="392" y1="76" x2="413" y2="76" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrGS)"/>
+
+        <rect x="415" y="32" width="175" height="88" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        <text x="502" y="54" text-anchor="middle" font-size="10.5" font-weight="700">③ 내가 직접 허용</text>
+        <text x="502" y="73" text-anchor="middle" font-size="9" fill="var(--muted)">Test users에 등록한 계정</text>
+        <text x="502" y="88" text-anchor="middle" font-size="9" fill="var(--muted)">권한 설명이 표 읽기인지 확인</text>
+        <text x="502" y="106" text-anchor="middle" font-size="9" fill="var(--muted)">Continue</text>
+
+        <line x1="592" y1="76" x2="613" y2="76" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrGS)"/>
+
+        <rect x="615" y="32" width="175" height="88" rx="8" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <text x="702" y="54" text-anchor="middle" font-size="10.5" font-weight="700" font-family="var(--font-heading)">④ token.json 저장</text>
+        <text x="702" y="73" text-anchor="middle" font-size="9" fill="var(--muted)">접근 토큰 + 갱신 토큰</text>
+        <text x="702" y="88" text-anchor="middle" font-size="9" fill="var(--muted)">save_private()가</text>
+        <text x="702" y="106" text-anchor="middle" font-size="9" fill="var(--muted)">개인 설정 폴더에 기록</text>
+
+        <line x1="702" y1="120" x2="702" y2="172" stroke="var(--muted)" stroke-width="2"/>
+        <line x1="702" y1="172" x2="562" y2="172" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrGS)"/>
+
+        <rect x="270" y="150" width="290" height="46" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        <text x="415" y="171" text-anchor="middle" font-size="10" font-weight="700">여기까지가 사람이 나오는 유일한 구간</text>
+        <text x="415" y="188" text-anchor="middle" font-size="9" fill="var(--muted)">아래부터는 저장된 토큰이 사람 자리를 대신해요</text>
+
+        <line x1="15" y1="216" x2="815" y2="216" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="6 5"/>
+        <text x="410" y="236" text-anchor="middle" font-size="11" font-weight="700" font-family="var(--font-heading)">그다음부터 매번 — 프로그램만으로 도는 구간</text>
+
+        <rect x="15" y="248" width="175" height="88" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        <text x="102" y="270" text-anchor="middle" font-size="10.5" font-weight="700">⑤ load_token()</text>
+        <text x="102" y="289" text-anchor="middle" font-size="9" fill="var(--muted)">저장된 토큰을 읽고</text>
+        <text x="102" y="304" text-anchor="middle" font-size="9" fill="var(--muted)">만료면 갱신 토큰으로</text>
+        <text x="102" y="322" text-anchor="middle" font-size="9" fill="var(--muted)">새 접근 토큰 요청</text>
+
+        <line x1="192" y1="292" x2="213" y2="292" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrGS)"/>
+
+        <rect x="215" y="248" width="175" height="88" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        <text x="302" y="270" text-anchor="middle" font-size="10.5" font-weight="700">⑥ 첫 번째 호출</text>
+        <text x="302" y="289" text-anchor="middle" font-size="9" fill="var(--muted)">spreadsheets().get()</text>
+        <text x="302" y="304" text-anchor="middle" font-size="9" fill="var(--muted)">문서 제목 · 시트 이름</text>
+        <text x="302" y="322" text-anchor="middle" font-size="9" fill="var(--muted)">= 목록 단말기 조회</text>
+
+        <line x1="392" y1="292" x2="413" y2="292" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrGS)"/>
+
+        <rect x="415" y="248" width="175" height="88" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        <text x="502" y="270" text-anchor="middle" font-size="10.5" font-weight="700">⑦ 두 번째 호출</text>
+        <text x="502" y="289" text-anchor="middle" font-size="9" fill="var(--muted)">values().get()</text>
+        <text x="502" y="304" text-anchor="middle" font-size="9" fill="var(--muted)">'시트이름'!A1:C3</text>
+        <text x="502" y="322" text-anchor="middle" font-size="9" fill="var(--muted)">= 서가에서 세 줄 베끼기</text>
+
+        <line x1="592" y1="292" x2="613" y2="292" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrGS)"/>
+
+        <rect x="615" y="248" width="175" height="88" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        <text x="702" y="270" text-anchor="middle" font-size="10.5" font-weight="700">⑧ 딕셔너리 반환</text>
+        <text x="702" y="289" text-anchor="middle" font-size="9" fill="var(--muted)">title · sheet</text>
+        <text x="702" y="304" text-anchor="middle" font-size="9" fill="var(--muted)">range · values</text>
+        <text x="702" y="322" text-anchor="middle" font-size="9" fill="var(--muted)">네 항목 한 묶음</text>
+
+        <line x1="702" y1="336" x2="702" y2="382" stroke="var(--muted)" stroke-width="2"/>
+        <line x1="702" y1="382" x2="637" y2="382" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrGS)"/>
+
+        <rect x="185" y="358" width="450" height="48" rx="8" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <text x="410" y="379" text-anchor="middle" font-size="10.5" font-weight="700" font-family="var(--font-heading)">⑨ 이 함수를 @mcp.tool()로 감싸면 = read_sheet_header 도구</text>
+        <text x="410" y="396" text-anchor="middle" font-size="9" fill="var(--muted)">여기부터는 에이전트가 사람 대신 부를 수 있어요 (3편에서 만든 서버와 같은 구조)</text>
+
+        <text x="410" y="434" text-anchor="middle" font-size="9" fill="var(--muted)">점선 위 = 딱 한 번, 사람이 브라우저에서 허용 · 점선 아래 = 실행할 때마다 반복되는 코드 경로</text>
+      </g>
+    </svg>
+    <p><strong>읽는 법:</strong> 가로 화살표는 <strong>실행 순서</strong>고, 가운데 <strong>점선</strong>이 이 글에서 제일 중요한 경계예요. 점선 <strong>위</strong>는 <strong>딱 한 번</strong> 일어나고, 점선 <strong>아래</strong>는 <strong>부를 때마다</strong> 반복돼요. 두 구간을 잇는 유일한 물건이 가운데 상자, 즉 <strong><code>token.json</code></strong>이고요. 맨 아래 상자는 아래 구간 전체를 <strong>도구 하나로 포장</strong>하는 단계라 세로 화살표로 붙여 뒀어요 — 여기까지 와야 <a href="mcp-skill-tool-call-anatomy.html">1편</a>에서 본 "에이전트가 도구를 부른다"가 제 표에서도 일어납니다.</p>
+
+    <h2><span class="hl">① 최초 로그인</span> — 브라우저가 열리는 그 순간</h2>
+    <p>안내 문서와 인증 프로그램이 폴더에 있으니, 에이전트에게 이렇게 부탁하는 걸로 시작해요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— 실습 폴더를 연 Claude Code나 OpenCode 대화창에서요</span></p>
+    <pre><code>이 폴더의 Google 인증 안내를 읽고 첫 로그인을 도와줘.
+로그인 뒤 예제 표가 읽히는지도 확인하자.</code></pre>
+    <p>이 명령이 실행되면 프로그램이 <strong><code>credentials.json</code>을 읽고 기본 브라우저를 엽니다.</strong> 아직 로그인한 적이 없으니, <strong>바로 지금 이 순간에</strong> 사용자 동의를 요청하는 거예요. 브라우저에 계정이 여러 개 로그인돼 있다면 <strong>11편에서 Test users에 등록해 둔 그 개인 계정</strong>을 고르세요. 다른 계정을 고르면 여기서 막힙니다.</p>
+
+    <h3>localhost와 포트 — 프로그램이 전화를 기다리는 자리</h3>
+    <p>브라우저가 열리는 동안 프로그램은 그냥 놀고 있는 게 아니라, <strong>로그인 결과를 돌려받으려고 <code>localhost</code> 주소에서 잠깐 기다려요.</strong> 이 말이 처음이면 두 단어만 풀어 두면 충분해요.</p>
+    <ul>
+      <li><strong><code>localhost</code></strong> — <strong>지금 이 프로그램을 실행하고 있는 자기 컴퓨터</strong>를 가리키는 이름이에요. 인터넷 어딘가가 아니라 <strong>내 책상 위 컴퓨터</strong>예요.</li>
+      <li><strong>포트</strong> — 같은 컴퓨터 안에서 <strong>여러 통신 대상을 구분하는 번호</strong>예요. 건물 하나에 내선 번호가 여러 개인 것과 같아요.</li>
+    </ul>
+    <p>즉 <strong>"내 컴퓨터의 몇 번 내선으로 결과를 돌려 달라"</strong>고 말해 두고 기다리는 거예요. Google 화면에서 제가 허용을 누르면, 그 결과가 <strong>바로 그 내선으로</strong> 되돌아옵니다.</p>
+    <p>동의 화면에서는 두 장면을 눈으로 확인하세요. 먼저 <strong>앱 이름·개발자·로그인 계정</strong>이 맞는지 보고 Continue, 그다음 <strong>요청하는 권한 설명이 "표 읽기"인지</strong> 보고 Continue예요. 두 번째 화면이 <strong>제가 11편에서 고른 scope가 실제로 어떻게 보이는지</strong> 확인할 수 있는 유일한 자리라 그냥 넘기지 말고 한 번 읽어 보면 좋아요.</p>
+
+    <h3>돌아온 값</h3>
+    <p>인증이 끝나면 프로그램이 예제 표를 읽어 결과를 출력해요. 실제로 돌아온 값(2026-09-06 실행)이에요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 프로그램이 실제로 돌려준 값을 읽기 좋게 줄바꿈한 것이에요</span></p>
+    <pre><code>{
+  "title": "Example Spreadsheet",
+  "sheet": "Class Data",
+  "range": "'Class Data'!A1:C3",
+  "values": [
+    ["Student Name", "Gender", "Class Level"],
+    ["Alexandra", "Female", "4. Senior"],
+    ["Andrew", "Male", "1. Freshman"]
+  ]
+}</code></pre>
+    <p>네 항목이 각각 뭔지 보면 이 프로그램이 무슨 일을 했는지가 한눈에 들어와요. <code>title</code>은 <strong>문서 이름</strong>, <code>sheet</code>는 <strong>읽은 시트(탭) 이름</strong>, <code>range</code>는 <strong>실제로 읽힌 범위</strong>, <code>values</code>는 <strong>줄 단위 목록</strong>이에요. <code>values</code> 안에 목록이 세 개 들어 있고, <strong>첫 목록이 헤더</strong>죠.</p>
+
+    <h3>"실패한 것 같은데 성공한" 경우</h3>
+    <p>여기서 한 번 놀랄 수 있는 장면이 있어요. 이번 환경에서는 동의를 누른 뒤 브라우저의 <code>localhost</code> 완료 페이지가 Chrome에서 <strong><code>ERR_BLOCKED_BY_CLIENT</code></strong>로 보였어요. 화면만 보면 실패 같죠. 그런데 <strong>터미널의 로컬 프로그램은 인증 결과를 정상적으로 받아</strong> 위 응답을 출력하고 정상 종료했어요.</p>
+    <p><strong>메시지 하나로 성공·실패를 단정하지 않는 게 요령</strong>이에요. 여기서 진짜 성공 판정 기준은 <strong>브라우저 화면이 아니라 두 가지</strong>예요 — <strong><code>token.json</code>이 생겼는가</strong>, 그리고 <strong>프로그램이 표 값을 출력했는가</strong>.</p>
+
+    <h2><span class="hl">② 토큰을 받아 다시 쓰는 코드</span></h2>
+    <p>이제 그 일을 실제로 해낸 코드를 봅니다. 파이썬 문법이 낯설다면 <a href="reading-python-code-basics.html">파이썬 코드 읽기 입문</a>의 <strong>함수</strong>·<strong>try/except</strong>·<strong>점(.)과 import</strong> 부분만 먼저 훑고 와도 좋아요. 여기서는 <strong>줄마다 무슨 판단을 하는지</strong>만 따라가면 됩니다.</p>
+    <p>전체 흐름은 세 마디예요 — <strong>인증 파일 경로 확인 → 기존 토큰 읽기 또는 최초 로그인 → 표 읽기.</strong> 그 갈림길이 이 한 줄에 다 들어 있어요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 완성 파일에서 갈림길 한 줄만 잘라 온 발췌예요</span></p>
+    <pre><code>creds = (load_token(token_path) if token_path.exists() and not args.reauth else
+    authenticate(credential_path, token_path, no_browser=args.no_browser, auth_url_file=url_path, timeout=args.timeout))</code></pre>
+    <p>길어 보이지만 하는 말은 짧아요. <strong>"토큰 파일이 이미 있고, 사용자가 재인증을 요구하지도 않았다면 → 저장된 토큰을 읽어라. 아니면 → 처음부터 로그인해라."</strong> 방문증 비유의 <strong>"주머니에 방문증이 있나 없나"</strong>가 정확히 이 줄이에요. <code>--reauth</code> 옵션은 <strong>주머니에 있어도 일부러 새로 받겠다</strong>는 뜻이고요.</p>
+
+    <h3>처음 로그인할 때 — authenticate()</h3>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 함수 안쪽의 로그인 부분만 잘라 온 발췌예요</span></p>
+    <pre><code>flow = PrivateURLFlow.from_client_secrets_file(str(credentials_path), SCOPES)
+flow.auth_url_file = auth_url_file
+try:
+    creds = flow.run_local_server(
+        host="localhost", bind_addr="127.0.0.1", port=0,
+        open_browser=not no_browser, authorization_prompt_message="",
+        success_message="Authentication complete. You can close this tab.",
+        timeout_seconds=timeout, prompt="consent",
+    )
+    check_scopes(creds)
+    save_private(token_path, creds.to_json())
+    return creds
+finally:
+    if flow.wrote_url and auth_url_file is not None:
+        auth_url_file.unlink(missing_ok=True)</code></pre>
+    <p>위에서부터 짚어 볼게요.</p>
+    <ul>
+      <li><strong><code>from_client_secrets_file(...)</code></strong> — 11편에서 내려받은 <strong>앱 설정 JSON</strong>과 <strong><code>SCOPES</code></strong>(요청할 범위 목록)를 읽어 들여요. 여기서 <code>credentials.json</code>이 처음으로 코드에 등장합니다.</li>
+      <li><strong><code>run_local_server(...)</code></strong> — <strong>브라우저의 로그인·동의 흐름을 시작하고 결과를 받아</strong> 인증 객체(<code>creds</code>)를 만들어요. 이 한 줄이 앞에서 본 "브라우저가 열리고 기다린다"의 전부예요.</li>
+      <li><strong><code>port=0</code></strong> — 포트 번호를 <strong>제가 고르지 않고 시스템이 비어 있는 번호를 고르게</strong> 하는 값이에요. 특정 번호를 못박으면 그 번호를 다른 프로그램이 쓰고 있을 때 충돌하거든요.</li>
+      <li><strong><code>prompt="consent"</code></strong> — <strong>동의 화면을 요청</strong>하는 옵션이에요.</li>
+      <li><strong><code>check_scopes(creds)</code></strong> — 돌아온 인증이 <strong>내가 의도한 범위인지 대조</strong>해요.</li>
+      <li><strong><code>creds.to_json()</code> → <code>save_private(...)</code></strong> — 인증을 <strong>저장할 수 있는 형태로 바꿔</strong> <code>token.json</code>에 기록해요. <code>save_private()</code>는 개인 설정 폴더에 <strong>임시 파일을 만든 뒤 교체</strong>하는 방식으로, <strong>토큰 파일이 다른 사용자에게 열리지 않도록</strong> 저장합니다.</li>
+      <li><strong><code>finally:</code></strong> — <strong>성공하든 실패하든 반드시 실행되는 자리</strong>예요. 여기서는 임시로 남겨 둔 로그인 URL 파일을 <strong>지우는 뒷정리</strong>를 해요.</li>
+    </ul>
+    <p><code>PrivateURLFlow</code>는 Google 라이브러리가 제공하는 <code>InstalledAppFlow</code>를 <strong>확장한 클래스<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup></strong>예요. 원래 동작은 그대로 물려받고, <strong>브라우저를 자동으로 열지 않는 실행 환경</strong>(예: 화면 없는 서버)에서도 로그인 URL을 <strong>별도 파일로 전달</strong>할 수 있는 보조 동작만 더한 거예요. "라이브러리 코드를 통째로 고치지 않고 필요한 부분만 덧붙인다"는 게 이런 모양입니다.</p>
+
+    <h3>두 번째부터 — load_token()</h3>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 완성 파일에 들어 있는 함수 하나를 그대로 옮긴 것이에요</span></p>
+    <pre><code>def load_token(path: Path) -&gt; Credentials:
+    if not path.is_file():
+        raise ValueError("인증 토큰이 없습니다. google_auth_check.py를 먼저 실행하세요.")
+    creds = Credentials.from_authorized_user_file(str(path))
+    check_scopes(creds)
+    if not creds.valid:
+        if not creds.refresh_token:
+            raise ValueError("재인증이 필요합니다. google_auth_check.py --reauth를 실행하세요.")
+        creds.refresh(Request())
+        check_scopes(creds)
+        save_private(path, creds.to_json())
+    return creds</code></pre>
+    <p>이 함수가 <strong>"기사가 내일부터 저를 안 부르는" 부분</strong>이에요. 판단이 계단처럼 세 번 일어나요.</p>
+    <table>
+      <thead><tr><th>확인하는 것</th><th>아니면 어떻게 하나</th><th>방문증 비유로는</th></tr></thead>
+      <tbody>
+        <tr><td>토큰 <strong>파일이 있는가</strong></td><td>없으면 <strong>인증 프로그램을 먼저 실행하라</strong>고 알림</td><td>주머니에 <strong>아무것도 없음</strong></td></tr>
+        <tr><td>토큰이 <strong>아직 유효한가</strong> (<code>creds.valid</code>)</td><td>유효하면 <strong>그대로 사용</strong></td><td>방문증 <strong>유효 시간이 남음</strong></td></tr>
+        <tr><td>만료됐다면 <strong>갱신 토큰이 있는가</strong></td><td>있으면 <code>creds.refresh(Request())</code>로 <strong>새 접근 토큰</strong>을 받아 다시 저장</td><td><strong>재발급 티켓</strong>을 내밀어 새 방문증</td></tr>
+        <tr><td>갱신 토큰도 <strong>없거나 철회됐다면</strong></td><td><code>--reauth</code>로 <strong>다시 로그인</strong>하라고 알림</td><td>티켓까지 잃어버려 <strong>저를 다시 부름</strong></td></tr>
+      </tbody>
+    </table>
+    <p><code>check_scopes()</code>가 <strong>두 번</strong> 불리는 게 눈에 띄죠. <strong>파일에서 읽어 온 직후</strong> 한 번, <strong>갱신한 직후</strong> 한 번이에요. 저장된 토큰이 <strong>예전에 다른 범위로 받아 둔 것</strong>일 수도 있어서, "지금 이 실습이 요구하는 범위와 같은가"를 <strong>쓰기 전에</strong> 대조하는 거예요.</p>
+    <p>그리고 이 함수는 문제가 생기면 <strong>조용히 넘어가지 않고 <code>raise</code>로 멈춰요.</strong> 게다가 오류 메시지 안에 <strong>다음에 칠 명령</strong>까지 적어 뒀죠. 이렇게 써 두면 나중에 막혔을 때 "무슨 일이 생겼는지"뿐 아니라 <strong>"이제 뭘 하면 되는지"</strong>까지 읽는 사람이 바로 알 수 있어요.</p>
+
+    <h2><span class="hl">③ 표의 제목과 셀을 읽는 코드</span></h2>
+    <p>먼저 <strong>문서 ID</strong>가 뭔지부터. 스프레드시트 주소에서 <code>/d/</code> 뒤부터 <code>/edit</code> 앞까지의 긴 문자열이에요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 주소의 어느 부분이 ID인지 보여주는 예시예요</span></p>
+    <pre><code>전체 주소:
+https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
+
+이 중 spreadsheet_id는 이 부분:
+1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms</code></pre>
+    <p>이제 읽기 함수예요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 완성 파일에 들어 있는 함수 하나를 그대로 옮긴 것이에요</span></p>
+    <pre><code>def read_header(creds: Credentials, spreadsheet_id: str) -&gt; dict:
+    if not re.fullmatch(r"[A-Za-z0-9_-]+", spreadsheet_id):
+        raise ValueError("표 URL 전체가 아닌 spreadsheet_id를 입력하세요.")
+    service = build("sheets", "v4", credentials=creds, cache_discovery=False)
+    try:
+        metadata = service.spreadsheets().get(
+            spreadsheetId=spreadsheet_id, fields="properties(title),sheets(properties(title))",
+        ).execute()
+        sheets = metadata.get("sheets", [])
+        if not sheets:
+            raise ValueError("읽을 시트가 없습니다.")
+        title = sheets[0]["properties"]["title"]
+        selected_range = "'" + title.replace("'", "''") + "'!A1:C3"
+        result = service.spreadsheets().values().get(
+            spreadsheetId=spreadsheet_id, range=selected_range,
+        ).execute()
+        return {"title": metadata["properties"]["title"], "sheet": title,
+            "range": result.get("range", selected_range), "values": result.get("values", [])}
+    finally:
+        service.close()</code></pre>
+
+    <h3>줄별로 무슨 판단을 하는가</h3>
+    <p><strong>① 입력 검사.</strong> <code>re.fullmatch(r"[A-Za-z0-9_-]+", spreadsheet_id)</code>는 <strong>정규표현식<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup></strong>으로 <strong>"영문·숫자·밑줄·붙임표만으로 이루어졌는가"</strong>를 확인해요. 이 한 줄이 막는 실수가 아주 흔한 것 하나인데, <strong>주소 전체를 통째로 붙여넣는 것</strong>이에요. 주소에는 <code>:</code>와 <code>/</code>가 들어 있으니 여기서 걸리고, <strong>"URL 말고 ID를 넣으세요"</strong>라는 메시지가 곧바로 나와요. 이 검사가 없으면 훨씬 나중에 <strong>알아보기 어려운 API 오류</strong>로 튀어나옵니다.</p>
+    <p><strong>② 창구 준비.</strong> <code>build("sheets", "v4", credentials=creds, ...)</code>가 <strong>Sheets API v4를 호출할 클라이언트</strong>를 만들어요. <code>"v4"</code>는 <strong>이 API의 버전</strong>이고, <code>credentials=creds</code>가 바로 앞에서 준비한 <strong>토큰을 여기에 붙이는</strong> 부분이에요. <a href="what-is-api.html">API</a>가 "정해진 형식으로 물어보면 결과를 돌려주는 창구"였다면, 이 줄은 <strong>그 창구를 여는</strong> 겁니다.</p>
+    <p><strong>③ 첫 번째 물음 — 메타데이터.</strong> <code>spreadsheets().get(...)</code>이 <strong>문서 제목과 시트 이름들</strong>을 가져와요. <code>fields=</code>로 <strong>필요한 항목만 콕 집어</strong> 달라고 적어 뒀는데, 이러면 <strong>주고받는 양이 줄어</strong> 응답이 가볍고 빨라져요.</p>
+    <p><strong>④ 범위 문자열 만들기.</strong> 첫 시트 이름을 꺼내 <code>'Class Data'!A1:C3</code> 같은 <strong>범위 표기</strong>를 조립해요. 여기서 <code>title.replace("'", "''")</code>가 하는 일이 재미있는데, <strong>시트 이름 안에 작은따옴표가 들어 있는 경우</strong>를 대비한 거예요. 이름이 <code>Bob's Class</code>라면 그냥 감쌌을 때 따옴표가 <strong>엉뚱한 자리에서 닫혀</strong> 범위가 깨지니, 작은따옴표를 <strong>두 번 겹쳐</strong> "이건 이름의 일부"라고 표시하는 거예요.</p>
+    <p><strong>⑤ 두 번째 물음 — 셀 값.</strong> <code>values().get(...)</code>에서 실제 아홉 칸을 읽어요.</p>
+    <p><strong>⑥ 한 묶음으로 반환.</strong> <code>title</code>·<code>sheet</code>·<code>range</code>·<code>values</code> 네 항목을 <strong>딕셔너리 하나</strong>로 묶어 돌려줍니다. 값만 주지 않고 <strong>"어느 문서의 어느 시트의 어느 범위였는지"까지 함께</strong> 돌려주는 게 요점이에요 — 나중에 화면과 대조할 때 이 세 항목이 없으면 <strong>무엇과 무엇을 비교하는지</strong>부터 흐려지거든요.</p>
+    <p><strong>⑦ 뒷정리.</strong> <code>finally: service.close()</code>로 <strong>중간에 오류가 나도 창구는 닫습니다.</strong></p>
+    <p>마지막으로 결과를 다룰 때 주의할 점 하나. <strong>Sheets API는 뒤쪽의 빈 행·열을 생략할 수 있어요.</strong> A1:C3을 요청했다고 <strong>항상 3×3짜리 목록이 온다고 가정하면 안 된다</strong>는 뜻이에요. 아래쪽이 비어 있으면 목록이 두 줄만 올 수도 있고, 오른쪽 칸이 비어 있으면 그 줄만 짧게 올 수도 있어요.</p>
+
+    <h2><span class="hl">④ 읽기 함수를 MCP 도구로 공개하기</span></h2>
+    <p>여기까지는 <strong>제가 터미널에서 직접 돌리는 파이썬 함수</strong>였어요. 이제 <a href="mcp-skill-building-server.html">3편</a>에서 업무 기록 서버를 만들 때 썼던 방법을 그대로 다시 씁니다. <strong>이미 배운 개념</strong> 세 가지가 여기서 재등장해요 — <strong><code>MCPServer</code></strong>(도구들을 제공할 서버 객체), <strong><code>@mcp.tool()</code> 데코레이터<sup class="fn-ref"><a href="#fn8" id="fnref8">8</a></sup></strong>(함수를 도구로 등록하는 한 줄), 그리고 <strong>docstring<sup class="fn-ref"><a href="#fn9" id="fnref9">9</a></sup>이 그대로 도구 설명이 되는 구조</strong>요.</p>
+    <p class="run-tag">실행: google_sheet_reader.py 파일로 저장 <span class="run-tag-why">— 호스트가 이 파일을 MCP 서버로 실행해요</span></p>
+    <pre><code>"""미리 인증한 읽기 전용 토큰으로 지정한 표의 첫 시트 A1:C3만 읽습니다."""
+from mcp.server import MCPServer
+from mcp.server.mcpserver.exceptions import ToolError
+from google_auth_check import configured_path, load_token, read_header
+
+mcp = MCPServer("google-sheets-reader")
+
+@mcp.tool()
+def read_sheet_header(spreadsheet_id: str) -&gt; dict:
+    """지정한 Google 표의 제목과 첫 시트 A1:C3을 읽습니다. 생성·수정하지 않습니다.
+
+    spreadsheet_id는 표 URL의 /d/와 /edit 사이 ID입니다.
+    인증이 안 되어 있으면 터미널에서 google_auth_check.py를 먼저 실행하세요.
+    """
+    try:
+        token = load_token(configured_path("TOKEN_PATH", "token.json"))
+        return read_header(token, spreadsheet_id)
+    except Exception as error:
+        raise ToolError(
+            "Google 읽기 실패. 인증 확인 스크립트와 지정 표의 접근 권한을 확인하세요 "
+            f"({type(error).__name__})."
+        ) from None</code></pre>
+    <p>파일이 짧죠. <strong>새로 짠 로직이 하나도 없기 때문</strong>이에요. 맨 위 <code>import</code> 줄에서 <strong><code>google_auth_check</code>에 이미 만들어 둔 함수 세 개를 그대로 가져와</strong> 쓰고 있어요. 이 파일이 하는 일은 딱 <strong>포장</strong>입니다.</p>
+    <p><strong><code>MCPServer("google-sheets-reader")</code></strong>가 서버 이름이고, 그 아래 <strong><code>read_sheet_header</code></strong>가 이 서버가 제공하는 <strong>도구 이름</strong>이에요. 3편에서 봤던 <strong>이름 두 층</strong> 구조가 똑같이 반복되죠 — 서버 이름 하나 아래 도구 이름 여럿.</p>
+    <p><strong><code>@mcp.tool()</code></strong> 한 줄이 이 함수를 <strong>호스트가 발견하고 부를 수 있는 도구로 등록</strong>해요. 입력이 <code>spreadsheet_id: str</code> 하나라는 것도 이 줄 덕분에 호스트에 알려집니다. 그리고 함수 맨 위 <strong>삼중 따옴표 설명문이 그대로 모델이 읽는 도구 설명</strong>이 돼요. 그 안에 무엇을 적어 뒀는지 다시 보면, 세 문장이 각각 일을 하고 있어요.</p>
+    <ul>
+      <li><strong>"생성·수정하지 않습니다"</strong> — 모델에게 <strong>이 도구의 한계</strong>를 알려요. 표를 고쳐 달라는 요청에 이 도구를 부르지 않도록요.</li>
+      <li><strong>"<code>/d/</code>와 <code>/edit</code> 사이 ID입니다"</strong> — <strong>입력 형식</strong>을 알려요. 앞에서 본 <code>re.fullmatch</code> 검사에 걸리지 않도록 미리 안내하는 셈이죠.</li>
+      <li><strong>"인증이 안 되어 있으면 … 먼저 실행하세요"</strong> — <strong>선행 조건</strong>을 알려요. 도구를 부르기 전에 무엇이 끝나 있어야 하는지요.</li>
+    </ul>
+    <p>함수 몸통은 <strong>토큰을 읽고</strong>(<code>load_token</code>) <strong>표를 읽는</strong>(<code>read_header</code>) 두 줄뿐이에요. 토큰 위치는 <code>configured_path("TOKEN_PATH", "token.json")</code>로 가져오는데, <strong>환경 변수<sup class="fn-ref"><a href="#fn10" id="fnref10">10</a></sup></strong> <code>TOKEN_PATH</code>가 지정돼 있으면 그 경로를, 없으면 기본값을 쓴다는 뜻이에요. <strong>경로를 코드에 못박지 않는</strong> 방식이라 사람마다 다른 폴더를 써도 파일을 고칠 필요가 없어요.</p>
+
+    <h3>오류를 감싸서 돌려주기</h3>
+    <p><code>except</code> 부분이 이 파일에서 제일 눈여겨볼 자리예요. 무슨 오류가 나든 <strong><code>ToolError</code></strong>로 바꿔 <strong>호스트가 읽을 수 있는 한 문장</strong>으로 돌려줘요. 그런데 담긴 정보는 <strong><code>type(error).__name__</code></strong>, 즉 <strong>오류의 종류 이름만</strong>이에요.</p>
+    <p>왜 이렇게 했을까요. <a href="mcp-skill-tool-call-anatomy.html">1편</a>에서 봤듯 <strong>도구가 돌려준 결과는 대화에 그대로 담겨요.</strong> 원래 오류 메시지에는 <strong>파일 경로나 토큰 관련 내용이 섞여 나올 수 있고</strong>, 그게 대화 기록에 남으면 11편에서 조심하자고 했던 그 일이 벌어지죠. <strong>모델이 다음 행동을 정하는 데 필요한 만큼만 알려 주고, 나머지는 안 내보내는</strong> 선택이에요. 끝의 <code>from None</code>도 같은 결로, <strong>원래 오류의 자세한 내역을 뒤에 달아 보내지 않겠다</strong>는 표시입니다.</p>
+    <p>등록은 4편에서 서버를 붙였던 것과 같아요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— 로그인과 예제 표 읽기를 확인한 다음에요</span></p>
+    <pre><code>로그인하고 예제 표 읽기까지 확인했어.
+이제 이 폴더의 Google Sheets 도구를 MCP로 연결해 줘.</code></pre>
+
+    <h2><span class="hl">⑤ 실제로 불러 보고 원본과 대조하기</span></h2>
+    <p>연결이 끝났으면 <strong>도구를 통해서</strong> 같은 표를 다시 읽어 봅니다. 아까는 제가 터미널에서 직접 돌린 거였고, 이번엔 <strong>에이전트가 부르는</strong> 거예요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— 표를 브라우저에도 띄워 두고 나란히 보세요</span></p>
+    <pre><code>이 표의 제목과 처음 세 줄을 읽어 줘.
+화면과 결과를 비교하자.</code></pre>
+    <p>여기서 <strong>"잘 나왔네"로 끝내지 않는 게 이 편의 핵심</strong>이에요. 확인할 게 네 가지 있어요.</p>
+    <table>
+      <thead><tr><th>확인 항목</th><th>무엇을 보는가</th><th>어긋나면 무슨 뜻인가</th></tr></thead>
+      <tbody>
+        <tr><td><strong>서버가 붙었는가</strong></td><td>연결 목록에 <code>google-sheets-reader</code>가 보이는지</td><td>MCP 설정이 안 읽혔거나 <strong>서버 실행 자체가 실패</strong></td></tr>
+        <tr><td><strong>도구가 골라졌는가</strong></td><td><code>read_sheet_header</code>가 실제로 선택됐는지</td><td>모델이 <strong>다른 방법으로 답을 지어냈을</strong> 수 있음</td></tr>
+        <tr><td><strong>입력이 맞는가</strong></td><td><code>spreadsheet_id</code>에 <strong>URL 속 ID</strong>가 들어갔는지</td><td>주소 전체가 들어갔다면 <strong>입력 검사에서 막힘</strong></td></tr>
+        <tr><td><strong>값이 같은가</strong></td><td>반환된 <strong>제목·시트·행</strong>이 브라우저 화면과 같은지</td><td>다르면 <strong>다른 표·다른 시트</strong>를 읽은 것</td></tr>
+      </tbody>
+    </table>
+    <p>그리고 마지막에 <strong>한 번 걸리는 지점</strong>이 있어요. 제가 <strong>"처음 세 줄"</strong>이라고 부탁했으니 <strong>헤더 다음의 학생 세 명</strong>이 올 것 같잖아요? 그런데 <code>values</code>의 <strong>첫 목록은 헤더</strong>(<code>Student Name · Gender · Class Level</code>)고, 두 번째·세 번째가 <strong>화면의 2행·3행</strong>이에요. 즉 <strong>학생은 두 명만</strong> 왔죠.</p>
+    <p>이건 버그가 아니라 <strong>이 도구가 A1:C3, 즉 헤더를 포함한 1~3행을 읽도록 만들어졌기 때문</strong>이에요. 제가 한국어로 무슨 말을 하든 <strong>도구가 읽는 범위는 코드에 고정</strong>돼 있어요. <strong>내 말과 도구의 실제 동작이 어긋날 수 있다</strong>는 걸 이만큼 작고 안전하게 확인할 수 있는 자리가 흔치 않아요 — 이걸 <strong>지금</strong> 겪어 두는 게, 나중에 팀 자료로 옮겼을 때 훨씬 크게 어긋나는 걸 막아 줍니다.</p>
+
+    <h2><span class="hl">나쁜 선택 vs 좋은 선택</span> — 방문증과 도서관에서</h2>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">로비 안내판에 뜬 에러 문구만 보고 돌아선다 = 브라우저에 <code>ERR_BLOCKED_BY_CLIENT</code>가 떴다고 <strong>실패로 단정하고 처음부터 다시</strong> 한다 → 이미 저장된 토큰을 두고 <strong>같은 로그인을 반복</strong>하며 원인을 엉뚱한 데서 찾는다.</td>
+          <td class="choice-good">방문증이 손에 있는지부터 본다 = <strong><code>token.json</code>이 생겼는지</strong>와 <strong>프로그램이 표 값을 출력했는지</strong>를 확인한다 → 화면 메시지와 무관하게 <strong>성공 여부가 확정</strong>된다.</td>
+        </tr>
+        <tr>
+          <td class="choice-bad">매번 저를 로비로 불러 내린다 = 실행할 때마다 <strong>새로 로그인시키는</strong> 코드를 짠다 → 자동화가 <strong>사람 없이는 한 발짝도</strong> 못 가고, 동의 화면이 계속 뜬다.</td>
+          <td class="choice-good">주머니를 먼저 뒤진다 = <strong>토큰 파일이 있으면 <code>load_token()</code></strong>, 없을 때만 로그인 → 사람이 개입하는 건 <strong>처음 한 번</strong>뿐이다.</td>
+        </tr>
+        <tr>
+          <td class="choice-bad">청구기호 대신 도서관 홈페이지 주소를 통째로 내민다 = <code>spreadsheet_id</code> 자리에 <strong>표 URL 전체</strong>를 넣는다 → 입력 검사가 없었다면 한참 뒤에 <strong>알아보기 어려운 API 오류</strong>로 튀어나온다.</td>
+          <td class="choice-good">청구기호 형식부터 확인한다 = <strong><code>re.fullmatch</code>로 ID 모양을 먼저 검사</strong>한다 → <strong>"URL 말고 ID를 넣으세요"</strong>가 즉시 나온다.</td>
+        </tr>
+        <tr>
+          <td class="choice-bad">기사가 받은 서류를 <strong>로비에서 큰 소리로 읽는다</strong> = 오류가 나면 <strong>원래 메시지를 그대로</strong> 호스트에 돌려준다 → 파일 경로 같은 내용이 <strong>대화 기록에 남는다</strong>.</td>
+          <td class="choice-good">필요한 만큼만 말한다 = <strong><code>ToolError</code>로 감싸 오류 종류 이름만</strong> 돌려준다 → 모델은 다음 행동을 정할 수 있고, <strong>내역은 새어 나가지 않는다</strong>.</td>
+        </tr>
+        <tr>
+          <td class="choice-bad">"세 줄 부탁해"라고 말한 대로 왔겠거니 한다 = 반환된 <code>values</code>를 <strong>확인 없이 학생 세 명으로</strong> 여긴다 → 첫 줄이 헤더인 걸 모른 채 <strong>보고서에 헤더를 데이터로</strong> 넣는다.</td>
+          <td class="choice-good">화면과 나란히 놓고 센다 = <strong>제목·시트·범위·행을 원본과 대조</strong>한다 → 이 도구가 <strong>헤더를 포함한 1~3행</strong>을 읽는다는 걸 눈으로 확인한다.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2><span class="hl">연결이 멈춘 단계 찾기</span></h2>
+    <p>막혔을 때 제일 중요한 건 <strong>오류 문구로 단계를 특정하는 것</strong>이에요. 같은 "안 돼요"라도 어느 단계에서 멈췄는지에 따라 볼 자리가 완전히 달라요.</p>
+    <table>
+      <thead><tr><th>오류·현상</th><th>어느 단계에서 멈춘 건가</th><th>확인 순서</th></tr></thead>
+      <tbody>
+        <tr><td><code>access_denied</code> / 테스트 사용자 제한</td><td><strong>③ 동의 화면</strong></td><td>동의 화면에서 취소·거부했는지 → <strong>로그인한 계정과 Test users 등록</strong>이 일치하는지 → 조직 정책</td></tr>
+        <tr><td><code>redirect_uri_mismatch</code></td><td><strong>② 결과를 돌려받는 자리</strong></td><td>도구가 요구하는 <strong>앱 종류</strong>(Desktop app인지)와 <strong>등록한 반환 주소</strong></td></tr>
+        <tr><td>API가 꺼져 있다는 오류</td><td><strong>⑥⑦ API 호출</strong></td><td><strong>credential을 만든 그 프로젝트</strong>에서 API가 켜져 있는지 (다른 프로젝트에 켜 뒀을 수 있어요)</td></tr>
+        <tr><td><code>insufficient permissions</code></td><td><strong>범위 또는 파일 권한</strong></td><td>요청한 scope → 실제로 <strong>동의한 범위</strong> → 대상 파일의 <strong>접근 권한</strong> — 이 셋은 서로 다른 조건이에요</td></tr>
+        <tr><td><code>invalid_grant</code> / 재로그인 필요</td><td><strong>⑤ 토큰 재사용</strong></td><td>도구의 재인증 안내 확인 → <strong>토큰 만료·철회</strong> 가능성</td></tr>
+      </tbody>
+    </table>
+    <p>마지막 줄과 관련해 하나 알아 둘 게 있어요. <strong>Sheets·Drive 등의 권한을 요청하는 External 앱이 Testing 상태이면 갱신 토큰은 7일 후 만료</strong>돼요(이름·이메일·프로필 등 기본 사용자 정보 범위만 요청한 경우는 예외예요). 그러니 <strong>한 주쯤 지나 갑자기 <code>invalid_grant</code>가 뜬다면 그건 고장이 아니라 예정된 일</strong>이고, <code>--reauth</code>로 다시 로그인하면 됩니다.</p>
+    <p>그리고 어떤 경우에도 <strong>인증 JSON이나 토큰 원문은 어디에도 제출하지 않아요.</strong> 계정 정책 때문에 진행이 멈췄다면 값을 붙여넣는 대신 <strong>어느 단계에서 어떤 오류가 났는지만 기록</strong>해 두면 충분합니다.</p>
+
+    <h2><span class="hl">이번 편에 나온 구체적인 값</span></h2>
+    <table>
+      <thead><tr><th>항목</th><th>값</th><th>조건·출처</th></tr></thead>
+      <tbody>
+        <tr><td>실습 폴더의 파일</td><td>3개</td><td><code>GOOGLE_AUTH_README.md</code> · <code>google_auth_check.py</code> · <code>google_sheet_reader.py</code></td></tr>
+        <tr><td>사람이 브라우저에서 허용을 누르는 횟수</td><td><strong>1번</strong></td><td>이후에는 저장된 토큰과 갱신 토큰으로 처리 — 토큰이 철회·만료되면 다시 1번</td></tr>
+        <tr><td>읽는 범위</td><td><code>A1:C3</code> = <strong>3행 × 3열</strong></td><td>첫 행이 헤더면 <strong>헤더 포함</strong> — 학생 데이터는 2행뿐</td></tr>
+        <tr><td>표 하나를 읽을 때의 API 호출</td><td><strong>2번</strong></td><td>① 메타데이터(제목·시트 이름) → ② 셀 값 — 시트 이름을 알아야 범위를 만들 수 있어서</td></tr>
+        <tr><td>반환 딕셔너리의 항목</td><td>4개</td><td><code>title</code> · <code>sheet</code> · <code>range</code> · <code>values</code></td></tr>
+        <tr><td><code>values</code> 안의 목록</td><td>3개</td><td>헤더 1 + 데이터 2 — 2026-09-06 실행 기준</td></tr>
+        <tr><td>읽은 예제 표</td><td><code>Example Spreadsheet</code></td><td>Google 공식 시작 예제 · 시트 <code>Class Data</code> · 범위 <code>'Class Data'!A1:C3</code></td></tr>
+        <tr><td>로그인 대기 포트</td><td><code>port=0</code></td><td>번호를 못박지 않고 <strong>시스템이 비어 있는 번호를 고르게</strong> 하는 설정</td></tr>
+        <tr><td>MCP로 공개하는 함수</td><td><strong>1개</strong></td><td><code>read_sheet_header</code> — <code>load_token</code>·<code>read_header</code>는 안에서만 쓰임</td></tr>
+        <tr><td>도구가 받는 입력</td><td>1개</td><td><code>spreadsheet_id</code> (문자열)</td></tr>
+        <tr><td>오류 시 호스트로 나가는 정보</td><td><strong>오류 종류 이름 1개</strong></td><td><code>type(error).__name__</code>만 — 원래 메시지 내역은 내보내지 않음</td></tr>
+        <tr><td>트러블슈팅 갈래</td><td>5가지</td><td><code>access_denied</code> · <code>redirect_uri_mismatch</code> · API 꺼짐 · <code>insufficient permissions</code> · <code>invalid_grant</code></td></tr>
+        <tr><td>Testing 상태 앱의 갱신 토큰 유효 기간</td><td><strong>7일</strong></td><td>Sheets·Drive 등의 권한을 요청하는 <strong>External + Testing</strong> 앱 기준 — 이름·이메일·프로필 등 기본 사용자 정보 범위만 요청한 경우는 예외</td></tr>
+      </tbody>
+    </table>
+    <p class="post-date">※ 위 <strong>반환값과 실행 결과는 2026-09-06에 제 환경에서 확인한 것</strong>이며, Google 공식 예제 표의 내용이나 라이브러리 버전이 바뀌면 달라질 수 있습니다. <strong>7일 만료</strong>도 Testing 상태에서 이 실습 범위를 요청했을 때의 조건이고, 요청 범위와 게시 상태가 달라지면 조건도 달라집니다.</p>
+
+    <h2><span class="hl">다음은 내 자료로</span></h2>
+    <p>여기까지 읽은 표는 <strong>Google이 공개해 둔 예제</strong>예요. 인증과 읽기 경로가 제대로 뚫렸는지 확인하는 데는 딱 좋지만, <strong>제 업무에는 아무 쓸모가 없죠.</strong></p>
+    <p><a href="mcp-skill-first-weekly-report.html">7편</a>에서 주간보고서를 만들 때 썼던 <code>week-one</code>·<code>week-two</code> 업무 기록을 <strong>연습용 Google 표로 옮기면</strong> 이 도구가 그걸 읽게 할 수 있어요. 다만 옮기는 것만으로는 부족하고, <strong>열 이름과 값의 의미를 정하는 단계</strong>가 하나 더 필요해요 — 어느 열이 진행률이고 어느 열이 위험 신호인지를 정해 둬야 하니까요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— 연습용 표를 하나 만들어 둔 다음에요</span></p>
+    <pre><code>우리 주간 기록을 이 연습용 표에서 읽고 싶어.
+지금 도구에서 무엇을 바꾸면 될지 같이 살펴보자.</code></pre>
+    <p>여기서 짚어 둘 게 하나 있어요. <strong>보고서의 완료·진행·위험 판정 기준은 계속 <a href="mcp-skill-writing-skill-md.html">8편</a>에서 만든 Skill이 맡아요.</strong> 자료를 어디서 가져오는지가 바뀌었을 뿐, <strong>그 자료를 어떻게 판정하는지는 그대로</strong>인 거죠. <a href="mcp-skill-why-skill-needed.html">6편</a>에서 봤던 <strong>"도구는 자료를 가져오고, Skill은 판단을 정한다"</strong>는 분업이 여기서도 그대로 유지됩니다.</p>
+
+    <h2><span class="hl">직접 해보기</span></h2>
+    <p>이번 연습의 목적은 <strong>"됐다"를 확인하는 게 아니라, 어느 구간에서 무엇이 일어나는지를 손으로 갈라 보는 것</strong>이에요.</p>
+    <p>① <strong>토큰 파일을 잠깐 옮겨 보기.</strong> <code>token.json</code>을 다른 이름으로 바꿔 두고 도구를 불러 보세요. <strong>어떤 문구</strong>가 돌아오는지 적어 두고, 다시 이름을 되돌린 뒤 <strong>같은 호출이 성공하는지</strong> 확인해 보세요. 이 한 번으로 <strong>"토큰 파일이 있고 없고"가 전부를 가른다</strong>는 게 몸에 남아요.</p>
+    <p>② <strong>ID 대신 URL을 넣어 보기.</strong> <code>spreadsheet_id</code> 자리에 <strong>표 주소 전체</strong>를 넣고 불러 보세요. 오류가 <strong>Google에서 오는지, 제 코드의 검사에서 오는지</strong> 구분해 보세요 — 이 차이가 <strong>입력 검사를 왜 함수 맨 위에 두는지</strong>에 대한 답이에요.</p>
+    <p>③ <strong>헤더 포함 여부를 직접 세어 보기.</strong> 반환된 <code>values</code>의 목록이 <strong>몇 개</strong>이고 그중 <strong>실제 데이터가 몇 줄</strong>인지 세어 보세요. 그리고 <strong>"처음 세 줄"이라는 제 요청과 몇 줄이 어긋났는지</strong>도요.</p>
+    <p>④ <strong>docstring을 고쳐 보기.</strong> <code>read_sheet_header</code>의 설명문에서 <strong>"생성·수정하지 않습니다"</strong> 한 문장을 지웠다가, 에이전트에게 <strong>"이 표에 한 줄 추가해 줘"</strong>라고 해 보세요. 도구가 <strong>불릴 뻔하는지</strong>를 보면, <a href="mcp-skill-building-server.html">3편</a>에서 말한 "설명이 곧 도구 사용 안내"라는 게 실감 납니다.</p>
+    <p>⑤ <strong>범위를 바꿔 보기.</strong> <code>A1:C3</code>을 <code>A1:C5</code>로 바꿔 읽어 보고, <strong>빈 행이 어떻게 돌아오는지</strong> 확인해 보세요. <strong>"항상 요청한 크기대로 오지 않는다"</strong>는 앞의 주의가 눈앞에서 재현돼요.</p>
+    <p>⑥ <strong>멈춘 단계 이름 붙이기.</strong> 실습 중 막힌 적이 있다면, 그게 트러블슈팅 표의 <strong>다섯 갈래 중 어느 줄</strong>이었는지 적어 보세요. 오류 문구를 그대로 검색하기 전에 <strong>단계부터 특정하는 습관</strong>이 훨씬 빨라요.</p>
+    <p>여기까지 오면 <strong>내 계정으로 인증하고, 내 표를 읽고, 그걸 에이전트가 부를 수 있는 도구로 내놓는</strong> 한 바퀴가 끝났어요. <strong>다음 편에서는 이 도구를 제 업무에 맞게 바꿔 봅니다.</strong> 예제 표가 아니라 우리 팀 기록으로, 고정된 <code>A1:C3</code>이 아니라 필요한 범위로요.</p>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">MCP — 에이전트를 도구·자료에 연결하는 공통 규약으로, 호스트·클라이언트·서버가 역할을 나눠 대화해요(<a href="mcp-skill-protocol-roles.html">2편</a>에서 구조를 다뤘어요). <a href="#fnref1">↩</a></li>
+        <li id="fn2">localhost — 지금 프로그램을 실행하고 있는 자기 컴퓨터 자신을 가리키는 주소 이름이에요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">포트 — 한 컴퓨터 안에서 여러 통신 대상을 구분하기 위해 붙이는 번호로, 건물의 내선 번호와 비슷해요. <a href="#fnref3">↩</a></li>
+        <li id="fn4">메타데이터 — 내용 자체가 아니라 그 내용에 대한 정보(제목·시트 이름·크기 같은 것)를 가리키는 말이에요. <a href="#fnref4">↩</a></li>
+        <li id="fn5">딕셔너리 — 파이썬에서 "이름: 값" 짝을 여러 개 담는 자료 형태로, 여기서는 <code>title</code>·<code>sheet</code>·<code>range</code>·<code>values</code> 네 짝을 담아요. <a href="#fnref5">↩</a></li>
+        <li id="fn6">클래스를 확장한다(상속) — 이미 있는 코드 묶음의 동작을 그대로 물려받고 필요한 부분만 덧붙여 새 묶음을 만드는 방식이에요. <a href="#fnref6">↩</a></li>
+        <li id="fn7">정규표현식 — "영문·숫자만 허용"처럼 문자열의 모양을 규칙으로 적어 검사하는 표기법이에요. <a href="#fnref7">↩</a></li>
+        <li id="fn8">데코레이터 — 함수 바로 위 줄에 <code>@</code>로 붙여 그 함수에 성격을 더하는 파이썬 문법이며, 여기서는 함수를 MCP 도구로 등록해요(<a href="mcp-skill-building-server.html">3편</a>에서 처음 설명했어요). <a href="#fnref8">↩</a></li>
+        <li id="fn9">docstring — 함수 첫 줄에 삼중 따옴표로 적는 설명문으로, MCP 서버에서는 이것이 그대로 모델이 읽는 도구 설명이 돼요(<a href="mcp-skill-building-server.html">3편</a>에서 처음 설명했어요). <a href="#fnref9">↩</a></li>
+        <li id="fn10">환경 변수 — 프로그램 바깥(운영체제나 실행 설정)에 값을 적어 두고 코드가 그 값을 읽어 쓰게 하는 방식이에요. <a href="#fnref10">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <h3>"MCP와 Skill로 에이전트에게 업무 맡기기" 시리즈</h3>
+    <a class="post-nav" href="mcp-skill-tool-call-anatomy.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">도구 하나가 호출되기까지 — 정의·파싱·구조화 요청</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-protocol-roles.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">호스트·클라이언트·서버가 나누는 대화 — MCP 연결 구조와 메시지</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-building-server.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">업무 기록 서버 직접 만들기 — uv 환경과 Python MCP 서버</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-host-connection.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">호스트에 연결하고 첫 도구 호출 확인하기</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-context-and-search.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">도구가 많아지면 생기는 문맥 부담 — Tool Search와 Code Mode</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-why-skill-needed.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">같은 기록, 다른 판정 — Skill이 필요한 이유</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-first-weekly-report.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">팀 규칙으로 첫 주간보고서 쓰기</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-writing-skill-md.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">완성한 판단을 SKILL.md로 남기기</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-reuse-verification.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">다음 주에도 통하는가 — Skill 재사용 검증하기</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-colab-notebook.html">
+      <span class="post-nav-label">(10)</span>
+      <span class="post-nav-title">계산 과정을 노트북에 남기기 — Colab MCP 연결</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-google-oauth-setup.html">
+      <span class="post-nav-label">(11)</span>
+      <span class="post-nav-title">내 표를 읽는 프로그램 만들기 — Google OAuth 준비</span>
+    </a>
+    <p class="post-date">(12) 로그인부터 표가 반환되기까지 — 인증 코드와 MCP 서버 (이 글)</p>
+    <a class="post-nav" href="mcp-skill-adapting-to-my-task.html">
+      <span class="post-nav-label">(13)</span>
+      <span class="post-nav-title">내 업무에 맞게 바꿔보기 — 데이터·기준·기능 나누기</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-wikiskill-research.html">
+      <span class="post-nav-label">(14)</span>
+      <span class="post-nav-title">에이전트도 경험을 쌓는다 — WikiSkill 연구가 보는 Skill</span>
+    </a>
+
+    <a class="post-nav" href="mcp-skill-adapting-to-my-task.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">내 업무에 맞게 바꿔보기 — 데이터·기준·기능 나누기</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>

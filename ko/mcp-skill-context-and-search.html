@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>도구가 많아지면 생기는 문맥 부담 — Tool Search와 Code Mode (5) - Tigermorning</title>
+  <meta name="description" content="짧은 인사 한 마디만 주고받았는데 화면에는 138,233 토큰, 69% used가 떠 있었습니다. 문맥이란 무엇이고 대화창 밖에서 무엇이 함께 실리는지, 도구 정의·호출 입력·실행 결과가 어떻게 다른지, 실행 전 부담과 실행 후 부담이 왜 다른 처방을 요구하는지, 그리고 Claude Code의 Tool Search와 OpenCode의 Code Mode가 같은 문제를 각각 어떻게 푸는지 완전 초보자 눈높이로 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="도구가 많아지면 생기는 문맥 부담 — Tool Search와 Code Mode (5)">
+  <meta property="og:description" content="대화는 짧은데 문맥은 이미 13만 토큰. 도구를 늘릴수록 커지는 두 가지 부담과, 지연 로딩으로 그중 하나만 줄이는 Claude Code Tool Search·OpenCode Code Mode의 서로 다른 접근을 나란히 봅니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/mcp-skill-context-and-search.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">도구가 많아지면 생기는</span> 문맥 부담 — Tool Search와 Code Mode (5)</h1>
+    <p class="post-date">2026. 9. 7.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="mcp-skill-host-connection.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">호스트에 연결하고 첫 도구 호출 확인하기</span>
+    </a>
+
+    <p class="one-liner">문맥 부담이란 모델이 이번 답 하나를 만들려고 함께 읽어야 하는 정보가 대화 내용과 무관하게 불어나는 현상이다.</p>
+
+    <p><a href="mcp-skill-host-connection.html">지난 편</a>에서 업무 기록을 읽는 통로 하나를 뚫었어요. 이 방식이면 문서 검색도, 달력 조회도, 다른 팀 기록도 같은 식으로 붙일 수 있겠구나 싶었죠. 그래서 몇 개 더 붙여 봤는데, 여기서 좀 의외의 장면을 만났어요.</p>
+    <p>수업에서 보여 준 캡처가 그 장면이에요. 사용자가 입력한 건 <code>ping</code> 한 마디, AI도 짧게 답했어요. <strong>대화는 두 줄이 전부</strong>인데 화면 오른쪽 숫자는 <strong>Context 138,233 tokens · 69% used</strong>였어요. 옆에는 연결된 서버 이름들(달력·문서·스프레드시트 등)이 죽 나열돼 있고요.</p>
+    <p>여기서 제가 제일 먼저 확인해야 했던 건 <strong>"그 13만 토큰이 전부 MCP 도구 설명이냐"</strong>는 거예요. 아니에요. 호스트<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>의 기본 지시, 프로젝트 규칙, 도구 안내 등 <strong>말풍선 바깥에서 함께 들어가는 정보</strong>가 섞여 있어요. 그러니 이 숫자를 "도구를 붙였더니 13만 토큰이 되었다"로 읽으면 틀려요. 다만 <strong>대화가 짧다고 문맥이 작은 건 아니다</strong>는 사실만큼은 이 화면이 확실히 보여 줘요.</p>
+    <p>이번 편은 그 부담이 <strong>어디서</strong> 생기는지 갈라 보고, Claude Code와 OpenCode가 <strong>같은 문제를 각각 어떻게 푸는지</strong>까지 봐요.</p>
+
+    <h2><span class="hl">비유</span> — 회의실에 들어가기 전 책상 위</h2>
+    <p><a href="mcp-skill-protocol-roles.html">2편</a>에서 회사 대표번호와 전화 교환대를, <a href="mcp-skill-building-server.html">3편</a>에서 자료실 직원을 이야기했죠. 이번엔 그 회사의 <strong>회의실 안</strong>이에요.</p>
+    <p>저는 지금 회의실에 앉아 있고, 앞에 담당자 한 명이 있어요. 제가 할 말은 딱 한 줄이에요. <strong>"첫 주 업무 기록 좀 보여 주세요."</strong> 그런데 담당자 책상 위에는 이미 <strong>회사 전 부서의 업무 매뉴얼 100권</strong>이 쌓여 있어요. 회의 전에 "혹시 필요할지 모르니" 전부 올려 둔 거예요. 아직 한 마디도 안 했는데 책상은 이미 꽉 찼죠.</p>
+    <p>더 좋은 방법이 있어요. 책상엔 <strong>부서명과 한 줄 소개만 적힌 색인 카드</strong> 한 장만 두고, 제 요청을 듣고 나서 <strong>필요한 두 권만</strong> 꺼내 오는 거예요. 100권을 없애는 게 아니라 <strong>가져오는 시점을 미루는</strong> 거죠.</p>
+    <p>그런데 여기서 끝이 아니에요. 담당자가 자료실에 다녀왔는데, 제가 "첫 주"라고 안 하고 그냥 "우리 팀 기록"이라고 했다면 <strong>1년치 서류 뭉치</strong>를 실어 와요. 매뉴얼을 안 펼쳐서 아낀 자리를, 이번엔 서류 뭉치가 다 차지해요. <strong>책상을 채우는 방법이 두 가지</strong>인 거예요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>담당자 책상 위의 유한한 공간</td><td>문맥<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup> — 모델이 이번 답을 만들 때 함께 읽는 정보 전체</td></tr>
+        <tr><td>책상이 꽉 차면 더 못 올림</td><td>문맥 창<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>(context window)</td></tr>
+        <tr><td>미리 올려 둔 부서 매뉴얼 100권</td><td>연결된 모든 도구의 상세 <strong>도구 정의</strong><sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup></td></tr>
+        <tr><td>부서명·한 줄 소개만 적힌 색인 카드</td><td>도구를 <strong>발견하는 데</strong>만 필요한 최소 안내</td></tr>
+        <tr><td>요청을 듣고 나서 두 권만 꺼내 오기</td><td>지연 로딩<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>(deferred loading)</td></tr>
+        <tr><td>"첫 주 기록 주세요"라고 적어 건넨 쪽지</td><td>호출 입력 — <code>{"week": "week-one"}</code></td></tr>
+        <tr><td>자료실에서 실어 온 서류 뭉치</td><td>실행 결과 — 도구가 실제로 돌려준 데이터</td></tr>
+        <tr><td>서류에서 필요한 줄만 옮겨 적어 오기</td><td>결과에서 필요한 항목만 골라 전달</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 책상을 채우는 건 <strong>안 펼칠 매뉴얼</strong>과 <strong>너무 많이 실어 온 서류</strong> 두 가지고, 이 둘은 치우는 방법이 서로 달라요.</p>
+    <p>다만 여기서 비유가 끊기는 점이 하나 있어요. 진짜 책상은 <strong>치우지 않으면 어제 그대로</strong>지만, 문맥은 그렇지 않아요. <a href="context-window-budget.html">컨텍스트 창은 왜 유한한가</a>에서 정리했듯이 문맥은 <strong>매 요청마다 새로 채워지는</strong> 작업대예요. 그래서 "지난번에 한 번 읽혔으니 이번엔 안 읽어도 되겠지"가 성립하지 않아요.</p>
+
+    <h2><span class="hl">대화창 밖에서 함께 읽히는 것들</span></h2>
+    <p><strong>문맥(context)</strong>은 모델이 이번 응답 하나를 만들 때 참고하라고 <strong>함께 건네받는 정보</strong>예요. 사용자와 AI가 주고받은 말이 여기 들어가지만, <strong>대화창에 보이는 문장만</strong> 들어가는 건 아니에요. 화면에 안 보이는 재료가 여럿 같이 실려요.</p>
+    <table>
+      <thead><tr><th>모델 입력에 들어갈 수 있는 것</th><th>이번 실습에서는</th><th>무엇 때문에 늘어나나</th></tr></thead>
+      <tbody>
+        <tr><td>시스템·프로젝트 지시</td><td>에이전트의 작업 방식, 프로젝트 규칙 문서</td><td>지침이나 설정을 추가할수록</td></tr>
+        <tr><td>요청·대화 이력</td><td>"첫 주 기록 읽어 줘"와 그 이전 질문·답변들</td><td>같은 대화를 길게 이어 갈수록</td></tr>
+        <tr><td>도구 정의</td><td><code>get_weekly_records</code>의 이름·설명·입력 규칙</td><td>도구를 추가하거나 상세 정의를 읽을수록</td></tr>
+        <tr><td>실행 결과</td><td>조회된 주차 정보와 업무 기록 목록</td><td>더 많은 자료를 가져올수록</td></tr>
+        <tr><td>읽은 자료</td><td>팀 보고 기준 문서, 참조한 프로젝트 파일</td><td>새 파일과 참조 자료를 읽을수록</td></tr>
+      </tbody>
+    </table>
+    <p>이 다섯 재료는 <a href="context-window-budget.html">컨텍스트 창은 왜 유한한가</a>에서 "하나의 적재함을 나눠 쓴다"고 정리했던 그 재료들과 같은 얘기예요. 그 글의 예산표에 <strong>"도구 설명 — 지금 과업에서 쓰지 않는 도구는 노출을 뺀다"</strong>는 줄이 있었는데, 이번 편은 <strong>그 한 줄을 실제 기능으로 구현하면 어떻게 생겼는가</strong>에 대한 이야기예요.</p>
+    <p>한 가지 더. 호스트가 이 모든 걸 <strong>항상 원문 그대로 보내는 건 아니에요.</strong> 필요한 항목만 고르거나, 오래된 대화를 요약해 넣거나, 읽는 시점을 뒤로 미룰 수 있어요. 그러니 "화면에 있는 것 = 모델이 읽은 것"도 아니고, "연결된 것 = 지금 다 읽히는 중"도 아니에요.</p>
+    <p>여기서 <strong>토큰<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup></strong>도 한 번 짚고 갈게요. 토큰은 모델이 글자를 나누는 <strong>조각</strong>이고, 단어나 글자와 정확히 일치하지 않아요. <a href="what-is-ai-token.html">AI 토큰이란 무엇인가</a>에서 처음 다뤘고, <a href="tokens-and-context-window-cost.html">토큰과 컨텍스트 — 활용가가 보는 비용과 한계</a>에서는 같은 뜻의 한국어 문장이 영어보다 토큰을 훨씬 많이 먹는다는 걸 실제로 세어 봤어요. 그래서 화면의 <strong>69% used</strong>는 절대 진리가 아니라 <strong>그 환경이 그 모델 기준으로 표시한 사용 비율</strong>로 읽으면 돼요 — 정확한 한도와 계산 방식은 모델마다 다르거든요.</p>
+
+    <h2><span class="hl">도구 정의 · 호출 입력 · 실행 결과</span> — 셋은 다른 정보예요</h2>
+    <p>부담이 어디서 생기는지 보려면 먼저 <strong>같은 도구를 둘러싼 세 가지 정보</strong>를 갈라 둬야 해요. 이걸 뭉뚱그리면 "도구를 줄여야 하나?" 같은 엉뚱한 결론으로 가요.</p>
+    <p><code>get_weekly_records</code>라는 <strong>이름만</strong> 봐도 주간 기록과 관련된 기능이겠거니 짐작은 돼요. 그런데 <strong>어느 주를 읽을지 어떻게 지정하는지</strong>, <strong>어떤 값이 돌아오는지</strong>는 이름만으로 알 수 없죠. 이 사용 안내의 묶음을 <strong>도구 정의</strong>라고 해요 — <a href="mcp-skill-tool-call-anatomy.html">1편</a>에서 "이름 · 설명 · 입력 스키마" 세 부분으로 처음 뜯어봤던 그것이에요.</p>
+    <table>
+      <thead><tr><th>정보</th><th>이번 실습에서의 내용</th><th>언제 필요한가</th></tr></thead>
+      <tbody>
+        <tr><td>도구 정의</td><td>이름은 <code>get_weekly_records</code>, 가상 팀의 업무 기록을 읽음, <code>week</code>라는 문자열 입력을 받음</td><td>모델이 <strong>기능을 고르고 입력을 만들 때</strong></td></tr>
+        <tr><td>호출 입력</td><td><code>{"week": "week-one"}</code></td><td>첫 주 기록을 읽어 달라고 <strong>실행을 요청할 때</strong></td></tr>
+        <tr><td>실행 결과</td><td>첫 주의 팀 정보 · 보고 기준일 · 업무 기록 4건</td><td>실제 기록을 받아 <strong>내용을 이해할 때</strong></td></tr>
+      </tbody>
+    </table>
+    <p>이 구분은 제가 지어낸 게 아니라 <strong>MCP 메시지 자체에 이미 있어요.</strong> <a href="mcp-skill-protocol-roles.html">2편</a>에서 본 <code>tools/list</code>(도구의 이름·설명·입력 스키마를 알아오는 요청)와 <code>tools/call</code>(쓸 도구와 인자를 전달하는 요청)이 각각 첫 줄과 둘째 줄에 대응해요.</p>
+    <p>그리고 <strong>MCP가 "모든 정의를 매번 모델에게 한꺼번에 읽혀라"라고 강제하지는 않아요.</strong> 이게 이번 편의 출발점이에요. <strong>서버 연결 → 도구 정의 발견·로드 → 도구 호출 → 결과 읽기</strong>를 <strong>별개의 단계</strong>로 보면, 어느 단계를 미룰 수 있는지가 보이거든요. <a href="mcp-skill-host-connection.html">4편</a>에서 "연결됐다"와 "호출됐다"를 굳이 갈라 뒀던 이유가 여기서 한 번 더 쓰여요.</p>
+
+    <h2><span class="hl">실행 전의 부담과 실행 후의 부담</span></h2>
+    <p>이제 부담을 두 종류로 나눠 볼게요. 수업에서 든 <strong>가상 수치</strong> 예시가 이해에 좋아요(실제 측정값이 아니라 감을 잡으려고 만든 숫자예요).</p>
+    <p>도구가 <strong>100개</strong> 있고 각 정의가 평균 <strong>500토큰</strong>이라면, 전부 미리 실을 때 <strong>100 × 500 = 약 50,000토큰</strong>이에요. 그런데 이번 요청에 실제로 필요한 도구가 <strong>두 개</strong>뿐이라면? 검색 안내에 <strong>1,000토큰</strong> + 찾은 두 도구의 정의 <strong>1,000토큰</strong> = <strong>약 2,000토큰</strong>이면 돼요. 나머지 98개의 상세 설명은 이번 대화에서 한 번도 안 펼치는 거죠.</p>
+    <p>여기까지가 <strong>한 종류</strong>예요. 이제 다른 상황을 보세요. <strong>찾은 도구의 설명은 짧은데, 실행했더니 1년치 업무 기록이 수천 줄 돌아오는</strong> 경우요. 정의를 나중에 읽는 기능을 아무리 켜 놔도 <strong>커진 실행 결과 자체는 조금도 작아지지 않아요.</strong></p>
+    <table>
+      <thead><tr><th>구분</th><th>무엇이 문맥을 차지하나</th><th>어느 쪽으로 손대야 하나</th></tr></thead>
+      <tbody>
+        <tr><td><strong>실행 전</strong>의 부담</td><td>이번에 쓰지도 않을 도구들의 상세 설명</td><td>관련 정의만 <strong>필요한 시점에</strong> 읽는 방식</td></tr>
+        <tr><td><strong>실행 후</strong>의 부담</td><td>실제로 가져온 데이터가 너무 많음</td><td>조회 기간·항목을 <strong>좁히거나</strong>, 결과에서 필요한 부분만 추려 전달</td></tr>
+      </tbody>
+    </table>
+    <p>이 구분이 왜 중요하냐면, <strong>증상이 비슷해 보여도 처방이 정반대</strong>이기 때문이에요. "문맥이 꽉 찼다"는 같은 화면을 보고 실행 전 부담을 줄이는 기능만 켜면, 원인이 실행 후 부담이었을 때 아무것도 안 바뀌어요.</p>
+    <p>여기서 <a href="mcp-skill-building-server.html">3편</a>에서 만든 서버를 다시 보면 재밌어요. 우리 서버는 <code>week</code>를 입력받아 <strong>해당 주의 파일 하나만</strong> 돌려줘요. 그때는 "허용된 값만 받으려고" 그렇게 만든 거였는데, 결과적으로 <strong>실행 후 부담을 설계 단계에서 미리 잘라 둔</strong> 셈이에요. 도구를 만들 때 "무엇을 돌려줄 것인가"를 좁게 잡는 일이 나중에 문맥 문제로 돌아온다는 뜻이죠.</p>
+    <p>덧붙여, 실행 후 부담은 요금·속도 문제만도 아니에요. <a href="lost-in-the-middle-and-context-rot.html">길게 넣어도 안 읽힐 수 있다</a>에서 봤듯이 <strong>실었다는 사실과 읽혔다는 사실은 다르거든요.</strong> 수천 줄을 밀어 넣으면 정작 중요한 한 줄이 가운데 묻힐 수 있어요.</p>
+
+    <h2><span class="hl">전체 흐름 그림</span> — 미리 다 읽히기 vs 찾아서 읽기</h2>
+    <p><strong>지연 로딩(deferred loading)</strong>은 <strong>쓸 때까지 상세 내용을 불러오는 시점을 미루는</strong> 것이에요. 기능을 없애거나 서버를 끄는 것과는 완전히 다른 얘기예요 — 100권은 창고에 그대로 있고, 책상에 언제 올리느냐만 바뀌어요.</p>
+    <svg viewBox="0 0 780 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="위쪽 줄은 모든 상세 정의를 먼저 제공하는 흐름으로, 도구 100개의 정의를 전부 싣고 도구를 고른 뒤 입력을 만들고 호출해 결과를 읽는다. 아래쪽 줄은 필요한 정의를 찾아 읽는 흐름으로, 발견용 안내만 먼저 제공하고 도구를 검색해 그 도구의 정의만 불러온 뒤 호출해 결과를 읽는다. 아래쪽에는 앞의 세 칸이 실행 전 부담, 마지막 칸이 실행 후 부담임을 표시한 괄호가 있다.">
+      <defs>
+        <marker id="arrCS" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <g font-family="var(--font-body)" font-size="11" fill="var(--ink)">
+        <text x="20" y="18" font-size="11.5" font-weight="700" font-family="var(--font-heading)" fill="var(--muted)">① 모든 상세 정의를 먼저 제공하는 흐름</text>
+
+        <rect x="20" y="28" width="170" height="82" rx="8" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <text x="105" y="50" text-anchor="middle" font-size="10.5" font-weight="700">도구 100개의 정의를</text>
+        <text x="105" y="66" text-anchor="middle" font-size="10.5" font-weight="700">처음부터 전부 실음</text>
+        <text x="105" y="88" text-anchor="middle" font-size="9.5" fill="var(--muted)">≈ 50,000토큰 (가상 수치)</text>
+
+        <line x1="192" y1="69" x2="206" y2="69" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrCS)"/>
+
+        <rect x="210" y="28" width="170" height="82" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="295" y="58" text-anchor="middle" font-size="10.5" font-weight="700">요청에 맞는 도구 선택</text>
+        <text x="295" y="80" text-anchor="middle" font-size="9.5" fill="var(--muted)">이미 읽은 설명 중에서</text>
+
+        <line x1="382" y1="69" x2="396" y2="69" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrCS)"/>
+
+        <rect x="400" y="28" width="170" height="82" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="485" y="58" text-anchor="middle" font-size="10.5" font-weight="700">호출 입력 작성</text>
+        <text x="485" y="80" text-anchor="middle" font-size="10">{"week": "week-one"}</text>
+
+        <line x1="572" y1="69" x2="586" y2="69" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrCS)"/>
+
+        <rect x="590" y="28" width="170" height="82" rx="8" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <text x="675" y="58" text-anchor="middle" font-size="10.5" font-weight="700">호출하고 결과 읽기</text>
+        <text x="675" y="80" text-anchor="middle" font-size="9.5" fill="var(--muted)">돌아온 기록이 문맥에 쌓임</text>
+
+        <text x="20" y="148" font-size="11.5" font-weight="700" font-family="var(--font-heading)" fill="var(--muted)">② 필요한 정의를 찾아 읽는 흐름 — 지연 로딩</text>
+
+        <rect x="20" y="158" width="170" height="82" rx="8" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <text x="105" y="180" text-anchor="middle" font-size="10.5" font-weight="700">도구를 발견할 안내만</text>
+        <text x="105" y="196" text-anchor="middle" font-size="10.5" font-weight="700">먼저 제공</text>
+        <text x="105" y="218" text-anchor="middle" font-size="9.5" fill="var(--muted)">≈ 1,000토큰 (가상 수치)</text>
+
+        <line x1="192" y1="199" x2="206" y2="199" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrCS)"/>
+
+        <rect x="210" y="158" width="170" height="82" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="295" y="188" text-anchor="middle" font-size="10.5" font-weight="700">관련된 도구를 검색</text>
+        <text x="295" y="210" text-anchor="middle" font-size="9.5" fill="var(--muted)">get_weekly_records 발견</text>
+
+        <line x1="382" y1="199" x2="396" y2="199" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrCS)"/>
+
+        <rect x="400" y="158" width="170" height="82" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="485" y="180" text-anchor="middle" font-size="10.5" font-weight="700">그 도구의 상세 정의만</text>
+        <text x="485" y="196" text-anchor="middle" font-size="10.5" font-weight="700">불러옴(로드)</text>
+        <text x="485" y="218" text-anchor="middle" font-size="9.5" fill="var(--muted)">≈ 1,000토큰 (가상 수치)</text>
+
+        <line x1="572" y1="199" x2="586" y2="199" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrCS)"/>
+
+        <rect x="590" y="158" width="170" height="82" rx="8" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <text x="675" y="180" text-anchor="middle" font-size="10.5" font-weight="700">호출하고 결과 읽기</text>
+        <text x="675" y="202" text-anchor="middle" font-size="9.5" fill="var(--muted)">여기 크기는</text>
+        <text x="675" y="218" text-anchor="middle" font-size="9.5" fill="var(--muted)">그대로 남아 있음</text>
+
+        <polyline points="20,268 20,258 570,258 570,268" fill="none" stroke="var(--muted)" stroke-width="1.5"/>
+        <text x="295" y="288" text-anchor="middle" font-size="10.5" font-weight="700">실행 전의 부담</text>
+        <text x="295" y="306" text-anchor="middle" font-size="9.5" fill="var(--muted)">②가 줄여 주는 부분</text>
+
+        <polyline points="590,268 590,258 760,258 760,268" fill="none" stroke="var(--muted)" stroke-width="1.5"/>
+        <text x="675" y="288" text-anchor="middle" font-size="10.5" font-weight="700">실행 후의 부담</text>
+        <text x="675" y="306" text-anchor="middle" font-size="9.5" fill="var(--muted)">②로는 안 줄어드는 부분</text>
+
+        <text x="390" y="346" text-anchor="middle" font-size="10.5" fill="var(--muted)">②는 도구를 없애지 않는다 — 상세 설명을 언제 읽을지만 바꾼다</text>
+        <text x="390" y="370" text-anchor="middle" font-size="10.5" fill="var(--muted)">②에는 검색이라는 단계가 하나 늘어난다 — 도구가 적으면 이득이 크지 않을 수 있다</text>
+      </g>
+    </svg>
+    <p><strong>읽는 법:</strong> 두 줄은 <strong>같은 일을 하는 서로 다른 순서</strong>예요. 첫 칸을 비교하는 게 핵심이에요 — ①은 <strong>요청을 듣기도 전에</strong> 100개를 다 실었고, ②는 <strong>요청을 듣고 나서</strong> 두 개만 실어요. 그리고 아래 괄호 두 개를 보세요. <strong>②가 줄여 주는 건 왼쪽 괄호뿐이에요.</strong> 오른쪽 칸(결과)은 두 줄에서 크기가 똑같아요. 마지막 줄도 중요해요 — ②에는 <strong>검색이라는 단계가 하나 늘어나요.</strong> 그래서 도구가 두세 개뿐인 환경에서는 오히려 손해일 수도 있어요.</p>
+    <p>Anthropic의 Tool Search 설명도 같은 얘기를 해요. 많은 도구의 상세 정의를 처음부터 다 주는 대신 <strong>필요할 때 발견해서 읽는</strong> 방식을 소개하면서, 동시에 <strong>검색 단계가 추가되므로 도구 수가 적을 때와 많을 때의 이점이 다를 수 있다</strong>고 단서를 달아 뒀어요. 이 단서를 빼고 "무조건 절약된다"로 읽으면 안 돼요.</p>
+
+    <h2><span class="hl">Claude Code의 Tool Search</span> — 찾고 나서 읽는다</h2>
+    <p><strong>Tool Search</strong><sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup>는 <strong>필요한 도구를 먼저 찾고, 그 도구의 상세 정의를 그다음에 불러오는</strong> 기능이에요. 연결된 도구가 <strong>존재한다</strong>는 정보와, 실제 호출에 필요한 <strong>상세 사용법</strong>을 나눠서 다루는 거죠.</p>
+    <p>요청 하나를 예로 네 장면을 따라가 볼게요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— Claude Code 등</span></p>
+    <pre><code>MCP로 week-one 업무 기록을 읽고, 어떤 자료를 가져왔는지 알려 줘.</code></pre>
+    <ul>
+      <li><strong>첫째, 할 일을 이해해요.</strong> 모델은 요청을 받았지만 <strong>아직 업무 기록을 읽지는 않았어요.</strong></li>
+      <li><strong>둘째, 필요한 도구를 찾아요.</strong> 여기서 검색이 한 일은 <strong>'조회할 수단 찾기'</strong>예요. 화면에 <code>get_weekly_records</code>가 등장해도 <strong>TASK-101부터 TASK-104까지 읽었다는 뜻이 아니에요.</strong></li>
+      <li><strong>셋째, 찾은 도구의 상세 정의를 불러와요.</strong> 필요한 정의를 문맥에 넣는 걸 흔히 <strong>로드<sup class="fn-ref"><a href="#fn8" id="fnref8">8</a></sup>(load)한다</strong>고 해요. 이 단계에서 "<code>week-one</code>이라는 값을 써야 한다"는 설명을 읽고 입력을 맞춰요.</li>
+      <li><strong>넷째, 실제로 호출하고 기록을 받아요.</strong> <code>{"week": "week-one"}</code>이 오가고 자료가 돌아와요.</li>
+    </ul>
+    <p>둘째와 넷째를 헷갈리는 게 이 기능에서 제일 흔한 오해예요. 구분하는 법은 간단해요 — <strong>돌아온 게 도구의 사용법이면 검색, 실제 업무의 내용이면 호출</strong>이에요.</p>
+    <p>그리고 이 흐름을 따라가다 보면 <a href="mcp-skill-building-server.html">3편</a>에서 함수 설명(docstring)에 <strong>"week-one 또는 week-two"</strong>라고 적어 둔 게 왜 중요했는지 다시 보여요. <strong>검색 기능이 생겨도, 도구가 무슨 일을 하는지 잘 설명해 두는 건 여전히 우리 몫</strong>이에요. 설명이 부실하면 검색으로 못 찾거나, 찾아도 엉뚱한 입력을 만들어요.</p>
+
+    <h3>내 환경에서 확인하기</h3>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— Claude Code 등</span></p>
+    <pre><code>내 환경에서 Tool Search를 쓸 수 있는지 확인해 줘.
+필요하면 설정하고, MCP로 week-one 기록을 읽어 줘.</code></pre>
+    <p>여기서 한 가지 함정이 있어요. <strong>AI가 터미널에서 설정값을 바꿨다고 해서, 이미 돌고 있는 모든 세션이 동시에 바뀌지는 않아요.</strong> <a href="mcp-skill-host-connection.html">4편</a> 트러블슈팅 표 마지막 줄의 "실행 중인 프로세스는 새 소스를 다시 읽어야 한다"와 같은 종류예요. <strong>지금 보고 있는 세션</strong>과 <strong>새로 실행하는 세션</strong>을 구분하지 않으면, 안 바뀐 화면을 몇 번이고 다시 확인하게 돼요.</p>
+    <p>그다음엔 <code>/mcp</code>에서 <code>weekly-records</code> 서버와 도구 상태를 보고, 대화에 표시된 검색·호출 항목을 <strong>펼쳐서</strong> 봐요. <a href="mcp-skill-host-connection.html">4편</a>에서 익힌 <strong>호출 기록(trace)</strong> 읽기가 여기서 그대로 이어져요.</p>
+    <table>
+      <thead><tr><th>볼 곳</th><th>여기서 확인되는 것</th></tr></thead>
+      <tbody>
+        <tr><td>서버와 도구의 가용 상태</td><td>업무 기록을 읽을 연결이 준비됐다</td></tr>
+        <tr><td>검색이 찾아낸 도구</td><td>이번 요청을 처리할 <strong>수단</strong>을 발견했다 (자료를 받은 건 아니다)</td></tr>
+        <tr><td>실제 MCP 호출의 입력</td><td>조회 주차가 <code>week-one</code>이 맞는가</td></tr>
+        <tr><td>반환된 <code>week</code>와 <code>records</code></td><td>올바른 주차의 업무 데이터가 왔는가</td></tr>
+        <tr><td>최종 답변</td><td>답변 내용이 <strong>반환된 자료에 근거</strong>하는가</td></tr>
+      </tbody>
+    </table>
+    <p>대조할 항목 하나를 정해 두면 편해요. 원본 <strong>TASK-102</strong>는 제목이 '로그인 안내 문구 개선', 상태가 '개발 완료', <code>note</code>에는 <strong>코드 작성은 끝났고 다음 배포를 기다린다</strong>고 적혀 있어요. 도구의 반환값에도 이 내용이 그대로 있는지 찾아보세요. 다만 여기서 <strong>TASK-102를 보고서의 어느 범주에 넣을지까지는 아직 정하지 않아요.</strong> 지금은 자료가 정확히 도착했는지만 보는 단계예요.</p>
+
+    <h3>검색이 안 보였다고 고장 난 건 아니에요</h3>
+    <p>같은 대화에서 <strong>둘째 주</strong> 기록을 이어서 요청했는데, 이번엔 검색 장면이 안 나올 수 있어요. 저는 처음에 "설정이 풀렸나?" 했는데 아니었어요. 가능한 이유가 몇 가지 있어요.</p>
+    <ul>
+      <li><strong>이미 찾아 둔 정의를 그대로 재사용</strong>했을 수 있어요 — 같은 도구를 또 찾을 이유가 없으니까요. (대화가 압축돼 발견 정보가 정리되고 나면 다시 검색해요.)</li>
+      <li>설정을 <strong><code>auto</code></strong>로 뒀다면, <strong>정의 분량이 기준에 못 미쳐</strong> 그냥 미리 로드했을 수 있어요. 이번 실습처럼 도구가 한 개뿐이면 충분히 있을 수 있는 일이에요.</li>
+    </ul>
+    <p><strong>검색이 안 보였다는 관찰</strong>과 <strong>기능이 고장 났다는 결론</strong>은 다른 얘기예요. 관찰을 결론으로 바로 승격시키면 멀쩡한 설정을 뒤집어엎게 돼요.</p>
+    <p>도구는 찾았는데 <strong>실제 호출에서 오류</strong>가 났다면, 오류 내용을 읽어요. 예를 들어 "지원하지 않는 주차"라는 응답이라면 <strong>서버가 요청을 받고 입력을 검사하는 단계까지 도달한</strong> 거예요 — <a href="mcp-skill-building-server.html">3편</a>의 <code>WEEK_FILES</code> 허용 검사가 돌았다는 뜻이죠. 이건 연결 실패와 완전히 다른 상태예요.</p>
+    <p>마지막으로 절약 효과를 해석하는 기준 하나. <strong>도구 하나만 연결한 상태에서 큰 절약률이 나오도록 억지로 만들 필요는 없어요.</strong> 검색 자체에 과정이 추가되니까 도구가 적으면 전체 시간이 더 빨라진다고 단정할 수도 없고요. 그리고 여기가 핵심인데 — <strong>Tool Search는 정의를 언제 읽을지를 돕고, 자료의 범위를 정하는 건 우리 몫</strong>이에요. 필요 없는 주차까지 다 가져오면 정의를 아껴도 데이터가 문맥을 채워요.</p>
+
+    <h2><span class="hl">OpenCode의 Code Mode</span> — 코드로 도구를 부른다</h2>
+    <p>OpenCode를 쓰는 경우에도 같은 자료를 읽을 수 있어요. 다만 <strong>Code Mode</strong><sup class="fn-ref"><a href="#fn9" id="fnref9">9</a></sup>를 켜면 실행 기록에 익숙한 도구 이름 대신 <code>execute</code>가 먼저 나타날 수 있어요. 처음 보면 "내 도구가 사라졌나?" 싶은데, <strong>바뀐 건 모델이 도구를 호출하는 방식</strong>일 뿐이에요. <a href="mcp-skill-building-server.html">3편</a>에서 만든 Python 서버와 JSON 자료는 <strong>그대로 써요.</strong></p>
+    <p>Code Mode에서는 모델이 <strong>도구 호출을 담은 짧은 JavaScript 코드</strong>를 만들고, OpenCode가 정해진 범위 안에서 그 코드를 실행해요. 제가 서버를 새 언어로 다시 짜는 게 아니에요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— OpenCode 등</span></p>
+    <pre><code>내 OpenCode 버전에서 Code Mode를 사용할 수 있는지 확인해 줘.
+가능하면 켜고 week-one 기록을 MCP로 읽어 줘.</code></pre>
+    <p><a href="mcp-skill-host-connection.html">4편</a>에서 봤듯이 OpenCode는 <strong>V1과 V2의 설정 구조가 다른 계열</strong>이라, 버전부터 확인하는 게 안전해요. 아래 내용은 <strong>V1 v1.18.29</strong> 기준이에요.</p>
+
+    <h3>목록과 검색, 그리고 네임스페이스</h3>
+    <p>V1의 Code Mode는 <strong>처음 제공할 도구 안내에 분량을 정해 두고</strong>, 그 안에 들어가는 도구 정의를 보여 줘요. 그래서 <strong>일부 도구가 빠진 목록</strong>이 나올 수 있어요. 그때 모델은 <strong>검색으로</strong> 필요한 도구의 경로와 입력 규칙을 확인할 수 있어요. 여기서의 검색은 새 도구를 설치하는 게 아니라 <strong>이미 연결된 도구 가운데 쓸 것을 찾는</strong> 과정이에요.</p>
+    <p>그러면 이름이 겹칠 때가 문제예요. 여러 서버에 <code>search</code>라는 도구가 다 있다고 상상해 보세요. <strong>어느 서버의 검색인지 구분할 이름</strong>이 필요하죠. 서버별로 도구를 묶어 둔 이름 공간을 <strong>네임스페이스<sup class="fn-ref"><a href="#fn10" id="fnref10">10</a></sup>(namespace)</strong>라고 해요. 우리 실습에서는 <code>weekly-records</code>라는 묶음 아래에 <code>get_weekly_records</code>가 있어요 — <a href="mcp-skill-host-connection.html">4편</a>에서 등록한 <strong>서버 이름</strong>이 여기서 이렇게 쓰여요.</p>
+    <table>
+      <thead><tr><th>상황</th><th>실행 경로</th></tr></thead>
+      <tbody>
+        <tr><td>처음 주어진 안내에 필요한 도구와 입력 규칙이 이미 보임</td><td>안내를 읽고 <strong>바로 호출</strong></td></tr>
+        <tr><td>도구 목록이 일부만 보이고 필요한 도구가 빠져 있음</td><td>도구 검색 → 반환된 경로·입력 확인 → 호출</td></tr>
+      </tbody>
+    </table>
+    <p>그래서 여기서도 같은 주의가 붙어요. <strong>검색이 없었다는 이유만으로 설정 실패라고 판단하지 마세요.</strong> 첫 줄의 경우일 수 있어요.</p>
+
+    <h3>실행 기록 따라가기</h3>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— OpenCode 등</span></p>
+    <pre><code>weekly-records MCP에서 week-one 기록을 읽어 줘.</code></pre>
+    <p>V1 소스에서 <strong>바깥쪽 도구 이름은 <code>execute</code></strong>이고, 그 안의 호출이 MCP 클라이언트를 통해 원래 서버로 전달돼요. 다섯 걸음으로 적으면 이래요.</p>
+    <ul>
+      <li>저: "week-one 기록을 읽어 줘"</li>
+      <li>모델: <code>execute</code>에 <strong>도구 호출 코드</strong>를 전달</li>
+      <li>OpenCode: 그 안의 내부 호출을 <strong>MCP 요청</strong>으로 전달</li>
+      <li><code>weekly-records</code>: <code>get_weekly_records</code>가 자료를 읽어 반환</li>
+      <li>OpenCode: <strong>코드 실행 결과</strong>를 모델에게 전달</li>
+    </ul>
+    <p>모델이 만드는 코드는 이렇게 생겼어요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 모델이 내부에서 만드는 코드를 사람이 읽기 좋게 옮긴 것이에요</span></p>
+    <pre><code>const result = await tools["weekly-records"].get_weekly_records({ week: "week-one" });
+return result;</code></pre>
+    <p>한 조각씩 뜯어볼게요.</p>
+    <ul>
+      <li><code>tools</code> — 실행 환경에 제공된 <strong>도구 모음</strong>이에요.</li>
+      <li><code>["weekly-records"]</code> — 그중 <strong>주간 기록 서버 묶음</strong>을 가리키는 네임스페이스예요.</li>
+      <li><code>get_weekly_records(...)</code> — 실제 조회예요. <a href="mcp-skill-building-server.html">3편</a>에서 만든 그 함수요.</li>
+      <li><code>{ week: "week-one" }</code> — 서버에 보낼 <strong>입력</strong>이에요. <a href="mcp-skill-protocol-roles.html">2편</a>에서 본 <code>tools/call</code>의 인자와 같은 내용이 여기 들어가요.</li>
+      <li><code>await</code><sup class="fn-ref"><a href="#fn11" id="fnref11">11</a></sup> — <strong>결과가 도착할 때까지 기다린다</strong>는 뜻이에요. <a href="reading-python-code-basics.html">파이썬 코드 눈으로 읽기</a>의 <code>async</code>/<code>await</code> 설명과 같은 개념이에요.</li>
+      <li><code>return</code> — 코드 실행에서 얻은 값을 <strong>바깥으로 돌려줘요.</strong> 이 값이 모델에게 가요.</li>
+    </ul>
+    <p>여기서 중요한 건 <strong>이 코드는 OpenCode 쪽에서 돌고, 실제 Python 함수는 MCP 서버에서 돈다</strong>는 점이에요. 두 실행 위치가 다른 거죠. 확인은 <a href="mcp-skill-host-connection.html">4편</a>과 똑같이 해요 — 전달한 주차와 결과의 <code>week</code>를 맞춰 보고, 원본 <code>data/week-one.json</code>의 업무 ID 네 개가 반환 자료에도 다 있는지 보세요.</p>
+
+    <h3>받은 자료와 돌려줄 자료를 나누기</h3>
+    <p>여기가 Code Mode에서 제일 흥미로웠던 부분이에요. 이렇게 물어봐요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— OpenCode 등</span></p>
+    <pre><code>week-one 기록에서 blocker가 적힌 항목의 ID와 막힌 이유만 보여 줘.</code></pre>
+    <p><code>blocker</code>는 업무 진행을 막는 사유를 담는 필드예요. 값이 <code>null</code>이면 <strong>사유가 기록되어 있지 않은</strong> 거고요(<a href="mcp-skill-host-connection.html">4편</a>에서 <code>deployed_at</code>과 <code>owner</code>의 <code>null</code>을 대조할 때 본 그 <code>null</code>이에요).</p>
+    <p>Code Mode에서는 <strong>도구로 받은 결과를 코드 안에서 살펴보고 필요한 부분만 반환</strong>할 수 있어요. 전체 기록을 받았더라도 <strong>모델에게 전달되는 최종 값은 고른 ID와 사유뿐</strong>일 수 있다는 뜻이에요. 아까 그림의 <strong>오른쪽 괄호(실행 후의 부담)</strong>에 손을 대는 방법이 여기서 하나 생기는 거예요.</p>
+    <p>다만 두 가지 단서가 붙어요.</p>
+    <ul>
+      <li>V1 v1.18.29의 호스트 소스는 <strong>MCP의 구조화된 결과<sup class="fn-ref"><a href="#fn12" id="fnref12">12</a></sup>가 있으면 그걸 쓰고, 없으면 텍스트 내용을 전달</strong>하는 경로를 가져요. <strong>텍스트를 객체처럼 취급하면 필드를 못 찾아요</strong> — <code>result.records</code> 같은 접근이 빈손으로 돌아오는 상황이 여기서 나와요.</li>
+      <li><strong>전체 기록을 모델에 다 전달한 뒤 답변만 짧게 만드는 것</strong>과 <strong>코드 안에서 골라 짧게 전달하는 것</strong>은 완전히 다른 상태인데, <strong>결과 문장의 길이만으로는 구분이 안 돼요.</strong> 둘 다 답은 두 줄로 나오거든요. 그래서 실행 기록을 같이 봐야 해요.</li>
+    </ul>
+    <p>마지막으로 이것도 짚어 둘게요. OpenCode는 여러 제공자의 모델을 쓸 수 있고, <strong>모델마다 코드 생성과 도구 호출 능력이 달라요.</strong> "설정 예시를 확인했다"와 "내 모델 조합에서 호출에 성공했다"는 각각 따로 확인해야 해요.</p>
+
+    <h2><span class="hl">두 앱을 나란히</span> — 같은 문제, 다른 해법</h2>
+    <p>둘 중 뭐가 더 낫냐는 질문이 자연스럽게 나오는데, <strong>도구 하나짜리 실습으로 성능 우열이나 절감률을 판정하지는 않을게요.</strong> 대신 <strong>어느 부담을 어디서 건드리는가</strong>로 갈라 보면 성격 차이가 뚜렷해요.</p>
+    <table>
+      <thead><tr><th>보는 곳</th><th>Claude Code — Tool Search</th><th>OpenCode — Code Mode</th></tr></thead>
+      <tbody>
+        <tr><td>주로 줄이는 부담</td><td><strong>실행 전</strong> — 상세 정의를 나중에 읽음</td><td><strong>실행 전 + 실행 후</strong> — 결과도 코드로 추릴 수 있음</td></tr>
+        <tr><td>모델이 하는 일</td><td>도구를 검색해 정의를 로드한 뒤 <strong>그 도구를 직접 호출</strong></td><td>도구 호출을 담은 <strong>JavaScript 코드를 작성</strong></td></tr>
+        <tr><td>실행 기록에 보이는 이름</td><td>검색 항목, 그다음 <strong>원래 도구 이름</strong></td><td><strong><code>execute</code>가 먼저</strong>, 그 안에서 원래 도구 호출</td></tr>
+        <tr><td>도구를 지목하는 방식</td><td>검색 결과에 나온 도구 이름</td><td>네임스페이스 — <code>tools["weekly-records"].get_weekly_records</code></td></tr>
+        <tr><td>결과를 줄이는 방법</td><td>도구 <strong>입력</strong>으로 범위를 좁히는 건 우리 설계 몫</td><td>입력으로 좁히거나, <strong>코드 안에서 필요한 필드만 골라</strong> 반환</td></tr>
+        <tr><td>검색이 안 보일 때</td><td>이미 로드된 정의 재사용, 또는 <code>auto</code> 기준 미달로 미리 로드</td><td>처음 안내 목록에 그 도구가 이미 들어 있었을 수 있음</td></tr>
+        <tr><td>우리가 만든 서버는</td><td>그대로 씀</td><td>그대로 씀</td></tr>
+      </tbody>
+    </table>
+    <p>표 마지막 줄이 제일 마음에 들었어요. <strong>두 방식 다 <a href="mcp-skill-building-server.html">3편</a>에서 만든 Python 서버를 손대지 않아요.</strong> 호스트가 도구를 어떻게 알아내고 어떻게 부르는지는 <strong>호스트 쪽 사정</strong>이고, 서버는 <a href="mcp-skill-protocol-roles.html">2편</a>의 MCP 규칙만 지키면 되니까요. 프로토콜을 사이에 두는 구조의 이점이 여기서 실감 나요.</p>
+
+    <h2><span class="hl">나쁜 선택 vs 좋은 선택</span> — 회의실 책상 위에서</h2>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">회의 시작 전에 전 부서 매뉴얼 100권을 책상에 다 올려 둔다 = 연결된 도구 <strong>전부</strong>의 상세 정의를 처음부터 문맥에 싣는다 → 아직 한 마디도 안 했는데 책상이 꽉 차고, 정작 펼쳐야 할 두 권을 놓을 자리가 없다.</td>
+          <td class="choice-good">부서명과 한 줄 소개만 적힌 색인 카드를 두고, 요청을 듣고 두 권만 꺼내 온다 = <strong>발견용 안내만</strong> 두고 검색으로 찾은 도구의 정의만 로드한다 → 책상에 올라가는 건 실제로 쓸 두 권뿐이다.</td>
+        </tr>
+        <tr>
+          <td class="choice-bad">자료실에 "우리 팀 기록 전부 주세요"라고 부탁한다 = 조회 범위를 안 좁히고 1년치를 통째로 가져온다 → 매뉴얼을 아껴 비운 자리를 서류 뭉치가 그대로 채운다. <strong>정의를 미루는 기능으로는 이건 안 줄어든다.</strong></td>
+          <td class="choice-good">"첫 주 것만, 그중 막힌 건의 번호와 사유만" 부탁한다 = <code>week</code> 입력으로 주차를 좁히고, 필요한 필드만 추려 전달한다 → <strong>실행 후의 부담까지</strong> 같이 줄어든다.</td>
+        </tr>
+        <tr>
+          <td class="choice-bad">색인 카드를 뒤지는 장면이 안 보였으니 색인 제도가 고장 났다고 결론짓는다 = 실행 기록에 검색이 안 보여 기능이 꺼졌다고 단정한다 → 멀쩡한 설정을 뒤집어엎고, 원인은 다른 데 있었으므로 증상도 그대로다.</td>
+          <td class="choice-good">"안 보였다"는 <strong>관찰</strong>과 "고장 났다"는 <strong>결론</strong>을 갈라 둔다 → 이미 로드된 정의를 재사용한 건지, 분량 기준에 못 미쳐 미리 실린 건지부터 확인한다.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2><span class="hl">증상마다 먼저 볼 곳이 다르다</span></h2>
+    <p>도구를 많이 연결한 환경을 다룰 때 제일 중요한 태도는 <strong>"문맥이 크다"를 하나의 증상으로 뭉치지 않는 것</strong>이에요. 관찰한 상황마다 봐야 할 데가 달라요.</p>
+    <table>
+      <thead><tr><th>관찰한 상황</th><th>먼저 살펴볼 곳</th></tr></thead>
+      <tbody>
+        <tr><td>대화를 거의 하지 않았는데 많은 도구 설명이 이미 제공됨</td><td>필요한 도구 정의만 불러오는 기능이 켜져 있는지</td></tr>
+        <tr><td>한 번의 조회에서 수천 줄의 원자료가 반환됨</td><td>조회 범위와 반환할 항목 — <strong>도구 설계 쪽</strong></td></tr>
+        <tr><td>같은 대화에서 여러 작업을 오래 이어감</td><td>남아 있는 대화·파일·결과와 호스트의 문맥 관리</td></tr>
+        <tr><td>도구는 발견했는데 인증 만료 오류가 반환됨</td><td>해당 서비스의 인증 상태와 서버 오류</td></tr>
+        <tr><td>비슷한 이름의 다른 기능을 호출함</td><td>발견한 도구 설명과 실제 호출 입력</td></tr>
+      </tbody>
+    </table>
+    <p>넷째 줄이 이 표의 이유예요. <strong>인증이 만료된 상황에서는 도구 설명을 덜 읽게 해도 접근 권한이 돌아오지 않아요.</strong> 문맥을 줄이는 기능은 문맥 문제만 풀어요. 어느 단계에서 문제가 생겼는지에 맞춰 방법을 고르는 게 출발점이에요.</p>
+    <p>내 환경이 실제로 어떤지 궁금하면 이렇게 물어봐요. 뒷줄이 특히 중요해요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— Claude Code 등</span></p>
+    <pre><code>지금 연결된 MCP 도구가 어떻게 AI에게 알려지는지 확인해 줘.
+실제로 확인한 내용과 추정은 구분해 줘.</code></pre>
+    <p>"확인한 내용과 추정을 구분해 줘"를 안 붙이면 그럴듯한 설명이 한 덩어리로 와요. 이건 <a href="mcp-skill-host-connection.html">4편</a>에서 AI의 진단을 <strong>결론이 아니라 확인할 지점을 좁혀 주는 힌트</strong>로 썼던 것과 같은 태도예요.</p>
+    <p>그리고 한 가지 안심할 점. <strong>이번 실습처럼 도구가 적으면 처음부터 도구 설명이 다 제공될 수도 있어요.</strong> 그게 정상이에요. <strong>절감 효과를 보겠다고 필요도 없는 서버를 잔뜩 설치할 필요는 전혀 없어요.</strong></p>
+
+    <h2><span class="hl">이번 편에 나온 구체적인 값</span></h2>
+    <table>
+      <thead><tr><th>항목</th><th>값</th><th>조건·출처</th></tr></thead>
+      <tbody>
+        <tr><td>짧은 <code>ping</code> 한 번 뒤의 문맥 사용량</td><td>138,233 토큰 · 69% used</td><td>OpenCode 1.14.50, 강사 제공 캡처 — <strong>전부가 MCP 도구 설명은 아님</strong></td></tr>
+        <tr><td>모델 입력에 들어갈 수 있는 재료</td><td>5가지</td><td>지시 · 대화 이력 · 도구 정의 · 실행 결과 · 읽은 자료</td></tr>
+        <tr><td>같은 도구를 둘러싼 정보</td><td>3가지 (정의 · 호출 입력 · 실행 결과)</td><td>필요한 시점이 서로 다름</td></tr>
+        <tr><td>부담의 종류</td><td>2가지 (실행 전 · 실행 후)</td><td>처방이 서로 다름 — 지연 로딩은 앞쪽만 줄임</td></tr>
+        <tr><td>모든 정의를 미리 싣는 경우</td><td>도구 100개 × 평균 500토큰 ≈ 50,000토큰</td><td><strong>가상 수치</strong> — 감을 잡기 위한 예시이며 실측값 아님</td></tr>
+        <tr><td>검색해서 두 개만 읽는 경우</td><td>검색 안내 1,000 + 정의 1,000 ≈ 2,000토큰</td><td><strong>가상 수치</strong> — 필요한 도구가 2개일 때</td></tr>
+        <tr><td>Tool Search가 기록을 읽기까지</td><td>4단계 (할 일 이해 → 도구 검색 → 정의 로드 → 실제 호출)</td><td>둘째와 넷째를 구분하는 게 핵심</td></tr>
+        <tr><td>Code Mode의 실행 경로</td><td>2가지 (안내에 이미 있음 / 검색해서 찾음)</td><td>검색이 없었다고 설정 실패는 아님</td></tr>
+        <tr><td>Code Mode 설명의 기준 버전</td><td>OpenCode V1 v1.18.29</td><td>V2는 별도 공식 문서 기준 — 계열이 다름</td></tr>
+        <tr><td>이번 실습에서 연결한 도구</td><td>1개 (<code>get_weekly_records</code>)</td><td>도구가 적으면 검색 단계가 오히려 손해일 수 있음</td></tr>
+        <tr><td>첫 주 업무 기록</td><td>4건 (TASK-101 ~ TASK-104)</td><td>3편 실습 자료 — 가상 제품팀</td></tr>
+      </tbody>
+    </table>
+    <p class="post-date">※ 위 숫자 중 <strong>50,000토큰·2,000토큰은 원문이 밝혀 둔 가상 수치</strong>이고, 138,233토큰은 <strong>특정 환경의 캡처 한 장</strong>이에요. 어느 쪽도 "이 기능을 켜면 몇 % 절약된다"의 근거가 아니에요. 앱과 모델 버전이 올라가면 동작과 표시가 달라질 수 있어요.</p>
+
+    <h2><span class="hl">직접 해보기</span></h2>
+    <p>이번 연습의 목적은 <strong>절약률을 재는 게 아니라 두 부담을 눈으로 구분하는 것</strong>이에요.</p>
+    <p>① <strong>같은 요청을 범위만 바꿔 두 번 해보기.</strong> 먼저 "우리 팀 업무 기록 읽어 줘"라고만 하고, 다음엔 "첫 주 기록만 읽어 줘"라고 해 보세요. <strong>실행 기록에 돌아온 자료의 양</strong>을 나란히 놓고 보세요. 답변 문장 길이는 비슷해도 실어 온 서류 뭉치의 두께가 다를 수 있어요.</p>
+    <p>② <strong>검색 장면이 나오는지 두 번 확인하기.</strong> 새 대화에서 첫 주를 요청하고, 이어서 같은 대화에서 둘째 주를 요청해 보세요. 두 번째에 검색이 안 나온다면 <strong>왜 안 나왔는지</strong>를 한 줄로 적어 보세요 — 재사용인지, 애초에 미리 실렸는지요. <strong>안 보였다는 관찰을 결론으로 바꾸지 않는 연습</strong>이에요.</p>
+    <p>③ <strong>일부러 필드를 골라 달라고 해보기.</strong> Code Mode를 쓸 수 있다면 "<code>blocker</code>가 적힌 항목의 ID와 사유만"을 요청하고, 실행 기록에서 <strong>모델에게 실제로 전달된 값</strong>이 전체 기록인지 추려진 값인지 확인해 보세요. 둘 다 최종 답은 두 줄로 나올 테니, <strong>답변만 보고는 절대 구분 못 한다</strong>는 걸 여기서 체감하게 돼요.</p>
+    <p>여기까지 오면 통로도 뚫렸고, 그 통로가 문맥을 어떻게 쓰는지도 봤어요. 그런데 아직 안 정한 게 하나 있어요. <strong>TASK-102는 '개발 완료'인데, 이걸 우리 팀 주간보고의 '완료'에 넣어도 되나요?</strong> 이건 도구가 정해 줄 수 없는, <strong>우리 팀만의 판정 기준</strong>이에요. 그리고 이런 기준은 매주 반복돼요. 그 반복되는 판단을 어디에 적어 두는가 — 다음 편의 <strong>Skill</strong> 이야기예요.</p>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">호스트(host) — 내가 대화하는 AI 앱으로, 모델 사용과 서버 연결·실행 허용을 관리하는 쪽이며 <a href="mcp-skill-protocol-roles.html">호스트·클라이언트·서버가 나누는 대화</a>에서 처음 다뤘어요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">문맥(context) — 모델이 이번 응답 하나를 만들 때 참고하도록 함께 건네받는 정보 전체로, 대화창에 보이는 문장만 들어가는 것은 아니에요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">문맥 창(context window) — 모델이 한 번의 요청에서 다룰 수 있는 정보의 범위이며, <a href="context-window-budget.html">컨텍스트 창은 왜 유한한가</a>에서 이사 트럭 적재함 비유로 처음 다뤘어요. <a href="#fnref3">↩</a></li>
+        <li id="fn4">도구 정의(tool definition) — 도구의 이름·설명·입력 규칙을 묶은 사용 안내로, <a href="mcp-skill-tool-call-anatomy.html">도구 하나가 호출되기까지</a>에서 처음 다뤘어요. <a href="#fnref4">↩</a></li>
+        <li id="fn5">지연 로딩(deferred loading) — 기능을 없애는 것이 아니라, 상세 내용을 실제로 쓸 때까지 불러오는 시점을 미루는 방식. <a href="#fnref5">↩</a></li>
+        <li id="fn6">토큰(token) — 모델이 글자를 나누는 조각으로 단어나 글자와 정확히 일치하지 않으며, <a href="what-is-ai-token.html">AI 토큰(Token)이란 무엇인가</a>에서 처음 다뤘어요. <a href="#fnref6">↩</a></li>
+        <li id="fn7">Tool Search — Claude Code에서 필요한 도구를 먼저 검색해 찾은 뒤 그 도구의 상세 정의만 문맥에 불러오는 기능. <a href="#fnref7">↩</a></li>
+        <li id="fn8">로드(load) — 필요한 정의나 자료를 모델이 읽을 수 있도록 문맥에 실어 넣는 일. <a href="#fnref8">↩</a></li>
+        <li id="fn9">Code Mode — OpenCode에서 모델이 도구 호출을 담은 짧은 JavaScript 코드를 만들고 앱이 그 코드를 정해진 범위 안에서 실행하는 방식. <a href="#fnref9">↩</a></li>
+        <li id="fn10">네임스페이스(namespace) — 이름이 겹치지 않도록 서버나 묶음별로 도구를 담아 두는 이름 공간. <a href="#fnref10">↩</a></li>
+        <li id="fn11">await — 결과가 도착할 때까지 기다린다는 뜻의 문법으로, <a href="reading-python-code-basics.html">파이썬 코드 눈으로 읽기</a>의 <code>async</code>/<code>await</code> 절에서 처음 다뤘어요. <a href="#fnref11">↩</a></li>
+        <li id="fn12">구조화된 결과(structured content) — 도구가 돌려준 값이 항목별로 나뉜 형태로 와서 <code>records</code> 같은 필드를 코드로 바로 꺼낼 수 있는 상태. <a href="#fnref12">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <h3>"MCP와 Skill로 에이전트에게 업무 맡기기" 시리즈</h3>
+    <a class="post-nav" href="mcp-skill-tool-call-anatomy.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">도구 하나가 호출되기까지 — 정의·파싱·구조화 요청</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-protocol-roles.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">호스트·클라이언트·서버가 나누는 대화 — MCP 연결 구조와 메시지</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-building-server.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">업무 기록 서버 직접 만들기 — uv 환경과 Python MCP 서버</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-host-connection.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">호스트에 연결하고 첫 도구 호출 확인하기</span>
+    </a>
+    <p class="post-date">(5) 도구가 많아지면 생기는 문맥 부담 — Tool Search와 Code Mode (이 글)</p>
+    <a class="post-nav" href="mcp-skill-why-skill-needed.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">같은 기록, 다른 판정 — Skill이 필요한 이유</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-first-weekly-report.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">팀 규칙으로 첫 주간보고서 쓰기</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-writing-skill-md.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">완성한 판단을 SKILL.md로 남기기</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-reuse-verification.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">다음 주에도 통하는가 — Skill 재사용 검증하기</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-colab-notebook.html">
+      <span class="post-nav-label">(10)</span>
+      <span class="post-nav-title">계산 과정을 노트북에 남기기 — Colab MCP 연결</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-google-oauth-setup.html">
+      <span class="post-nav-label">(11)</span>
+      <span class="post-nav-title">내 표를 읽는 프로그램 만들기 — Google OAuth 준비</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-google-sheets-mcp.html">
+      <span class="post-nav-label">(12)</span>
+      <span class="post-nav-title">로그인부터 표가 반환되기까지 — 인증 코드와 MCP 서버</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-adapting-to-my-task.html">
+      <span class="post-nav-label">(13)</span>
+      <span class="post-nav-title">내 업무에 맞게 바꿔보기 — 데이터·기준·기능 나누기</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-wikiskill-research.html">
+      <span class="post-nav-label">(14)</span>
+      <span class="post-nav-title">에이전트도 경험을 쌓는다 — WikiSkill 연구가 보는 Skill</span>
+    </a>
+
+    <a class="post-nav" href="mcp-skill-why-skill-needed.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">같은 기록, 다른 판정 — Skill이 필요한 이유</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>

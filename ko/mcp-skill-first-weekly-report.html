@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>팀 규칙으로 첫 주간보고서 쓰기 (7) - Tigermorning</title>
+  <meta name="description" content="기록 네 건과 팀 규칙 문서 하나로 주간 보고서 한 편을 끝까지 만들어 봅니다. TASK-102를 위험→완료→진행 순서로 판정하는 과정을 손으로 따라가고, 기한(due_date)과 보고 기준일(report_date)을 가르고, 알고 싶은 사실을 어떤 필드에서 확인하는지 대응표로 정리하고, 사실·판단·제안을 나눠 AI 초안을 원본과 대조하는 방법까지 완전 초보자 눈높이로 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="팀 규칙으로 첫 주간보고서 쓰기 (7)">
+  <meta property="og:description" content="Skill 파일을 쓰기 전에 보고서 한 편을 먼저 만듭니다. 위험→완료→진행 판정 순서, 기한과 보고 기준일의 차이, 사실·판단·제안 구분까지 실제 기록 한 건으로 따라가 봅니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/mcp-skill-first-weekly-report.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">팀 규칙으로</span> 첫 주간보고서 쓰기 (7)</h1>
+    <p class="post-date">2026. 9. 7.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="mcp-skill-why-skill-needed.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">같은 기록, 다른 판정 — Skill이 필요한 이유</span>
+    </a>
+
+    <p class="one-liner">주간 보고서를 쓴다는 건 기록에 적힌 사실을 팀이 미리 정해 둔 순서에 하나씩 대입해 <strong>업무마다 한 범주만 고르고</strong>, 그렇게 고른 근거를 함께 남기는 일이다.</p>
+
+    <p>금요일이에요. 가상 제품팀의 이번 주 업무 기록이 <strong>네 건</strong> 모였어요. 팀장이 알고 싶은 건 두 가지예요 — <strong>사용자가 실제로 쓸 수 있게 된 변화</strong>가 무엇인지, 그리고 <strong>다음 주에 도와줘야 할 일</strong>이 무엇인지요. 그런데 기록에는 '배포 완료', '개발 완료', '진행 중'이 섞여 있어요.</p>
+    <p><a href="mcp-skill-why-skill-needed.html">6편</a>에서 이 팀의 방침은 정해 뒀어요. <strong>사용 환경에 반영하고 동작까지 확인한 일만 완료로 본다</strong>는 거였죠. 이번 편은 그 방침을 실제 기록 네 건에 대입해서 <strong>보고서 한 편을 끝까지 완성</strong>하는 이야기예요.</p>
+    <p>먼저 이번 편에서 <strong>하지 않을 일</strong>을 못 박고 갈게요. <strong>이번 편에서는 <code>SKILL.md</code><sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>를 읽히거나 Skill을 설치하지 않아요.</strong> 6편 마지막에 적었듯이 순서가 반대면 적을 게 없거든요 — 보고서를 한 편 만들어 봐야 "어? 이건 내가 정해 줘야 하네" 싶은 지점이 나오고, 그게 그대로 <strong>업무 고유 지식<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup></strong>의 목록이 돼요. Skill 파일로 묶는 건 8편 몫이에요.</p>
+    <p>이번 실습에서 읽을 자료는 딱 두 개예요.</p>
+    <ul>
+      <li><code>data/week-one.json</code> — <a href="mcp-skill-building-server.html">3편</a>에서 만든 <strong>첫 주의 업무 사실</strong>이에요.</li>
+      <li><code>team-weekly-report/references/team-rules.md</code> — 가상 제품팀이 <strong>상태를 분류하고 보고서를 쓰는 약속</strong>을 적어 둔 문서예요.</li>
+    </ul>
+    <p>앞의 것은 <strong>사실</strong>이고 뒤의 것은 <strong>약속</strong>이에요. 이 둘이 서로 다른 종류의 정보라는 게 이번 편 내내 반복될 이야기예요.</p>
+
+    <h2><span class="hl">비유 하나</span> — 병원 접수 창구의 세 줄</h2>
+    <p>동네 병원에 사람이 여럿 들어왔어요. 창구 직원은 온 순서대로 줄을 세우지 않아요. 대신 <strong>정해진 순서로 한 사람씩 훑어요.</strong> 제일 먼저 보는 건 <strong>지금 당장 위험한 신호</strong>가 있는지예요. 그게 없으면 다음으로 <strong>진료가 다 끝난 사람</strong>인지 보고, 그것도 아니면 <strong>대기 중</strong>으로 넘겨요.</p>
+    <p>여기에 두 가지 규칙이 붙어 있어요. 하나, <strong>한 사람은 한 줄에만 서요.</strong> 둘, <strong>진료가 끝난 것처럼 보여도 위험 신호가 있으면 위험 줄이 먼저예요.</strong> 순서를 위험부터 두는 이유가 바로 이거예요 — 나중에 보면 이미 '완료'로 분류돼 창구를 떠난 뒤거든요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>창구에 들어온 사람 한 명</td><td>업무 기록 한 건 — 예: <strong>TASK-102</strong></td></tr>
+        <tr><td>① 위험 신호부터 확인</td><td>팀 규칙의 <strong>위험 기준</strong> — 차단 요인·운영 확인 실패·기한 초과</td></tr>
+        <tr><td>② 진료가 다 끝났는지 확인</td><td>팀 규칙의 <strong>완료 기준</strong> — 배포 + 기준일 이내 배포일 + 운영 확인 통과</td></tr>
+        <tr><td>③ 남으면 대기 줄</td><td><strong>진행</strong> — 위험도 완료도 아닌 나머지</td></tr>
+        <tr><td>한 사람은 한 줄에만</td><td>업무 하나는 <strong>한 범주에만</strong> 넣기</td></tr>
+        <tr><td>위험 줄을 먼저 보는 이유</td><td>완료 조건을 채웠어도 남은 차단 요인을 <strong>먼저 드러내려는</strong> 약속</td></tr>
+        <tr><td>창구 직원의 매뉴얼</td><td><code>team-rules.md</code> — 팀이 적어 둔 약속</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 분류는 <strong>무엇을 보느냐</strong>만이 아니라 <strong>무엇부터 보느냐</strong>로 결정돼요 — 순서를 바꾸면 같은 기록이 다른 줄에 서요.</p>
+    <p>다만 여기서 비유가 끊기는 점이 하나 있어요. 병원에서는 <strong>사람이 눈앞에 있어서</strong> 안색이나 호흡 같은 걸 직접 볼 수 있어요. 그런데 업무 기록은 <strong>칸에 적힌 값이 전부</strong>예요. 적히지 않은 건 "괜찮다"가 아니라 <strong>"모른다"</strong>고 읽어야 하고, 그 차이가 이번 편에서 가장 자주 실수가 나는 지점이에요.</p>
+
+    <h2><span class="hl">비유 둘</span> — 신문 마감 시각</h2>
+    <p>신문사에는 <strong>마감 시각</strong>이 있어요. 오늘 자 신문에는 마감 시각까지 들어온 사실만 실려요. 마감 30분 뒤에 큰일이 터져도 그건 <strong>내일 자 신문</strong> 몫이에요. 기자가 신문을 읽는 시각이 언제냐와는 아무 상관이 없어요 — 월요일에 읽든 다음 달에 읽든, 그 신문은 <strong>그 마감 시각 기준</strong>이에요.</p>
+    <p>업무 보고서도 똑같아요. 보고서에는 <strong>"어느 시점까지의 사실을 담은 것인가"</strong>가 있어요. 그런데 여기서 초보자가(제가 그랬어요) 꼭 하는 실수가 있어요. <strong>컴퓨터의 오늘 날짜</strong>로 기한을 비교하는 거예요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>오늘 자 신문의 <strong>마감 시각</strong></td><td><code>report_date</code> — <strong>보고 기준일</strong>, 첫 주는 <code>2026-09-04</code></td></tr>
+        <tr><td>기사에 적힌 <strong>행사 예정일</strong></td><td><code>due_date</code> — <strong>마치기로 한 기한</strong>, TASK-102는 <code>2026-09-07</code></td></tr>
+        <tr><td>신문을 <strong>내가 읽는 날</strong></td><td>실습을 돌리는 <strong>컴퓨터의 오늘 날짜</strong> — 판정에 쓰면 안 되는 값</td></tr>
+        <tr><td>같은 신문은 언제 읽어도 같은 내용</td><td>같은 원본은 <strong>언제 돌려도 같은 결과</strong>가 나와야 함</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 기한은 <strong>기록 안의 값</strong>과 비교해요 — 실습하는 날짜를 끌어들이는 순간, 같은 원본을 읽고도 <strong>돌리는 날마다 답이 달라져요.</strong></p>
+    <p>그리고 이 팀은 기준일을 <strong>"그날 하루가 아직 끝나지 않은 시점"</strong>으로 봐요. 그래서 기한이 기준일과 <strong>같은 날</strong>이면 아직 지연이 아니에요. 이건 상식으로 맞힐 수 있는 게 아니라 <strong>이 팀이 그렇게 약속한 것</strong>이라, <code>team-rules.md</code>에 적혀 있어야만 알 수 있는 정보예요.</p>
+
+    <h2><span class="hl">알고 싶은 사실</span>은 어느 칸에 적혀 있나</h2>
+    <p>판정에 들어가기 전에, 기록 한 건을 <strong>칸 단위로</strong> 읽는 연습부터 할게요. TASK-102예요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 3편에서 만든 실습 자료의 한 항목을 읽기 쉽게 옮긴 것이에요</span></p>
+    <pre><code>id            : TASK-102
+title         : 로그인 안내 문구 개선
+owner         : 지우
+status        : 개발 완료
+due_date      : 2026-09-07
+deployed_at   : null
+verification  : 미실시
+blocker       : null
+note          : "코드 작성은 끝났으며 다음 배포를 기다린다."</code></pre>
+    <p>여기서 <code>id</code>, <code>title</code>처럼 <strong>정해진 이름으로 값 하나를 담는 칸</strong>을 <strong>필드<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup></strong>라고 불러요. 보고서를 쓸 때 우리가 알고 싶은 건 사실 <strong>질문 일곱 개</strong>인데, 그 질문마다 답이 어느 필드에 있는지 미리 짝지어 두면 판정이 훨씬 빨라져요.</p>
+    <table>
+      <thead><tr><th>알고 싶은 사실</th><th>확인할 필드</th><th>TASK-102의 값</th></tr></thead>
+      <tbody>
+        <tr><td>어떤 업무인지</td><td><code>id</code>, <code>title</code></td><td>TASK-102 · 로그인 안내 문구 개선</td></tr>
+        <tr><td>누가 맡고 있는지</td><td><code>owner</code></td><td>지우</td></tr>
+        <tr><td>어디까지 진행했는지</td><td><code>status</code>, <code>note</code></td><td>개발 완료 · 다음 배포 대기</td></tr>
+        <tr><td>언제까지 마칠 일인지</td><td><code>due_date</code></td><td>2026-09-07</td></tr>
+        <tr><td>실제 환경에 반영했는지</td><td><code>deployed_at</code></td><td>날짜 미기록(<code>null</code><sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>) — 설명에도 배포 대기라고 적힘</td></tr>
+        <tr><td>실제 환경에서 확인했는지</td><td><code>verification</code></td><td>미실시</td></tr>
+        <tr><td>진행을 막는 조건이 있는지</td><td><code>blocker</code></td><td>기록된 차단 요인 없음</td></tr>
+      </tbody>
+    </table>
+    <p>세 개만 따로 풀고 갈게요. <strong>개발</strong>은 기능을 구현하거나 코드를 고치는 작업이에요. 그 변경을 <strong>사용자가 실제로 쓰는 환경에 반영하는 일</strong>이 <strong>배포<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup></strong>이고, <code>deployed_at</code>은 그 배포한 날짜를 담는 칸이에요. 배포한 다음에 <strong>그 환경에서 의도대로 도는지 확인한 결과</strong>가 <strong>운영 확인<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup></strong>(<code>verification</code>)이고요. <code>blocker</code>는 <strong>작업을 계속하기 어렵게 만드는 차단 요인<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup></strong>을 적는 칸이에요.</p>
+    <p>여기서 제가 처음에 걸려 넘어졌던 지점 하나. <strong>날짜 칸이 비었다고 오늘 날짜를 대신 넣으면 안 돼요.</strong> 그건 빈칸을 채우는 게 아니라 <strong>업무 사실을 바꾸는 것</strong>이에요. <code>null</code>은 "값이 없다"는 정보 그 자체고, 그 정보가 바로 다음 절 판정의 근거가 돼요.</p>
+    <p>비어 있는 칸을 다루는 방식도 팀마다 달라요. 이 팀은 이렇게 갈라요 — <strong>담당자가 없으면</strong> '미정'이라고 쓰고 <strong>확인할 사항</strong>으로 남겨요. 반면 <strong>판정에 필요한 기록이 빠졌거나 서로 모순되면</strong> 그건 <strong>위험</strong>으로 두고 무엇을 확인해야 하는지 적어요. 담당자가 비었다는 것과 판정 근거가 비었다는 건 무게가 다르다는 뜻이에요.</p>
+
+    <h2><span class="hl">전체 흐름 그림</span> — 위험 → 완료 → 진행</h2>
+    <p>이제 팀 규칙의 판정 순서를 한 장으로 볼게요. 오른쪽으로 빠지면 그 범주로 확정되고, 아래로 내려가면 다음 기준을 봐요.</p>
+    <svg viewBox="0 0 780 430" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="업무 기록 한 건이 위에서 아래로 세 단계를 거치는 판정 흐름도. 첫 단계에서 위험 기준에 걸리면 오른쪽 위험 범주로 빠지고, 아니면 아래로 내려가 완료 기준을 확인해 충족하면 완료 범주로, 그것도 아니면 마지막에 진행 범주로 들어간다. 왼쪽에는 TASK-102가 각 단계에서 어떻게 판정되는지 적혀 있다.">
+      <defs>
+        <marker id="arrWR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <g font-family="var(--font-body)" font-size="11" fill="var(--ink)">
+
+        <rect x="195" y="10" width="330" height="44" rx="8" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <text x="360" y="30" text-anchor="middle" font-size="11.5" font-weight="700" font-family="var(--font-heading)">업무 기록 한 건</text>
+        <text x="360" y="46" text-anchor="middle" font-size="9.5" fill="var(--muted)">예: TASK-102 — 로그인 안내 문구 개선</text>
+        <line x1="360" y1="56" x2="360" y2="82" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrWR)"/>
+
+        <rect x="195" y="86" width="330" height="76" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="360" y="108" text-anchor="middle" font-size="10.5" font-weight="700">① 위험 기준에 걸리나?</text>
+        <text x="360" y="127" text-anchor="middle" font-size="9.5" fill="var(--muted)">차단 요인 있음 · 배포했는데 운영 확인 미통과</text>
+        <text x="360" y="143" text-anchor="middle" font-size="9.5" fill="var(--muted)">· 기준일을 지난 기한 · 근거가 빠졌거나 모순됨</text>
+        <line x1="527" y1="124" x2="592" y2="124" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrWR)"/>
+        <text x="559" y="117" text-anchor="middle" font-size="9" fill="var(--muted)">예</text>
+        <rect x="598" y="100" width="167" height="48" rx="8" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <text x="681" y="130" text-anchor="middle" font-size="11" font-weight="700">위험</text>
+        <line x1="360" y1="164" x2="360" y2="190" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrWR)"/>
+        <text x="378" y="181" font-size="9" fill="var(--muted)">아니오</text>
+
+        <rect x="195" y="194" width="330" height="76" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="360" y="216" text-anchor="middle" font-size="10.5" font-weight="700">② 완료 기준을 셋 다 채웠나?</text>
+        <text x="360" y="235" text-anchor="middle" font-size="9.5" fill="var(--muted)">상태 = 배포 완료 · 기준일 이내의 유효한 배포일</text>
+        <text x="360" y="251" text-anchor="middle" font-size="9.5" fill="var(--muted)">· 운영 확인 통과 (하나라도 빠지면 아니오)</text>
+        <line x1="527" y1="232" x2="592" y2="232" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrWR)"/>
+        <text x="559" y="225" text-anchor="middle" font-size="9" fill="var(--muted)">예</text>
+        <rect x="598" y="208" width="167" height="48" rx="8" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <text x="681" y="238" text-anchor="middle" font-size="11" font-weight="700">완료</text>
+        <line x1="360" y1="272" x2="360" y2="298" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrWR)"/>
+        <text x="378" y="289" font-size="9" fill="var(--muted)">아니오</text>
+
+        <rect x="195" y="302" width="330" height="60" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="360" y="326" text-anchor="middle" font-size="10.5" font-weight="700">③ 나머지는 전부 여기</text>
+        <text x="360" y="345" text-anchor="middle" font-size="9.5" fill="var(--muted)">위험도 완료도 아닌 일</text>
+        <line x1="527" y1="332" x2="592" y2="332" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrWR)"/>
+        <rect x="598" y="308" width="167" height="48" rx="8" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <text x="681" y="338" text-anchor="middle" font-size="11" font-weight="700">진행</text>
+
+        <text x="12" y="94" font-size="9.5" font-weight="700" fill="var(--muted)">TASK-102는</text>
+        <text x="12" y="115" font-size="9" fill="var(--muted)">차단 요인 없음,</text>
+        <text x="12" y="130" font-size="9" fill="var(--muted)">배포 전이라 확인 실패도</text>
+        <text x="12" y="145" font-size="9" fill="var(--muted)">아님, 기한 9-07 &gt; 기준일 9-04</text>
+        <text x="12" y="222" font-size="9" fill="var(--muted)">상태는 '개발 완료',</text>
+        <text x="12" y="237" font-size="9" fill="var(--muted)">배포일 없음,</text>
+        <text x="12" y="252" font-size="9" fill="var(--muted)">운영 확인 미실시</text>
+        <text x="12" y="330" font-size="9.5" font-weight="700" fill="var(--accent)">→ 여기로 확정</text>
+
+        <text x="360" y="394" text-anchor="middle" font-size="9.5" fill="var(--muted)">업무 하나는 한 범주에만 들어가요 — 오른쪽으로 한 번 빠지면 아래 단계는 보지 않아요.</text>
+        <text x="360" y="412" text-anchor="middle" font-size="9.5" fill="var(--muted)">순서를 완료부터 보면, 차단 요인이 있는 일이 '완료'로 확정돼 버려요.</text>
+      </g>
+    </svg>
+    <p><strong>읽는 법:</strong> 화살표는 두 방향뿐이에요. <strong>오른쪽</strong>은 "이 범주로 확정, 끝"이고 <strong>아래</strong>는 "여기 아니니 다음 기준을 보자"예요. 세 상자를 위에서부터 보는 게 규칙의 전부이고, <strong>순서 자체가 규칙의 일부</strong>예요. 왼쪽에 적어 둔 게 TASK-102가 각 단계에서 왜 아래로 내려갔는지고요.</p>
+
+    <h2><span class="hl">TASK-102</span>를 손으로 판정해 보기</h2>
+    <p>그림을 말로 풀어서 한 단계씩 따라가 볼게요. 저는 이걸 종이에 적어 가며 했는데, 그렇게 하니까 "왜 이 결론이 나왔는지"를 나중에 설명할 수 있게 되더라고요.</p>
+    <p><strong>① 위험 기준부터.</strong> <code>blocker</code>가 <code>null</code>이니 <strong>기록된 차단 요인이 없어요.</strong> 그리고 아직 배포하지 않았으니 <strong>'배포했으나 운영 확인이 통과하지 않은 경우'에도 해당하지 않아요.</strong> 이 대목이 헷갈리기 쉬운데, <strong>'아직 운영 확인을 하지 않았다'는 말만으로 위험이라고 단정할 수 없어요.</strong> 아직 배포 전인 TASK-102와, <strong>이미 배포했는데 운영 확인이 실패한 일</strong>은 완전히 다른 상황이거든요. 이 팀 규칙이 위험으로 묶는 건 뒤쪽이에요. 마지막으로 기한(9-07)은 보고 기준일(9-04)보다 <strong>뒤</strong>라 기한을 넘긴 것도 아니에요. → <strong>위험 아님.</strong></p>
+    <p><strong>② 다음은 완료 기준.</strong> 이 팀의 완료는 조건 <strong>셋을 모두</strong> 만족해야 해요 — 상태가 <strong>배포 완료</strong>이고, <strong>기준일 이내의 유효한 배포일</strong>이 있고, <strong>운영 확인이 통과</strong>인 경우요. TASK-102는 상태가 '개발 완료'이고, 배포일도 운영 확인도 조건을 채우지 못했어요. → <strong>완료 아님.</strong></p>
+    <p><strong>③ 따라서 진행.</strong> 위험도 완료도 아니니 남은 자리는 하나예요.</p>
+    <p>이 세 줄이 중요한 이유가 있어요. 결론만 보면 "개발 완료니까 진행 중이겠지" 하고 <strong>느낌으로 맞힌 것</strong>과 구별이 안 돼요. 그런데 위처럼 적어 두면 <strong>어느 규칙의 어느 조건 때문에</strong> 그렇게 됐는지가 남아요. 나중에 팀 규칙이 바뀌었을 때 <strong>어느 줄부터 다시 봐야 하는지</strong>도 이 기록이 알려 줘요.</p>
+
+    <h2><span class="hl">보고서 문장</span>으로 옮길 때 — 한 단어가 뜻을 바꿔요</h2>
+    <p>판정이 끝났으니 문장으로 옮겨요. 이렇게 적었어요.</p>
+    <blockquote><p>TASK-102 로그인 안내 문구 개선 — 지우. 개발은 끝났으며 다음 배포를 기다리고 있습니다. 기한은 2026-09-07입니다.</p></blockquote>
+    <p>여기서 딱 한 군데만 바꿔 볼게요. 마지막 문장을 <strong>"9월 7일에 배포합니다"</strong>로요. 훨씬 자연스럽게 읽히죠. 그런데 <strong>뜻이 달라졌어요.</strong> 원본의 9월 7일은 <strong>업무 기한</strong>이지, <strong>확정된 배포 일정</strong>이 아니거든요. 기록 어디에도 "9월 7일에 배포하기로 했다"는 약속은 없어요.</p>
+    <p>이런 미끄러짐을 잡으려면 문장을 <strong>세 종류로 갈라 읽는</strong> 게 제일 빨라요. 사실, 판단, 제안이에요.</p>
+    <table>
+      <thead><tr><th>종류</th><th>예시 문장</th><th>근거가 어디에 있나</th></tr></thead>
+      <tbody>
+        <tr><td><strong>사실</strong></td><td>"테스트 계정이 미발급 상태다."</td><td><strong>기록 안</strong> — <code>blocker</code>에 그렇게 적혀 있음</td></tr>
+        <tr><td><strong>판단</strong></td><td>"차단 요인이 있어 <strong>위험으로 분류한다</strong>."</td><td><strong>팀 규칙</strong> — 사실에 규칙을 적용한 결과</td></tr>
+        <tr><td><strong>제안</strong></td><td>"계정 발급 <strong>일정을 확인하자</strong>."</td><td><strong>어디에도 없음</strong> — 앞으로 할 행동의 권유</td></tr>
+      </tbody>
+    </table>
+    <p><strong>제안은 유용해요.</strong> 팀장이 알고 싶어 하는 "다음 주에 도와야 할 일"이 딱 여기서 나오거든요. 문제는 제안을 <strong>사실처럼 적을 때</strong>예요. "계정 발급 일정을 확인하자"는 제안이지만, <strong>"계정이 월요일에 발급된다"</strong>는 확인되지 않은 <strong>사실 주장</strong>이 돼요. 기록 어디에도 월요일이라는 근거가 없는데도요.</p>
+    <p>세 종류를 나눠 놓으면 검토가 훨씬 쉬워져요. 보고서를 다시 읽을 때 <strong>사실 문장은 원본과 대조</strong>하고, <strong>판단 문장은 규칙과 대조</strong>하고, <strong>제안 문장은 사실처럼 쓰이지 않았는지만</strong> 보면 되거든요.</p>
+
+    <h2><span class="hl">나쁜 선택 vs 좋은 선택</span> — 접수 창구 앞에서</h2>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">진료가 끝난 것처럼 보이는 사람부터 먼저 내보낸다 = <strong>완료 기준을 먼저</strong> 확인해서 조건이 맞는 일을 완료로 확정한다 → 차단 요인이 적혀 있던 일이 '완료' 칸에 들어가 버리고, 팀장은 도와줄 일이 있다는 걸 못 본다.</td>
+          <td class="choice-good">위험 신호부터 훑고 그다음에 완료를 본다 = <strong>위험 → 완료 → 진행</strong> 순서를 지키고 한 업무를 한 범주에만 넣는다 → 도움이 필요한 일이 보고서 맨 위에서 먼저 보인다.</td>
+        </tr>
+        <tr>
+          <td class="choice-bad">기한이 지났는지를 <strong>컴퓨터의 오늘 날짜</strong>로 비교한다 → 같은 <code>week-one.json</code>을 읽고도 실습을 9월에 돌리면 '진행', 11월에 돌리면 '지연'이 나온다.</td>
+          <td class="choice-good">기한을 파일 위쪽의 <code>report_date</code>(2026-09-04)와 비교한다 → 언제 돌려도 같은 결과가 나오고, 결과가 달라지면 그건 규칙이나 기록이 바뀐 것이다.</td>
+        </tr>
+        <tr>
+          <td class="choice-bad"><code>deployed_at</code>이 <code>null</code>이라 어색하니 오늘 날짜를 채워 넣는다 → 빈칸이 사라져 보고서는 매끄러워지지만, <strong>있지도 않은 배포가 완료 건수로 집계</strong>된다.</td>
+          <td class="choice-good"><code>null</code>을 <strong>"값이 없다"는 정보</strong>로 그대로 두고 판정 근거로 쓴다 → "개발은 끝났고 배포·운영 확인이 남았다"가 정확히 적힌다.</td>
+        </tr>
+        <tr>
+          <td class="choice-bad">담당자가 비어 있으니 비슷한 일을 하던 사람 이름을 적어 둔다 → 보고서만 보면 담당자가 정해진 것처럼 보이고, 아무도 그 일을 챙기지 않는다.</td>
+          <td class="choice-good">'미정'이라고 쓰고 <strong>확인할 사항</strong>으로 남긴다 → 팀장이 다음 주 회의에서 물어볼 항목이 하나 생긴다.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2><span class="hl">AI와 함께</span> 첫 보고서 완성하기</h2>
+    <p>손으로 한 건을 판정해 봤으니 이제 나머지를 AI와 같이 해요. 새 대화를 열고 이렇게 요청했어요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— Claude Code 등</span></p>
+    <pre><code>첫 주 업무 기록과 팀 규칙을 읽고 주간 보고서를 만들어 줘.</code></pre>
+    <p>자료를 못 찾는다고 하면 위치를 알려 주면 돼요 — <code>자료는 data/week-one.json과 team-weekly-report/references/team-rules.md에 있어.</code> 이 시리즈에서 만든 <a href="mcp-skill-host-connection.html">MCP 연결</a>을 거쳐서 확인하고 싶다면 이렇게요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— 4편에서 서버를 등록해 둔 호스트에서요</span></p>
+    <pre><code>연결한 업무 기록 도구로 첫 주 자료를 가져오고, 팀 규칙에 맞게 주간 보고서를 만들어 줘.</code></pre>
+    <p>이때 결과 문장만 읽지 말고 <strong>도구 호출 기록<sup class="fn-ref"><a href="#fn8" id="fnref8">8</a></sup></strong>을 두 군데 열어 보세요.</p>
+    <ul>
+      <li><strong><code>get_weekly_records</code>에 <code>week-one</code>을 넘겼는지, 업무 네 건이 돌아왔는지.</strong> <a href="mcp-skill-tool-call-anatomy.html">1편</a>에서 본 <strong>도구 정의</strong>대로 인자가 들어갔는지 보는 거예요.</li>
+      <li><strong>팀 규칙 파일을 실제로 읽었는지.</strong> 안 읽고도 그럴싸한 보고서가 나올 수 있는데, 그건 <strong>일반 상식으로 쓴 보고서</strong>지 우리 팀 기준으로 분류한 보고서가 아니에요.</li>
+    </ul>
+    <p>이 둘을 나눠 보는 게 이번 편의 핵심 습관이에요. <strong>업무 기록을 가져오는 호출과 팀 기준을 읽는 행동은 서로 다른 정보를 줘요.</strong> 앞의 것은 <strong>사실</strong>을, 뒤의 것은 <strong>약속</strong>을 가져오죠. 하나만 성공해도 보고서 모양은 나오는데, 그중 하나는 <strong>내용이 우리 팀 것이 아니에요.</strong></p>
+
+    <h2><span class="hl">원본과 초안을 나란히</span> 놓고 읽기</h2>
+    <p>초안이 나왔으면 이제 대조예요. 방법은 단순해요. <strong>보고서의 문장 하나를 집어서, 그 문장을 만든 근거가 원본 어느 필드인지 되짚어요.</strong> 근거를 못 찾겠으면 그게 바로 손볼 자리예요. 근거 없는 내용이 사실처럼 섞여 드는 걸 <a href="mcp-skill-host-connection.html">4편</a>에서 <strong>환각<sup class="fn-ref"><a href="#fn9" id="fnref9">9</a></sup></strong>이라고 불렀는데, 대조는 그걸 잡는 가장 단순한 방법이에요.</p>
+    <p>TASK-102 문장들로 실제 대조표를 만들면 이런 모양이에요.</p>
+    <table>
+      <thead><tr><th>보고서의 표현</th><th>근거가 된 필드</th><th>판정</th></tr></thead>
+      <tbody>
+        <tr><td>"개발을 끝내고 배포를 기다립니다."</td><td><code>status</code>, <code>note</code></td><td>원본의 현재 상태를 옮긴 표현 — <strong>그대로 둠</strong></td></tr>
+        <tr><td>'진행' 범주에 배치</td><td><code>deployed_at</code> 미기록 · <code>verification</code> 미실시 · 기준일 뒤의 <code>due_date</code></td><td>위험·완료 조건에 해당하지 않아 진행으로 분류 — <strong>규칙 적용 결과</strong></td></tr>
+        <tr><td>"기한은 09-07입니다."</td><td><code>due_date</code></td><td>기한이라는 의미를 유지 — <strong>그대로 둠</strong></td></tr>
+        <tr><td>"09-07에 배포하기로 확정했습니다."</td><td><strong>해당하는 약속 없음</strong></td><td>기한을 확정 일정으로 바꿈 — <strong>고쳐야 함</strong></td></tr>
+      </tbody>
+    </table>
+    <p>표의 가운데 열이 비는 줄이 나오면 거의 항상 손볼 자리예요. 반대로 가운데 열이 <strong>"팀 규칙"</strong>이면 그건 사실이 아니라 <strong>판단</strong>이고, 규칙이 바뀌면 같이 바뀔 문장이에요.</p>
+    <p>고칠 곳을 찾았으면 <strong>어디를 왜 다시 봐야 하는지 짚어서</strong> 요청하는 게 좋아요. "다시 해 줘"보다 훨씬 잘 고쳐져요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— 초안을 만든 그 대화에 이어서요</span></p>
+    <pre><code>104번은 기준일과 기한이 같아. 팀 규칙을 확인하고 이 항목을 다시 판단해 줘.</code></pre>
+
+    <h2><span class="hl">이번 결과</span>와 <span class="hl">다음에도 쓸 지식</span>은 다른 것이에요</h2>
+    <p>보고서가 완성되면 <code>first-week-report.md</code>라는 <strong>마크다운<sup class="fn-ref"><a href="#fn10" id="fnref10">10</a></sup></strong> 파일로 저장해요. 그리고 여기서 이번 편에서 가장 중요한 정리를 해요 — 방금 나온 것들을 <strong>두 칸으로 갈라 적는</strong> 거예요.</p>
+    <table>
+      <thead><tr><th>이번 입력에서 얻은 결과</th><th>다음 입력에도 가져갈 지식</th></tr></thead>
+      <tbody>
+        <tr><td>TASK-102는 이번 주에 <strong>진행</strong>입니다.</td><td><strong>개발 완료만으로는</strong> 보고서의 완료로 분류하지 않습니다.</td></tr>
+        <tr><td>TASK-104의 기한은 <strong>2026-09-04</strong>입니다.</td><td>기한과 기준일이 <strong>같은 날</strong>이면 이 팀에서는 지연으로 보지 않습니다.</td></tr>
+        <tr><td>첫 주의 위험 업무는 <strong>한 건</strong>입니다.</td><td><strong>위험 기준부터</strong> 확인하고, 업무마다 하나의 범주에만 넣습니다.</td></tr>
+        <tr><td>TASK-103의 담당자는 <strong>미정</strong>입니다.</td><td>없는 담당자나 일정을 <strong>만들어 채우지 않고</strong> 확인할 사항으로 남깁니다.</td></tr>
+      </tbody>
+    </table>
+    <p>왼쪽은 <strong>다음 주에 달라질 수 있는 값</strong>이고, 오른쪽은 <strong>팀이 약속을 바꾸지 않는 한 계속 쓸 기준</strong>이에요. 8편에서 Skill에 넣을 건 <strong>오른쪽 칸</strong>이에요. 왼쪽을 넣으면 <strong>특정 주의 정답을 외우게 하는 것</strong>이 되고, 다음 주 기록에는 하나도 안 맞아요.</p>
+    <p>그리고 작업 메모를 <code>report-work-notes.md</code>에 따로 남겨 두면 8편이 훨씬 편해져요. 적을 건 네 가지예요 — <strong>처음 요청한 말</strong>, <strong>읽은 자료와 그 경로</strong>, <strong>판단할 때 특히 주의했던 업무 하나</strong>, <strong>적용한 규칙</strong>이요. 수정한 내용이 있으면 <strong>바꾼 이유</strong>도 한 줄 덧붙여요. 이 메모가 없으면 다음 주에 "내가 그때 왜 그렇게 판단했지?"부터 다시 시작하게 돼요.</p>
+    <p>마지막으로 오해 하나 풀고 갈게요. <strong>모델이 첫 요청만으로 정확하게 써 줬다면 이번 실습도 성공이에요.</strong> 저는 처음에 "AI가 틀려야 Skill이 필요한 거 아닌가" 싶었는데 아니에요. 잘 나왔을 때도 <strong>"그 판단을 뒷받침한 자료가 뭐였지?"</strong>를 되짚으면 재료는 똑같이 나와요. 6편에서 했던 이야기가 여기서 그대로 반복돼요.</p>
+
+    <h2><span class="hl">이번 편에 나온 구체적인 값</span></h2>
+    <table>
+      <thead><tr><th>항목</th><th>값</th><th>조건·출처</th></tr></thead>
+      <tbody>
+        <tr><td>첫 주 업무 기록</td><td>4건 (TASK-101 ~ TASK-104)</td><td><a href="mcp-skill-building-server.html">3편</a>에서 만든 <code>data/week-one.json</code></td></tr>
+        <tr><td>이번 편에서 읽는 자료</td><td>2개 (업무 기록 · 팀 규칙 문서)</td><td>앞은 <strong>사실</strong>, 뒤는 <strong>약속</strong></td></tr>
+        <tr><td>이번 편에서 읽히는 <code>SKILL.md</code></td><td>0개</td><td>Skill 설치·적용은 <strong>8편</strong> 몫</td></tr>
+        <tr><td>보고 기준일(<code>report_date</code>)</td><td><code>2026-09-04</code></td><td>파일 위쪽에 적힌 값 — 컴퓨터의 오늘 날짜가 아님</td></tr>
+        <tr><td>TASK-102의 기한(<code>due_date</code>)</td><td><code>2026-09-07</code></td><td>기준일보다 <strong>3일 뒤</strong> → 기한 초과 아님</td></tr>
+        <tr><td>판정 범주</td><td>3개 (위험 · 완료 · 진행)</td><td>업무 하나당 <strong>한 범주만</strong></td></tr>
+        <tr><td>판정 순서</td><td>위험 → 완료 → 진행</td><td>순서 자체가 팀 규칙의 일부</td></tr>
+        <tr><td>완료로 인정하는 조건</td><td>3가지 (상태 배포 완료 · 기준일 이내 배포일 · 운영 확인 통과)</td><td><strong>셋 다</strong> 충족해야 완료</td></tr>
+        <tr><td>TASK-102가 채운 완료 조건</td><td>0개</td><td>상태 '개발 완료' · <code>deployed_at</code> <code>null</code> · <code>verification</code> 미실시 → <strong>진행</strong></td></tr>
+        <tr><td>사실과 짝지은 필드</td><td>7개 질문 → 9개 필드</td><td><code>id</code>·<code>title</code>·<code>owner</code>·<code>status</code>·<code>note</code>·<code>due_date</code>·<code>deployed_at</code>·<code>verification</code>·<code>blocker</code></td></tr>
+        <tr><td>문장을 가르는 종류</td><td>3가지 (사실 · 판단 · 제안)</td><td>근거가 <strong>기록 / 규칙 / 없음</strong>으로 갈림</td></tr>
+        <tr><td>첫 주의 위험 업무</td><td>1건</td><td>차단 요인이 기록된 건 — 직접 찾아보세요</td></tr>
+        <tr><td>TASK-104의 기한</td><td><code>2026-09-04</code></td><td>기준일과 <strong>같은 날</strong> → 이 팀 규칙으로는 지연 아님</td></tr>
+        <tr><td>이번 편에서 남기는 파일</td><td>2개 (<code>first-week-report.md</code> · <code>report-work-notes.md</code>)</td><td>보고서 본문과 작업 메모</td></tr>
+      </tbody>
+    </table>
+    <p class="post-date">※ 위 값 중 <strong>업무 기록의 필드값·날짜·팀 규칙은 전부 학습용 가상 설정</strong>이에요. 특히 <strong>"기한과 기준일이 같은 날은 지연이 아니다"</strong>는 일반 규칙이 아니라 <strong>이 가상 팀이 그렇게 약속한 것</strong>이라, 다른 팀에 그대로 옮기면 안 돼요.</p>
+
+    <h2><span class="hl">직접 해보기</span></h2>
+    <p>여기까지는 제 판정을 따라온 거예요. 이제 <strong>여러분 차례</strong>인 항목이 두 건 남아 있어요. 정답을 먼저 말하지 않을게요 — <strong>판정보다 판정 과정을 적는 게 이번 연습의 목적</strong>이거든요.</p>
+    <p>① <strong>TASK-104를 직접 판정해 보기.</strong> <code>data/week-one.json</code>을 열어 TASK-104를 찾고, <strong>기한(<code>due_date</code>)</strong>과 <strong>보고 기준일(<code>report_date</code>)</strong>을 각각 어디서 읽었는지 먼저 적으세요. 그다음 위험 → 완료 → 진행 순서로 내려가며 <strong>어느 범주에 넣을지와 그 이유</strong>를 세 줄로 적어 보세요. 이 항목은 <strong>두 날짜가 같은 날</strong>이라, 규칙을 안 읽고 감으로 판단하면 십중팔구 '지연'으로 갑니다.</p>
+    <p>② <strong>TASK-103에서 근거와 확인 사항을 갈라 보기.</strong> TASK-103에는 담당자·기한·차단 요인에 <strong>서로 다른 성격의 정보</strong>가 들어 있어요. 여기서 나눠야 할 건 두 가지예요 — <strong>어떤 정보가 분류의 근거</strong>이고, <strong>어떤 정보가 추가로 확인할 사항</strong>인지요. 힌트는 위에서 정리한 이 팀의 방침이에요. 담당자가 비었을 때와 <strong>판정 근거가 비었을 때</strong>를 이 팀은 다르게 다뤄요.</p>
+    <p>③ <strong>TASK-101로 "날짜만 볼 때"와 "전체를 읽을 때"를 비교하기.</strong> TASK-101은 <strong>기한이 기준일보다 앞서</strong> 있어요. 날짜 두 개만 떼어서 보면 "기한이 지났네?" 소리가 나올 자리예요. 그런데 이 건은 <strong>배포와 운영 확인까지 마친 사실</strong>이 기록에 있어요. 날짜만 봤을 때의 판정과 전체 기록을 읽었을 때의 판정을 <strong>둘 다 적어 놓고</strong>, 무엇이 결론을 뒤집었는지 한 줄로 정리해 보세요.</p>
+    <p>④ <strong>내 판정과 AI 초안을 대조하기.</strong> ①에서 적어 둔 TASK-104의 판정과 AI가 만든 초안의 판정이 <strong>같은지</strong> 보세요. 다르다면 승패를 가리지 말고 <strong>어느 쪽이 팀 규칙과 맞는지</strong>를 규칙 문서로 확인하세요. 여기서 <strong>내가 틀린 경우가 더 값져요</strong> — 규칙 중에 내가 못 읽고 넘어간 줄이 있다는 뜻이고, 그 줄이 8편에서 Skill에 꼭 들어가야 할 문장이거든요.</p>
+    <p>⑤ <strong>오른쪽 칸을 세 줄 이상 채우기.</strong> 위의 '이번 결과 vs 다음에도 쓸 지식' 표를 빈 종이에 다시 그리고, <strong>오른쪽 칸만</strong> 채워 보세요. 세 줄이 안 나오면 아직 재료가 부족한 거예요 — 보고서를 다시 훑으며 "이 문장을 쓸 때 내가 뭘 알고 있어야 했지?"를 물어보면 한두 줄이 더 나와요.</p>
+    <p>여기까지 오면 <strong>보고서 한 편</strong>과 <strong>다시 쓸 지식 목록</strong>이 손에 남아요. 다음 편에서는 그 목록을 실제 <code>SKILL.md</code> 파일로 옮겨서, 다음 주에 새 대화를 열어도 같은 기준이 적용되게 만들어 볼게요.</p>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">SKILL.md — Skill의 중심이 되는 지침 파일로, <a href="mcp-skill-why-skill-needed.html">같은 기록, 다른 판정</a>에서 주방 벽의 레시피 카드에 빗대어 처음 다뤘어요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">업무 고유 지식 — 팀의 용어·데이터 칸의 뜻·예외 기준처럼 일반 지식만으로는 알 수 없고 그 조직에만 존재하는 정보로, <a href="mcp-skill-why-skill-needed.html">같은 기록, 다른 판정</a>에서 처음 다뤘어요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">필드(field) — 기록 한 건 안에서 정해진 이름으로 값 하나를 담는 칸이며, <a href="mcp-skill-building-server.html">업무 기록 서버 직접 만들기</a>의 JSON 자료에서 처음 봤어요. <a href="#fnref3">↩</a></li>
+        <li id="fn4">null — 값이 <strong>비어 있음</strong>을 뜻하는 표시로, <a href="mcp-skill-host-connection.html">호스트에 연결하고 첫 도구 호출 확인하기</a>에서 <code>deployed_at</code>을 대조할 때 처음 다뤘어요. <a href="#fnref4">↩</a></li>
+        <li id="fn5">배포(deploy) — 완성한 코드 변경을 사용자가 실제로 쓰는 환경에 반영해 서비스에 나가게 하는 작업으로, <a href="mcp-skill-why-skill-needed.html">같은 기록, 다른 판정</a>에서 처음 다뤘어요. <a href="#fnref5">↩</a></li>
+        <li id="fn6">운영 확인(verification) — 배포한 변경이 실제 사용 환경에서 의도대로 동작하는지 확인한 결과를 담는 값이에요. <a href="#fnref6">↩</a></li>
+        <li id="fn7">차단 요인(blocker) — 그 업무를 계속 진행하기 어렵게 만드는 조건을 적어 두는 칸이에요. <a href="#fnref7">↩</a></li>
+        <li id="fn8">도구 호출 기록 — 모델이 어떤 도구를 어떤 인자로 불렀고 무엇이 돌아왔는지 남은 흔적으로, <a href="mcp-skill-host-connection.html">호스트에 연결하고 첫 도구 호출 확인하기</a>에서 처음 열어 봤어요. <a href="#fnref8">↩</a></li>
+        <li id="fn9">환각(hallucination) — 근거 없는 내용이 사실처럼 답변에 섞여 드는 현상으로, <a href="mcp-skill-host-connection.html">호스트에 연결하고 첫 도구 호출 확인하기</a>에서 원본 대조로 잡아내는 법을 처음 다뤘어요. <a href="#fnref9">↩</a></li>
+        <li id="fn10">마크다운(Markdown) — <code>#</code>이나 <code>-</code> 같은 간단한 기호로 제목·목록을 표시하는 글쓰기 형식이며, <a href="ai-skills-and-rules-files.html">스킬과 규칙 파일</a>에서 규칙 파일을 다룰 때 처음 나왔어요. <a href="#fnref10">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <h3>"MCP와 Skill로 에이전트에게 업무 맡기기" 시리즈</h3>
+    <a class="post-nav" href="mcp-skill-tool-call-anatomy.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">도구 하나가 호출되기까지 — 정의·파싱·구조화 요청</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-protocol-roles.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">호스트·클라이언트·서버가 나누는 대화 — MCP 연결 구조와 메시지</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-building-server.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">업무 기록 서버 직접 만들기 — uv 환경과 Python MCP 서버</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-host-connection.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">호스트에 연결하고 첫 도구 호출 확인하기</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-context-and-search.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">도구가 많아지면 생기는 문맥 부담 — Tool Search와 Code Mode</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-why-skill-needed.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">같은 기록, 다른 판정 — Skill이 필요한 이유</span>
+    </a>
+    <p class="post-date">(7) 팀 규칙으로 첫 주간보고서 쓰기 (이 글)</p>
+    <a class="post-nav" href="mcp-skill-writing-skill-md.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">완성한 판단을 SKILL.md로 남기기</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-reuse-verification.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">다음 주에도 통하는가 — Skill 재사용 검증하기</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-colab-notebook.html">
+      <span class="post-nav-label">(10)</span>
+      <span class="post-nav-title">계산 과정을 노트북에 남기기 — Colab MCP 연결</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-google-oauth-setup.html">
+      <span class="post-nav-label">(11)</span>
+      <span class="post-nav-title">내 표를 읽는 프로그램 만들기 — Google OAuth 준비</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-google-sheets-mcp.html">
+      <span class="post-nav-label">(12)</span>
+      <span class="post-nav-title">로그인부터 표가 반환되기까지 — 인증 코드와 MCP 서버</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-adapting-to-my-task.html">
+      <span class="post-nav-label">(13)</span>
+      <span class="post-nav-title">내 업무에 맞게 바꿔보기 — 데이터·기준·기능 나누기</span>
+    </a>
+    <a class="post-nav" href="mcp-skill-wikiskill-research.html">
+      <span class="post-nav-label">(14)</span>
+      <span class="post-nav-title">에이전트도 경험을 쌓는다 — WikiSkill 연구가 보는 Skill</span>
+    </a>
+
+    <a class="post-nav" href="mcp-skill-writing-skill-md.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">완성한 판단을 SKILL.md로 남기기</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
