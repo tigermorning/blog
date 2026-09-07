@@ -1100,3 +1100,34 @@ details[open] > summary .tree-toggle-icon {
 .footnotes a {
   color: var(--accent);
 }
+
+/* 코드 실습 위치 뱃지 (.claude/skills/tigermorning-blog-post) */
+.run-tag {
+  display: block;
+  margin: 1.5rem 0 0;
+  padding: 0.5rem 1.25rem;
+  background: var(--ink);
+  color: var(--bg);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 700;
+  border-radius: 4px 16px 0 0;
+  border-top: 4px solid var(--accent);
+}
+
+.run-tag + pre {
+  margin-top: 0;
+  border-top: none;
+  border-radius: 0 0 4px 16px;
+}
+
+.run-tag-why {
+  font-weight: 400;
+  opacity: 0.75;
+}
+
+.run-tag--concept {
+  background: var(--border);
+  color: var(--muted);
+  border-top-color: var(--muted);
+}

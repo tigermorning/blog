@@ -39,9 +39,11 @@
     <h2><span class="hl">모델하우스</span> — 아직 집이 없어도 구경은 할 수 있다</h2>
     <p>아파트를 분양할 때, 진짜 건물이 다 지어지기 전에 <strong>모델하우스</strong>부터 열죠. 실제로 살 집은 아니지만, 가구를 놓아보고 동선을 걸어보면서 "이 구조가 괜찮은가"를 미리 판단할 수 있어요. 프론트엔드(화면)도 똑같아요. 진짜 데이터를 주는 백엔드(서버)가 완성되기를 기다리지 않고, <strong>가짜 데이터</strong>로 먼저 화면을 돌려볼 수 있어요. 이걸 <strong>목업 데이터(mock data)</strong>라고 불러요.</p>
     <p>프론트엔드가 진짜 데이터를 받아올 땐 이런 코드를 써요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 직접 실행하는 코드 아니에요</span></p>
     <pre>const response = await fetch('https://내서비스.com/api/experts');
 const experts = await response.json();</pre>
     <p>문제는 이 코드가 작동하려면 <code>/api/experts</code>에 응답해줄 백엔드가 <strong>이미 있어야</strong> 한다는 거예요. 백엔드가 없으면 이 요청은 실패하고 화면은 텅 비어요. 그래서 진짜 API가 보내줄 것과 <strong>똑같은 모양</strong>의 가짜 데이터를 코드 안에 미리 적어두는 거예요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 직접 실행하는 코드 아니에요</span></p>
     <pre>// mockData.js — 가짜지만 진짜 API 응답과 같은 구조
 const mockExperts = [
   { id: 1, name: '김민준 변호사', specialty: '형사전문', years: 15 },
@@ -75,6 +77,7 @@ export default mockExperts;</pre>
 
     <h2><span class="hl">GraphQL</span> — 필요한 것만 골라 받기</h2>
     <p>REST는 하나의 주소가 정해진 데이터 덩어리를 통째로 돌려줘요. 전문가의 이름과 전문분야만 필요한데 자기소개서·연락처·사진까지 다 오면, 불필요한 데이터가 왕복하는 셈이에요. <strong>GraphQL</strong>은 "내가 필요한 필드만 골라서 달라"고 요청하는 방식이에요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 직접 실행하는 코드 아니에요</span></p>
     <pre>query {
   experts(specialty: "형사") {
     name

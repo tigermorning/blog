@@ -52,6 +52,7 @@
     </table>
     <p>말로만 들으면 안 와닿아서, 저는 같은 화면(전문가 프로필 카드 30개)을 순수 JS와 React로 각각 만들면 뭐가 다른지 직접 비교해봤어요.</p>
     <p><strong>순수 JS라면</strong> 카드 구조를 30번 복사해야 해요. 나중에 배지 디자인 하나를 바꾸고 싶으면 30곳을 전부 찾아 고쳐야 하고요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 직접 실행하는 코드 아니에요</span></p>
     <pre>const container = document.getElementById('expert-list');
 experts.forEach(expert => {
   const card = document.createElement('div');
@@ -60,6 +61,7 @@ experts.forEach(expert => {
 });
 // 배지 디자인을 바꾸려면? 이 코드를 다시 찾아 고쳐야 해요</pre>
     <p><strong>React라면</strong> 카드의 설계(컴포넌트)를 한 곳에 딱 한 번 만들고, 데이터만 바꿔가며 여러 번 불러써요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 직접 실행하는 코드 아니에요</span></p>
     <pre>function ExpertCard({ name, badge }) {
   return (&lt;div&gt;&lt;h3&gt;{name}&lt;/h3&gt;&lt;p&gt;{badge}&lt;/p&gt;&lt;/div&gt;);
 }

@@ -95,6 +95,7 @@
 
     <h2><span class="hl">binding</span> — 채널 계정을 역할에 잇는다</h2>
     <p><strong>binding</strong>(바인딩)은 채널 계정을 특정 에이전트에 연결하는 규칙이에요. 채널 계정이란 슬랙 작업공간 하나, 왓츠앱 번호 하나처럼 채널이 구분하는 단위예요. 공식 문서의 가장 짧은 예시는 에이전트 둘과 binding 하나예요.</p>
+    <p class="run-tag">실행: openclaw.json 설정 파일에 붙여넣기</p>
     <pre><code>{
   agents: {
     entries: {
@@ -139,6 +140,7 @@
     <h2><span class="hl">standing orders와 병렬 전문가 레인</span></h2>
     <p>역할이 여럿이면 맡긴 일을 언제 어떻게 하는지 규칙이 필요해요. <strong>standing orders</strong>(스탠딩 오더)는 항상 적용되는 지시예요. 무엇을 해도 되는지, 무엇은 승인을 받아야 하는지, 무엇이 보이면 멈추는지를 에이전트에게 미리 적어 두는 규칙이에요. <strong>허용·승인·중단</strong> 세 칸을 채우는 셈이고, 5편 끝의 "직접 해보기"에서 쓴 권한 기준 메모와 같은 문양이에요. 규칙을 파일로 미리 적어 두는 발상은 <a href="ai-skills-and-rules-files.html">스킬과 규칙 파일</a>에서 봤어요.</p>
     <p>병렬 작업은 에이전트를 많이 만드는 일이 아니라 <strong>역할 설계가 먼저</strong>예요. 공식 문서의 병렬 전문가 레인은 연구, 제작, 검토처럼 역할이 겹치지 않게 나누고, 동시에 돌릴 개수를 정해 두는 구성을 권해요. 예시 설정의 해당 부분이에요.</p>
+    <p class="run-tag">실행: openclaw.json 설정 파일에 붙여넣기</p>
     <pre><code>{
   agents: {
     defaults: {
@@ -152,6 +154,7 @@
 }</code></pre>
     <p>동시 실행 수에 한도를 두고(<code>maxConcurrent</code>), 몰리는 메시지는 모아 두었다가(<code>collect</code>) 한도를 넘으면 요약해서 넘기는(<code>summarize</code>) 규칙까지가 설계 대상이에요. 에이전트를 늘리는 일보다 <strong>역할 겹침과 용량을 먼저 정하는</strong> 편이 사고를 줄여요.</p>
     <p>에이전트끼리 직접 대화하는 길은 <strong>기본으로 닫혀</strong> 있어요. 켜려면 명시적 활성화와 허용 목록이 필요해요.</p>
+    <p class="run-tag">실행: openclaw.json 설정 파일에 붙여넣기</p>
     <pre><code>{
   tools: {
     agentToAgent: {

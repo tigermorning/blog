@@ -41,6 +41,7 @@
 
     <h2><span class="hl">코드로 보면 이렇게 바뀐다</span></h2>
     <p>프록시가 없으면 브라우저 코드가 이런 모양이에요 — 키가 그대로 코드 안에 박혀요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 직접 실행하는 코드 아니에요</span></p>
     <pre>// ❌ 브라우저에서 직접 호출 — 키가 그대로 노출됨
 const res = await fetch('https://sam.example.com/v1/generate', {
   method: 'POST',
@@ -48,12 +49,14 @@ const res = await fetch('https://sam.example.com/v1/generate', {
   body: JSON.stringify({ npc: '김민준', situation: '주방에서 마주침' }),
 });</pre>
     <p>이 코드가 배포되는 순간, 누구나 개발자 도구 네트워크 탭에서 <code>sk-abc123...</code>을 그대로 복사해 갈 수 있어요. 프록시 서버를 세우면 브라우저 코드는 이렇게 바뀌어요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 직접 실행하는 코드 아니에요</span></p>
     <pre>// ✅ 우리 프록시 서버에만 요청 — 키는 안 보임
 const res = await fetch('/api/npc-line', {
   method: 'POST',
   body: JSON.stringify({ npc: '김민준', situation: '주방에서 마주침' }),
 });</pre>
     <p>그리고 그 <code>/api/npc-line</code>을 받아주는 프록시 서버 쪽 코드는 이래요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 직접 실행하는 코드 아니에요</span></p>
     <pre>// server.js — 프록시 서버 (Node.js + Express)
 app.post('/api/npc-line', async (req, res) => {
   const upstream = await fetch('https://sam.example.com/v1/generate', {

@@ -173,6 +173,7 @@
 
     <h2>5. <span class="hl">직접 만들어 실행해보기</span></h2>
     <p>지금까지는 이론이었다면, 여기서는 실제로 코드를 돌려 확인한다. Python으로 짠 <code>get_inventory</code> 도구를 모델에 연결해, 요청→실행→최종 답 세 단계를 그대로 찍어본다.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 직접 실행하는 코드 아니에요</span></p>
     <pre><code>[1] 모델의 요청: get_inventory(sku='A-17', warehouse_id='BUSAN-02')
 [2] 하네스의 실행 결과: {"sku": "A-17", "warehouse_id": "BUSAN-02",
     "available_quantity": 7, "checked_at": "2026-08-27T01:55:00+09:00"}
@@ -188,6 +189,7 @@
       <li><strong>벡터 데이터베이스(vector database)</strong> — 이렇게 숫자로 바꾼 값들을 모아두고, 새 질문이 들어오면 의미가 가장 비슷한 것을 빠르게 찾아주는 저장소. Qdrant가 이 역할을 한다.</li>
     </ul>
     <p>등록은 설정 파일 하나로 끝난다. Claude Code는 프로젝트 루트의 <code>.mcp.json</code>에 이렇게 등록한다.</p>
+    <p class="run-tag">실행: 프로젝트 설정 파일 <span class="run-tag-why">— .mcp.json에 저장하면 Claude Code가 자동 인식</span></p>
     <pre><code>{
   "mcpServers": {
     "qdrant": {

@@ -41,12 +41,14 @@
 
     <h2><span class="hl">실제로 겪으면 이렇게 생겼다</span></h2>
     <p>예를 들어 우리 게임이 <code>https://cheesecake.pages.dev</code>에, 프록시 서버가 <code>https://cheesecake-proxy.onrender.com</code>에 따로 있다고 해봐요. 서버 쪽에서 헤더를 안 챙기면 이렇게 돼요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 직접 실행하는 코드 아니에요</span></p>
     <pre>// server.js — 허용 헤더 없음
 app.post('/api/npc-line', async (req, res) => {
   // ... SAM 호출 ...
   res.json(result); // ← 이대로면 브라우저가 응답을 버림
 });</pre>
     <p>헤더를 붙이면 통과해요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 직접 실행하는 코드 아니에요</span></p>
     <pre>// server.js — 허용 헤더 추가
 app.post('/api/npc-line', async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', 'https://cheesecake.pages.dev');

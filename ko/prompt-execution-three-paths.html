@@ -44,6 +44,7 @@
 
     <h2>2. <span class="hl">Claude Agent SDK</span> — 에이전트 입력 스트림 그대로 쓰기</h2>
     <p>Claude 경로는 Claude Code 로그인과 <code>claude-agent-sdk</code> 설치가 필요하다. 공통 지시는 <code>system_prompt</code>에, 사용자의 현재 요청은 비동기 생성기가 내보내는 user 메시지에 둔다. <code>max_turns=1</code>은 에이전트 턴 수를 제한할 뿐 답변 길이를 제한하지 않고, <code>tools=[]</code>는 도구 호출을 제외한다.</p>
+    <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— claude-agent-sdk 설치 + Claude Code 로그인 필요</span></p>
     <pre><code>import asyncio
 from pathlib import Path
 from claude_agent_sdk import ClaudeAgentOptions, query
@@ -77,6 +78,7 @@ asyncio.run(main())</code></pre>
 
     <h2>4. <span class="hl">LangChain + Gemini</span> — 메시지 객체 목록</h2>
     <p><code>GEMINI_API_KEY</code>를 셸 환경 변수로 설정한 뒤, system 지시와 대화 이력을 각각 알맞은 메시지 객체로 표현한다.</p>
+    <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— GEMINI_API_KEY 환경변수 필요</span></p>
     <pre><code>from pathlib import Path
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -97,6 +99,7 @@ save_run("gemini-with-history.txt", [
 
     <h2>5. <span class="hl">Ollama</span> — role 딕셔너리 목록</h2>
     <p>Ollama 앱을 실행하고 <code>ollama pull qwen3.5:2b</code>로 모델을 준비한 뒤, 같은 관찰을 role 딕셔너리로 표현했다.</p>
+    <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— Ollama 앱 실행 + 모델 준비 필요</span></p>
     <pre><code>from pathlib import Path
 from ollama import chat
 

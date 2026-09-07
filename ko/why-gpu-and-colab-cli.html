@@ -54,6 +54,7 @@
 
     <h2><span class="hl">Colab CLI로 터미널에서 GPU 손에 넣기</span></h2>
     <p>GPU가 없는 노트북에서는 이 실습들을 어떻게 돌릴까요. 가장 손쉬운 길이 구글 코랩(Google Colab)이에요. 브라우저로 노트북을 열면 GPU 한 대를 무료로 빌려줘요. 그런데 2026년 6월, 구글은 여기에 터미널용 도구를 하나 더 얹었어요. 바로 <strong>Colab CLI</strong>(공식 패키지 <code>google-colab-cli</code>)예요. 브라우저 탭을 열지 않고도 명령어 한 줄로 Colab의 GPU 런타임을 띄우고, 코드를 돌리고, 끝나면 정리까지 해줘요.</p>
+    <p class="run-tag">실행: 로컬 터미널 <span class="run-tag-why">— Colab CLI 설치 필요</span></p>
     <pre>pip install google-colab-cli   # 설치
 colab run --gpu T4 train.py    # GPU VM 띄움 → train.py 실행 → 자동 반납</pre>
     <p>무료 요금제에서는 보통 T4 GPU가 주어지고, 더 강한 A100·H100이나 TPU는 유료(Pro/Pro+)에서 열려요. 여기서 실습 방식과 딱 맞물리는 점이 있었어요. Colab CLI는 AI 에이전트가 직접 쓰도록 설계돼서, Claude Code나 Codex 같은 코딩 에이전트가 이 명령을 대신 실행할 수 있어요. 덕분에 앞의 MNIST·파인튜닝에서 "에이전트에게 프롬프트로 시킨다"가 말뿐이 아니라, 에이전트가 실제 GPU에서 코드를 돌리고 정확도를 받아오는 데까지 이어졌어요. 직접 훈련 코드를 쓰지 않아도, 원리를 아는 사람이 "무엇을·어디서·어떻게 돌릴지"만 지시하면 되는 셈이었어요.</p>

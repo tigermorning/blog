@@ -53,6 +53,7 @@
     <h2><span class="hl">locator를 파일 하나로 옮기기</span> — 서브에이전트 정의 파일</h2>
     <p>3편의 locator는 <code>arms.py</code> 안에서 <code>agents={"locator": ...}</code>로 파이썬 코드가 정의했어요. 같은 역할을 터미널에서 쓰는 코딩 에이전트에는 <strong>마크다운 파일 하나</strong>로 정의할 수 있고, Agent Teams의 팀원도 이 정의 파일에서 띄워요. 그래서 역할을 파일로 적어 두면 서브에이전트로도 팀원으로도 같은 정의를 써요. (파일로 규칙을 외워 두는 발상 자체는 <a href="ai-skills-and-rules-files.html">스킬과 규칙 파일</a>에서 봤어요.)</p>
     <p><strong>Claude Code</strong>의 서브에이전트는 프로젝트의 <code>.claude/agents/</code> 폴더에 두는 마크다운이에요. 프로젝트 폴더에 두면 저장소와 함께 버전 관리되어 팀이 같은 정의를 쓰고, <code>~/.claude/agents/</code>(<code>~/</code>는 내 홈 폴더)에 두면 내 모든 프로젝트에서 써요. 파일 머리의 YAML(설정을 "이름: 값" 꼴로 적는 형식)에서 <code>name</code>과 <code>description</code>은 필수이고, <code>tools</code>로 도구를 제한하고, <code>model</code>과 <code>maxTurns</code>로 모델과 턴 예산을 정해요. 머리 아래 본문이 그 에이전트의 시스템 프롬프트가 돼요.</p>
+    <p class="run-tag">실행: 로컬 파일로 저장 <span class="run-tag-why">— .claude/agents/*.md</span></p>
     <pre><code>---
 name: locator
 description: 버그 보고를 받아 원인이 있는 파일 경로·함수 이름·진단을 구조화된 보고로 남긴다. 파일을 고치지 않는다.
@@ -65,6 +66,7 @@ maxTurns: 12
 파일 경로 · 함수 또는 클래스 이름 · 한 문단 진단의 세 항목으로 보고합니다.</code></pre>
     <p><code>tools</code>에 Read·Grep·Glob만 적으면 파일을 고치는 도구는 빠지니, 3편에서 <code>allowed_tools</code>로 건 읽기 전용 제한과 같은 뜻이에요. Claude는 요청과 <code>description</code>을 견줘 이 서브에이전트에 맡길지 스스로 정하고, 반드시 맡기려면 프롬프트에 <code>@agent-locator</code>라고 불러요. 파일을 저장하면 몇 초 안에 반영되지만, agents 폴더를 처음 만들었을 때는 세션을 다시 시작해야 해요.</p>
     <p><strong>OpenCode</strong>는 오픈소스 코딩 에이전트 CLI예요. 정의 파일은 <code>.opencode/agents/</code> 또는 <code>~/.config/opencode/agents/</code>에 두고, 파일 이름이 곧 에이전트 이름이에요. <code>mode</code>가 <code>primary</code>면 Tab 키로 바꿔 가며 직접 대화하는 주 에이전트, <code>subagent</code>면 주 에이전트가 필요할 때 부르거나 사용자가 <code>@이름</code>으로 부르는 보조 에이전트예요. 도구 제한은 <code>permission</code>으로 선언해요.</p>
+    <p class="run-tag">실행: 로컬 파일로 저장 <span class="run-tag-why">— .opencode/agents/*.md</span></p>
     <pre><code>---
 description: 버그 보고를 받아 원인이 있는 파일 경로·함수 이름·진단을 구조화된 보고로 남긴다. 파일을 고치지 않는다.
 mode: subagent

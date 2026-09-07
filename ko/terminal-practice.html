@@ -58,6 +58,7 @@
 
     <h2><span class="hl">1~2단계</span> — 연습 공간을 만들고 파일을 옮겨보기</h2>
     <p>가장 먼저 할 일은 폴더를 만드는 게 아니라 <strong>지금 내가 어디 서 있는지 확인하는 것</strong>이에요. 3편에서 이 단계를 건너뛰었다가 폴더가 엉뚱한 데 생겼으니까요. 위치를 확인하고, 거기가 맞으면 그때 연습 폴더를 만들어요.</p>
+    <p class="run-tag">실행: 로컬 터미널</p>
     <pre><code>pwd
 ls
 mkdir terminal-practice
@@ -67,6 +68,7 @@ ls</code></pre>
     <p><code>pwd</code> 출력에서 지금 내 위치를 노트에 적어두고, <code>ls</code>로 <code>ideas</code>, <code>assets</code>, <code>archive</code> 세 폴더가 보이는지 확인해요. 이미 같은 이름의 폴더가 있다는 에러가 나오면, 지우지 말고 그냥 <code>ls</code>로 확인한 뒤 다음 단계로 넘어가면 돼요.</p>
 
     <p>빈 방 세 개를 만들었으니, 이번엔 그 안에 실제로 뭔가를 넣고 옮겨볼 차례예요. 폴더를 만드는 것보다 <strong>옮기는 것</strong>이 한 단계 더 조심스러운 일이라서 여기서 연습해두는 게 중요해요. 만들기는 잘못돼도 새 폴더가 하나 생길 뿐이지만, 옮기기는 원래 있던 자리에서 파일이 <em>사라지는</em> 일이거든요.</p>
+    <p class="run-tag">실행: 로컬 터미널</p>
     <pre><code>ni ideas/landing-page.txt
 mkdir assets/images
 mv ideas/landing-page.txt assets/images/landing-page.txt
@@ -77,6 +79,7 @@ pwd</code></pre>
 
     <h2><span class="hl">3단계</span> — 길을 잃었을 때 돌아오기, 그리고 명령어의 정체</h2>
     <p>2단계를 하면서 실제로 불편한 게 하나 생겼어요. <code>cd</code>로 폴더를 몇 번 들어갔다 나왔더니, 지금 제가 어느 층에 있는지 헷갈리기 시작한 거예요. 화면에는 마지막 명령의 결과만 남아 있어서 눈으로는 알 수가 없었어요. 그래서 3단계는 <strong>일부러 깊이 들어갔다가 되돌아 나오는</strong> 연습이에요.</p>
+    <p class="run-tag">실행: 로컬 터미널</p>
     <pre><code>cd terminal-practice
 cd assets
 pwd

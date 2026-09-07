@@ -45,6 +45,7 @@
 
     <h2><span class="hl">학습시키기</span> — 경사하강이 실제로 하는 일</h2>
     <p>여기가 핵심이었어요. weight·bias를 엉뚱한 값(0)에서 출발시켜 예측 → 오차 → 조정을 600번 반복해요.</p>
+    <p class="run-tag">실행: Colab <span class="run-tag-why">— torch 설치 번거로움 없이 바로 실행 가능</span></p>
     <pre>w = torch.zeros(1, 1, requires_grad=True)
 b = torch.zeros(1, requires_grad=True)
 

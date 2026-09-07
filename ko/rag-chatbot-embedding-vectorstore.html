@@ -38,6 +38,7 @@
 
     <h2>3. <span class="hl">기본 파이프라인이 멈추는 지점을 우회하기</span></h2>
     <p>브라우저에서 <code>pipeline()</code>을 곧바로 호출하는 방식은 간결해 보이지만, 기본 q4/q8 경로가 선택되면 WASM ONNX Runtime이 <code>GatherBlockQuantized</code> 연산을 지원하지 않아 실패할 수 있다. 해결은 모델 전체를 포기하는 게 아니라 <strong>역할을 분리하는 것</strong>이다. 토크나이저는 transformers.js의 <code>AutoTokenizer</code>로 쓰고, 추론 세션은 <code>model_no_gather_q4.onnx</code>와 데이터 파일을 ONNX Runtime에 직접 넘긴 뒤 WASM 실행 공급자를 지정한다.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 앱 내부 구현 일부, 직접 실행하는 코드 아니에요</span></p>
     <pre><code>// rag.ts의 핵심 경로를 짧게 확인합니다.
 const tokenizer = await AutoTokenizer.from_pretrained(modelId);
 const session = await ort.InferenceSession.create(modelUrl, {
@@ -54,6 +55,7 @@ const session = await ort.InferenceSession.create(modelUrl, {
 
     <h2>6. <span class="hl">실습</span> — 문서 벡터스토어를 에이전트와 함께 만들기</h2>
     <p><code>embed-docs-browser-path.mjs</code>는 Node 환경에서 같은 모델의 feature-extraction pipeline을 쓰고, <code>dtype:"q4"</code>, <code>pooling:"mean"</code>, <code>normalize:true</code> 조건으로 문서 벡터를 만들어 <code>app/public/moducon-docs.json</code>에 둔다.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— Claude Code 등</span></p>
     <pre><code>모두콘 공개 문서 청크 배열을 읽어 브라우저 RAG용 벡터스토어를 만드는
 embed-docs-browser-path.mjs를 작성합니다. onnx-community/embeddinggemma-300m-ONNX를
 사용하고 dtype은 q4, pooling은 mean, normalize는 true로 고정합니다.
@@ -64,6 +66,7 @@ app/public/moducon-docs.json에 저장합니다. 기존 BGE 384차원 경로는 
 
     <h2>7. <span class="hl">검색 결과를 스팟체크로 읽기</span></h2>
     <p>생성 명령이 성공했다는 메시지만으로 벡터스토어가 올바르다고 판단할 수 없다. <code>check_retrieval.py</code> 같은 점검 도구에서 예상 질문을 넣고 top-1, top-3에 어떤 청크가 놓이는지 읽어야 한다. 문서에 근거가 있는 질문은 관련 청크가 상위에 나타나는지, 문서 범위 밖 질문은 억지로 관련 청크가 정답처럼 보이지 않는지도 함께 관찰한다. top-1이 기대와 다를 때는 곧바로 임계값을 바꾸기보다, 질문과 문서가 같은 임베딩 경로를 지나갔는지, 청크의 사실 경계가 적절한지부터 역순으로 점검한다.</p>
+    <p class="run-tag">실행: 로컬 터미널</p>
     <pre><code>python3 check_retrieval.py</code></pre>
 
     <h2><span class="hl">정리</span></h2>

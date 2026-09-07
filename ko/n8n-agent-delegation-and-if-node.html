@@ -37,10 +37,12 @@
     <h2><span class="hl">같은 흐름, 이번엔 코딩 에이전트에게 맡겨봤어요</span></h2>
     <p>맡긴다는 말은 명령을 대신 실행하는 데서 끝나지 않아요. 결과와 실행 기록을 누가 확인했는지도 함께 정해야 해요. 화면에서 5분쯤 걸릴 일을 에이전트가 30초 만에 끝내도, 그 속도만으로 결과를 믿지는 않았어요.</p>
     <p>n8n 화면의 <strong>Settings → n8n API</strong>에서 API 키를 먼저 발급받아요. 이 키로 워크플로 목록 조회·생성·삭제, 실행 기록 조회를 할 수 있어요. 터미널에서는 설치 없이 <code>npx @n8n/cli</code>로 CLI를 바로 써요.</p>
+    <p class="run-tag">실행: 로컬 터미널</p>
     <pre><code>npx @n8n/cli config set-url https://n8n.vibemakers.kr
 npx @n8n/cli config set-api-key &lt;발급한 API 키&gt;
 npx @n8n/cli workflow list</code></pre>
     <p>공식 <a href="ai-skills-and-rules-files.html">스킬</a>을 전역 설치하면 코딩 에이전트가 CLI로 할 수 있는 작업 범위(조회·생성·활성화·실행 기록 확인 등)를 미리 알게 돼요.</p>
+    <p class="run-tag">실행: 로컬 터미널</p>
     <pre><code>npx @n8n/cli skill install --global</code></pre>
     <p>여기서 중요한 건 CLI 명령 자체가 아니라, 에이전트에게 <strong>요청하는 순서</strong>였어요. 한 요청 안에 이 네 단계를 못 박아뒀어요.</p>
     <ol>
@@ -61,6 +63,7 @@ npx @n8n/cli workflow list</code></pre>
     <h2><span class="hl">IF 노드 vs AI Agent 노드</span> — 언제 뭘 쓸까</h2>
     <p>여기까지는 입력이 들어오면 항상 같은 순서로 노드를 실행했어요. 실제 업무에서는 받은 값의 상태에 따라 다음 행동이 달라져야 할 때가 있어요. n8n의 <strong>IF 노드</strong>는 정해진 조건을 검사해서 실행 경로를 true/false로 나눠줘요.</p>
     <p>HTTP Request와 AI Agent 사이에 IF 노드를 끼워, "응답에 title과 description이 모두 있는가"를 조건으로 걸어봤어요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 직접 실행하는 코드 아니에요</span></p>
     <pre><code>HTTP Request
   ↓
 IF: title과 description이 모두 있는가?

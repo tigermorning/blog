@@ -171,6 +171,7 @@
     <ol>
       <li>
         <strong>잘못 고름</strong> — 재고를 확인해야 하는데, 이름이 비슷한 "주문 조회" 도구를 잘못 고르는 경우. 위 그림 ①에서 생긴다. 예를 들어 이런 식이다.
+        <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 직접 실행하는 코드 아니에요</span></p>
         <pre><code>사용자: 부산 창고에 A-17 재고 있어?
 모델(잘못된 선택): get_order_status(order_id="A-17") 호출  ← 재고 조회가 아니라 주문 조회를 부름</code></pre>
       </li>
@@ -186,6 +187,7 @@
     <h2>4. <span class="hl">도구 설명은 모델이 실제로 읽는 문장이다</span></h2>
     <p>도구를 하나 준다는 건 코드를 연결하는 일처럼 보이지만, 모델 입장에서는 다르다. 모델은 함수의 실제 코드를 보지 못하고, <strong>이 도구가 뭘 하는지 설명하는 문장</strong>만 읽는다. 이 문장을 <strong>프롬프트(prompt)</strong>라 부르는데 — 프롬프트가 뭔지 처음이라면 <a href="what-is-prompt-engineering.html">프롬프트 엔지니어링이란?</a>을 먼저 봐도 좋다 — 도구 설명도 결국 이 프롬프트의 일부로 모델에게 전달된다. 이 설명 문장을 <strong>계약(contract)</strong>이라 부른다. 이름, 하는 일, 인자 형식, 반환 형식, 실패했을 때의 행동까지 묶어 정한 약속이라는 뜻이다. 계약이 모호하면 모델은 빈 자리를 그럴듯한 추측으로 채운다.</p>
     <p>실제로 얼마나 그대로 들어가는지, 강의 실습에서 직접 확인한 결과가 있다. 구글 코랩 연결 도구 하나를 등록하고 모델에게 전달되는 최종 입력을 그대로 꺼내 보면 이렇다.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 직접 실행하는 코드 아니에요</span></p>
     <pre><code>&lt;|im_start|&gt;system
 # Tools
 You have access to the following functions:

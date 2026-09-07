@@ -98,6 +98,7 @@
 
     <h2><span class="hl">문제 다섯 건</span> — 정답 없이 테스트로만 확인한다</h2>
     <p>대상은 벤치마크 문제 다섯 건이에요. <strong>SWE-bench</strong>는 실제 오픈소스 저장소의 이슈를 에이전트에게 고치게 하고 테스트로 채점하는 벤치마크이고, <strong>Terminal-Bench</strong>는 터미널 안에서 끝내야 하는 과제 모음이에요. 원문은 GitHub 저장소 <code>SunCreation/d035-agent-lab</code>에 모여 있어요.</p>
+    <p class="run-tag">실행: 로컬 터미널</p>
     <pre><code>git clone https://github.com/SunCreation/d035-agent-lab.git   # 저장소를 내 컴퓨터로 통째로 복사</code></pre>
     <ul>
       <li><strong>sympy-24909</strong> — 접두사에 단위를 곱하면 결과가 1이 되어 단위가 사라져요. <code>milli * W</code>는 정상이라면 밀리와트가 남아야 해요.</li>
@@ -114,6 +115,7 @@
 
     <h2><span class="hl">기준선 실행(A)</span> — 한 에이전트가 끝까지</h2>
     <p>실험 스크립트 <code>arms.py</code>의 핵심은 <code>query()</code>를 한 번 부르는 도우미 함수예요. 턴을 다 써서 SDK가 오류를 던져도, 실험에서는 그게 "턴 소진"이라는 <strong>관측 결과</strong>일 뿐이라 예외로 죽지 않고 남은 상태를 그대로 채점해요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 직접 실행하는 코드 아니에요</span></p>
     <pre><code>async def _run_once(prompt, options):
     """(마지막 ResultMessage, 오류문) 반환."""
     last = None
@@ -151,6 +153,7 @@ if arm == "A":
 
     <h2><span class="hl">워크플로 실행(B)</span> — 코드가 순서를 고정한다</h2>
     <p>건물 보수 현장을 떠올려 보세요. 구조조사팀이 먼저 균열을 살펴 보고서를 넘기고, 시공팀은 그 보고서를 바탕으로 보수해요. B는 이 순서와 인계 내용을 현장이 아니라 <strong>파이썬 코드가 미리 고정</strong>하는 구성이에요. locator는 읽기와 검색만 하고 파일 경로·함수 이름·진단을 구조화된 보고로 남겨요. 그 보고를 받은 fixer가 <strong>새 세션</strong>에서 수정해요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 직접 실행하는 코드 아니에요</span></p>
     <pre><code>loc, err_loc = await asyncio.wait_for(_run_once(
     f"Bug report:\n\n{problem}\n\nLocate the likely cause.",
     ClaudeAgentOptions(cwd=str(repo), model=MODEL, max_turns=12,
@@ -186,6 +189,7 @@ if err:
 
     <h2><span class="hl">오케스트레이션 실행(C)</span> — 리드가 부를지 정한다</h2>
     <p>C에도 같은 읽기 전용 locator가 있어요. 다른 점은 <code>ClaudeAgentOptions</code>의 <code>agents={"locator": ...}</code>로 이 locator를 리드 세션에 <strong>제공만</strong> 한다는 거예요. 리드는 부를지 말지, 받은 내용을 어떻게 쓸지를 스스로 정하고, 최종 수정도 직접 해요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 직접 실행하는 코드 아니에요</span></p>
     <pre><code>elif arm == "C":
     locator = AgentDefinition(
         description="Read-only locator: finds the likely cause of a bug "
@@ -216,11 +220,13 @@ if err:
 
     <h2><span class="hl">바이브 코딩으로 돌리기</span> — 요약이 아니라 명령과 파일을 받는다</h2>
     <p>이 실험 스크립트를 처음부터 손으로 다 짤 필요는 없어요. 위 코드를 참고 자료로 붙여 코딩 에이전트에게 부탁하면 돼요(<a href="what-is-vibe-coding.html">바이브 코딩</a>이 이런 거죠). 실제로 쓴 부탁은 이런 모양이었어요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— Claude Code 등</span></p>
     <pre><code>https://github.com/SunCreation/d035-agent-lab 를 claude sdk 로 haiku4.5 로
 테스트 해볼 수 있게, 실험 구현을 해줘. 결과 파일에서 성공 여부, 비용,
 대화 횟수, 걸린 시간을 찾아 정리하고, 실행한 명령과 결과 파일 경로도
 보여 줘.  # 참고사항으로 위 코드 제공</code></pre>
     <p>인스턴스 준비와 채점까지 똑같이 만들 필요는 없어요. "한 문제를 한 에이전트가 처리하고 결과 파일을 남긴다"는 구조만 같으면 돼요. 다만 위임한 뒤에 <strong>에이전트의 요약을 결과로 받아들이지 말고</strong>, 실제로 실행된 명령과 실제로 생긴 결과 파일을 함께 확인해요. C를 돌릴 때는 "리드가 locator를 실제로 불렀는지 기록에서 확인해 알려 줘"까지 부탁에 넣어요.</p>
+    <p class="run-tag">실행: 로컬 터미널</p>
     <pre><code># 가상 환경의 파이썬으로 arms.py 실행. 뒤의 두 단어가 "어느 실행, 어느 문제"
 .venv/bin/python arms.py A sympy__sympy-24909
 .venv/bin/python arms.py B sympy__sympy-24909

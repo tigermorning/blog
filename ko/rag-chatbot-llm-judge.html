@@ -35,6 +35,7 @@
 
     <h2>2. <span class="hl">여섯 필드로 판정을 데이터 구조로 읽기</span></h2>
     <p>판정 프롬프트는 평가 기준을 모호한 칭찬이나 인상으로 남기지 않고, JSON 필드와 판단 대상을 명시한다. 특히 근거 없는 질문에 답을 꾸며내지 않고 "없다"고 말한 경우는 실패가 아니라 <code>refusal:true</code>로 따로 분리해야, 챗봇이 무엇이든 답하는 도구가 아니라 확인 가능한 자료 안에서만 답하는 안내 도구가 된다.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 직접 실행하는 코드 아니에요</span></p>
     <pre><code>당신은 RAG 챗봇 답변의 평가자입니다. 아래 [질문], [근거자료], [답변]을 읽고 다음 기준으로 JSON만 출력합니다.
 grounded: 답변 내용이 근거자료에서 나왔는가 (true/false)
 noHalluc: 근거에 없는 사실을 지어내지 않았는가 (true/false)
@@ -63,6 +64,7 @@ comment: 한두 문장 평어 (한국어)
 
     <h2>3. <span class="hl">로컬 자기평가의 한계까지 함께 기록한다</span></h2>
     <p>로컬 엔진에서는 답변 생성에 쓴 <code>qwen3.5:2b</code>에게 같은 질문·근거·답변을 다시 보내되, 스트리밍을 끄고 사고 출력도 끄며 JSON 형식과 온도 0을 지정한다.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 직접 실행하는 코드 아니에요</span></p>
     <pre><code>stream:false, think:false, format:"json", options:{temperature:0}</code></pre>
     <p>이 경로는 외부 API 키 없이 브라우저의 로컬 Ollama 호출로 평가를 수행하므로, 키 발급이나 서버 구성보다 <strong>판정 결과가 생성 결과와 어떻게 붙는지</strong>에 집중할 수 있다. 다만 답변 모델과 평가 모델이 같은 2B 모델이라, 이 평가는 독립 심사가 아니다. 세밀한 사실 차이나 문맥 누락을 거칠게 판정할 수 있다는 한계를 화면과 기록에서 숨기지 않아야 한다. 모델이 간혹 5점 만점처럼 score를 반환하면 <code>score ≤ 5</code>일 때 <code>(score/5)×100</code>으로 환산해 점수 체계의 오해를 방어하고, JSON 파싱이나 호출이 실패하면 <code>judgeError</code> 배지만 남긴 채 이미 생성된 답변과 UI는 유지한다. 사람의 좋아요·싫어요 표시가 판정 배지와 같은 방향이면 자동 기준과 사용 경험이 일단 맞물린 사례로 읽고, 어긋나면 판정 기준이 놓친 유용성 또는 사용자가 놓친 근거를 답변·출처·평어와 함께 다시 읽는다.</p>
 
