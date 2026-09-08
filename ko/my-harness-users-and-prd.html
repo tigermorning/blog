@@ -178,9 +178,40 @@
     <p>AI가 코드를 쓸 수 있다는 사실이, 그 코드가 <strong>제 의도와 같아진다는 뜻은 아니에요.</strong> 빠진 결정은 사라지는 게 아니라 <strong>누군가 대신 채웁니다.</strong> 그게 저인지 AI인지를 정하는 게 이번 편이에요.</p>
 
     <h2><span class="hl">빈칸이 남아 있는 설계 자료</span></h2>
-    <p>그래서 이 과정에서는 완성된 코드를 따라 치는 대신, <strong>일부가 비어 있는 설계 자료</strong>(강의에서는 <code>harness-design-kit</code>이라는 폴더로 제공돼요)로 시작해요. 이걸 <a href="choosing-ai-coding-tools.html">Claude Code나 OpenCode</a> 같은 코딩 에이전트의 작업 폴더로 열고 대화를 시작합니다.</p>
+    <p>그래서 이 과정은 <strong>완성된 코드를 따라 치는 실습이 아니에요.</strong> 시작할 때 손에 쥐는 건 동작하는 프로그램이 아니라 <strong>문서 몇 개가 들어 있는 폴더</strong>예요. 강의에서는 <code>harness-design-kit</code>이라는 이름으로 제공되는데, 이름이 무엇이든 성격은 같아요 — <strong>절반쯤 적혀 있고 나머지는 "여기는 네가 정해야 한다"고 표시된 채 비어 있는 설계 문서 묶음</strong>이에요.</p>
+    <p>여기서 <strong>"빈칸"이 무엇을 뜻하는지</strong>가 제일 헷갈리는 지점이라 먼저 못 박고 갈게요. <strong>비어 있는 건 코드가 아니라 결정이에요.</strong> 함수 본문이 <code>TODO</code>로 비어 있으니 채우라는 뜻이 아니라, <strong>"이 하네스를 터미널에서 쓸 건지 웹 화면으로 쓸 건지" 같은 선택 자체가 아직 안 정해진 상태로</strong> 문서에 적혀 있다는 뜻이에요. <code>PRD.md</code> 안의 한 항목은 대략 이런 모양이에요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 발췌 <span class="run-tag-why">— 실제 파일에 있는 한 항목의 모양이에요</span></p>
+    <pre><code>## D02 — 실행 환경
+상태: OPEN
+후보: (가) 터미널에서 실행하는 명령줄 도구
+      (나) 브라우저로 접속하는 웹 화면
+결정:
+이유:</code></pre>
+    <p><strong>결정</strong>과 <strong>이유</strong> 줄이 비어 있죠. 이번 편에서 하는 일은 이 두 줄을 채우는 거예요. 그리고 채우는 방법이 <strong>혼자 골똘히 고민하기</strong>가 아니라 <strong>코딩 에이전트와 대화하면서 채우기</strong>예요. 앞의 "좋은 선택"에서 말한 그 방식이 여기서 실제 작업이 됩니다.</p>
+
+    <h3>1. 폴더를 열고 에이전트를 켜기</h3>
+    <p>설계 자료 폴더를 내 컴퓨터에 내려받은 다음, <strong>터미널을 열고 그 폴더 안으로 이동해서</strong> 코딩 에이전트를 실행해요. 여기서 폴더로 <em>이동한 뒤에</em> 실행한다는 게 중요해요. 코딩 에이전트는 <strong>실행한 위치를 작업 폴더로 삼고, 그 안의 파일만 읽고 고쳐요.</strong> 다른 데서 실행하면 애초에 이 문서들이 보이지 않아요.</p>
+    <p class="run-tag">실행: 터미널 <span class="run-tag-why">— 폴더로 이동한 뒤 에이전트 켜기</span></p>
+    <pre><code>cd harness-design-kit
+claude</code></pre>
+    <p><a href="choosing-ai-coding-tools.html">Claude Code든 OpenCode든</a> 이미 설치해 둔 쪽이면 돼요. 마지막 줄의 <code>claude</code> 자리에 쓰는 도구의 실행 명령을 넣으면 되고, 설치가 아직이라면 <a href="ai-agent-dev-environment.html">개발 환경 준비 편</a>을 먼저 보고 오세요.</p>
+
+    <h3>2. 첫 마디로 "코드 금지"를 걸기</h3>
+    <p>에이전트가 켜지면 처음 보내는 말이 이거예요.</p>
     <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— Claude Code 등</span></p>
     <pre><code>README와 설계 문서를 읽고, 아직 정하지 않은 것부터 같이 정하자. 코드는 아직 만들지 마.</code></pre>
+    <p>짧은 문장이지만 <strong>세 가지를 한꺼번에 지시</strong>하고 있어요. 첫째, 내가 설명하기 전에 <strong>폴더의 문서를 먼저 읽으라</strong>는 것. 둘째, 대화의 주제를 <strong>빈칸(<code>OPEN</code>)으로 남은 결정</strong>으로 좁히라는 것. 셋째, <strong>지금 구현을 시작하지 말라</strong>는 것이에요. 마지막 문장이 없으면 대부분의 코딩 에이전트는 몇 마디 나눈 뒤 바로 파일을 만들기 시작해요 — 그러면 앞의 "나쁜 선택"으로 되돌아가는 거죠.</p>
+
+    <h3>3. 오가는 대화의 한 바퀴</h3>
+    <p>이 뒤로는 <strong>에이전트가 질문하고 내가 답하는 왕복</strong>이 이어져요. 한 바퀴는 이렇게 돌아요.</p>
+    <ol>
+      <li>에이전트가 문서를 읽고 <strong>아직 비어 있는 항목을 찾아 질문</strong>해요. "D02 실행 환경이 <code>OPEN</code>입니다. 터미널과 웹 중 어느 쪽으로 쓰실 건가요?"</li>
+      <li>제가 <strong>제 사정을 근거로</strong> 답해요. "터미널. 혼자 쓰고, 실습 폴더 안에서만 돌릴 거라서 화면까지는 필요 없어."</li>
+      <li>에이전트가 <strong>고른 값과 이유를 문서에 적어요.</strong> <code>PRD.md</code>의 그 항목은 <code>CHOSEN</code>이 되고, 고른 이유는 <code>DECISIONS.md</code>에 남아요.</li>
+      <li>다음 빈칸으로 넘어가요. 이걸 <strong>빈칸이 떨어질 때까지 반복</strong>해요.</li>
+    </ol>
+    <p>그러니 이 실습이 끝났을 때 손에 남는 건 <strong>코드가 아니라 채워진 문서</strong>예요. 허전하게 느껴질 수 있는데, 이 문서가 다음 편부터 만들 코드의 <strong>기준</strong>이 돼요. 나중에 구현이 어긋났을 때 <strong>"여기 이렇게 적어 뒀는데 코드가 다르다"</strong>라고 짚을 근거가 이 파일들이거든요.</p>
+    <p>강의 자료가 없어도 따라 할 수 있어요. <strong>빈 폴더를 하나 만들고 아래 표의 파일들을 직접 만들면 돼요.</strong> 처음부터 다 만들 필요도 없고, <code>PRD.md</code> 하나에 "내가 쓸 사람은 누구, 시킬 일은 무엇, 아직 못 정한 것은 무엇" 세 덩어리만 적어 두고 시작해도 대화는 굴러가요.</p>
     <p>폴더 안 문서들은 역할이 갈려 있어요. 같은 설명을 여러 파일에 복제하지 않고 각자 맡은 것만 적는 게 요령이에요.</p>
     <table>
       <thead><tr><th>문서</th><th>이 대화에서 맡는 역할</th></tr></thead>
