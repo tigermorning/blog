@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>도커(Docker)란 무엇인가 — 이미지와 컨테이너, 상자에 뭘 담느냐 - Tigermorning</title>
+  <meta name="description" content="도커를 밀키트 비유로 풀어 이미지와 컨테이너의 차이를 잡고, 가상 머신·파이썬 가상환경·런타임 버전 관리자와 무엇이 다른지 구분합니다. 볼륨을 안 붙여 데이터를 날리는 실수, 도커가 실제로 쓰이는 자리, 자원이 부족할 때의 판단까지 완전 초보자 기준으로 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="도커(Docker)란 무엇인가 — 이미지와 컨테이너, 상자에 뭘 담느냐">
+  <meta property="og:description" content="도커를 밀키트 비유로 풀어 이미지와 컨테이너의 차이를 잡고, 가상 머신·파이썬 가상환경·런타임 버전 관리자와 무엇이 다른지 구분합니다. 볼륨을 안 붙여 데이터를 날리는 실수, 도커가 실제로 쓰이는 자리, 자원이 부족할 때의 판단까지 완전 초보자 기준으로 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/what-is-docker.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">도커(Docker)란 무엇인가</span> — 이미지와 컨테이너, 상자에 뭘 담느냐</h1>
+    <p class="post-date">2026. 9. 8.</p>
+    <p class="post-date">※ 이 글은 같이 공부하는 분들과 나눈 대화에서 출발해, 제 나름의 언어로 정리한 것입니다.</p>
+
+    <p class="one-liner">도커는 프로그램과 그 프로그램이 돌아가는 데 필요한 환경을 통째로 상자 하나에 담아, 어느 컴퓨터에서든 같은 조건으로 실행하게 해 주는 도구다.</p>
+
+    <hr>
+
+    <h2><span class="hl">왜 이 글을 쓰게 됐나</span></h2>
+    <p>"도커는 주로 어디에 쓰나요?"라는 질문에 누군가 "서비스 배포요"라고 답했고, 다른 분이 이렇게 받았어요 — <strong>"주 사용처가 딱 정해져 있진 않아요. 컨테이너에 뭘 담느냐에 따라 그 컨테이너의 역할이 바뀌듯이, 컴퓨터의 컨테이너도 똑같아요."</strong></p>
+    <p>이 말이 정확해요. 도커는 "배포 도구"가 아니라 <strong>담는 그릇</strong>이에요. 안에 웹 서버를 담으면 웹 서버가 되고, 데이터베이스를 담으면 데이터베이스가 되고, 실험용 파이썬 환경을 담으면 실험실이 돼요. 그래서 "도커로 뭘 하나요"라는 질문은 "상자로 뭘 하나요"만큼이나 답이 넓어요.</p>
+    <p>제가 이 블로그에서 도커를 여러 번 스쳐 지나갔는데 — <a href="n8n-self-hosting-options.html">n8n 직접 띄워보기</a>에서 "Docker로 옮기기"를 시키고, <a href="my-harness-benchmark-local-port.html">벤치마크 10문항 로컬 평가</a>에서는 "Docker 없이 돌린다"를 전제로 설명했어요 — 정작 도커가 무엇인지는 한 번도 제대로 풀지 않았더라고요. 이 글이 그 자리예요.</p>
+
+    <h2><span class="hl">비유</span> — 남의 집 부엌과 밀키트</h2>
+    <p>요리사 한 명이 자기 주방에서는 늘 같은 맛을 내요. 그런데 친구 집 부엌에서 같은 요리를 하면 맛이 달라져요. 그 집엔 쓰던 간장이 없고, 팬 크기가 다르고, 불 세기도 달라요. 매번 "여기선 왜 안 되지"를 처음부터 다시 겪어요.</p>
+    <p>밀키트는 이걸 다르게 풀어요. 손질된 재료, 계량된 양념, 조리법을 <strong>한 상자에 다 담아서</strong> 보내요. 그 상자만 있으면 어느 집 부엌에서 뜯든 같은 맛이 나와요. 그 집에 간장이 있든 없든 상관없어요 — 필요한 건 상자 안에 다 들었으니까요.</p>
+    <table>
+      <thead><tr><th>밀키트에서는</th><th>도커에서는</th></tr></thead>
+      <tbody>
+        <tr><td>냉장고에 든 포장 그대로의 밀키트 상자 (아직 요리 아님)</td><td><strong>이미지<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup></strong> — 아직 실행 안 된 정지 상태의 덩어리</td></tr>
+        <tr><td>상자를 뜯어 불에 올린 상태</td><td><strong>컨테이너<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup></strong> — 실제로 돌고 있는 것</td></tr>
+        <tr><td>같은 밀키트 세 상자를 동시에 조리</td><td>이미지 하나로 컨테이너를 여러 개 띄우기</td></tr>
+        <tr><td>상자 안의 재료·양념·조리법 전부</td><td>프로그램 + 필요한 라이브러리 + 설정 파일 전부</td></tr>
+        <tr><td>남의 집 부엌 (간장 없음, 팬 다름)</td><td>내 컴퓨터의 운영체제와 설치된 프로그램 버전</td></tr>
+        <tr><td>다 먹고 냄비 씻으면 그 집 부엌은 원래대로</td><td>컨테이너를 지우면 내 컴퓨터엔 흔적이 안 남음</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 도커가 고정하는 건 "요리"가 아니라 <strong>부엌 조건</strong>이에요 — 무엇을 만드느냐가 아니라, 어디서 만들어도 같아지게 하는 쪽이에요.</p>
+    <p>다만 여기서 비유가 끊기는 점이 둘 있어요. 하나는 <strong>밀키트는 먹으면 없어지지만 컨테이너는 도는 동안 결과물이 쌓인다</strong>는 거예요 — 데이터베이스라면 저장된 데이터가 그 안에 생기죠. 그래서 아래에서 볼 "볼륨"이 필요해요. 다른 하나는 <strong>컨테이너가 부엌 설비를 아예 안 쓰는 건 아니라는</strong> 거예요. 불과 가스는 그 집 것을 써요 — 도커도 컴퓨터의 핵심 부분(커널<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>)은 빌려 씁니다. 이게 뒤에 나올 "가상 머신과의 차이"의 뿌리예요.</p>
+
+    <h3>또 하나의 비유 — 옛날 CD 이미지와 가상 드라이브</h3>
+    <p>대화에서 이런 비유도 나왔어요. 예전에 CD를 통째로 파일 하나로 떠 놓은 <strong>이미지 파일(.iso)</strong>을 가상 드라이브에 "꽂아서" 실물 CD 없이 실행하던 프로그램들이 있었죠. 그 파일은 그냥 있을 땐 아무것도 안 해요. <strong>꽂아야 비로소 돌아가요.</strong></p>
+    <p>도커도 똑같아요. 이미지를 내려받기만 하면 아무 일도 안 일어나요. <strong>실행해서 컨테이너로 만들어야</strong> 그때부터 돌아가요. "도커 이미지 받았는데 왜 아무것도 안 되죠?"의 답이 여기 있어요. 다만 이 비유도 한 지점에서 끊겨요 — CD 이미지는 읽기 전용 디스크를 흉내 내는 것뿐이지만, 컨테이너 안에서는 프로그램이 <strong>실제로 실행돼요</strong>.</p>
+
+    <h2><span class="hl">전체 흐름</span> — 이미지가 만들어져서 컨테이너로 도는 길</h2>
+    <svg viewBox="0 0 720 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dockerfile에서 이미지를 만들고 컨테이너로 실행하는 흐름, 그리고 가상 머신과 컨테이너의 층 구조 비교">
+      <text x="10" y="22" font-family="var(--font-heading)" font-size="16" fill="var(--accent)">① 정지 상태에서 도는 상태로</text>
+
+      <rect x="10" y="60" width="120" height="44" rx="8" fill="none" stroke="var(--border)" stroke-width="3"/>
+      <text x="24" y="80" font-family="var(--font-body)" font-size="13" fill="var(--ink)">Dockerfile</text>
+      <text x="24" y="97" font-family="var(--font-body)" font-size="11" fill="var(--muted)">담을 것 적은 목록</text>
+
+      <line x1="130" y1="82" x2="168" y2="82" stroke="var(--muted)" stroke-width="2"/>
+      <polygon points="168,76 181,82 168,88" fill="var(--muted)"/>
+      <text x="155" y="66" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">build</text>
+
+      <rect x="185" y="60" width="130" height="44" rx="8" fill="none" stroke="var(--accent)" stroke-width="3"/>
+      <text x="199" y="80" font-family="var(--font-body)" font-size="13" fill="var(--ink)">이미지</text>
+      <text x="199" y="97" font-family="var(--font-body)" font-size="11" fill="var(--muted)">아직 안 도는 덩어리</text>
+
+      <line x1="315" y1="82" x2="353" y2="82" stroke="var(--muted)" stroke-width="2"/>
+      <polygon points="353,76 366,82 353,88" fill="var(--muted)"/>
+      <text x="340" y="66" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">run</text>
+
+      <rect x="370" y="30" width="150" height="32" rx="8" fill="none" stroke="var(--border)" stroke-width="3"/>
+      <text x="384" y="51" font-family="var(--font-body)" font-size="12" fill="var(--ink)">컨테이너 1 (도는 중)</text>
+      <rect x="370" y="68" width="150" height="32" rx="8" fill="none" stroke="var(--border)" stroke-width="3"/>
+      <text x="384" y="89" font-family="var(--font-body)" font-size="12" fill="var(--ink)">컨테이너 2 (도는 중)</text>
+      <rect x="370" y="106" width="150" height="32" rx="8" fill="none" stroke="var(--border)" stroke-width="3"/>
+      <text x="384" y="127" font-family="var(--font-body)" font-size="12" fill="var(--ink)">컨테이너 3 (도는 중)</text>
+
+      <line x1="520" y1="84" x2="565" y2="84" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 4"/>
+      <rect x="570" y="60" width="140" height="48" rx="8" fill="none" stroke="var(--accent)" stroke-width="3"/>
+      <text x="584" y="80" font-family="var(--font-body)" font-size="12" fill="var(--ink)">볼륨 (컨테이너 밖)</text>
+      <text x="584" y="98" font-family="var(--font-body)" font-size="11" fill="var(--muted)">데이터는 여기 남는다</text>
+
+      <text x="10" y="160" font-family="var(--font-body)" font-size="12" fill="var(--muted)">이미지 하나로 컨테이너를 여러 개 띄울 수 있고, 컨테이너를 지워도 볼륨에 넣어 둔 데이터는 남는다.</text>
+
+      <text x="10" y="200" font-family="var(--font-heading)" font-size="16" fill="var(--accent)">② 가상 머신과 무엇이 다른가</text>
+
+      <text x="10" y="232" font-family="var(--font-body)" font-size="13" fill="var(--ink)">가상 머신</text>
+      <rect x="10" y="248" width="150" height="34" rx="6" fill="none" stroke="var(--border)" stroke-width="3"/>
+      <text x="24" y="270" font-family="var(--font-body)" font-size="12" fill="var(--ink)">앱 A</text>
+      <rect x="170" y="248" width="150" height="34" rx="6" fill="none" stroke="var(--border)" stroke-width="3"/>
+      <text x="184" y="270" font-family="var(--font-body)" font-size="12" fill="var(--ink)">앱 B</text>
+      <rect x="10" y="288" width="150" height="34" rx="6" fill="none" stroke="var(--accent)" stroke-width="3"/>
+      <text x="24" y="310" font-family="var(--font-body)" font-size="12" fill="var(--ink)">게스트 OS 통째로</text>
+      <rect x="170" y="288" width="150" height="34" rx="6" fill="none" stroke="var(--accent)" stroke-width="3"/>
+      <text x="184" y="310" font-family="var(--font-body)" font-size="12" fill="var(--ink)">게스트 OS 통째로</text>
+      <rect x="10" y="328" width="310" height="34" rx="6" fill="none" stroke="var(--border)" stroke-width="3"/>
+      <text x="24" y="350" font-family="var(--font-body)" font-size="12" fill="var(--ink)">하이퍼바이저</text>
+      <rect x="10" y="368" width="310" height="34" rx="6" fill="none" stroke="var(--border)" stroke-width="3"/>
+      <text x="24" y="390" font-family="var(--font-body)" font-size="12" fill="var(--ink)">호스트 OS (커널)</text>
+      <rect x="10" y="408" width="310" height="34" rx="6" fill="none" stroke="var(--border)" stroke-width="3"/>
+      <text x="24" y="430" font-family="var(--font-body)" font-size="12" fill="var(--ink)">내 컴퓨터 하드웨어</text>
+
+      <text x="390" y="232" font-family="var(--font-body)" font-size="13" fill="var(--ink)">도커 컨테이너</text>
+      <rect x="390" y="248" width="100" height="34" rx="6" fill="none" stroke="var(--border)" stroke-width="3"/>
+      <text x="402" y="270" font-family="var(--font-body)" font-size="12" fill="var(--ink)">앱 A</text>
+      <rect x="500" y="248" width="100" height="34" rx="6" fill="none" stroke="var(--border)" stroke-width="3"/>
+      <text x="512" y="270" font-family="var(--font-body)" font-size="12" fill="var(--ink)">앱 B</text>
+      <rect x="610" y="248" width="100" height="34" rx="6" fill="none" stroke="var(--border)" stroke-width="3"/>
+      <text x="622" y="270" font-family="var(--font-body)" font-size="12" fill="var(--ink)">앱 C</text>
+      <rect x="390" y="288" width="320" height="34" rx="6" fill="none" stroke="var(--border)" stroke-width="3"/>
+      <text x="404" y="310" font-family="var(--font-body)" font-size="12" fill="var(--ink)">도커 엔진</text>
+      <rect x="390" y="328" width="320" height="34" rx="6" fill="none" stroke="var(--accent)" stroke-width="3"/>
+      <text x="404" y="350" font-family="var(--font-body)" font-size="12" fill="var(--ink)">호스트 OS (커널) — 다 같이 나눠 씀</text>
+      <rect x="390" y="368" width="320" height="34" rx="6" fill="none" stroke="var(--border)" stroke-width="3"/>
+      <text x="404" y="390" font-family="var(--font-body)" font-size="12" fill="var(--ink)">내 컴퓨터 하드웨어</text>
+      <text x="390" y="428" font-family="var(--font-body)" font-size="12" fill="var(--accent)">↑ 층이 하나 적다 — 그만큼 가볍고 빨리 뜬다</text>
+    </svg>
+    <p class="post-date">읽는 법: ①은 왼쪽에서 오른쪽으로 한 방향 흐름이고, 점선은 "데이터가 컨테이너 밖으로 빠져나가 저장된다"는 뜻이에요. ②는 아래가 하드웨어, 위로 갈수록 사람이 쓰는 프로그램인 <strong>층 그림</strong>이에요. 왼쪽에는 붉은 칸(게스트 OS)이 앱마다 하나씩 있고 오른쪽에는 그 층이 아예 없다는 게 이 그림의 전부예요.</p>
+
+    <h2><span class="hl">그래서 도커는 무엇이 아닌가</span></h2>
+    <p>제가 제일 헷갈렸던 부분이에요. "환경을 고정해 준다"는 도구가 이미 여러 개 있는데, 그것들과 도커가 같은 물건인 줄 알았거든요. 아니었어요 — <strong>고정해 주는 범위가 다 달라요.</strong></p>
+    <table>
+      <thead><tr><th>도구</th><th>무엇을 고정하나</th><th>도커와 뭐가 다른가</th></tr></thead>
+      <tbody>
+        <tr><td>파이썬 가상환경 (venv·conda)</td><td>그 프로젝트가 쓰는 파이썬 패키지 목록과 버전</td><td>운영체제와 시스템 프로그램은 그대로 내 컴퓨터 것 — 다른 컴퓨터로 가면 여전히 달라짐</td></tr>
+        <tr><td>런타임 버전 관리자 (nvm 등), Bun 같은 실행기</td><td>자바스크립트 실행기의 버전</td><td>격리가 없음. 같은 운영체제 위에서 그냥 버전만 바꿔 끼우는 것</td></tr>
+        <tr><td>가상 머신<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup> (VirtualBox 등)</td><td>운영체제를 통째로</td><td>커널까지 따로 띄움 → 무겁고 부팅도 오래 걸림</td></tr>
+        <tr><td><strong>도커</strong></td><td>프로그램 + 라이브러리 + 파일 구조 전부</td><td>커널만은 내 컴퓨터 것을 빌려 씀 → 가상 머신보다 가볍고 빨리 뜸</td></tr>
+      </tbody>
+    </table>
+    <p>대화에서 "알게 모르게 도커 비슷한 걸 많이 써 봤을 거예요, Bun 같은 거요"라는 말이 나왔는데, 여기서 한 번 갈라 두는 게 좋아요. Bun은 자바스크립트를 실행하는 프로그램이지 컨테이너가 아니에요. <strong>겹치는 건 "환경을 통째로 고정한다"는 감각이지, 하는 일이 아니에요.</strong> 위 표에서 보듯 고정하는 범위가 서로 다르고, 도커만 유일하게 <strong>격리</strong>까지 해요.</p>
+
+    <h2><span class="hl">실제로 어디에 쓰나</span></h2>
+    <p>"뭘 담느냐가 역할을 정한다"는 말을 구체적인 장면으로 바꿔 보면 이래요.</p>
+    <table>
+      <thead><tr><th>상황</th><th>상자에 담는 것</th><th>도커를 쓰는 이유</th></tr></thead>
+      <tbody>
+        <tr><td>만든 서비스를 서버에 올릴 때</td><td>웹 서버 + 내 코드</td><td>내 컴퓨터에서 되던 게 서버에서도 그대로 됨</td></tr>
+        <tr><td>데이터베이스가 필요할 때</td><td>PostgreSQL 등</td><td>내 컴퓨터에 직접 설치하지 않고도 씀 — 안 쓰면 지우면 끝</td></tr>
+        <tr><td>자동화 도구를 띄울 때</td><td>n8n 같은 프로그램</td><td>운영체제마다 다른 설치 과정을 건너뜀 (<a href="n8n-self-hosting-options.html">n8n 셀프 호스팅</a>에서 실제로 해 본 것)</td></tr>
+        <tr><td>실험·테스트</td><td>실험용 파이썬 환경, 벤치마크 문제</td><td>망가뜨려도 컨테이너만 지우면 내 컴퓨터는 그대로</td></tr>
+        <tr><td>여러 사람이 같은 조건에서 채점</td><td>채점 코드 + 필요한 도구 전부</td><td>실행 환경 차이가 점수에 섞이지 않음 (<a href="my-harness-benchmark-local-port.html">벤치마크 로컬 평가</a>에서 다룬 지점)</td></tr>
+      </tbody>
+    </table>
+    <p>테스트·실험에 특히 유리한 이유가 마지막 두 줄이에요. 뭔가 설치했다 지웠다를 반복하다 보면 내 컴퓨터가 알 수 없는 상태로 더러워지는데, 컨테이너 안에서는 그럴 일이 없어요.</p>
+
+    <h2><span class="hl">써 보기</span> — 명령 네 개면 감이 와요</h2>
+    <p>도커를 설치했다는 전제로, 실제 명령이 어떻게 생겼는지만 보고 갈게요. 지금 따라 치지 않아도 괜찮아요 — <strong>"이미지를 받는다 / 컨테이너로 띄운다 / 뭐가 도는지 본다"</strong> 이 세 동작이 나뉜다는 것만 보면 돼요.</p>
+    <p>먼저 이미지를 받아 컨테이너로 띄우는 명령이에요. <code>-p</code>는 컨테이너 안의 포트<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>를 내 컴퓨터 쪽으로 연결하라는 뜻이에요. 이걸 안 하면 컨테이너는 잘 돌아도 브라우저로 들어갈 문이 없어요.</p>
+    <p class="run-tag">실행: 로컬 터미널 — 도커가 설치돼 있어야 해요</p>
+    <pre>docker run -p 5678:5678 n8nio/n8n</pre>
+    <p>지금 뭐가 도는지, 어떤 이미지를 갖고 있는지 확인하는 명령이에요.</p>
+    <p class="run-tag">실행: 로컬 터미널</p>
+    <pre>docker ps
+docker images</pre>
+    <p><code>docker ps</code>는 <strong>지금 도는 컨테이너</strong>, <code>docker images</code>는 <strong>내려받아 둔 이미지</strong>를 보여줘요. 둘이 다른 목록이라는 게 이미지와 컨테이너가 다른 것이라는 증거예요.</p>
+    <p>그리고 데이터를 지키려면 볼륨<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup>을 붙여야 해요. <code>-v</code>가 "컨테이너 안 이 폴더는 컨테이너 밖에 저장해 달라"는 뜻이에요.</p>
+    <p class="run-tag">실행: 로컬 터미널</p>
+    <pre>docker run -p 5678:5678 -v n8n_data:/home/node/.n8n n8nio/n8n</pre>
+    <p>내 프로그램을 이미지로 만들 때는 "무엇을 담을지" 적은 목록 파일을 하나 써요. 이 파일 이름이 <code>Dockerfile</code>이에요.</p>
+    <p class="run-tag">실행: 프로젝트에 Dockerfile로 저장 — docker build 명령이 이 파일을 읽어요</p>
+    <pre>FROM python:3.12
+WORKDIR /app
+COPY . .
+RUN pip install -r requirements.txt
+CMD ["python", "main.py"]</pre>
+    <p>읽어 보면 밀키트 상자를 싸는 순서 그대로예요 — 어떤 바탕에서 시작할지(<code>FROM</code>), 어디에 풀지(<code>WORKDIR</code>), 뭘 넣을지(<code>COPY</code>), 뭘 미리 설치해 둘지(<code>RUN</code>), 뜯었을 때 뭘 실행할지(<code>CMD</code>).</p>
+
+    <h2><span class="hl">나쁜 선택 vs 좋은 선택</span></h2>
+    <p>부엌 비유를 이어서 — "데이터베이스를 도커로 띄워 며칠 작업했다".</p>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">볼륨 없이 <code>docker run</code>만으로 띄우고 며칠 데이터를 쌓았다. 정리한다고 컨테이너를 지웠다 → <strong>안에 있던 데이터가 통째로 사라진다.</strong> 밀키트를 조리한 냄비를 통째로 버린 것과 같아요. 컨테이너는 "지우면 흔적이 안 남는다"는 게 장점인데, 그게 그대로 위험이 되는 지점이에요.</td>
+          <td class="choice-good">처음부터 <code>-v</code>로 볼륨을 붙여 데이터가 <strong>컨테이너 밖에</strong> 저장되게 했다 → 컨테이너를 지우고 새 버전 이미지로 다시 띄워도 데이터는 그대로 붙는다. 상자는 갈아도 냄비 속 내용물은 따로 그릇에 옮겨 둔 셈이에요.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>초보자가 도커에서 가장 크게 다치는 자리가 여기예요. <strong>"컨테이너 안의 것은 언제든 사라질 수 있다"</strong>를 기본값으로 놓고, 남아야 하는 건 반드시 볼륨으로 빼세요.</p>
+
+    <h2><span class="hl">자원이 부족할 때</span></h2>
+    <p>같은 대화에서 이런 이야기도 나왔어요 — 책 실습을 하는데 절반 이상이 메모리 부족으로 실패해서, 모델을 점점 작은 것으로 낮추다 보니 품질이 떨어지더라는 거예요.</p>
+    <p>여기서 두 가지를 갈라 두면 좋아요.</p>
+    <p><strong>도커 자체는 가상 머신보다 가볍지만 공짜는 아니에요.</strong> 위 그림 ②에서 층이 하나 적다는 게 "자원을 안 쓴다"는 뜻은 아니에요. 컨테이너 안에서 도는 프로그램은 결국 내 컴퓨터의 메모리와 CPU를 씁니다. 특히 윈도우·맥에서는 도커가 내부적으로 리눅스 환경을 하나 띄워 두고 쓰기 때문에, 그 몫이 추가로 나가요.</p>
+    <p><strong>하지만 AI 실습이 메모리 부족으로 실패하는 주된 이유는 도커가 아니라 모델 크기예요.</strong> 모델이 메모리에 들어가는지를 계산하는 법은 <a href="kv-cache-and-vram-budget.html">KV 캐시와 VRAM — 내 컴퓨터에 들어갈지 계산하기</a>에, 크기를 줄이면서 품질을 덜 잃는 방법은 <a href="quantization-why-it-still-works.html">양자화 — 정밀도를 깎아도 왜 멀쩡할까</a>에 정리해 뒀어요. 그리고 "내 컴퓨터에서 돌리느냐 API로 부르느냐"를 아예 다른 축으로 놓고 보는 관점이 <a href="three-ways-to-run-an-llm.html">로컬이냐 API냐는 틀린 질문 — 세 갈래와 품질 격차</a>예요.</p>
+    <p>정리하면 — <strong>도커는 "환경이 달라서 안 되는 문제"를 푸는 도구지, "내 컴퓨터가 작아서 안 되는 문제"를 푸는 도구가 아니에요.</strong> 두 문제를 섞으면 엉뚱한 데서 답을 찾게 돼요.</p>
+
+    <h2><span class="hl">직접 해보기</span></h2>
+    <p>설치까지 갔다면 이 순서로 감을 잡아 보세요. 목표는 <strong>"이미지와 컨테이너가 다른 것"을 눈으로 확인하는 것</strong>이에요.</p>
+    <p><strong>할 것:</strong> ⓐ 가벼운 이미지를 하나 받고 <code>docker images</code>로 목록에 뜨는지 본다. ⓑ 이때 <code>docker ps</code>를 쳐 본다 — <strong>비어 있어야 정상이에요.</strong> 이미지는 받았지만 아직 아무것도 안 돌고 있으니까요. ⓒ 그 이미지를 실행하고 다시 <code>docker ps</code>를 친다.<br>
+    <strong>확인할 것:</strong> ⓑ와 ⓒ 사이에 <code>docker images</code> 결과는 그대로인데 <code>docker ps</code> 결과만 바뀐다는 것.<br>
+    <strong>한 걸음 더:</strong> 컨테이너를 지운 뒤 <code>docker images</code>를 다시 쳐 보세요. 이미지는 그대로 남아 있어요 — 밀키트 상자를 하나 조리해 먹었다고 냉장고의 다른 상자가 없어지지 않는 것과 같아요.</p>
+
+    <h2>함께 읽으면 좋은 글</h2>
+    <p class="post-date">한 걸음 더: 도커로 띄운 걸 실제로 인터넷에 올리는 이야기, 집 컴퓨터를 서버로 쓰는 선택지는 <a href="deploying-and-free-hosting.html">배포, 무료 호스팅, 그리고 집 컴퓨터를 서버로 쓰기</a>에 있어요.</p>
+    <p class="post-date">한 걸음 더: <code>-p 5678:5678</code> 같은 포트 이야기가 낯설다면 <a href="domain-http-and-packets.html">도메인·포트·HTTPS — 주소가 화면이 되기까지</a>를 먼저 보세요.</p>
+    <p class="post-date">한 걸음 더: 데이터베이스를 도커로 띄우는 게 나은지, 무료 클라우드 서비스를 쓰는 게 나은지는 <a href="choosing-a-free-database.html">무료로 쓸 수 있는 데이터베이스 고르기</a>와 함께 보면 판단이 서요.</p>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">이미지 — 프로그램과 실행 환경을 통째로 묶어 놓은 파일 덩어리로, 그 자체로는 실행되지 않아요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">컨테이너 — 이미지를 실제로 실행해 돌고 있는 상태이며, 같은 이미지로 여러 개를 동시에 띄울 수 있어요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">커널 — 운영체제의 가장 핵심이 되는 부분으로, 프로그램과 하드웨어 사이를 중개하며 <a href="terminal-shell-kernel-prompt.html">터미널·셸·커널·프롬프트 차이</a>에서 다뤘어요. <a href="#fnref3">↩</a></li>
+        <li id="fn4">가상 머신 — 내 컴퓨터 안에 운영체제를 통째로 하나 더 띄워 별개의 컴퓨터처럼 쓰는 방식이에요. <a href="#fnref4">↩</a></li>
+        <li id="fn5">포트 — 한 컴퓨터 안에서 프로그램마다 나뉘어 있는 출입구 번호로, <a href="domain-http-and-packets.html">도메인·포트·HTTPS</a>에서 설명했어요. <a href="#fnref5">↩</a></li>
+        <li id="fn6">볼륨 — 컨테이너를 지워도 남아야 하는 데이터를 컨테이너 바깥에 따로 저장해 두는 자리예요. <a href="#fnref6">↩</a></li>
+      </ol>
+    </section>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
