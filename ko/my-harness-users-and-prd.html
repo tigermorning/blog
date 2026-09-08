@@ -69,7 +69,7 @@
 
     <h2><span class="hl">전체 흐름</span> — 요청 한 번이 도는 길</h2>
     <p>이번 시리즈에서 만들 프로그램이 하는 일을 한 장에 그리면 이래요. <strong>읽는 법:</strong> 세로 기둥 네 개가 각각 <strong>사용자 · 하네스 · 모델 · 도구</strong>이고, 화살표를 <strong>①부터 ⑨까지 위에서 아래로</strong> 차례대로 읽으면 돼요. 점선 상자 안(②~⑦)이 <strong>답이 나올 때까지 여러 번 도는 반복</strong>이고, 그 바깥의 ①·⑧·⑨는 한 번씩만 지나가요.</p>
-    <svg viewBox="0 0 760 470" role="img" aria-label="사용자 요청이 하네스를 거쳐 모델과 도구 사이를 오가고, 검사를 통과한 도구만 실행된 뒤 최종 답변으로 돌아오는 순서도">
+    <svg viewBox="0 0 760 480" role="img" aria-label="사용자 요청이 하네스를 거쳐 모델과 도구 사이를 오가고, 검사를 통과한 도구만 실행된 뒤 최종 답변으로 돌아오는 순서도">
       <defs>
         <marker id="ah1" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
           <path d="M0,0 L9,4.5 L0,9 z" fill="var(--muted)"/>
@@ -80,67 +80,67 @@
       </defs>
 
       <!-- 세로 기둥 네 개 -->
-      <line x1="75" y1="52" x2="75" y2="452" stroke="var(--border)" stroke-width="2" stroke-dasharray="4 5"/>
-      <line x1="270" y1="52" x2="270" y2="452" stroke="var(--accent)" stroke-width="2" stroke-dasharray="4 5" opacity="0.55"/>
-      <line x1="480" y1="52" x2="480" y2="452" stroke="var(--border)" stroke-width="2" stroke-dasharray="4 5"/>
-      <line x1="680" y1="52" x2="680" y2="452" stroke="var(--border)" stroke-width="2" stroke-dasharray="4 5"/>
+      <line x1="75" y1="58" x2="75" y2="456" stroke="var(--border)" stroke-width="2" stroke-dasharray="4 5"/>
+      <line x1="270" y1="58" x2="270" y2="456" stroke="var(--accent)" stroke-width="2" stroke-dasharray="4 5" opacity="0.55"/>
+      <line x1="480" y1="58" x2="480" y2="456" stroke="var(--border)" stroke-width="2" stroke-dasharray="4 5"/>
+      <line x1="680" y1="58" x2="680" y2="456" stroke="var(--border)" stroke-width="2" stroke-dasharray="4 5"/>
 
       <!-- 등장인물 -->
-      <rect x="15" y="8" width="120" height="42" rx="8" fill="var(--bg)" stroke="var(--border)"/>
-      <text x="75" y="35" text-anchor="middle" font-family="var(--font-body)" font-size="14" fill="var(--ink)">사용자</text>
+      <rect x="15" y="8" width="120" height="48" rx="8" fill="var(--bg)" stroke="var(--border)"/>
+      <text x="75" y="38" text-anchor="middle" font-family="var(--font-body)" font-size="14" fill="var(--ink)">사용자</text>
 
-      <rect x="200" y="8" width="140" height="42" rx="8" fill="var(--bg)" stroke="var(--accent)" stroke-width="2"/>
-      <text x="270" y="28" text-anchor="middle" font-family="var(--font-heading)" font-size="15" fill="var(--accent)">하네스</text>
-      <text x="270" y="44" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">내가 짜는 프로그램</text>
+      <rect x="200" y="8" width="140" height="48" rx="8" fill="var(--bg)" stroke="var(--accent)" stroke-width="2"/>
+      <text x="270" y="29" text-anchor="middle" font-family="var(--font-heading)" font-size="15" fill="var(--accent)">하네스</text>
+      <text x="270" y="47" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">내가 짜는 프로그램</text>
 
-      <rect x="420" y="8" width="120" height="42" rx="8" fill="var(--bg)" stroke="var(--border)"/>
-      <text x="480" y="28" text-anchor="middle" font-family="var(--font-body)" font-size="14" fill="var(--ink)">모델</text>
-      <text x="480" y="44" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">말만 하는 쪽</text>
+      <rect x="420" y="8" width="120" height="48" rx="8" fill="var(--bg)" stroke="var(--border)"/>
+      <text x="480" y="29" text-anchor="middle" font-family="var(--font-body)" font-size="14" fill="var(--ink)">모델</text>
+      <text x="480" y="47" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">말만 하는 쪽</text>
 
-      <rect x="620" y="8" width="120" height="42" rx="8" fill="var(--bg)" stroke="var(--border)"/>
-      <text x="680" y="28" text-anchor="middle" font-family="var(--font-body)" font-size="14" fill="var(--ink)">도구</text>
-      <text x="680" y="44" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">파일 읽기 · 검사 실행</text>
+      <rect x="620" y="8" width="120" height="48" rx="8" fill="var(--bg)" stroke="var(--border)"/>
+      <text x="680" y="29" text-anchor="middle" font-family="var(--font-body)" font-size="14" fill="var(--ink)">도구</text>
+      <text x="680" y="47" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">파일 읽기 · 검사 실행</text>
 
       <!-- ① 요청 -->
-      <text x="172" y="66" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">① 요청</text>
-      <line x1="75" y1="76" x2="264" y2="76" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah1)"/>
+      <text x="172" y="76" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">① 요청</text>
+      <line x1="75" y1="86" x2="264" y2="86" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah1)"/>
 
       <!-- 반복 구간 -->
-      <rect x="168" y="92" width="584" height="282" rx="10" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="7 5" opacity="0.65"/>
-      <text x="180" y="110" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">여기부터 ⑦까지가 답이 나올 때까지 도는 반복</text>
+      <rect x="168" y="96" width="584" height="282" rx="10" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="7 5" opacity="0.65"/>
+      <text x="180" y="115" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">여기부터 ⑦까지가 답이 나올 때까지 도는 반복</text>
 
       <!-- ② -->
-      <text x="375" y="134" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">② 지금까지의 대화 + 쓸 수 있는 도구 목록</text>
-      <line x1="270" y1="144" x2="474" y2="144" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah1)"/>
+      <text x="375" y="139" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">② 지금까지의 대화 + 쓸 수 있는 도구 목록</text>
+      <line x1="270" y1="149" x2="474" y2="149" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah1)"/>
 
       <!-- ③ -->
-      <text x="375" y="174" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">③ “이 도구를 이 값으로 써 주세요” — 말까지만</text>
-      <line x1="480" y1="184" x2="276" y2="184" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah1)"/>
+      <text x="375" y="179" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">③ “이 도구를 이 값으로 써 주세요” — 말까지만</text>
+      <line x1="480" y1="189" x2="276" y2="189" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah1)"/>
 
       <!-- ④ 검사 -->
-      <rect x="180" y="200" width="180" height="52" rx="8" fill="var(--bg)" stroke="var(--accent)" stroke-width="2"/>
-      <text x="270" y="220" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">④ 하네스가 검사</text>
-      <text x="270" y="240" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">등록된 도구인가 · 허용한 폴더인가</text>
+      <rect x="180" y="205" width="180" height="52" rx="8" fill="var(--bg)" stroke="var(--accent)" stroke-width="2"/>
+      <text x="270" y="226" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">④ 하네스가 검사</text>
+      <text x="270" y="246" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">등록된 도구인가 · 허용한 폴더인가</text>
 
       <!-- ⑤ -->
-      <text x="475" y="278" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">⑤ 검사를 통과한 것만 실제로 실행</text>
-      <line x1="270" y1="288" x2="674" y2="288" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah1)"/>
+      <text x="475" y="283" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">⑤ 검사를 통과한 것만 실제로 실행</text>
+      <line x1="270" y1="293" x2="674" y2="293" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah1)"/>
 
       <!-- ⑥ -->
-      <text x="475" y="314" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">⑥ 결과 또는 오류</text>
-      <line x1="680" y1="324" x2="276" y2="324" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah1)"/>
+      <text x="475" y="319" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">⑥ 결과 또는 오류</text>
+      <line x1="680" y1="329" x2="276" y2="329" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah1)"/>
 
       <!-- ⑦ -->
-      <text x="375" y="350" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">⑦ 그 결과를 그대로 돌려주기 — 실패도 결과</text>
-      <line x1="270" y1="360" x2="474" y2="360" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah1)"/>
+      <text x="375" y="355" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">⑦ 그 결과를 그대로 돌려주기 — 실패도 결과</text>
+      <line x1="270" y1="365" x2="474" y2="365" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah1)"/>
 
       <!-- ⑧ 탈출 -->
-      <text x="375" y="404" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">⑧ 도구 요청이 없으면 반복 끝</text>
-      <line x1="480" y1="414" x2="276" y2="414" stroke="var(--accent)" stroke-width="2" marker-end="url(#ah2)"/>
+      <text x="375" y="409" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">⑧ 도구 요청이 없으면 반복 끝</text>
+      <line x1="480" y1="419" x2="276" y2="419" stroke="var(--accent)" stroke-width="2" marker-end="url(#ah2)"/>
 
       <!-- ⑨ 최종 답변 -->
-      <text x="172" y="440" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">⑨ 최종 답변 또는 중단 이유</text>
-      <line x1="270" y1="450" x2="81" y2="450" stroke="var(--accent)" stroke-width="2" marker-end="url(#ah2)"/>
+      <text x="172" y="445" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">⑨ 최종 답변 또는 중단 이유</text>
+      <line x1="270" y1="455" x2="81" y2="455" stroke="var(--accent)" stroke-width="2" marker-end="url(#ah2)"/>
     </svg>
     <p>③과 ⑤ 사이에 <strong>④ 검사</strong>가 끼어 있다는 점이 이 그림의 전부라고 해도 돼요. 모델이 요청했다고 곧바로 실행하는 게 아니라, 등록된 도구인지·인자가 맞는지·허용한 폴더 안인지 확인한 뒤에 실행해요. 이 반복 자체는 <a href="agent-react-loop-and-autogpt.html">에이전트는 어떻게 스스로 반복할까 — ReAct 루프와 AutoGPT 소동</a>에서 본 "생각하고, 행동하고, 결과를 보고 다시 생각하는" 구조와 같아요. 이번엔 그 구조를 <strong>구경하는 게 아니라 직접 코드로 씁니다.</strong></p>
 
