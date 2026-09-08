@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>남이 낸 문제로 재보기 — 벤치마크 10문항 로컬 평가 (8) - Tigermorning</title>
+  <meta name="description" content="내 실습 자료가 아니라 남이 정한 문제와 채점 기준에 하네스를 연결합니다. Terminal-Bench Pro의 고정 10문항, Docker 없이 절대 경로를 로컬 폴더로 옮기는 이식(local-port)이 무엇을 보장하고 무엇을 보장하지 않는지, Agent·도구·verifier의 세 역할, 그리고 첫 기준 실행(baseline)을 완전 초보자 눈높이로 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="남이 낸 문제로 재보기 — 벤치마크 10문항 로컬 평가 (8)">
+  <meta property="og:description" content="종목과 채점표는 남의 것을 그대로 씁니다. 다만 잰 곳이 학교 운동장이라는 사실도 함께 적어야 해요.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/my-harness-benchmark-local-port.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">남이 낸 문제로 재보기</span> — 벤치마크 10문항 로컬 평가 (8)</h1>
+    <p class="post-date">2026. 9. 8.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="my-harness-python-code-reading.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">설계가 코드 어디에 앉는가 — 실행 가능한 Python 하네스 읽기</span>
+    </a>
+
+    <p class="one-liner">벤치마크란 정해진 문제와 실행 조건, 그리고 남이 정한 평가 기준으로 시스템의 동작을 비교하는 방법이다.</p>
+
+    <p>지금까지는 <strong>제가 만든 실습 자료</strong>로 하네스를 확인했어요. 회의록도 제가 썼고, 기대 결과도 제가 정했죠. 이번에는 <strong>다른 사람이 정한 작업과 채점 기준</strong>에 연결합니다. 제 프로그램이 낯선 파일을 읽고, 코드를 쓰고, 결과를 확인하며 작업을 끝낼 수 있는지 보는 거예요.</p>
+
+    <h2><span class="hl">비유</span> — 학교 운동장에서 잰 기록</h2>
+    <p>학교에서 체력 측정을 한다고 해 볼게요. 종목은 제가 고르는 게 아니에요. <strong>팔굽혀펴기, 오래달리기, 유연성</strong>처럼 이미 정해져 있고, 몇 개를 몇 초에 해야 몇 등급인지도 <strong>남이 만든 표</strong>에 적혀 있어요.</p>
+    <p>여기서 두 가지가 갈려요. <strong>종목과 채점표는 공식 그대로</strong>예요. 그런데 <strong>재는 장소는 학교 운동장</strong>이에요. 공식 경기장의 우레탄 트랙이 아니라 흙바닥이고, 그날 바람도 불었고, 신발도 제 운동화죠.</p>
+    <p>그래서 결과를 이렇게 적어야 해요. <strong>"공식 종목·공식 채점표로, 우리 학교 운동장에서 잰 기록"</strong>이요. 이걸 <strong>"공식 기록"</strong>이라고 적으면 거짓말이 되고, 그렇다고 <strong>"우리끼리 만든 놀이"</strong>라고 적으면 종목과 채점표가 공식이라는 사실을 버리는 거예요.</p>
+    <p>그리고 채점하는 사람도 따로 있어요. 체육 선생님이 <strong>"잘했어!"</strong>라고 말한 건 기록이 아니에요. <strong>스톱워치에 찍힌 숫자</strong>가 기록이죠. 뛴 사람과 잰 사람이 다르다는 것, 이게 채점의 핵심이에요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>미리 정해진 종목 10개</td><td><strong>고정 10문항</strong> — <code>benchmark/tasks.json</code>에 기록</td></tr>
+        <tr><td>남이 만든 채점표</td><td><strong>원본 검증기(verifier)<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup></strong> — 원본 <code>pytest</code> 검사</td></tr>
+        <tr><td>공식 경기장 트랙</td><td>원본 <strong>Docker<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup> 컨테이너</strong> 실행 환경</td></tr>
+        <tr><td>우리 학교 운동장</td><td><strong>로컬 이식<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>(local-port)</strong> — 절대 경로를 내 폴더로 옮겨 실행</td></tr>
+        <tr><td>종목별 난이도 표기</td><td>원본 <code>task.toml</code>의 난도 — <strong>수업에서 붙인 게 아님</strong></td></tr>
+        <tr><td>매 종목마다 새로 서는 출발선</td><td><strong>시행<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>(trial)</strong>마다 새 작업 폴더</td></tr>
+        <tr><td>선생님의 "잘했어!"</td><td>모델이 쓴 "완료했습니다" — <strong>점수가 아님</strong></td></tr>
+        <tr><td>스톱워치에 찍힌 숫자</td><td>독립 채점 프로그램의 결과</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 종목과 채점표는 남의 것을 그대로 쓰되, <strong>잰 곳이 학교 운동장이라는 사실</strong>도 기록에 같이 적어요.</p>
+    <p>다만 비유가 끊기는 점이 있어요. 체력 측정은 종목을 다 통과하는 게 목표지만, <strong>이 과제는 열 문제를 다 통과하는 게 완료 조건이 아니에요.</strong> 통과 못 한 문제의 실패 기록을 읽고 <strong>한 군데를 고쳐 다시 재는 것</strong>이 과제예요.</p>
+
+    <h2><span class="hl">고정한 열 문제</span></h2>
+    <p>여기 쓰는 문제는 <strong>Terminal-Bench Pro의 실제 공개 문제</strong>예요. 수업용으로 새로 만들거나 난도를 임의로 붙이지 않았고, 원본 <code>task.toml</code>에 적힌 난도를 그대로 가져왔어요.</p>
+    <p><strong>Manifest<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup></strong>는 실험에 쓸 문제와 조건을 적어 둔 목록이에요. <code>benchmark/tasks.json</code>에 원본 저장소, 고정 커밋, 문제 이름, 난도, 파일 해시가 들어 있어요.</p>
+    <table>
+      <thead><tr><th>원본 문제 이름</th><th>원본 난도</th><th>작업 목표</th></tr></thead>
+      <tbody>
+        <tr><td><code>extract-paper-metadata-to-json</code></td><td>easy</td><td>논문 텍스트에서 제목·저자·초록 등을 추출해 JSON으로 저장</td></tr>
+        <tr><td><code>python-sudoku-solver-backtracking</code></td><td>easy</td><td>주어진 함수 규격으로 스도쿠 풀이를 구현하고 해답 파일 작성</td></tr>
+        <tr><td><code>detect-corrupted-blockchain-transaction</code></td><td>medium</td><td>거래 데이터의 해시 연결을 조사해 손상된 항목 식별</td></tr>
+        <tr><td><code>implement-go-board-analyzer</code></td><td>medium</td><td>바둑 돌의 연결·활로·잡힌 돌을 분석하는 클래스 구현</td></tr>
+        <tr><td><code>python-sokoban-bfs-solver</code></td><td>medium</td><td>추상화한 게임 상태를 탐색해 최단 이동 순서 작성</td></tr>
+        <tr><td><code>recover-encrypted-db-credentials</code></td><td>medium</td><td>실습용 디스크 조각을 재조립하고 규칙에 맞는 <strong>가상</strong> 키 복원</td></tr>
+        <tr><td><code>advanced-json-to-rfc4180-csv-converter</code></td><td>hard</td><td>중첩 데이터·숫자·날짜·유니코드를 엄격한 CSV 규격으로 변환</td></tr>
+        <tr><td><code>implement-depgraph-dependency-resolver</code></td><td>hard</td><td>패키지 버전 제약·충돌·순환을 처리하는 의존성 해결기 구현</td></tr>
+        <tr><td><code>implement-lz77-file-compressor</code></td><td>hard</td><td>정해진 바이너리 형식과 일치 선택 규칙으로 압축기 구현</td></tr>
+        <tr><td><code>implement-nonogram-puzzle-solver</code></td><td>hard</td><td>행·열 단서에 맞는 노노그램 풀이와 오류 처리 구현</td></tr>
+      </tbody>
+    </table>
+    <p>이 표는 <strong>개요</strong>예요. 실제 요구사항은 <strong>원문 그대로</strong> 하네스에 전달하고, 함수·클래스 이름과 출력 형식도 유지해요. 중국어로 작성된 문제도 있어서 개발 도우미에게 한국어 설명을 부탁할 수 있는데, <strong>번역하면서 조건을 줄이거나 바꾸면 안 됩니다.</strong></p>
+    <p>그리고 <strong><code>easy</code>라고 해서 작은 모델이 반드시 푼다는 뜻이 아니에요.</strong> 난도는 원본 메타데이터의 분류일 뿐, 이 로컬 환경에서 새로 측정한 난도가 아니에요.</p>
+
+    <h2><span class="hl">숫자로 보는 이번 평가</span></h2>
+    <table>
+      <thead><tr><th>항목</th><th>값</th><th>측정 조건 / 단서</th></tr></thead>
+      <tbody>
+        <tr><td>문항 수</td><td>10문항</td><td>고정 — 성공한 문제만 모으거나 실패 문제를 바꾸지 않음</td></tr>
+        <tr><td>난도 분포</td><td>쉬움 2 · 중간 4 · 어려움 4</td><td>원본 <code>task.toml</code> 메타데이터 기준</td></tr>
+        <tr><td>한 문제의 배점</td><td>10점 / 10퍼센트포인트</td><td>한 번씩 평가할 때, 분모는 <strong>항상 10</strong></td></tr>
+        <tr><td>문제당 모델 반복</td><td>40단계</td><td>기본 한도 — 기준 실행과 개선 실행에 <strong>동일 적용</strong></td></tr>
+        <tr><td>에이전트 작업 시간</td><td>300초</td><td>문제 하나 기준</td></tr>
+        <tr><td>Python 도구 1회 실행</td><td>10초</td><td>원본 채점은 이와 별도 제한 안에서 실행</td></tr>
+      </tbody>
+    </table>
+    <p>표 아래 단서를 답니다. <strong>이런 한도는 문제를 끝까지 고민할 기회에도 영향을 줘요.</strong> 그러니 <strong>빨리 끝났다는 사실만으로 효율적이라고 결론 내리지 않고</strong>, 한도 때문에 멈춘 결과인지 기록을 확인합니다. 그리고 이 값들은 <a href="my-harness-python-code-reading.html">7편에서 본 일상 CLI의 한도</a>와는 다른 값이에요 — 평가 경로는 따로 정해져 있어요.</p>
+
+    <h2><span class="hl">Docker 없이 돌리는 구조</span></h2>
+    <p>기본 실습에는 <strong>Docker가 필요하지 않아요.</strong> 압축을 푼 프로젝트에서 Python으로 문제 파일을 준비하고, 문제마다 새 작업 폴더를 만들어 실행합니다. 실행 코드는 <strong>제 컴퓨터에서</strong> 동작해요.</p>
+    <p>원본 문제는 컨테이너 안의 <code>/app</code>, <code>/protected</code> 같은 <strong>절대 경로</strong>를 써요. 로컬 실행에서는 이 경로를 각 시행의 <code>workspace/app</code>, <code>workspace/protected</code> 등으로 바꿔요. 문제의 입력 자료·요구사항·원본 Python 채점 코드는 <strong>그대로 쓰되</strong> 경로와 Python 실행 파일 선택만 로컬에 맞추는 것 — 이게 <strong>이식(port)</strong>이에요. <strong>풀이를 단순한 함수 문제로 바꾼 게 아닙니다.</strong></p>
+    <p>예외가 하나 있어요. 자격정보 복구 문제의 원본 이미지에 들어 있던 <strong>정답 목록</strong>은 평가자 전용 캐시에 두고 <strong>모델 작업 폴더에는 복사하지 않아요.</strong> 채점기는 같은 원본 정답 목록을 쓰고, 이 노출 보정도 manifest의 변경 기록에 남깁니다.</p>
+    <p><strong>읽는 법:</strong> 아래 그림에서 왼쪽 <strong>캐시</strong>는 건드리지 않는 원본이고, 가운데는 <strong>시행마다 새로 만드는</strong> 작업 폴더예요. 오른쪽 채점은 <strong>에이전트가 끝난 뒤에</strong> 별도로 돌아요.</p>
+    <svg viewBox="0 0 760 300" role="img" aria-label="원본 캐시에서 시행별 작업 폴더로 복사하고 에이전트가 작업한 뒤 별도 채점기가 검사하는 흐름">
+      <defs>
+        <marker id="ah8" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+          <path d="M0,0 L9,4.5 L0,9 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <rect x="10" y="110" width="150" height="80" rx="8" fill="none" stroke="var(--border)"/>
+      <text x="85" y="138" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)">원본 캐시</text>
+      <text x="85" y="158" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">고정 커밋 · 해시 확인</text>
+      <text x="85" y="175" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">건드리지 않음</text>
+
+      <rect x="212" y="94" width="180" height="112" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="302" y="120" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--accent)">시행별 작업 폴더</text>
+      <text x="302" y="140" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">문제이름__시도번호</text>
+      <text x="302" y="158" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">/workspace</text>
+      <text x="302" y="180" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">매번 새로 복사</text>
+
+      <rect x="444" y="40" width="150" height="72" rx="8" fill="none" stroke="var(--border)"/>
+      <text x="519" y="68" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)">Agent</text>
+      <text x="519" y="88" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">다음 행동 결정</text>
+
+      <rect x="444" y="188" width="150" height="72" rx="8" fill="none" stroke="var(--border)"/>
+      <text x="519" y="216" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)">도구</text>
+      <text x="519" y="236" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">읽기·쓰기·run_python</text>
+
+      <rect x="632" y="110" width="118" height="80" rx="8" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="5 4"/>
+      <text x="691" y="140" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--accent)">verifier</text>
+      <text x="691" y="160" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">원본 pytest</text>
+      <text x="691" y="177" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">작업 후 별도 실행</text>
+
+      <line x1="160" y1="150" x2="206" y2="150" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah8)"/>
+      <line x1="392" y1="120" x2="438" y2="86" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah8)"/>
+      <line x1="438" y1="100" x2="396" y2="132" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah8)"/>
+      <line x1="392" y1="180" x2="438" y2="214" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah8)"/>
+      <line x1="438" y1="228" x2="396" y2="194" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah8)"/>
+      <line x1="594" y1="150" x2="626" y2="150" stroke="var(--accent)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#ah8)"/>
+      <text x="10" y="284" font-family="var(--font-body)" font-size="11" fill="var(--muted)">Agent는 풀고, 도구는 실행하고, verifier는 결과만 봅니다 — 뛴 사람과 잰 사람이 다릅니다.</text>
+    </svg>
+    <p>세 역할이 나뉘어 있다는 게 핵심이에요. <strong>Agent</strong>는 다음 행동을 결정하고, <strong>도구</strong>는 파일을 읽거나 Python 코드를 실행하고, <strong>verifier</strong>는 결과를 검사해요. 모델이 "완료했습니다"라고 말했는지가 아니라 <strong>원본의 검사 조건을 충족했는지</strong>를 봅니다.</p>
+    <p>파일별로는 <a href="my-harness-python-code-reading.html">7편에서 본 그대로</a>예요 — <code>benchmark_source.py</code>가 고정 원본을 준비하고, <code>local_agent.py</code>가 같은 <code>Agent</code> 반복을 평가용 도구에 연결하고, <code>grading.py</code>가 원본 <code>tests/test_outputs.py</code>를 실행해요. 바둑 문제의 원본 검사에서 부르는 <code>mypy</code>와 <code>flake8</code>(각각 타입과 코드 형식을 검사하는 도구예요)도 잠금 파일에 포함돼요.</p>
+    <p>여기서 한 번 더 못 박아 둘게요. <strong>원본 검사 자체가 모든 요구를 엄격하게 판정하는 건 아니에요.</strong> 통과 점수를 제품 품질 전체의 증명으로 해석하지 않습니다.</p>
+
+    <h2><span class="hl">준비부터 첫 실행까지</span></h2>
+    <p><a href="my-harness-python-code-reading.html">7편</a>에서 쓰던 <code>harness-lab</code> 폴더를 그대로 씁니다. <code>pyproject.toml</code>과 <code>run.py</code>가 보이는 위치예요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— Claude Code 등</span></p>
+    <pre><code>README를 보고 로컬 벤치마크를 준비해 줘. 실제 문제 10개와 난도가 맞는지 확인하고, 실행 전 설정을 보여 줘.</code></pre>
+    <p>문제는 <strong>내려받은 원본을 보관하는 캐시</strong>와 <strong>실제로 풀 작업 폴더</strong>로 나뉘어요. 시행마다 입력 파일을 새로 복사하니 <strong>직전 문제의 수정 결과가 다음 문제로 넘어가지 않아요.</strong></p>
+    <p>다만 <strong>작업 폴더를 나눴다고 운영체제 수준의 격리가 생긴 건 아니에요.</strong> 실행한 Python은 제 계정 권한으로 돌아요. 그래서 실습용 자료와 코드만 쓰고, <strong>제 컴퓨터의 민감한 자료를 평가 작업에 섞지 않습니다.</strong> 원본 풀이와 채점 파일은 모델 작업 폴더에 주지 않지만, <strong>이 로컬 방식이 악의적인 코드의 접근까지 막는 보안 샌드박스는 아니에요.</strong></p>
+
+    <h2><span class="hl">첫 기준 실행</span> — baseline</h2>
+    <p><strong>Baseline<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup></strong>은 개선 전 비교 기준이에요. 기본 실행은 고정 열 문제를 한 번씩 순서대로 시도해요. <strong>첫 점수가 낮아도 괜찮아요</strong> — 실패 기록이라는 읽을 재료가 생기니까요.</p>
+    <p>실행 전에 모델과 단계·시간 한도를 정하고, <strong>기준 실행과 개선 실행에 똑같이 적용</strong>합니다.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— Claude Code 등</span></p>
+    <pre><code>현재 하네스로 고정 10문제를 baseline으로 실행해 줘. 점수 화면도 열고, 실패와 실행 오류를 따로 남겨 줘.</code></pre>
+    <p>실행할 때 하네스는 <strong>당시의 소스를 별도 사본에 저장하고 그 사본으로 실행</strong>해요. 기준 실행 도중에 작업 중인 소스를 고쳐도 <strong>그 실행에 새 코드가 섞이지 않게</strong> 하려는 거예요. 그리고 <code>run-metadata.json</code>에 문제 버전, 코드와 manifest 해시, 모델, 실행 한도, 운영체제와 Python 버전 등이 남아요.</p>
+    <p>다만 <strong>로컬 실행은 원본 컨테이너의 CPU·메모리 제한을 강제하지 않아요.</strong> 이 차이도 조건에 포함해 기록합니다.</p>
+
+    <h2><span class="hl">나쁜 선택 vs 좋은 선택</span></h2>
+    <p>같은 체력 측정에서, 결과를 제출하는 두 가지 방식이에요.</p>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad"><strong>무엇을 했나:</strong> 제 하네스를 만들긴 했는데, 평가는 <strong>기본 명령이 실행하는 제공 Python 구현</strong>으로 돌렸어요. 명령 한 줄이면 됐고 점수도 잘 나왔거든요. 그 점수를 제 구현의 점수로 제출했어요.<br><br><strong>무슨 일이 생기나:</strong> 보고서의 숫자가 <strong>제 코드와 아무 관계가 없어요.</strong> 개선 실험도 성립하지 않아요 — 제가 고친 곳이 그 점수에 반영될 리가 없으니까요. 그리고 이건 실수라기보다 <strong>측정 대상 자체를 바꿔치기한 것</strong>이에요.</td>
+          <td class="choice-good"><strong>무엇을 했나:</strong> 평가기가 <strong>제 하네스를 호출하도록 연결부를 바꿨어요.</strong> 문제 설명과 작업 폴더를 전달하고, 종료 상태와 사용량을 돌려받게요.<br><br><strong>무슨 일이 생기나:</strong> 점수가 낮게 나올 수 있어요. 대신 <strong>그 숫자가 제 코드의 숫자</strong>예요. 실패 기록도 제 하네스의 기록이라 다음 편의 개선 가설로 곧장 이어집니다.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— Claude Code 등</span></p>
+    <pre><code>평가기가 내 하네스를 실행하도록 연결해 줘. 문제 설명과 작업 폴더를 전달하고, 종료 상태와 사용량을 돌려주게 해 줘.</code></pre>
+
+    <h2><span class="hl">이 점수를 뭐라고 부를까</span></h2>
+    <p>결과 이름을 정확히 붙이는 게 이번 편의 마지막 일이에요. 이건 <strong>Terminal-Bench Pro 고정 10문항의 로컬 이식판 결과</strong>예요.</p>
+    <ul>
+      <li>난도는 <strong>실제 벤치마크의 표기</strong>가 맞아요.</li>
+      <li>문제와 채점 코드도 <strong>고정된 원본</strong>이 맞고요.</li>
+      <li>다만 실행 환경이 다르므로 <strong>공식 컨테이너 점수나 전체 순위와 직접 비교할 수 없어요.</strong></li>
+    </ul>
+    <p>더 다양한 시스템 도구가 필요한 문제를 다루거나, 여러 사람의 실행 환경을 더 일관되게 맞추고 싶다면 Docker를 쓸 수 있어요. <strong>이번 과제에서는 설치나 사용을 요구하지 않습니다.</strong></p>
+    <p>그리고 이 태도는 이 블로그가 계속 지켜 온 것이기도 해요 — <a href="harness-evaluation-and-comparison.html">결과와 궤적을 함께 본다 — 평가 루프와 일곱 하네스 비교 (5)</a>에서 남의 하네스 점수를 읽을 때 썼던 그 기준을, 이번엔 <strong>제 점수에 적용</strong>하는 거예요.</p>
+
+    <h2><span class="hl">직접 해보기</span></h2>
+    <ol>
+      <li><strong>바꿀 것</strong> — 평가기 연결부를 제 하네스로 바꾸고, 고정 10문항을 한 번씩 <code>baseline</code>이라는 이름으로 실행해요.</li>
+      <li><strong>측정할 것</strong> — 결과에서 <strong>통과·실패·실행 오류·미완료</strong>를 각각 몇 개인지 세요. 넷을 뭉뚱그리지 않는 게 중요해요.</li>
+      <li><strong>비교할 것</strong> — <code>run-metadata.json</code>에 모델·한도·문제 커밋·코드 해시가 남았는지 확인해요. <strong>이게 없으면 다음 편의 비교 실험이 성립하지 않아요.</strong></li>
+    </ol>
+    <p>첫 실행과 개선 실행 모두 <strong>같은 열 문제를 시도한 기록</strong>을 남깁니다. <strong>성공한 문제만 모으거나 실패한 문제를 쉬운 문제로 바꾸지 않아요.</strong> 다음 편에서는 아직 끝나지 않은 문제까지 포함해 점수를 읽고, 변경 한 가지가 어떤 결과로 이어졌는지 비교합니다.</p>
+
+    <h2>함께 읽으면 좋은 글</h2>
+    <ul>
+      <li><a href="harness-evaluation-and-comparison.html">결과와 궤적을 함께 본다 — 평가 루프와 일곱 하네스 비교 (5)</a> — 남의 하네스 점수를 읽는 기준이에요.</li>
+      <li><a href="multi-agent-judging-records.html">통과했다는 말로는 부족하다 — 두 층 채점과 채택·축소·폐기 판정 (4)</a> — 자기 실험을 채점하는 두 층 구조요.</li>
+      <li><a href="harness-hypothesis-experiment.html">내 불편을 가설로 — 개선 실험 설계와 제출 (6)</a> — 다음 편으로 이어지는 실험 설계 감각이요.</li>
+    </ul>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">검증기(verifier) — 에이전트가 만든 산출물을 에이전트와 무관하게 별도로 검사해 통과 여부를 판정하는 채점 프로그램이에요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">Docker — 프로그램과 그 실행 환경을 하나로 묶어 어디서든 같은 조건으로 실행하게 해 주는 도구로, 이번 기본 실습에서는 쓰지 않아요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">이식(port) — 원본의 입력 자료·요구사항·채점 코드는 그대로 두고 경로와 실행 환경만 다른 곳에 맞춰 옮기는 작업이에요. <a href="#fnref3">↩</a></li>
+        <li id="fn4">시행(trial) — 한 문제를 새 작업 상태에서 한 번 풀고 채점하는 단위예요. <a href="#fnref4">↩</a></li>
+        <li id="fn5">Manifest — 실험에 쓸 문제와 조건(저장소·커밋·문제 이름·난도·파일 해시)을 적어 둔 목록이에요. <a href="#fnref5">↩</a></li>
+        <li id="fn6">Baseline — 개선 전후를 비교하기 위해 먼저 재 두는 기준 실행이에요. <a href="#fnref6">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <h3>"내 손으로 만드는 에이전트 하네스" 시리즈</h3>
+    <a class="post-nav" href="my-harness-users-and-prd.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">맡길 일부터 적는다 — 내 하네스의 사용자와 미완성 PRD</span>
+    </a>
+    <a class="post-nav" href="my-harness-platform-and-provider.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">어디서 돌리고 무엇에 연결할까 — 플랫폼·언어·모델 제공자</span>
+    </a>
+    <a class="post-nav" href="my-harness-flow-and-state.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">끝날 때까지 따라가기 — 실행 흐름·상태·승인과 종료 조건</span>
+    </a>
+    <a class="post-nav" href="my-harness-interfaces.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">버튼 하나 뒤의 약속 — API와 도구 인터페이스</span>
+    </a>
+    <a class="post-nav" href="my-harness-acceptance.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">만들기 전에 합격선을 긋는다 — 완료 조건과 검증 시나리오</span>
+    </a>
+    <a class="post-nav" href="my-harness-vertical-slice.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">얇게 한 번 관통시키기 — 첫 구현과 막힌 지점 찾기</span>
+    </a>
+    <a class="post-nav" href="my-harness-python-code-reading.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">설계가 코드 어디에 앉는가 — 실행 가능한 Python 하네스 읽기</span>
+    </a>
+    <p class="post-date">(8) 남이 낸 문제로 재보기 — 벤치마크 10문항 로컬 평가 (이 글)</p>
+    <a class="post-nav" href="my-harness-scoring-and-report.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">분모를 지키는 정직 — 점수 읽기·비교 실험·제출</span>
+    </a>
+
+    <a class="post-nav" href="my-harness-scoring-and-report.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">분모를 지키는 정직 — 점수 읽기·비교 실험·제출</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>

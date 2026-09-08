@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>어디서 돌리고 무엇에 연결할까 — 플랫폼·언어·모델 제공자 (2) - Tigermorning</title>
+  <meta name="description" content="'웹으로 만든다'는 말은 프로그램이 어디서 도는지를 정해 주지 않아요. 화면·하네스 실행 위치·모델 실행 위치가 왜 서로 다른 결정인지, Python·TypeScript·Rust 중 무엇을 고를지, OpenAI API와 Ollama 중 첫 제공자를 어떻게 정하고 무엇으로 검증할지 완전 초보자 눈높이로 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="어디서 돌리고 무엇에 연결할까 — 플랫폼·언어·모델 제공자 (2)">
+  <meta property="og:description" content="터미널이냐 웹이냐, Python이냐 TypeScript냐, OpenAI냐 Ollama냐. 세 질문은 하나로 묶이지 않아요.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/my-harness-platform-and-provider.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">어디서 돌리고 무엇에 연결할까</span> — 플랫폼·언어·모델 제공자 (2)</h1>
+    <p class="post-date">2026. 9. 8.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="my-harness-users-and-prd.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">맡길 일부터 적는다 — 내 하네스의 사용자와 미완성 PRD</span>
+    </a>
+
+    <p class="one-liner">사용자가 요청을 넣는 화면, 내 하네스가 실행되는 컴퓨터, 모델이 실행되는 컴퓨터는 서로 다른 세 개의 결정이며 따로 골라야 한다.</p>
+
+    <p><a href="my-harness-users-and-prd.html">1편</a>에서 <strong>누가 무엇을 맡기는지</strong>(D01)를 적었어요. 이번 편은 그 사람이 <strong>요청을 어디에 입력하고</strong>(D02·D03), <strong>그 요청이 어떤 모델로 가는지</strong>(D04·D05)를 정합니다. 네 칸을 한 번에 다루는 이유는 이것들이 자주 한 덩어리로 뭉뚱그려지기 때문이에요 — "웹으로 만들 거야"라는 한마디가 실은 서로 다른 결정 서너 개를 동시에 건드립니다.</p>
+
+    <h2><span class="hl">비유</span> — 주문 자리, 주방, 로스팅 공장</h2>
+    <p>동네 카페 하나를 떠올려 볼게요. 여기서 커피 한 잔이 나오기까지 <strong>세 개의 다른 장소</strong>가 관여해요.</p>
+    <p>첫째, 손님이 <strong>주문하는 자리</strong>예요. 카운터에서 직원에게 말로 주문할 수도 있고, 입구의 키오스크 화면에서 버튼을 눌러 주문할 수도 있죠. 둘째, <strong>음료를 만드는 주방</strong>이에요. 주문이 어디로 들어왔든 에스프레소를 뽑는 건 이 매장 안 기계예요. 셋째, <strong>원두를 볶는 곳</strong>이에요. 본사 로스팅 공장에서 볶아 배송받을 수도 있고, 매장 구석의 작은 로스터로 직접 볶을 수도 있어요.</p>
+    <p>이 셋은 서로 붙어 있지 않아요. 키오스크를 들여놨다고 주방이 옮겨 가지 않고, 본사 원두를 쓴다고 주문을 본사에 하는 것도 아니죠.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>카운터에서 말로 주문</td><td><strong>CLI<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup></strong> — 터미널에 글자로 요청을 입력</td></tr>
+        <tr><td>입구의 키오스크 화면</td><td><strong>로컬 웹 화면</strong> — 브라우저에서 버튼·입력란으로 조작</td></tr>
+        <tr><td>음료를 만드는 매장 주방</td><td><strong>하네스가 실행되는 컴퓨터</strong> — 파일 읽기·검사 실행이 실제로 벌어지는 곳</td></tr>
+        <tr><td>주방에서 쓰는 기계와 도구 브랜드</td><td><strong>구현 언어</strong> — Python·TypeScript·Rust</td></tr>
+        <tr><td>본사 로스팅 공장에서 원두 배송</td><td><strong>외부 모델 API</strong> — 예: OpenAI</td></tr>
+        <tr><td>매장 구석의 작은 로스터</td><td><strong>로컬 모델 서버</strong> — 예: Ollama<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup></td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> <strong>주문받는 자리</strong>와 <strong>음료를 만드는 주방</strong>과 <strong>원두를 볶는 곳</strong>은 서로 다른 장소이고, 하나를 바꿔도 나머지는 그대로예요.</p>
+    <p>다만 여기서 비유가 끊기는 점이 있어요. 카페는 키오스크를 놓아도 주방 일이 그대로지만, <strong>하네스를 웹으로 바꾸면 새로 설계할 것이 늘어나요.</strong> 작업 중 표시, 완료·실패 상태, 승인 버튼, 통신이 끊겼을 때의 중복 요청 처리 같은 것들이요. 화면이 생겼다는 사실만으로 이런 동작이 따라오지는 않아요.</p>
+
+    <h2><span class="hl">세 축</span> — 무엇이 무엇과 독립인가</h2>
+    <p><strong>읽는 법:</strong> 세 줄은 각각 하나의 결정이에요. 같은 줄 안에서만 좌우로 고르는 것이고, <strong>윗줄에서 왼쪽을 골랐다고 아랫줄도 왼쪽이 되지는 않아요.</strong> 점선은 "여기는 서로 묶여 있지 않다"는 표시예요.</p>
+    <svg viewBox="0 0 720 280" role="img" aria-label="화면, 하네스 실행 위치, 모델 실행 위치가 서로 독립적인 세 개의 결정임을 보여주는 그림">
+      <text x="8" y="30" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">① 화면 (D02)</text>
+      <rect x="200" y="12" width="200" height="42" rx="8" fill="none" stroke="var(--border)"/>
+      <text x="300" y="38" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)">터미널 CLI</text>
+      <rect x="450" y="12" width="200" height="42" rx="8" fill="none" stroke="var(--border)"/>
+      <text x="550" y="38" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)">로컬 웹 화면</text>
+
+      <text x="8" y="118" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">② 하네스 실행 위치</text>
+      <rect x="200" y="100" width="200" height="42" rx="8" fill="none" stroke="var(--border)"/>
+      <text x="300" y="126" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)">내 컴퓨터</text>
+      <rect x="450" y="100" width="200" height="42" rx="8" fill="none" stroke="var(--border)"/>
+      <text x="550" y="126" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)">원격 서버<sup>·</sup></text>
+      <text x="550" y="160" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">파일 기준도 그 서버로 바뀜</text>
+
+      <text x="8" y="216" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">③ 모델 실행 위치 (D04)</text>
+      <rect x="200" y="198" width="200" height="42" rx="8" fill="none" stroke="var(--border)"/>
+      <text x="300" y="224" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)">외부 API (OpenAI 등)</text>
+      <rect x="450" y="198" width="200" height="42" rx="8" fill="none" stroke="var(--border)"/>
+      <text x="550" y="224" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)">로컬 모델 서버 (Ollama)</text>
+
+      <line x1="20" y1="70" x2="700" y2="70" stroke="var(--border)" stroke-dasharray="4 5"/>
+      <line x1="20" y1="176" x2="700" y2="176" stroke="var(--border)" stroke-dasharray="4 5"/>
+      <text x="20" y="262" font-family="var(--font-body)" font-size="12" fill="var(--muted)">예: 터미널 CLI + 내 컴퓨터 실행 + 외부 API 모델 — 세 줄에서 각각 따로 고른 조합</text>
+    </svg>
+    <p>그림에서 제일 자주 헷갈리는 건 <strong>②와 ③</strong>이에요. 하네스가 제 노트북에서 돈다고 <strong>모델까지 노트북에서 도는 건 아니에요.</strong> 제 노트북의 프로그램이 인터넷 너머 모델에 요청을 보낼 수도 있고, 같은 노트북에 띄운 로컬 모델 서버를 부를 수도 있어요. 이 세 갈래는 <a href="three-ways-to-run-an-llm.html">로컬이냐 API냐는 틀린 질문 — 세 갈래</a>에서 다룬 내용이에요.</p>
+    <p>②에서 "원격 서버"를 고르면 하나가 딸려 와요. <strong>파일 작업의 기준이 그 서버가 됩니다.</strong> 제 노트북 폴더가 저절로 서버에 연결되지는 않아요. 여기서 <strong>서버</strong>는 "요청을 받아 처리하는 프로그램"이라는 뜻이지, 꼭 멀리 있는 컴퓨터를 가리키는 말이 아니에요. 내 컴퓨터에서 서버 프로그램을 띄우고 같은 컴퓨터의 브라우저로 접속하는 <strong>로컬 웹 앱</strong>도 있으니까요.</p>
+
+    <h2><span class="hl">첫 화면</span> — 지금 필요한 것만 고르기</h2>
+    <p>특별한 이유가 없다면 강의는 <strong>내 컴퓨터에서 실행하는 터미널 CLI</strong>를 기본안으로 권해요. 웹 화면을 만드는 일보다, <strong>모델과 도구 사이의 실행 흐름을 관찰하기가 쉽기 때문</strong>이에요. 이미 익숙한 언어가 있거나 분명한 화면 요구가 있다면 그쪽을 골라도 됩니다.</p>
+    <table>
+      <thead><tr><th>지금의 사용 상황</th><th>권할 첫 선택</th><th>함께 고려할 점</th></tr></thead>
+      <tbody>
+        <tr><td>내가 자료 정리와 코드 점검에 사용</td><td><strong>로컬 CLI</strong></td><td>실행 기록과 승인 내용을 터미널에서 읽기 쉽게 구성</td></tr>
+        <tr><td>터미널에 익숙하지 않은 사람이 사용</td><td><strong>로컬 웹</strong></td><td>입력·진행·결과·승인을 화면에서 구별되게 설계</td></tr>
+        <tr><td>여러 기기나 여러 사람이 접속해야 함</td><td>접속 요구를 <strong>먼저 구체화</strong></td><td>실행 위치, 인증, 사용자별 파일 접근 범위가 추가로 필요</td></tr>
+      </tbody>
+    </table>
+    <p>CLI를 먼저 고르더라도 <strong>핵심 처리와 터미널 입출력을 분리해 두면</strong> 나중에 웹 화면을 붙일 여지가 생겨요. 그렇다고 전환이 저절로 끝나는 건 아니고요. 오늘 필요한 화면을 고르고, 미래의 화면은 실제로 필요해질 때 따로 설계하는 게 맞습니다.</p>
+
+    <h2><span class="hl">언어</span> — 읽고 고칠 수 있는 쪽으로</h2>
+    <p>Python, TypeScript, Rust 셋 다 이 하네스를 만들 수 있어요. 그리고 <strong>언어를 바꾼다고 모델이 더 정확해지지는 않아요.</strong> 여기서 고르는 건 "파일 작업, 모델 요청, 응답 해석, 도구 실행, 기록을 <em>어떤 코드와 환경으로 다룰까</em>"예요.</p>
+    <table>
+      <thead><tr><th>언어</th><th>이럴 때 고려</th><th>주의할 점</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Python</strong></td><td>간결한 문법으로 파일 처리와 API 연결 코드를 읽어 가고 싶을 때. 기본안</td><td>이미 배운 자료 구조와 함수로 흐름을 설명하기 좋아요</td></tr>
+        <tr><td><strong>TypeScript</strong></td><td>JavaScript 경험이 있거나 웹 화면과 서버를 같은 언어 계열로 다루고 싶을 때</td><td>타입<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>을 적으면 실행 전에 일부 불일치를 잡지만, <strong>외부 API에서 받은 값은 실행 중에도 검사해야</strong> 해요. TypeScript를 쓴다는 이유로 잘못된 모델 응답이 막히지 않아요</td></tr>
+        <tr><td><strong>Rust</strong></td><td>이미 경험이 있거나 컴파일된 CLI의 구조와 자원 관리를 깊게 다루고 싶을 때</td><td>값의 소유와 사용 관계를 컴파일러가 검사하는 <strong>소유권 규칙</strong>을 새로 익혀야 해요. 이번 학습의 중심이 설계라면 그것까지 함께 배울지 판단하세요</td></tr>
+      </tbody>
+    </table>
+    <p>세 언어를 다 설치하거나 같은 기능을 세 번 만들 필요는 전혀 없어요. 그리고 <strong>화면과 언어는 한 묶음이 아니에요</strong> — Python으로도 웹 앱을 만들 수 있고 TypeScript로도 CLI를 만들 수 있어요. Python 코드를 눈으로 따라 읽는 게 아직 부담스럽다면 <a href="reading-python-code-basics.html">파이썬 코드 눈으로 읽기 — 함수·변수·반복·오류·async</a>를 먼저 보고 오면 뒤 편이 편해집니다.</p>
+
+    <h2><span class="hl">제공자</span> — 이름을 정했다고 검증이 끝난 건 아니에요</h2>
+    <p><strong>모델 제공자<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>(provider)</strong>는 프로그램이 모델 실행을 요청하는 서비스나 연결 경로예요. <strong>모델</strong>은 그 경로에서 실제로 답을 만드는 대상이고요. 같은 제공자 안에도 모델은 여러 개라서, <strong>제공자 이름만 정해서는 무엇을 검증할지까지 정해지지 않아요.</strong></p>
+    <table>
+      <thead><tr><th>선택</th><th>준비하고 확인할 내용</th><th>설계에 미치는 영향</th></tr></thead>
+      <tbody>
+        <tr><td><strong>OpenAI API</strong></td><td>발급받은 키, 사용 가능한 모델, 선택한 API의 도구 호출 방식</td><td>자료가 외부 서비스로 전송돼요. 사용량과 오류를 다뤄야 해요</td></tr>
+        <tr><td><strong>Ollama 로컬 모델</strong></td><td>실행 중인 로컬 서버, 설치된 모델, <strong>도구 호출 지원 여부</strong>, 장치 자원</td><td>로컬 실행 환경과 모델의 응답 품질을 직접 확인해야 해요</td></tr>
+      </tbody>
+    </table>
+    <p><strong>Ollama 자체는 모델이 아니에요.</strong> 어떤 모델을 실행하느냐에 따라 도구 요청과 답변 품질이 달라져요. 작은 모델이 돌아간다는 사실만으로 코드 수정까지 잘한다고 볼 수 없고요. Ollama를 처음 써 본다면 <a href="running-local-llm-with-ollama.html">직접 Ollama로 로컬 LLM 돌려보기</a>에 설치와 첫 실행이 정리돼 있어요.</p>
+    <p>한 가지 더 갈라 둘 게 있어요. Ollama는 <strong>OpenAI API의 일부와 호환되는 경로</strong>를 제공해요. 기존 클라이언트 코드를 재사용할 수 있다는 뜻이지, <strong>모든 기능과 저장 방식이 같다는 뜻은 아니에요.</strong> 그리고 <strong>API<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>가 도구 설명을 받아 준다는 것</strong>과 <strong>그 모델이 적절한 도구 호출을 돌려준다는 것</strong>은 완전히 다른 이야기예요.</p>
+
+    <h2><span class="hl">나쁜 선택 vs 좋은 선택</span></h2>
+    <p>같은 카페에서, 새 원두 거래처를 정하는 두 가지 방식이에요.</p>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad"><strong>무엇을 했나:</strong> AI가 "로컬 실행이면 Ollama가 좋습니다"라고 추천하자 그대로 D04를 <code>CHOSEN</code>으로 바꿨어요. 모델 이름은 안 적었고, 도구 호출을 지원하는지도 확인하지 않았어요.<br><br><strong>무슨 일이 생기나:</strong> 구현 뒤 모델이 "파일을 읽었습니다"라는 <strong>문장만</strong> 돌려줘요. 구조화된 도구 요청이 아예 안 와서 하네스는 아무것도 실행하지 않았는데, 답변은 그럴듯해요. 원인이 코드인지 모델인지 몰라 며칠을 헤매요.</td>
+          <td class="choice-good"><strong>무엇을 했나:</strong> 제공자와 <strong>모델 이름까지</strong> 함께 적고, 확인 못 한 항목은 "확인 예정"으로 남겼어요. 검증을 네 단계로 쪼개 적어 뒀고요.<br><br><strong>무슨 일이 생기나:</strong> 나중에 실패했을 때 <strong>몇 번째 단계에서 끊겼는지</strong> 바로 짚여요. 연결은 됐는데 도구 요청 형식이 안 온 것과, 도구는 돌았는데 답이 틀린 것이 다른 문제로 남아요.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>그 네 단계가 이거예요. 구현 뒤 하나씩 확인할 목록으로 지금 적어 둡니다.</p>
+    <ol>
+      <li><strong>연결</strong> — 정한 주소와 인증으로 응답을 받는다.</li>
+      <li><strong>호출 형식</strong> — 도구 이름과 입력이 <strong>프로그램이 해석할 수 있는 구조</strong>로 돌아온다.</li>
+      <li><strong>결과 전달</strong> — 실제 실행 결과를 돌려주면 다음 응답이 이어진다.</li>
+      <li><strong>내용 품질</strong> — 모델의 답이 실제 자료나 검사 결과와 맞는다.</li>
+    </ol>
+    <p>답변에 "파일을 읽었습니다"라고 적혀 있는 것만으로 <strong>2번과 3번이 통과한 게 아니에요.</strong> 반대로 읽기 함수가 성공했는데 담당자나 마감일을 잘못 답했다면 <strong>4번이 실패</strong>한 거고요. 이 구분은 <a href="my-harness-acceptance.html">5편</a>의 완료 조건과 <a href="my-harness-vertical-slice.html">6편</a>의 디버깅에서 계속 쓰입니다.</p>
+
+    <h2><span class="hl">첫 도구와 작업 범위</span> — 이름보다 허용 범위부터</h2>
+    <p>D05에는 도구 이름 목록보다 <strong>어떤 자료에 어떤 행동을 허용할지</strong>를 먼저 적어요. 첫 요청이 "지정한 회의록에서 담당자를 찾아 줘"라면 <strong>파일 읽기 하나</strong>로 시작할 수 있어요. 파일을 스스로 찾아야 하는 시나리오라면 목록 조회나 검색이 더 필요하고요.</p>
+    <ul>
+      <li>사용할 <strong>민감하지 않은</strong> 자료와 기준 폴더</li>
+      <li>첫 도구가 받는 대상과 돌려줘야 할 정보</li>
+      <li><strong>접근하지 않을</strong> 위치와 파일 종류</li>
+      <li>결과를 확인할 짧은 사용자 요청 한 줄</li>
+      <li>읽기 다음에 추가할 코드 변경·검사의 범위</li>
+    </ul>
+    <p>처음부터 <strong>컴퓨터 전체 접근</strong>이나 <strong>임의 터미널 명령</strong>을 기본 기능으로 넣지 않아요. 편해 보이지만 그만큼 잘못될 때의 범위도 커져요. 이 감각은 <a href="harness-minimal-and-permission.html">덜어내기와 경계 긋기 — 미니멀과 권한·보안 (4)</a>와 <a href="ai-permissions-local-models-and-token-cost.html">AI에게 컴퓨터를 맡길 때 — 권한, 로컬 모델, 토큰 비용</a>에서 이미 한 번 다룬 이야기예요.</p>
+
+    <h2><span class="hl">실패했을 때의 동작도 기능이에요</span></h2>
+    <p>"파일을 읽을 수 있다"만 적으면 <strong>파일이 없을 때</strong>가 남아요. "모델과 연결된다"만 적으면 <strong>인증 오류</strong>를 성공처럼 숨길 수도 있고요. 이것도 사용자가 겪는 제품 동작이라 명세에 적습니다.</p>
+    <table>
+      <thead><tr><th>상황</th><th>명세에 남길 동작의 예</th></tr></thead>
+      <tbody>
+        <tr><td>자료가 없음</td><td>실패 이유를 돌려주고, 다른 자료 확인이나 사용자 질문으로 이어감</td></tr>
+        <tr><td>허용 범위 밖 경로</td><td>읽지 않고, <strong>거절했다는 사실</strong>을 남김</td></tr>
+        <tr><td>API 인증·연결 실패</td><td>현재 요청을 실패로 표시하고 원인을 확인할 단서 제공</td></tr>
+        <tr><td>해석할 수 없는 도구 요청</td><td>실행하지 않고 오류 처리</td></tr>
+        <tr><td>모델이 근거와 다른 답을 함</td><td><strong>내용 평가에서 실패로 기록</strong>하고 실행 성공과 구별</td></tr>
+      </tbody>
+    </table>
+    <p>재시도 여부와 중단 조건은 <a href="my-harness-flow-and-state.html">다음 편</a>에서 정해요. 다만 지금 확실히 못 박아 둘 기준이 하나 있어요. <strong>실패했을 때 몰래 다른 제공자나 준비된 예제 답변으로 바꿔 성공한 것처럼 보이게 하지 않는다.</strong> 키가 없는 경우를 임의의 예제 응답으로 대신 통과시키는 것도 여기 포함이에요.</p>
+
+    <h2><span class="hl">직접 해보기</span></h2>
+    <p>개발 도우미와 함께 자기 상황을 붙여 이렇게 요청해 봅니다.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— Claude Code 등</span></p>
+    <pre><code>나는 Python을 배웠고, 내 컴퓨터에서 문서 정리와 코드 점검에 쓸 거야.
+CLI와 로컬 웹 중 맞는 구성과 이유를 설명해 줘. 내가 고른 뒤 PRD와 결정 기록에 남기자. 구현은 아직 하지 마.</code></pre>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— Claude Code 등</span></p>
+    <pre><code>내 환경에서 먼저 연결할 제공자와 모델을 고르자. 도구 호출 지원과 선택 이유를 확인해서 D04에 남겨 줘.</code></pre>
+    <ol>
+      <li><strong>바꿀 것</strong> — D02(플랫폼)·D03(언어)·D04(제공자와 모델)·D05(첫 도구와 허용 범위)를 각각 이유와 함께 채워요.</li>
+      <li><strong>측정할 것</strong> — AI가 기록한 내용을 읽고 <strong>제 상황과 어긋난 곳</strong>을 찾아요. 로컬 웹을 골랐는데 공개 서버 배포가 계획에 들어가 있거나, Python을 골랐는데 완성된 다른 에이전트 CLI에 작업을 통째로 넘기게 돼 있다면 요구가 바뀐 거예요.</li>
+      <li><strong>비교할 것</strong> — D08(추가 제공자)과 D09(확장 기능)에 <strong>무엇을 왜 미뤘는지</strong> 적혀 있는지 확인해요. <code>DEFERRED</code>는 "필요 없음"이 아니라 "나중에"라는 뜻이니까요.</li>
+    </ol>
+    <p>여기까지 오면 <strong>무엇을 어디서 어떤 모델로 돌릴지</strong>가 정해졌어요. 다음 편에서는 요청 하나가 들어와서 끝날 때까지의 <strong>흐름과 상태</strong>를 그립니다.</p>
+
+    <h2>함께 읽으면 좋은 글</h2>
+    <ul>
+      <li><a href="three-ways-to-run-an-llm.html">로컬이냐 API냐는 틀린 질문 — 세 갈래</a> — 모델을 어디서 돌릴지의 갈래를 정리한 글이에요.</li>
+      <li><a href="running-local-llm-with-ollama.html">직접 Ollama로 로컬 LLM 돌려보기</a> — Ollama 설치와 첫 실행이요.</li>
+      <li><a href="cost-and-control-of-local-llm.html">비용과 통제권 — 손익분기 계산과 누가 바꾸는가</a> — 외부 API와 로컬 실행의 비용 구조 비교예요.</li>
+      <li><a href="reading-python-code-basics.html">파이썬 코드 눈으로 읽기</a> — <a href="my-harness-python-code-reading.html">7편</a>에서 코드를 읽기 전에 보면 좋아요.</li>
+    </ul>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">CLI(Command-Line Interface) — 터미널에서 글자로 요청을 입력하고 결과를 받는 방식이며, 버튼과 입력란이 있는 웹 화면과 마찬가지로 UI(사용자 인터페이스)의 한 종류예요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">Ollama — 내 컴퓨터에서 언어 모델을 내려받아 실행하고 그 모델에 요청을 보낼 수 있게 해 주는 로컬 모델 실행 도구로, <a href="running-local-llm-with-ollama.html">직접 Ollama로 로컬 LLM 돌려보기</a>에서 다뤘어요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">타입(type) — 값이 숫자인지 문자열인지처럼 데이터의 종류와 모양을 코드에 적어 두는 표기로, 실행 전에 일부 불일치를 발견하게 도와줘요. <a href="#fnref3">↩</a></li>
+        <li id="fn4">모델 제공자(provider) — 프로그램이 모델 실행을 요청하는 서비스나 연결 경로이며, 같은 제공자 안에서도 여러 모델 중 하나를 골라야 해요. <a href="#fnref4">↩</a></li>
+        <li id="fn5">API(Application Programming Interface) — 프로그램이 다른 프로그램에 기능을 요청할 때 쓰는 약속으로 요청 주소·입력 필드·응답 형식 등이 포함되며, <a href="what-is-api.html">API란 무엇인가</a>에서 정리했어요. <a href="#fnref5">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <h3>"내 손으로 만드는 에이전트 하네스" 시리즈</h3>
+    <a class="post-nav" href="my-harness-users-and-prd.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">맡길 일부터 적는다 — 내 하네스의 사용자와 미완성 PRD</span>
+    </a>
+    <p class="post-date">(2) 어디서 돌리고 무엇에 연결할까 — 플랫폼·언어·모델 제공자 (이 글)</p>
+    <a class="post-nav" href="my-harness-flow-and-state.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">끝날 때까지 따라가기 — 실행 흐름·상태·승인과 종료 조건</span>
+    </a>
+    <a class="post-nav" href="my-harness-interfaces.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">버튼 하나 뒤의 약속 — API와 도구 인터페이스</span>
+    </a>
+    <a class="post-nav" href="my-harness-acceptance.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">만들기 전에 합격선을 긋는다 — 완료 조건과 검증 시나리오</span>
+    </a>
+    <a class="post-nav" href="my-harness-vertical-slice.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">얇게 한 번 관통시키기 — 첫 구현과 막힌 지점 찾기</span>
+    </a>
+    <a class="post-nav" href="my-harness-python-code-reading.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">설계가 코드 어디에 앉는가 — 실행 가능한 Python 하네스 읽기</span>
+    </a>
+    <a class="post-nav" href="my-harness-benchmark-local-port.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">남이 낸 문제로 재보기 — 벤치마크 10문항 로컬 평가</span>
+    </a>
+    <a class="post-nav" href="my-harness-scoring-and-report.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">분모를 지키는 정직 — 점수 읽기·비교 실험·제출</span>
+    </a>
+
+    <a class="post-nav" href="my-harness-flow-and-state.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">끝날 때까지 따라가기 — 실행 흐름·상태·승인과 종료 조건</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>

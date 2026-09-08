@@ -172,6 +172,7 @@
     <p>즉 여섯 지점은 낱개로 존재하는 목록이 아니라, <strong>검증→실행→관찰→재입력이라는 피드백 순환 하나를 안전하게 돌리기 위한 세부 장치들</strong>이다. 권한과 실행 환경은 이 순환이 도는 범위 자체를 좁혀 피해를 제한하는 역할을 한다. 이 순환이 없으면 모델은 매번 같은 추측을 반복할 뿐이고, 순환이 있어야 실행 결과가 다음 판단에 실제로 반영된다 — 그 반영이 곧 "목표 수행능력이 올라간다"는 말의 실체다.</p>
 
     <h2>5. <span class="hl">직접 만들어 실행해보기</span></h2>
+    <p>여기서 만든 <strong>도구 정의서와 스키마</strong>가 실제 하네스의 <code>INTERFACES.md</code>로 자라나는 이야기는 <a href="my-harness-interfaces.html">버튼 하나 뒤의 약속 — API와 도구 인터페이스</a>에서 이어가요.</p>
     <p>지금까지는 이론이었다면, 여기서는 실제로 코드를 돌려 확인한다. Python으로 짠 <code>get_inventory</code> 도구를 모델에 연결해, 요청→실행→최종 답 세 단계를 그대로 찍어본다.</p>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 직접 실행하는 코드 아니에요</span></p>
     <pre><code>[1] 모델의 요청: get_inventory(sku='A-17', warehouse_id='BUSAN-02')

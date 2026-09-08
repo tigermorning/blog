@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>만들기 전에 합격선을 긋는다 — 완료 조건과 검증 시나리오 (5) - Tigermorning</title>
+  <meta name="description" content="'회의록을 읽고 정리했다'는 답변이 화면에 떴다고 완성일까요. 구현 전에 기대 결과를 못 박는 인수 기준(A01~A12), 모의 모델과 실제 모델 검사가 각각 무엇을 증명하는지, 거절했는데 파일이 그대로인지 대조하는 법, Given·When·Then으로 내 시나리오를 쓰는 법을 완전 초보자 눈높이로 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="만들기 전에 합격선을 긋는다 — 완료 조건과 검증 시나리오 (5)">
+  <meta property="og:description" content="모델이 낸 답을 기대값으로 복사하면, 잘못된 동작도 통과합니다. 기대는 원문에서, 실제는 실행에서.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/my-harness-acceptance.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">만들기 전에 합격선을 긋는다</span> — 완료 조건과 검증 시나리오 (5)</h1>
+    <p class="post-date">2026. 9. 8.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="my-harness-interfaces.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">버튼 하나 뒤의 약속 — API와 도구 인터페이스</span>
+    </a>
+
+    <p class="one-liner">완료 조건이란 구현을 시작하기 전에 "어떤 상황에서 무엇을 관찰하면 요구를 충족했다고 볼지"를 미리 못 박아 둔 기준이다.</p>
+
+    <p>"회의록을 읽고 정리했습니다"라는 답변이 화면에 떴어요. 하네스가 완성된 걸까요?</p>
+    <p>아직 몰라요. 모델이 <strong>파일을 읽지 않고</strong> 답했을 수도 있고, 읽기는 했지만 원문에 있는 담당자를 <strong>빠뜨렸을</strong> 수도 있어요. 코드 수정도 마찬가지예요. 파일 내용이 바뀌었다는 사실만으로는 부족하고, <strong>의도한 오류를 고쳤는지</strong>를 검사해야 하죠.</p>
+    <p>이번 편은 <strong>구현에 앞서</strong> 그 판단 기준을 씁니다. 이걸 <strong>완료 조건</strong> 또는 <strong>인수 기준<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup></strong>이라고 불러요.</p>
+
+    <h2><span class="hl">비유</span> — 입주 전 사전점검</h2>
+    <p>새 집에 들어가기 전에 <strong>사전점검</strong>이라는 걸 해요. 하루 날을 잡아 집을 돌면서 하자를 찾는 절차예요.</p>
+    <p>여기서 잘하는 사람과 못하는 사람이 갈리는 지점이 있어요. <strong>못하는 사람은 집에 들어가서야 볼 것을 생각해요.</strong> 그러면 눈에 띄는 것만 보게 돼요. 벽지 얼룩처럼 튀는 건 잡지만, 붙박이장 문이 끝까지 닫히는지, 싱크대 아래 배수가 새지 않는지는 그냥 지나쳐요.</p>
+    <p><strong>잘하는 사람은 집에 들어가기 전에 체크리스트를 만들어 가요.</strong> "모든 문을 여닫아 본다", "물을 5분 틀어 놓고 아래를 본다" 같은 항목이요. 그리고 항목마다 <strong>미리 정한 기대</strong>가 있어요 — 문은 끝까지 닫혀야 하고, 물은 새지 않아야 하고요.</p>
+    <p>현장에서 시공사 담당자가 <strong>"다 확인했습니다, 문제없습니다"</strong>라고 말할 수 있어요. 그 말은 <strong>제 체크리스트의 항목이 아니에요.</strong> 제가 문을 직접 여닫아 봐야 그 칸이 채워져요.</p>
+    <p>그리고 칸을 채우는 방식이 네 가지예요. <strong>아직 안 해 봄</strong>, <strong>확인했고 기대대로임</strong>, <strong>확인했는데 기대와 다름</strong>, 그리고 <strong>이 집엔 해당 없음</strong>(발코니가 없는 집에서 '발코니 배수' 항목처럼요). 여기서 제일 위험한 게 마지막이에요. <strong>확인하기 귀찮다고 '해당 없음'으로 넘기면</strong> 체크리스트 전체가 의미를 잃어요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>입주 전에 만든 체크리스트</td><td><code>ACCEPTANCE.md</code>의 <strong>A01~A12</strong></td></tr>
+        <tr><td>"문은 끝까지 닫혀야 한다"</td><td><strong>기대 결과</strong> — 원문이나 요구사항에서 미리 정함</td></tr>
+        <tr><td>실제로 여닫아 본 결과</td><td><strong>실제 결과</strong> — 구현을 실행한 뒤 관찰</td></tr>
+        <tr><td>시공사의 "다 확인했습니다"</td><td>모델이 쓴 <strong>"완료했습니다"</strong> — 증거가 아님</td></tr>
+        <tr><td>아직 안 해 봄</td><td><code>NOT_RUN</code></td></tr>
+        <tr><td>확인했고 기대대로임 / 기대와 다름</td><td><code>PASS</code> / <code>FAIL</code></td></tr>
+        <tr><td>이 집엔 해당 없음</td><td><code>DEFERRED</code> — <strong>결정 ID와 연결될 때만</strong></td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 체크리스트는 <strong>집에 들어가기 전에</strong> 만들어야 해요 — 보고 나서 만들면 이미 본 것만 적게 되니까요.</p>
+    <p>다만 비유가 끊기는 점이 있어요. 사전점검은 하자를 다 잡으면 끝이지만, <strong>검사를 다 통과했다고 모든 결함이 없다는 뜻은 아니에요.</strong> 검사하지 않은 경계 조건은 그대로 <strong>한계로 남습니다.</strong> 이건 뒤에서 다시 나와요.</p>
+
+    <h2><span class="hl">전체 흐름</span> — 기대는 어디서, 실제는 어디서</h2>
+    <p><strong>읽는 법:</strong> 위쪽 줄은 <strong>구현하기 전에</strong> 만드는 것이고, 아래쪽 줄은 <strong>구현한 뒤에</strong> 생기는 것이에요. 둘은 오른쪽 끝에서만 만나요. 아래 줄에서 위 줄로 올라가는 화살표가 없다는 게 이 그림의 핵심이에요.</p>
+    <svg viewBox="0 0 760 280" role="img" aria-label="기대 결과는 구현 전 요구사항에서, 실제 결과는 구현 후 실행에서 나오며 마지막에 대조된다는 흐름 그림">
+      <defs>
+        <marker id="ah5" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+          <path d="M0,0 L9,4.5 L0,9 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <text x="14" y="26" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">구현 전</text>
+      <rect x="14" y="40" width="170" height="52" rx="8" fill="none" stroke="var(--border)"/>
+      <text x="99" y="62" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">요구사항 · 준비한 원문</text>
+      <text x="99" y="80" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">가상 회의록 · 비용 규칙</text>
+      <rect x="248" y="40" width="170" height="52" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="333" y="62" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">기대 결과</text>
+      <text x="333" y="80" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">A01~A12에 미리 기록</text>
+      <line x1="184" y1="66" x2="242" y2="66" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah5)"/>
+
+      <text x="14" y="176" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">구현 후</text>
+      <rect x="14" y="190" width="170" height="52" rx="8" fill="none" stroke="var(--border)"/>
+      <text x="99" y="212" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">하네스 실행</text>
+      <text x="99" y="230" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">도구 기록 · 최종 답변</text>
+      <rect x="248" y="190" width="170" height="52" rx="8" fill="none" stroke="var(--border)"/>
+      <text x="333" y="212" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">실제 결과</text>
+      <text x="333" y="230" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">관찰해서 기록</text>
+      <line x1="184" y1="216" x2="242" y2="216" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah5)"/>
+
+      <rect x="500" y="112" width="200" height="60" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="600" y="136" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--accent)">대조</text>
+      <text x="600" y="156" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">PASS · FAIL</text>
+      <line x1="418" y1="76" x2="494" y2="124" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah5)"/>
+      <line x1="418" y1="206" x2="494" y2="160" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah5)"/>
+
+      <line x1="333" y1="182" x2="333" y2="100" stroke="var(--border)" stroke-width="2" stroke-dasharray="5 4"/>
+      <text x="344" y="146" font-family="var(--font-body)" font-size="11" fill="var(--muted)">이 방향으로 베끼지 않는다</text>
+      <text x="344" y="163" font-family="var(--font-body)" font-size="11" fill="var(--muted)">(모델의 답을 기대값으로 복사 금지)</text>
+    </svg>
+    <p>점선이 이 그림의 전부예요. <strong>모델이 우연히 내놓은 답을 기대값으로 복사하면, 잘못된 동작도 통과하게 만들 수 있어요.</strong> 기대는 <strong>원문</strong>에서 나와야 하고, 실제는 <strong>실행</strong>에서만 나옵니다.</p>
+
+    <h2><span class="hl">한 칸 채워 보기</span></h2>
+    <p>가상 회의록에 <strong>"수진이 금요일까지 홍보 초안을 작성한다"</strong>라고 적어 뒀다고 해 볼게요. 그러면 이렇게 나눠 적어요.</p>
+    <table>
+      <thead><tr><th>기록할 내용</th><th>예시</th></tr></thead>
+      <tbody>
+        <tr><td>준비한 자료</td><td>담당자와 마감이 명시된 작은 <strong>가상</strong> 회의록</td></tr>
+        <tr><td>사용자 행동</td><td>홍보 초안의 담당자와 마감을 찾아 달라고 요청</td></tr>
+        <tr><td>기대 결과</td><td><strong>실제 파일을 읽고</strong>, 수진·금요일을 근거와 함께 전달</td></tr>
+        <tr><td>실제 결과</td><td>실행 후 <strong>읽기 기록</strong>과 <strong>최종 답변</strong>을 확인해 기록</td></tr>
+      </tbody>
+    </table>
+    <p>정답 <strong>문장 표현까지</strong> 고정할 필요는 없어요. "담당 수진, 마감 금요일"과 같은 뜻이면 문장이 달라도 통과예요. 반면 <strong>없는 담당자를 만들었거나 금요일을 행사 날짜로 잘못 해석했다면</strong> 내용 기준을 충족하지 못한 거예요.</p>
+
+    <h2><span class="hl">모의 모델</span> — 만들 수 있는 상황과 만들 수 없는 상황</h2>
+    <p>모델에게 "도구를 세 번 호출해 줘"라고 부탁해도 <strong>정확히 그 응답이 온다는 보장이 없어요.</strong> 그런데 "반복 한도에 도달하면 멈추는가" 같은 검사는 그 상황을 <strong>반드시</strong> 만들어야 하죠.</p>
+    <p>그래서 <strong>모의 모델<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup></strong>을 씁니다. 모델 대신 <strong>준비한 응답을 순서대로 돌려주는</strong> 테스트용 구성이에요. 그런데 이게 무엇을 증명하고 무엇을 증명 못 하는지가 헷갈리기 쉬워요.</p>
+    <table>
+      <thead><tr><th>검사</th><th>확인하는 것</th><th>이 검사만으로 알 수 <strong>없는</strong> 것</th></tr></thead>
+      <tbody>
+        <tr><td>A02 — 모의 도구 호출</td><td>인수 검사, 실제 도구 연결, 결과 반환, 종료</td><td>실제 모델의 <strong>도구 선택 능력</strong></td></tr>
+        <tr><td>A06 — 반복하는 모의 응답</td><td>합의한 한도에서 <strong>멈추는지</strong></td><td>실제 모델이 반복할 <strong>빈도</strong></td></tr>
+        <tr><td>A01 — 실제 모델의 자료 작업</td><td>실제 연결과 읽기, 최종 답의 근거 일치</td><td>다른 모든 자료에서도 <strong>같은 품질</strong>인지</td></tr>
+      </tbody>
+    </table>
+    <p>모의 검사는 요청을 정확히 만들 수 있으니, <strong>결과가 엉뚱한 요청에 붙거나 끝나지 않는 버그</strong>를 찾기에 좋아요. 다만 <strong>이 결과를 "실제 모델 연결 성공"으로 기록하면 안 됩니다.</strong></p>
+    <p>반대로 실제 모델 검사는 인증·통신·응답 형식·도구 실행·내용 품질을 한꺼번에 보여 줘요. 그래서 <strong>파일 읽기는 성공했는데 요약이 틀렸다면 두 사실을 나눠 기록</strong>해요. A01의 완료 기준이 "근거에 맞는 결과까지"라면, <strong>연결 성공만으로 항목 전체를 통과시키지 않습니다.</strong></p>
+
+    <h2><span class="hl">코드 변경의 합격선</span> — 기대값은 규칙에서 계산해요</h2>
+    <p>A03은 <strong>작은 결함이 있는 코드</strong>를 대상으로 해요. 여기서 <strong>픽스처<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>(fixture)</strong>는 검사를 반복할 수 있게 준비해 둔 입력·파일·상태예요. 민감한 실제 프로젝트 대신, <strong>결함과 기대 동작을 이해할 수 있는 작은 코드</strong>를 준비합니다.</p>
+    <p>강의의 예를 그대로 가져와 볼게요. "참가자별 비용과 장소 고정 비용을 합한다"는 함수인데, <strong>장소비를 인원수만큼 중복 계산하는</strong> 결함이 있어요.</p>
+    <table>
+      <thead><tr><th>항목</th><th>값 (원)</th><th>계산 근거</th></tr></thead>
+      <tbody>
+        <tr><td>참가자 1인당 비용</td><td>5,000</td><td>비용 규칙에서 정한 단가</td></tr>
+        <tr><td>참가자 수</td><td>2명</td><td>이 검사 입력</td></tr>
+        <tr><td>장소 고정 비용</td><td>100,000</td><td><strong>인원과 무관하게 1회</strong></td></tr>
+        <tr><td><strong>기대 합계</strong></td><td><strong>110,000</strong></td><td>5,000 × 2 + 100,000</td></tr>
+        <tr><td>결함이 있는 함수의 현재 출력</td><td>210,000</td><td>장소비를 2번 더함 — <strong>기대값이 아님</strong></td></tr>
+      </tbody>
+    </table>
+    <p>표 아래 단서를 하나 붙여요. <strong>기대값 110,000원은 함수의 출력이 아니라 비용 규칙에서 계산한 값</strong>이에요. 함수의 현재 출력(210,000)을 기대값 칸에 적는 순간, 이 검사는 <strong>결함을 영원히 통과시킵니다.</strong></p>
+    <p>A03에는 다음 연결이 드러나야 해요.</p>
+    <ol>
+      <li>변경 <strong>전</strong> 검사에서 의도한 결함이 드러난다.</li>
+      <li>에이전트가 제안한 <strong>변경 내용</strong>을 확인한다.</li>
+      <li>합의한 <strong>승인 절차</strong> 뒤 변경을 적용한다.</li>
+      <li><strong>같은 검사</strong>를 다시 실행하고 결과를 확인한다.</li>
+      <li>요청과 무관한 변경이나 <strong>검사 기대값 조작</strong>이 없는지 본다.</li>
+    </ol>
+    <p>그리고 <strong>사람이 정답 코드를 넣어 검사가 통과한 것</strong>과 <strong>에이전트가 변경을 찾아 완료한 것</strong>은 구별해 기록해요.</p>
+
+    <h2><span class="hl">나쁜 선택 vs 좋은 선택</span></h2>
+    <p>같은 사전점검에서, 붙박이장 문 항목을 채우는 두 가지 방식이에요.</p>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad"><strong>무엇을 했나:</strong> A04(변경 거절)를 검사하면서, 하네스가 <strong>"변경을 취소했습니다"</strong>라고 출력한 것을 보고 <code>PASS</code>로 적었어요.<br><br><strong>무슨 일이 생기나:</strong> 실제로는 승인 확인보다 <strong>쓰기가 먼저 실행되는</strong> 경로가 있어서 파일은 이미 바뀐 상태였어요. 거절 문구는 그 뒤에 출력된 거고요. 나중에 진짜 작업 폴더에서 같은 일이 벌어져야 알게 됩니다.</td>
+          <td class="choice-good"><strong>무엇을 했나:</strong> 거절 <strong>전후의 파일 내용을 대조</strong>하는 것을 A04의 관찰 항목으로 적어 뒀어요.<br><br><strong>무슨 일이 생기나:</strong> 첫 실행에서 바로 <code>FAIL</code>이 나요. 거절 문구는 맞는데 파일이 달라졌으니까요. <strong>고칠 곳이 프롬프트가 아니라 실행 코드의 승인 검사</strong>라는 것도 같이 드러납니다.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>같은 원칙이 A05에도 적용돼요. <strong>임시 작업 폴더 밖</strong>에 가상 파일을 두고, 경로 이탈 요청이 <strong>코드의 검사에서</strong> 거절되는지 확인해요. 진짜 개인 파일로 시험할 필요는 전혀 없고요. 그리고 <strong>모델이 우연히 그 요청을 하지 않았다는 관찰만으로 경로 제한이 구현됐다고 판단하지 않습니다.</strong></p>
+    <p>A07의 오류 상황도 갈라요. <strong>도구 인수가 잘못됐다면</strong> 실패를 모델에게 돌려주고 수정 기회를 줄 수 있어요. <strong>API 연결 자체가 실패했다면</strong> 사용자에게 실패를 표시해야 하고요. 어느 경우에도 <strong>성공한 작업처럼 기록하지 않습니다.</strong></p>
+
+    <h2><span class="hl">상태 네 가지</span> — DEFERRED를 도피처로 쓰지 않기</h2>
+    <table>
+      <thead><tr><th>상태</th><th>의미</th></tr></thead>
+      <tbody>
+        <tr><td><code>NOT_RUN</code></td><td>계획했지만 아직 실행하지 않음</td></tr>
+        <tr><td><code>PASS</code></td><td>실행 증거가 기대 결과를 충족함</td></tr>
+        <tr><td><code>FAIL</code></td><td>실행했지만 기대 결과를 충족하지 못함</td></tr>
+        <tr><td><code>DEFERRED</code></td><td>합의한 <strong>선택 범위</strong>에 따라 미룸</td></tr>
+      </tbody>
+    </table>
+    <p><strong>공통 필수 항목이 어렵다는 이유로 <code>DEFERRED</code>로 바꾸지 않아요.</strong> 실패 원인과 남은 구현을 기록합니다. 반면 이런 경우는 <code>DEFERRED</code>가 정당해요.</p>
+    <ul>
+      <li><a href="my-harness-flow-and-state.html">D07</a>에서 <strong>영속 저장을 선택하지 않았다면</strong> → 재시작 복원에 해당하는 <strong>A09</strong>를 미룸</li>
+      <li><a href="my-harness-platform-and-provider.html">D08</a>에서 <strong>추가 제공자를 미뤘다면</strong> → <strong>A10</strong>을 미룸</li>
+    </ul>
+    <p>둘 다 <strong>결정 ID를 함께 적어야</strong> 나중에 "왜 안 했지?"에 답할 수 있어요.</p>
+    <p>A08(같은 세션의 후속 요청)은 선택한 대화 유지 범위에 맞게 검증해요. <strong>앱이 실행 중일 때 이어지는 대화</strong>와 <strong>앱을 껐다 켠 뒤 파일에서 복원하는 대화</strong>는 다른 기능이에요. 저장하지 않기로 했다면 <strong>재시작 후 이어진다고 설명해서는 안 됩니다.</strong></p>
+
+    <h2><span class="hl">직접 해보기</span> — Given · When · Then</h2>
+    <p>마지막으로 <a href="my-harness-users-and-prd.html">D01의 사용자 이야기</a>에서 <strong>정상 사례 하나</strong>와 <strong>실패 사례 하나</strong>를 직접 골라 <code>ACCEPTANCE.md</code>의 학생 추가 항목에 적어요. 형식은 이래요.</p>
+    <ul>
+      <li><strong>Given — 준비</strong>: 어떤 자료와 상태에서 시작하는지</li>
+      <li><strong>When — 행동</strong>: 사용자가 무엇을 요청하거나 결정하는지</li>
+      <li><strong>Then — 관찰</strong>: 무엇을 확인하면 기대한 동작이라고 볼지</li>
+    </ul>
+    <p>예를 들면요.</p>
+    <ul>
+      <li><strong>정상 사례</strong> — 담당자가 적힌 자료를 준비하고(Given), 할 일 정리를 요청하면(When), <strong>실제 근거와 담당자를 함께 제시한다</strong>(Then).</li>
+      <li><strong>실패 사례</strong> — 담당자가 <strong>없는</strong> 자료에서(Given), 담당자 확인을 요청하면(When), <strong>사람 이름을 만들지 않고 미정이라고 표시한다</strong>(Then).</li>
+    </ul>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— Claude Code 등</span></p>
+    <pre><code>ACCEPTANCE를 내 사용자 이야기와 연결하자. 기대 결과와 실제로 남겨야 할 증거를 나눠 적어 줘.</code></pre>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— Claude Code 등</span></p>
+    <pre><code>내 작업에서 정상 사례 하나와 실패 사례 하나를 골랐어. 기대 결과가 모호하지 않은지 같이 검토해 줘.</code></pre>
+    <ol>
+      <li><strong>바꿀 것</strong> — A01~A12를 자기 시나리오와 연결하고, 학생 추가 항목 두 개를 Given·When·Then으로 씁니다.</li>
+      <li><strong>측정할 것</strong> — 각 항목에 대해 <strong>"이게 통과하면 내가 원한 일이 된다고 말할 수 있는가"</strong>를 스스로 물어요. 못 하겠으면 기대 결과가 아직 모호한 거예요.</li>
+      <li><strong>비교할 것</strong> — 증거 칸이 <strong>비어 있는지</strong> 확인해요. 아직 실행 안 했으니 비어 있는 게 정상이에요. <strong>좋은 검사 계획을 세웠다는 이유로 <code>PASS</code>를 적지 않습니다.</strong></li>
+    </ol>
+    <p>실제 검증 기록에는 <strong>코드 버전, 제공자와 모델, 입력 자료, 도구 실행 결과, 최종 답과의 대조</strong>를 남길 계획을 세워 둬요. <strong>인증 키와 개인 자료는 증거에 넣지 않습니다.</strong></p>
+    <p>덧붙여, 벤치마크 요구인 R08에는 <strong>A11(기준 측정)</strong>과 <strong>A12(변경 후 비교 실험)</strong>가 연결돼요. 이 둘은 로컬 파일 작업 검사가 끝난 뒤 <a href="my-harness-benchmark-local-port.html">고정 10문항</a>에서 확인해요. <strong>단위 검사의 성공을 A11·A12의 실제 모델 평가 증거로 대신하지 않습니다.</strong></p>
+    <p>이제 무엇을 만들지뿐 아니라 <strong>무엇으로 확인할지</strong>도 정해졌어요. 다음 편에서 드디어 코드를 씁니다.</p>
+
+    <h2>함께 읽으면 좋은 글</h2>
+    <ul>
+      <li><a href="harness-evaluation-and-comparison.html">결과와 궤적을 함께 본다 — 평가 루프와 일곱 하네스 비교 (5)</a> — 결과만이 아니라 과정을 함께 보는 평가의 감각이요.</li>
+      <li><a href="tool-permission-and-evaluation.html">안전하게 쓰고 평가하기 — 권한·회귀·과제 제출 (3)</a> — 회귀 검사와 권한 검증을 처음 다룬 글이에요.</li>
+      <li><a href="mcp-skill-reuse-verification.html">다음 주에도 통하는가 — Skill 재사용 검증하기 (9)</a> — "한 번 됐다"와 "다시 해도 된다"를 가르는 이야기예요.</li>
+    </ul>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">인수 기준(acceptance criteria) — 만든 프로그램을 사용자의 기대에 맞는 결과로 받아들일 수 있는지 판단하는, 구현 전에 정해 두는 기준이에요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">모의 모델(mock model) — 실제 모델 대신 미리 준비한 응답을 순서대로 돌려주는 테스트용 구성으로, 특정 상황을 반드시 재현해야 할 때 써요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">픽스처(fixture) — 검사를 반복 실행할 수 있도록 미리 준비해 둔 입력·파일·상태예요. <a href="#fnref3">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <h3>"내 손으로 만드는 에이전트 하네스" 시리즈</h3>
+    <a class="post-nav" href="my-harness-users-and-prd.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">맡길 일부터 적는다 — 내 하네스의 사용자와 미완성 PRD</span>
+    </a>
+    <a class="post-nav" href="my-harness-platform-and-provider.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">어디서 돌리고 무엇에 연결할까 — 플랫폼·언어·모델 제공자</span>
+    </a>
+    <a class="post-nav" href="my-harness-flow-and-state.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">끝날 때까지 따라가기 — 실행 흐름·상태·승인과 종료 조건</span>
+    </a>
+    <a class="post-nav" href="my-harness-interfaces.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">버튼 하나 뒤의 약속 — API와 도구 인터페이스</span>
+    </a>
+    <p class="post-date">(5) 만들기 전에 합격선을 긋는다 — 완료 조건과 검증 시나리오 (이 글)</p>
+    <a class="post-nav" href="my-harness-vertical-slice.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">얇게 한 번 관통시키기 — 첫 구현과 막힌 지점 찾기</span>
+    </a>
+    <a class="post-nav" href="my-harness-python-code-reading.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">설계가 코드 어디에 앉는가 — 실행 가능한 Python 하네스 읽기</span>
+    </a>
+    <a class="post-nav" href="my-harness-benchmark-local-port.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">남이 낸 문제로 재보기 — 벤치마크 10문항 로컬 평가</span>
+    </a>
+    <a class="post-nav" href="my-harness-scoring-and-report.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">분모를 지키는 정직 — 점수 읽기·비교 실험·제출</span>
+    </a>
+
+    <a class="post-nav" href="my-harness-vertical-slice.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">얇게 한 번 관통시키기 — 첫 구현과 막힌 지점 찾기</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
