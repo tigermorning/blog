@@ -329,7 +329,191 @@
       <figcaption>OCR → 객체 탐지 → 분할 → VLM. 필요한 정밀도가 올라갈수록 오른쪽 칸이에요.</figcaption>
     </figure>
 
-    <p style="color:var(--muted); font-size:0.92rem;">사다리는 이 다섯 개가 전부는 아니에요. 카테고리 안에서 번호가 매겨진 시리즈(예: MCP와 Skill 14편, 멀티 에이전트 5편)는 전부 같은 종류의 사다리고, 그 글들은 <a href="posts.html">글 목록</a>에서 순서대로 읽으면 돼요.</p>
+    <h2><span class="hl">사다리 ⑥ — 소리·목소리를 다룰 때</span></h2>
+    <p>소리를 글자로 바꾸면 되는지, 내 컴퓨터에서 돌려야 하는지, 반대로 글자를 소리로 내야 하는지, 그 목소리가 실존 인물이라 따져야 할 게 있는지 — 필요한 게 늘어날수록 오른쪽 칸이에요.</p>
+
+    <figure class="tm-diagram">
+      <svg viewBox="0 0 764 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="tm-f-title">
+        <title id="tm-f-title">STT에서 로컬 Whisper, TTS, 복제 윤리로 넘어가는 사다리</title>
+        <defs>
+          <marker id="tm-am-f" markerWidth="9" markerHeight="9" refX="4.5" refY="4.5" orient="auto">
+            <path d="M0,0 L9,4.5 L0,9 z" fill="var(--border)"/>
+          </marker>
+        </defs>
+
+        <path d="M166,68 L208,68" class="tm-arrow" marker-end="url(#tm-am-f)"/>
+        <text x="187" y="16" class="tm-arrowcap">안 되면</text>
+        <path d="M360,68 L402,68" class="tm-arrow" marker-end="url(#tm-am-f)"/>
+        <text x="381" y="16" class="tm-arrowcap">그래도 안 되면</text>
+        <path d="M554,68 L596,68" class="tm-arrow" marker-end="url(#tm-am-f)"/>
+        <text x="575" y="16" class="tm-arrowcap">그래도 안 되면</text>
+
+        <a href="speech-to-text-history.html" class="tm-node"><g style="--nc:var(--folder-1)">
+          <rect class="tm-box" x="16" y="34" width="150" height="68" rx="14"/>
+          <text class="tm-title" x="91" y="60">① 글자로 바꾸기</text>
+          <text class="tm-tag" x="91" y="78">STT</text>
+        </g></a>
+
+        <a href="choosing-a-local-whisper.html" class="tm-node"><g style="--nc:var(--folder-2)">
+          <rect class="tm-box" x="210" y="34" width="150" height="68" rx="14"/>
+          <text class="tm-title" x="285" y="60">② 로컬로 돌리기</text>
+          <text class="tm-tag" x="285" y="78">Whisper</text>
+        </g></a>
+
+        <a href="choosing-a-voice-synthesis-tool.html" class="tm-node"><g style="--nc:var(--folder-3)">
+          <rect class="tm-box" x="404" y="34" width="150" height="68" rx="14"/>
+          <text class="tm-title" x="479" y="60">③ 소리로 내기</text>
+          <text class="tm-tag" x="479" y="78">TTS</text>
+        </g></a>
+
+        <a href="voice-cloning-and-responsible-ai.html" class="tm-node"><g style="--nc:var(--folder-4)">
+          <rect class="tm-box" x="598" y="34" width="150" height="68" rx="14"/>
+          <text class="tm-title" x="673" y="60">④ 복제 따지기</text>
+          <text class="tm-tag" x="673" y="78">윤리 판단</text>
+        </g></a>
+      </svg>
+      <figcaption>STT → 로컬 Whisper → TTS 합성 → 복제 윤리. 듣는 쪽에서 말하는 쪽으로 넘어가면 칸이 달라져요.</figcaption>
+    </figure>
+
+    <h2><span class="hl">사다리 ⑦ — 사진 한 장에서 공간을 되찾을 때</span></h2>
+    <p>거리만 있으면 되는지, 장면 전체를 재구성해야 하는지, 그걸 점 하나하나로 바꿔야 하는지, 웹 화면에 그려야 하는지 — 사진에서 화면까지 가는 순서예요.</p>
+
+    <figure class="tm-diagram">
+      <svg viewBox="0 0 764 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="tm-g-title">
+        <title id="tm-g-title">깊이 추정에서 NeRF·스플래팅, 스플랫 변환, 웹 최적화로 넘어가는 사다리</title>
+        <defs>
+          <marker id="tm-am-g" markerWidth="9" markerHeight="9" refX="4.5" refY="4.5" orient="auto">
+            <path d="M0,0 L9,4.5 L0,9 z" fill="var(--border)"/>
+          </marker>
+        </defs>
+
+        <path d="M166,68 L208,68" class="tm-arrow" marker-end="url(#tm-am-g)"/>
+        <text x="187" y="16" class="tm-arrowcap">안 되면</text>
+        <path d="M360,68 L402,68" class="tm-arrow" marker-end="url(#tm-am-g)"/>
+        <text x="381" y="16" class="tm-arrowcap">그래도 안 되면</text>
+        <path d="M554,68 L596,68" class="tm-arrow" marker-end="url(#tm-am-g)"/>
+        <text x="575" y="16" class="tm-arrowcap">그래도 안 되면</text>
+
+        <a href="recovering-depth-from-photos.html" class="tm-node"><g style="--nc:var(--folder-1)">
+          <rect class="tm-box" x="16" y="34" width="150" height="68" rx="14"/>
+          <text class="tm-title" x="91" y="60">① 거리 되찾기</text>
+          <text class="tm-tag" x="91" y="78">깊이 추정</text>
+        </g></a>
+
+        <a href="birth-of-nerf-and-gaussian-splatting.html" class="tm-node"><g style="--nc:var(--folder-2)">
+          <rect class="tm-box" x="210" y="34" width="150" height="68" rx="14"/>
+          <text class="tm-title" x="285" y="60">② 장면 외우기</text>
+          <text class="tm-tag" x="285" y="78">NeRF·스플래팅</text>
+        </g></a>
+
+        <a href="turning-points-into-splats.html" class="tm-node"><g style="--nc:var(--folder-3)">
+          <rect class="tm-box" x="404" y="34" width="150" height="68" rx="14"/>
+          <text class="tm-title" x="479" y="60">③ 알갱이로</text>
+          <text class="tm-tag" x="479" y="78">스플랫 변환</text>
+        </g></a>
+
+        <a href="shrinking-splat-files-for-the-web.html" class="tm-node"><g style="--nc:var(--folder-4)">
+          <rect class="tm-box" x="598" y="34" width="150" height="68" rx="14"/>
+          <text class="tm-title" x="673" y="60">④ 웹에 올리기</text>
+          <text class="tm-tag" x="673" y="78">파일 최적화</text>
+        </g></a>
+      </svg>
+      <figcaption>깊이 추정 → NeRF·스플래팅 → 스플랫 변환 → 웹 최적화. 사진 한 장이 화면에 그려지기까지예요.</figcaption>
+    </figure>
+
+    <h2><span class="hl">사다리 ⑧ — 그림 하나 만들 때</span></h2>
+    <p>확산모델로 충분한지, 내 컴퓨터에서 가볍게 돌려야 하는지, 반복 작업이라 자동화해야 하는지, 결과물 용도(라이선스)까지 따져야 하는지로 달라져요.</p>
+
+    <figure class="tm-diagram">
+      <svg viewBox="0 0 764 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="tm-h-title">
+        <title id="tm-h-title">확산모델에서 잠재확산·증류, 자동화, 도구 선택으로 넘어가는 사다리</title>
+        <defs>
+          <marker id="tm-am-h" markerWidth="9" markerHeight="9" refX="4.5" refY="4.5" orient="auto">
+            <path d="M0,0 L9,4.5 L0,9 z" fill="var(--border)"/>
+          </marker>
+        </defs>
+
+        <path d="M166,68 L208,68" class="tm-arrow" marker-end="url(#tm-am-h)"/>
+        <text x="187" y="16" class="tm-arrowcap">안 되면</text>
+        <path d="M360,68 L402,68" class="tm-arrow" marker-end="url(#tm-am-h)"/>
+        <text x="381" y="16" class="tm-arrowcap">그래도 안 되면</text>
+        <path d="M554,68 L596,68" class="tm-arrow" marker-end="url(#tm-am-h)"/>
+        <text x="575" y="16" class="tm-arrowcap">그래도 안 되면</text>
+
+        <a href="gan-to-diffusion-models.html" class="tm-node"><g style="--nc:var(--folder-1)">
+          <rect class="tm-box" x="16" y="34" width="150" height="68" rx="14"/>
+          <text class="tm-title" x="91" y="60">① 확산모델 쓰기</text>
+          <text class="tm-tag" x="91" y="78">GAN→확산</text>
+        </g></a>
+
+        <a href="latent-diffusion-and-distillation.html" class="tm-node"><g style="--nc:var(--folder-2)">
+          <rect class="tm-box" x="210" y="34" width="150" height="68" rx="14"/>
+          <text class="tm-title" x="285" y="60">② 가볍게 만들기</text>
+          <text class="tm-tag" x="285" y="78">잠재확산·증류</text>
+        </g></a>
+
+        <a href="automating-image-generation.html" class="tm-node"><g style="--nc:var(--folder-3)">
+          <rect class="tm-box" x="404" y="34" width="150" height="68" rx="14"/>
+          <text class="tm-title" x="479" y="60">③ 자동화하기</text>
+          <text class="tm-tag" x="479" y="78">코드로 생성</text>
+        </g></a>
+
+        <a href="choosing-image-generation-tools.html" class="tm-node"><g style="--nc:var(--folder-4)">
+          <rect class="tm-box" x="598" y="34" width="150" height="68" rx="14"/>
+          <text class="tm-title" x="673" y="60">④ 도구 고르기</text>
+          <text class="tm-tag" x="673" y="78">라이선스</text>
+        </g></a>
+      </svg>
+      <figcaption>확산모델 → 잠재확산·증류 → 자동화 → 도구 고르기. 반복과 용도가 걸릴수록 오른쪽 칸이에요.</figcaption>
+    </figure>
+
+    <h2><span class="hl">사다리 ⑨ — 과학 데이터 하나 다룰 때</span></h2>
+    <p>표만 읽으면 되는지, 서열에서 구조까지 알아야 하는지, 없던 걸 거꾸로 설계해야 하는지, 원자 사이 힘까지 계산해야 하는지 — 다루려는 문제가 커질수록 오른쪽 칸이에요.</p>
+
+    <figure class="tm-diagram">
+      <svg viewBox="0 0 764 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="tm-i-title">
+        <title id="tm-i-title">표 파운데이션 모델에서 구조 예측, 단백질 역설계, 그래프 신경망으로 넘어가는 사다리</title>
+        <defs>
+          <marker id="tm-am-i" markerWidth="9" markerHeight="9" refX="4.5" refY="4.5" orient="auto">
+            <path d="M0,0 L9,4.5 L0,9 z" fill="var(--border)"/>
+          </marker>
+        </defs>
+
+        <path d="M166,68 L208,68" class="tm-arrow" marker-end="url(#tm-am-i)"/>
+        <text x="187" y="16" class="tm-arrowcap">안 되면</text>
+        <path d="M360,68 L402,68" class="tm-arrow" marker-end="url(#tm-am-i)"/>
+        <text x="381" y="16" class="tm-arrowcap">그래도 안 되면</text>
+        <path d="M554,68 L596,68" class="tm-arrow" marker-end="url(#tm-am-i)"/>
+        <text x="575" y="16" class="tm-arrowcap">그래도 안 되면</text>
+
+        <a href="foundation-models-for-tables.html" class="tm-node"><g style="--nc:var(--folder-1)">
+          <rect class="tm-box" x="16" y="34" width="150" height="68" rx="14"/>
+          <text class="tm-title" x="91" y="60">① 표 읽기</text>
+          <text class="tm-tag" x="91" y="78">표 파운데이션</text>
+        </g></a>
+
+        <a href="from-sequence-to-structure.html" class="tm-node"><g style="--nc:var(--folder-2)">
+          <rect class="tm-box" x="210" y="34" width="150" height="68" rx="14"/>
+          <text class="tm-title" x="285" y="60">② 구조 읽기</text>
+          <text class="tm-tag" x="285" y="78">서열→구조</text>
+        </g></a>
+
+        <a href="designing-proteins-backwards.html" class="tm-node"><g style="--nc:var(--folder-3)">
+          <rect class="tm-box" x="404" y="34" width="150" height="68" rx="14"/>
+          <text class="tm-title" x="479" y="60">③ 거꾸로 설계</text>
+          <text class="tm-tag" x="479" y="78">단백질 역설계</text>
+        </g></a>
+
+        <a href="graphs-and-interatomic-forces.html" class="tm-node"><g style="--nc:var(--folder-4)">
+          <rect class="tm-box" x="598" y="34" width="150" height="68" rx="14"/>
+          <text class="tm-title" x="673" y="60">④ 힘까지 계산</text>
+          <text class="tm-tag" x="673" y="78">그래프 신경망</text>
+        </g></a>
+      </svg>
+      <figcaption>표 읽기 → 구조 읽기 → 거꾸로 설계 → 힘 계산. 다루려는 문제가 커질수록 오른쪽 칸이에요.</figcaption>
+    </figure>
+
+    <p style="color:var(--muted); font-size:0.92rem;">사다리는 이 아홉 개가 전부는 아니에요. 카테고리 안에서 번호가 매겨진 시리즈(예: MCP와 Skill 14편, 멀티 에이전트 5편)는 전부 같은 종류의 사다리고, 그 글들은 <a href="posts.html">글 목록</a>에서 순서대로 읽으면 돼요.</p>
 
     <a class="post-nav" href="posts.html">
       <span class="post-nav-label">← 목록으로</span>
