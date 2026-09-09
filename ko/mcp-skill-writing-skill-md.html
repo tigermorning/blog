@@ -34,6 +34,20 @@
 
     <p class="one-liner">Skill을 만드는 일은 새 지식을 짜내는 게 아니라, 이미 한 번 해 본 작업에서 <strong>다음 입력에도 그대로 맞는 문장만</strong> 골라내 파일 한 장에 옮기는 일이다.</p>
 
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>뭐를 할 수 있나</dt>
+        <dd>"이번 주에만 맞는 정답"과 "다음 주에도 쓸 규칙"을 갈라서, 실제로 재사용되는 <code>SKILL.md</code> 파일 하나를 직접 만들 수 있어요. frontmatter의 <code>name</code>·<code>description</code>을 채우고 폴더째 배치해서 도구가 실제로 불러 읽는지 확인하는 순서까지 할 수 있어요.</dd>
+        <dt>왜 배우나</dt>
+        <dd>안 배우면 "이번에 잘 됐던 대화"를 그대로 파일에 옮기게 되는데, 그러면 다음 주 다른 기록이 들어왔을 때 오히려 옛 답을 근거로 잘못 판단하는 Skill을 만들게 돼요.</dd>
+        <dt>왜 중요한가</dt>
+        <dd><code>description</code>을 너무 넓게 쓰거나 <code>SKILL.md</code> 한 장만 복사해 옮기면, Skill이 엉뚱한 요청에 꺼내지거나 참조 문서 링크가 끊겨서 일반 상식으로 채운 결과를 우리 팀 결과로 착각하게 돼요.</dd>
+        <dt>어디에 쓰나</dt>
+        <dd>반복되는 주간 보고 작성 규칙을 파일로 남기기 · 여러 프로젝트에서 같이 쓸 개인 공용 Skill 만들기 · <code>SKILL.md</code>만 공유했다가 참조 문서 링크가 끊기는 실수 피하기 · Skill이 실제로 읽혔는지 로드 기록으로 확인하는 습관 들이기</dd>
+      </dl>
+    </div>
+
     <p>다음 주 금요일이 왔다고 상상해 볼게요. <a href="mcp-skill-first-weekly-report.html">7편</a>에서 만든 파일 두 개를 다시 펼칩니다 — 보고서 본문 <code>first-week-report.md</code>와 작업 메모 <code>report-work-notes.md</code>요.</p>
     <p>거기엔 이런 문장이 나란히 적혀 있어요. <strong>"첫째 주 TASK-102는 진행이다."</strong> 그리고 <strong>"개발 완료만으로는 우리 팀의 완료 성과에 넣지 않는다."</strong> 얼핏 보면 둘 다 "이번에 알아낸 것"이라 똑같아 보여요. 그런데 다음 주 기록을 가져다 놓는 순간 성질이 완전히 갈려요. 앞 문장은 <strong>기록이 바뀌면 같이 바뀔 답</strong>이고, 뒤 문장은 <strong>기록이 바뀌어도 그대로 쓸 기준</strong>이거든요.</p>
     <p>이 두 가지를 갈라내는 것이 이번 편의 전부라고 해도 과하지 않아요. <a href="mcp-skill-why-skill-needed.html">6편</a>에서 <strong>Skill<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup></strong>이 왜 필요한지 이야기하고, 7편에서 실제 보고서를 한 편 만들었죠. 이제 그 결과물에서 <strong>재료를 건져 <code>SKILL.md</code><sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup> 한 장으로 옮기고</strong>, 그 파일을 컴퓨터 어디에 둬야 도구가 찾아 읽는지까지 해 볼게요.</p>

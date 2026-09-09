@@ -27,6 +27,20 @@
     <p class="post-date">2026. 9. 1.</p>
     <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
 
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>뭐를 할 수 있나</dt>
+        <dd>내 워크플로를 로컬 실행부터 Docker, PostgreSQL, Redis 큐 모드, Kubernetes까지, 규모가 아니라 "멈췄을 때 누가 확인하고 복구하는지" 기준으로 어떤 구성을 고를지 판단할 수 있게 돼요.</dd>
+        <dt>왜 배우나</dt>
+        <dd>수업 인스턴스처럼 남이 운영해 주는 환경에서만 써 보면, 데이터 보관·백업·업데이트·장애 대응까지 전부 제 책임이 된다는 사실을 놓치기 쉬워요.</dd>
+        <dt>왜 중요한가</dt>
+        <dd>데이터가 내 컴퓨터에 있다고 저절로 안전해지는 게 아니라서, 접근 권한이나 백업, 비밀값 저장 위치를 따로 점검하지 않으면 셀프 호스팅으로 옮긴 만큼 그대로 위험도 넘어와요.</dd>
+        <dt>어디에 쓰나</dt>
+        <dd>혼자 관찰용으로 로컬 실행 + SQLite 띄우기 · 소규모 팀용으로 Docker + PostgreSQL 구성하기 · 실행이 겹칠 때 Redis queue mode 검토하기 · 코딩 에이전트에게 Docker 실행을 맡기고 포트·볼륨 직접 확인하기.</dd>
+      </dl>
+    </div>
+
     <a class="post-nav" href="n8n-agent-delegation-and-if-node.html">
       <span class="post-nav-label">← 이전 편</span>
       <span class="post-nav-title">코딩 에이전트에게 흐름을 맡기고, IF 노드로 갈림길 만들기</span>

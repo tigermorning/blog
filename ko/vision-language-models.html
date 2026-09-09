@@ -27,6 +27,20 @@
     <p class="post-date">2026. 8. 11.</p>
     <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
 
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>뭐를 할 수 있나</dt>
+        <dd>"VLM"이라는 말이 나올 때 이미지를 패치와 특징 벡터로 바꿔 언어 모델에 연결하는 원리라는 걸 알고, projector·cross-attention·Q-Former 같은 연결 방식의 차이를 구분하고, VLM이 준 답을 그냥 믿지 않고 원문과 대조해야 하는 이유를 설명할 수 있어요.</dd>
+        <dt>왜 배우나</dt>
+        <dd>이걸 모르면 "이 사진에서 위험해 보이는 곳이 있나요"처럼 후보를 미리 정할 수 없는 질문에 왜 VLM이 필요한지 모르고, 문서 전용 VLM이 기존 OCR을 무조건 대체한다고 오해하게 돼요.</dd>
+        <dt>왜 중요한가</dt>
+        <dd>VLM은 그럴듯한 다음 토큰을 이어가는 방식이라 원문에 없는 내용을 자연스럽게 섞는 환각이 생길 수 있는데, 좌표를 받았다는 사실만으로 근거 위치가 확인됐다고 믿으면 그 오류를 놓치게 돼요.</dd>
+        <dt>어디에 쓰나</dt>
+        <dd>계약서의 "발주자"처럼 문맥 해석이 필요한 질문에 VLM 쓰기 · 문서 파싱에 문서 전용 VLM과 전용 OCR을 같은 페이지로 돌려 결과 비교하기 · VLM이 준 좌표를 실제 원문 위치와 대조해서 검증하기 · 반복 실행이 같은 답을 낸다고 정확하다고 믿지 않고 사람이 미리 적어둔 확인점과 대조하기.</dd>
+      </dl>
+    </div>
+
     <a class="post-nav" href="segmentation-and-sam.html">
       <span class="post-nav-label">← 이전 편</span>
       <span class="post-nav-title">박스로 안 되는 일 — 분할과 SAM</span>

@@ -1039,7 +1039,7 @@ details[open] > summary .tree-toggle-icon {
   border-top: 3px dashed var(--border);
 }
 
-/* ── 요약 노트 6규칙 전용 스타일 (.claude/skills/tigermorning-blog-post) ── */
+/* ── 요약 노트 7규칙 전용 스타일 (.claude/skills/tigermorning-blog-post) ── */
 
 /* 1. 한 줄 정의: h1 바로 아래, 글이 다루는 개념을 딱 1문장으로 */
 .one-liner {
@@ -1051,6 +1051,51 @@ details[open] > summary .tree-toggle-icon {
   font-weight: var(--font-subhead-weight, 400);
   font-size: 1.15rem;
   color: var(--ink);
+}
+
+/* 2. 이 글을 왜 읽나: 한 줄 정의가 "무엇인가"를 답한다면 이 박스는
+      "나한테 무슨 쓸모인가"를 답한다. 네 항목 고정 순서. */
+.why-read {
+  border: 2px dashed var(--border);
+  border-radius: 4px 18px 4px 18px;
+  background: color-mix(in srgb, var(--folder-4) 6%, transparent);
+  padding: 1rem 1.2rem 0.9rem;
+  margin: 0 0 1.8rem;
+}
+
+.why-read-title {
+  margin: 0 0 0.8rem;
+  font-family: var(--font-subhead);
+  font-weight: var(--font-subhead-weight, 400);
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+
+.why-read dl {
+  margin: 0;
+}
+
+.why-read dt {
+  display: inline-block;
+  margin-bottom: 0.25rem;
+  padding: 0.05rem 0.7rem;
+  border-radius: 999px;
+  background: var(--folder-4);
+  color: #fff;
+  font-family: var(--font-subhead);
+  font-weight: var(--font-subhead-weight, 400);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.why-read dd {
+  margin: 0 0 0.9rem;
+  font-size: 0.96rem;
+  line-height: 1.75;
+}
+
+.why-read dd:last-of-type {
+  margin-bottom: 0.1rem;
 }
 
 /* 4. 나쁜 선택 vs 좋은 선택 대비표 */

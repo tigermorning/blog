@@ -27,6 +27,20 @@
     <p class="post-date">2026. 8. 24.</p>
     <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
 
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>뭐를 할 수 있나</dt>
+        <dd>시스템·개발자·사용자·데이터가 동시에 말을 걸 때 AI가 누구 지시를 우선해야 하는지 판단하고, 좋은 컨텍스트를 관련성·출처성·최신성 같은 여섯 기준으로 점검할 수 있어요.</dd>
+        <dt>왜 배우나</dt>
+        <dd>"지시"를 한 사람이 주는 걸로만 알면, 검색해온 문서 속에 숨은 "앞선 지시를 무시하라"는 문구를 AI가 왜 진짜 명령으로 착각할 수 있는지 이해할 수 없어요.</dd>
+        <dt>왜 중요한가</dt>
+        <dd>데이터 속 그런 문구를 낮은 권한으로 분류해도 완전한 방어는 안 돼요 — 악성 문구가 요약이나 도구 호출 선택을 은근히 흐릴 수 있어서, 우선순위는 시스템 구조로 따로 보강해야 하는 문제예요.</dd>
+        <dt>어디에 쓰나</dt>
+        <dd>정책 문서를 전체 투입할지 RAG로 발췌할지 상황에 맞춰 고르기 · 신뢰 안 된 문서에 출처를 표시해 지시 채널과 안 섞이게 하기 · system 지시만 바꿔가며 답이 실제로 달라지는지 검증하기 · Claude Agent SDK·LangChain·Ollama 중 상황에 맞는 실행 경로 고르기.</dd>
+      </dl>
+    </div>
+
     <a class="post-nav" href="what-is-model-input.html">
       <span class="post-nav-label">← 이전 편</span>
       <span class="post-nav-title">AI가 실제로 읽는 입력이란?</span>

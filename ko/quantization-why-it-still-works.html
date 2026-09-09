@@ -27,6 +27,20 @@
     <p class="post-date">2026. 8. 5.</p>
     <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
 
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>뭐를 할 수 있나</dt>
+        <dd>16비트 가중치를 4비트로 눌러도 모델이 왜 멀쩡한지 원리를 이해하고, 모델 파일 이름에 붙는 Q4_K_M 같은 표기가 정확히 뭘 뜻하는지 읽을 수 있어요.</dd>
+        <dt>왜 배우나</dt>
+        <dd>이 원리를 모르면 "정밀도를 깎는다"는 말만 듣고 품질이 크게 나빠질 거라 지레짐작해 실행 가능한 양자화 모델을 지레 피하게 돼요.</dd>
+        <dt>왜 중요한가</dt>
+        <dd>교환비를 모르면 내 컴퓨터 사양에 안 맞는 원본 모델을 고집하다 아예 못 돌리거나, 반대로 손실 곡선이 가팔라지는 낮은 비트를 무턱대고 골라 필요 이상 성능을 깎아먹게 돼요.</dd>
+        <dt>어디에 쓰나</dt>
+        <dd>로컬 LLM을 받을 때 파일명의 Q4_K_M 표기 읽고 고르기 · 내 컴퓨터 용량에 맞는 양자화 수준 선택하기 · 벤치마크 손실 수치를 특정 모델·조건에서 나온 값으로 감안해 판단하기.</dd>
+      </dl>
+    </div>
+
     <a class="post-nav" href="training-vs-inference-memory.html">
       <span class="post-nav-label">← 이전 편</span>
       <span class="post-nav-title">내 노트북에서도 LLM이 돌아갈까 — 학습과 추론은 다른 일이다</span>

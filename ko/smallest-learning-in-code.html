@@ -27,6 +27,20 @@
     <p class="post-date">2026. 7. 30.</p>
     <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
 
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>뭐를 할 수 있나</dt>
+        <dd>weight·bias 딱 두 숫자만 가진 가장 작은 모델을 직접 학습시켜 보면서, "예측 → 오차 → 조정"이라는 학습의 반복이 코드 몇 줄로 실제로 무엇을 하는지 눈으로 확인할 수 있어요.</dd>
+        <dt>왜 배우나</dt>
+        <dd>학습이라는 말을 글로만 들으면 여전히 추상적으로 남는데, weight가 0에서 시작해 600번 만에 정답에 가까운 값을 스스로 찾아가는 과정을 보지 않으면 "AI가 데이터에서 배운다"는 말이 뭘 뜻하는지 감이 안 잡혀요.</dd>
+        <dt>왜 중요한가</dt>
+        <dd>이 가장 작은 학습을 안 보고 넘어가면, 거대 언어모델의 사전학습을 아예 다른 원리로 착각하기 쉬운데 실제로는 파라미터 개수와 예측 대상만 다를 뿐 똑같은 반복이에요.</dd>
+        <dt>어디에 쓰나</dt>
+        <dd>PyTorch의 텐서·autograd가 무슨 일을 하는지 감 잡기 · <code>nn.Linear</code>·<code>optim.SGD</code> 같은 축약 도구를 쓸 때 속에서 벌어지는 일 이해하기 · 다음 편의 분류(softmax) 문제로 넘어가기 전 회귀의 기본기 다지기.</dd>
+      </dl>
+    </div>
+
     <a class="post-nav" href="turning-data-into-numbers.html">
       <span class="post-nav-label">← 이전 편</span>
       <span class="post-nav-title">데이터를 숫자로 바꾸기 — 벡터와 텐서</span>

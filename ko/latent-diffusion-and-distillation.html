@@ -27,6 +27,20 @@
     <p class="post-date">2026. 8. 14.</p>
     <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
 
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>뭐를 할 수 있나</dt>
+        <dd>이미지 생성 모델이 왜 2022년에야 개인 컴퓨터로 내려왔는지 설명할 수 있고, 증류된 모델 코드에서 <code>guidance_scale=0.0</code>을 봤을 때 그게 오타가 아니라 왜 그래야 하는지 알 수 있어요.</dd>
+        <dt>왜 배우나</dt>
+        <dd>그림을 잘 그리게 하려면 그림 쪽을 더 학습시켜야 할 것 같지만, 실제로는 언어모델 쪽을 키우는 게 결과에 더 크게 기여했어요. 이걸 모르면 프롬프트를 키워드 나열로만 쓰고 왜 결과가 안 좋은지 못 알아채요.</dd>
+        <dt>왜 중요한가</dt>
+        <dd>증류된 모델에 가이던스 값을 세게 주면 그림이 오히려 상해요 — 원리를 모르고 기본값을 건드리면 품질이 나빠지는데 원인도 못 찾아요.</dd>
+        <dt>어디에 쓰나</dt>
+        <dd>프롬프트를 키워드 나열 대신 완전한 문장으로 쓰기 · 증류된 모델 코드에서 guidance_scale을 임의로 올리지 않고 0으로 두기 · 간판이나 표지판 글자가 필요한 이미지라면 텍스트를 이미지와 같은 토큰으로 다루는 최신 모델을 고르기.</dd>
+      </dl>
+    </div>
+
     <a class="post-nav" href="gan-to-diffusion-models.html">
       <span class="post-nav-label">← 이전 편</span>
       <span class="post-nav-title">노이즈에서 되돌린다는 발상 — GAN에서 확산 모델까지</span>

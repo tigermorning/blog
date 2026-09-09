@@ -27,6 +27,20 @@
     <p class="post-date">2026. 8. 26.</p>
     <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
 
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>뭐를 할 수 있나</dt>
+        <dd>AI 답을 다른 프로그램이 이어받게 할 때 JSON 스키마로 모양을 강제하는 법과, 그 답이 형식만 맞고 내용은 지어낸 건 아닌지 따로 검사해야 한다는 걸 구분할 수 있어요. exact match·F1·BLEU·ROUGE·pass@k·LLM-as-judge 중 내 상황에 맞는 평가지표도 고를 수 있게 돼요.</dd>
+        <dt>왜 배우나</dt>
+        <dd>"JSON으로 답해줘"라는 부탁과 실제로 그 형식을 강제하는 것을 같다고 생각하면 필수 필드가 빠지거나 파싱이 깨지는 걸 못 막고, 지표 하나로 정확성·형식·유용성을 다 잴 수 있다고 착각하면 엉뚱한 지표로 비교하게 돼요.</dd>
+        <dt>왜 중요한가</dt>
+        <dd>형식 검사를 통과했다고 안심하면 존재하지 않는 강 이름이나 없는 패키지 이름처럼 형식엔 맞지만 지어낸 내용을 놓치고, F1을 어떤 평균으로 냈는지 안 밝히면 같은 결과도 완전히 다른 점수로 보고돼서 비교 자체가 무너져요.</dd>
+        <dt>어디에 쓰나</dt>
+        <dd>회의록에서 담당자·기한을 뽑을 때 strict schema로 필드 강제하기 · AI가 짠 코드의 import 패키지명이 실제로 존재하는지 따로 확인하기 · 희귀 카테고리가 중요한 일(사기 탐지 등)엔 macro F1 쓰기 · 지시안끼리 비교할 땐 시험 입력·실행 조건·판정 규칙부터 고정하기.</dd>
+      </dl>
+    </div>
+
     <a class="post-nav" href="instruction-priority-and-testing.html">
       <span class="post-nav-label">← 이전 편</span>
       <span class="post-nav-title">지시 우선권과 검증</span>

@@ -34,6 +34,20 @@
 
     <p class="one-liner">노트북<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>은 <strong>입력값·계산 코드·실행 결과·설명을 한 문서에 나란히 남기는 자리</strong>이고, 여기에 에이전트를 연결한다는 것은 그 문서를 대신 쓰고 대신 돌려 보게 한다는 뜻이다.</p>
 
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>뭐를 할 수 있나</dt>
+        <dd>Colab 노트북을 MCP로 연결해 AI 에이전트가 셀을 추가하고 실행하게 만들어서, 계산의 입력·과정·결과를 한 문서에 남겨 나중에 다시 확인할 수 있어요.</dd>
+        <dt>왜 배우나</dt>
+        <dd>"셀을 추가해줘"와 "그 셀을 실행해줘"가 다른 부탁이라는 것, 그리고 이름이 같은 두 개의 Connect 버튼(런타임 연결과 MCP 서버 연결)이 서로 다른 걸 잇는다는 걸 모르면 셀만 생기고 계산은 안 된 상태를 "다 됐다"고 착각하게 돼요.</dd>
+        <dt>왜 중요한가</dt>
+        <dd>"평균 30분" 같은 결과 문장 하나만 남기면 나중에 그 값이 어떤 계산에서 나왔는지 아무도 되짚을 수 없고, 기록 없는 날을 어떻게 볼지 같은 기준을 정해두지 않으면 같은 자료로도 30분과 12.9분처럼 서로 다른 숫자가 나올 수 있어요.</dd>
+        <dt>어디에 쓰나</dt>
+        <dd>학습 시간 평균처럼 반복 계산하는 값을 노트북 셀에 코드로 남기기 · 답을 아는 계산(print(37+5))으로 연결 전체를 검증하기 · 계산 기준을 텍스트 셀에 적어 숫자 옆에 남기기 · 연결이 멈춘 위치를 단계별로 좁혀 찾기</dd>
+      </dl>
+    </div>
+
     <p><a href="mcp-skill-reuse-verification.html">9편</a>까지는 판단을 <strong>문서로</strong> 남겼어요. 주간 보고서를 쓰고, 그 판단 기준을 <code>SKILL.md</code>에 적고, 다음 주에도 같은 기준이 적용되는지 확인했죠. 그런데 팀원이 이런 말을 꺼냈다고 해 볼게요. <strong>"앞으로는 학습 시간 같은 기록도 모아서 평균을 보고 싶어요. 어떤 값을 어떻게 계산했는지 나중에 다시 확인할 수 있게 남겨 주세요."</strong></p>
     <p>보고서에 "평균 30분"이라고 적힌 문장 하나만 남으면, 석 달 뒤에 그 30분이 <strong>어떤 값을 어떻게 나눈 결과인지</strong> 아무도 못 되짚어요. 그래서 이번 편에는 문서 대신 <strong>돌려 볼 수 있는 형태</strong>가 등장해요. 브라우저에서 노트북을 쓰고 Python을 실행하는 환경이 <strong>Colab</strong>이고, 여기에 <a href="mcp-skill-protocol-roles.html">2편</a>에서 배운 <strong>MCP<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup></strong> 방식으로 에이전트를 붙이는 게 이번 편의 일이에요.</p>
     <p>먼저 말 두 개만 풀고 갈게요. 노트북의 <strong>한 칸</strong>을 <strong>셀<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup></strong>이라고 불러요. Python을 적는 <strong>코드 셀</strong>과 제목·설명을 적는 <strong>텍스트 셀</strong>이 있고, 코드 셀을 실행하면 그 칸 <strong>바로 아래에 출력</strong>이 붙어요. 그리고 그 코드를 실제로 계산해 주는 자리를 <strong>런타임<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup></strong>이라고 해요. 이 둘이 <strong>다른 곳</strong>이라는 게 이번 편에서 제일 중요한 이야기예요.</p>

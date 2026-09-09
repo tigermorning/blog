@@ -34,6 +34,20 @@
 
     <p class="one-liner">OAuth 준비란 <strong>비밀번호를 프로그램에 넘기는 대신 "이 앱이 내 표를 읽는 것까지만 허용한다"고 내가 Google 화면에서 직접 눌러 줄 수 있도록, 앱과 허용 범위를 미리 등록해 두는 일</strong>이다.</p>
 
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>뭐를 할 수 있나</dt>
+        <dd>Google Cloud Console에서 프로젝트를 만들고 Sheets API를 켜고 동의 화면과 읽기 전용 범위를 설정해, <code>credentials.json</code> 파일 하나를 손에 쥘 수 있게 돼요. 실제 로그인과 표 읽기는 다음 편 몫이에요.</dd>
+        <dt>왜 배우나</dt>
+        <dd>브라우저에 로그인해 있다는 사실이 새로 만든 프로그램에게 자동으로 접근 권한을 넘겨주지 않는다는 걸 모르면, 왜 코드가 표를 못 읽는지 원인을 못 찾고 헤매게 돼요.</dd>
+        <dt>왜 중요한가</dt>
+        <dd>준비 단계에서 scope를 필요 이상으로 넓게 잡거나 <code>credentials.json</code>을 저장소에 커밋하면, 실수로 표를 고칠 권한까지 열리거나 인증 정보가 새어 나가는 실제 사고로 이어져요.</dd>
+        <dt>어디에 쓰나</dt>
+        <dd>팀 업무 기록을 Google 스프레드시트에서 읽는 MCP 도구를 만들 때 · 개인 계정으로 실습용 프로젝트를 등록할 때 · Desktop app과 Web application 중 맞는 클라이언트 종류를 고를 때 · 인증 파일을 대화창에 노출하지 않고 안전하게 다룰 때</dd>
+      </dl>
+    </div>
+
     <p><a href="mcp-skill-colab-notebook.html">10편</a> 끝에서 이런 예고를 했어요. <strong>Colab에 로그인해 있다는 사실이 다른 앱의 접근 동의까지 대신해 주지는 않는다</strong>고요. 이번 편이 바로 그 이야기예요.</p>
     <p>상황은 이렇습니다. 팀이 주간 기록을 <strong>Google 스프레드시트</strong>에 모으기 시작했어요. 저는 브라우저에서 그 표를 잘 보고 있고요. 그런데 <strong>Python 프로그램에서 같은 표를 읽으려고 하면</strong> 아무것도 안 돼요. 브라우저에 로그인한 사실이 <strong>방금 새로 실행한 프로그램에게 자동으로 전달되지는 않기</strong> 때문이에요. 프로그램은 Google에게 <strong>어떤 앱이 · 어느 사용자의 동의를 받아 · 어떤 작업을 하려는지</strong> 스스로 밝혀야 합니다.</p>
     <p>여기서 말하는 Google Docs·Sheets·Drive·Gmail·Calendar를 묶어 <strong>Google Workspace<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup></strong>라고 불러요. 문서·표·파일·메일·일정 서비스 묶음이에요. 그리고 미리 하나 짚어 둘게요 — <a href="mcp-skill-writing-skill-md.html">8편</a>에서 만든 <code>SKILL.md</code> 같은 <strong>Skill 문서를 쓰는 것 자체에는 인증이 전혀 필요 없어요.</strong> 인증이 필요해지는 건 그 Skill이 부르는 <strong>MCP 서버나 스크립트가 Google API를 실제로 호출할 때</strong>예요.</p>

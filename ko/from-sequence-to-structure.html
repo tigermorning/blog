@@ -27,6 +27,20 @@
     <p class="post-date">2026. 8. 27.</p>
     <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
 
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>뭐를 할 수 있나</dt>
+        <dd>세포 유전자 발현 데이터나 단백질 서열을 다루는 기반모델(Geneformer, AlphaFold2)이 실제로 무슨 문제를 푸는지 알게 되고, AlphaFold2가 내놓는 pLDDT 점수를 보고 구조의 어느 부분을 믿고 어느 부분을 의심해야 할지 읽을 수 있어요.</dd>
+        <dt>왜 배우나</dt>
+        <dd>"서열만 다루던 언어모델 구조가 왜 생명과학까지 갔지"라는 의문을 안 풀면 이런 진전을 각각 별개의 마법처럼 보게 되는데, 실은 세포도 단백질도 글자가 한 줄로 늘어선 서열이라는 공통점 때문에 같은 구조가 옮겨간 거예요.</dd>
+        <dt>왜 중요한가</dt>
+        <dd>pLDDT 같은 확신도 점수를 안 보고 구조 결과를 통째로 믿거나 안 믿으면, 실제로는 믿을 만한 부분과 흔들리는 부분이 자리마다 갈린다는 걸 놓치고 잘못된 판단을 하게 돼요.</dd>
+        <dt>어디에 쓰나</dt>
+        <dd>적은 수의 세포 샘플만 가지고도 사전학습된 모델에 물어 후보 유전자 순위 뽑기 · 단백질 서열만으로 구조를 예측해 실험 없이 빠르게 가설 세우기 · AlphaFold2 결과에서 pLDDT 90 이상 자리만 결합 부위 판단에 신뢰하기.</dd>
+      </dl>
+    </div>
+
     <a class="post-nav" href="foundation-models-for-tables.html">
       <span class="post-nav-label">← 이전 편</span>
       <span class="post-nav-title">학습 없이 표를 읽는 모델</span>

@@ -34,6 +34,20 @@
 
     <p class="one-liner">이번 편이 하는 일은 <strong>사람이 브라우저에서 딱 한 번 허용을 누르고, 그 결과를 파일로 남겨 그다음부터는 프로그램이 사람 없이 표를 읽게 만드는 것</strong>이다.</p>
 
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>뭐를 할 수 있나</dt>
+        <dd>11편에서 받아 둔 <code>credentials.json</code>으로 실제 로그인해 <code>token.json</code>을 만들고, 그 토큰으로 표의 제목과 셀 값을 읽는 함수를 MCP 도구로 감싸 에이전트가 부를 수 있게 만들 수 있어요.</dd>
+        <dt>왜 배우나</dt>
+        <dd>사람이 딱 한 번만 브라우저에서 허용을 누르고 그 뒤로는 저장된 토큰이 대신한다는 구조를 모르면, 실행할 때마다 로그인 화면이 뜨는 게 정상인지 오류인지 구분하지 못해요.</dd>
+        <dt>왜 중요한가</dt>
+        <dd>반환된 값이 요청한 범위와 다른데(예: 헤더 포함이라 데이터가 두 줄만 온 경우) 그걸 모르고 그대로 넣으면, 헤더를 데이터로 착각하는 실제 오류가 눈에 안 띄게 보고서에 섞여 들어가요.</dd>
+        <dt>어디에 쓰나</dt>
+        <dd>인증이 끝난 표를 에이전트가 자동으로 읽어 오게 할 때 · <code>spreadsheet_id</code> 대신 URL 전체를 넣는 실수를 미리 막을 때 · 토큰 만료·재인증 오류를 진단할 때 · 오류 메시지에 비밀 정보가 섞여 나가지 않게 감쌀 때</dd>
+      </dl>
+    </div>
+
     <p><a href="mcp-skill-google-oauth-setup.html">11편</a>이 끝났을 때 손에 남은 건 <strong><code>credentials.json</code> 파일 하나</strong>였어요. 콘솔에서 프로젝트를 만들고, Google Sheets API를 켜고, 동의 화면을 만들고, <code>spreadsheets.readonly</code> 범위를 고르고, Desktop app 클라이언트를 만들어 내려받은 결과물이죠. 그런데 그 파일 하나로는 <strong>아직 아무 표도 못 읽어요.</strong> 그건 "어떤 앱이 요청하는가"를 적은 <strong>앱 설정</strong>일 뿐이고, "내가 이 앱에 내 표 읽기를 허용한다"는 <strong>동의</strong>는 아직 한 번도 일어나지 않았거든요.</p>
     <p>이번 편에서 그 동의를 실제로 받아 봅니다. 그리고 동의만 받고 끝내지 않고, <strong>표를 읽는 함수 → 에이전트가 부를 수 있는 도구</strong>까지 이어 붙여요. <a href="mcp-skill-protocol-roles.html">2편</a>에서 배운 MCP<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup> 구조와 <a href="mcp-skill-building-server.html">3편</a>에서 직접 만들어 본 서버가 여기서 다시 쓰여요.</p>
 

@@ -27,6 +27,20 @@
     <p class="post-date">2026. 7. 23.</p>
     <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
 
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>뭐를 할 수 있나</dt>
+        <dd>회원가입·로그인을 CRUD로 풀어 설명할 수 있고, 로그인 상태를 세션으로 유지할지 JWT로 유지할지 상황에 맞게 고를 수 있고, 로그인 정보를 어디에 저장하면 위험한지 판단할 수 있어요.</dd>
+        <dt>왜 배우나</dt>
+        <dd>이걸 모르면 회원 표에 비밀번호를 그대로 저장하거나 인증 기능을 직접 만들려는 유혹에 빠지기 쉬운데, 이 글은 그게 왜 위험한지와 무엇을 대신 써야 하는지를 짚어줘요.</dd>
+        <dt>왜 중요한가</dt>
+        <dd>비밀번호를 원문으로 두거나 인증을 자작하면 사고로 이어지고, 세션 저장소를 잘못 고르면 서버를 늘릴 때 로그인이 통째로 깨지거나 즉시 로그아웃이 안 되는 대가를 치러요.</dd>
+        <dt>어디에 쓰나</dt>
+        <dd>회원 표의 비밀번호 칸을 password_hash로 이름 짓고 해시로만 저장하기 · Supabase Auth 같은 검증된 서비스로 인증 붙이기 · 즉시 로그아웃이 중요한 서비스면 세션, 여러 서비스 연동이면 JWT로 고르기 · Redis로 세션 캐시를 만들어 "30분 무활동 자동 로그아웃" 구현하기.</dd>
+      </dl>
+    </div>
+
     <a class="post-nav" href="transactions-normalization-nosql-types.html">
       <span class="post-nav-label">← 이전 편</span>
       <span class="post-nav-title">트랜잭션, 정규화, 그리고 NoSQL 네 가지</span>

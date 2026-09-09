@@ -27,6 +27,20 @@
     <p class="post-date">2026. 8. 27.</p>
     <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
 
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>뭐를 할 수 있나</dt>
+        <dd>원하는 기능을 가진, 자연에 없던 단백질을 어떻게 "지어내는지" — RFdiffusion으로 뼈대를 만들고 ProteinMPNN으로 서열을 입히는 흐름을 이해할 수 있어요.</dd>
+        <dt>왜 배우나</dt>
+        <dd>서열을 넣고 구조를 맞히는 예측 문제와 원하는 기능에서 거꾸로 단백질을 만드는 설계 문제는 방향이 반대인데, 이 차이를 모르면 왜 별도의 두 모델을 이어붙여야 하는지 이해할 수 없어요.</dd>
+        <dt>왜 중요한가</dt>
+        <dd>만든 서열을 실험실에 바로 들고 가지 않고 다시 구조 예측기에 넣어 걸러내는 되돌림 고리 덕분에 합성해볼 후보를 수천 개에서 몇십 개로 줄일 수 있어요 — 이 검증 단계가 없으면 실험 비용이 그대로 치솟아요.</dd>
+        <dt>어디에 쓰나</dt>
+        <dd>표적 구조를 넣고 밤새 후보 수백 개를 뽑아 예측기로 거르기 · pLDDT와 원래 뼈대와의 거리 차이 기준으로 후보 채점하기 · 암 표면 단백질에 붙는 바인더처럼 표적이 있는 설계에 조건 걸기.</dd>
+      </dl>
+    </div>
+
     <a class="post-nav" href="from-sequence-to-structure.html">
       <span class="post-nav-label">← 이전 편</span>
       <span class="post-nav-title">서열을 읽던 모델이 간 곳 — 유전체와 구조 예측</span>

@@ -27,6 +27,20 @@
     <p class="post-date">2026. 8. 28.</p>
     <p class="post-date">※ 순순팩토리와의 미팅에서 나온 질문에 답하려고, "화면 뒤에서 일어나는 일들" 시리즈에서 한 줄로만 스쳐 지나갔던 내용을 번외로 정리했습니다.</p>
 
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>뭐를 할 수 있나</dt>
+        <dd><code>blocked by CORS policy</code> 에러가 서버 거부가 아니라 브라우저 스스로 응답을 버린 거라는 걸 설명할 수 있고, 서버 응답에 <code>Access-Control-Allow-Origin</code> 헤더를 직접 붙여 이 에러를 해결할 수 있어요.</dd>
+        <dt>왜 배우나</dt>
+        <dd>이 에러를 서버 문제로 오해하면 서버 로그만 뒤지며 헛수고를 하게 되는데, 실제로는 여권 검문처럼 브라우저가 응답에 붙은 허용 주소 목록을 보고 스스로 통과시키거나 돌려보내는 거예요.</dd>
+        <dt>왜 중요한가</dt>
+        <dd>개발할 때 편하다고 전체 허용(<code>*</code>)으로 열어둔 채 그대로 배포하면, 프록시 주소만 아는 아무 사이트나 우리 API 키를 공짜로 빌려 쓸 수 있게 돼요 — 프록시로 키를 숨긴 의미가 없어지는 셈이에요.</dd>
+        <dt>어디에 쓰나</dt>
+        <dd>프론트엔드와 별도 주소의 백엔드(프록시 서버)를 연결할 때 CORS 에러 해결하기 · Express의 <code>cors</code> 패키지로 허용 주소를 한 줄로 설정하기 · 배포 전에 개발용 전체 허용 설정을 실제 우리 사이트 주소로 좁혀 두기</dd>
+      </dl>
+    </div>
+
     <a class="post-nav" href="what-is-proxy-server.html">
       <span class="post-nav-label">← 이전 번외</span>
       <span class="post-nav-title">프록시 서버 — API 키를 대신 들어주는 서버</span>

@@ -27,6 +27,20 @@
     <p class="post-date">2026. 8. 6.</p>
     <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
 
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>뭐를 할 수 있나</dt>
+        <dd>모델 가중치 파일 크기만 보고 "내 그래픽카드에 들어가겠다"고 판단하는 실수를 피하고, 컨텍스트 길이·헤드 구조(GQA·MHA)까지 넣어서 실제로 필요한 VRAM을 계산할 수 있어요.</dd>
+        <dt>왜 배우나</dt>
+        <dd>가중치 크기만 계산하면 반드시 틀려요. 긴 문서 몇 편만 넣어도 KV 캐시가 몇 배로 불어나는데, 이걸 빼고 계산하면 좁은 카드에 여유가 있다고 착각하게 돼요.</dd>
+        <dt>왜 중요한가</dt>
+        <dd>계산을 잘못하면 실행 중에 메모리가 넘쳐 일부가 CPU로 밀려나(속도가 초당 수십 토큰에서 한 자릿수로 주저앉음) 아예 메모리 부족으로 프로그램이 종료돼요.</dd>
+        <dt>어디에 쓰나</dt>
+        <dd>모델 카드에서 KV 헤드 수를 확인해 MHA인지 GQA인지 먼저 확인하기 · 좁은 VRAM에서는 컨텍스트 길이를 줄이거나 캐시를 양자화하기 · MoE 모델을 고를 때 메모리는 전체 파라미터 기준, 속도는 활성 파라미터 기준으로 따로 계산하기.</dd>
+      </dl>
+    </div>
+
     <a class="post-nav" href="quantization-why-it-still-works.html">
       <span class="post-nav-label">← 이전 편</span>
       <span class="post-nav-title">양자화 — 정밀도를 깎아도 왜 멀쩡할까</span>

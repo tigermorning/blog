@@ -27,6 +27,20 @@
     <p class="post-date">2026. 8. 10.</p>
     <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
 
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>뭐를 할 수 있나</dt>
+        <dd>객체 탐지 모델이 내놓는 label·box·score 세 숫자 묶음을 어떻게 읽어야 하는지, 그리고 박스 두 개가 얼마나 겹쳤는지를 IoU로 직접 계산할 수 있어요.</dd>
+        <dt>왜 배우나</dt>
+        <dd>score를 "몇 퍼센트 확률로 맞다"는 뜻으로 오해하면, 모델이 학습 패턴과 얼마나 비슷한지를 요약한 내부 점수일 뿐이라는 걸 놓치고 결과를 잘못 믿게 돼요.</dd>
+        <dt>왜 중요한가</dt>
+        <dd>신뢰도 임계값은 기술 설정이 아니라 업무 정책이라, 화재 감지처럼 놓치면 위험한 일과 자동결제처럼 헛짚으면 손해인 일에서 같은 문턱을 쓰면 안 돼요.</dd>
+        <dt>어디에 쓰나</dt>
+        <dd>업무 성격에 맞춰 신뢰도 임계값을 낮게 또는 높게 잡기 · 다른 팀 성능표를 볼 때 어떤 IoU 문턱에서 잰 숫자인지 먼저 확인하기 · 박스로 넓이나 재고량을 계측하지 않고 위치 후보로만 쓰기.</dd>
+      </dl>
+    </div>
+
     <a class="post-nav" href="ocr-assembly-line-and-error-propagation.html">
       <span class="post-nav-label">← 이전 편</span>
       <span class="post-nav-title">글자를 찾고 읽는 조립 라인 — 전처리부터 레이아웃까지</span>
