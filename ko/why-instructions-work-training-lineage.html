@@ -30,6 +30,8 @@
     <div class="why-read">
       <p class="why-read-title">이 글을 읽기 전에</p>
       <dl>
+        <dt>어디쯤인가</dt>
+        <dd><a href="posts.html#cat-prompt-agent">5단계</a> › <a href="posts.html#instruction-design">지시 설계</a> — 7번째 글 (전 7편). 중간부터 보셨다면 <a href="instruction-design-basics.html">첫 글</a>부터 보시는 게 편해요.</dd>
         <dt>뭐를 할 수 있나</dt>
         <dd>모델이 지시를 따르는 게 문장을 사람처럼 논리적으로 해독해서가 아니라 SFT·선호 학습 같은 특정 단계에서 만들어진 행동이라는 걸 알고, base LM·SFT·RLHF·DPO·GRPO가 각각 어떤 학습 신호로 무엇을 바꾸는지 구분할 수 있어요.</dd>
         <dt>왜 배우나</dt>
@@ -40,6 +42,11 @@
         <dd>지시를 잘 안 따르는 원인을 찾을 때 지시문 한 줄이 아니라 과업의 모호성·chat template·디코딩 설정까지 의심 범위에 넣기 · 모델이나 스냅샷을 바꿀 때 대표 질문 묶음으로 다시 측정하기 · 도구 호출 권한이나 주문 변경처럼 민감한 동작은 지시 준수 학습에만 맡기지 않고 애플리케이션에서 따로 검사하기.</dd>
       </dl>
     </div>
+
+    <a class="post-nav" href="eleven-ways-same-question.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">같은 질문, 열한 가지 방법 — 로컬 모델로 직접 재보기</span>
+    </a>
 
     <p>프롬프트에 따라 답이 달라진다는 관찰은 <a href="eleven-ways-same-question.html">지난 실습</a>에서 확인했다. 근데 그 차이가 어디서 오는지는 아직 설명이 아니었다. 모델이 지시를 따른다고 할 때, 문장의 명령형을 사람처럼 논리적으로 해독한다고 단정하면 안 된다는 게 오늘의 출발점이다. SFT·RLHF·DPO 각 단계가 무엇을 학습 신호로 쓰는지는 <a href="what-is-alignment-sft-rlhf-dpo.html">정렬이란 무엇인가</a>에서 이미 정리해 뒀으니, 여기서는 그 계보를 <strong>지시 설계자의 판단</strong>으로 다시 압축하는 데 집중한다.</p>
 
@@ -84,6 +91,10 @@
     </ol>
     <p>지시는 기대 행동을 조정하는 층이고, 검증과 권한 부여는 그 기대가 빗나가도 남아야 하는 층이다. 학습된 성질 위에서 작동한다는 걸 알았으니, 이제 지시를 조립하는 방법을 배울 차례다.</p>
 
+    <a class="post-nav" href="context-window-budget.html">
+      <span class="post-nav-label">다음 시리즈 →</span>
+      <span class="post-nav-title">컨텍스트 창은 왜 유한한가 (1)</span>
+    </a>
   </main>
   </div>
 

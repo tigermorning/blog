@@ -23,7 +23,6 @@
   <div id="sidebar-mount"></div>
 
   <main>
-    <p class="post-date"><a href="rag-chatbot-chunk-design.html">← 이전 편 검색되는 자료와 답할 수 있는 자료는 다르다 — 청크 설계</a></p>
     <h1><span class="hl">브라우저 안에서 문장을 좌표로 바꾸기</span> — 임베딩과 벡터스토어</h1>
     <p class="post-date">2026. 8. 28.</p>
     <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
@@ -31,6 +30,8 @@
     <div class="why-read">
       <p class="why-read-title">이 글을 읽기 전에</p>
       <dl>
+        <dt>어디쯤인가</dt>
+        <dd><a href="posts.html#cat-agent-build">6단계</a> › <a href="posts.html#chatbot-project">나만의 챗봇 만들기</a> — 4번째 글 (전 9편). 중간부터 보셨다면 <a href="rag-chatbot-project-overview.html">첫 글</a>부터 보시는 게 편해요.</dd>
         <dt>뭐를 할 수 있나</dt>
         <dd>브라우저 안에서 문장을 임베딩 벡터로 바꾸는 과정(모델 선택, 캐싱, WASM 오류 우회, mean pooling과 L2 정규화)을 이해하고, 문서 벡터와 질문 벡터가 같은 공간에 있는지 스스로 점검할 수 있어요.</dd>
         <dt>왜 배우나</dt>
@@ -41,6 +42,11 @@
         <dd>모델 다운로드를 Cache Storage로 캐싱해 재방문 속도 살리기 · GatherBlockQuantized 오류를 토크나이저·세션 분리로 우회하기 · mean pooling과 L2 정규화 순서 점검하기 · 스팟체크 도구로 top-1 결과 확인하기.</dd>
       </dl>
     </div>
+
+    <a class="post-nav" href="rag-chatbot-chunk-design.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">검색되는 자료와 답할 수 있는 자료는 다르다 — 청크 설계</span>
+    </a>
 
     <p>과거에 쓰던 스크립트를 그대로 실행하려다 보면, 그 경로가 BGE 384차원 벡터를 남긴다는 사실을 만난다. 화면에 숫자 배열은 정상처럼 보이지만, 질문이 다른 공간에서 만들어진다면 <strong>가까움이라는 판단 자체가 성립하지 않는다</strong>. 문서와 질문의 출발점부터 맞춰야 한다는 게 오늘의 핵심이었다.</p>
 
@@ -86,8 +92,11 @@ app/public/moducon-docs.json에 저장합니다. 기존 BGE 384차원 경로는 
     <h2><span class="hl">정리</span></h2>
     <p>임베딩은 답을 만드는 단계가 아니라 근거 후보를 찾는 색인 단계라는 걸 자꾸 잊어버리기 쉽다. 질문과 문서가 같은 공간에 있어야 거리가 말을 한다 — 오늘 배운 걸 한 문장으로 압축하면 이거였다. 다음 편에서는 이렇게 만든 벡터스토어에서 실제로 가까운 청크를 고르는 하이브리드 검색으로 넘어간다.</p>
 
-    <p class="post-date"><a href="rag-chatbot-hybrid-search.html">다음 편 → 가까운 청크를 고른다 — 코사인과 BM25의 하이브리드 검색</a></p>
 
+    <a class="post-nav" href="rag-chatbot-hybrid-search.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">가까운 청크를 고른다 — 코사인과 BM25의 하이브리드 검색</span>
+    </a>
   </main>
   </div>
 

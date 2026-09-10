@@ -23,7 +23,6 @@
   <div id="sidebar-mount"></div>
 
   <main>
-    <p class="post-date"><a href="rag-chatbot-hybrid-search.html">← 이전 편 가까운 청크를 고른다 — 코사인과 BM25의 하이브리드 검색</a></p>
     <h1><span class="hl">프롬프트는 근거의 경계다</span> — 프롬프트 조립과 로컬 LLM 스트리밍</h1>
     <p class="post-date">2026. 8. 28.</p>
     <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
@@ -31,6 +30,8 @@
     <div class="why-read">
       <p class="why-read-title">이 글을 읽기 전에</p>
       <dl>
+        <dt>어디쯤인가</dt>
+        <dd><a href="posts.html#cat-agent-build">6단계</a> › <a href="posts.html#chatbot-project">나만의 챗봇 만들기</a> — 6번째 글 (전 9편). 중간부터 보셨다면 <a href="rag-chatbot-project-overview.html">첫 글</a>부터 보시는 게 편해요.</dd>
         <dt>뭐를 할 수 있나</dt>
         <dd>정적으로 배포한 페이지도 답변은 방문자 컴퓨터의 로컬 Ollama가 만든다는 실행 경계를 이해하고, 프롬프트로 근거 범위를 문장으로 고정하고 스트리밍 응답을 조각으로 읽어 화면에 이어붙이는 법을 챙길 수 있게 돼요.</dd>
         <dt>왜 배우나</dt>
@@ -41,6 +42,11 @@
         <dd>로컬 LLM을 부르는 웹앱을 GitHub Pages 같은 정적 호스팅에 배포할 때 · RAG 챗봇 프롬프트에 근거 원칙·ID 표시·상대 시각 해석 규칙을 넣을 때 · 스트리밍 응답을 조각조각 받아 답변 말풍선에 이어붙이는 화면을 만들 때 · 배포 뒤 OLLAMA_ORIGINS로 CORS를 허용하고 실제 주소에서 재점검할 때</dd>
       </dl>
     </div>
+
+    <a class="post-nav" href="rag-chatbot-hybrid-search.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">가까운 청크를 고른다 — 코사인과 BM25의 하이브리드 검색</span>
+    </a>
 
     <p>정적 Pages에 배포한 챗봇 주소에서 질문을 보내면, 화면은 공개돼도 <a href="running-local-llm-with-ollama.html">Ollama</a>(내 컴퓨터에서 모델을 돌려 주는 로컬 실행 프로그램) 호출이 막힐 수 있다. "정적 파일을 배포하면 서버가 로컬 모델 호출을 대신할 것"이라는 짐작은 틀렸다. <strong>배포된 앱은 사용자 컴퓨터의 브라우저에서 실행되고, 브라우저는 여전히 그 컴퓨터의 로컬 엔진을 직접 호출한다.</strong> 이 실행 경계를 먼저 확인한 뒤에야 프롬프트가 어떤 근거로 답해야 하는지도 정할 수 있었다.</p>
 
@@ -98,8 +104,11 @@ systemctl set-environment OLLAMA_ORIGINS="https://YOUR_ID.github.io"</code></pre
     <h2><span class="hl">정리</span></h2>
     <p>오늘 확인한 건 결국 두 층의 분리였다 — <strong>배포 환경의 연결 조건</strong>(어디서 Ollama를 부르는가)과 <strong>답변 근거의 조건</strong>(무엇을 근거로 답할 수 있는가)은 서로 다른 층에서 검증해야 한다는 것. 다음 편에서는 이렇게 나온 답변을 사람이 매번 읽지 않고도 판정할 수 있게, 답변 뒤에 심사위원 하나를 더 두는 LLM-as-a-Judge로 넘어간다.</p>
 
-    <p class="post-date"><a href="rag-chatbot-llm-judge.html">다음 편 → 답변 뒤에 심사위원 하나를 더 둔다 — LLM-as-a-Judge</a></p>
 
+    <a class="post-nav" href="rag-chatbot-llm-judge.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">답변 뒤에 심사위원 하나를 더 둔다 — LLM-as-a-Judge</span>
+    </a>
   </main>
   </div>
 

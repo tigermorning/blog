@@ -30,6 +30,8 @@
     <div class="why-read">
       <p class="why-read-title">이 글을 읽기 전에</p>
       <dl>
+        <dt>어디쯤인가</dt>
+        <dd><a href="posts.html#cat-ai-tools">2단계</a> › <a href="posts.html#prompt-agent-concepts">프롬프트와 에이전트 개념</a> — 9번째 글 (전 9편). 중간부터 보셨다면 <a href="what-is-prompt-engineering.html">첫 글</a>부터 보시는 게 편해요.</dd>
         <dt>뭐를 할 수 있나</dt>
         <dd>같은 "system 지시"라는 개념을 Claude Agent SDK, LangChain, Ollama가 각각 어떤 자료형으로 받는지 코드로 직접 비교하고, 내 상황에 맞는 실행 경로를 고를 수 있어요.</dd>
         <dt>왜 배우나</dt>
@@ -40,6 +42,11 @@
         <dd>Claude Code 구독 로그인으로 에이전트 실행 관찰하기 · API 키로 LangChain 메시지 객체 다루기 · 로컬 Ollama에서 role 딕셔너리로 멀티턴 실험하기 · system 프롬프트만 바꿔 문체 차이 비교하기.</dd>
       </dl>
     </div>
+
+    <a class="post-nav" href="ai-agent-beginner-guide.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">AI 에이전트(Agent) 쉽게 이해하기</span>
+    </a>
 
     <p><a href="prompt-engineering-history.html">프롬프트 기법의 역사</a>에서 system·이력이 답을 어떻게 바꾸는지 이론으로 봤다면, 이번엔 손으로 직접 세 가지 실행 경로를 돌려봤다. 결론부터 말하면 <strong>같은 "system 지시"라는 개념도 라이브러리마다 받는 자료형이 다르다</strong>. 인터페이스 차이를 감춰야 할 결함이 아니라, 실행 환경을 고를 때 확인할 조건으로 보는 법을 배웠다.</p>
     <p>세 번째 경로에 나오는 Ollama는 내 컴퓨터 안에서 AI 모델을 내려받아 돌려 주는 무료 프로그램이다. 설치와 첫 실행은 <a href="running-local-llm-with-ollama.html">직접 Ollama로 로컬 LLM 돌려보기</a>에서 다뤘으니, 아직 안 깔았다면 그 글부터 보고 오는 편이 낫다.</p>
@@ -138,6 +145,10 @@ save_run("ollama-with-history.txt", [
     <p class="post-date">코드가 낯설다면: 이 글의 파이썬 블록을 한 줄씩 한국어로 읽는 법은 <a href="reading-python-code-basics.html">파이썬 코드 눈으로 읽기 — 함수·변수·반복·오류·async</a>에 정리해 두었어요.</p>
     <p class="post-date">한 걸음 더: 여기서 처음 부른 Claude Agent SDK의 query()로 같은 버그를 세 방식(단일·워크플로·오케스트레이션)으로 고쳐 비교한 글이 <a href="multi-agent-three-runs-abc.html">같은 버그를 세 방식으로 — 기준선·워크플로·오케스트레이션 실행</a>이에요. allowed_tools로 읽기 전용 서브에이전트를 만들고 agents= 로 리드에 붙이는 코드가 나와요.</p>
 
+    <a class="post-nav" href="agent-react-loop-and-autogpt.html">
+      <span class="post-nav-label">다음 시리즈 →</span>
+      <span class="post-nav-title">에이전트는 어떻게 스스로 반복할까 — ReAct 루프와 AutoGPT 소동</span>
+    </a>
   </main>
   </div>
 

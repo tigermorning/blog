@@ -23,7 +23,6 @@
   <div id="sidebar-mount"></div>
 
   <main>
-    <p class="post-date"><a href="rag-chatbot-llm-judge.html">← 이전 편 답변 뒤에 심사위원 하나를 더 둔다 — LLM-as-a-Judge</a></p>
     <h1><span class="hl">감이 아니라 기록으로</span> — 나만의 루브릭으로 실험하기</h1>
     <p class="post-date">2026. 8. 28.</p>
     <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
@@ -31,6 +30,8 @@
     <div class="why-read">
       <p class="why-read-title">이 글을 읽기 전에</p>
       <dl>
+        <dt>어디쯤인가</dt>
+        <dd><a href="posts.html#cat-agent-build">6단계</a> › <a href="posts.html#chatbot-project">나만의 챗봇 만들기</a> — 8번째 글 (전 9편). 중간부터 보셨다면 <a href="rag-chatbot-project-overview.html">첫 글</a>부터 보시는 게 편해요.</dd>
         <dt>뭐를 할 수 있나</dt>
         <dd>PRD의 수용 기준과는 별개로 나만의 루브릭(출처 인용·정당한 거부·근거성 같은 지표)을 정의하고, 한 번에 변수 하나만 바꿔 고정 질문 세트로 결과를 비교하는 실험 절차를 세울 수 있게 돼요.</dd>
         <dt>왜 배우나</dt>
@@ -41,6 +42,11 @@
         <dd>RAG 챗봇의 검색(top-k, 약한 근거 임계값) 튜닝 실험을 설계할 때 · 정상·경계·무근거 질문을 고정 세트로 만들어 변경 전후를 비교할 때 · 실험 결과와 판정 필드를 README에 기록해 나중에 되짚을 때 · 에이전트가 제안한 변경도 다시 실행해 측정하기 전엔 채택하지 않을 때</dd>
       </dl>
     </div>
+
+    <a class="post-nav" href="rag-chatbot-llm-judge.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">답변 뒤에 심사위원 하나를 더 둔다 — LLM-as-a-Judge</span>
+    </a>
 
     <p>모두콘 챗봇의 답변 길이는 프롬프트·검색 세팅을 검토할 수 있는 관찰 항목이다. 근데 답변을 짧게 바꾸더라도 근거 청크의 내용과 <code>[ID]</code> 표시가 빠지면 자료 경계가 흐려질 수 있다. <strong>길이만으로 개선을 판단하면 안 된다</strong>는 게 오늘의 첫 문장이었다. 개선을 실험으로 검증하려면 먼저 무엇을 좋아졌다고 볼지 도메인에 맞는 루브릭으로 정의해야 한다.</p>
 
@@ -89,8 +95,11 @@
     <h2><span class="hl">정리</span></h2>
     <p>루브릭을 스스로 적는 순간 개선은 감이 아니라 기록이 된다. 한 바퀴를 안정적으로 돌린 뒤에는 로컬 judge와 Gemini judge에 같은 답변을 각각 보내 판정을 비교해보는 것도, 프롬프트 세 종을 A/B로 비교하는 것도 같은 원리로 이어갈 수 있다. 다음 편에서는 이 모든 걸 실제로 배포하고 저장소로 제출하는 마지막 단계로 넘어간다.</p>
 
-    <p class="post-date"><a href="rag-chatbot-submission.html">다음 편 → 지도를 접고 첫걸음을 — 배포와 제출</a></p>
 
+    <a class="post-nav" href="rag-chatbot-submission.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">지도를 접고 첫걸음을 — 배포와 제출</span>
+    </a>
   </main>
   </div>
 

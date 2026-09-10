@@ -29,6 +29,8 @@
   --folder-3: #a479f2;
   --folder-4: #ff9f45;
   --folder-5: #ff6fae;
+  --folder-6: #e0483c;
+  --folder-7: #7a8a99;
 
   /* 크레용으로 대충 문지른 결 — 알약·배지 배경에 soft-light로 얹는다.
      흰 스트로크라 어떤 폴더 색 위에서도 무난하게 먹힌다. */
@@ -429,6 +431,23 @@ main th {
   color: var(--accent);
 }
 
+/* 처음 온 사람이 200편짜리 목록 대신 먼저 눌러야 하는 문. 점선이 아니라
+   꽉 찬 테두리 + 옅은 바탕으로, 옆에 놓인 보통 post-nav보다 한 단계 앞에
+   서게 한다. */
+.post-nav-primary {
+  border-style: solid;
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.post-nav-primary .post-nav-label {
+  color: var(--ink);
+}
+
+.post-nav-primary .post-nav-title {
+  font-size: 1.45rem;
+}
+
 .post-date {
   color: var(--muted);
   font-size: 0.9rem;
@@ -701,6 +720,8 @@ body.list-page .site-header {
 .post-group:nth-of-type(4) { --folder-accent: var(--folder-3); }
 .post-group:nth-of-type(5) { --folder-accent: var(--folder-4); }
 .post-group:nth-of-type(6) { --folder-accent: var(--folder-5); }
+.post-group:nth-of-type(7) { --folder-accent: var(--folder-6); }
+.post-group:nth-of-type(8) { --folder-accent: var(--folder-7); }
 
 .post-group-title {
   font-family: var(--font-heading);
@@ -726,6 +747,14 @@ body.list-page .site-header {
   background-position: left bottom;
   background-size: 100% 100%;
   color: var(--folder-accent, var(--accent));
+}
+
+.post-group-blurb {
+  margin: -0.4rem 0 1.5rem;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--muted);
+  max-width: 46rem;
 }
 
 .post-subcategory {
