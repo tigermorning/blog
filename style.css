@@ -31,7 +31,8 @@
   --folder-5: #ff6fae;
   --folder-6: #e0483c;
   --folder-7: #1f9e8f;
-  --folder-8: #7a8a99;
+  --folder-8: #5a5fd4;
+  --folder-9: #7a8a99;
 
   /* 크레용으로 대충 문지른 결 — 알약·배지 배경에 soft-light로 얹는다.
      흰 스트로크라 어떤 폴더 색 위에서도 무난하게 먹힌다. */
@@ -191,6 +192,18 @@ main h1 .hl {
   background-repeat: no-repeat;
   background-position: left bottom;
   background-size: 100% 15px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='26' viewBox='0 0 200 26'%3E%3Cpath d='M4 9 C40 2 70 15 110 7 C145 1 170 12 196 6' fill='none' stroke='%23ff5a5f' stroke-opacity='0.55' stroke-width='3.5' stroke-linecap='round'/%3E%3Cpath d='M4 18 C38 23 68 13 105 19 C138 24 168 15 196 20' fill='none' stroke='%23ff5a5f' stroke-opacity='0.45' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+/* 본문 문장 강조용 형광펜 밑줄. h1의 .hl과 같은 색·기법이지만 글자 크기가
+   작아서 bg-size와 padding을 줄였다. */
+main p .hl {
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  padding-bottom: 0.15em;
+  background-repeat: no-repeat;
+  background-position: left bottom;
+  background-size: 100% 9px;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='26' viewBox='0 0 200 26'%3E%3Cpath d='M4 9 C40 2 70 15 110 7 C145 1 170 12 196 6' fill='none' stroke='%23ff5a5f' stroke-opacity='0.55' stroke-width='3.5' stroke-linecap='round'/%3E%3Cpath d='M4 18 C38 23 68 13 105 19 C138 24 168 15 196 20' fill='none' stroke='%23ff5a5f' stroke-opacity='0.45' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E");
 }
 
@@ -724,6 +737,7 @@ body.list-page .site-header {
 .post-group:nth-of-type(7) { --folder-accent: var(--folder-6); }
 .post-group:nth-of-type(8) { --folder-accent: var(--folder-7); }
 .post-group:nth-of-type(9) { --folder-accent: var(--folder-8); }
+.post-group:nth-of-type(10) { --folder-accent: var(--folder-9); }
 
 .post-group-title {
   font-family: var(--font-heading);
@@ -912,6 +926,7 @@ body.list-page .site-header {
 .sidebar-tree > li:nth-of-type(1) .tree-subgroup:nth-child(5) { --folder-accent: var(--folder-5); }
 .sidebar-tree > li:nth-of-type(1) .tree-subgroup:nth-child(6) { --folder-accent: var(--folder-6); }
 .sidebar-tree > li:nth-of-type(1) .tree-subgroup:nth-child(7) { --folder-accent: var(--folder-7); }
+.sidebar-tree > li:nth-of-type(1) .tree-subgroup:nth-child(8) { --folder-accent: var(--folder-8); }
 .sidebar-tree > li:nth-of-type(2) .tree-group { --folder-accent: var(--folder-5); }
 .sidebar-tree > li:nth-of-type(2) .tree-subgroup:nth-child(1) { --folder-accent: var(--folder-3); }
 .sidebar-tree > li:nth-of-type(2) .tree-subgroup:nth-child(2) { --folder-accent: var(--folder-4); }
