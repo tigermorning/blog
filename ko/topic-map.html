@@ -21,6 +21,12 @@
     .tm-node:hover .tm-box { fill-opacity: 0.28; }
     .tm-node:hover .tm-title { fill: var(--nc); }
     figure.tm-diagram { margin: 1.2rem 0 0.4rem; }
+    /* 사다리③은 박스 5개라 화면 폭에 맞춰 줄어드는 배율이 다른 사다리보다
+       커서(958유닛 캔버스), 같은 12.5/10px 글자가 유독 작게 보인다.
+       박스·좌표는 그대로 두고 이 도식 안 글자 크기만 한 단계 올려서
+       다른 사다리와 비슷한 최종 크기로 보이게 한다. */
+    svg[aria-labelledby="tm-c-title"] .tm-title { font-size: 16.4px; }
+    svg[aria-labelledby="tm-c-title"] .tm-tag { font-size: 12.5px; }
   </style>
 </head>
 <body>
