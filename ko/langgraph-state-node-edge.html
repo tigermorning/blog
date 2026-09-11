@@ -61,11 +61,12 @@
       <li><strong>계획</strong> — 어떤 도구를 어떤 순서로 쓸지 정하는 판단이에요.</li>
     </ul>
     <p>그런데 여기서 중요한 질문이 하나 남아요. <strong>그 순서는 누가 정하나요?</strong> "조회하고, 판단하고, 답을 써라"를 개발자가 코드에 박아 두면 <strong>워크플로<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup></strong>, 매 단계 LLM이 스스로 고르게 두면 좁은 뜻의 <strong>에이전트</strong>예요. 이 기준은 <a href="what-is-automation-workflow-agent.html">자동화·워크플로·에이전트, 뭐가 다를까</a>에서 내비 경로와 자율주행에 빗대 처음 다뤘던 것과 같아요.</p>
-    <p>처음 배울 때는 겉으로 보이는 차이를 기준으로 착각하기 쉬워요. 아래 셋은 <strong>기준이 아니에요</strong>.</p>
+    <p>처음 배울 때는 겉으로 보이는 차이를 기준으로 착각하기 쉬워요. 아래 넷은 <strong>기준이 아니에요</strong>.</p>
     <ul>
       <li><strong>LLM을 몇 번 부르는지</strong> — 워크플로도 LLM을 여러 번 불러요. <a href="langgraph-five-workflow-patterns.html#chaining">다음 편의 프롬프트 체이닝</a>은 LLM 호출 여러 번을 순서대로 이은, 가장 전형적인 워크플로예요.</li>
       <li><strong>도구를 쓰는지</strong> — 워크플로의 노드도 도구를 쥘 수 있어요. 바로 아래에서 볼 'LLM에 도구를 붙인 한 덩어리'는 워크플로와 에이전트가 함께 쓰는 기본 부품이에요.</li>
       <li><strong>모델이 큰지 작은지</strong> — 같은 모델로 둘 다 만들 수 있어요. 오히려 워크플로 안에서 쉬운 단계는 작고 싼 모델로, 어려운 단계는 큰 모델로 나눠 보내기도 해요.</li>
+      <li><strong>무엇으로 만들었는지</strong> — n8n은 워크플로 자동화 도구, LangGraph는 에이전트 프레임워크로 카테고리부터 달라요. 하지만 카테고리는 그 제품이 <strong>무엇을 하려고 만들어졌느냐</strong>의 이야기라서, <a href="langgraph-five-workflow-patterns.html">다음 편</a>의 다섯 패턴은 LangGraph로 그렸는데도 전부 워크플로예요. 두 도구의 차이는 <a href="#n8n-vs-langgraph">아래에서 따로 비교해요</a>.</li>
     </ul>
     <p>그래서 <a href="langgraph-five-workflow-patterns.html#routing">다음 편의 라우팅</a>처럼 LLM이 입력을 읽고 갈래를 골라도, 고를 수 있는 갈래를 개발자가 미리 다 그려 뒀다면 여전히 워크플로예요. LLM이 판단을 하느냐가 아니라, <strong>그 판단이 움직일 수 있는 길을 누가 그려 뒀느냐</strong>를 봐요.</p>
     <p>Anthropic은 "가장 단순한 방법으로 시작하고, 자율성이 꼭 필요하다는 증거가 있을 때만 복잡도를 더하라"고 권해요. 정해진 길을 따르면 결과를 예측할 수 있고, 비용을 통제할 수 있고, 틀렸을 때 어디가 틀렸는지 바로 찾을 수 있으니까요.</p>
@@ -111,10 +112,27 @@
       <thead><tr><th>이름</th><th>정체</th><th>LangGraph와 다른 점</th></tr></thead>
       <tbody>
         <tr><td>ComfyUI</td><td>이미지·영상 생성 AI를 노드 상자로 이어 돌리는 화면 도구 (<a href="choosing-image-generation-tools.html">이미지 생성 도구 고르기</a>의 세계예요)</td><td>마우스로 이어요. 다루는 대상도 텍스트 LLM이 아니라 그림 생성이에요</td></tr>
-        <tr><td>n8n</td><td>노코드 자동화 도구 (<a href="n8n-agent-delegation-and-if-node.html">IF 노드로 갈림길 만들기</a>)</td><td>화면에서 그려요. LangGraph는 같은 발상을 파이썬 코드로 써요</td></tr>
+        <tr><td>n8n</td><td>노코드 워크플로 자동화 도구 (<a href="n8n-agent-delegation-and-if-node.html">IF 노드로 갈림길 만들기</a>)</td><td>셋 중 생김새가 가장 닮았지만 카테고리가 달라요. <a href="#n8n-vs-langgraph">바로 아래</a>에서 따로 봐요</td></tr>
         <tr><td>GraphRAG</td><td>문서에서 뽑은 개체와 관계를 지식 그래프로 저장해 검색하는 기법</td><td>여기서 graph는 <strong>지식의 구조</strong>예요. LangGraph의 graph는 <strong>실행 순서</strong>고요. 이 모듈 뒤쪽에서 배워요</td></tr>
       </tbody>
     </table>
+
+    <h2 id="n8n-vs-langgraph"><span class="hl">n8n과는 뭐가 다른가</span> — 워크플로 도구와 에이전트 프레임워크</h2>
+    <p>위 표에서 가장 헷갈리는 게 n8n이에요. 둘 다 노드를 선으로 잇고, 둘 다 LLM을 부를 수 있고, 둘 다 갈림길을 만들 수 있어요. 그래서 "화면으로 그리면 n8n, 코드로 쓰면 LangGraph" 정도로만 구분하기 쉬운데, 둘은 애초에 <strong>카테고리가 달라요</strong>. n8n은 <strong>워크플로 자동화 도구</strong>고, LangGraph는 <strong>에이전트를 만드는 프레임워크</strong>예요. 닮은 데가 많아서 오히려 이 차이가 잘 안 보여요.</p>
+    <table>
+      <thead><tr><th>따져 볼 것</th><th>n8n</th><th>LangGraph</th></tr></thead>
+      <tbody>
+        <tr><td>카테고리</td><td>워크플로 자동화 도구 — <a href="what-is-automation-workflow-agent.html">자동화·워크플로·에이전트 글</a>의 도구 표에서 내비 경로 쪽에 놓았던 도구예요</td><td>에이전트 프레임워크 — 위에서 본 CrewAI·AutoGen·Claude Agent SDK와 같은 줄이에요</td></tr>
+        <tr><td>원래 잘하려던 일</td><td>"메일이 오면 표에 옮기고 슬랙에 알린다"처럼 사람이 정해 둔 순서를, 메일 도착이나 매일 아침 9시 같은 시작 신호(트리거)가 올 때마다 그대로 되풀이하기</td><td>LLM이 도구 결과를 보고 다음 행동을 고르는 반복을, State를 들고 끝날 때까지 통제하며 돌리기</td></tr>
+        <tr><td>흐름을 만드는 법</td><td>브라우저 화면에서 노드를 끌어다 선으로 이어요</td><td>파이썬 코드로 State·Node·Edge를 적어요</td></tr>
+        <tr><td>외부 서비스 붙이기</td><td>자주 쓰는 서비스는 미리 만들어진 노드가 있어서, 노드를 고르고 화면에서 계정만 연결하면 돼요</td><td>서비스가 프로그램용으로 열어 둔 창구(API)를 부르는 함수를 직접 짜서 도구로 붙여요</td></tr>
+        <tr><td>LLM이 판단하는 범위</td><td>사람이 그린 흐름 속 AI Agent 노드 한 칸이에요. 칸 안에서는 LLM이 도구를 고르지만, 칸 밖의 순서는 화면에 그린 선을 따라가요</td><td>그래프 전체를 LLM이 다음 걸음을 고르는 루프로 짤 수도 있고(<a href="#tool-loop">직접 만들기 ③</a>), 규칙으로 못 박을 수도 있어요(직접 만들기 ①·②)</td></tr>
+        <tr><td>시작 문턱</td><td>코드 없이 시작할 수 있어요</td><td>코드를 읽고 쓸 줄 알아야 해요</td></tr>
+      </tbody>
+    </table>
+    <p>그렇다고 n8n으로는 판단하는 AI를 아예 못 넣는 건 아니에요. AI Agent 노드로 흐름 한가운데에 판단을 한 조각 끼울 수 있어요(<a href="n8n-agent-delegation-and-if-node.html">IF 노드 vs AI Agent 노드</a>). 반대로 LangGraph로 그렸다고 다 에이전트인 것도 아니고요. 제품의 카테고리와 그걸로 만든 시스템의 종류가 따로라는 건 <a href="#workflow-vs-agent">앞의 '기준이 아니에요' 목록</a>에서 짚은 그대로예요.</p>
+    <p>LangGraph가 n8n보다 어려운 이유도 표에 다 들어 있어요. 코드를 읽어야 하고, 외부 서비스를 직접 가져다 붙여야 하거든요. 예를 들어 "결과를 슬랙으로 보내기" 한 단계가 n8n에서는 Slack 노드를 놓고 계정을 연결하면 끝나요. LangGraph에서는 Slack의 API 설명서를 찾아 읽고, 메시지를 보내는 파이썬 함수를 짜고, Slack에서 받은 비밀 키를 <code>.env</code>에 넣고, <code>@tool</code>로 감싸 모델에 쥐여 줘야 해요(도구를 쥐여 주는 과정은 아래 <a href="#tool-loop">직접 만들기 ③</a>에서 봐요). 위에서 본 <code>langchain-community</code>에 이미 만들어진 연동이 있기도 하지만, 그걸 찾아 불러와 그래프에 잇는 것도 코드로 해요. 대신 그만큼 반복 횟수 상한, 특정 도구 앞의 사람 승인, State 칸 하나하나를 원하는 대로 통제할 수 있어요.</p>
+    <p>그래서 <a href="#workflow-vs-agent">앞에서 본 Anthropic의 권고</a>, "가장 단순한 방법으로 시작하라"는 n8n과 LangGraph 중에 고를 때도 통해요. 정해진 순서로 여러 서비스를 잇는 일이 대부분이라면 n8n으로 끝나는지부터 보고, LLM이 매번 다음 걸음을 골라야 하거나 흐름을 코드로 세밀하게 통제해야 할 때 LangGraph로 가는 순서예요.</p>
 
     <h2><span class="hl">비유</span> — 식당 주방의 주문 전표와 동선표</h2>
     <p>식당 주방을 떠올려 볼게요. 주문이 들어오면 <strong>전표 한 장</strong>이 주방을 돌아요. 접수대 직원은 전표에 메뉴를 옮겨 적고, 화구 담당은 조리를 마쳤다고 자기 칸에만 체크해요. 다른 사람이 적은 칸은 건드리지 않아요.</p>

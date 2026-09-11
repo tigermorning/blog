@@ -51,7 +51,7 @@
     </div>
 
     <p><a href="langgraph-state-node-edge.html">앞 편</a>에서 State·Node·Edge와 조건부 엣지로 갈림길과 반복을 만들었어요. 강의 후반부는 그 재료로 <strong>흔히 쓰이는 흐름 모양 다섯 가지</strong>를 하나씩 조립하는 시간이었어요. 출처는 Anthropic의 글 "Building Effective Agents"이고, 실습 데이터는 '모두런'이라는 가상 온라인 강의 플랫폼의 강의 노트와 녹취였어요. 그래프 구조에 집중하려고 일부러 더미 데이터를 썼대요.</p>
-    <p>다섯 모두 <strong>개발자가 경로를 그려 두는 워크플로</strong>예요. 가장 확실하고 통제하기 쉬운 모양부터 차례로 자율성을 조금씩 늘려 가는 순서예요. 모두 LLM을 여러 번 부르고, ②에서는 LLM이 입력을 분류하고, ④에서는 워커 수까지 LLM이 정하는데도 에이전트가 아닌 이유는 <a href="langgraph-state-node-edge.html#workflow-vs-agent">앞 편에서 정리한 기준</a> 그대로예요. 호출 횟수나 도구 사용 여부가 아니라, <strong>갈 수 있는 길을 개발자가 미리 다 그려 뒀는가</strong>가 기준이거든요.</p>
+    <p>다섯 모두 <strong>개발자가 경로를 그려 두는 워크플로</strong>예요. 가장 확실하고 통제하기 쉬운 모양부터 차례로 자율성을 조금씩 늘려 가는 순서예요. 모두 LLM을 여러 번 부르고, ②에서는 LLM이 입력을 분류하고, ④에서는 워커 수까지 LLM이 정하는데도 에이전트가 아닌 이유는 <a href="langgraph-state-node-edge.html#workflow-vs-agent">앞 편에서 정리한 기준</a> 그대로예요. 호출 횟수나 도구 사용 여부가 아니라, <strong>갈 수 있는 길을 개발자가 미리 다 그려 뒀는가</strong>가 기준이거든요. 에이전트 프레임워크인 LangGraph로 그렸다는 것도 기준이 아니에요. n8n 같은 워크플로 자동화 도구와 카테고리가 갈리는 건 제품이 무엇을 하려고 만들어졌느냐의 이야기고, 그걸로 무엇을 그리느냐는 따로예요(<a href="langgraph-state-node-edge.html#n8n-vs-langgraph">앞 편의 n8n 비교</a>).</p>
 
     <h2><span class="hl">비유</span> — 식당 주방의 하루, 다섯 장면</h2>
     <p><a href="langgraph-state-node-edge.html">앞 편의 주방</a>으로 다시 가 볼게요. 하루 동안 이런 장면들이 벌어져요.</p>
