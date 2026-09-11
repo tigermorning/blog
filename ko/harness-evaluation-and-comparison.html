@@ -60,15 +60,15 @@
     <p>여기까지 온 이유는 표의 빈칸이 적은 도구를 고르려는 게 아니라, <strong>내 병목 칸에 근거 있는 도구</strong>를 고르려는 거였어요. 먼저 내 과업에서 확인할 병목을 하나 정하고, 아래 표에서는 그 병목에 닿는 열만 읽으면 돼요. 클로즈드 도구의 내부 구현은 확인할 수 없고, 공개 코드가 있는 도구도 설치 버전·로컬 설정·실행 기록 없이는 안전을 증명할 수 없어요. 그래서 이 표는 제품의 우열을 매기는 표가 아니라, 지금까지 살펴본 카드와 다시 확인할 근거를 한자리에 모은 지도예요.</p>
     <div style="overflow-x:auto;">
     <table>
-      <thead><tr><th>도구</th><th>행동 포맷</th><th>컨텍스트 관리</th><th>경험·반성</th><th>미니멀</th><th>권한</th><th>평가</th></tr></thead>
+      <thead><tr><th>도구</th><th>행동 포맷</th><th>컨텍스트 관리</th><th>경험·<wbr>반성</th><th>미니멀</th><th>권한</th><th>평가</th></tr></thead>
       <tbody>
-        <tr><td>Claude Code</td><td>도구 호출과 터미널 작업 연결</td><td>서브에이전트로 문맥 격리</td><td>skills 재사용, 결과를 다음 대화에 반영</td><td>필요한 도구 구성만 확인</td><td>승인·권한 설정</td><td>요청-실행-검증 흐름</td></tr>
-        <tr><td>opencode</td><td>역할별 도구 호출 연결</td><td>세션·서브에이전트 문맥 분리</td><td>설정·도구 정의 재사용</td><td>필요한 모드만 사용</td><td>역할별 허가(allow·ask·deny)</td><td>실행 기록과 검증 단계</td></tr>
-        <tr><td>Aider</td><td>search·replace 편집 포맷</td><td>repo map으로 관련 기호 선별</td><td>대화·저장소 맥락 재사용</td><td>좁은 편집 루프</td><td>로컬 실행 범위</td><td>자체 벤치마크 조건</td></tr>
-        <tr><td>pi</td><td>도구 네 개짜리 작은 루프</td><td>짧은 상태를 다음 호출에 전달</td><td>확장 코드·세션 재사용</td><td>도구 4개 + 짧은 프롬프트</td><td>실행 환경(외부 격리)에 위임</td><td>README 비교 조건</td></tr>
-        <tr><td>OpenClaw</td><td>채널 이벤트를 Gateway로 수신</td><td>세션·workspace 연결</td><td>세션 기록 재사용</td><td>필요한 채널만 연결</td><td>pairing·allowFrom·멘션 요구</td><td>공식 문서의 기록 위치</td></tr>
-        <tr><td>Hermes</td><td>채널 요청과 도구 호출 연결</td><td>세션 검색·memory 조립</td><td>memory·skills 재사용</td><td>활성 skills만 조립</td><td>채널·세션·권한 설정</td><td>공식 문서·실행 기록</td></tr>
-        <tr><td>SWE-agent</td><td>구조화된 검색·편집·실행 ACI</td><td>최근 관측 중심으로 이력 관리</td><td>trajectory 남김, 피드백 뒤 행동 수정</td><td>과업 전용 인터페이스</td><td>실행 도구 범위 확인</td><td>SWE-bench·ablation으로 측정</td></tr>
+        <tr><td>Claude Code</td><td>도구 호출과 터미널 작업 연결</td><td>서브에이전트로 문맥 격리</td><td>skills 재사용, 결과를 다음 대화에 반영</td><td>필요한 도구 구성만 확인</td><td>승인·<wbr>권한 설정</td><td>요청-실행-검증 흐름</td></tr>
+        <tr><td>opencode</td><td>역할별 도구 호출 연결</td><td>세션·<wbr>서브에이전트 문맥 분리</td><td>설정·<wbr>도구 정의 재사용</td><td>필요한 모드만 사용</td><td>역할별 허가(allow·<wbr>ask·<wbr>deny)</td><td>실행 기록과 검증 단계</td></tr>
+        <tr><td>Aider</td><td>search·<wbr>replace 편집 포맷</td><td>repo map으로 관련 기호 선별</td><td>대화·<wbr>저장소 맥락 재사용</td><td>좁은 편집 루프</td><td>로컬 실행 범위</td><td>자체 벤치마크 조건</td></tr>
+        <tr><td>pi</td><td>도구 네 개짜리 작은 루프</td><td>짧은 상태를 다음 호출에 전달</td><td>확장 코드·<wbr>세션 재사용</td><td>도구 4개 + 짧은 프롬프트</td><td>실행 환경(외부 격리)에 위임</td><td>README 비교 조건</td></tr>
+        <tr><td>OpenClaw</td><td>채널 이벤트를 Gateway로 수신</td><td>세션·<wbr>workspace 연결</td><td>세션 기록 재사용</td><td>필요한 채널만 연결</td><td>pairing·<wbr>allowFrom·<wbr>멘션 요구</td><td>공식 문서의 기록 위치</td></tr>
+        <tr><td>Hermes</td><td>채널 요청과 도구 호출 연결</td><td>세션 검색·<wbr>memory 조립</td><td>memory·<wbr>skills 재사용</td><td>활성 skills만 조립</td><td>채널·<wbr>세션·<wbr>권한 설정</td><td>공식 문서·<wbr>실행 기록</td></tr>
+        <tr><td>SWE-agent</td><td>구조화된 검색·<wbr>편집·<wbr>실행 ACI</td><td>최근 관측 중심으로 이력 관리</td><td>trajectory 남김, 피드백 뒤 행동 수정</td><td>과업 전용 인터페이스</td><td>실행 도구 범위 확인</td><td>SWE-bench·<wbr>ablation으로 측정</td></tr>
       </tbody>
     </table>
     </div>
