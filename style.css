@@ -1180,6 +1180,45 @@ details[open] > summary .tree-toggle-icon {
   color: var(--hit-ink);
 }
 
+/* 중요 표시: 강의 퀴즈가 짚은 핵심을 퀴즈 형식 대신 본문 설명 속에 표시한다.
+   라벨 알약(중요) 옆에 어느 강의에서 짚은 내용인지만 흐리게 적는다. */
+.key-point {
+  border: 2px solid var(--accent);
+  border-radius: 4px 16px 4px 16px;
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+  padding: 0.85rem 1.1rem 0.9rem;
+  margin: 1.2rem 0 1.5rem;
+}
+
+.key-point-label {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.key-point-badge {
+  display: inline-block;
+  margin-right: 0.45rem;
+  padding: 0.05rem 0.7rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--font-subhead);
+  font-weight: var(--font-subhead-weight, 400);
+  line-height: 1.6;
+}
+
+.key-point > p:last-child,
+.key-point > ul:last-child,
+.key-point > ol:last-child {
+  margin-bottom: 0;
+}
+
+/* 이 편에서 꼭 기억할 것: 중요 표시로 이어지는 목차 */
+.key-recap li {
+  margin-bottom: 0.45rem;
+}
+
 /* 6. 전문 용어 각주 */
 .fn-ref {
   font-size: 0.75em;

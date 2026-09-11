@@ -60,7 +60,12 @@
       <li><strong>행동</strong> — 환경에 손을 대는 수단이에요. 실무에서는 <strong>도구(tool)</strong>라고 불러요. 에이전트가 할 수 있는 일의 한계는 쥔 도구 목록이 정해요.</li>
       <li><strong>계획</strong> — 어떤 도구를 어떤 순서로 쓸지 정하는 판단이에요.</li>
     </ul>
-    <p>그런데 여기서 중요한 질문이 하나 남아요. <strong>그 순서는 누가 정하나요?</strong> "조회하고, 판단하고, 답을 써라"를 개발자가 코드에 박아 두면 <strong>워크플로<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup></strong>, 매 단계 LLM이 스스로 고르게 두면 좁은 뜻의 <strong>에이전트</strong>예요. 이 기준은 <a href="what-is-automation-workflow-agent.html">자동화·워크플로·에이전트, 뭐가 다를까</a>에서 내비 경로와 자율주행에 빗대 처음 다뤘던 것과 같아요.</p>
+    <div class="key-point" id="key-lookup-action">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>1강에서 짚은 내용</p>
+      <p>에이전트에게 맡길 일을 떠올렸다면, 그 일에 필요한 것을 <strong>조회</strong>와 <strong>행동</strong> 두 목록으로 나눠 적어 보세요. 조회는 바깥세상을 읽기만 하는 일이고, 행동은 바깥세상을 실제로 바꾸는 일이에요(위 목록의 '행동'은 도구 전체를 가리켰지만, 여기서는 바깥을 바꾸는 도구만 가리키는 좁은 뜻이에요). 이 두 목록을 합친 게 곧 그 에이전트가 쥘 도구 목록이에요.</p>
+      <p>식당 예약 변경을 맡긴다면 조회는 "예약 내역 찾기 · 원하는 시간에 빈자리 확인 · 변경 수수료 확인"이고, 행동은 "예약 바꾸기 · 확인 문자 보내기"예요. 굳이 나누는 이유는 위험이 달라서예요. 조회는 틀려도 다시 하면 되지만, 행동은 한 번 하면 되돌리기 어려워요. 사람의 확인 같은 안전장치를 붙일 자리가 바로 행동 목록이에요(아래 표의 '환경 변경').</p>
+    </div>
+    <p>그런데 여기서 중요한 질문이 하나 남아요. <strong>그럼 도구를 어떤 순서로 쓸지는 누가 정하나요?</strong> "조회하고, 판단하고, 답을 써라"를 개발자가 코드에 박아 두면 <strong>워크플로<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup></strong>, 매 단계 LLM이 스스로 고르게 두면 좁은 뜻의 <strong>에이전트</strong>예요. 이 기준은 <a href="what-is-automation-workflow-agent.html">자동화·워크플로·에이전트, 뭐가 다를까</a>에서 내비 경로와 자율주행에 빗대 처음 다뤘던 것과 같아요.</p>
     <p>처음 배울 때는 겉으로 보이는 차이를 기준으로 착각하기 쉬워요. 아래 넷은 <strong>기준이 아니에요</strong>.</p>
     <ul>
       <li><strong>LLM을 몇 번 부르는지</strong> — 워크플로도 LLM을 여러 번 불러요. <a href="langgraph-five-workflow-patterns.html#chaining">다음 편의 프롬프트 체이닝</a>은 LLM 호출 여러 번을 순서대로 이은, 가장 전형적인 워크플로예요.</li>
@@ -69,6 +74,10 @@
       <li><strong>무엇으로 만들었는지</strong> — n8n은 워크플로 자동화 도구, LangGraph는 에이전트 프레임워크로 카테고리부터 달라요. 하지만 카테고리는 그 제품이 <strong>무엇을 하려고 만들어졌느냐</strong>의 이야기라서, <a href="langgraph-five-workflow-patterns.html">다음 편</a>의 다섯 패턴은 LangGraph로 그렸는데도 전부 워크플로예요. 두 도구의 차이는 <a href="#n8n-vs-langgraph">아래에서 따로 비교해요</a>.</li>
     </ul>
     <p>그래서 <a href="langgraph-five-workflow-patterns.html#routing">다음 편의 라우팅</a>처럼 LLM이 입력을 읽고 갈래를 골라도, 고를 수 있는 갈래를 개발자가 미리 다 그려 뒀다면 여전히 워크플로예요. LLM이 판단을 하느냐가 아니라, <strong>그 판단이 움직일 수 있는 길을 누가 그려 뒀느냐</strong>를 봐요.</p>
+    <div class="key-point" id="key-who-decides">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>2강에서 짚은 내용</p>
+      <p>워크플로와 에이전트를 가르는 기준은 하나예요. <strong>다음에 갈 길을 누가 정하나.</strong> 개발자가 코드로 길을 미리 다 그려 뒀으면 워크플로, LLM이 매 단계 스스로 정하면 에이전트예요. LLM을 몇 번 부르는지, 도구를 쓰는지, 모델이 큰지는 기준이 아니에요. 셋 다 워크플로와 에이전트 양쪽에 똑같이 나타날 수 있어서 둘을 가르지 못해요.</p>
+    </div>
     <p>Anthropic은 "가장 단순한 방법으로 시작하고, 자율성이 꼭 필요하다는 증거가 있을 때만 복잡도를 더하라"고 권해요. 정해진 길을 따르면 결과를 예측할 수 있고, 비용을 통제할 수 있고, 틀렸을 때 어디가 틀렸는지 바로 찾을 수 있으니까요.</p>
     <p>모든 그래프의 노드 하나하나는 <strong>증강된 LLM<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup></strong>이라고 보면 이해가 쉬워요. LLM 본체에 검색·도구·메모리가 붙은 한 덩어리요. 붙이는 도구는 크게 셋이에요.</p>
     <table>
@@ -92,6 +101,15 @@
       </tbody>
     </table>
     <p>정리하면 LLM은 "날짜 계산이 필요하니 이 도구를 이 값으로 부르자"까지만 판단하고, 계산은 코드가 맡아요. 이 역할 분담이 뒤에서 조립할 도구 루프의 출발점이에요. 다만 도구를 늘릴수록 모델이 읽어야 할 도구 설명도 함께 쌓이니(<a href="mcp-skill-context-and-search.html">도구가 많아지면 생기는 문맥 부담 — Tool Search와 Code Mode</a>), 틀리면 곤란한 계산부터 빼는 게 순서예요. 둘의 차이는 글 끝 <a href="#try">직접 해보기</a> 2번에서 재 볼 수 있어요.</p>
+    <div class="key-point" id="key-code-tools">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>2강에서 짚은 내용</p>
+      <p>단순한 계산도 LLM에게 맡기지 않고 도구로 빼는 이유는 세 가지로 모여요.</p>
+      <ul>
+        <li><strong>틀려도 티가 안 나요.</strong> LLM이 틀린 날짜를 말할 때도 문장은 그럴듯해서, 사람이 읽어서는 잡아내기 어려워요.</li>
+        <li><strong>함수는 검사할 수 있어요.</strong> 같은 입력에 늘 같은 답을 내니(이런 성질을 '결정적'이라고 해요) 테스트 코드로 미리 확인해 둘 수 있어요.</li>
+        <li><strong>일을 나눠 맡겨요.</strong> LLM은 "지금 날짜 계산이 필요하다"는 판단을, 코드는 계산 자체를 맡아요. 강의 예제가 복습 문제의 형식 검사를 LLM 대신 파이썬 함수로 한 것도 같은 이유예요.</li>
+      </ul>
+    </div>
 
     <h2><span class="hl">LangGraph는 어느 집 식구인가</span> — LangChain·LangSmith</h2>
     <p>강의 코드를 보면 import 줄에 <code>langchain_</code>과 <code>langgraph</code>가 섞여 나와요. 둘은 경쟁 관계가 아니라 같은 회사(LangChain Inc.)가 역할을 나눠 만든 제품이에요. 표의 오른쪽 칸은 이 글의 코드에서 각 제품을 어떤 이름으로 만나게 되는지예요.</p>
@@ -137,7 +155,7 @@
     <h2><span class="hl">비유</span> — 식당 주방의 주문 전표와 동선표</h2>
     <p>식당 주방을 떠올려 볼게요. 주문이 들어오면 <strong>전표 한 장</strong>이 주방을 돌아요. 접수대 직원은 전표에 메뉴를 옮겨 적고, 화구 담당은 조리를 마쳤다고 자기 칸에만 체크해요. 다른 사람이 적은 칸은 건드리지 않아요.</p>
     <p>전표가 다음에 어느 조리대로 갈지는 벽에 붙은 <strong>동선표</strong>가 정해요. "손질대 다음은 화구." 동선표 중간에는 갈림길도 있어요. 검수대 직원이 맛을 보고, 싱거우면 전표를 <strong>화구 담당에게 되돌려</strong> 보내고, 간이 맞으면 <strong>홀로 내보내요</strong>. 영업을 시작하기 전에 사장님이 이 동선표를 확정해 둬요.</p>
-    <p>그리고 이 식당에는 <a href="mcp-skill-tool-call-anatomy.html">도구 호출 글에서 본 홀 직원</a>도 있어요. 홀 직원이 창고 조회 쪽지를 적어 주방에 넘기면, 쪽지를 실제로 처리하는 건 창고 담당이에요.</p>
+    <p>그리고 이 식당에는 <a href="mcp-skill-tool-call-anatomy.html">도구 호출 글에서 본 홀 직원</a>도 있어요. 홀 직원이 창고 조회 요청서를 적어 주방에 넘기면(그 글의 '주문표'와 같은 거예요), 요청서를 실제로 처리하는 건 창고 담당이에요. 홀 직원은 적기만 하고 창고에는 들어가지 않아요.</p>
     <table>
       <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
       <tbody>
@@ -149,7 +167,7 @@
         <tr><td>검수대 직원이 전표를 보고 화구 담당에게 되돌리거나 홀로 내보내기</td><td><strong>조건부 엣지</strong> — <strong>라우터 함수<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup></strong>가 State를 읽고 다음 노드 이름을 돌려줘요</td></tr>
         <tr><td>주문 접수 창구 / 홀로 나가는 창구</td><td><code>START</code> / <code>END</code></td></tr>
         <tr><td>사장님이 영업 전에 동선표를 확정하기</td><td><code>compile()</code> — 설계한 그래프를 실행 가능한 객체로 바꿔요</td></tr>
-        <tr><td>홀 직원이 적어 주방에 넘기는 창고 조회 쪽지 / 창고 담당이 쪽지대로 조회하기</td><td>모델이 내놓는 <strong>도구 호출 요청</strong>(<code>tool_calls</code>) / 그 요청을 실제로 실행하는 <code>ToolNode</code></td></tr>
+        <tr><td>홀 직원이 적어 주방에 넘기는 창고 조회 요청서 / 창고 담당이 요청서대로 조회하기</td><td>모델이 내놓는 <strong>도구 호출 요청</strong>(<code>tool_calls</code>) / 그 요청을 실제로 실행하는 <code>ToolNode</code></td></tr>
       </tbody>
     </table>
     <p><strong>핵심 한 줄:</strong> 요리를 잘하는 건 조리대(노드)의 몫이고, 전표가 어디로 갈지는 동선표(엣지)가 정해요 — LangGraph는 그 동선표를 코드로 쓰는 도구예요.</p>
@@ -255,7 +273,11 @@ print(graph.invoke({"order": " 김치찌개,  계란말이 ,공기밥 ", "log": 
     <p><code>count_dishes</code>의 반환값에서 <code>log</code>를 빼서 <code>return {"count": len(state["dishes"])}</code>만 남겨요. 나머지 코드는 위와 같아요. 돌리기 전에 먼저 예상해 보세요. 마지막 <code>log</code>는 <code>None</code>이 될까요, 빈 문자열이 될까요, 아니면 그대로일까요?</p>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 위처럼 반환값 한 줄만 바꿔 실행했을 때 제 화면에 찍힌 출력이에요</span></p>
     <pre><code>{'order': ' 김치찌개,  계란말이 ,공기밥 ', 'dishes': ['김치찌개', '계란말이', '공기밥'], 'count': 3, 'log': '시작 &gt; 접수'}</code></pre>
-    <p><code>log</code>는 지워지지 않고 <code>take_order</code>가 적어 둔 <code>'시작 &gt; 접수'</code>에서 멈춰 있어요. 반환값에서 키를 뺀다는 건 "이번엔 이 칸을 건드리지 않는다"는 뜻이지, State에서 지우라는 뜻이 아니에요. 주방으로 치면 집계 담당이 '거쳐 간 조리대' 칸에 아무것도 적지 않고 전표를 넘긴 거예요. 그 칸에는 앞사람이 적은 글씨가 그대로 남아요. 강의의 객관식 퀴즈도 바로 이 질문이었어요. 노드가 한 칸만 돌려주면 나머지 칸은 어떻게 되냐는 건데, 보기 중 'None으로 초기화된다', 'State에서 삭제된다', '에러가 난다'는 모두 틀리고 '이전 값을 그대로 유지한다'가 답이에요.</p>
+    <p><code>log</code>는 지워지지 않고 <code>take_order</code>가 적어 둔 <code>'시작 &gt; 접수'</code>에서 멈춰 있어요. 반환값에서 키를 뺀다는 건 "이번엔 이 칸을 건드리지 않는다"는 뜻이지, State에서 지우라는 뜻이 아니에요. 주방으로 치면 집계 담당이 '거쳐 간 조리대' 칸에 아무것도 적지 않고 전표를 넘긴 거예요. 그 칸에는 앞사람이 적은 글씨가 그대로 남아요.</p>
+    <div class="key-point" id="key-partial-update">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>3강에서 짚은 내용</p>
+      <p>노드가 돌려준 칸만 새 값으로 바뀌고, 돌려주지 않은 칸은 <strong>이전 값 그대로</strong> 남아요(부분 업데이트). 그래서 노드는 전표 전체를 다시 적어 돌려줄 필요 없이 자기가 바꾼 칸만 돌려주면 돼요. 안 돌려준 칸이 <code>None</code>으로 비워진다, 전표에서 지워진다, 전체를 안 돌려줬으니 에러가 난다 — 이렇게 착각하기 쉬운데 셋 다 아니에요.</p>
+    </div>
 
     <h3>확인 ② — 순서를 뒤집으면</h3>
     <p>이번에는 <code>count_dishes</code>를 <code>take_order</code>보다 먼저 돌려요. 바꿀 곳은 엣지 세 줄뿐이에요.</p>
@@ -507,8 +529,8 @@ For troubleshooting, visit: https://docs.langchain.com/oss/python/langgraph/erro
     <p>그런데 위의 간 맞추기 그래프도 되돌아가는 선이 있었는데 그건 끝났잖아요. 차이는 <strong>한 바퀴 돌 때마다 State가 바뀌느냐</strong>예요. 간 맞추기에서는 <code>add_salt</code>가 돌 때마다 <code>salt</code>를 1씩 올려서 언젠가 3에 닿아요. 여기서는 되돌아가는 동안 <code>text</code>를 고치는 노드가 하나도 없어요. 똑같은 13자 노트를 똑같은 라우터가 똑같이 판정하니, 몇 바퀴를 돌아도 같은 길이에요. 되돌아가는 선이 의미가 있으려면 소금이든, 시도 횟수든, 고쳐 쓴 초안이든 매 바퀴 무언가가 달라져야 해요.</p>
     <p><code>recursion_limit</code>을 빼고 기본값으로 돌려 봤더니 <code>receive</code>가 5,004번, <code>flag_too_short</code>가 5,003번 돈 뒤에야 10007스텝에서 멈췄어요. 이 노드들이 LLM을 부르는 노드였다면 호출이 만 번 가까이 쌓였을 거예요. 아래 '나쁜 선택 vs 좋은 선택'의 정상 출구가 왜 필요한지 이 숫자가 말해 줘요.</p>
 
-    <h3 id="router-no-write">덤 — 라우터가 전표에 직접 적으면?</h3>
-    <p>강의 주관식 퀴즈는 이거였어요. "<code>triage()</code>는 State를 읽기만 했는데, 라우터 안에서 State를 고치려 하면 무슨 문제가 생길까?" 처음엔 답을 못 적었어요. 그래서 라우터에서 전표를 고치는 방법 세 가지를 직접 해 봤어요.</p>
+    <h3 id="router-no-write">라우터는 길만 고른다 — 전표에 직접 적으면?</h3>
+    <p>위의 <code>triage()</code>는 전표를 읽기만 하고 아무것도 고치지 않았어요. 그럼 라우터 안에서 전표를 고치면 어떻게 될까요? 강의가 던진 질문인데, 저는 처음에 답을 몰라서 라우터에서 전표를 고치는 방법 세 가지를 직접 해 봤어요.</p>
     <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— langgraph 설치 후, API 키 없이 돌아가요</span></p>
     <pre><code>from typing_extensions import TypedDict
 from langgraph.graph import StateGraph, START, END
@@ -547,7 +569,11 @@ print(builder.compile().invoke({"text": "아무 노트"}))</code></pre>
         <tr><td>실험 3 — <code>{"verdict": ...}</code> 딕셔너리를 돌려주기</td><td>멈춤. <code>TypeError: unhashable type: 'dict'</code><sup class="fn-ref"><a href="#fn13" id="fnref13">13</a></sup></td><td>라우터의 반환값은 목적지 목록에서 이름을 찾는 열쇠로 쓰이는데, 딕셔너리는 열쇠가 될 수 없는 자료형이에요</td></tr>
       </tbody>
     </table>
-    <p>퀴즈의 답을 제 말로 적으면 이래요. <strong>라우터의 반환값은 '다음에 갈 곳'으로만 해석되고, State에 옮겨 적는 통로는 노드의 반환값뿐이다.</strong> 그래서 라우터에서 적은 값은 사라지거나(실험 1), 기록 없이 몰래 새어 들어가거나(실험 2), 목적지를 못 찾고 멈춰요(실험 3). 제일 위험한 건 실험 2예요. 되는 것처럼 보여서 믿고 쓰게 되는데, 문자열이나 숫자 칸은 제자리에서 고칠 방법이 없어서 결국 실험 1처럼 새 값을 적게 되고, 그 값은 조용히 사라지거든요. 판정 결과를 남기고 싶으면 판정을 적는 노드를 따로 두면 돼요. 세 번째 갈래 문제의 <code>flag_too_long</code>이 딱 그런 노드예요.</p>
+    <div class="key-point" id="key-router-read-only">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>4강에서 짚은 내용</p>
+      <p>라우터가 돌려주는 값은 <strong>'다음에 갈 곳의 이름'</strong>으로만 읽혀요. 전표에 값을 적는 통로는 노드가 돌려주는 딕셔너리 하나뿐이에요. 그래서 라우터 안에서 전표를 고치면 적은 값이 사라지거나(실험 1), 기록 없이 몰래 새어 들어가거나(실험 2), 목적지를 못 찾고 멈춰요(실험 3). 라우터는 읽기만 하고, 적는 일은 노드에게 맡겨요.</p>
+    </div>
+    <p>셋 중 제일 위험한 건 실험 2예요. 되는 것처럼 보여서 믿고 쓰게 되는데, 문자열이나 숫자 칸은 제자리에서 고칠 방법이 없어서 결국 실험 1처럼 새 값을 적게 되고, 그 값은 조용히 사라지거든요. 판정 결과를 남기고 싶으면 판정을 적는 노드를 따로 두면 돼요. 세 번째 갈래 문제의 <code>flag_too_long</code>이 딱 그런 노드예요.</p>
 
     <h3>세 문제에서 남은 것</h3>
     <table>
@@ -556,7 +582,7 @@ print(builder.compile().invoke({"text": "아무 노트"}))</code></pre>
         <tr><td>① 세 번째 갈래</td><td>라우터에 판단 하나, 목적지 목록에 이름 하나, 노드 둘</td><td>갈래는 필요한 만큼 늘릴 수 있어요. 대신 라우터가 돌려줄 이름과 목적지 목록은 사람이 맞춰야 해요</td></tr>
         <tr><td>② 라벨</td><td>라우터의 반환값, 목적지를 리스트에서 딕셔너리로</td><td>라벨이 노드 이름과 다르면 그림의 화살표에 갈래의 이유가 적혀요</td></tr>
         <tr><td>③ 무한 반복</td><td>선 하나를 <code>END</code>에서 <code>receive</code>로</td><td>되돌아가는 선은 매 바퀴 State가 바뀌어야 끝나요. 상한은 기본값에 맡기지 말고 직접 걸어요</td></tr>
-        <tr><td>덤 — 라우터 퀴즈</td><td>라우터 안에서 State 고치기</td><td>적은 값은 사라지거나 몰래 새어 들어가요. 전표에 적는 건 노드의 일이에요</td></tr>
+        <tr><td>라우터가 전표에 적기</td><td>라우터 안에서 State 고치기</td><td>적은 값은 사라지거나 몰래 새어 들어가요. 전표에 적는 건 노드의 일이에요</td></tr>
       </tbody>
     </table>
 
@@ -614,11 +640,66 @@ for m in result["messages"]:
     <ul>
       <li><strong><code>parse_docstring=True</code></strong> — 이걸 빼면 독스트링의 <code>Args:</code> 설명이 스키마에 안 들어가요. 성실하게 써 두고도 모델에게 전달이 안 되는 셈이라 꼭 확인할 값이에요. 제 컴퓨터에서 <code>get_recipe</code>의 스키마를 찍어 보니 <code>"dish": {"description": "요리 이름. 예: \"계란말이\"", "type": "string"}</code>처럼 타입 힌트는 <code>type</code>이, <code>Args:</code>는 <code>description</code>이 돼 있었어요.</li>
       <li><strong><code>MessagesState</code></strong> — <code>messages</code> 칸 하나짜리 미리 만들어진 State예요. 새 메시지가 오면 덮어쓰지 않고 뒤에 쌓이게 설정돼 있어서 대화 기록을 따로 관리할 필요가 없어요.</li>
-      <li><strong><code>bind_tools</code>는 도구를 실행하지 않아요.</strong> 모델 응답의 <code>tool_calls</code> 칸에 "이 도구를 이 값으로 불러 달라"는 요청만 담겨요. 실제 실행은 <code>ToolNode</code>가 하고, 결과를 <code>ToolMessage</code>로 메시지 목록에 붙여요.</li>
+      <li><strong><code>bind_tools</code>는 도구를 실행하지 않아요.</strong> 모델 응답의 <code>tool_calls</code> 칸에 "이 도구를 이 값으로 불러 달라"는 요청만 담겨요. 실제 실행은 <code>ToolNode</code>가 하고, 결과를 <code>ToolMessage</code>로 메시지 목록에 붙여요. 정말 그런지 <a href="#tool-request-only">아래에서 직접 확인해요</a>.</li>
       <li><strong><code>tools_condition</code></strong> — 마지막 메시지에 <code>tool_calls</code>가 있으면 <code>"tools"</code>를, 없으면 <code>END</code>를 돌려주는 미리 만들어진 라우터예요.</li>
     </ul>
     <p>실행하면 이런 순서로 흘러가요. 사용자 질문을 받은 모델은 답 대신 레시피와 재고를 알려 달라는 도구 요청을 내놓고(모델에 따라 두 개를 한 번에 요청하기도, 하나씩 부르기도 해요), <code>ToolNode</code>가 두 함수를 실행해 "계란 3개", "계란 4개"를 붙이고, 다시 불려 온 모델이 그걸 읽고 "한 접시만 가능하다"는 최종 답을 써요. 더 부를 도구가 없으니 <code>tools_condition</code>이 <code>END</code>를 돌려주고 끝나요.</p>
-    <p>강의 실습에서도 똑같은 장면이 나왔어요. 노트 조회 도구와 출제 가능 판정 도구를 쥐여 주고 "이 노트로 문제를 낼 수 있나" 물었더니, 모델이 먼저 조회를 불러 208자·4문장이라는 값을 받고, 그 숫자를 그대로 판정 도구의 인자로 넣었어요. 개발자가 "조회한 뒤 판정하라"고 코드에 순서를 박지 않았는데도요. 이렇게 관찰과 행동을 번갈아 하며 다음 행동을 스스로 정하는 게 <strong>ReAct<sup class="fn-ref"><a href="#fn17" id="fnref17">17</a></sup></strong> 루프예요. 도구 결과라는 확실한 기준을 받아 오니 모델 기억에만 기대는 것보다 지어낼 여지가 줄어들어요.</p>
+    <p>강의 실습에서도 똑같은 장면이 나왔어요. 노트 조회 도구와 출제 가능 판정 도구를 쥐여 주고 "이 노트로 문제를 낼 수 있나" 물었더니, 모델이 먼저 조회를 불러 208자·4문장이라는 값을 받고, 그 숫자를 그대로 판정 도구의 인자(함수 괄호 안에 넣는 값)로 넣었어요. 개발자가 "조회한 뒤 판정하라"고 코드에 순서를 박지 않았는데도요. 이렇게 관찰과 행동을 번갈아 하며 다음 행동을 스스로 정하는 게 <strong>ReAct<sup class="fn-ref"><a href="#fn17" id="fnref17">17</a></sup></strong> 루프예요. 도구 결과라는 확실한 기준을 받아 오니 모델 기억에만 기대는 것보다 지어낼 여지가 줄어들어요.</p>
+
+    <h3 id="tool-request-only">요청서는 종이일 뿐 — 도구는 누가 실행하나</h3>
+    <p>처음 보면 가장 헷갈리는 게 이 대목이에요. 모델의 답을 찍어 보면 글(<code>content</code>)은 비어 있고, <code>tool_calls</code>에 도구 이름과 넣을 값만 들어 있어요. 이 순간 도구는 이미 돌았을까요? 확인하려고 모델이 돌려주는 답과 똑같은 모양의 메시지(<code>AIMessage</code>, 모델의 답 한 통을 담는 LangChain 자료형)를 손으로 만들고, 함수 안에는 실행되는 순간 한 줄을 찍게 해 뒀어요. 모델을 부르지 않으니 API 키도 필요 없어요.</p>
+    <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— langgraph 설치 후, API 키 없이 돌아가요</span></p>
+    <pre><code>from langchain_core.tools import tool
+from langchain_core.messages import AIMessage
+from langgraph.graph import StateGraph, START, END, MessagesState
+from langgraph.prebuilt import ToolNode
+
+@tool
+def get_recipe(dish: str) -&gt; str:
+    """요리 한 접시에 들어가는 재료와 양을 알려 준다."""
+    print("&gt;&gt;&gt; get_recipe 함수가 지금 실행됨")
+    return {"계란말이": "계란 3개"}.get(dish, "레시피 없음")
+
+# bind_tools를 붙인 모델이 돌려주는 답과 똑같은 모양의 메시지를 손으로 만든다
+ai = AIMessage(content="", tool_calls=[{"name": "get_recipe", "args": {"dish": "계란말이"}, "id": "call_1"}])
+print("content:", repr(ai.content))
+print("tool_calls:", ai.tool_calls[0]["name"], ai.tool_calls[0]["args"])
+print("--- 여기까지 함수는 한 번도 안 돌았어요 ---")
+
+b = StateGraph(MessagesState)
+b.add_node("tools", ToolNode([get_recipe]))    # 요청서를 실제로 실행하는 노드
+b.add_edge(START, "tools")
+b.add_edge("tools", END)
+last = b.compile().invoke({"messages": [ai]})["messages"][-1]
+print(type(last).__name__, "|", last.content)</code></pre>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 위 코드를 실행했을 때 제 화면에 찍힌 출력이에요</span></p>
+    <pre><code>content: ''
+tool_calls: get_recipe {'dish': '계란말이'}
+--- 여기까지 함수는 한 번도 안 돌았어요 ---
+&gt;&gt;&gt; get_recipe 함수가 지금 실행됨
+ToolMessage | 계란 3개</code></pre>
+    <p>요청서만 있을 때는 아무것도 안 찍혔고, <code>ToolNode</code>를 거친 뒤에야 "실행됨"이 찍혔어요. 결과("계란 3개")도 요청서 안에 숨어 있던 게 아니라 <code>ToolMessage</code>라는 새 메시지로 따로 붙었고요. 주방으로 치면 홀 직원이 요청서를 막 적은 순간에는 아직 아무도 창고에 안 갔고, 창고 담당이 다녀와서 결과를 따로 적어 붙여 준 거예요.</p>
+    <div class="key-point" id="key-bind-tools">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>5강에서 짚은 내용</p>
+      <p>LLM은 글자만 만들어요. 우리 컴퓨터에 있는 함수를 직접 실행할 손이 없어요. 그래서 <code>bind_tools</code>를 붙인 모델도 "이 도구를 이 값으로 불러 달라"는 <strong>요청서</strong>(<code>tool_calls</code>)만 써서 내밀어요. 요청서를 받아 함수를 실제로 돌리는 건 우리 쪽 코드인 <code>ToolNode</code>이고, 결과는 <code>ToolMessage</code>로 메시지 목록에 따로 붙어요. 어느 모델을 쓰든 똑같아요.</p>
+    </div>
+    <h3 id="tool-order">순서를 정해 준 적이 없는데 — 모델은 왜 조회부터 했을까</h3>
+    <p>앞에서 본 강의 실습에서 모델이 조회부터 한 이유는 셋이에요.</p>
+    <ul>
+      <li><strong>도구가 요구하는 값이 순서를 끌어내요.</strong> 판정 도구는 글자 수와 문장 수를 넣어야 부를 수 있어요. 모델은 처음에 그 숫자를 모르고, 알아낼 길은 조회뿐이라 조회를 먼저 할 수밖에 없어요. 서류에 모르는 칸이 있으면 먼저 알아보러 가는 것과 같아요.</li>
+      <li><strong>설명서에 적어 뒀어요.</strong> 조회 도구의 독스트링에 "판정하기 전에 반드시 먼저 호출한다"는 문장이 있었어요. 모델이 보는 건 이 설명이에요. 위 코드의 <code>get_recipe</code>에 "만들 수 있는지 답하기 전에 먼저 호출한다"를 넣어 둔 것도 같은 장치예요.</li>
+      <li><strong>결과를 보고 다시 고를 기회가 있어요.</strong> <code>tools</code>에서 <code>agent</code>로 되돌아가는 선 덕분에, 도구 결과가 붙은 뒤 모델이 다시 불려서 그걸 읽고 다음 행동을 골라요. 앞에서 말한 ReAct 루프예요.</li>
+    </ul>
+    <p>다만 이건 모델의 판단이라 매번 같다는 보장이 없어요. 숫자를 지어내서 바로 판정을 부르거나, 조회를 건너뛸 수도 있어요.</p>
+    <div class="key-point" id="key-tool-order">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>5강에서 짚은 내용</p>
+      <p>도구 루프에서는 도구를 부르는 순서를 모델이 정해요. 그 판단은 도구가 요구하는 값, 독스트링의 안내, 결과를 보고 다시 고를 수 있는 루프에서 나와요. 이 순서를 더 확실히 지키게 하는 방법은 약한 것부터 셋이에요.</p>
+      <ol>
+        <li><strong>부탁을 또렷하게</strong> — 모델에게 매번 맨 앞에 붙여 주는 기본 지시문(시스템 프롬프트)에 "조회한 뒤 판정한다"는 절차를 적어요. 여전히 모델의 판단이라 보장은 못 해요.</li>
+        <li><strong>도구를 하나로 합치기</strong> — 판정 도구가 노트 이름만 받아서 안에서 조회까지 하게 바꿔요. 순서가 함수 코드 안에 박혀서, 모델이 숫자를 옮겨 적을 일이 아예 없어져요.</li>
+        <li><strong>워크플로로 바꾸기</strong> — 조회 노드와 판정 노드를 고정 엣지(<code>add_edge</code>)로 이어요. 순서를 그래프가 정하니 가장 확실해요. <a href="langgraph-five-workflow-patterns.html#chaining">다음 편의 프롬프트 체이닝</a>이 이 모양이에요.</li>
+      </ol>
+    </div>
     <p>이 <code>agent ↔ tools</code> 루프는 너무 자주 쓰여서 한 줄짜리 부품도 있어요.</p>
     <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— OPENAI_API_KEY 환경변수 필요, 위 코드의 TOOLS를 그대로 써요</span></p>
     <pre><code>from langchain.agents import create_agent
@@ -654,6 +735,18 @@ agent.invoke({"messages": [("user", "계란말이 두 접시 만들 수 있어?"
         <tr><td>강의 실습에서 조회된 노트 분량 vs 출제 기준</td><td>208자 · 4문장 vs 200자 · 3문장</td><td>가상의 강의 노트 데이터</td></tr>
       </tbody>
     </table>
+
+    <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
+    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 강의 1~5강이 퀴즈로 다시 짚은 내용이라, 복습할 때 이것부터 보면 돼요.</p>
+    <ul class="key-recap">
+      <li><a href="#key-lookup-action">도구 목록은 조회 + 행동</a> — 바깥을 바꾸는 행동 앞에 안전장치를 둬요 (1강)</li>
+      <li><a href="#key-who-decides">워크플로와 에이전트를 가르는 건 "다음 길을 누가 정하나"</a> — 호출 수·도구·모델 크기는 기준이 아니에요 (2강)</li>
+      <li><a href="#key-code-tools">단순한 계산도 도구로 빼요</a> — 티 안 나는 오답, 검사할 수 있는 함수, 일 나눠 맡기기 (2강)</li>
+      <li><a href="#key-partial-update">노드가 안 돌려준 칸은 그대로 남아요</a> — 부분 업데이트 (3강)</li>
+      <li><a href="#key-router-read-only">라우터는 길만 고르고, 전표에 적는 건 노드</a> (4강)</li>
+      <li><a href="#key-bind-tools">모델은 요청서만 쓰고, 실행은 ToolNode가 해요</a> (5강)</li>
+      <li><a href="#key-tool-order">도구 루프에서는 순서를 모델이 정해요 — 확실히 하려면 코드로 박아요</a> (5강)</li>
+    </ul>
 
     <h2 id="roadmap"><span class="hl">이 모듈이 앞으로 가는 길</span></h2>
     <p>"에이전트 팀 꾸리기"는 11일짜리 모듈이에요. 주제마다 이틀쯤 잡혀 있고, 둘째 날에 서브 퀘스트(실습 과제)가 붙어요. 9월 24~25일이 비는 건 추석 연휴 때문이에요.</p>
