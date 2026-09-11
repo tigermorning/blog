@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>글 목록 - Tigermorning</title>
-  <meta name="description" content="바이브코딩 카테고리별 Tigermorning 블로그의 전체 글 목록입니다.">
+  <meta name="description" content="바이브 코딩 단계별로 정리한 Tigermorning 블로그의 전체 글 목록입니다.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="글 목록 - Tigermorning">
-  <meta property="og:description" content="바이브코딩 카테고리별 Tigermorning 블로그의 전체 글 목록입니다.">
+  <meta property="og:description" content="바이브 코딩 단계별로 정리한 Tigermorning 블로그의 전체 글 목록입니다.">
   <meta property="og:url" content="https://tigermorning.github.io/blog/ko/posts.html">
   <meta property="og:locale" content="ko_KR">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -685,8 +685,8 @@
       });
 
       // #id가 가리키는 곳이 글 하나(소분류)면 그 소분류만, 카테고리
-      // 제목(대분류)이면 그 그룹 전체를 필터 범위로 잡는다. "바이브코딩"
-      // 자체(#vibe-coding)처럼 범위를 못 찾으면 전체 보기로 되돌린다.
+      // 제목(대분류)이면 그 그룹 전체를 필터 범위로 잡는다. "바이브 코딩
+      // 단계별 글" 자체(#vibe-coding)처럼 범위를 못 찾으면 전체 보기로 되돌린다.
       function scopeForHash(hash) {
         if (!hash) return null;
         var target = document.getElementById(hash.slice(1));
