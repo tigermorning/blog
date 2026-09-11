@@ -362,6 +362,57 @@ print(build(Plate).invoke({"checks": []}))</code></pre>
     <p>고친 쪽 출력을 보면 세 결과가 다 살았고, <code>aggregate</code>는 셋이 다 모인 뒤에 <strong>한 번만</strong> 돌았어요("총 3건"). 이렇게 한 노드에서 여러 갈래로 펼치는 걸 <strong>팬아웃</strong>, 여러 갈래가 하나로 모이는 걸 <strong>팬인</strong>이라고 해요. 그런데 <code>checks</code>의 순서가 모양·맛·온도예요. 코드에 적은 순서(맛·온도·모양)와 달라요. <strong>병렬 결과의 순서는 보장되지 않아요.</strong> 그래서 항목마다 이름표를 붙여 두는(<code>("맛", 4)</code>) 게 안전해요.</p>
     <p>강의 실습은 성의 없이 쓴 노트 초안을 정확성·명확성·예시 세 축으로 동시에 평가했어요. 점수가 축마다 다르게 나오고 각 코멘트가 자기 축 이야기만 했대요. 한 호출에 기준을 다 몰아넣는 것보다 나은 점은 셋이에요. 모델의 주의가 가장 눈에 띄는 결함 하나로 쏠리지 않고, 한 축의 프롬프트만 고치거나 축을 하나 더하는 게 쉽고, 세 번 연달아 부를 시간에 한 번 부르는 시간이면 끝나요. 다만 <strong>시간은 줄어도 호출 수와 요금은 그대로</strong>예요. 같은 검사를 여러 번 돌려 다수결로 판정하는 투표 방식도 같은 모양으로 만들 수 있어요.</p>
 
+    <h3 id="parallel-quiz">강의 퀴즈로 다시 짚기</h3>
+    <p>병렬화 수업 끝에도 객관식 퀴즈가 하나 있었어요. 문제와 보기는 제 말로 줄여 옮겼어요.</p>
+    <p><strong>객관식 — 동시에 도는 두 노드가 둘 다 State의 <code>reviews</code> 칸에 값을 돌려줬더니 <code>InvalidUpdateError</code>가 났어요. 원인은?</strong></p>
+    <ol>
+      <li>LangGraph는 병렬 실행을 지원하지 않아서 늘 에러가 난다</li>
+      <li>기본 합치기 규칙이 덮어쓰기라, 같은 스텝에 같은 칸으로 값이 둘 오면 무엇을 남길지 정할 수 없어서 아무거나 고르지 않고 에러를 낸다</li>
+      <li>두 노드가 같은 이름의 함수를 써서 이름이 부딪혔다</li>
+      <li>State에는 리스트를 쓸 수 없고 문자열이나 정수만 쓸 수 있다</li>
+    </ol>
+    <p><strong>정답은 2번</strong>이에요. 퀴즈의 <code>reviews</code>는 위 코드의 <code>checks</code>와 같은 자리예요. 저는 처음에 1번을 골랐어요. 이 수업이 병렬로 돌리자마자 에러가 나는 장면으로 시작하니 "병렬로 돌리면 에러가 난다"로 읽혔거든요. 그런데 에러는 병렬 실행 자체가 아니라 <strong>한 칸에 동시에 쓴 것</strong> 때문이에요. 근거가 셋 있어요.</p>
+    <ul>
+      <li><strong>에러 문장이 고치는 법을 알려 줘요.</strong> "여러 값을 받으려면 Annotated 키를 쓰라"고 했죠. 병렬 실행을 지원하지 않는 거라면 고칠 방법도 없어야 해요.</li>
+      <li><strong>위 코드의 두 번째 실행이 반례예요.</strong> 세 갈래는 그대로 두고 리듀서만 붙인 <code>Plate</code>는 에러 없이 돌아서 "총 3건"을 찍었어요.</li>
+      <li><strong>칸을 따로 두면 리듀서도 필요 없어요.</strong> 아래처럼 검사마다 자기 칸에 쓰게 하면 셋이 동시에 돌아도 에러가 안 나요.</li>
+    </ul>
+    <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— langgraph 설치 후, API 키 없이 돌아가요</span></p>
+    <pre><code>from typing_extensions import TypedDict
+from langgraph.graph import StateGraph, START, END
+
+class Scores(TypedDict):          # 리듀서 없음. 대신 검사마다 칸을 따로 둔다
+    taste: int
+    temp: int
+    look: int
+
+def check_taste(state): return {"taste": 4}
+def check_temp(state):  return {"temp": 2}
+def check_look(state):  return {"look": 5}
+
+b = StateGraph(Scores)
+b.add_node("check_taste", check_taste)
+b.add_node("check_temp", check_temp)
+b.add_node("check_look", check_look)
+for name in ["check_taste", "check_temp", "check_look"]:
+    b.add_edge(START, name)       # 세 갈래가 동시에
+    b.add_edge(name, END)
+print(b.compile().invoke({}))</code></pre>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 위 코드를 실행했을 때 제 화면에 찍힌 출력이에요</span></p>
+    <pre><code>{'taste': 4, 'temp': 2, 'look': 5}</code></pre>
+    <p>정리하면 에러는 <strong>같은 스텝, 같은 칸, 리듀서 없음</strong> 세 조건이 모두 겹칠 때만 나요. 하나만 빠져도 안 나요.</p>
+    <table>
+      <thead><tr><th>그래프 모양</th><th>실행 결과</th></tr></thead>
+      <tbody>
+        <tr><td>동시에, 같은&nbsp;칸, 리듀서&nbsp;없음</td><td><code>InvalidUpdateError</code></td></tr>
+        <tr><td>동시에, 같은&nbsp;칸, 리듀서&nbsp;있음</td><td>셋 다 이어 붙어 남아요 (위&nbsp;<code>Plate</code>)</td></tr>
+        <tr><td>동시에, 칸을&nbsp;따로</td><td>각자 자기 칸에 들어가요 (바로 위 코드)</td></tr>
+        <tr><td>순서대로, 같은&nbsp;칸, 리듀서&nbsp;없음</td><td>에러 없이 덮어써서 마지막 값만 남아요</td></tr>
+      </tbody>
+    </table>
+    <p>마지막 줄이 LangGraph가 동시 쓰기에서만 에러를 내는 이유예요. <code>BadPlate</code>의 세 검사를 맛, 온도, 모양 순서로 이어 돌리면 에러 없이 <code>{'checks': [('모양', 5)]}</code>만 남아요. 순서대로 돌 때는 뒤 노드가 앞 노드의 값을 보고 돌았으니, 덮어쓴 것도 뒤 노드가 고른 결과예요. 동시에 돈 노드들은 서로의 값을 못 본 채 썼으니, 하나만 골라 남기면 나머지가 소리 없이 사라져요. 그래서 LangGraph는 조용히 틀리는 대신 눈에 띄게 멈춰요.</p>
+    <p>3번이 틀린 건 노드를 가르는 게 함수 이름이 아니라 <code>add_node</code>에 준 노드 이름이라서예요. 같은 함수를 두 노드에 붙여도 괜찮고, 노드 이름이 겹치면 실행하기도 전에 <code>add_node</code>에서 <code>ValueError</code>로 막혀요. 4번은 위 <code>Plate</code>의 <code>checks</code>도, 앞 편의 <code>MessagesState</code>도 리스트 칸이니 틀렸어요.</p>
+
     <h2>④ <span class="hl">오케스트레이터-워커</span> — 몇 갈래일지 LLM이 정한다</h2>
     <p>병렬화에는 숨은 전제가 있었어요. 하위 작업의 <strong>개수와 종류를 개발자가 코드를 쓸 때 이미 알아야</strong> 해요. 평가 축이 셋이라 노드도 셋을 미리 그렸죠. 그런데 "이 주제로 학습 가이드를 만들어 줘, 섹션 수는 알아서"라는 요청이면요? 섹션이 3개일 수도 7개일 수도 있어요. <code>add_node</code>는 <code>compile()</code> 전에 부르는 함수라 실행 중에 노드를 새로 만들 수도 없어요. 이걸 푸는 열쇠가 <code>Send</code>예요.</p>
     <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— langgraph 설치 후, API 키 없이 돌아가요</span></p>
