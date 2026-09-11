@@ -106,6 +106,7 @@
       <tbody>
         <tr><td>주방을 도는 전표 한 장</td><td><strong>State</strong> — 노드들이 함께 읽고 쓰는 공용 데이터</td></tr>
         <tr><td>조리대 직원이 자기 칸에만 체크하기</td><td><strong>부분 업데이트<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup></strong> — 노드는 바꾼 키만 돌려주고 나머지는 그대로 남아요</td></tr>
+        <tr><td>전표 양식에 미리 인쇄된 칸 이름 (아직 아무도 안 적은 칸 포함)</td><td><strong>State 선언</strong> — 어떤 칸이 있을 수 있는지만 정해요. 칸의 값은 어떤 노드가 돌려줘야 비로소 생겨요 (<a href="#merge-rules">아래에서 직접 확인</a>)</td></tr>
         <tr><td>조리대 하나 (접수대·화구·검수대)</td><td><strong>Node</strong> — State를 받아 딕셔너리를 돌려주는 평범한 파이썬 함수</td></tr>
         <tr><td>동선표의 화살표 "손질대 다음은 화구"</td><td><strong>Edge</strong> — <code>add_edge(A, B)</code>, A가 끝나면 B로</td></tr>
         <tr><td>검수대 직원이 전표를 보고 화구 담당에게 되돌리거나 홀로 내보내기</td><td><strong>조건부 엣지</strong> — <strong>라우터 함수<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup></strong>가 State를 읽고 다음 노드 이름을 돌려줘요</td></tr>
@@ -210,6 +211,63 @@ print(graph.invoke({"order": " 김치찌개,  계란말이 ,공기밥 ", "log": 
     </ul>
     <p><code>log</code>가 계속 뒤에 붙은 건 노드가 직접 <code>+</code>로 이어 붙였기 때문이에요. 여러 노드가 <strong>동시에</strong> 같은 칸에 쓰면 이 방식이 깨지는데, 그 문제와 해결책(리듀서)은 <a href="langgraph-five-workflow-patterns.html#parallel">다음 편 병렬화</a>에서 봐요.</p>
 
+    <h2 id="merge-rules"><span class="hl">합치기 규칙 확인하기</span> — 안 돌려준 칸, 아직 없는 칸</h2>
+    <p>강의에는 "State 병합 규칙을 직접 확인하기"라는 연습 문제가 있었어요. 코드를 조금 바꾸고, <strong>돌리기 전에 결과를 먼저 예상한 뒤</strong> 실행해서 맞춰 보는 문제였어요. 저는 처음에 무엇을 확인하라는 건지부터 헷갈려서, 위의 전표 예제에 그대로 옮겨 두 가지를 돌려 봤어요.</p>
+
+    <h3>확인 ① — 돌려주지 않은 칸은 어떻게 될까</h3>
+    <p><code>count_dishes</code>의 반환값에서 <code>log</code>를 빼서 <code>return {"count": len(state["dishes"])}</code>만 남겨요. 나머지 코드는 위와 같아요. 돌리기 전에 먼저 예상해 보세요. 마지막 <code>log</code>는 <code>None</code>이 될까요, 빈 문자열이 될까요, 아니면 그대로일까요?</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 위처럼 반환값 한 줄만 바꿔 실행했을 때 제 화면에 찍힌 출력이에요</span></p>
+    <pre><code>{'order': ' 김치찌개,  계란말이 ,공기밥 ', 'dishes': ['김치찌개', '계란말이', '공기밥'], 'count': 3, 'log': '시작 &gt; 접수'}</code></pre>
+    <p><code>log</code>는 지워지지 않고 <code>take_order</code>가 적어 둔 <code>'시작 &gt; 접수'</code>에서 멈춰 있어요. 반환값에서 키를 뺀다는 건 "이번엔 이 칸을 건드리지 않는다"는 뜻이지, State에서 지우라는 뜻이 아니에요. 주방으로 치면 집계 담당이 '거쳐 간 조리대' 칸에 아무것도 적지 않고 전표를 넘긴 거예요. 그 칸에는 앞사람이 적은 글씨가 그대로 남아요.</p>
+
+    <h3>확인 ② — 순서를 뒤집으면</h3>
+    <p>이번에는 <code>count_dishes</code>를 <code>take_order</code>보다 먼저 돌려요. 바꿀 곳은 엣지 세 줄뿐이에요.</p>
+    <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— 위 일직선 그래프 코드에서 builder.add_edge 세 줄만 이렇게 바꿔요</span></p>
+    <pre><code>builder.add_edge(START, "count_dishes")
+builder.add_edge("count_dishes", "take_order")
+builder.add_edge("take_order", END)</code></pre>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 제 화면에 찍힌 에러에서 파일 경로를 줄이고, langgraph 내부를 지나간 여섯 단계를 생략했어요</span></p>
+    <pre><code>Traceback (most recent call last):
+  File "...", line 25, in &lt;module&gt;
+    print(graph.invoke({"order": " 김치찌개,  계란말이 ,공기밥 ", "log": "시작"}))
+  ... (langgraph 내부 여섯 단계 생략) ...
+  File "...", line 15, in count_dishes
+    return {"count": len(state["dishes"]), "log": state["log"] + " &gt; 집계"}
+                         ~~~~~^^^^^^^^^^
+KeyError: 'dishes'
+During task with name 'count_dishes' and id '...'</code></pre>
+    <p>이런 에러 기록을 <strong>트레이스백<sup class="fn-ref"><a href="#fn9" id="fnref9">9</a></sup></strong>이라고 해요. 처음 보면 겁나지만 <strong>맨 아래부터 거꾸로</strong> 읽으면 금방 풀려요.</p>
+    <ul>
+      <li><strong><code>KeyError: 'dishes'</code></strong> — 무슨 일이 났는지예요. 딕셔너리에서 <code>'dishes'</code>라는 키를 꺼내려 했는데 없었다는 <strong>KeyError<sup class="fn-ref"><a href="#fn10" id="fnref10">10</a></sup></strong>예요.</li>
+      <li><strong><code>During task with name 'count_dishes'</code></strong> — 어느 노드에서 났는지예요. LangGraph가 덧붙여 주는 줄이에요.</li>
+      <li><strong><code>line 15, in count_dishes</code></strong> — 정확히 어느 줄인지예요. 그 아래 물결표와 꺾쇠(<code>~~~~~^^^^^^^^^^</code>)가 <code>state["dishes"]</code>를 가리키고 있어요.</li>
+      <li><strong>중간의 langgraph 줄들</strong> — 그래프 엔진 내부를 지나간 경로라서, 처음엔 건너뛰어도 돼요.</li>
+    </ul>
+    <p>한 문장으로 옮기면 <strong>"count_dishes가 dishes를 꺼내려 했는데 전표에 그 칸이 없었다"</strong>예요. 왜 없었는지는 전표를 단계마다 따라가 보면 보여요.</p>
+    <table>
+      <thead><tr><th>시점</th><th>전표에 있는 칸</th><th>일어난 일</th></tr></thead>
+      <tbody>
+        <tr><td><code>invoke()</code> 직후</td><td><code>order</code>, <code>log</code></td><td>입력으로 넣은 두 칸뿐이에요</td></tr>
+        <tr><td><code>count_dishes</code> 차례</td><td><code>order</code>, <code>log</code></td><td><code>dishes</code>를 읽으려는데 아직 아무도 안 만들어서 에러로 멈춰요</td></tr>
+        <tr><td><code>take_order</code> 차례</td><td>—</td><td>실행될 기회조차 없어요</td></tr>
+      </tbody>
+    </table>
+    <p>"<code>Ticket</code>에 <code>dishes</code>라고 적어 뒀잖아?" 싶을 수 있어요. 확인하려고 첫 노드가 받은 State의 키를 찍어 봤더니 <code>['log', 'order']</code> 두 개뿐이었어요. <code>dishes</code>와 <code>count</code>는 <code>None</code>이나 빈 리스트로 들어 있던 게 아니라 <strong>아예 없었어요</strong>. TypedDict는 전표 양식에 칸 이름을 인쇄해 두는 것일 뿐, 칸을 미리 만들거나 기본값을 채워 두지 않아요. 여기서 주방 비유도 끊겨요. 종이 전표라면 빈칸을 보고 "아직 안 적혔네" 하고 넘어가겠지만, 파이썬은 없는 칸을 읽으려는 순간 그 자리에서 멈춰요.</p>
+    <p>그래서 노드마다 <strong>읽는 칸</strong>과 <strong>만드는 칸</strong>을 나눠 보면 순서가 저절로 정해져요.</p>
+    <table>
+      <thead><tr><th>노드</th><th>읽는 칸 (먼저 있어야 하는 것)</th><th>만드는 칸</th></tr></thead>
+      <tbody>
+        <tr><td><code>take_order</code></td><td><code>order</code>, <code>log</code> — 둘 다 입력으로 처음부터 있어요</td><td><code>dishes</code>, <code>log</code></td></tr>
+        <tr><td><code>count_dishes</code></td><td><code>dishes</code>, <code>log</code> — <code>dishes</code>는 <code>take_order</code>가 돌려줘야 생겨요</td><td><code>count</code>, <code>log</code></td></tr>
+      </tbody>
+    </table>
+    <p><code>take_order</code>는 맨 처음에 돌아도 필요한 게 다 있고, <code>count_dishes</code>는 반드시 <code>take_order</code> 뒤에 와야 해요. 그리고 LangGraph는 "이 노드가 <code>dishes</code>를 필요로 하니 <code>take_order</code>부터 돌리자" 같은 판단을 해 주지 않아요. <strong>엣지로 정한 순서 그대로 실행할 뿐</strong>이라서, 값을 만드는 노드가 그 값을 읽는 노드보다 앞에 오도록 잇는 건 사람의 몫이에요. 참고로 <code>add_node</code> 두 줄의 순서만 바꿔 보면 결과가 원래와 똑같이 나와요. 노드를 등록하는 순서는 실행 순서와 상관없어요.</p>
+    <p>에러를 없애려고 <code>state["dishes"]</code>를 <code>state.get("dishes", [])</code>로 바꾸는 방법도 떠올릴 수 있어요. <code>.get()</code>은 키가 없으면 에러를 내는 대신 뒤에 준 기본값을 돌려주는 딕셔너리 메서드예요. 엣지는 뒤집힌 그대로 두고 이것만 바꿔서 돌려 봤어요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 순서를 뒤집은 채 .get()으로만 바꿨을 때 제 화면에 찍힌 출력이에요</span></p>
+    <pre><code>{'order': ' 김치찌개,  계란말이 ,공기밥 ', 'dishes': ['김치찌개', '계란말이', '공기밥'], 'count': 0, 'log': '시작 &gt; 집계 &gt; 접수'}</code></pre>
+    <p>에러는 사라졌지만 메뉴는 셋인데 접시 수가 0이에요. 프로그램이 멈추지 않으니 틀린 줄도 모르고 넘어가기 쉬워요. 뒤집힌 흔적은 <code>log</code>의 순서(<code>집계 &gt; 접수</code>)에만 남아요. <code>KeyError</code>는 "순서가 틀렸다"고 알려 주는 신호예요. 신호를 끄지 말고 엣지를 고치는 게 맞아요.</p>
+    <p><strong>정리하면 두 줄이에요.</strong> 노드가 돌려주지 않은 칸에는 앞의 값이 그대로 남고(확인 ①), 한 번도 누가 쓴 적 없는 칸은 남아 있을 앞의 값 자체가 없어요(확인 ②). State에 선언된 칸이 곧 지금 존재하는 칸은 아니에요.</p>
+
     <h2><span class="hl">직접 만들기 ②</span> — 갈림길과 되돌아가는 선</h2>
     <p>실제 시스템은 일직선으로 끝나지 않아요. "간이 맞으면 내보내고, 싱거우면 소금을 넣고 다시 맛본다" 같은 갈림길이 필요하죠. 위 흐름 그림을 그대로 코드로 옮기면 이래요.</p>
     <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— langgraph 설치 후, API 키 없이 돌아가요</span></p>
@@ -260,18 +318,18 @@ serve --&gt; __end__;</code></pre>
     <ul>
       <li><strong>목적지를 딕셔너리로도 줄 수 있어요.</strong> <code>{"통과": "serve", "보류": "add_salt"}</code>처럼 주면 라우터가 한국어 라벨을 돌려주고 LangGraph가 노드 이름으로 번역해 줘요. 노드 이름은 영문으로, 라벨만 한국어로 두는 절충이에요.</li>
       <li><strong>조건부 엣지 하나로 분기와 반복을 다 만들어요.</strong> 이미 지나온 노드로 돌아가는 선을 그으면 그게 반복이에요.</li>
-      <li><strong>그림으로 확인하기.</strong> <code>draw_mermaid()</code>는 <strong>Mermaid<sup class="fn-ref"><a href="#fn9" id="fnref9">9</a></sup></strong> 문법 글자를 돌려줘요. <code>--&gt;</code>는 실선(항상 가는 길), <code>-.-&gt;</code>는 점선(조건에 따라 고르는 길)이에요. 목적지를 리스트로 줘서 라벨이 노드 이름과 같으면 화살표 라벨이 생략되고, 딕셔너리로 다른 라벨을 주면 화살표 위에 라벨이 찍혀요. <code>draw_mermaid_png()</code>는 그림 파일로 바로 그려 주지만, 기본 설정은 외부 렌더링 서비스를 부르니 인터넷이 필요해요.</li>
+      <li><strong>그림으로 확인하기.</strong> <code>draw_mermaid()</code>는 <strong>Mermaid<sup class="fn-ref"><a href="#fn11" id="fnref11">11</a></sup></strong> 문법 글자를 돌려줘요. <code>--&gt;</code>는 실선(항상 가는 길), <code>-.-&gt;</code>는 점선(조건에 따라 고르는 길)이에요. 목적지를 리스트로 줘서 라벨이 노드 이름과 같으면 화살표 라벨이 생략되고, 딕셔너리로 다른 라벨을 주면 화살표 위에 라벨이 찍혀요. <code>draw_mermaid_png()</code>는 그림 파일로 바로 그려 주지만, 기본 설정은 외부 렌더링 서비스를 부르니 인터넷이 필요해요.</li>
     </ul>
     <p>반복에는 늘 따라오는 위험이 있어요. <strong>끝나지 않을 수 있다</strong>는 거예요. <code>judge</code>가 항상 <code>"add_salt"</code>만 돌려주게 바꾸고 <code>graph.invoke(입력, {"recursion_limit": 6})</code>으로 돌려 보니, 여섯 스텝에서 <code>GraphRecursionError</code>가 나며 멈췄어요. LangGraph는 기본으로 25스텝에서 이렇게 끊어 줘요. 다만 이건 예외로 멈추는 거라 그때까지 만든 중간 결과를 못 받아요. 그래서 위 코드처럼 <strong><code>tries</code>를 세다가 <code>call_chef</code>로 빠지는 정상 출구</strong>를 그래프 안에 두는 게 기본이고, <code>recursion_limit</code>은 그 설계가 실패했을 때를 대비한 두 번째 안전망이에요. <a href="my-harness-flow-and-state.html">끝날 때까지 따라가기 — 실행 흐름·상태·승인과 종료 조건</a>에서 "중단을 완료로 표시하지 말라"고 했던 것과 같은 이야기예요.</p>
 
     <h2><span class="hl">직접 만들기 ③</span> — 도구를 쥐여 주는 루프</h2>
-    <p>이제 진짜 LLM을 넣어요. 여기서부터는 OpenAI <strong>API 키<sup class="fn-ref"><a href="#fn10" id="fnref10">10</a></sup></strong>가 필요해요. 키를 넣는 방법은 세 가지예요.</p>
+    <p>이제 진짜 LLM을 넣어요. 여기서부터는 OpenAI <strong>API 키<sup class="fn-ref"><a href="#fn12" id="fnref12">12</a></sup></strong>가 필요해요. 키를 넣는 방법은 세 가지예요.</p>
     <ul>
       <li><strong>내 컴퓨터</strong> — 프로젝트 폴더의 <code>.env</code> 파일에 <code>OPENAI_API_KEY=sk-...</code>를 적고 <code>from dotenv import load_dotenv; load_dotenv()</code>로 읽어요. <code>.env</code>는 절대 깃에 올리지 않아요 (<a href="ai-code-security-basics.html">AI 코드 보안 기초</a>에서 다룬 비밀 관리 그대로예요).</li>
       <li><strong><a href="why-gpu-and-colab-cli.html">Colab</a></strong> — 왼쪽 열쇠 아이콘(보안 비밀)에 등록하고 <code>google.colab.userdata</code>로 읽어요.</li>
       <li><strong>임시</strong> — <code>os.environ["OPENAI_API_KEY"] = "sk-..."</code>로 직접 넣어요. 노트북 파일에 키가 그대로 남으니 저장하거나 공유하기 전에 꼭 지워요.</li>
     </ul>
-    <p>도구는 함수에 <code>@tool</code>을 붙여 만들어요. 여기서 제일 중요한 건 <strong>독스트링<sup class="fn-ref"><a href="#fn11" id="fnref11">11</a></sup></strong>이에요. LangChain이 독스트링과 타입 힌트를 읽어 <strong>JSON 스키마<sup class="fn-ref"><a href="#fn12" id="fnref12">12</a></sup></strong>를 만들고, 모델은 우리 파이썬 코드가 아니라 <strong>이 스키마만</strong> 봐요.</p>
+    <p>도구는 함수에 <code>@tool</code>을 붙여 만들어요. 여기서 제일 중요한 건 <strong>독스트링<sup class="fn-ref"><a href="#fn13" id="fnref13">13</a></sup></strong>이에요. LangChain이 독스트링과 타입 힌트를 읽어 <strong>JSON 스키마<sup class="fn-ref"><a href="#fn14" id="fnref14">14</a></sup></strong>를 만들고, 모델은 우리 파이썬 코드가 아니라 <strong>이 스키마만</strong> 봐요.</p>
     <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— OPENAI_API_KEY 환경변수 필요 (호출마다 요금이 조금 나가요)</span></p>
     <pre><code>from langchain_core.tools import tool
 from langchain_openai import ChatOpenAI
@@ -321,7 +379,7 @@ for m in result["messages"]:
       <li><strong><code>tools_condition</code></strong> — 마지막 메시지에 <code>tool_calls</code>가 있으면 <code>"tools"</code>를, 없으면 <code>END</code>를 돌려주는 미리 만들어진 라우터예요.</li>
     </ul>
     <p>실행하면 이런 순서로 흘러가요. 사용자 질문을 받은 모델은 답 대신 레시피와 재고를 알려 달라는 도구 요청을 내놓고(모델에 따라 두 개를 한 번에 요청하기도, 하나씩 부르기도 해요), <code>ToolNode</code>가 두 함수를 실행해 "계란 3개", "계란 4개"를 붙이고, 다시 불려 온 모델이 그걸 읽고 "한 접시만 가능하다"는 최종 답을 써요. 더 부를 도구가 없으니 <code>tools_condition</code>이 <code>END</code>를 돌려주고 끝나요.</p>
-    <p>강의 실습에서도 똑같은 장면이 나왔어요. 노트 조회 도구와 출제 가능 판정 도구를 쥐여 주고 "이 노트로 문제를 낼 수 있나" 물었더니, 모델이 먼저 조회를 불러 208자·4문장이라는 값을 받고, 그 숫자를 그대로 판정 도구의 인자로 넣었어요. 개발자가 "조회한 뒤 판정하라"고 코드에 순서를 박지 않았는데도요. 이렇게 관찰과 행동을 번갈아 하며 다음 행동을 스스로 정하는 게 <strong>ReAct<sup class="fn-ref"><a href="#fn13" id="fnref13">13</a></sup></strong> 루프예요. 도구 결과라는 확실한 기준을 받아 오니 모델 기억에만 기대는 것보다 지어낼 여지가 줄어들어요.</p>
+    <p>강의 실습에서도 똑같은 장면이 나왔어요. 노트 조회 도구와 출제 가능 판정 도구를 쥐여 주고 "이 노트로 문제를 낼 수 있나" 물었더니, 모델이 먼저 조회를 불러 208자·4문장이라는 값을 받고, 그 숫자를 그대로 판정 도구의 인자로 넣었어요. 개발자가 "조회한 뒤 판정하라"고 코드에 순서를 박지 않았는데도요. 이렇게 관찰과 행동을 번갈아 하며 다음 행동을 스스로 정하는 게 <strong>ReAct<sup class="fn-ref"><a href="#fn15" id="fnref15">15</a></sup></strong> 루프예요. 도구 결과라는 확실한 기준을 받아 오니 모델 기억에만 기대는 것보다 지어낼 여지가 줄어들어요.</p>
     <p>이 <code>agent ↔ tools</code> 루프는 너무 자주 쓰여서 한 줄짜리 부품도 있어요.</p>
     <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— OPENAI_API_KEY 환경변수 필요, 위 코드의 TOOLS를 그대로 써요</span></p>
     <pre><code>from langchain.agents import create_agent
@@ -348,8 +406,10 @@ agent.invoke({"messages": [("user", "계란말이 두 접시 만들 수 있어?"
       <tbody>
         <tr><td>강의 교안이 검증한 라이브러리 버전</td><td>langgraph 1.2 · langchain-core 1.6 · langchain 1.4 · langchain-openai 1.6</td><td>강의 교안 기준. 제가 2026.09.11에 새로 설치한 최신판도 1.2.11 · 1.6.2 · 1.4.0 · 1.6.2</td></tr>
         <tr><td><code>recursion_limit</code> 기본값</td><td>25스텝</td><td><code>invoke()</code>의 두 번째 인자로 변경. 제 실험에서 6으로 낮추자 6스텝에서 <code>GraphRecursionError</code></td></tr>
+        <tr><td>첫 노드가 받은 State의 키</td><td>2개 (<code>order</code>, <code>log</code>) — <code>Ticket</code>에 선언한 칸은 4개</td><td>제 전표 예제, 입력으로 두 칸만 넣은 경우 (<a href="#merge-rules">합치기 규칙 확인하기</a>)</td></tr>
+        <tr><td>순서를 뒤집고 <code>.get()</code>으로 에러만 막았을 때의 접시 수</td><td>0 (실제 메뉴는 3개)</td><td>제 전표 예제, 엣지 순서를 <code>count_dishes</code> → <code>take_order</code>로 바꾼 경우</td></tr>
         <tr><td>간 맞추기 예제 결과</td><td>간 보기 4번 · 소금 3번 후 완성</td><td>제 예제, 소금 3숟갈을 통과 기준으로 둔 경우</td></tr>
-        <tr><td>강의 도구 루프 실습의 메시지 수</td><td>6개</td><td>질문 1 + (도구 요청·결과) 2쌍 + 최종 답 1, gpt-4o-mini로 1회 실행한 결과<sup class="fn-ref"><a href="#fn14" id="fnref14">14</a></sup></td></tr>
+        <tr><td>강의 도구 루프 실습의 메시지 수</td><td>6개</td><td>질문 1 + (도구 요청·결과) 2쌍 + 최종 답 1, gpt-4o-mini로 1회 실행한 결과<sup class="fn-ref"><a href="#fn16" id="fnref16">16</a></sup></td></tr>
         <tr><td>강의 실습에서 조회된 노트 분량 vs 출제 기준</td><td>208자 · 4문장 vs 200자 · 3문장</td><td>가상의 강의 노트 데이터</td></tr>
       </tbody>
     </table>
@@ -403,13 +463,15 @@ agent.invoke({"messages": [("user", "계란말이 두 접시 만들 수 있어?"
         <li id="fn5">프레임워크(framework) — 매번 반복되는 뼈대 코드를 미리 짜 둔 틀이라서, 개발자는 빈칸만 채우면 되는 개발 도구 묶음이에요. <a href="#fnref5">↩</a></li>
         <li id="fn6">부분 업데이트(partial update) — 노드가 State 전체가 아니라 바꾼 칸만 돌려주면 LangGraph가 나머지 칸은 그대로 두고 합쳐 주는 방식이에요. <a href="#fnref6">↩</a></li>
         <li id="fn7">라우터 함수 — State를 읽고 다음에 갈 노드의 이름(또는 라벨)만 돌려주는 함수예요. <a href="#fnref7">↩</a></li>
-        <li id="fn8">TypedDict — 딕셔너리에 어떤 이름의 칸이 어떤 자료형으로 들어가는지 미리 적어 두는 파이썬 타입 힌트 문법이에요. <a href="#fnref8">↩</a></li>
-        <li id="fn9">Mermaid — 글자로 적은 도형 설명을 다이어그램으로 그려 주는 문법으로, GitHub나 Notion에 붙여 넣으면 바로 그림이 돼요. <a href="#fnref9">↩</a></li>
-        <li id="fn10">API 키 — 유료 AI 서비스를 내 계정으로 부를 때 쓰는 비밀 문자열이라, 남에게 보이면 내 요금으로 남이 쓸 수 있어요. <a href="#fnref10">↩</a></li>
-        <li id="fn11">독스트링(docstring) — 파이썬 함수 맨 위에 적는 설명 문자열로, LangChain은 이것을 읽어 모델에게 보낼 도구 설명을 만들어요. <a href="#fnref11">↩</a></li>
-        <li id="fn12">JSON 스키마 — 데이터가 어떤 칸과 자료형을 가져야 하는지 적은 규칙서로, <a href="mcp-skill-tool-call-anatomy.html">도구 호출 글</a>에서 메뉴판의 '주문 규칙'에 빗댔던 입력 스키마가 이것이에요. <a href="#fnref12">↩</a></li>
-        <li id="fn13">ReAct(Reasoning + Acting) — 생각과 행동을 번갈아 하며 관찰 결과로 다음 행동을 정하는 루프로, <a href="agent-react-loop-and-autogpt.html">ReAct 루프 글</a>에서 그 뿌리를 다뤘어요. <a href="#fnref13">↩</a></li>
-        <li id="fn14">LLM의 답은 확률적이라 같은 질문도 실행할 때마다 도구 호출 순서나 메시지 수가 달라질 수 있어서, 이 값은 강의 실습의 한 번 실행 결과로만 읽어야 해요. <a href="#fnref14">↩</a></li>
+        <li id="fn8">TypedDict — 딕셔너리에 어떤 이름의 칸이 어떤 자료형으로 들어가는지 미리 적어 두는 파이썬 타입 힌트 문법으로, 칸을 실제로 만들거나 기본값을 채워 주지는 않아요(<a href="#merge-rules">합치기 규칙 확인하기</a>에서 직접 확인해요). <a href="#fnref8">↩</a></li>
+        <li id="fn9">트레이스백(traceback) — 에러가 났을 때 파이썬이 그 지점까지 거쳐 온 함수 호출 경로를 차례로 적어 보여 주는 기록으로, 맨 아래 줄이 실제로 일어난 에러예요. <a href="#fnref9">↩</a></li>
+        <li id="fn10">KeyError — 딕셔너리에 없는 키를 <code>d["키"]</code>처럼 대괄호로 꺼내려 할 때 파이썬이 내는 에러예요. <a href="#fnref10">↩</a></li>
+        <li id="fn11">Mermaid — 글자로 적은 도형 설명을 다이어그램으로 그려 주는 문법으로, GitHub나 Notion에 붙여 넣으면 바로 그림이 돼요. <a href="#fnref11">↩</a></li>
+        <li id="fn12">API 키 — 유료 AI 서비스를 내 계정으로 부를 때 쓰는 비밀 문자열이라, 남에게 보이면 내 요금으로 남이 쓸 수 있어요. <a href="#fnref12">↩</a></li>
+        <li id="fn13">독스트링(docstring) — 파이썬 함수 맨 위에 적는 설명 문자열로, LangChain은 이것을 읽어 모델에게 보낼 도구 설명을 만들어요. <a href="#fnref13">↩</a></li>
+        <li id="fn14">JSON 스키마 — 데이터가 어떤 칸과 자료형을 가져야 하는지 적은 규칙서로, <a href="mcp-skill-tool-call-anatomy.html">도구 호출 글</a>에서 메뉴판의 '주문 규칙'에 빗댔던 입력 스키마가 이것이에요. <a href="#fnref14">↩</a></li>
+        <li id="fn15">ReAct(Reasoning + Acting) — 생각과 행동을 번갈아 하며 관찰 결과로 다음 행동을 정하는 루프로, <a href="agent-react-loop-and-autogpt.html">ReAct 루프 글</a>에서 그 뿌리를 다뤘어요. <a href="#fnref15">↩</a></li>
+        <li id="fn16">LLM의 답은 확률적이라 같은 질문도 실행할 때마다 도구 호출 순서나 메시지 수가 달라질 수 있어서, 이 값은 강의 실습의 한 번 실행 결과로만 읽어야 해요. <a href="#fnref16">↩</a></li>
       </ol>
     </section>
 

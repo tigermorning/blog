@@ -291,7 +291,7 @@ print(build(Plate).invoke({"checks": []}))</code></pre>
     <p>에러 문장은 "한 스텝에 이 키로 값을 하나만 받을 수 있으니, 여러 값을 받으려면 Annotated 키를 쓰라"는 뜻이에요. 왜 이런 일이 생기는지는 LangGraph의 실행 단위를 알면 풀려요.</p>
     <ul>
       <li><strong>슈퍼스텝<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup></strong> — LangGraph는 노드를 하나씩 도는 게 아니라, 실행 준비가 된 노드를 한 스텝에 <strong>모두 동시에</strong> 돌리고, 스텝이 끝나면 반환값을 한꺼번에 State에 합쳐요. 세 검사 노드는 같은 스텝에서 돌았어요.</li>
-      <li><strong>기본 규칙은 덮어쓰기</strong>예요. 같은 스텝에 같은 키로 값이 셋 오면 무엇을 남길지 정할 수 없어요. LangGraph는 아무거나 고르지 않고 에러를 내요.</li>
+      <li><strong>기본 규칙은 덮어쓰기</strong>예요. 노드가 돌려준 키만 새 값으로 바뀌고 돌려주지 않은 키는 그대로 남는다는 건 <a href="langgraph-state-node-edge.html#merge-rules">앞 편의 합치기 규칙 확인하기</a>에서 직접 봤어요. 그런데 같은 스텝에 같은 키로 값이 셋 오면 무엇을 남길지 정할 수 없어요. LangGraph는 아무거나 고르지 않고 에러를 내요.</li>
       <li><strong>리듀서<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup></strong>로 합치는 법을 알려 줘요. <code>Annotated[list, operator.add]</code>는 "이 칸은 리스트이고, 여러 값이 오면 <code>+</code>로 이어 붙여라"예요. <code>Annotated</code>는 타입에 덧붙임 정보를 다는 파이썬 표준 문법인데, 파이썬은 무시하고 LangGraph가 읽어서 합치는 규칙으로 써요. <a href="langgraph-state-node-edge.html">앞 편</a>의 <code>MessagesState</code>가 메시지를 쌓아 올리던 것도 이 장치 덕분이었어요.</li>
     </ul>
     <p>고친 쪽 출력을 보면 세 결과가 다 살았고, <code>aggregate</code>는 셋이 다 모인 뒤에 <strong>한 번만</strong> 돌았어요("총 3건"). 이렇게 한 노드에서 여러 갈래로 펼치는 걸 <strong>팬아웃</strong>, 여러 갈래가 하나로 모이는 걸 <strong>팬인</strong>이라고 해요. 그런데 <code>checks</code>의 순서가 모양·맛·온도예요. 코드에 적은 순서(맛·온도·모양)와 달라요. <strong>병렬 결과의 순서는 보장되지 않아요.</strong> 그래서 항목마다 이름표를 붙여 두는(<code>("맛", 4)</code>) 게 안전해요.</p>
