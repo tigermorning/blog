@@ -244,7 +244,7 @@ for note in [note_a, note_b]:
     </ul>
     <p><a href="langgraph-state-node-edge.html#code-tools">앞 편에서 날짜 계산을 함수에 맡긴 것</a>처럼, 결정적인 검사는 <strong>정해 둔 규칙 안에서는</strong> 절대 흔들리지 않아요. 대신 규칙 밖의 일은 아예 못 봐요. 그래서 검사를 이렇게 나눠 맡겨요.</p>
     <table>
-      <thead><tr><th>따져 볼 것</th><th>코드 게이트 (결정적)</th><th>LLM 평가자 · 사람</th></tr></thead>
+      <thead><tr><th>비교 항목</th><th>코드 게이트 (결정적)</th><th>LLM 평가자 · 사람</th></tr></thead>
       <tbody>
         <tr><td>잘 맞는 검사</td><td>용어가 빠졌나, 글자 수·문장 수, JSON 칸이 다 있나처럼 <strong>규칙으로 적을 수 있는 것</strong></td><td>설명이 맞나, 처음 배우는 사람이 이해할 수 있나처럼 <strong>뜻을 읽어야 하는 것</strong></td></tr>
         <tr><td>같은 입력에 같은 판정인가</td><td>네, 언제 돌려도 같아요</td><td>LLM은 실행마다 판정이 달라질 수 있어요</td></tr>
