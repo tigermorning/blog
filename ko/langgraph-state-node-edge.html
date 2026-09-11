@@ -103,12 +103,14 @@
     <p>패키지 이름이 여러 개인 이유도 이거예요. 기본 자료형은 <code>langchain-core</code>, 모델 회사별 연결은 <code>langchain-openai</code>·<code>langchain-anthropic</code>·<code>langchain-google-genai</code>, 외부 서비스 연동 모음은 <code>langchain-community</code>에 들어 있어요. 한 가지 주의할 게 있어요. 옛날 자료에 나오는 <code>LLMChain</code>, <code>AgentExecutor</code>, <code>initialize_agent</code>는 1.0부터 <code>langchain-classic</code>이라는 별도 패키지로 빠졌어요. 검색해서 찾은 코드가 import 에러를 내면 버전부터 의심해 보세요.</p>
     <p>그럼 수많은 <strong>프레임워크<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup></strong>(CrewAI, AutoGen, Claude Agent SDK…) 중에 왜 LangGraph였을까요. 강의가 든 이유는 셋이에요. 특정 모델 회사에 묶이지 않고, 흐름을 블랙박스로 감추지 않고 State·Node·Edge로 개발자가 직접 그리게 하고, 환경 변수 몇 줄로 LangSmith 관측을 붙일 수 있다는 점이요.</p>
     <p>여기서 제 기록 하나를 고쳐 적어야겠어요. <a href="multi-agent-three-runs-abc.html">멀티 에이전트 실험</a> 때는 "LangGraph를 쓰면 다음 행동을 누가 정하는지가 프레임워크 안에 가려진다"고 보고 Claude Agent SDK를 골랐어요. 막상 배워 보니 <strong>직접 그린 그래프는 오히려 그 결정 주체를 선 하나하나로 드러내는 쪽</strong>이었어요. 가려지는 건 <a href="langgraph-branches-and-tool-loop.html#tool-loop">다음 편</a>에 나오는 <code>create_agent</code> 같은 미리 만들어진 부품을 쓸 때예요.</p>
-    <p>LangGraph와 헷갈리기 쉬운 것들도 정리해 둘게요. ComfyUI와 n8n은 노드를 선으로 잇는 <strong>생김새</strong>가 닮았고, GraphRAG는 <strong>이름</strong>에 graph가 들어가서 헷갈려요.</p>
+    <p>LangGraph와 헷갈리기 쉬운 것들도 정리해 둘게요. ComfyUI·n8n·Flowise·Dify는 노드를 선으로 잇는 <strong>생김새</strong>가 닮았고, GraphRAG는 <strong>이름</strong>에 graph가 들어가서 헷갈려요.</p>
     <table id="look-alikes">
       <thead><tr><th>헷갈리는 것</th><th>정체</th><th>LangGraph와 다른 점</th></tr></thead>
       <tbody>
         <tr><td>ComfyUI</td><td>이미지·영상 생성 AI를 노드 상자로 이어 돌리는 화면 도구 (<a href="choosing-image-generation-tools.html">이미지 생성 도구 고르기</a>의 세계예요)</td><td>마우스로 이어요. 다루는 대상도 텍스트 LLM이 아니라 그림 생성이에요</td></tr>
         <tr><td>n8n</td><td>노코드 워크플로 자동화 도구 (<a href="n8n-agent-delegation-and-if-node.html">IF 노드로 갈림길 만들기</a>)</td><td>셋 중 생김새가 가장 닮았지만 카테고리가 달라요. <a href="#n8n-vs-langgraph">바로 아래</a>에서 따로 봐요</td></tr>
+        <tr><td>Flowise</td><td>LangChain의 부품(모델·메모리·도구·벡터 저장소)을 화면에서 상자로 놓고 이어 돌리는 오픈소스 도구</td><td>"LangChain을 마우스로 조립하는 그림판"이에요. 개발자가 코드 대신 화면으로 그릴 때 써요. 최근 판(Agentflow)은 공유 State와 되돌림 선까지 지원해서 넷 중 LangGraph에 제일 가까워요</td></tr>
+        <tr><td>Dify</td><td>지식베이스(문서 넣고 검색), 프롬프트 편집기, 워크플로 화면, 배포·로그·권한까지 한 덩어리로 묶은 LLM 앱 제작 플랫폼</td><td>LangChain을 안 쓰고 자체 엔진이에요. 노드가 "LLM 호출·문서 검색·HTTP 요청·반복"처럼 업무 단위라서 쓰는 느낌은 n8n에 가깝고, 챗봇을 웹 앱이나 API로 바로 내놓는 데 강해요. 저는 아직 안 써 봐서 문서를 읽고 정리한 거예요</td></tr>
         <tr><td>GraphRAG</td><td>문서에서 뽑은 개체와 관계를 지식 그래프로 저장해 검색하는 기법</td><td>여기서 graph는 <strong>지식의 구조</strong>예요. LangGraph의 graph는 <strong>실행 순서</strong>고요. 이 모듈 뒤쪽에서 배워요</td></tr>
       </tbody>
     </table>
@@ -121,8 +123,10 @@
         <tr><td>카테고리</td><td>워크플로 자동화 도구 — <a href="what-is-automation-workflow-agent.html">자동화·워크플로·에이전트 글</a>의 도구 표에서 내비 경로 쪽에 놓았던 도구예요</td><td>에이전트 프레임워크 — 위에서 본 CrewAI·<wbr>AutoGen·<wbr>Claude Agent SDK와 같은 줄이에요</td></tr>
         <tr><td>만든 목적</td><td>"메일이 오면 표에 옮기고 슬랙에 알린다"처럼 사람이 정해 둔 순서를, 메일 도착이나 매일 아침 9시 같은 시작 신호(트리거)가 올 때마다 그대로 되풀이하기</td><td>LLM이 도구 결과를 보고 다음 행동을 고르는 반복을, State를 들고 끝날 때까지 통제하며 돌리기</td></tr>
         <tr><td>흐름 짜는 방식</td><td>브라우저 화면에서 노드를 끌어다 선으로 이어요</td><td>파이썬 코드로 State·Node·Edge를 적어요</td></tr>
+        <tr><td>노드가 보는 데이터</td><td>컨베이어 벨트예요. 앞 노드가 내보낸 결과(항목 묶음)가 다음 노드의 입력이 되고, 노드는 기본적으로 바로 앞 노드 결과만 봐요. 다섯 칸 전 값이 필요하면 그 노드를 이름으로 지목해 꺼내 오거나 Set 노드로 계속 들고 다녀야 해요</td><td>화이트보드예요. State 하나를 모든 노드가 통째로 읽고, 고칠 칸만 돌려줘요. 다섯 칸 전 노드가 적어 둔 값도 State에 그대로 있어요(<a href="#merge-rules">아래 State 합치기 규칙</a>)</td></tr>
+        <tr><td>반복(루프)</td><td>돼요. Loop Over Items 노드로 항목마다 돌리거나, IF 노드의 출력을 앞 노드로 되돌려 이으면 돼요. 다만 벨트라서 바퀴마다 앞 노드 결과만 넘어오고, "지금까지 모은 것"은 따로 들고 다녀야 해요</td><td>조건부 엣지로 앞 노드에 되돌려요(<a href="#build-branch">아래 직접 만들기 ②</a>). 바퀴마다 쌓이는 값은 State 합치기 규칙이 알아서 이어 붙여요</td></tr>
         <tr><td>외부 서비스 연결</td><td>자주 쓰는 서비스는 미리 만들어진 노드가 있어서, 노드를 고르고 화면에서 계정만 연결하면 돼요</td><td>서비스가 프로그램용으로 열어 둔 창구(API)를 부르는 함수를 직접 짜서 도구로 붙여요</td></tr>
-        <tr><td>LLM 판단 범위</td><td>사람이 그린 흐름 속 AI Agent 노드 한 칸이에요. 칸 안에서는 LLM이 도구를 고르지만, 칸 밖의 순서는 화면에 그린 선을 따라가요</td><td>그래프 전체를 LLM이 다음 걸음을 고르는 루프로 짤 수도 있고(<a href="langgraph-branches-and-tool-loop.html#tool-loop">다음 편의 직접 만들기 ③</a>), 규칙으로 못 박을 수도 있어요(직접 만들기 ①·②)</td></tr>
+        <tr><td>LLM 판단 범위</td><td>사람이 그린 흐름 속 AI Agent 노드 한 칸이에요. 칸 안에서는 LLM이 도구를 고르지만, 칸 밖의 순서는 화면에 그린 선을 따라가요. 칸 안의 도구 고르기 반복은 봉인돼 있어서, 그 반복 중간에 "검토" 같은 내 노드를 끼울 수는 없어요</td><td>그래프 전체를 LLM이 다음 걸음을 고르는 루프로 짤 수도 있고(<a href="langgraph-branches-and-tool-loop.html#tool-loop">다음 편의 직접 만들기 ③</a>), 규칙으로 못 박을 수도 있어요(직접 만들기 ①·②)</td></tr>
         <tr><td>시작 문턱</td><td>코드 없이 시작할 수 있어요</td><td>코드를 읽고 쓸 줄 알아야 해요</td></tr>
       </tbody>
     </table>
