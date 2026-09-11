@@ -94,13 +94,13 @@
     <p>정리하면 LLM은 "날짜 계산이 필요하니 이 도구를 이 값으로 부르자"까지만 판단하고, 계산은 코드가 맡아요. 이 역할 분담이 뒤에서 조립할 도구 루프의 출발점이에요. 다만 도구를 늘릴수록 모델이 읽어야 할 도구 설명도 함께 쌓이니(<a href="mcp-skill-context-and-search.html">도구가 많아지면 생기는 문맥 부담 — Tool Search와 Code Mode</a>), 틀리면 곤란한 계산부터 빼는 게 순서예요. 둘의 차이는 글 끝 <a href="#try">직접 해보기</a> 2번에서 재 볼 수 있어요.</p>
 
     <h2><span class="hl">LangGraph는 어느 집 식구인가</span> — LangChain·LangSmith</h2>
-    <p>강의 코드를 보면 import 줄에 <code>langchain_</code>과 <code>langgraph</code>가 섞여 나와요. 둘은 경쟁 관계가 아니라 같은 회사(LangChain Inc.)가 역할을 나눠 만든 제품이에요.</p>
+    <p>강의 코드를 보면 import 줄에 <code>langchain_</code>과 <code>langgraph</code>가 섞여 나와요. 둘은 경쟁 관계가 아니라 같은 회사(LangChain Inc.)가 역할을 나눠 만든 제품이에요. 표의 오른쪽 칸은 이 글의 코드에서 각 제품을 어떤 이름으로 만나게 되는지예요.</p>
     <table>
-      <thead><tr><th>이름</th><th>맡은 일</th><th>이 글에서 쓰는 곳</th></tr></thead>
+      <thead><tr><th>이름</th><th>맡은 일</th><th>이 글 코드에서 만나는 이름</th></tr></thead>
       <tbody>
-        <tr><td><strong>LangChain</strong></td><td><strong>부품</strong> — 모델 연결, 메시지 형식, 도구 정의, 문서 로더, 벡터스토어</td><td><code>ChatOpenAI</code>, <code>@tool</code></td></tr>
-        <tr><td><strong>LangGraph</strong></td><td><strong>배선</strong> — 부품을 어떤 순서로 돌릴지, 분기·반복·상태</td><td><code>StateGraph</code>, <code>ToolNode</code></td></tr>
-        <tr><td><strong>LangSmith</strong></td><td><strong>관측</strong> — 실행 기록과 평가를 보여 주는 웹 서비스</td><td><a href="langgraph-five-workflow-patterns.html#langsmith">다음 편</a>에서 켜 봐요</td></tr>
+        <tr><td><strong>LangChain</strong></td><td><strong>부품</strong> — 모델 연결, 메시지 형식, 도구 정의, 문서 로더, 벡터스토어</td><td><code>ChatOpenAI</code> — OpenAI 모델을 부르는 부품<br><code>@tool</code> — 파이썬 함수를 모델이 쓸 수 있는 도구로 바꾸는 표시<br>둘 다 <a href="#tool-loop">직접 만들기 ③</a>에서 나와요</td></tr>
+        <tr><td><strong>LangGraph</strong></td><td><strong>배선</strong> — 부품을 어떤 순서로 돌릴지, 분기·반복·상태</td><td><code>StateGraph</code> — 흐름 그림(그래프)을 짜는 틀이라 <a href="#build-line">직접 만들기 ①</a>부터 계속 써요<br><code>ToolNode</code> — 모델이 부탁한 도구를 대신 실행해 주는 노드로, 직접 만들기 ③에서 나와요</td></tr>
+        <tr><td><strong>LangSmith</strong></td><td><strong>관측</strong> — 실행 기록과 평가를 보여 주는 웹 서비스</td><td>이 글 코드에는 안 나와요. 코드가 아니라 설정 몇 줄로 켜는 서비스라 <a href="langgraph-five-workflow-patterns.html#langsmith">다음 편</a>에서 켜 봐요</td></tr>
       </tbody>
     </table>
     <p>LangChain은 <a href="prompt-execution-three-paths.html">프롬프트 세 경로 직접 실행해보기</a>에서 메시지 객체를 넘기는 모습으로 한 번 봤어요. 초기 LangChain의 "체인"은 <code>prompt | model | parser</code>처럼 <strong>한 줄로만 흐르는 파이프라인</strong>이었어요. 되돌아가는 반복이나 갈림길, 중간 상태 저장에 약해서 2024년에 LangGraph가 따로 나왔고, 지금은 LangChain의 에이전트 기능도 속으로는 LangGraph 위에서 돌아가요.</p>
@@ -207,7 +207,7 @@
       <text x="450" y="310" font-family="var(--font-body)" font-size="11" fill="var(--muted)">라우터가 하나를 고르는 선 (조건부 엣지)</text>
     </svg>
 
-    <h2><span class="hl">직접 만들기 ①</span> — LLM 없이 일직선 그래프</h2>
+    <h2 id="build-line"><span class="hl">직접 만들기 ①</span> — LLM 없이 일직선 그래프</h2>
     <p>개념 설명보다 한 번 돌려 보는 게 빨라요. 먼저 설치예요. 강의 교안은 langgraph 1.2, langchain-core 1.6, langchain 1.4, langchain-openai 1.6에서 검증됐고, 제가 오늘 새로 설치한 버전도 같은 줄기(1.2.11·1.6.2·1.4.0·1.6.2)였어요. 파이썬 코드 자체가 낯설다면 <a href="reading-python-code-basics.html">파이썬 코드 눈으로 읽기</a>를 먼저 보고 오면 편해요.</p>
     <p class="run-tag">실행: 로컬 터미널 <span class="run-tag-why">— 가상 환경을 켠 상태에서 한 번만</span></p>
     <pre><code>pip install -U langgraph langchain langchain-openai</code></pre>
