@@ -50,7 +50,7 @@
       </dl>
     </div>
 
-    <p>오늘부터 "에이전트 팀 꾸리기"라는 새 모듈이 시작됐어요. 첫 주제가 LangGraph였는데, 솔직히 이름을 처음 봤을 때는 이미지 생성할 때 쓰는 ComfyUI랑 헷갈렸어요. 둘 다 "노드를 선으로 잇는다"는 말이 나오거든요. 제 기록을 뒤져 보니 LangGraph는 <a href="multi-agent-three-runs-abc.html">멀티 에이전트 실험</a> 때 후보로만 검토하고 쓰지 않았던 도구였어요.</p>
+    <p>오늘부터 "에이전트 팀 꾸리기"라는 새 모듈이 시작됐어요. 첫 주제가 LangGraph였어요. "노드를 선으로 잇는다"는 설명만 들으면 이미지 생성할 때 쓰는 ComfyUI와 비슷해 보이는데, 다루는 대상도 잇는 방법도 달라요(<a href="#look-alikes">아래 표</a>). 제 기록을 뒤져 보니 LangGraph는 <a href="multi-agent-three-runs-abc.html">멀티 에이전트 실험</a> 때 후보로만 검토하고 쓰지 않았던 도구였어요.</p>
     <p>이번 편에서는 LangGraph가 무엇이고 어디 집 식구인지, 그리고 그래프를 만드는 세 가지 재료와 도구 루프까지를 다뤄요. 흐름의 대표적인 모양 다섯 가지는 <a href="langgraph-five-workflow-patterns.html">다음 편</a>에서 이어서 봅니다.</p>
 
     <h2 id="workflow-vs-agent"><span class="hl">먼저 낱말 정리</span> — 에이전트와 워크플로</h2>
@@ -107,9 +107,9 @@
     <p>패키지 이름이 여러 개인 이유도 이거예요. 기본 자료형은 <code>langchain-core</code>, 모델 회사별 연결은 <code>langchain-openai</code>·<code>langchain-anthropic</code>·<code>langchain-google-genai</code>, 외부 서비스 연동 모음은 <code>langchain-community</code>에 들어 있어요. 한 가지 주의할 게 있어요. 옛날 자료에 나오는 <code>LLMChain</code>, <code>AgentExecutor</code>, <code>initialize_agent</code>는 1.0부터 <code>langchain-classic</code>이라는 별도 패키지로 빠졌어요. 검색해서 찾은 코드가 import 에러를 내면 버전부터 의심해 보세요.</p>
     <p>그럼 수많은 <strong>프레임워크<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup></strong>(CrewAI, AutoGen, Claude Agent SDK…) 중에 왜 LangGraph였을까요. 강의가 든 이유는 셋이에요. 특정 모델 회사에 묶이지 않고, 흐름을 블랙박스로 감추지 않고 State·Node·Edge로 개발자가 직접 그리게 하고, 환경 변수 몇 줄로 LangSmith 관측을 붙일 수 있다는 점이요.</p>
     <p>여기서 제 기록 하나를 고쳐 적어야겠어요. <a href="multi-agent-three-runs-abc.html">멀티 에이전트 실험</a> 때는 "LangGraph를 쓰면 다음 행동을 누가 정하는지가 프레임워크 안에 가려진다"고 보고 Claude Agent SDK를 골랐어요. 막상 배워 보니 <strong>직접 그린 그래프는 오히려 그 결정 주체를 선 하나하나로 드러내는 쪽</strong>이었어요. 가려지는 건 뒤에 나오는 <code>create_agent</code> 같은 미리 만들어진 부품을 쓸 때예요.</p>
-    <p>이름 때문에 헷갈리기 쉬운 것들도 정리해 둘게요.</p>
-    <table>
-      <thead><tr><th>이름</th><th>정체</th><th>LangGraph와 다른 점</th></tr></thead>
+    <p>LangGraph와 헷갈리기 쉬운 것들도 정리해 둘게요. ComfyUI와 n8n은 노드를 선으로 잇는 <strong>생김새</strong>가 닮았고, GraphRAG는 <strong>이름</strong>에 graph가 들어가서 헷갈려요.</p>
+    <table id="look-alikes">
+      <thead><tr><th>헷갈리는 것</th><th>정체</th><th>LangGraph와 다른 점</th></tr></thead>
       <tbody>
         <tr><td>ComfyUI</td><td>이미지·영상 생성 AI를 노드 상자로 이어 돌리는 화면 도구 (<a href="choosing-image-generation-tools.html">이미지 생성 도구 고르기</a>의 세계예요)</td><td>마우스로 이어요. 다루는 대상도 텍스트 LLM이 아니라 그림 생성이에요</td></tr>
         <tr><td>n8n</td><td>노코드 워크플로 자동화 도구 (<a href="n8n-agent-delegation-and-if-node.html">IF 노드로 갈림길 만들기</a>)</td><td>셋 중 생김새가 가장 닮았지만 카테고리가 달라요. <a href="#n8n-vs-langgraph">바로 아래</a>에서 따로 봐요</td></tr>
