@@ -21,12 +21,13 @@
     .tm-node:hover .tm-box { fill-opacity: 0.28; }
     .tm-node:hover .tm-title { fill: var(--nc); }
     figure.tm-diagram { margin: 1.2rem 0 0.4rem; }
-    /* 사다리③은 박스 5개라 화면 폭에 맞춰 줄어드는 배율이 다른 사다리보다
-       커서(958유닛 캔버스), 같은 12.5/10px 글자가 유독 작게 보인다.
-       박스·좌표는 그대로 두고 이 도식 안 글자 크기만 한 단계 올려서
-       다른 사다리와 비슷한 최종 크기로 보이게 한다. */
-    svg[aria-labelledby="tm-c-title"] .tm-title { font-size: 16.4px; }
-    svg[aria-labelledby="tm-c-title"] .tm-tag { font-size: 12.5px; }
+    /* 사다리③은 박스 6개라(1152유닛 캔버스) 화면 폭에 맞춰 줄어드는 배율이
+       다른 사다리(764유닛)보다 커서, 같은 12.5/10/10.5px 글자가 유독 작게 보인다.
+       배율 차이(1152/764 ≈ 1.51)만큼 이 도식 안 글자만 키워서 다른 사다리와
+       비슷한 최종 크기로 보이게 하고, 커진 글자가 들어가도록 박스 높이도 늘렸다. */
+    svg[aria-labelledby="tm-c-title"] .tm-title { font-size: 18.9px; }
+    svg[aria-labelledby="tm-c-title"] .tm-tag { font-size: 15.1px; }
+    svg[aria-labelledby="tm-c-title"] .tm-arrowcap { font-size: 15.8px; }
   </style>
 </head>
 <body>
@@ -221,57 +222,65 @@
     </figure>
 
     <h2><span class="hl">사다리 ③ — 일을 못 맡길 때</span></h2>
-    <p>한 번 시키고 끝나는 일과 매주 반복되는 일은 맡기는 방법이 달라져요. 반복될수록, 다른 데이터가 필요할수록, 일이 커질수록 오른쪽 칸이에요.</p>
+    <p>한 번 시키고 끝나는 일과 매주 반복되는 일은 맡기는 방법이 달라져요. 반복될수록, 다른 데이터가 필요할수록, 일이 커질수록 오른쪽 칸이에요. 도구와 MCP까지 쥐여 줬는데도 한 번에 안 끝나면, 에이전트를 여럿 두기 전에 먼저 <a href="langgraph-state-node-edge.html">일의 순서를 코드로 그려 줘요</a>(⑤ 워크플로). 가장 단순한 방법부터 쓰고 복잡도는 필요할 때만 더하라는 Anthropic의 권고와 같은 순서예요.</p>
 
     <figure class="tm-diagram">
-      <svg viewBox="0 0 958 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="tm-c-title">
-        <title id="tm-c-title">프롬프트에서 스킬, 도구, MCP, 멀티 에이전트로 넘어가는 사다리</title>
+      <svg viewBox="0 0 1152 140" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="tm-c-title">
+        <title id="tm-c-title">프롬프트에서 스킬, 도구, MCP, 워크플로, 멀티 에이전트로 넘어가는 사다리</title>
         <defs>
           <marker id="tm-am-c" markerWidth="9" markerHeight="9" refX="4.5" refY="4.5" orient="auto">
             <path d="M0,0 L9,4.5 L0,9 z" fill="var(--border)"/>
           </marker>
         </defs>
 
-        <path d="M166,68 L208,68" class="tm-arrow" marker-end="url(#tm-am-c)"/>
-        <text x="187" y="16" class="tm-arrowcap">안 되면</text>
-        <path d="M360,68 L402,68" class="tm-arrow" marker-end="url(#tm-am-c)"/>
-        <text x="381" y="16" class="tm-arrowcap">그래도 안 되면</text>
-        <path d="M554,68 L596,68" class="tm-arrow" marker-end="url(#tm-am-c)"/>
-        <text x="575" y="16" class="tm-arrowcap">그래도 안 되면</text>
-        <path d="M748,68 L790,68" class="tm-arrow" marker-end="url(#tm-am-c)"/>
-        <text x="769" y="16" class="tm-arrowcap">그래도 안 되면</text>
+        <path d="M166,72 L208,72" class="tm-arrow" marker-end="url(#tm-am-c)"/>
+        <text x="187" y="21" class="tm-arrowcap">안 되면</text>
+        <path d="M360,72 L402,72" class="tm-arrow" marker-end="url(#tm-am-c)"/>
+        <text x="381" y="21" class="tm-arrowcap">그래도 안 되면</text>
+        <path d="M554,72 L596,72" class="tm-arrow" marker-end="url(#tm-am-c)"/>
+        <text x="575" y="21" class="tm-arrowcap">그래도 안 되면</text>
+        <path d="M748,72 L790,72" class="tm-arrow" marker-end="url(#tm-am-c)"/>
+        <text x="769" y="21" class="tm-arrowcap">그래도 안 되면</text>
+        <path d="M942,72 L984,72" class="tm-arrow" marker-end="url(#tm-am-c)"/>
+        <text x="963" y="21" class="tm-arrowcap">그래도 안 되면</text>
 
         <a href="what-is-ai-agent.html" class="tm-node"><g style="--nc:var(--folder-1)">
-          <rect class="tm-box" x="16" y="34" width="150" height="68" rx="14"/>
-          <text class="tm-title" x="91" y="60">① 그냥 시키기</text>
-          <text class="tm-tag" x="91" y="78">프롬프트</text>
+          <rect class="tm-box" x="16" y="34" width="150" height="76" rx="14"/>
+          <text class="tm-title" x="91" y="66">① 그냥 시키기</text>
+          <text class="tm-tag" x="91" y="90">프롬프트</text>
         </g></a>
 
         <a href="ai-skills-and-rules-files.html" class="tm-node"><g style="--nc:var(--folder-2)">
-          <rect class="tm-box" x="210" y="34" width="150" height="68" rx="14"/>
-          <text class="tm-title" x="285" y="60">② 스킬로 외우기</text>
-          <text class="tm-tag" x="285" y="78">규칙 파일</text>
+          <rect class="tm-box" x="210" y="34" width="150" height="76" rx="14"/>
+          <text class="tm-title" x="285" y="66">② 스킬로 외우기</text>
+          <text class="tm-tag" x="285" y="90">규칙 파일</text>
         </g></a>
 
         <a href="agent-tool-design-and-harness.html" class="tm-node"><g style="--nc:var(--folder-3)">
-          <rect class="tm-box" x="404" y="34" width="150" height="68" rx="14"/>
-          <text class="tm-title" x="479" y="60">③ 도구 쥐기</text>
-          <text class="tm-tag" x="479" y="78">도구 설계</text>
+          <rect class="tm-box" x="404" y="34" width="150" height="76" rx="14"/>
+          <text class="tm-title" x="479" y="66">③ 도구 쥐기</text>
+          <text class="tm-tag" x="479" y="90">도구 설계</text>
         </g></a>
 
         <a href="mcp-usb-c-for-ai.html" class="tm-node"><g style="--nc:var(--folder-4)">
-          <rect class="tm-box" x="598" y="34" width="150" height="68" rx="14"/>
-          <text class="tm-title" x="673" y="60">④ MCP 연결</text>
-          <text class="tm-tag" x="673" y="78">MCP</text>
+          <rect class="tm-box" x="598" y="34" width="150" height="76" rx="14"/>
+          <text class="tm-title" x="673" y="66">④ MCP 연결</text>
+          <text class="tm-tag" x="673" y="90">MCP</text>
         </g></a>
 
-        <a href="multi-agent-four-structures.html" class="tm-node"><g style="--nc:var(--folder-5)">
-          <rect class="tm-box" x="792" y="34" width="150" height="68" rx="14"/>
-          <text class="tm-title" x="867" y="60">⑤ 여럿 나누기</text>
-          <text class="tm-tag" x="867" y="78">멀티 에이전트</text>
+        <a href="langgraph-five-workflow-patterns.html" class="tm-node"><g style="--nc:var(--folder-5)">
+          <rect class="tm-box" x="792" y="34" width="150" height="76" rx="14"/>
+          <text class="tm-title" x="867" y="66">⑤ 흐름 짜 주기</text>
+          <text class="tm-tag" x="867" y="90">워크플로</text>
+        </g></a>
+
+        <a href="multi-agent-four-structures.html" class="tm-node"><g style="--nc:var(--folder-6)">
+          <rect class="tm-box" x="986" y="34" width="150" height="76" rx="14"/>
+          <text class="tm-title" x="1061" y="66">⑥ 여럿 나누기</text>
+          <text class="tm-tag" x="1061" y="90">멀티 에이전트</text>
         </g></a>
       </svg>
-      <figcaption>프롬프트 → 규칙 파일 → 도구 → MCP → 멀티 에이전트. 칸이 늘어날수록 내가 매번 챙길 일도 늘어요.</figcaption>
+      <figcaption>프롬프트 → 규칙 파일 → 도구 → MCP → 워크플로 → 멀티 에이전트. 칸이 늘어날수록 내가 매번 챙길 일도 늘어요.</figcaption>
     </figure>
 
     <h2><span class="hl">사다리 ④ — 도구 하나 고를 때</span></h2>
