@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>다섯 가지 흐름 모양 ② — 오케스트레이터-워커·평가자-최적화자 (7) - Tigermorning</title>
+  <meta name="description" content="갈래 수를 돌려 보기 전에는 모르는 두 모양을 LangGraph로 만듭니다. Send로 워커 수를 실행 중에 정하는 오케스트레이터-워커, 통과할 때까지 되돌리는 평가자-최적화자. 어떤 모양을 고를지 판단하는 질문 순서와, 에이전트로 옮길 근거가 어떤 모습인지까지 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="다섯 가지 흐름 모양 ② — 오케스트레이터-워커·평가자-최적화자 (7)">
+  <meta property="og:description" content="몇 갈래일지 LLM이 정하고, 몇 바퀴 돌지는 결과를 봐야 압니다. 그래도 갈 수 있는 길은 전부 그려져 있어요.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/langgraph-patterns-orchestrator-evaluator.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">다섯 가지 흐름 모양 ②</span> — 오케스트레이터-워커·평가자-최적화자 (7)</h1>
+    <p class="post-date">2026. 9. 11.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="langgraph-five-workflow-patterns.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">다섯 가지 흐름 모양 ① — 체이닝·라우팅·병렬화 (6)</span>
+    </a>
+
+    <p class="one-liner">뒤의 두 모양은 갈래 수나 바퀴 수를 코드에 적어 둘 수 없어서, 몇 개일지는 LLM이 정하고(오케스트레이터-워커) 몇 바퀴일지는 결과를 보고 정하는(평가자-최적화자) 흐름이다.</p>
+
+    <div class="why-read" id="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>어디쯤인가</dt>
+        <dd><a href="posts.html#cat-agent-system">8단계</a> › <a href="posts.html#langgraph-team">에이전트 팀 꾸리기 — LangGraph</a> — 7번째 글 (전 7편, 마지막). 앞의 세 모양은 <a href="langgraph-five-workflow-patterns.html">지난 편</a>이에요.</dd>
+        <dt>뭐를 할 수 있나</dt>
+        <dd><code>Send</code>로 워커 수를 실행 중에 정하는 그래프와, 통과할 때까지 되돌리는 평가 루프를 만들 수 있어요. 그리고 내 일에 다섯 모양 중 무엇이 맞는지 질문 순서를 따라 고를 수 있어요.</dd>
+        <dt>왜 배우나</dt>
+        <dd>병렬화와 오케스트레이터-워커는 그림이 거의 같아 보여요. 갈래 수를 <strong>내가 코드에 적었는지, 돌려 봐야 아는지</strong>가 갈림점인데, 이걸 모르면 매번 노드를 손으로 늘리게 돼요.</dd>
+        <dt>왜 중요한가</dt>
+        <dd>두 모양 다 호출 수가 미리 정해지지 않아요. 오케스트레이터가 섹션 20개를 계획하면 호출은 21번이 되고, 평가 루프는 바퀴마다 2호출씩 늘어요. 상한과 정상 출구를 그래프에 그려 두지 않으면 요금과 시간이 열려 있는 셈이에요.</dd>
+        <dt>어디에 쓰나</dt>
+        <dd>분량이 입력마다 다른 보고서·기획서 쓰기 · 초안을 기준에 맞을 때까지 고쳐 쓰기 · 지금 쓰는 흐름을 에이전트로 옮길지 판단하기</dd>
+      </dl>
+    </div>
+
+    <p><a href="langgraph-five-workflow-patterns.html">지난 편</a>에서 앞의 세 모양을 만들었어요. 셋 다 <strong>갈래 수가 코드에 적혀 있었어요</strong>. 체이닝은 한 줄, 라우팅은 미리 적어 둔 갈래 중 하나, 병렬화는 노드 세 개요. 이번 편의 두 모양은 그 수를 <strong>돌려 보기 전에는 모르는</strong> 경우를 다뤄요.</p>
+    <p>그런데도 둘 다 여전히 워크플로예요. 워커가 몇이 될지, 몇 바퀴를 돌지는 실행 중에 정해지지만 <strong>갈 수 있는 길의 모양</strong>은 개발자가 다 그려 뒀거든요. <a href="langgraph-what-and-why.html#key-who-decides">1편의 기준</a>으로 보면 여전히 왼쪽이에요. 이 편 마지막에서 그 왼쪽을 벗어나야 하는 순간, 즉 에이전트로 옮길 근거가 어떤 모습인지까지 봐요.</p>
+
+    <h2 id="analogy"><span class="hl">비유</span> — 주방의 저녁, 연회 주문과 시식 담당</h2>
+    <p><a href="langgraph-five-workflow-patterns.html">지난 편의 그 주방</a>이에요. 점심의 코스 요리는 메뉴가 정해져 있었지만, 저녁엔 사정이 달라요.</p>
+    <p>단체 손님이 들어와요. 인원이 몇인지, 뭘 못 먹는 사람이 있는지는 주문서를 봐야 알아요. 헤드셰프가 주문서를 읽고 <strong>그 자리에서 메뉴 수를 정해요</strong>. "오늘은 다섯 접시." 그리고 요리사마다 쪽지를 한 장씩 건네요. 쪽지에는 자기가 맡은 요리 하나만 적혀 있고, 다른 요리사가 뭘 하는지는 안 적혀 있어요. 다 만들어지면 한 상에 모아 내보내요.</p>
+    <p>내보내기 전에 <strong>시식 담당</strong>이 맛을 봐요. 기준에 못 미치면 조리사에게 되돌리면서 <strong>무엇이 부족한지 적어</strong> 보내요. 조리사는 그 메모를 보고 고쳐요. 세 번을 넘기면 더 붙들지 않고 사장님을 불러요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>헤드셰프가 주문서를 읽고 그 자리에서 메뉴 수를 정하기</td><td><strong>④ 오케스트레이터</strong> — 하위 작업의 <strong>개수</strong>를 LLM이 실행 중에 정해요</td></tr>
+        <tr><td>요리사마다 건네는 쪽지 한 장 (자기 것만 적혀 있음)</td><td><code>Send</code> — 워커는 전표(State) 전체가 아니라 자기 쪽지만 받아요 (<a href="#send-note">아래</a>)</td></tr>
+        <tr><td>다 만들어진 접시를 한 상에 모으기</td><td><strong>신서사이저</strong> — 워커 결과를 리듀서로 모아 합치는 노드</td></tr>
+        <tr><td>시식 담당이 조리사에게 — "간이 약해요"라고 <strong>적어서</strong> 되돌리기</td><td><strong>⑤ 평가자</strong> — 되돌아가는 선에 <strong>피드백</strong>을 실어야 다음 바퀴가 달라져요</td></tr>
+        <tr><td>세 번 넘으면 사장님 호출</td><td><strong>정상 출구</strong> — 상한에만 맡기지 않고 그래프 안에 출구를 그려요 (<a href="#loop-stop">아래</a>)</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 저녁 주방에서도 <strong>동선표 자체는 그대로예요</strong> — 헤드셰프가 정하는 건 접시 수이고, 시식 담당이 정하는 건 바퀴 수일 뿐, 요리사가 제멋대로 새 동선을 만드는 장면은 없어요.</p>
+    <p>다만 여기서 비유가 끊기는 점이 있어요. 사람 요리사는 쪽지만 받아도 옆을 힐끗 보고 눈치껏 맞추지만, <code>Send</code>로 불린 워커는 <strong>정말 자기 쪽지 말고는 아무것도 못 봐요</strong>. 필요한 정보는 쪽지에 전부 적어 보내야 해요.</p>
+
+    <h2 id="big-picture"><span class="hl">전체 흐름</span> — 두 모양을 한 장에</h2>
+    <p>두 모양의 생김새를 먼저 볼게요. <strong>읽는 법:</strong> 점선은 개수나 방향이 <strong>실행 중에 정해지는</strong> 선이고, 실선은 언제나 지나가는 선이에요. ④의 워커 상자가 겹쳐 그려진 건 몇 개가 될지 그림을 그리는 시점에는 모른다는 뜻이에요.</p>
+    <svg viewBox="0 0 760 330" role="img" aria-label="위쪽은 오케스트레이터가 Send로 개수를 모르는 워커들을 펼치고 신서사이저가 합치는 그림, 아래쪽은 생성과 평가가 오가며 통과하면 끝나고 상한을 넘으면 사람을 부르는 평가 루프 그림">
+      <defs>
+        <marker id="lgp1" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+          <path d="M0,0 L9,4.5 L0,9 z" fill="var(--muted)"/>
+        </marker>
+        <marker id="lgp2" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+          <path d="M0,0 L9,4.5 L0,9 z" fill="var(--accent)"/>
+        </marker>
+      </defs>
+
+      <text x="14" y="26" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">④ 오케스트레이터-워커 — 개수를 LLM이 정해요</text>
+      <rect x="14" y="44" width="132" height="46" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="80" y="64" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--accent)">orchestrator</text>
+      <text x="80" y="81" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">몇 개일지 계획</text>
+
+      <rect x="232" y="32" width="132" height="34" rx="6" fill="none" stroke="var(--border)"/>
+      <rect x="244" y="48" width="132" height="34" rx="6" fill="none" stroke="var(--border)"/>
+      <rect x="256" y="64" width="132" height="34" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="322" y="86" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)">worker × N</text>
+      <text x="322" y="116" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">각자 쪽지 하나만 받아요</text>
+
+      <rect x="440" y="44" width="132" height="46" rx="8" fill="none" stroke="var(--border)"/>
+      <text x="506" y="64" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)">synthesizer</text>
+      <text x="506" y="81" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">리듀서로 합치기</text>
+
+      <rect x="644" y="48" width="70" height="38" rx="19" fill="none" stroke="var(--border)"/>
+      <text x="679" y="72" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">END</text>
+
+      <line x1="146" y1="62" x2="228" y2="50" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#lgp1)"/>
+      <text x="150" y="42" font-family="var(--font-body)" font-size="10" fill="var(--muted)">Send × N</text>
+      <line x1="388" y1="74" x2="436" y2="68" stroke="var(--muted)" stroke-width="2" marker-end="url(#lgp1)"/>
+      <line x1="572" y1="67" x2="640" y2="67" stroke="var(--muted)" stroke-width="2" marker-end="url(#lgp1)"/>
+
+      <line x1="14" y1="150" x2="746" y2="150" stroke="var(--border)" stroke-width="1"/>
+
+      <text x="14" y="186" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">⑤ 평가자-최적화자 — 바퀴 수를 결과가 정해요</text>
+      <rect x="14" y="204" width="132" height="46" rx="8" fill="none" stroke="var(--border)"/>
+      <text x="80" y="224" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)">generate</text>
+      <text x="80" y="241" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">초안 쓰기·고쳐 쓰기</text>
+
+      <rect x="232" y="204" width="132" height="46" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="298" y="224" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--accent)">evaluate</text>
+      <text x="298" y="241" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">기준에 맞나 + 라우터</text>
+
+      <rect x="450" y="176" width="140" height="42" rx="8" fill="none" stroke="var(--border)"/>
+      <text x="520" y="202" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">통과 → 내보내기</text>
+
+      <rect x="450" y="234" width="140" height="42" rx="8" fill="none" stroke="var(--border)"/>
+      <text x="520" y="253" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">상한 초과 →</text>
+      <text x="520" y="268" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">사람 호출 (정상 출구)</text>
+
+      <rect x="660" y="206" width="70" height="38" rx="19" fill="none" stroke="var(--border)"/>
+      <text x="695" y="230" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">END</text>
+
+      <line x1="146" y1="227" x2="228" y2="227" stroke="var(--muted)" stroke-width="2" marker-end="url(#lgp1)"/>
+      <line x1="364" y1="218" x2="446" y2="199" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#lgp1)"/>
+      <line x1="364" y1="238" x2="446" y2="253" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#lgp1)"/>
+      <line x1="590" y1="197" x2="656" y2="216" stroke="var(--muted)" stroke-width="2" marker-end="url(#lgp1)"/>
+      <line x1="590" y1="255" x2="656" y2="236" stroke="var(--muted)" stroke-width="2" marker-end="url(#lgp1)"/>
+
+      <path d="M 298 250 L 298 296 L 80 296 L 80 254" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#lgp2)"/>
+      <text x="306" y="292" font-family="var(--font-body)" font-size="11" fill="var(--accent)">미달 → 피드백을 실어서 되돌리기 (이게 없으면 다음 바퀴도 같아요)</text>
+    </svg>
+    <p>두 그림 모두 상자와 선은 제가 미리 다 그렸어요. 실행할 때 정해지는 건 ④의 <strong>N</strong>과 ⑤의 <strong>바퀴 수</strong>뿐이에요.</p>
+
+    <h2 id="orchestrator">④ <span class="hl">오케스트레이터-워커</span> — 몇 갈래일지 LLM이 정한다</h2>
+    <p>병렬화에는 숨은 전제가 있었어요. 하위 작업(나눠 맡길 일 하나하나)의 <strong>개수와 종류를 개발자가 코드를 쓸 때 이미 알아야</strong> 해요. 평가 축이 셋이라 검사 노드도 셋을 미리 그렸죠. 주방으로 치면 검사 담당 셋을 영업 전에 동선표에 그려 둔 거예요.</p>
+    <p>그런데 단체 예약이 들어오면 사정이 달라요. 손님 수를 봐야 메뉴가 몇 개일지 정해지니, 요리사가 몇 명 필요할지 영업 전에는 몰라요. 학습 가이드도 같아요. "이 주제로 가이드를 만들어 줘, 섹션 수는 알아서"라고 하면 섹션이 3개일 수도 7개일 수도 있어요. 그렇다고 영업 중에 동선표에 조리대를 새로 그려 넣을 수도 없어요. 노드를 등록하는 <code>add_node</code>는 <code>compile()</code> 전에만 부를 수 있거든요.</p>
+    <p>그래서 요리사 자리는 동선표에 <strong>하나만</strong> 그려 두고, 헤드셰프가 메뉴를 정한 다음 "이 쪽지 들고 요리사 한 명 더!"를 메뉴 수만큼 외쳐요. 이 외침이 <code>Send</code>예요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 아래 전체 코드에서 한 줄만 떼어 뜯어본 거예요</span></p>
+    <pre><code>Send("cook", {"dish": d})
+     ^^^^^^  ^^^^^^^^^^^
+     (1)     (2)
+# (1) 부를 노드 이름   (2) 그 요리사에게만 건넬 쪽지</code></pre>
+    <p>아래 코드의 <code>assign</code>은 메뉴 목록에서 요리를 하나씩 꺼내(<code>for d in state["menu"]</code>) <code>Send</code>를 하나씩 만들어 목록으로 돌려줘요. 메뉴가 셋이면 <code>Send</code>도 셋이고, 같은 <code>cook</code> 노드가 쪽지를 한 장씩 들고 세 번 동시에 돌아요. 보통 라우터는 "다음은 이 노드" 하고 이름 하나를 돌려주는데, 여기서는 <code>Send</code> 목록을 돌려줘서 "이 노드를 이 쪽지로 N번"이라고 지시하는 거예요.</p>
+    <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— langgraph 설치 후, API 키 없이 돌아가요</span></p>
+    <pre><code>import operator
+from typing import Annotated
+from typing_extensions import TypedDict
+from langgraph.graph import StateGraph, START, END
+from langgraph.types import Send
+
+class Party(TypedDict):
+    guests: int
+    menu: list
+    plates: Annotated[list, operator.add]   # 워커들의 결과를 모으는 칸
+
+class CookInput(TypedDict):                  # 요리사 한 명이 받는 전용 쪽지
+    dish: str
+
+def plan(state: Party):                      # 실제로는 LLM이 메뉴 수를 정하는 자리
+    menu = ["전", "잡채", "갈비", "나물", "떡", "식혜"][: state["guests"] // 2]
+    return {"menu": menu}
+
+def assign(state: Party):
+    return [Send("cook", {"dish": d}) for d in state["menu"]]   # 메뉴 수만큼 요리사 복제
+
+def cook(state: CookInput):
+    return {"plates": [f"{state['dish']} 완성"]}
+
+def serve(state: Party):
+    return {}
+
+b = StateGraph(Party)
+b.add_node("plan", plan)
+b.add_node("cook", cook)
+b.add_node("serve", serve)
+b.add_edge(START, "plan")
+b.add_conditional_edges("plan", assign, ["cook"])
+b.add_edge("cook", "serve")
+b.add_edge("serve", END)
+g = b.compile()
+
+for n in (6, 12):
+    out = g.invoke({"guests": n, "plates": []})
+    print(n, "명 →", len(out["plates"]), "접시:", out["plates"])</code></pre>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 위 코드를 실행했을 때 제 화면에 찍힌 출력이에요</span></p>
+    <pre><code>6 명 → 3 접시: ['전 완성', '잡채 완성', '갈비 완성']
+12 명 → 6 접시: ['전 완성', '잡채 완성', '갈비 완성', '나물 완성', '떡 완성', '식혜 완성']</code></pre>
+    <p>같은 그래프인데 한 번은 요리사가 3명, 한 번은 6명 불렸어요. <code>draw_mermaid()</code>로 찍어 보면 <code>cook</code> 노드는 여전히 하나고 <code>plan -.-&gt; cook</code> 점선 하나뿐이에요. <strong>그림에는 요리사 자리가 하나, 실행할 때 필요한 만큼 불려 나오는</strong> 거예요. 요리사들이 돌려준 <code>plates</code>는 리듀서(<code>operator.add</code>)를 단 칸이라, 세 명이 동시에 적어도 에러 없이 한 목록으로 모여요(<a href="langgraph-five-workflow-patterns.html#parallel">③ 병렬화</a>의 그 장치예요). 이렇게 펼쳐서 각자 처리하고 하나로 모으는 구조를 <strong>맵-리듀스<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup></strong>라고도 불러요.</p>
+
+    <h3 id="send-note">요리사는 전표를 못 봐요 — 쪽지만 받아요</h3>
+    <p>여기서 가장 중요한 성질이 있어요. <code>Send</code>로 불린 요리사는 주방의 전표(State) 전체를 받는 게 아니라 <strong>자기 쪽지만</strong> 받아요. 확인하려고 <code>cook</code>이 받은 걸 찍고, 쪽지에 없는 손님 수(<code>guests</code>)까지 읽어 보게 했어요.</p>
+    <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— 위 코드에서 cook 함수와 맨 아래 실행 줄만 이렇게 바꿔요</span></p>
+    <pre><code>def cook(state: CookInput):
+    print("요리사가 받은 것:", dict(state))
+    print("손님 수를 읽으면:", state["guests"])   # 쪽지에 없는 칸을 읽어 본다
+    return {"plates": [f"{state['dish']} 완성"]}
+
+try:
+    g.invoke({"guests": 6, "plates": []})
+except Exception as e:
+    print("에러:", type(e).__name__, e)</code></pre>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 위 코드를 실행했을 때 제 화면에 찍힌 출력이에요</span></p>
+    <pre><code>요리사가 받은 것: {'dish': '전'}
+요리사가 받은 것: {'dish': '잡채'}
+요리사가 받은 것: {'dish': '갈비'}
+에러: KeyError 'guests'</code></pre>
+    <p>요리사 셋이 받은 건 요리 이름 하나짜리 쪽지뿐이었고, 손님 수를 읽으려는 순간 <code>KeyError</code>로 멈췄어요. <code>cook</code>의 타입을 <code>Party</code>로 바꿔 적어도 결과는 같았어요. 타입 힌트는 표시일 뿐이고, 실제로 들어오는 건 <code>Send</code>에 담은 딕셔너리 그대로거든요.</p>
+    <p>왜 이렇게 만들었을까요? 요리사 셋이 동시에 서로 다른 요리를 맡아야 하는데, 전표의 한 칸에는 값을 하나만 적을 수 있어요. "지금 만들 요리" 칸을 전표에 두면 세 명에게 서로 다른 값을 줄 수가 없죠. 그래서 한 명씩 개인 쪽지를 주는 거예요.</p>
+    <div class="key-point" id="key-send-note">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>9강에서 짚은 내용</p>
+      <p><code>Send("노드 이름", {...})</code>의 두 번째 인자(괄호 안에 넣는 두 번째 값)는 <strong>그 워커 실행 한 번에만 건네는 전용 상태</strong>예요. 이 쪽지는 전표(State)에 옮겨 적히지 않고 그 워커에게만 가요. 워커가 받는 건 이 딕셔너리 그대로라서, 메인 State의 다른 칸(주제, 섹션 목록 등)은 볼 수 없어요. 워커가 알아야 하는 건 전부 이 쪽지에 담아 줘야 해요. 워커가 쓴 결과는 쪽지가 아니라 워커의 반환값으로 따로 돌아와 리듀서가 단 칸에 모여요.</p>
+    </div>
+    <p>강의 실습에서는 "LangGraph의 리듀서와 병렬 실행"이라는 주제를 주고 프롬프트에 "섹션은 3~5개"라는 범위만 줬더니 오케스트레이터가 5개를 골랐어요. 그런데 결과물을 읽어 보면 한계가 드러났대요.</p>
+    <ul>
+      <li><strong>지어내기</strong> — 쪽지에 섹션 제목만 받은 워커는 주제가 LangGraph라는 걸 몰라요(<a href="#send-note">바로 위에서 본 성질</a>이에요). 그래서 'LangGraph의 리듀서' 대신 학습 데이터에 훨씬 흔한 자바스크립트 Redux의 <code>useReducer</code>를 설명해 버렸어요. 해법은 프롬프트를 다듬는 게 아니라 <strong>주제와 근거 노트를 쪽지에 같이 넣어 주는 것</strong>이에요. <code>Send("write_section", {"section": s, "topic": state["topic"]})</code>처럼요.</li>
+      <li><strong>중복</strong> — 계획할 때 섹션의 경계를 안 그어 주면 워커 두 명이 거의 같은 내용을 써요. "이 섹션에서 다루지 않을 것" 칸을 쪽지에 넣는 식으로 막아요.</li>
+      <li><strong>격리</strong> — 워커끼리는 서로 뭘 썼는지 몰라요.</li>
+    </ul>
+    <h3 id="parallel-vs-orchestrator">병렬화와 뭐가 다른가</h3>
+    <p>두 패턴은 실행될 때 여러 갈래로 갈라졌다가 한곳에 모이는 모양이 닮았어요(개념도로 그리면 거의 같고, <code>draw_mermaid()</code> 그림에서는 오케스트레이터-워커의 워커 노드가 하나뿐이지만요). 차이는 <strong>갈래가 몇 개인지 누가, 언제 정하느냐</strong> 하나예요.</p>
+    <table>
+      <thead><tr><th>비교 항목</th><th>③ 병렬화</th><th>④ 오케스트레이터-워커</th></tr></thead>
+      <tbody>
+        <tr><td>갈래 수를 정하는 쪽</td><td>개발자</td><td>LLM(오케스트레이터)</td></tr>
+        <tr><td>정하는 때</td><td>코드를 쓸 때, <code>compile()</code> 전</td><td>실행 중에, 입력을 본 뒤</td></tr>
+        <tr><td>그래프 모양</td><td>갈래마다 노드를 미리 그려 둠</td><td>워커 노드 하나 + <code>Send</code>로 필요한 만큼 불러냄</td></tr>
+        <tr><td>주방에서</td><td>검사 담당 셋을 동선표에 미리 그려 둠</td><td>헤드셰프가 그날 메뉴 수를 보고 요리사를 부름</td></tr>
+      </tbody>
+    </table>
+    <p>대가도 분명해요. 계획이 나쁘면 아래 워커 전부가 나빠지고(<strong>단일 실패 지점<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup></strong>), 워커 수를 LLM이 정하니 비용도 미리 알 수 없어요. 오케스트레이터가 섹션 20개를 계획하면 호출이 21번이에요. 그래서 <code>state["menu"][:4]</code>(목록에서 앞의 4개만 남기기)처럼 워커 수에 상한을 두고, 잘린 게 있으면 결과에 표시해 둬요.</p>
+    <div class="key-point" id="key-parallel-vs-orchestrator">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>9강에서 짚은 내용</p>
+      <p>병렬화와 오케스트레이터-워커의 가장 큰 차이는 <strong>하위 작업의 개수와 종류를 누가, 언제 정하느냐</strong>예요. 병렬화는 개발자가 코드를 쓸 때 고정해서 노드를 미리 그려 두고, 오케스트레이터-워커는 LLM이 실행 중에 정해서 <code>Send</code>로 워커를 불러내요.</p>
+      <p>그래서 "평가 축 3개로 노트 검수하기"처럼 어떤 입력이 와도 할 일이 늘 같은 작업에 오케스트레이터-워커를 쓰면, 얻는 것 없이 대가만 커져요. 계획용 LLM 호출이 한 번 더 들어 비용과 기다리는 시간이 늘고, 계획이 틀리면(축을 둘만 만들거나 엉뚱한 축을 넣으면) 검수 전체가 망가지고, 실행마다 축이 달라져 결과를 서로 비교할 수도 없어요. 미리 알 수 있는 건 미리 정해 두는 게 맞아요(<a href="#pattern-choice-example">아래 나쁜 선택 vs 좋은 선택</a>).</p>
+    </div>
+    <p>이 모양은 코딩(몇 개 파일을 어떻게 고칠지 요청마다 다름)이나 여러 출처 검색에 잘 맞아요. <a href="multi-agent-four-structures.html">멀티 에이전트 네 가지 구조</a>에서 본 오케스트레이터-워커가 에이전트 여럿의 이야기라면, 여기서는 한 그래프 안의 LLM 호출로 같은 모양을 만든 거예요.</p>
+
+    <h2 id="evaluator">⑤ <span class="hl">평가자-최적화자</span> — 통과할 때까지 고쳐 쓰기</h2>
+    <p>앞의 넷은 데이터가 앞에서 뒤로만 흘렀어요. 이번엔 처음으로 <strong>되돌아가는 순환</strong>이 생겨요. 한 LLM 호출이 결과를 만들고, 다른 호출이 평가해서 피드백을 주고, 기준을 넘을 때까지 반복해요. 순환에는 <a href="langgraph-state-node-edge.html#build-branch">첫 편</a>에서 본 위험이 따라와요. 끝나지 않을 수 있다는 거요. <a href="langgraph-branch-drills.html#drill-loop">앞 편의 무한 반복 실험</a>에서는 되돌아가는 동안 State가 하나도 안 바뀌어서 영원히 돌았는데, 이 패턴은 매 바퀴 초안을 고쳐 쓰니 그 점은 달라요. 대신 고쳐 써도 기준을 영영 못 넘을 수 있어서 상한은 여전히 필요해요.</p>
+    <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— langgraph 설치 후, API 키 없이 돌아가요 (LLM 자리는 규칙으로 흉내 냈어요)</span></p>
+    <pre><code>from typing_extensions import TypedDict
+from langgraph.graph import StateGraph, START, END
+
+MAX_ROUNDS = 3
+RULES = ["용어 정의", "예시"]
+
+class Draft(TypedDict):
+    text: str
+    feedback: str
+    rounds: int
+    passed: bool
+
+def evaluate(state: Draft):                  # 실제로는 LLM 평가자 자리
+    missing = [r for r in RULES if r not in state["text"]]
+    return {"passed": not missing,
+            "feedback": f"빠진 것: {missing}" if missing else "통과",
+            "rounds": state["rounds"] + 1}
+
+def optimize(state: Draft):                  # 실제로는 LLM 작성자 자리
+    missing = [r for r in RULES if r not in state["text"]]
+    return {"text": state["text"] + f" +{missing[0]}"}
+
+def hand_over(state: Draft):                 # 상한에 닿으면 사람에게 넘기는 정상 출구
+    return {"feedback": state["feedback"] + " (사람에게 넘김)"}
+
+def decide(state: Draft) -&gt; str:
+    if state["passed"]:
+        return "통과"
+    if state["rounds"] &gt;= MAX_ROUNDS:
+        return "포기"
+    return "재작성"
+
+b = StateGraph(Draft)
+b.add_node("evaluate", evaluate)
+b.add_node("optimize", optimize)
+b.add_node("hand_over", hand_over)
+b.add_edge(START, "evaluate")
+b.add_conditional_edges("evaluate", decide,
+                        {"통과": END, "재작성": "optimize", "포기": "hand_over"})
+b.add_edge("optimize", "evaluate")
+b.add_edge("hand_over", END)
+g = b.compile()
+
+for step in g.stream({"text": "리듀서는 값을 합친다.", "rounds": 0}):
+    print(step)</code></pre>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 위 코드를 실행했을 때 제 화면에 찍힌 출력이에요</span></p>
+    <pre><code>{'evaluate': {'passed': False, 'feedback': "빠진 것: ['용어 정의', '예시']", 'rounds': 1}}
+{'optimize': {'text': '리듀서는 값을 합친다. +용어 정의'}}
+{'evaluate': {'passed': False, 'feedback': "빠진 것: ['예시']", 'rounds': 2}}
+{'optimize': {'text': '리듀서는 값을 합친다. +용어 정의 +예시'}}
+{'evaluate': {'passed': True, 'feedback': '통과', 'rounds': 3}}</code></pre>
+    <ul>
+      <li><strong>반복 상한은 그래프 안에.</strong> 상한에 닿으면 <code>GraphRecursionError</code>로 멈추는데, 이건 예외(실행을 그 자리에서 끊는 에러)라서 그동안 고쳐 온 중간 결과가 다 날아가요(<a href="#loop-stop">바로 아래에서 직접 확인해요</a>). 게다가 langgraph 1.2 이후의 기본 상한은 25가 아니라 10007스텝이라(<a href="langgraph-branch-drills.html#drill-loop">앞 편에서 직접 확인</a>), 기본값만 믿으면 멈추기 전에 호출 요금부터 쌓여요. 그래서 <code>rounds</code>를 세다가 <code>hand_over</code>로 빠지는 <strong>정상 종료 경로</strong>를 두고, <code>recursion_limit</code>은 이중 안전망으로 남겨요.</li>
+      <li><strong><code>stream()</code>과 <code>invoke()</code></strong> — <code>invoke()</code>는 끝날 때까지 기다렸다가 최종 State만 줘요. <code>stream()</code>은 스텝이 끝날 때마다 "어느 노드가 무엇을 바꿨는지"를 하나씩 내보내요. 루프가 몇 바퀴 돌았는지, 피드백이 어떻게 바뀌었는지는 <code>stream()</code>으로만 보여요. 디버깅엔 <code>stream()</code>, 서비스에서 결과만 필요하면 <code>invoke()</code>예요.</li>
+      <li><strong>비용은 곱절로 늘어요.</strong> 한 바퀴에 생성 1번 + 평가 1번이니, 3바퀴면 6번이에요. 바퀴를 늘리면 품질이 정말 오르는지 재 보고 상한을 정해요.</li>
+    </ul>
+
+    <h3 id="loop-stop">상한에만 맡기면 왜 결과를 못 받을까</h3>
+    <p>"예외라서 결과가 날아간다"는 말이 처음엔 잘 와닿지 않았어요. 그래서 채점이 <strong>늘 불합격</strong>을 주는 최악의 경우를 두 가지 방식으로 돌려 봤어요. A는 멈추는 걸 <code>recursion_limit</code>에만 맡기고, B는 위 코드처럼 <code>rounds</code>를 세다가 3이 되면 <code>hand_over</code>로 빠지는 정상 출구를 둬요.</p>
+    <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— langgraph 설치 후, API 키 없이 돌아가요</span></p>
+    <pre><code>from typing_extensions import TypedDict
+from langgraph.graph import StateGraph, START, END
+from langgraph.errors import GraphRecursionError
+
+class Draft(TypedDict):
+    text: str
+    rounds: int
+
+def evaluate(state: Draft):                 # 늘 불합격을 주는 채점 (최악의 경우를 흉내)
+    return {"rounds": state["rounds"] + 1}
+
+def optimize(state: Draft):
+    return {"text": state["text"] + " +고침"}
+
+def hand_over(state: Draft):
+    return {"text": state["text"] + " (사람에게 넘김)"}
+
+def build(decide, with_exit):
+    b = StateGraph(Draft)
+    b.add_node("evaluate", evaluate)
+    b.add_node("optimize", optimize)
+    b.add_edge(START, "evaluate")
+    if with_exit:
+        b.add_node("hand_over", hand_over)
+        b.add_conditional_edges("evaluate", decide, ["optimize", "hand_over"])
+        b.add_edge("hand_over", END)
+    else:
+        b.add_conditional_edges("evaluate", decide, ["optimize"])
+    b.add_edge("optimize", "evaluate")
+    return b.compile()
+
+# A. 멈추는 걸 recursion_limit에만 맡긴다
+a = build(lambda s: "optimize", with_exit=False)
+result = "아직 아무것도 안 들어옴"
+try:
+    result = a.invoke({"text": "초안", "rounds": 0}, {"recursion_limit": 8})
+except GraphRecursionError as e:
+    print("A 에러:", type(e).__name__)
+print("A result:", result)
+
+# B. rounds를 세다가 3이 되면 hand_over로 빠지는 정상 출구를 둔다
+b = build(lambda s: "hand_over" if s["rounds"] &gt;= 3 else "optimize", with_exit=True)
+print("B result:", b.invoke({"text": "초안", "rounds": 0}, {"recursion_limit": 8}))</code></pre>
+    <p>처음 보는 문법 둘만 짚을게요. <code>lambda s: ...</code>는 한 줄짜리 이름 없는 함수라서 여기서는 라우터 역할을 해요. <code>try:</code> 아래에서 에러가 나면 프로그램이 멈추는 대신 <code>except</code> 아래 줄로 넘어가요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 위 코드를 실행했을 때 제 화면에 찍힌 출력이에요</span></p>
+    <pre><code>A 에러: GraphRecursionError
+A result: 아직 아무것도 안 들어옴
+B result: {'text': '초안 +고침 +고침 (사람에게 넘김)', 'rounds': 3}</code></pre>
+    <p>핵심은 <code>result = a.invoke(...)</code> 한 줄이에요. <code>=</code>는 오른쪽 일이 끝까지 성공해야 왼쪽 <code>result</code>에 값을 넣어요. A는 채점과 수정이 번갈아 8번 돈 뒤 한도에 걸려, <code>invoke</code>가 결과를 돌려주기 전에 에러로 끝났어요. 그래서 <code>result</code>에는 처음에 넣어 둔 "아직 아무것도 안 들어옴"이 그대로 남았고, 네 번이나 고친 초안은 받을 길이 없어요. B는 세 번째 채점에서 <code>hand_over</code>로 빠져 평범하게 끝났고, 고쳐 온 초안을 그대로 받았어요.</p>
+    <p>A가 멈춘 지점도 눈여겨볼 만해요. 노드마다 실행 횟수를 따로 세어 보니 채점 4번, 수정 4번, 모두 8번 실행한 뒤 멈췄어요. 노드는 두 종류뿐인데 한도 8에서 멈췄다는 건, <code>recursion_limit</code>이 노드 개수가 아니라 <strong>실행된 단계 수</strong>를 센다는 뜻이에요. 한도는 <code>invoke()</code>에 두 번째 값으로 <code>{"recursion_limit": 8}</code>처럼 넘겨서 얼마든지 바꿀 수 있고요.</p>
+    <div class="key-point" id="key-loop-stop">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>10강에서 짚은 내용</p>
+      <p>되돌아가는 선이 있는 그래프를 <code>recursion_limit</code> 하나로만 멈추게 하면 안 돼요. 한도에 닿으면 <code>GraphRecursionError</code>라는 예외로 끝나서, 그때까지 만든 중간 결과를 하나도 돌려받지 못해요. 그래서 반복 횟수를 State에 세다가 정해 둔 횟수에서 "사람에게 넘기기" 같은 <strong>정상 출구</strong>로 빠지게 그래프 안에 그려 두고, <code>recursion_limit</code>은 그 설계가 실패했을 때를 대비한 비상용으로만 남겨요.</p>
+    </div>
+    <p>강의 실습에서 인상 깊었던 장면이 있어요. 성의 없는 노트 초안을 이 루프에 넣었더니, 평가 규칙("용어 정의가 있나", "예시 코드가 있나" 등)을 채우는 쪽으로 고쳐 쓰는 동안 <strong>주제가 LangGraph 리듀서에서 자바스크립트 <code>reduce</code>로 옮겨 가 버렸대요</strong>. 평가자는 규칙 목록만 채우는 방향으로 글을 바꿀 뿐, 원래 무엇을 지켜야 했는지는 몰라요. 그래서 <strong>"무엇을 잃으면 안 되는가"</strong>를 ①의 게이트처럼 코드 검사로 걸어 두는 게 필요해요.</p>
+    <p>평가 기준이 흐리면 피드백이 "더 좋게 써 보세요" 수준으로 겉돌고 반복해도 안 나아져요. 규칙부터 구체적으로 적는 게 먼저예요. 그리고 <strong>평가자가 결정적일 수 있다면 그편이 훨씬 나아요.</strong> 코드를 쓰게 하고 테스트를 돌려 실패 메시지를 피드백으로 돌려주는 루프가 대표적이에요. LLM이 채점하는 방식의 장단점은 <a href="rag-chatbot-llm-judge.html">답변 뒤에 심사위원 하나를 더 둔다 — LLM-as-a-Judge</a>에서, 에이전트 여럿이 같은 모양을 만드는 경우는 <a href="multi-agent-four-structures.html">네 가지 구조</a>의 비평-수정에서 봤어요.</p>
+
+    <h2><span class="hl">어떤 모양을 고를까</span></h2>
+    <p>강의 정리표를 제 말로 다시 적으면 이래요.</p>
+    <table>
+      <thead><tr><th>패턴</th><th>이럴 때</th><th>그래프의 핵심</th><th>치르는 값</th></tr></thead>
+      <tbody>
+        <tr><td>① 프롬프트 체이닝</td><td>단계에 순서가 있고 중간 점검이 필요할 때</td><td>일렬 노드 + 코드 게이트</td><td>단계 수만큼 기다리는 시간(<strong>지연 시간<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup></strong>)이 늘어요</td></tr>
+        <tr><td>② 라우팅</td><td>입력 종류마다 전혀 다른 프롬프트나 모델이 필요할 때</td><td>분류 노드 + 점선 조건부 엣지</td><td>분류가 틀리면 뒤가 다 틀려요</td></tr>
+        <tr><td>③ 병렬화</td><td>하위 작업이 서로 독립이고 개수를 미리 알 때</td><td>실선 팬아웃 + 리듀서</td><td>시간은 줄지만 호출 수만큼 요금은 그대로예요</td></tr>
+        <tr><td>④ 오케스트레이터-워커</td><td>하위 작업의 개수와 내용이 입력마다 달라질 때</td><td>계획 노드 + <code>Send</code> 복제</td><td>계획 품질이 상한이고, 비용을 미리 알 수 없어요</td></tr>
+        <tr><td>⑤ 평가자-최적화자</td><td>기준이 뚜렷하고 피드백을 반영하면 나아질 때</td><td>생성·평가 사이 되돌아가는 선</td><td>바퀴마다 비용이 곱해지고, 상한이 필수예요</td></tr>
+      </tbody>
+    </table>
+    <p>표를 실제 요구에 대 볼게요. "회의록을 받아, 거기서 나온 할 일 개수만큼(3개일 수도 10개일 수도) 할 일마다 담당자 배정 초안을 만든다." 요약하고, 할 일을 뽑고, 배정하는 순서가 있어 보여서 ① 체이닝을 떠올리기 쉬워요. 하지만 체이닝은 단계가 고정이라 마지막 단계 한 번에 할 일을 몰아서 처리하게 되고, 할 일마다 따로 초안을 만드는 구조가 아니에요. ③ 병렬화는 처리 노드 개수를 미리 알아야 하는데 할 일 개수는 회의록마다 달라요. ② 라우팅은 여러 갈래 중 <strong>하나</strong>만 고르니 할 일 여러 개를 동시에 다루지 못해요.</p>
+    <div class="key-point" id="key-meeting-notes">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>11강에서 짚은 내용</p>
+      <p>하위 작업의 <strong>개수가 입력을 받아 봐야 정해진다</strong>면 ④ 오케스트레이터-워커예요. 회의록에서 할 일을 뽑는 계획 단계가 개수를 정하고, <code>Send</code>로 할 일마다 워커를 하나씩 불러 담당자 초안을 써요. "개수를 미리 아나?" 한 질문이 병렬화와 오케스트레이터-워커를 가르는 갈림길이에요.</p>
+    </div>
+    <p>그럼 언제 워크플로를 넘어 <strong>에이전트</strong>로 가야 할까요. 기준은 하나예요. <strong>필요한 단계의 조합을 개발자가 미리 늘어놓을 수 없을 때.</strong> 사내 문서로 퀴즈를 만드는 일은 경로가 뻔하니 워크플로가 낫고, "이 저장소의 버그를 찾아 고쳐 줘"는 어떤 파일을 몇 번 읽을지 경우의 수가 끝이 없으니 도구를 쥔 자율 에이전트가 필요해요. 대신 비용을 미리 계산할 수 없고, 같은 입력에 다른 길로 가서 테스트가 어렵고, 틀렸을 때 어디가 틀렸는지 짚기 어려워요. 그래서 <strong>워크플로로 먼저 해 보고, 안 된다는 증거가 나왔을 때만</strong> 옮겨요.</p>
+
+    <h3 id="agent-evidence">"워크플로로는 안 된다"는 증거는 어떤 모습일까</h3>
+    <p>"증거가 나왔을 때만"이라는 말은, 뒤집으면 그 증거를 알아볼 수 있어야 한다는 뜻이에요. 강의는 구체적인 모습을 스스로 적어 보라고만 했고, 아래는 제가 떠올린 신호예요. 기준이 "필요한 단계의 조합을 미리 늘어놓을 수 없을 때"였으니, 증거도 결국 <strong>미리 그린 길로는 감당이 안 되는 장면</strong>이에요. 아래 <a href="langgraph-five-workflow-patterns.html#langsmith">LangSmith</a> 같은 실행 기록에서 이런 모습이 되풀이되면 신호로 봐요.</p>
+    <ul>
+      <li><strong>갈래를 계속 덧대고 있어요.</strong> 새로운 종류의 입력이 올 때마다 라우터에 갈래를 하나씩 더하고, 예외를 처리하는 노드가 끝없이 늘어나요. 길을 미리 다 그릴 수 없다는 뜻이에요.</li>
+      <li><strong>중간 결과를 보고 다음 걸음을 바꿔야 해요.</strong> 실패한 건을 모아 보니 "한 번 더 조회했어야 했는데 그래프에 그 길이 없어서" 틀린 경우가 대부분이에요. 몇 번, 어떤 순서로 조회할지가 매번 달라요.</li>
+      <li><strong>계획 한 번으로 끝나지 않아요.</strong> 오케스트레이터가 처음 짠 계획대로 워커를 돌렸는데, 결과를 보고 계획을 다시 짜야 하는 일이 잦아요. ④ 오케스트레이터-워커는 계획을 한 번만 세우는 모양이에요.</li>
+      <li><strong>사람이 자주 끼어들어 길을 바꿔 줘요.</strong> 흐름이 막힐 때마다 사람이 "이번엔 이걸 먼저 해"라고 손으로 경로를 바꿔 주고 있다면, 그 판단을 LLM에게 맡길 후보예요.</li>
+    </ul>
+    <p>강의가 참고 자료로 건 칩 후옌(Chip Huyen)의 글 <a href="https://huyenchip.com/2025/01/07/agents.html" target="_blank" rel="noopener">Agents</a>는 에이전트가 실패하는 모습을 계획 오류·도구 오류·효율 문제로 나눠 정리해요. 에이전트로 옮긴 뒤 무엇을 지켜봐야 하는지 알고 싶을 때 이어서 읽기 좋아요.</p>
+    <div class="key-point" id="key-agent-evidence">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>11강에서 짚은 내용</p>
+      <p>에이전트로 옮기는 근거는 "더 똑똑해 보여서"가 아니라 <strong>기록으로 확인한 실패 모습</strong>이어야 해요. 갈래가 끝없이 늘어나거나, 중간 결과에 따라 다음 걸음이 매번 달라져 고정된 길로는 실패하는 일이 되풀이될 때가 그 증거예요. 에이전트는 비용을 미리 알 수 없고 테스트와 원인 찾기가 어려운 만큼, 증거 없이 먼저 가지 않아요.</p>
+    </div>
+
+    <h3 id="pick-my-pattern">내 일에는 어떤 모양이 맞을까 — 고르는 질문 순서</h3>
+    <p>강의는 마지막에 첫 질문으로 돌아가요. <a href="langgraph-what-and-why.html#key-lookup-action">첫 편에서 적어 본 '맡기고 싶은 반복 작업'과 그 조회·행동 목록</a>을 다시 꺼내, 다섯 모양 중 무엇이 맞는지 골라 보라는 거예요. 저는 위 표를 질문 순서로 바꿔서 위에서부터 차례로 물어요.</p>
+    <ol>
+      <li>할 일의 단계와 순서가 늘 같고, 단계 사이에 확인할 게 있나? → ① 프롬프트 체이닝</li>
+      <li>들어오는 입력의 종류에 따라 처리 방법이 완전히 달라지나? → ② 라우팅</li>
+      <li>서로 독립인 일을 여러 개 동시에 할 수 있고, 그 개수를 미리 아나? → ③ 병렬화</li>
+      <li>그 개수를 입력을 받아 봐야 알 수 있나? → ④ 오케스트레이터-워커</li>
+      <li>좋고 나쁨의 기준이 뚜렷하고, 피드백대로 고쳐 쓰면 나아지나? → ⑤ 평가자-최적화자</li>
+      <li>필요한 단계의 조합을 아예 미리 늘어놓을 수 없나? → 그때만 에이전트</li>
+    </ol>
+    <p>한 가지 일에 여러 모양이 섞여도 돼요. 첫 편 예시였던 식당 예약 변경에 대 보면, 할 일은 늘 "예약 찾기 → 빈자리·수수료 확인 → 예약 바꾸기 → 확인 문자" 순서라 ① 프롬프트 체이닝이 뼈대예요. 빈자리가 없으면 멈추는 코드 게이트를 확인 단계 뒤에 두고, 되돌리기 어려운 '예약 바꾸기' 앞에는 사람의 확인을 끼워요. 그런데 문의가 예약 변경·취소·불만으로 섞여 들어온다면 맨 앞에 ② 라우팅을 붙여 종류별로 나눠 보내요.</p>
+    <div class="key-point" id="key-pick-pattern">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>12강에서 짚은 내용</p>
+      <p>패턴은 이름을 외우는 게 아니라 <strong>내 일의 모양에 대 보는 것</strong>이에요. 순서가 정해져 있나, 종류별로 갈리나, 개수를 미리 아나, 고쳐 쓰면 나아지나를 차례로 묻고, 맞는 것 중 가장 단순한 모양을 골라요. 여러 모양을 섞어도 되지만, 길을 미리 그릴 수 있는 한 워크플로로 먼저 해요.</p>
+    </div>
+
+    <h2 id="pattern-choice-example"><span class="hl">나쁜 선택 vs 좋은 선택</span> — 신메뉴를 세 기준으로 검사할 때</h2>
+    <p>주방에서 신메뉴를 낼 때마다 맛·온도·모양 세 가지로 검사하는 흐름을 만든다고 해 볼게요.</p>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad"><strong>무엇을 했나:</strong> "유연해 보여서" 오케스트레이터-워커로 짰어요. 헤드셰프 역할 LLM이 매번 접시를 보고 검사 항목을 정한 뒤 <code>Send</code>로 검사원을 불러요.<br><br><strong>무슨 일이 생기나:</strong> 계획 호출이 매번 1번 더 들고, 어떤 날은 항목이 4개로 늘고 어떤 날은 '모양'이 빠져요. 요금은 들쑥날쑥하고, 메뉴끼리 점수를 비교할 수도 없어요.</td>
+          <td class="choice-good"><strong>무엇을 했나:</strong> 검사 항목이 항상 셋이니 병렬화로 짰어요. 노드 셋을 고정하고 <code>checks</code> 칸에 리듀서를 달았어요.<br><br><strong>무슨 일이 생기나:</strong> 호출은 늘 3번이고 비용이 예측돼요. 같은 기준의 점수가 쌓이니 메뉴끼리 비교도 돼요. 반대로 "회의록에서 나온 할 일 개수만큼 담당자 초안 만들기"처럼 <strong>개수가 입력마다 다를 때</strong>가 오케스트레이터-워커의 자리예요.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2><span class="hl">이번 편의 수치</span></h2>
+    <table>
+      <thead><tr><th>항목</th><th>값</th><th>조건·출처</th></tr></thead>
+      <tbody>
+        <tr><td><code>Send</code> 워커 수</td><td>같은 그래프에서 3개 / 6개</td><td>입력만 바꿨을 때 (강의 실습과 제 예제 모두). 코드는 한 줄도 안 고쳤어요 (<a href="#orchestrator">④ 오케스트레이터-워커</a>)</td></tr>
+        <tr><td>오케스트레이터가 고른 섹션 수</td><td>5개</td><td>강의 실습, 프롬프트에 "3~5개" 범위만 준 경우</td></tr>
+        <tr><td>섹션 20개를 계획했을 때의 호출 수</td><td>21번</td><td>오케스트레이터 1 + 워커 20. 범위를 안 주면 이렇게 열려 있어요</td></tr>
+        <tr><td>평가 루프 상한</td><td>3바퀴 = 최대 6호출</td><td>바퀴마다 생성 1 + 평가 1 (<a href="#evaluator">⑤ 평가자-최적화자</a>)</td></tr>
+        <tr><td><code>recursion_limit</code></td><td>기본 10007스텝</td><td>langgraph 1.2 이후(1.0.0은 25, 1.1.0은 10000). 강의는 8로 낮춰 <code>GraphRecursionError</code>를 재현했어요 (<a href="#loop-stop">상한에만 맡기면</a>)</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
+    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 강의 9~12강이 퀴즈로 다시 짚은 내용이에요. 1~2강 것은 <a href="langgraph-what-and-why.html#key-recap">1편</a>, 3강 것은 <a href="langgraph-state-node-edge.html#key-recap">2편</a>, 4강 것은 <a href="langgraph-branch-drills.html#key-recap">3편</a>, 5강 것은 <a href="langgraph-branches-and-tool-loop.html#key-recap">4편</a>, 6~8강 것은 <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a>의 같은 목록에 있어요.</p>
+    <ul class="key-recap">
+      <li><a href="#key-send-note"><code>Send</code>로 불린 워커는 자기 쪽지만 봐요</a> (9강)</li>
+      <li><a href="#key-parallel-vs-orchestrator">병렬화와 오케스트레이터-워커는 "개수를 누가, 언제 정하나"로 갈려요</a> (9강)</li>
+      <li><a href="#key-loop-stop">반복은 상한에만 맡기지 말고 정상 출구를 그래프 안에</a> (10강)</li>
+      <li><a href="#key-meeting-notes">개수를 입력을 봐야 알면 오케스트레이터-워커</a> (11강)</li>
+      <li><a href="#key-agent-evidence">에이전트로 옮기는 근거는 기록으로 확인한 실패 모습</a> (11강)</li>
+      <li><a href="#key-pick-pattern">패턴은 내 일의 모양에 대 보고, 가장 단순한 것부터</a> (12강)</li>
+    </ul>
+
+    <h2><span class="hl">직접 해보기</span></h2>
+    <ol>
+      <li><strong>기준을 흐리게 해 보기</strong> — 바꿀 것: 평가 규칙을 "좋은 학습 노트로 써라" 한 문장으로 바꿔요. 측정할 것: 바퀴 수가 몇 번에 끝나는지, 매번 같은지. 비교할 것: 기준을 항목별로 적어 뒀을 때와 대 봐요. 기준이 흐리면 평가자가 매번 다른 이유로 퇴짜를 놓아 바퀴만 늘어요.</li>
+      <li><strong>범위를 빼 보기</strong> — 바꿀 것: 오케스트레이터 프롬프트에서 "3~5개"라는 범위를 지워요. 측정할 것: 같은 입력으로 여러 번 돌렸을 때 계획된 섹션 수와 총 호출 수. 비교할 것: 범위가 있을 때와 대 봐요. 호출 수가 열려 있다는 게 숫자로 보여요.</li>
+      <li><strong>쪽지에 덜 적어 보기</strong> — 바꿀 것: <code>Send</code>로 넘기는 쪽지에서 필드 하나를 빼요. 측정할 것: 워커가 그 정보를 State에서 가져올 수 있는지. 비교할 것: 에러가 나는지, 아니면 조용히 엉뚱한 결과가 나오는지 확인해요.</li>
+    </ol>
+    <p>정답은 없어요. 모델 답은 실행할 때마다 달라질 수 있으니, 제 조건에서 몇 번 돌려 보고 기록으로 비교하는 게 요령이에요.</p>
+
+    <h2><span class="hl">다음은</span></h2>
+    <p>이걸로 "에이전트 팀 꾸리기" 시리즈 일곱 편이 끝나요. <a href="langgraph-what-and-why.html#roadmap">1편의 로드맵</a>대로라면 다음 수업부터는 오늘의 ② 라우팅에 RAG를 붙이고, 이어서 GraphRAG, 사람 승인과 상태 저장(HITL·상태 지속성)으로 넘어가요. 오늘 그린 되돌아가는 선 중간에 사람이 끼어드는 게 HITL이고, 그 지점에서 State를 저장해 뒀다가 나중에 이어 가는 게 상태 지속성이에요.</p>
+
+    <h2>함께 읽으면 좋은 글</h2>
+    <ul>
+      <li><a href="multi-agent-four-structures.html">여럿이라는 말만으론 부족하다 — 네 가지 구조와 맞는 과업</a> — 오케스트레이터-워커를 여러 에이전트 구조 가운데 하나로 놓고 본 글이에요.</li>
+      <li><a href="rag-chatbot-llm-judge.html">답변 뒤에 심사위원 하나를 더 둔다 — LLM-as-a-Judge</a> — ⑤의 평가자를 LLM으로 둘 때의 한계를 다룬 글이에요.</li>
+      <li><a href="multi-agent-split-gains-and-losses.html">나눠서 얻는 것과 잃는 것</a> — 일을 여러 갈래로 나눌 때 치르는 비용을 다룬 글이에요.</li>
+      <li><a href="langgraph-what-and-why.html">길을 누가 정하나 — LangGraph와 워크플로·에이전트</a> — 이 시리즈의 기준을 세운 첫 편이에요.</li>
+    </ul>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">맵-리듀스(map-reduce) — 일을 여러 갈래로 펼쳐 각각 처리한 뒤 결과를 하나로 접는 데이터 처리 방식이에요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">단일 실패 지점(single point of failure) — 그 한 곳이 잘못되면 시스템 전체 결과가 망가지는 지점이에요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">지연 시간(latency) — 요청을 보낸 뒤 결과를 받기까지 기다리는 시간이에요. <a href="#fnref3">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <h3 id="series-list">"에이전트 팀 꾸리기 — LangGraph" 시리즈</h3>
+    <a class="post-nav" href="langgraph-what-and-why.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">길을 누가 정하나 — LangGraph와 워크플로·에이전트</span>
+    </a>
+    <a class="post-nav" href="langgraph-state-node-edge.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">흐름을 그림으로 짠다 — LangGraph의 State·Node·Edge</span>
+    </a>
+    <a class="post-nav" href="langgraph-branch-drills.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">갈림길을 밀어붙인다 — 세 갈래·라벨·끝나지 않는 반복</span>
+    </a>
+    <a class="post-nav" href="langgraph-branches-and-tool-loop.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">모델이 다음 길을 고르게 한다 — 도구를 쥐여 주는 루프</span>
+    </a>
+    <a class="post-nav" href="langgraph-env-troubleshooting.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">.env가 안 읽혔던 네 겹의 이유 — 강의 화면에서 API 키 넣기</span>
+    </a>
+    <a class="post-nav" href="langgraph-five-workflow-patterns.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">다섯 가지 흐름 모양 ① — 체이닝·라우팅·병렬화</span>
+    </a>
+    <p class="post-date">(7) 다섯 가지 흐름 모양 ② — 오케스트레이터-워커·평가자-최적화자 (이 글)</p>
+
+    <a class="post-nav" href="multi-agent-split-gains-and-losses.html">
+      <span class="post-nav-label">다음 시리즈 →</span>
+      <span class="post-nav-title">나눠서 얻는 것과 잃는 것</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
