@@ -72,6 +72,7 @@
 
     <h2><span class="hl">세 축</span> — 무엇이 무엇과 독립인가</h2>
     <p><strong>읽는 법:</strong> 세 줄은 각각 하나의 결정이에요. 같은 줄 안에서만 좌우로 고르는 것이고, <strong>윗줄에서 왼쪽을 골랐다고 아랫줄도 왼쪽이 되지는 않아요.</strong> 점선은 "여기는 서로 묶여 있지 않다"는 표시예요.</p>
+    <div class="diagram-scroll" style="--diagram-min: 720px">
     <svg viewBox="0 0 720 280" role="img" aria-label="화면, 하네스 실행 위치, 모델 실행 위치가 서로 독립적인 세 개의 결정임을 보여주는 그림">
       <text x="8" y="30" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">① 화면 (D02)</text>
       <rect x="200" y="12" width="200" height="42" rx="8" fill="none" stroke="var(--border)"/>
@@ -96,6 +97,7 @@
       <line x1="20" y1="176" x2="700" y2="176" stroke="var(--border)" stroke-dasharray="4 5"/>
       <text x="20" y="262" font-family="var(--font-body)" font-size="12" fill="var(--muted)">예: 터미널 CLI + 내 컴퓨터 실행 + 외부 API 모델 — 세 줄에서 각각 따로 고른 조합</text>
     </svg>
+    </div>
     <p>그림에서 제일 자주 헷갈리는 건 <strong>②와 ③</strong>이에요. 하네스가 제 노트북에서 돈다고 <strong>모델까지 노트북에서 도는 건 아니에요.</strong> 제 노트북의 프로그램이 인터넷 너머 모델에 요청을 보낼 수도 있고, 같은 노트북에 띄운 로컬 모델 서버를 부를 수도 있어요. 이 세 갈래는 <a href="three-ways-to-run-an-llm.html">로컬이냐 API냐는 틀린 질문 — 세 갈래</a>에서 다룬 내용이에요.</p>
     <p>②에서 "원격 서버"를 고르면 하나가 딸려 와요. <strong>파일 작업의 기준이 그 서버가 됩니다.</strong> 제 노트북 폴더가 저절로 서버에 연결되지는 않아요. 여기서 <strong>서버</strong>는 "요청을 받아 처리하는 프로그램"이라는 뜻이지, 꼭 멀리 있는 컴퓨터를 가리키는 말이 아니에요. 내 컴퓨터에서 서버 프로그램을 띄우고 같은 컴퓨터의 브라우저로 접속하는 <strong>로컬 웹 앱</strong>도 있으니까요.</p>
 

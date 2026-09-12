@@ -113,6 +113,7 @@
     <p>원본 문제는 컨테이너 안의 <code>/app</code>, <code>/protected</code> 같은 <strong>절대 경로</strong>를 써요. 로컬 실행에서는 이 경로를 각 시행의 <code>workspace/app</code>, <code>workspace/protected</code> 등으로 바꿔요. 문제의 입력 자료·요구사항·원본 Python 채점 코드는 <strong>그대로 쓰되</strong> 경로와 Python 실행 파일 선택만 로컬에 맞추는 것 — 이게 <strong>이식(port)</strong>이에요. <strong>풀이를 단순한 함수 문제로 바꾼 게 아닙니다.</strong></p>
     <p>예외가 하나 있어요. 자격정보 복구 문제의 원본 이미지에 들어 있던 <strong>정답 목록</strong>은 평가자 전용 캐시에 두고 <strong>모델 작업 폴더에는 복사하지 않아요.</strong> 채점기는 같은 원본 정답 목록을 쓰고, 이 노출 보정도 manifest의 변경 기록에 남깁니다.</p>
     <p><strong>읽는 법:</strong> 아래 그림에서 왼쪽 <strong>캐시</strong>는 건드리지 않는 원본이고, 가운데는 <strong>시행마다 새로 만드는</strong> 작업 폴더예요. 오른쪽 채점은 <strong>에이전트가 끝난 뒤에</strong> 별도로 돌아요.</p>
+    <div class="diagram-scroll" style="--diagram-min: 760px">
     <svg viewBox="0 0 760 300" role="img" aria-label="원본 캐시에서 시행별 작업 폴더로 복사하고 에이전트가 작업한 뒤 별도 채점기가 검사하는 흐름">
       <defs>
         <marker id="ah8" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
@@ -151,6 +152,7 @@
       <line x1="594" y1="150" x2="626" y2="150" stroke="var(--accent)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#ah8)"/>
       <text x="10" y="284" font-family="var(--font-body)" font-size="11" fill="var(--muted)">Agent는 풀고, 도구는 실행하고, verifier는 결과만 봅니다 — 뛴 사람과 잰 사람이 다릅니다.</text>
     </svg>
+    </div>
     <p>세 역할이 나뉘어 있다는 게 핵심이에요. <strong>Agent</strong>는 다음 행동을 결정하고, <strong>도구</strong>는 파일을 읽거나 Python 코드를 실행하고, <strong>verifier</strong>는 결과를 검사해요. 모델이 "완료했습니다"라고 말했는지가 아니라 <strong>원본의 검사 조건을 충족했는지</strong>를 봅니다.</p>
     <p>파일별로는 <a href="my-harness-python-code-reading.html">7편에서 본 그대로</a>예요 — <code>benchmark_source.py</code>가 고정 원본을 준비하고, <code>local_agent.py</code>가 같은 <code>Agent</code> 반복을 평가용 도구에 연결하고, <code>grading.py</code>가 원본 <code>tests/test_outputs.py</code>를 실행해요. 바둑 문제의 원본 검사에서 부르는 <code>mypy</code>와 <code>flake8</code>(각각 타입과 코드 형식을 검사하는 도구예요)도 잠금 파일에 포함돼요.</p>
     <p>여기서 한 번 더 못 박아 둘게요. <strong>원본 검사 자체가 모든 요구를 엄격하게 판정하는 건 아니에요.</strong> 통과 점수를 제품 품질 전체의 증명으로 해석하지 않습니다.</p>

@@ -78,6 +78,7 @@
     <p>다만 여기서 비유가 끊기는 점이 하나 있어요. 사람 직원이라면 "week-three요"라는 요청에 <strong>"아, 첫째 주 말씀이시죠?"라고 알아서 고쳐 주기도</strong> 하죠. 그런데 이 함수는 절대 그러지 않아요. 공백을 지우고 대소문자를 맞추는 것까지는 하지만, <strong>내용을 추측해서 다른 값으로 바꾸는 일은 하지 않아요.</strong> 여기가 "다듬기"와 "추측"을 가르는 선이에요.</p>
 
     <h2><span class="hl">전체 흐름 그림</span> — 요청 하나가 파일까지 갔다 오는 길</h2>
+    <div class="diagram-scroll" style="--diagram-min: 953px">
     <svg viewBox="0 0 780 430" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="왼쪽에 호스트의 클라이언트가 있고, 가운데 큰 상자가 weekly_records_server.py 파일이다. 그 안 위쪽에 @mcp.tool()로 공개된 get_weekly_records 함수가, 아래쪽에 공개되지 않은 load_weekly_records 함수가 네 단계(정규화, 허용 주차 검사, 파일 읽기, 구조 검사)로 들어 있다. 오른쪽에는 코드 파일 옆의 data 폴더와 week-one.json 파일이 있고, 파일 읽기 단계에서 그쪽으로 화살표가 오간다. 결과는 딕셔너리로 다시 위로 올라가 호스트로 돌아간다.">
       <defs>
         <marker id="arrBS" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -129,6 +130,7 @@
         <text x="390" y="414" text-anchor="middle" font-size="11.5" fill="var(--muted)">같은 파일 안에 함수가 둘인데, 바깥에서 부를 수 있는 건 위쪽 하나뿐이다</text>
       </g>
     </svg>
+    </div>
     <p><strong>읽는 법:</strong> 가운데 큰 상자가 <strong>파일 하나</strong>예요. 그 안에 함수가 둘 들어 있는데, 굵은 테두리로 그린 위쪽만 바깥에 공개돼요. 공개 여부를 가르는 건 함수 위에 붙은 <code>@mcp.tool()</code> 한 줄이에요. 아래쪽 상자의 ①~⑤가 실제로 일이 일어나는 순서고, ②와 ④에서 조건이 어긋나면 ⑤까지 못 가고 중간에 멈춰요. 오른쪽 자료 상자로 가는 화살표가 <strong>파일을 실제로 읽는 유일한 지점</strong>이고요. 왼쪽 클라이언트와 서버 사이를 오가는 화살표는 지난 편에서 본 <code>tools/call</code>과 그 응답인데, 그 통신은 제가 짜는 코드가 아니라 SDK가 처리해요.</p>
 
     <h2><span class="hl">먼저 원자료부터</span> — 무엇을 읽어 올 건가</h2>

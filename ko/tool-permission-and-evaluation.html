@@ -56,6 +56,7 @@
     <p>2편에서 스키마로 <code>warehouse_id</code> 값을 <code>SEOUL-01</code>이나 <code>BUSAN-02</code>로만 제한했다. 그런데 이 정도로 충분할까? 도구가 늘고 권한이 넓어질수록, "읽기만 한다"는 설명 문장만으로는 안전이 보장되지 않는다. 아래는 신뢰할 수 없는 입력이 실제 행동으로 이어지기까지, 통과해야 하는 네 겹의 문이다.</p>
 
     <figure>
+      <div class="diagram-scroll" style="--diagram-min: 587px">
       <svg viewBox="0 0 640 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="fig2title">
         <title id="fig2title">비신뢰 입력이 입력층, 모델층, 하네스층, 운영층 네 문을 통과해야 행동으로 이어지고, 통과 못 한 요청은 각 층에서 차단·기록된다</title>
         <style>
@@ -107,6 +108,7 @@
         </g>
         <text x="270" y="205" text-anchor="middle" class="g-t" fill="var(--muted)">통과하지 못한 요청은 각 층에서 즉시 차단·기록된다</text>
       </svg>
+      </div>
       <figcaption>스키마에 "이 두 창고만"이라 적어도 그건 안내일 뿐 — 실제로 막는 건 언제나 ③ 하네스층의 서버 쪽 검증이다.</figcaption>
     </figure>
 

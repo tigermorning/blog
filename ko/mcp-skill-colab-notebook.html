@@ -75,6 +75,7 @@
 
     <h2><span class="hl">전체 흐름 그림</span> — 내 컴퓨터에서 Colab 런타임까지 네 단계</h2>
     <p>제 말 한마디가 실제 계산에 닿기까지 <strong>네 곳</strong>을 거쳐요. 이 네 곳이 각각 어디서 도는지, 그리고 이따 나올 <strong>두 개의 Connect 버튼</strong>이 각각 어느 사이를 잇는지를 한 장에 그렸어요.</p>
+    <div class="diagram-scroll" style="--diagram-min: 960px">
     <svg viewBox="0 0 780 430" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="내 컴퓨터의 Claude Code 또는 OpenCode가 도구 호출을 요청하면 같은 컴퓨터의 Colab MCP 서버가 받아서, Chrome에 열린 Colab 노트북 문서를 조작하고, 노트북의 코드 셀을 실행하면 Colab 런타임의 Python이 계산한다. 승인 창의 Connect는 노트북과 로컬 MCP 서버를 잇고, 화면 오른쪽 위의 Connect는 노트북과 런타임을 잇는다. 셀을 추가해 달라는 요청은 노트북 문서까지만 바꾸고, 셀을 실행해 달라는 요청이라야 런타임까지 간다.">
       <defs>
         <marker id="arrCL" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -134,6 +135,7 @@
         <text x="600" y="388" text-anchor="middle" font-size="9" fill="var(--muted)">셀 아래에 출력이 붙는다</text>
       </g>
     </svg>
+    </div>
     <p><strong>읽는 법:</strong> 세로 실선은 <strong>내 말 한마디가 흘러가는 길</strong>이고, 화살표 옆의 글씨는 그 단계에서 <strong>무엇이 넘어가는지</strong>예요. 왼쪽의 <strong>점선 상자 두 개</strong>가 이번 편에서 제일 헷갈리는 부분인데, <strong>이름이 똑같이 Connect인 버튼 두 개</strong>가 서로 <strong>다른 사이</strong>를 잇는다는 뜻이에요. 맨 아래 두 상자는 <strong>어디까지 가느냐</strong>의 차이고요 — 부탁하는 말 한 줄에 따라 ③에서 멈추기도 하고 ④까지 가기도 해요.</p>
     <p>①과 ②가 <strong>둘 다 내 컴퓨터</strong>라는 점도 눈여겨보세요. <a href="mcp-skill-building-server.html">3편</a>에서 직접 만들어 본 업무 기록 서버가 그랬듯, MCP 서버는 <strong>먼 어딘가의 서비스가 아니라 내 컴퓨터에서 도는 프로그램</strong>일 수 있어요. Colab MCP 서버가 딱 그래요. 대신 이 서버가 <strong>브라우저 탭 하나를 붙잡고</strong> 그 안의 노트북을 조작한다는 게 지금까지와 다른 점이에요.</p>
 

@@ -90,6 +90,7 @@
 
     <h2><span class="hl">전체 흐름</span> — 요청 한 번이 도는 길</h2>
     <p>이번 시리즈에서 만들 프로그램이 하는 일을 한 장에 그리면 이래요. <strong>읽는 법:</strong> 세로 기둥 네 개가 각각 <strong>사용자 · 하네스 · 모델 · 도구</strong>이고, 화살표를 <strong>①부터 ⑨까지 위에서 아래로</strong> 차례대로 읽으면 돼요. 점선 상자 안(②~⑦)이 <strong>답이 나올 때까지 여러 번 도는 반복</strong>이고, 그 바깥의 ①·⑧·⑨는 한 번씩만 지나가요.</p>
+    <div class="diagram-scroll" style="--diagram-min: 760px">
     <svg viewBox="0 0 760 480" role="img" aria-label="사용자 요청이 하네스를 거쳐 모델과 도구 사이를 오가고, 검사를 통과한 도구만 실행된 뒤 최종 답변으로 돌아오는 순서도">
       <defs>
         <marker id="ah1" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
@@ -163,6 +164,7 @@
       <text x="172" y="445" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">⑨ 최종 답변 또는 중단 이유</text>
       <line x1="270" y1="455" x2="81" y2="455" stroke="var(--accent)" stroke-width="2" marker-end="url(#ah2)"/>
     </svg>
+    </div>
     <p>③과 ⑤ 사이에 <strong>④ 검사</strong>가 끼어 있다는 점이 이 그림의 전부라고 해도 돼요. 모델이 요청했다고 곧바로 실행하는 게 아니라, 등록된 도구인지·인자가 맞는지·허용한 폴더 안인지 확인한 뒤에 실행해요. 이 반복 자체는 <a href="agent-react-loop-and-autogpt.html">에이전트는 어떻게 스스로 반복할까 — ReAct 루프와 AutoGPT 소동</a>에서 본 "생각하고, 행동하고, 결과를 보고 다시 생각하는" 구조와 같아요. 이번엔 그 구조를 <strong>구경하는 게 아니라 직접 코드로 씁니다.</strong></p>
 
     <h2><span class="hl">첫 결정</span> — 누가 쓰고, 무엇을 맡기나</h2>

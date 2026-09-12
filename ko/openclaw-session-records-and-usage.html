@@ -84,6 +84,7 @@
 
     <h2><span class="hl">세션 기록의 한 줄</span> — 말한 것과 한 것은 다른 줄</h2>
     <p>강의에서 제일 인상 깊었던 그림이에요. 세션 기록 안에서 "말한 것"과 "한 것"은 <strong>서로 다른 줄</strong>로 저장돼요.</p>
+    <div class="diagram-scroll" style="--diagram-min: 720px">
     <svg viewBox="0 0 720 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="세션 기록 한 줄의 구조: assistant 줄에 text와 toolCall이, toolResult 줄에 실제 결과가 있고 둘은 toolCallId로 짝지어진다">
       <g font-family="var(--font-body)" font-size="13" fill="var(--ink)">
         <rect x="20" y="20" width="320" height="200" rx="10" fill="none" stroke="var(--border)" stroke-width="2"/>
@@ -106,6 +107,7 @@
         <text x="360" y="240" text-anchor="middle" font-size="12" fill="var(--muted)">점선 = 같은 toolCallId로 요청과 결과를 짝지음</text>
       </g>
     </svg>
+    </div>
     <p><strong>읽는 법:</strong> 왼쪽 상자가 모델이 낸 한 줄이에요. 그 안에 "말한 문장"(<code>text</code>)과 "이 도구를 이렇게 쓰겠다"는 요청(<code>toolCall</code>)이 같이 들어 있어요. 오른쪽 상자는 그 요청을 에이전트가 실제로 실행한 결과 줄이에요. 두 상자를 잇는 점선이 번호(<code>toolCallId</code>)예요. <strong>완료 여부를 묻는다면 왼쪽의 문장이 아니라 오른쪽의 결과 줄을 봐야 해요.</strong> 왼쪽에 "정리했어요"가 있어도 오른쪽에 짝이 되는 결과 줄이 없으면 실제로는 안 한 거예요.</p>
     <p>이 발상은 이 블로그에서 여러 번 나왔어요. <a href="harness-observation-and-feature-map.html">하네스 보는 법</a>에서 "관찰"을 강조했고, <a href="multi-agent-judging-records.html">멀티 에이전트 판정</a>에서 "통과했다는 말로는 부족하다"고 했죠. OpenClaw는 그 원칙을 기록 파일의 구조 자체에 박아 둔 경우예요.</p>
 

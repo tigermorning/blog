@@ -76,6 +76,7 @@
     <p>다만 여기서 비유가 끊기는 점이 하나 있어요. 사람이라면 방 번호를 잘못 적어 줘도 <strong>"아, 자료실 옮겼구나" 하고 알아서 찾아가요.</strong> 그런데 호스트는 절대 그러지 않아요. 적힌 폴더에 <code>pyproject.toml</code>이 없으면 그냥 실패해요. <strong>추측해서 근처를 뒤지는 기능은 없어요.</strong></p>
 
     <h2><span class="hl">전체 흐름 그림</span> — 등록 한 번, 그리고 물어볼 때마다</h2>
+    <div class="diagram-scroll" style="--diagram-min: 903px">
     <svg viewBox="0 0 780 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="위쪽 줄은 연결 단계로, MCP 설정 파일에서 호스트, uv, 서버 프로세스와 도구 목록으로 화살표가 이어진다. 아래쪽 줄은 첫 호출 단계로, 사람의 질문에서 모델의 도구 선택, tools/call 메시지, 서버가 data 폴더의 파일을 읽는 데까지 이어진다. 마지막 줄은 되돌아오는 길로, 서버가 돌려준 결과가 호스트와 모델을 거쳐 답변이 된다.">
       <defs>
         <marker id="arrHC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -146,6 +147,7 @@
         <text x="390" y="366" text-anchor="middle" font-size="10.5" fill="var(--muted)">data 폴더 위치는 설정 어디에도 없다 — 서버 소스가 자기 옆에서 스스로 찾는다</text>
       </g>
     </svg>
+    </div>
     <p><strong>읽는 법:</strong> 줄이 두 개인 게 핵심이에요. <strong>위쪽 줄(①)은 설정을 저장한 뒤 한 번 일어나는 일</strong>이고, <strong>아래쪽 줄(②)은 제가 뭔가 물어볼 때마다 반복되는 일</strong>이에요. 이 둘을 섞어서 생각하면 "연결은 됐는데 왜 호출이 안 되지?" 같은 상황에서 헤매게 돼요. ①까지만 성공하고 ②가 안 일어나는 경우가 실제로 흔하거든요. 그리고 오른쪽 끝 상자에 <code>data/week-one.json</code>이 있는데, <strong>이 경로는 설정 파일 어디에도 안 적혀 있어요.</strong> <a href="mcp-skill-building-server.html">3편</a>의 <code>Path(__file__).with_name("data")</code>가 서버 소스 파일 옆에서 알아서 찾기 때문이에요.</p>
 
     <h2><span class="hl">서버 등록이 실제로 담는 것</span></h2>

@@ -68,6 +68,7 @@
     <p>실제 강의 자료에 나온 원본 도식으로 이 넷을 한 번에 겹쳐보면 이렇다. "모델과 에이전트, 하네스, 루프는 각각 어떻게 다른 의미인가요?"라는 질문에 답할 때 이 그림 하나로 설명이 된다.</p>
 
     <figure>
+      <div class="diagram-scroll" style="--diagram-min: 623px">
       <svg viewBox="0 0 680 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="fig0title">
         <title id="fig0title">도구 호출의 한 바퀴 — 앱이 도구 정의를 요청에 포함하면 모델이 요청 JSON을 쓰고, 하네스·앱이 검증·실행하고, 모델이 결과를 입력받아 근거로 답을 완성한 뒤 다시 요청을 만드는 순환</title>
         <style>
@@ -112,6 +113,7 @@
         <text x="70" y="120" text-anchor="middle" class="o-t" fill="var(--accent)">연쇄 호출 —</text>
         <text x="70" y="135" text-anchor="middle" class="o-t" fill="var(--accent)">②에서 다시 요청</text>
       </svg>
+      </div>
       <figcaption>도구 호출의 한 바퀴(강의 원본 도식). 결과를 읽은 뒤 다시 ②에서 요청을 만드는 연쇄 호출이 곧 루프다.</figcaption>
     </figure>
 
@@ -128,6 +130,7 @@
     <p>"하네스는 모델과 도구 사이의 실행 장치다"라는 문장만 읽으면 뭔지 감이 잘 안 온다. 실제로 무슨 일이 벌어지는지, 부산 창고 재고를 묻는 요청 하나가 처음부터 끝까지 어떻게 흘러가는지를 그대로 그려보면 이렇다.</p>
 
     <figure>
+      <div class="diagram-scroll" style="--diagram-min: 563px">
       <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="fig1title">
         <title id="fig1title">모델이 요청을 쓰면 하네스가 검증·실행하고 결과를 모델에 되돌려, 모델이 그 결과를 근거로 답하는 순환</title>
         <style>
@@ -176,6 +179,7 @@
         <text x="350" y="270" text-anchor="middle" class="c-t">④ "A-17 재고는 7개입니다" — 최종 답</text>
         <path d="M85,160 L85,266 L228,266" class="c-a" marker-end="url(#ca1)"/>
       </svg>
+      </div>
       <figcaption>모델은 ①에서 요청만 쓴다. 실제 실행은 언제나 하네스(점선 상자) 안에서 일어나고, 그 결과를 다시 받아든 모델이 답을 완성한다.</figcaption>
     </figure>
 
@@ -241,6 +245,7 @@ You have access to the following functions:
     <p>여기서 헷갈리기 쉬운 게 하나 있다. <strong>MCP는 하네스가 아니다.</strong> MCP는 "도구 목록과 사용법을 이런 형식으로 알려준다"는 통신 규격일 뿐이고, 그 요청을 실제로 확인하고 실행하고 결과를 돌려주는 일은 여전히 하네스가 한다. 그림으로 보면 이렇다.</p>
 
     <figure>
+      <div class="diagram-scroll" style="--diagram-min: 587px">
       <svg viewBox="0 0 640 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="fig1btitle">
         <title id="fig1btitle">모델이 하네스에 요청하면 하네스가 MCP라는 통신 규격으로 도구 서버와 실제로 통신하고, 결과를 다시 모델에 돌려준다</title>
         <style>
@@ -284,6 +289,7 @@ You have access to the following functions:
         <text x="325" y="165" text-anchor="middle" class="m-t" fill="var(--muted)">MCP는 하네스가 도구 서버와 통신할 때 쓰는 "말"이지,</text>
         <text x="325" y="182" text-anchor="middle" class="m-t" fill="var(--muted)">확인·실행을 대신하는 주체가 아니다.</text>
       </svg>
+      </div>
       <figcaption>하네스가 실행 직전·직후에 도구 서버와 주고받는 통신에 MCP 규격을 쓸 뿐, 검증·실행·재입력이라는 하네스의 일 자체는 그대로 하네스 몫이다.</figcaption>
     </figure>
 

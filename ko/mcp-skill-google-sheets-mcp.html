@@ -106,6 +106,7 @@
 
     <h2><span class="hl">전체 흐름 그림</span> — 한 번뿐인 구간과 매번 도는 구간</h2>
     <p>이번 편의 전체 모양을 한 장에 그렸어요. 윗줄과 아랫줄을 가르는 기준은 <strong>"사람이 화면 앞에 앉아 있어야 하는가"</strong>예요.</p>
+    <div class="diagram-scroll" style="--diagram-min: 960px">
     <svg viewBox="0 0 820 448" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="위쪽은 최초 한 번만 일어나는 구간이다. 첫째 프로그램이 credentials.json을 읽고 실행되고, 둘째 브라우저가 열리며 프로그램은 localhost의 어떤 포트에서 결과를 기다리고, 셋째 내가 테스트 사용자로 등록한 계정을 골라 표 읽기 허용을 누르고, 넷째 접근 토큰과 갱신 토큰이 담긴 token.json이 개인 설정 폴더에 저장된다. 그 결과 여기까지가 사람이 나오는 유일한 구간이 된다. 아래쪽은 그다음부터 매번 도는 구간으로, 다섯째 load_token 함수가 저장된 토큰을 읽고 만료됐으면 갱신 토큰으로 새 접근 토큰을 받고, 여섯째 read_header 함수가 첫 번째 API 호출로 문서 제목과 첫 시트 이름을 가져오고, 일곱째 두 번째 API 호출로 그 시트의 A1에서 C3까지 셀 값을 읽고, 여덟째 title, sheet, range, values 네 항목을 담은 딕셔너리를 돌려준다. 마지막으로 이 함수를 골뱅이 mcp.tool 데코레이터로 감싸면 read_sheet_header라는 도구가 되어 에이전트가 부를 수 있게 된다.">
       <defs>
         <marker id="arrGS" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -196,6 +197,7 @@
         <text x="410" y="434" text-anchor="middle" font-size="9" fill="var(--muted)">점선 위 = 딱 한 번, 사람이 브라우저에서 허용 · 점선 아래 = 실행할 때마다 반복되는 코드 경로</text>
       </g>
     </svg>
+    </div>
     <p><strong>읽는 법:</strong> 가로 화살표는 <strong>실행 순서</strong>고, 가운데 <strong>점선</strong>이 이 글에서 제일 중요한 경계예요. 점선 <strong>위</strong>는 <strong>딱 한 번</strong> 일어나고, 점선 <strong>아래</strong>는 <strong>부를 때마다</strong> 반복돼요. 두 구간을 잇는 유일한 물건이 가운데 상자, 즉 <strong><code>token.json</code></strong>이고요. 맨 아래 상자는 아래 구간 전체를 <strong>도구 하나로 포장</strong>하는 단계라 세로 화살표로 붙여 뒀어요 — 여기까지 와야 <a href="mcp-skill-tool-call-anatomy.html">1편</a>에서 본 "에이전트가 도구를 부른다"가 제 표에서도 일어납니다.</p>
 
     <h2><span class="hl">① 최초 로그인</span> — 브라우저가 열리는 그 순간</h2>

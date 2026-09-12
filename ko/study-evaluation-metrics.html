@@ -223,6 +223,36 @@
     color:var(--q);
   }
   .tablewrap{ overflow-x:auto; }
+
+  /* 그림(인라인 SVG)은 viewBox만 주므로 카드 폭에 맞춰 줄어든다. 폰에서는
+     카드가 280px 남짓이라 그대로 두면 그림 안 글자가 3~7px이 되어 안 보인다.
+     표와 같은 해법 — 글자가 11px 밑으로 안 내려가는 최소 폭(--diagram-min)을
+     주고 넘치는 만큼 옆으로 밀어서 보게 한다. */
+  .diagram-scroll{ max-width:100%; }
+  @media (max-width:820px){
+    .diagram-scroll{ overflow-x:auto; overscroll-behavior-x:contain; }
+    .diagram-scroll > svg{ min-width:var(--diagram-min,640px); }
+
+    /* 폰에서는 목차가 화면 절반을 차지한 채 따라다녀서 본문 볼 자리가 없다.
+       좁은 화면에선 맨 위에 한 번만 보여주고 스크롤과 함께 올려보낸다. */
+    nav.toc{ position:static; max-height:none; }
+
+    /* 여백을 줄여 글 읽는 칸을 넓힌다 — 320px 화면에서 본문이 200px밖에
+       안 남던 것을 250px대로 돌려놓는다. */
+    .wrap{ padding:28px 14px 60px; }
+    .item, .refcard{ padding:18px 16px; }
+  }
+
+  /* 안내 문구는 어떤 그림이든 반드시 넘치는 폭(하한 480px + 카드 여백)
+     아래에서만 띄운다 — 밀 필요 없는 화면에서는 거짓 안내가 된다. */
+  @media (max-width:520px){
+    .diagram-scroll::after{
+      content:'← 옆으로 밀면 그림 전체가 보여요 →';
+      position:sticky; left:0; display:block; width:max-content; max-width:100%;
+      margin-top:6px; font-size:12px; color:var(--sub);
+    }
+  }
+
   table.reftable{
     width:100%;
     border-collapse:collapse;
@@ -570,11 +600,12 @@
     <span class="qnum">Q13</span>
     <p class="qtext">판정 기준을 엄격하게 할수록 정밀도는 오르고 재현율은 내려가는 그래프(선 2개, 반대 방향). 이 그래프가 보여주는 것은?</p>
     <figure class="chart">
+      <div class="diagram-scroll" style="--diagram-min: 480px">
       <svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="정밀도-재현율 트레이드오프 곡선">
         <line x1="40" y1="15" x2="40" y2="145" class="ax"/>
         <line x1="40" y1="145" x2="380" y2="145" class="ax"/>
         <text x="10" y="20" class="lbl">점수</text>
-        <text x="330" y="165" class="lbl">기준(느슨→엄격)</text>
+        <text x="394" y="165" class="lbl" text-anchor="end">기준(느슨→엄격)</text>
         <path d="M40,130 C120,115 220,60 380,25" fill="none" stroke="var(--q)" stroke-width="2.5"/>
         <path d="M40,25 C120,55 220,110 380,135" fill="none" stroke="var(--f)" stroke-width="2.5"/>
         <circle cx="215" cy="82" r="3.5" fill="var(--ink)"/>
@@ -583,6 +614,7 @@
         <rect x="255" y="34" width="10" height="10" fill="var(--f)"/>
         <text x="270" y="43" class="lgd">재현율</text>
       </svg>
+      </div>
       <p class="chart-cap">기준이 엄격해질수록 정밀도↑ 재현율↓ — 교차점 부근이 균형 지점</p>
     </figure>
     <div class="block ans">
@@ -595,15 +627,17 @@
     <span class="qnum">Q16</span>
     <p class="qtext">판정 기준을 바꿔가며 F1 점수를 그린 그래프에 봉우리(최고점)가 하나 있다. 이 봉우리가 의미하는 것은?</p>
     <figure class="chart">
+      <div class="diagram-scroll" style="--diagram-min: 480px">
       <svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="F1 vs 판정기준 봉우리 곡선">
         <line x1="40" y1="15" x2="40" y2="145" class="ax"/>
         <line x1="40" y1="145" x2="380" y2="145" class="ax"/>
         <text x="10" y="20" class="lbl">F1</text>
-        <text x="330" y="165" class="lbl">기준(느슨→엄격)</text>
+        <text x="394" y="165" class="lbl" text-anchor="end">기준(느슨→엄격)</text>
         <path d="M40,130 C120,90 180,30 210,28 C240,30 300,95 380,135" fill="none" stroke="var(--q)" stroke-width="2.5"/>
         <circle cx="210" cy="28" r="4" fill="var(--a)"/>
         <text x="188" y="18" class="lgd" fill="var(--a)">최적 지점</text>
       </svg>
+      </div>
       <p class="chart-cap">정밀도·재현율 균형이 가장 좋은 기준값에서 F1이 최고점을 찍는다</p>
     </figure>
     <div class="block ans">
@@ -752,15 +786,17 @@
     <span class="qnum">Q18</span>
     <p class="qtext">perplexity 그래프에서 특정 지점이 갑자기 확 치솟았다. 이게 의미하는 것은?</p>
     <figure class="chart">
+      <div class="diagram-scroll" style="--diagram-min: 480px">
       <svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="perplexity 스파이크 그래프">
         <line x1="40" y1="15" x2="40" y2="145" class="ax"/>
         <line x1="40" y1="145" x2="380" y2="145" class="ax"/>
         <text x="10" y="20" class="lbl">perplexity</text>
-        <text x="320" y="165" class="lbl">문장 속 단어 순서</text>
+        <text x="394" y="165" class="lbl" text-anchor="end">문장 속 단어 순서</text>
         <path d="M40,132 L110,128 L170,130 L215,35 L260,126 L330,124 L380,120" fill="none" stroke="var(--f)" stroke-width="2.5"/>
         <circle cx="215" cy="35" r="4.5" fill="var(--f)"/>
         <text x="180" y="24" class="lgd" fill="var(--f)">스파이크</text>
       </svg>
+      </div>
       <p class="chart-cap">평소엔 낮게 유지되다 한 지점에서 급등 — 그 단어를 모델이 전혀 예상 못 했다는 뜻</p>
     </figure>
     <div class="block ans">
@@ -838,6 +874,7 @@
     <span class="qnum">Q14</span>
     <p class="qtext">k(후보 개수)를 늘릴수록 pass@k가 오르다가 기울기가 완만해지는 그래프(선 1개). 이게 의미하는 것은?</p>
     <figure class="chart">
+      <div class="diagram-scroll" style="--diagram-min: 480px">
       <svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="pass@k vs k 그래프">
         <line x1="40" y1="15" x2="40" y2="145" class="ax"/>
         <line x1="40" y1="145" x2="380" y2="145" class="ax"/>
@@ -850,6 +887,7 @@
         <rect x="255" y="34" width="10" height="10" fill="var(--f)"/>
         <text x="270" y="43" class="lgd">다양성 낮음(temp=0)</text>
       </svg>
+      </div>
       <p class="chart-cap">다양성 있으면 k 늘수록 상승 후 완만해짐, 없으면 거의 평평(pass@1≈pass@10)</p>
     </figure>
     <div class="block ans">
@@ -863,6 +901,7 @@
     <p class="qtext">temperature를 낮췄을 때와 높였을 때 확률분포 곡선 모양이 다르게 그려진 그래프(뾰족한 봉우리 vs 완만하게 퍼진 모양). 뭘 보여주는가?</p>
     <p style="margin:-8px 0 16px;font-size:13.5px;color:var(--sub);"><em>※ temperature란: 모델이 다음 단어를 고를 때 후보들에 매긴 확률을, 얼마나 극단적으로(또는 고르게) 쓸지 조절하는 값. 0에 가까울수록 1등 후보를 거의 확정적으로 골라 매번 같은 답이 나오고, 값을 높일수록 후보들 사이 확률 차이가 줄어들어 다양한 답이 나온다.</em></p>
     <figure class="chart">
+      <div class="diagram-scroll" style="--diagram-min: 480px">
       <svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="temperature에 따른 확률분포 모양">
         <line x1="40" y1="15" x2="40" y2="145" class="ax"/>
         <line x1="40" y1="145" x2="380" y2="145" class="ax"/>
@@ -875,6 +914,7 @@
         <rect x="255" y="34" width="10" height="10" fill="var(--f)"/>
         <text x="270" y="43" class="lgd">temp 높음(평평)</text>
       </svg>
+      </div>
       <p class="chart-cap">뾰족할수록 한 후보에 확률 집중(항상 같은 답), 평평할수록 여러 후보에 분산(답이 매번 다름)</p>
     </figure>
     <div class="block ans">
@@ -885,6 +925,7 @@
       <span class="block-label">후속질문 · Q14와 연결</span>
       <p class="fq">이 확률분포 모양이 Q14의 pass@k 곡선과 어떻게 이어지는가?</p>
       <figure class="chart">
+        <div class="diagram-scroll" style="--diagram-min: 859px">
         <svg viewBox="0 0 820 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="temperature가 pass@k 곡선의 기울기를 결정하는 과정">
           <defs>
             <marker id="pkarrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
@@ -917,8 +958,9 @@
           <rect x="580" y="185" width="10" height="10" fill="var(--q)"/>
           <text x="595" y="194" class="lgd">temp 낮음 → 거의 평평</text>
           <rect x="700" y="185" width="10" height="10" fill="var(--f)"/>
-          <text x="715" y="194" class="lgd">temp 높음 → 계속 상승</text>
+          <text x="814" y="194" class="lgd" text-anchor="end">temp 높음 → 계속 상승</text>
         </svg>
+        </div>
         <p class="chart-cap">같은 temperature 값이 왼쪽 분포 모양과 오른쪽 곡선 기울기를 동시에 만든다</p>
       </figure>
       <p class="fa"><strong>답</strong>: temperature는 원인이고, Q14의 pass@k 곡선 모양은 그 결과다. temperature가 낮으면(왼쪽 파란 뾰족한 분포) 모델이 매번 같은 토큰을 거의 확정적으로 골라서, 후보를 몇 개 뽑든 사실상 같은 답을 반복하는 셈이 된다 — 그래서 k를 늘려도 pass@k가 거의 안 오르고 평평하게 유지된다(pass@1≈pass@10, 오른쪽 파란 선). temperature가 높으면(왼쪽 주황 평평한 분포) 매번 다른 토큰을 고를 확률이 커져서 후보마다 서로 다른 경로를 타게 되고, k를 늘릴수록 그중 하나가 정답에 걸릴 기회가 늘어나 pass@k가 계속 오른다(오른쪽 주황 선). 즉 같은 temperature 하나가 왼쪽 분포 모양과 오른쪽 곡선 기울기를 동시에 결정하는 원인이다. 다만 temperature를 무한정 올리면 개별 후보 하나하나의 품질(pass@1)이 떨어질 수 있어서 무조건 높다고 좋은 게 아니다 — 이게 <b style="color:var(--q);">고정 3원칙</b>의 "같은 실행 조건"에 temperature가 꼭 들어가야 하는 이유다.</p>
@@ -929,6 +971,7 @@
     <span class="qnum">Q19</span>
     <p class="qtext">왼쪽은 훈련 스텝에 따른 AIME 정확도(pass@1, cons@16), 오른쪽은 같은 훈련 스텝에 따른 평균 응답 길이 그래프다(DeepSeek-R1-Zero). 이 두 그래프를 나란히 보여주는 이유는?</p>
     <figure class="chart">
+      <div class="diagram-scroll" style="--diagram-min: 859px">
       <svg viewBox="0 0 820 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="DeepSeek-R1-Zero 훈련 중 정확도와 응답 길이 그래프">
         <line x1="40" y1="15" x2="40" y2="185" class="ax"/>
         <line x1="40" y1="185" x2="380" y2="185" class="ax"/>
@@ -949,6 +992,7 @@
         <text x="745" y="205" class="lbl">Steps</text>
         <path d="M465,183 C520,178 560,168 600,150 C640,132 660,110 700,95 C730,85 750,80 760,72 C770,80 775,90 780,85 C790,78 795,82 797,80" fill="none" stroke="var(--q)" stroke-width="2"/>
       </svg>
+      </div>
       <p class="chart-cap">왼쪽: cons@16(빨강)이 pass@1(파랑)보다 항상 위, 둘 다 우상향. 오른쪽: 같은 훈련 구간에서 응답 길이도 우상향. (DeepSeek-R1 논문, arXiv:2501.12948 Figure 2·3을 단순화해 재구성)</p>
     </figure>
     <div class="block ans">
@@ -1132,6 +1176,7 @@
     <p class="qtext">예시 개수(0개→1개→여러 개)가 늘어날수록 정확도가 오르는 선 그래프(GPT-3 zero-shot 64.3 → one-shot 68.2 → few-shot 71.8). 이 그래프를 읽을 때 주의할 점은?</p>
     <p style="margin:-8px 0 16px;font-size:13.5px;color:var(--sub);"><em>※ zero-shot/one-shot/few-shot이란: 모델을 다시 학습(파인튜닝)시키는 게 아니라, <strong>프롬프트 안에 예시를 몇 개 넣어주느냐</strong>의 차이다. zero-shot은 예시 없이 바로 문제만 주는 것, one-shot은 예시 1개를 먼저 보여준 뒤 문제를 주는 것, few-shot은 예시 여러 개(보통 몇 개~수십 개)를 먼저 보여준 뒤 문제를 주는 것. 아래 그래프는 "예시를 0개→1개→여러 개로 늘렸더니 GPT-3의 정확도가 64.3→68.2→71.8로 올라갔다"는 관찰을 보여준다.</em></p>
     <figure class="chart">
+      <div class="diagram-scroll" style="--diagram-min: 480px">
       <svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="예시 개수에 따른 정확도 그래프">
         <line x1="40" y1="15" x2="40" y2="145" class="ax"/>
         <line x1="40" y1="145" x2="380" y2="145" class="ax"/>
@@ -1148,6 +1193,7 @@
         <text x="200" y="160" class="lbl">one</text>
         <text x="335" y="160" class="lbl">few</text>
       </svg>
+      </div>
       <p class="chart-cap">GPT-3·SuperGLUE라는 특정 조건에서 나온 값 — 다른 모델·과업에 그대로 일반화 불가</p>
     </figure>
     <div class="block ans">
@@ -1167,7 +1213,10 @@
   function syncNavHeight(){
     var nav = document.querySelector('nav.toc');
     if(!nav) return;
-    document.documentElement.style.setProperty('--nav-h', nav.offsetHeight + 'px');
+    // 폰 폭에서는 목차가 sticky가 아니라 그냥 맨 위에 놓인다. 그때까지
+    // 목차 높이만큼 앵커를 띄우면 글이 화면 밖으로 밀려나므로 0으로 둔다.
+    var sticky = getComputedStyle(nav).position === 'sticky';
+    document.documentElement.style.setProperty('--nav-h', sticky ? nav.offsetHeight + 'px' : '0px');
   }
   window.addEventListener('load', syncNavHeight);
   window.addEventListener('resize', syncNavHeight);

@@ -74,6 +74,7 @@
     <p>지표 하나가 정확성·형식·유용성·안전성을 다 재지는 못한다. 자 하나로 길이와 무게를 동시에 잴 수 없는 것과 같다. 아래 순서로 물어보면 지표를 고를 수 있다.</p>
 
     <figure>
+      <div class="diagram-scroll" style="--diagram-min: 542px">
       <svg viewBox="0 0 640 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="fig1title">
         <title id="fig1title">평가지표를 고르는 3단계 질문 흐름도</title>
         <style>
@@ -101,6 +102,7 @@
         <rect x="15" y="212" width="610" height="38" rx="6" class="m-box" style="stroke:var(--muted);stroke-dasharray:5 4;"/>
         <text x="30" y="235" class="m-t" fill="var(--muted)">perplexity는 이 셋 중 어디에도 안 씀 — 모델의 "확신"만 잴 뿐, 정답 여부는 못 잰다</text>
       </svg>
+      </div>
       <figcaption>지표는 비용 순서이기도 하다 — 자동 판정이 제일 싸고, 사람 판단이 제일 비싸다.</figcaption>
     </figure>
 
@@ -184,6 +186,7 @@
     <h3>temperature가 pass@k 곡선의 모양을 결정한다</h3>
     <p>여기서 <strong>temperature</strong>(모델이 다음 단어를 고를 때 확률을 얼마나 극단적으로 쓸지 조절하는 값)가 중요해진다. temperature가 0에 가까우면 모델이 매번 같은 토큰을 거의 확정적으로 골라서, 후보를 몇 개 뽑든 사실상 같은 답을 반복하는 셈이 된다 — k를 늘려도 pass@k가 거의 안 오르고 평평하게 유지된다(pass@1≈pass@10). temperature를 높이면 매번 다른 토큰을 고를 확률이 커져서 후보마다 서로 다른 경로를 타게 되고, k를 늘릴수록 그중 하나가 정답에 걸릴 기회가 늘어나 pass@k가 계속 오른다.</p>
     <figure class="chart">
+      <div class="diagram-scroll" style="--diagram-min: 680px">
       <svg viewBox="0 0 680 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="fig-pk-title">
         <title id="fig-pk-title">temperature가 pass@k 곡선의 기울기를 결정하는 과정</title>
         <style>
@@ -224,6 +227,7 @@
         <rect x="440" y="203" width="10" height="10" fill="#8A5A12"/>
         <text x="455" y="212" class="pk-lgd">temp 높음 → 계속 상승</text>
       </svg>
+      </div>
       <figcaption>같은 temperature 값이 왼쪽 분포 모양과 오른쪽 곡선 기울기를 동시에 만든다</figcaption>
     </figure>
     <p>즉 같은 temperature 하나가 왼쪽 분포 모양과 오른쪽 곡선 기울기를 동시에 결정하는 원인이다. 다만 temperature를 무한정 올리면 개별 후보 하나하나의 품질(pass@1)이 떨어질 수 있어서 무조건 높다고 좋은 게 아니다 — temperature가 앞서 본 "고정할 것 ② 같은 실행 조건"에 꼭 들어가야 하는 이유가 여기 있다.</p>

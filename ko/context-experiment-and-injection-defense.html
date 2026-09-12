@@ -135,6 +135,7 @@ for name, ctx in CONTEXTS.items():
     <p><strong>프롬프트 인젝션</strong>은 이 구분이 무너질 때 생긴다. 읽으라고 넣은 데이터(비신뢰 입력) 안에 지시문이 숨어 있는데, AI가 그걸 진짜 지시로 받아들이는 현상이다. 사용자가 채팅창에 직접 "이전 지시 무시해"라고 쓰는 <strong>직접 인젝션</strong>도 있지만, 더 까다로운 건 AI가 읽은 웹페이지나 첨부 문서 속에 지시가 숨어 있는 <strong>간접 인젝션</strong>이다.</p>
 
     <figure>
+      <div class="diagram-scroll" style="--diagram-min: 563px">
       <svg viewBox="0 0 640 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="fig3title">
         <title id="fig3title">간접 프롬프트 인젝션이 행동으로 이어지는 경로</title>
         <style>
@@ -163,6 +164,7 @@ for name, ctx in CONTEXTS.items():
         <text x="574" y="80" class="ij-t">도구</text>
         <text x="574" y="100" class="ij-t">실행</text>
       </svg>
+      </div>
       <figcaption>승인 없는 행동 앞에 차단선을 두지 않으면, 비신뢰 문장이 도구 실행까지 이어질 수 있다.</figcaption>
     </figure>
 
