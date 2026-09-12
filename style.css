@@ -184,7 +184,9 @@ main h1 {
    구간(대시 앞 본문 문장, 없으면 전체)만 감싸므로 그 길이만큼만 밑줄이
    그려진다. box-decoration-break:clone 덕분에 그 span이 줄바꿈되면 배경도
    줄마다 새로 복제돼서, 각 줄이 실제로 자기 텍스트 폭만큼만 밑줄을 받는다
-   (짧은 마지막 줄이 다음 줄 앞부분까지 밑줄 긋는 문제 방지). */
+   (짧은 마지막 줄이 다음 줄 앞부분까지 밑줄 긋는 문제 방지).
+   SVG에는 preserveAspectRatio='none'이 필요하다 — 기본값 meet이면 비율을 지키느라
+   글자 폭이 아무리 넓어도 200:26 비율짜리 짧은 물결만 가운데에 그린다. */
 main h1 .hl {
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
@@ -192,7 +194,7 @@ main h1 .hl {
   background-repeat: no-repeat;
   background-position: left bottom;
   background-size: 100% 15px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='26' viewBox='0 0 200 26'%3E%3Cpath d='M4 9 C40 2 70 15 110 7 C145 1 170 12 196 6' fill='none' stroke='%23ff5a5f' stroke-opacity='0.55' stroke-width='3.5' stroke-linecap='round'/%3E%3Cpath d='M4 18 C38 23 68 13 105 19 C138 24 168 15 196 20' fill='none' stroke='%23ff5a5f' stroke-opacity='0.45' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='26' viewBox='0 0 200 26' preserveAspectRatio='none'%3E%3Cpath d='M4 9 C40 2 70 15 110 7 C145 1 170 12 196 6' fill='none' stroke='%23ff5a5f' stroke-opacity='0.55' stroke-width='3.5' stroke-linecap='round'/%3E%3Cpath d='M4 18 C38 23 68 13 105 19 C138 24 168 15 196 20' fill='none' stroke='%23ff5a5f' stroke-opacity='0.45' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E");
 }
 
 /* 본문 문장 강조용 형광펜 밑줄. h1의 .hl과 같은 색·기법이지만 글자 크기가
@@ -204,7 +206,7 @@ main p .hl {
   background-repeat: no-repeat;
   background-position: left bottom;
   background-size: 100% 9px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='26' viewBox='0 0 200 26'%3E%3Cpath d='M4 9 C40 2 70 15 110 7 C145 1 170 12 196 6' fill='none' stroke='%23ff5a5f' stroke-opacity='0.55' stroke-width='3.5' stroke-linecap='round'/%3E%3Cpath d='M4 18 C38 23 68 13 105 19 C138 24 168 15 196 20' fill='none' stroke='%23ff5a5f' stroke-opacity='0.45' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='26' viewBox='0 0 200 26' preserveAspectRatio='none'%3E%3Cpath d='M4 9 C40 2 70 15 110 7 C145 1 170 12 196 6' fill='none' stroke='%23ff5a5f' stroke-opacity='0.55' stroke-width='3.5' stroke-linecap='round'/%3E%3Cpath d='M4 18 C38 23 68 13 105 19 C138 24 168 15 196 20' fill='none' stroke='%23ff5a5f' stroke-opacity='0.45' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E");
 }
 
 main h1.greeting {
@@ -275,19 +277,19 @@ main h2 .hl {
   background-size: 100% 13px;
 }
 main h2:nth-of-type(5n+1) .hl {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='26' viewBox='0 0 200 26'%3E%3Cpath d='M4 9 C40 2 70 15 110 7 C145 1 170 12 196 6' fill='none' stroke='%233f8fef' stroke-opacity='0.55' stroke-width='3.5' stroke-linecap='round'/%3E%3Cpath d='M4 18 C38 23 68 13 105 19 C138 24 168 15 196 20' fill='none' stroke='%233f8fef' stroke-opacity='0.45' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='26' viewBox='0 0 200 26' preserveAspectRatio='none'%3E%3Cpath d='M4 9 C40 2 70 15 110 7 C145 1 170 12 196 6' fill='none' stroke='%233f8fef' stroke-opacity='0.55' stroke-width='3.5' stroke-linecap='round'/%3E%3Cpath d='M4 18 C38 23 68 13 105 19 C138 24 168 15 196 20' fill='none' stroke='%233f8fef' stroke-opacity='0.45' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E");
 }
 main h2:nth-of-type(5n+2) .hl {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='26' viewBox='0 0 200 26'%3E%3Cpath d='M4 9 C40 2 70 15 110 7 C145 1 170 12 196 6' fill='none' stroke='%2334c98d' stroke-opacity='0.55' stroke-width='3.5' stroke-linecap='round'/%3E%3Cpath d='M4 18 C38 23 68 13 105 19 C138 24 168 15 196 20' fill='none' stroke='%2334c98d' stroke-opacity='0.45' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='26' viewBox='0 0 200 26' preserveAspectRatio='none'%3E%3Cpath d='M4 9 C40 2 70 15 110 7 C145 1 170 12 196 6' fill='none' stroke='%2334c98d' stroke-opacity='0.55' stroke-width='3.5' stroke-linecap='round'/%3E%3Cpath d='M4 18 C38 23 68 13 105 19 C138 24 168 15 196 20' fill='none' stroke='%2334c98d' stroke-opacity='0.45' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E");
 }
 main h2:nth-of-type(5n+3) .hl {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='26' viewBox='0 0 200 26'%3E%3Cpath d='M4 9 C40 2 70 15 110 7 C145 1 170 12 196 6' fill='none' stroke='%23a479f2' stroke-opacity='0.55' stroke-width='3.5' stroke-linecap='round'/%3E%3Cpath d='M4 18 C38 23 68 13 105 19 C138 24 168 15 196 20' fill='none' stroke='%23a479f2' stroke-opacity='0.45' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='26' viewBox='0 0 200 26' preserveAspectRatio='none'%3E%3Cpath d='M4 9 C40 2 70 15 110 7 C145 1 170 12 196 6' fill='none' stroke='%23a479f2' stroke-opacity='0.55' stroke-width='3.5' stroke-linecap='round'/%3E%3Cpath d='M4 18 C38 23 68 13 105 19 C138 24 168 15 196 20' fill='none' stroke='%23a479f2' stroke-opacity='0.45' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E");
 }
 main h2:nth-of-type(5n+4) .hl {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='26' viewBox='0 0 200 26'%3E%3Cpath d='M4 9 C40 2 70 15 110 7 C145 1 170 12 196 6' fill='none' stroke='%23ff9f45' stroke-opacity='0.55' stroke-width='3.5' stroke-linecap='round'/%3E%3Cpath d='M4 18 C38 23 68 13 105 19 C138 24 168 15 196 20' fill='none' stroke='%23ff9f45' stroke-opacity='0.45' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='26' viewBox='0 0 200 26' preserveAspectRatio='none'%3E%3Cpath d='M4 9 C40 2 70 15 110 7 C145 1 170 12 196 6' fill='none' stroke='%23ff9f45' stroke-opacity='0.55' stroke-width='3.5' stroke-linecap='round'/%3E%3Cpath d='M4 18 C38 23 68 13 105 19 C138 24 168 15 196 20' fill='none' stroke='%23ff9f45' stroke-opacity='0.45' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E");
 }
 main h2:nth-of-type(5n) .hl {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='26' viewBox='0 0 200 26'%3E%3Cpath d='M4 9 C40 2 70 15 110 7 C145 1 170 12 196 6' fill='none' stroke='%23ff6fae' stroke-opacity='0.55' stroke-width='3.5' stroke-linecap='round'/%3E%3Cpath d='M4 18 C38 23 68 13 105 19 C138 24 168 15 196 20' fill='none' stroke='%23ff6fae' stroke-opacity='0.45' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='26' viewBox='0 0 200 26' preserveAspectRatio='none'%3E%3Cpath d='M4 9 C40 2 70 15 110 7 C145 1 170 12 196 6' fill='none' stroke='%23ff6fae' stroke-opacity='0.55' stroke-width='3.5' stroke-linecap='round'/%3E%3Cpath d='M4 18 C38 23 68 13 105 19 C138 24 168 15 196 20' fill='none' stroke='%23ff6fae' stroke-opacity='0.45' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E");
 }
 
 main ol,
@@ -303,21 +305,24 @@ main li {
 }
 
 /* 본문에 이미 쓰인 강조 태그를 크레용 손그림으로 꾸민다. 137개 글을
-   안 건드리고 기존 <strong>/<em> 위에 자동으로 입혀진다. */
-main strong {
-  position: relative;
-  z-index: 0;
-}
+   안 건드리고 기존 <strong>/<em> 위에 자동으로 입혀진다.
 
-main strong::before {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  left: -4%;
-  right: -4%;
-  top: 12%;
-  bottom: 6%;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='26' viewBox='0 0 220 26'%3E%3Cpath d='M2 8 L22 4 L42 9 L62 3 L82 8 L102 4 L122 9 L142 3 L162 8 L182 4 L202 9 L218 5 L218 15 L200 19 L182 14 L164 20 L146 15 L128 21 L110 16 L92 22 L74 17 L56 21 L38 16 L20 20 L2 17 Z' fill='%23ffd94a' opacity='0.85'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
+   노란 형광펜도 <em>의 동그라미와 같은 두 가지 이유로 어긋나 있었다.
+   (1) 절대 위치 가상 요소(::before)로 그려서, <strong>이 줄바꿈되면 인라인
+       요소의 컨테이닝 블록이 0폭으로 무너져 형광펜이 아예 사라졌고,
+   (2) 한 줄에 들어가도 SVG 기본값 preserveAspectRatio='xMidYMid meet'이 비율을
+       지키느라 납작하게 눌려서 취소선처럼 보였다.
+   그래서 <strong> 자신의 배경에 얹고 box-decoration-break:clone으로 줄마다 다시
+   그린다. 크레용 모양은 선이 아니라 칠(fill)이라 preserveAspectRatio='none'으로
+   늘여도 굵기가 일그러지지 않는다. */
+main strong {
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  /* 한글 글자는 em 상자 안에서 아래쪽에 앉기 때문에, 형광펜 띠를 살짝 내려야
+     글자 띠 한가운데에 온다. 세로 padding은 인라인 요소의 줄 높이를 바꾸지
+     않으므로(줄 간격 1.85 안에서만 부푼다) 문단 모양에는 영향이 없다. */
+  padding: 0.06em 0 0.16em;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='26' viewBox='0 0 220 26' preserveAspectRatio='none'%3E%3Cpath d='M2 8 L22 4 L42 9 L62 3 L82 8 L102 4 L122 9 L142 3 L162 8 L182 4 L202 9 L218 5 L218 15 L200 19 L182 14 L164 20 L146 15 L128 21 L110 16 L92 22 L74 17 L56 21 L38 16 L20 20 L2 17 Z' fill='%23ffd94a' opacity='0.85'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
 }
 
 /* 강조 문장을 감싸는 크레용 동그라미. 예전에는 절대 위치 가상 요소로 그렸는데
@@ -783,11 +788,12 @@ body.list-page .site-header {
   right: 0;
   bottom: 0;
   height: 14px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='14' viewBox='0 0 200 14'%3E%3Cpath d='M0 8 C8 2 14 13 24 7 C34 2 42 13 54 7 C66 2 76 13 88 7 C102 2 112 13 126 7 C140 2 150 13 164 7 C176 2 186 12 200 7' fill='none' stroke='currentColor' stroke-width='7.5' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: left bottom;
-  background-size: 100% 100%;
-  color: var(--folder-accent, var(--accent));
+  /* 물결을 background-image로 넣으면 SVG 안의 currentColor가 이 요소의 color를
+     못 읽어서(배경 이미지는 별개 문서다) 폴더 색 대신 검정으로 그려졌다. 그래서
+     물결은 mask로 모양만 뜨고 색은 background-color로 칠한다. */
+  background-color: var(--folder-accent, var(--accent));
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='14' viewBox='0 0 200 14' preserveAspectRatio='none'%3E%3Cpath d='M0 8 C8 2 14 13 24 7 C34 2 42 13 54 7 C66 2 76 13 88 7 C102 2 112 13 126 7 C140 2 150 13 164 7 C176 2 186 12 200 7' fill='none' stroke='%23000' stroke-width='7.5' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat left bottom / 100% 100%;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='14' viewBox='0 0 200 14' preserveAspectRatio='none'%3E%3Cpath d='M0 8 C8 2 14 13 24 7 C34 2 42 13 54 7 C66 2 76 13 88 7 C102 2 112 13 126 7 C140 2 150 13 164 7 C176 2 186 12 200 7' fill='none' stroke='%23000' stroke-width='7.5' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat left bottom / 100% 100%;
 }
 
 .post-group-blurb {
