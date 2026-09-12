@@ -131,7 +131,7 @@ while True:
     <p>그래서 <a href="langgraph-five-workflow-patterns.html#routing">6편의 라우팅</a>처럼 LLM이 입력을 읽고 갈래를 골라도, 고를 수 있는 갈래를 개발자가 미리 다 그려 뒀다면 여전히 워크플로예요. LLM이 판단을 하느냐가 아니라, <strong>그 판단이 움직일 수 있는 길을 누가 그려 뒀느냐</strong>를 봐요.</p>
     <div class="key-point" id="key-who-decides">
       <p class="key-point-label"><span class="key-point-badge">중요</span>2강에서 짚은 내용</p>
-      <p>워크플로와 에이전트를 가르는 기준은 하나예요. <strong>다음에 갈 다음에 어느 코드가 실행될까.</strong> 개발자가 코드로 길을 미리 다 그려 뒀으면 워크플로, LLM이 매 단계 스스로 정하면 에이전트예요. LLM을 몇 번 부르는지, 도구를 쓰는지, 모델이 큰지는 기준이 아니에요. 셋 다 워크플로와 에이전트 양쪽에 똑같이 나타날 수 있어서 둘을 가르지 못해요.</p>
+      <p>워크플로와 에이전트를 가르는 기준은 하나예요. <strong>다음에 어느 코드가 실행될지를 누가 정하나.</strong> 개발자가 코드로 길을 미리 다 그려 뒀으면 워크플로, LLM이 매 단계 스스로 정하면 에이전트예요. LLM을 몇 번 부르는지, 도구를 쓰는지, 모델이 큰지는 기준이 아니에요. 셋 다 워크플로와 에이전트 양쪽에 똑같이 나타날 수 있어서 둘을 가르지 못해요.</p>
     </div>
     <p id="anthropic-advice">Anthropic은 "가장 단순한 방법으로 시작하고, 자율성이 꼭 필요하다는 증거가 있을 때만 복잡도를 더하라"고 권해요. 정해진 길을 따르면 결과를 예측할 수 있고, 비용을 통제할 수 있고, 틀렸을 때 어디가 틀렸는지 바로 찾을 수 있으니까요.</p>
     <p>모든 그래프의 노드 하나하나는 <strong>증강된 LLM<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup></strong>이라고 보면 이해가 쉬워요. LLM 본체에 검색·도구·메모리가 붙은 한 덩어리요. 붙이는 도구는 크게 셋이에요.</p>
@@ -163,10 +163,8 @@ while True:
       <li><strong>관측을 붙이기 쉬워요</strong> — 코드를 고치지 않고 환경 변수 몇 줄만 넣으면 실행 기록이 LangSmith에 남아요(<a href="langgraph-five-workflow-patterns.html#langsmith">6편</a>에서 켜 봐요).</li>
     </ul>
 
-    <h3 id="who-decides-edges">제 기록 하나를 고쳐 적어요 — "결정 주체가 가려진다"는 말</h3>
-    <p>방금 "흐름을 감추지 않는다"를 장점으로 적었는데, 저는 예전에 정반대로 적어 뒀어요. 그래서 여기서 한 번 고치고 갈게요.</p>
-    <p><a href="multi-agent-three-runs-abc.html">멀티 에이전트 실험</a> 때 저는 "LangGraph 같은 범용 프레임워크를 쓰면 <strong>다음 행동을 누가 정하는지</strong>가 프레임워크 안에 가려진다"고 적고, 그 실험 도구로 Claude Agent SDK를 골랐어요. 여기서 "누가 정하는지"란 <a href="#key-who-decides">바로 위에서 본 그 질문</a>이에요. 한 걸음이 끝난 뒤 다음에 뭘 할지를 <strong>개발자가 코드에 박아 둔 규칙</strong>이 정하느냐, <strong>LLM</strong>이 정하느냐요. 그 실험에서 제가 비교하려던 게 정확히 그 차이였으니, 그게 안 보이는 도구는 쓸 수 없다고 판단한 거예요. 안 써 보고 내린 판단이었고요.</p>
-    <p>막상 배워 보니 반대였어요. <strong>State·Node·Edge로 직접 그린 그래프는 그 결정 주체를 선 하나하나로 드러내는 쪽</strong>이었어요. 선의 종류가 곧 답이거든요.</p>
+    <h3 id="who-decides-edges">누가 정하는지는 선의 종류에 적혀 있어요</h3>
+    <p>방금 적은 "흐름을 감추지 않는다"가 <a href="#key-who-decides">바로 위에서 본 그 질문</a>과 만나는 자리예요. 한 걸음이 끝난 뒤 다음에 뭘 할지를 <strong>개발자가 코드에 박아 둔 규칙</strong>이 정하느냐 <strong>LLM</strong>이 정하느냐 — <strong>State·Node·Edge로 직접 그린 그래프는 그 결정 주체를 선 하나하나로 드러내요.</strong> 선의 종류가 곧 답이거든요.</p>
     <table>
       <thead><tr><th>코드에 적은 선</th><th>이 걸음을 정한 건</th></tr></thead>
       <tbody>
@@ -174,9 +172,9 @@ while True:
         <tr><td><code>add_conditional_edges("taste", judge, [...])</code><br>— 조건부 엣지</td><td><strong>두 번째 자리에 앉힌 <code>judge</code></strong>예요. 그게 <code>if</code>문으로 짠 함수면 규칙이 정하는 거고(<a href="langgraph-state-node-edge.html#build-branch">다음 편의 직접 만들기 ②</a>), 그 자리에 모델을 앉히면 LLM이 정하는 거예요(<a href="langgraph-branches-and-tool-loop.html#tool-loop">4편의 직접 만들기 ③</a>)</td></tr>
       </tbody>
     </table>
-    <p>선을 한 줄씩 전부 제 손으로 적어야 하니, 거꾸로 그 줄만 보면 누가 정하는지가 그대로 보여요. 가려지기는커녕 <strong>코드가 그 답을 적어 놓고 있는</strong> 셈이에요.</p>
-    <p>그럼 제가 걱정했던 "가려짐"은 어디서 생길까요. <code>create_agent</code> 같은 <strong>미리 만들어진 부품</strong>을 쓸 때예요. 이 함수 한 줄을 부르면 "모델에게 묻는다 → 모델이 부탁한 도구를 실행한다 → 결과를 들고 다시 모델에게 묻는다"는 반복이 <strong>이미 배선된 채로</strong> 나와요. 몇 줄로 에이전트가 완성되니 편한데, 그 반복은 선으로 보이지 않고 중간에 "사람이 검토" 같은 제 노드를 끼워 넣을 수도 없어요. <a href="langgraph-branches-and-tool-loop.html#tool-loop">4편</a>에서 이 부품을 한 번 쓰고, 같은 걸 손으로 조립해서 나란히 비교해 봐요. <a href="#n8n-vs-langgraph">아래 n8n 비교표</a>의 'LLM 판단 범위' 줄에서 n8n의 AI Agent 노드를 두고 "칸 안의 반복은 봉인돼 있다"고 적은 것과 똑같은 상황이고요.</p>
-    <p><strong>정리하면, 가려지느냐 아니냐는 프레임워크 이름이 아니라 그 안에서 직접 그리느냐 완제품을 가져다 쓰느냐로 갈려요.</strong> 도구 이름만 보고 판단한 게 제 실수였어요.</p>
+    <p>선을 한 줄씩 전부 손으로 적어야 하니, 거꾸로 그 줄만 보면 누가 정하는지가 그대로 보여요. <strong>코드가 그 답을 적어 놓고 있는</strong> 셈이에요.</p>
+    <p>그럼 "누가 정하는지"가 안 보이는 경우는 언제일까요. <code>create_agent</code> 같은 <strong>미리 만들어진 부품</strong>을 쓸 때예요. 이 함수 한 줄을 부르면 "모델에게 묻는다 → 모델이 부탁한 도구를 실행한다 → 결과를 들고 다시 모델에게 묻는다"는 반복이 <strong>이미 배선된 채로</strong> 나와요. 몇 줄로 에이전트가 완성되니 편한데, 그 반복은 선으로 보이지 않고 중간에 "사람이 검토" 같은 제 노드를 끼워 넣을 수도 없어요. <a href="langgraph-branches-and-tool-loop.html#tool-loop">4편</a>에서 이 부품을 한 번 쓰고, 같은 걸 손으로 조립해서 나란히 비교해 봐요. <a href="#n8n-vs-langgraph">아래 n8n 비교표</a>의 'LLM 판단 범위' 줄에서 n8n의 AI Agent 노드를 두고 "칸 안의 반복은 봉인돼 있다"고 적은 것과 똑같은 상황이고요.</p>
+    <p><strong>정리하면, 결정 주체가 보이느냐 아니냐는 프레임워크 이름이 아니라 그 안에서 선을 직접 그리느냐 완제품을 가져다 쓰느냐로 갈려요.</strong></p>
 
     <h3>헷갈리기 쉬운 이웃들</h3>
     <p>LangGraph와 헷갈리기 쉬운 것들도 정리해 둘게요. ComfyUI·n8n·Flowise·Dify는 노드를 선으로 잇는 <strong>생김새</strong>가 닮았고, GraphRAG는 <strong>이름</strong>에 graph가 들어가서 헷갈려요. 여기부터 <a href="#n8n-vs-langgraph">다음 절(n8n 비교)</a>까지는 "이건 LangGraph가 아니다"를 갈라 두는 자리라, 이 도구들을 들어 본 적 없다면 <a href="#analogy">주방 비유 절</a>로 건너뛰었다가 나중에 돌아와도 돼요.</p>
@@ -211,8 +209,7 @@ while True:
     <p>그래서 <a href="#anthropic-advice">앞에서 본 Anthropic의 권고</a>, "가장 단순한 방법으로 시작하라"는 n8n과 LangGraph 중에 고를 때도 통해요. 정해진 순서로 여러 서비스를 잇는 일이 대부분이라면 n8n으로 끝나는지부터 보고, LLM이 매번 다음 걸음을 골라야 하거나 흐름을 코드로 세밀하게 통제해야 할 때 LangGraph로 가는 순서예요.</p>
 
     <h2 id="analogy"><span class="hl">비유</span> — 같은 주방, 두 가지 운영 방식</h2>
-    <p>이 시리즈는 비유를 <strong>하나만</strong> 써요. <strong>식당 주방</strong>이에요. 편이 바뀌어도 장소는 안 바뀌고, 같은 등장인물이 계속 나와요. 여기서 한 번 익혀 두면 일곱 편을 같은 그림으로 읽을 수 있어요. 이번 편에서는 주방을 세워 두기만 할게요.</p>
-    <p>다만 비유는 <strong>이해를 돕는 보조</strong>일 뿐이에요. 비유가 헷갈리면 위의 직접 설명("다음에 실행할 함수를 누가 고르나")으로 돌아가면 되고, 비유로는 잘 안 맞는 대목마다 "다만 여기서 비유가 끊기는 점" 한 줄을 따로 달아 둘게요.</p>
+    <p>이 시리즈는 비유를 <strong>하나만</strong> 써요. <strong>식당 주방</strong>이에요. 편이 바뀌어도 장소는 안 바뀌고, 같은 등장인물이 계속 나와요.</p>
     <p>A 주방은 벽에 <strong>동선표</strong>가 붙어 있어요. "손질대 다음은 화구, 화구 다음은 검수대." 영업 전에 사장님이 확정해 뒀고, 직원은 그 선을 따라 전표를 넘겨요. 검수대에서 갈림길이 나와도 갈 수 있는 곳은 사장님이 미리 그려 둔 두 곳뿐이에요.</p>
     <p>B 주방은 <strong>주방장</strong>이 접시를 보고 그때그때 정해요. "이건 다시 볶고, 저건 바로 내보내고, 이건 재료부터 다시 사 와." 벽에 동선표가 없어요. 대신 주방장이 쓸 수 있는 <strong>도구 목록</strong>(화구·냉장고·전화기)이 정해져 있고, 그 목록 밖의 일은 못 해요.</p>
     <table>
@@ -232,77 +229,78 @@ while True:
 
     <h2 id="big-picture"><span class="hl">전체 흐름</span> — 자율성 눈금자 한 줄</h2>
     <p>워크플로와 에이전트는 두 개의 상자가 아니라 <strong>눈금자 위의 위치</strong>예요. 이 시리즈에서 만들 것들을 그 눈금자에 올려 두면 이렇게 돼요. <strong>읽는 법:</strong> 왼쪽으로 갈수록 길을 개발자가 못 박아 둔 쪽이고, 오른쪽으로 갈수록 LLM이 그때그때 고르는 쪽이에요. 상자 아래 괄호는 그걸 다루는 편이고, 맨 오른쪽 하나만 테두리가 점선인데 <strong>그 안의 반복이 코드에 선으로 안 보인다</strong>는 뜻이에요.</p>
-    <svg viewBox="0 0 760 300" role="img" aria-label="다음 걸음을 누가 정하나를 왼쪽 개발자부터 오른쪽 LLM까지 눈금자로 그린 그림. 고정 엣지, if문 라우터를 쓴 조건부 엣지, 모델 라우터를 쓴 조건부 엣지, create_agent 완제품 루프 순으로 놓여 있다">
+    <svg viewBox="0 0 760 336" role="img" aria-label="다음 걸음을 누가 정하나를 왼쪽 개발자부터 오른쪽 LLM까지 눈금자로 그린 그림. 고정 엣지, if문 라우터를 쓴 조건부 엣지, 모델 라우터를 쓴 조건부 엣지, create_agent 완제품 루프 순으로 놓여 있다">
       <defs>
         <marker id="lgs1" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
           <path d="M0,0 L9,4.5 L0,9 z" fill="var(--muted)"/>
         </marker>
       </defs>
-      <text x="380" y="26" text-anchor="middle" font-family="var(--font-heading)" font-size="15" fill="var(--accent)">다음 걸음을 누가 정하나</text>
+      <text x="380" y="28" text-anchor="middle" font-family="var(--font-heading)" font-size="19" fill="var(--accent)">다음 걸음을 누가 정하나</text>
 
-      <text x="26" y="64" font-family="var(--font-body)" font-size="12" fill="var(--muted)">개발자가 전부 정함</text>
-      <text x="734" y="64" text-anchor="end" font-family="var(--font-body)" font-size="12" fill="var(--muted)">LLM이 매번 정함</text>
-      <line x1="26" y1="78" x2="726" y2="78" stroke="var(--muted)" stroke-width="2" marker-end="url(#lgs1)"/>
+      <text x="26" y="68" font-family="var(--font-body)" font-size="14" fill="var(--muted)">개발자가 전부 정함</text>
+      <text x="734" y="68" text-anchor="end" font-family="var(--font-body)" font-size="14" fill="var(--muted)">LLM이 매번 정함</text>
+      <line x1="26" y1="82" x2="726" y2="82" stroke="var(--muted)" stroke-width="2" marker-end="url(#lgs1)"/>
 
-      <line x1="100" y1="78" x2="100" y2="104" stroke="var(--border)" stroke-width="1.5"/>
-      <line x1="280" y1="78" x2="280" y2="104" stroke="var(--border)" stroke-width="1.5"/>
-      <line x1="460" y1="78" x2="460" y2="104" stroke="var(--border)" stroke-width="1.5"/>
-      <line x1="640" y1="78" x2="640" y2="104" stroke="var(--border)" stroke-width="1.5"/>
+      <line x1="100" y1="82" x2="100" y2="106" stroke="var(--border)" stroke-width="1.5"/>
+      <line x1="280" y1="82" x2="280" y2="106" stroke="var(--border)" stroke-width="1.5"/>
+      <line x1="460" y1="82" x2="460" y2="106" stroke="var(--border)" stroke-width="1.5"/>
+      <line x1="640" y1="82" x2="640" y2="106" stroke="var(--border)" stroke-width="1.5"/>
 
-      <rect x="24" y="104" width="152" height="82" rx="8" fill="none" stroke="var(--border)"/>
-      <text x="100" y="126" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)">고정 엣지만</text>
-      <text x="100" y="146" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">add_edge(A, B)</text>
-      <text x="100" y="165" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">순서를 못 박음</text>
-      <text x="100" y="181" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">(2편)</text>
+      <rect x="24" y="106" width="152" height="100" rx="8" fill="none" stroke="var(--border)"/>
+      <text x="100" y="132" text-anchor="middle" font-family="var(--font-body)" font-size="16" fill="var(--ink)">고정 엣지만</text>
+      <text x="100" y="156" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--muted)">add_edge(A, B)</text>
+      <text x="100" y="177" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--muted)">순서를 못 박음</text>
+      <text x="100" y="196" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">(2편)</text>
 
-      <rect x="204" y="104" width="152" height="82" rx="8" fill="none" stroke="var(--border)"/>
-      <text x="280" y="126" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)">조건부 엣지</text>
-      <text x="280" y="146" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">라우터가 if문</text>
-      <text x="280" y="165" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">규칙이 고름</text>
-      <text x="280" y="181" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">(2·3편)</text>
+      <rect x="204" y="106" width="152" height="100" rx="8" fill="none" stroke="var(--border)"/>
+      <text x="280" y="132" text-anchor="middle" font-family="var(--font-body)" font-size="16" fill="var(--ink)">조건부 엣지</text>
+      <text x="280" y="156" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--muted)">라우터가 if문</text>
+      <text x="280" y="177" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--muted)">규칙이 고름</text>
+      <text x="280" y="196" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">(2·3편)</text>
 
-      <rect x="384" y="104" width="152" height="82" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
-      <text x="460" y="126" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--accent)">조건부 엣지</text>
-      <text x="460" y="146" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">라우터가 모델</text>
-      <text x="460" y="165" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">LLM이 고름</text>
-      <text x="460" y="181" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">(4편)</text>
+      <rect x="384" y="106" width="152" height="100" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="460" y="132" text-anchor="middle" font-family="var(--font-body)" font-size="16" fill="var(--accent)">조건부 엣지</text>
+      <text x="460" y="156" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--muted)">라우터가 모델</text>
+      <text x="460" y="177" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--muted)">LLM이 고름</text>
+      <text x="460" y="196" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">(4편)</text>
 
-      <rect x="564" y="104" width="152" height="82" rx="8" fill="none" stroke="var(--muted)" stroke-dasharray="6 4"/>
-      <text x="640" y="126" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)">완제품 부품</text>
-      <text x="640" y="146" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">create_agent</text>
-      <text x="640" y="165" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">루프가 봉인됨</text>
-      <text x="640" y="181" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">(4편)</text>
+      <rect x="564" y="106" width="152" height="100" rx="8" fill="none" stroke="var(--muted)" stroke-dasharray="6 4"/>
+      <text x="640" y="132" text-anchor="middle" font-family="var(--font-body)" font-size="16" fill="var(--ink)">완제품 부품</text>
+      <text x="640" y="156" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--muted)">create_agent</text>
+      <text x="640" y="177" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--muted)">루프가 봉인됨</text>
+      <text x="640" y="196" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">(4편)</text>
 
-      <line x1="24" y1="212" x2="536" y2="212" stroke="var(--accent)" stroke-width="2"/>
-      <text x="24" y="232" font-family="var(--font-body)" font-size="11" fill="var(--accent)">여기까지는 누가 정하는지가 코드에 선으로 보여요</text>
-      <line x1="564" y1="212" x2="716" y2="212" stroke="var(--muted)" stroke-width="2" stroke-dasharray="6 4"/>
-      <text x="716" y="232" text-anchor="end" font-family="var(--font-body)" font-size="11" fill="var(--muted)">여기는 안 보여요</text>
+      <line x1="24" y1="234" x2="536" y2="234" stroke="var(--accent)" stroke-width="2"/>
+      <text x="24" y="256" font-family="var(--font-body)" font-size="13" fill="var(--accent)">여기까지는 누가 정하는지가 코드에 선으로 보여요</text>
+      <line x1="564" y1="234" x2="716" y2="234" stroke="var(--muted)" stroke-width="2" stroke-dasharray="6 4"/>
+      <text x="716" y="256" text-anchor="end" font-family="var(--font-body)" font-size="13" fill="var(--muted)">여기는 안 보여요</text>
 
-      <text x="24" y="266" font-family="var(--font-body)" font-size="11" fill="var(--muted)">왼쪽일수록 결과를 예측하기 쉽고 요금 상한을 걸기 쉬워요.</text>
-      <text x="24" y="284" font-family="var(--font-body)" font-size="11" fill="var(--muted)">오른쪽일수록 사람이 미리 생각 못 한 경우까지 처리해요.</text>
+      <text x="24" y="294" font-family="var(--font-body)" font-size="13" fill="var(--muted)">왼쪽일수록 결과를 예측하기 쉽고 요금 상한을 걸기 쉬워요.</text>
+      <text x="24" y="316" font-family="var(--font-body)" font-size="13" fill="var(--muted)">오른쪽일수록 사람이 미리 생각 못 한 경우까지 처리해요.</text>
     </svg>
     <p>왼쪽 끝만 쓰면 그건 워크플로고, 오른쪽 칸이 커질수록 에이전트예요. 눈금자 위 어디에 앉힐지가 설계고, <a href="#anthropic-advice">위에서 본 Anthropic의 권고</a>는 "일단 왼쪽에서 시작하라"는 말이에요.</p>
 
     <h2 id="tool-choice"><span class="hl">나쁜 선택 vs 좋은 선택</span> — 도구를 고를 때</h2>
-    <p>같은 주방에서, 매일 똑같은 3단 코스만 내는 식당의 주문 처리를 자동화한다고 해 볼게요.</p>
+    <p>같은 주방이에요. 매일 똑같은 3단 코스만 내는 식당이고, 주문이 들어오면 <strong>주문 접수 → 재고 차감 → 주방 티켓 출력 → 손님에게 알림</strong> 네 단계가 늘 같은 순서로 돌아요. 이 네 단계를 자동화한다고 해 볼게요. 아래 표의 ①②③은 <strong>고른 것과 그 결과를 번호로 짝지어</strong> 둔 거예요.</p>
     <table class="choice-table">
       <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
       <tbody>
         <tr>
-          <td class="choice-bad"><strong>무엇을 했나:</strong> "에이전트가 요즘 대세니까"라며 곧장 B 주방을 지었어요. LangGraph로 그래프를 짜고, 라우터 자리에 모델을 앉혀 다음 조리대를 매번 LLM이 고르게 했어요.<br><br><strong>무슨 일이 생기나:</strong> 코스가 매일 같으니 LLM은 똑같은 답을 매번 새로 지어내요. 주문 하나당 호출이 여러 번 나가 요금이 붙고, 열 번에 한 번은 순서를 엉뚱하게 골라요. 게다가 틀렸을 때 "모델이 그렇게 골랐다"는 것 말고는 원인을 짚을 데가 없어요. 코드를 읽고 쓸 줄 아는 사람만 고칠 수 있는 시스템이 된 건 덤이고요.</td>
-          <td class="choice-good"><strong>무엇을 했나:</strong> 순서가 고정이라는 걸 먼저 확인하고, <a href="n8n-agent-delegation-and-if-node.html">n8n</a>으로 노드를 끌어다 이어 끝냈어요. LLM은 "손님 요청사항을 한 줄로 요약" 한 칸에만 넣었고요.<br><br><strong>무슨 일이 생기나:</strong> 결과가 매번 같고, 호출은 주문당 한 번이라 요금이 예측돼요. 틀리면 화면에서 어느 노드인지 바로 보이고, 코드를 모르는 동료도 고칠 수 있어요. 나중에 진짜로 "그때그때 판단"이 필요해지면 그 칸만 오른쪽으로 옮기면 돼요.</td>
+          <td class="choice-bad"><strong>무엇을 했나:</strong> "에이전트가 요즘 대세니까"라며 곧장 <a href="#analogy">B 주방</a>을 지었어요. 네 단계를 LangGraph 노드 네 개로 만든 것까지는 평범해요. 갈린 건 여기부터예요.<br>① 노드끼리 <strong>선을 잇지 않았어요</strong>(<code>add_edge</code>를 한 줄도 안 썼어요).<br>② 대신 라우터 자리에 모델을 앉혀 <strong>한 걸음마다 물었어요</strong>. "지금까지 이걸 했는데 다음엔 뭘 할까?"<br>③ 흐름 전체를 <strong>파이썬 코드</strong>로 짰어요.<br><br><strong>무슨 일이 생기나:</strong><br>① 선이 없으니 순서가 <strong>보장이 아니라 매번 새로 나오는 답</strong>이 돼요. 열 번에 한 번쯤 모델이 알림을 먼저 골라서, 재고를 깎기 전에 손님에게 "준비됐다"가 나가요. 그 주문은 재고 숫자가 어긋난 채로 남아요.<br>② 답이 늘 같은데도 주문 한 건에 LLM 호출이 네 번 붙어요. 하루 200건이면 800번이고, 그중 대부분은 <strong>당연한 다음 단계를 돈 주고 다시 확인한 것</strong>이에요.<br>③ 틀렸을 때 기록에 남는 건 "모델이 알림 노드를 골랐다"뿐이에요. <code>if</code>문이었다면 조건을 읽으면 되는데, 고른 이유가 코드 어디에도 없어서 프롬프트를 고쳐 다시 돌려 보는 것밖에 할 게 없어요. 게다가 흐름이 코드 안에만 있어서 코드를 못 읽는 동료는 손을 못 대요.</td>
+          <td class="choice-good"><strong>무엇을 했나:</strong> 도구부터 고르지 않고, 네 단계가 <strong>매일 같은 순서인지</strong>부터 확인했어요. 같았어요. 그래서 <a href="#big-picture">눈금자 왼쪽 끝</a>에서 시작했어요.<br>① 순서를 <strong>선으로 박았어요</strong>. 접수 다음은 차감, 차감 다음은 티켓, 티켓 다음은 알림.<br>② 코드 대신 <a href="n8n-agent-delegation-and-if-node.html">n8n</a> 화면에서 노드 네 개를 끌어다 일직선으로 이었어요.<br>③ LLM은 판단이 정말 필요한 한 칸, <strong>"손님 요청사항을 한 줄로 요약"</strong>에만 넣었어요.<br><br><strong>무슨 일이 생기나:</strong><br>① 알림이 재고 차감보다 먼저 나갈 <strong>길 자체가 없어요</strong>. 모델이 잘 고르길 기대하는 게 아니라, 못 가게 막아 둔 거예요.<br>② 고장 나면 n8n 화면에서 <strong>어느 노드가 빨간지 바로 보여요</strong>. 코드를 모르는 동료도 그 노드를 열어 고칠 수 있어요.<br>③ LLM 호출은 주문당 한 번, 하루 200건이면 200번이라 <strong>요금이 미리 계산돼요</strong>. 나중에 진짜로 "그때그때 판단"이 필요해지면 그 한 칸만 눈금자 오른쪽으로 옮기면 돼요. 나머지 세 단계는 그대로 두고요.</td>
         </tr>
       </tbody>
     </table>
     <p>핵심은 "에이전트가 나쁘다"가 아니라 <strong>눈금자의 오른쪽은 값을 치르고 사는 것</strong>이라는 거예요. 예측 가능성과 요금 통제를 내주고 유연함을 받는 거래니까, 그 유연함이 실제로 필요한지부터 보는 순서예요.</p>
 
-    <h2><span class="hl">이번 편의 수치</span></h2>
+    <h2 id="numbers"><span class="hl">이번 편의 수치</span> — 설치하다 막히면 볼 것</h2>
+    <p>지금까지 나온 이야기 중 <strong>숫자와 버전만</strong> 따로 모아 둔 자리예요. 세 줄 다 <a href="#langchain-family">'LangGraph는 어느 집 식구인가' 절</a>에서 나온 것이고, 다음 편부터 코드를 직접 돌릴 때 필요해요. LangChain 집안은 <strong>이름이 같아도 버전마다 코드가 달라서</strong>, 남이 쓴 예제를 그대로 붙여 넣었을 때 <code>import</code> 에러가 가장 잘 나는 자리가 여기거든요. 지금 다 외울 건 아니고, 막혔을 때 돌아와서 보면 되는 표예요.</p>
     <table>
-      <thead><tr><th>항목</th><th>값</th><th>조건·출처</th></tr></thead>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>그래서 뭘 하면 되나</th></tr></thead>
       <tbody>
-        <tr><td>강의 교안이 검증한 라이브러리 버전</td><td>langgraph 1.2 · langchain-core 1.6 · langchain 1.4 · langchain-openai 1.6</td><td>강의 교안 기준. 제가 2026.09.11에 새로 설치한 최신판도 1.2.11 · 1.6.2 · 1.4.0 · 1.6.2</td></tr>
-        <tr><td>LangGraph가 따로 나온 해</td><td>2024년</td><td>초기 LangChain의 "체인"이 한 줄 파이프라인이라 반복·갈림길에 약했던 게 이유예요</td></tr>
-        <tr><td>옛 자료의 <code>LLMChain</code>·<code>AgentExecutor</code>·<code>initialize_agent</code>가 빠진 버전</td><td>LangChain 1.0부터</td><td><code>langchain-classic</code>이라는 별도 패키지로 분리. 검색해 찾은 코드가 import 에러를 내면 여기부터 의심</td></tr>
+        <tr><td>강의 교안이 검증한 라이브러리 버전</td><td><code>langgraph</code> 1.2<br><code>langchain</code> 1.4<br><code>langchain-core</code> 1.6<br><code>langchain-openai</code> 1.6</td><td>제가 2026.09.11에 새로 설치한 최신판도 같은 줄기(1.2.11 · 1.4.0 · 1.6.2 · 1.6.2)였어요. 그냥 최신판으로 설치해도 교안 코드가 그대로 돌아간다는 뜻이에요</td></tr>
+        <tr><td>LangGraph가 LangChain에서 따로 나온 해</td><td>2024년</td><td>그 전 자료(2023년까지의 "체인" 예제)는 반복·갈림길을 다루는 방식이 지금과 달라요. 검색 결과가 오래된 것 같으면 이 해를 기준으로 걸러요</td></tr>
+        <tr><td><code>LLMChain</code>·<code>AgentExecutor</code>·<code>initialize_agent</code>가 빠진 버전</td><td>LangChain 1.0부터</td><td>없어진 게 아니라 <code>langchain-classic</code>이라는 별도 패키지로 옮겨 갔어요. 이 세 이름이 든 코드가 <code>import</code> 에러를 내면 코드가 아니라 <strong>버전을 먼저</strong> 의심하면 돼요</td></tr>
       </tbody>
     </table>
 
@@ -310,7 +308,7 @@ while True:
     <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 강의 1~2강이 퀴즈로 다시 짚은 내용이라, 복습할 때 이것부터 보면 돼요. 3강 것은 <a href="langgraph-state-node-edge.html#key-recap">다음 편</a>, 4~5강 것은 <a href="langgraph-branches-and-tool-loop.html#key-recap">4편</a>, 6~12강 것은 <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a>과 <a href="langgraph-patterns-orchestrator-evaluator.html#key-recap">7편</a>의 같은 목록에 있어요.</p>
     <ul class="key-recap">
       <li><a href="#key-lookup-action">도구 목록은 조회 + 행동</a> — 바깥을 바꾸는 행동 앞에 안전장치를 둬요 (1강)</li>
-      <li><a href="#key-who-decides">워크플로와 에이전트를 가르는 건 "다음 다음에 어느 코드가 실행될까"</a> — 호출 수·도구·모델 크기는 기준이 아니에요 (2강)</li>
+      <li><a href="#key-who-decides">워크플로와 에이전트를 가르는 건 "다음에 어느 코드가 실행될지를 누가 정하나"</a> — 호출 수·도구·모델 크기는 기준이 아니에요 (2강)</li>
     </ul>
 
     <h2 id="roadmap"><span class="hl">이 모듈이 앞으로 가는 길</span></h2>
