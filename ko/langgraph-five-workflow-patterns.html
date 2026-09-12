@@ -471,12 +471,13 @@ LANGSMITH_PROJECT=langgraph-study</code></pre>
     </section>
     <section class="apply-box apply-box--repo" id="apply-repo">
       <p class="apply-box-title">실제 코드에 대입하면 — 교정기에 세 모양이 다 있고, 리듀서 하나가 위험해요</p>
-      <p><a href="langgraph-env-troubleshooting.html#apply-repo">교정기</a>에 이 편의 세 모양이 전부 들어 있어요.</p>
-      <p><strong>① 체이닝.</strong> 줄 하나를 고치는 함수가 규칙 스물다섯 개를 순서대로 통과시켜요. 앞 규칙이 고친 결과를 뒤 규칙이 받는 한 줄이에요. 순서가 장식이 아니에요 — 조사를 띄운 뒤에야 그 낱말이 의존명사인지 아닌지가 갈리는 자리가 있어서, 순서를 바꾸면 결과가 달라져요.</p>
+      <p><a href="langgraph-env-troubleshooting.html#apply-repo">교정기</a>에 이 편의 세 모양이 전부 들어 있어요. 먼저 숫자 두 개를 갈라 둘게요 — <strong>고치는 규칙이 스물네 개, 고치지 않고 제안만 만드는 검사가 스물다섯 개</strong>예요. 비슷한 수지만 다른 목록이에요.</p>
+      <p><strong>① 체이닝.</strong> 줄 하나를 고치는 함수가 규칙 스물네 개를 순서대로 통과시켜요. 앞 규칙이 고친 결과를 뒤 규칙이 받는 한 줄이에요. 순서가 장식이 아니에요 — 저장소에 제가 적어 둔 이유가 있어요. <strong>말줄임표를 먼저 온점 세 개로 통일해야, 그 뒤의 마침표 규칙이 <code>...</code>을 문장 종결 마침표로 오인하지 않아요.</strong> 순서를 뒤집으면 말줄임표가 문장 끝으로 오해받아 지워져요.</p>
       <p>사이에 둔 게이트도 있어요. 규칙 하나가 끝날 때마다 <code>verify_edit()</code>라는 관문이 <strong>"이 규칙이 바꾸겠다고 선언한 것만 실제로 바뀌었는가"</strong>를 봐요. 선언 안 한 낱말이 바뀌었으면 그 규칙의 결과를 통째로 버리고 원문을 그대로 써요. 이건 <strong>코드로 되는 검사</strong>예요 — 문자열 둘을 대 보면 끝이니까요. 반면 <a href="langgraph-what-and-why.html#apply-repo">1편에서 말한</a> 되/돼는 읽어 봐야 갈려요. 그래서 그 자리에만 모델을 붙였어요. 위의 <a href="#gate-limits">게이트가 못 보는 것</a>이 실제로 갈리는 선이 여기예요.</p>
-      <p><strong>② 라우팅.</strong> 갈래가 둘 있어요. 자막 파일이면 말줄임표·따옴표·마침표 규칙 넷이 뒤에 더 붙고, 일반 문서면 그 넷을 건너뛰어요. 띄어쓰기 기준을 "원칙"으로 골랐으면 전문 용어를 띄우고, "허용"으로 골랐으면 붙이는 규칙이 하나 더 들어와요. 갈래도 조건도 전부 미리 적어 뒀어요.</p>
-      <p><strong>③ 병렬화 — 그리고 이 편에서 가장 위험한 자리.</strong> 고친 줄 하나를 검사 스물네 개에 넣고, 나온 제안을 <strong>한 목록에 모아요.</strong> 여기까지는 이 편의 병렬화 그대로예요. 문제는 모으는 방법이에요.</p>
-      <p class="run-tag run-tag--concept">제 저장소 코드 <span class="run-tag-why">— <code>engine/pipeline.py</code>에서 검사 결과를 모으는 부분이에요</span></p>
+      <p>다만 <strong>관문이 모든 규칙 뒤에 있는 건 아니에요.</strong> 아래 ②의 자막 구두점 규칙 다섯 개에는 안 달려 있어요. 그 규칙들은 부호만 건드린다고 보고 통과시킨 건데, 게이트를 어디에 두고 어디에 안 둘지도 결국 사람이 정한 선이라는 뜻이에요.</p>
+      <p><strong>② 라우팅.</strong> 갈래가 둘 있어요. 자막 파일이면 대괄호·말줄임표·따옴표·마침표 규칙 <strong>다섯 개</strong>가 뒤에 더 붙고, 일반 문서면 구두점을 그대로 두느라 그 다섯을 하나도 안 붙여요. 띄어쓰기 기준을 "허용"으로 골랐으면 전문 용어를 붙이는 규칙이 하나 더 들어오고, "원칙"으로 골랐으면 <strong>그 규칙을 아예 부르지 않아요</strong> — 원칙 기준에서는 띄어 쓴 원문이 이미 정답이니까요. 갈래도 조건도 전부 미리 적어 뒀어요.</p>
+      <p><strong>③ 병렬화 — 그리고 이 편에서 가장 위험한 자리.</strong> 고친 줄 하나를 검사 스물다섯 개에 넣고, 나온 제안을 <strong>한 목록에 모아요.</strong> 여기까지는 이 편의 병렬화 그대로예요. 문제는 모으는 방법이에요.</p>
+      <p class="run-tag run-tag--concept">제 저장소 코드 <span class="run-tag-why">— <code>subtitle_corrector/engine/pipeline.py</code>에서 검사 결과를 모으는 부분이에요. <code>checks</code>는 검사 스물다섯 개의 결과 목록이고, <code>f.suggested_fix</code>는 그 검사가 내놓은 고침 제안이에요</span></p>
       <pre><code>for f in checks:
     if not f:
         continue
@@ -485,7 +486,7 @@ LANGSMITH_PROJECT=langgraph-study</code></pre>
     if f.suggested_fix:
         seen_fixes.add(f.suggested_fix)
     flags.append(f)</code></pre>
-      <p>같은 자리를 여러 검사가 <strong>같은 제안으로</strong> 잡는 일이 흔해요(행 끝 <code>나</code>를 조사 검사와 띄어쓰기 검사가 둘 다 <code>백 배나</code>로 제안해요). 그래서 이 리듀서는 이어 붙이지 않고 <strong>먼저 온 것만 남겨요.</strong> 남는 쪽이 규칙 이름과 근거를 정확히 말해 주는 검사가 되도록, 목록 안의 순서까지 일부러 맞춰 뒀어요 — 도로명 검사를 합성어 검사보다 위에 적어 둔 게 그 때문이에요.</p>
+      <p>같은 자리를 여러 검사가 <strong>같은 제안으로</strong> 잡는 일이 흔해요(행 끝 <code>나</code>를 조사 검사와 띄어쓰기 검사가 둘 다 <code>백 배나</code>로 제안해요). 그래서 이 리듀서는 이어 붙이지 않고 <strong>이미 나온 제안이면 버려요.</strong> <code>seen_fixes</code>가 지금까지 나온 제안을 담아 두는 자루고, 거기 있으면 <code>continue</code>로 건너뛰니 <strong>먼저 온 것만 남아요.</strong> 남는 쪽이 규칙 이름과 근거를 정확히 말해 주는 검사가 되도록, 목록 안의 순서까지 일부러 맞춰 뒀어요 — 도로명 검사를 합성어 검사보다 위에 적어 둔 게 그 때문이에요.</p>
       <p><strong>이 코드를 이 편의 병렬 분기로 그대로 옮기면 깨져요.</strong> 지금은 목록을 위에서 아래로 도니까 "먼저"가 제 뜻대로예요. 갈래를 따로 그어 동시에 돌리면 <strong>어느 검사 결과가 먼저 도착할지가 보장되지 않아요.</strong> 그러면 같은 자막을 두 번 돌렸을 때 남는 제안의 <em>이유 문구</em>가 달라져요. 개수도 내용도 같은데 설명만 바뀌니 알아채기도 어려워요. 리듀서가 <code>operator.add</code>처럼 순서를 안 따지는 것이면 상관없지만, <strong>먼저 온 것을 이기게 하는 리듀서는 병렬화와 같이 못 써요.</strong></p>
     </section>
 

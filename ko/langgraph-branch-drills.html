@@ -437,27 +437,29 @@ TypeError: unhashable type: 'dict'</code></pre>
     </section>
     <section class="apply-box apply-box--repo" id="apply-repo">
       <p class="apply-box-title">실제 코드에 대입하면 — 교정기의 세 갈래는 화자가 정해요</p>
-      <p><a href="langgraph-state-node-edge.html#apply-repo">지난 편의 교정기</a>에도 이 편의 세 갈래가 그대로 있어요. 다만 갈래를 고르는 기준이 글자 수가 아니라 <strong>그 대사의 화자가 사투리 화자로 지정돼 있는가</strong>예요.</p>
-      <p class="run-tag run-tag--concept">제 저장소 코드 <span class="run-tag-why">— <code>engine/pipeline.py</code>에서 갈림길 부분만 옮겼어요</span></p>
-      <pre><code>region, mode = resolve_dialect_mode(
-    e.speaker, dialect_map, dialect_modes, dialect_region, dialect_mode
-)
+      <p><a href="langgraph-state-node-edge.html#apply-repo">지난 편의 교정기</a>에도 이 편의 갈래가 있어요. 고르는 기준이 글자 수가 아니라 <strong>그 대사의 화자가 사투리 화자로 지정돼 있는가</strong>예요.</p>
+      <p class="run-tag run-tag--concept">제 저장소 코드 <span class="run-tag-why">— <code>subtitle_corrector/engine/pipeline.py</code>에서 자막 줄마다 도는 반복문의 앞부분이에요</span></p>
+      <pre><code>for e in entries:
+    region, mode = resolve_dialect_mode(
+        e.speaker, dialect_map, dialect_modes, dialect_region, dialect_mode
+    )
 
-if region is not None and mode == "protect":
-    protected_indices.add(e.index)
-    corrected_entries.append(replace(e))
-    continue
+    if region is not None and mode == "protect":
+        protected_indices.add(e.index)
+        corrected_entries.append(replace(e))   # 원문 그대로 복사
+        continue
 
-if region is not None and mode == "assist":
-    _, dialect_flags = check_dialect(e.index, e.text, region, mode)
-    flags.extend(dialect_flags)
-    corrected_entries.append(replace(e))
-    continue
+    if region is not None and mode == "assist":
+        _, dialect_flags = check_dialect(e.index, e.text, region, mode)
+        flags.extend(dialect_flags)
+        corrected_entries.append(replace(e))   # 여기도 원문 그대로
+        continue
 
-# 여기부터: 사투리 미지정 화자 또는 to_standard 화자</code></pre>
-      <p><strong>① 세 갈래.</strong> <code>resolve_dialect_mode</code>가 돌려주는 <code>mode</code>가 이 편의 라우터예요. <code>"protect"</code>면 아무것도 안 고치고 원문 그대로, <code>"assist"</code>면 제안만 남기고 텍스트는 그대로, <code>"to_standard"</code>거나 사투리 지정이 없으면 규칙 스물다섯 개 쪽으로 가요. 위의 짧은 노트·보통 노트·긴 노트와 같은 모양이에요.</p>
-      <p><strong>② 이름 어긋남.</strong> 여기 걸릴 자리가 실제로 있어요. 고르는 쪽이 돌려주는 글자와 받는 쪽이 비교하는 글자가 <strong>양쪽 코드에 따로 적혀 있거든요.</strong> 한쪽을 <code>"assist"</code>에서 다른 말로 바꿔 놓으면, <strong>사투리 화자가 없는 자막으로는 아무리 돌려도 안 걸려요.</strong> 사투리 화자를 <code>assist</code>로 지정한 파일이 처음 들어오는 날에야 조용히 규칙 스물다섯 개 쪽으로 새 버려요. 게다가 에러도 안 나요 — 보호했어야 할 대사가 표준어로 고쳐져 나올 뿐이에요. 갈래를 늘렸으면 그 갈래로 실제로 가는 입력을 한 번은 넣어 봐야 하는 이유예요.</p>
-      <p><strong>③ 되돌아가는 선.</strong> 이 코드에는 아직 없어요. 줄 하나를 고치고 다시 그 줄로 돌아오는 선이 없어서, 규칙끼리 물고 도는 일이 구조적으로 안 일어나요. 대신 각 규칙 뒤에 <strong>결과를 검사하는 관문</strong>이 하나씩 붙어 있는데, 그건 <a href="langgraph-five-workflow-patterns.html#apply-repo">6편</a>에서 꺼낼게요.</p>
+    # 여기부터: 사투리 미지정 화자 또는 to_standard 화자</code></pre>
+      <p><strong>① 세 갈래.</strong> <code>resolve_dialect_mode</code>가 돌려주는 <code>mode</code>가 갈래를 고르는 자리예요. <code>"protect"</code>면 아무것도 안 고치고 원문 그대로, <code>"assist"</code>면 제안만 남기고 텍스트는 그대로, <code>"to_standard"</code>거나 사투리 지정이 없으면 규칙 스물네 개 쪽으로 가요. 갈래마다 <code>continue</code>로 빠져나가는 게, 이 편에서 목적지를 따로 적어 준 것과 같은 일이에요.</p>
+      <p><strong>다만 이 코드는 위의 <a href="#key-router-read-only">라우터는 길만 고른다</a>를 안 지켜요.</strong> 고르는 블록이 <code>protected_indices</code>에도 적고 <code>flags</code>에도 적거든요. 평범한 파이썬이라 그래도 돌아가요. 그런데 이걸 LangGraph로 옮기면 <strong>고르는 일과 적는 일을 갈라야 해요</strong> — 라우터가 돌려주는 건 목적지 이름 한 글자뿐이라, 적는 일은 갈래 끝의 노드로 내려보내야 해요. 이 편의 그 규칙이 실제로 코드를 바꾸게 만드는 자리예요.</p>
+      <p><strong>② 이름 어긋남.</strong> 걸릴 자리가 실제로 있어요. 고르는 쪽이 돌려주는 글자와 받는 쪽이 비교하는 글자가 <strong>양쪽 코드에 따로 적혀 있거든요.</strong> 한쪽을 <code>"assist"</code>에서 다른 말로 바꿔 놓으면, 사투리 화자가 없는 자막으로는 아무리 돌려도 안 걸려요. 사투리 화자를 <code>assist</code>로 지정한 파일이 처음 들어오는 날에야 규칙 스물네 개 쪽으로 새 버려요. <strong>게다가 여기서는 에러조차 안 나요</strong> — 위의 실습은 목적지 목록에 없는 이름이라 <code>ValueError</code>로 멈췄지만, 이 코드는 그냥 <code>if</code> 둘을 다 지나쳐 아래로 흘러요. 보호했어야 할 대사가 표준어로 고쳐져 나올 뿐이에요.</p>
+      <p><strong>③ 되돌아가는 선.</strong> 이 코드에는 아직 없어요. 줄 하나를 고치고 다시 그 줄로 돌아오는 선이 없어서, 규칙끼리 물고 도는 일이 구조적으로 안 일어나요. 대신 규칙 스물네 개는 저마다 뒤에 <strong>결과를 검사하는 관문</strong>을 하나씩 달고 있는데, 그건 <a href="langgraph-five-workflow-patterns.html#apply-repo">6편</a>에서 꺼낼게요.</p>
     </section>
 
     <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>

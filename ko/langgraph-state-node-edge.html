@@ -378,23 +378,24 @@ serve --&gt; __end__;</code></pre>
         <thead><tr><th>그래프의 낱말</th><th>교정기에서는</th></tr></thead>
         <tbody>
           <tr><td>State<br>(주문 전표)</td><td>자막 한 줄을 담은 <code>SubtitleEntry</code>, 그리고 그 줄에서 나온 <code>FlagItem</code>(사람이 볼 제안) 목록과 <code>AppliedNote</code>(자동으로 고친 기록) 목록</td></tr>
-          <tr><td>Node<br>(일하는 함수)</td><td>파일 읽기 · 줄마다 규칙 스물다섯 개 적용하기 · 검사해서 제안 만들기 · 문서 전체 용어 통일하기 · 파일과 보고서 쓰기</td></tr>
+          <tr><td>Node<br>(일하는 함수)</td><td>파일 읽기 · 줄마다 규칙 스물네 개 적용하기 · 검사해서 제안 만들기 · 문서 전체 용어 통일하기 · 파일과 보고서 쓰기</td></tr>
           <tr><td>Edge<br>(다음 행선지)</td><td>그 순서, 그리고 화자가 사투리로 지정돼 있으면 교정 단계를 통째로 건너뛰는 선</td></tr>
         </tbody>
       </table>
-      <p class="run-tag run-tag--concept">제 저장소 코드 <span class="run-tag-why">— <code>subtitle_corrector/parsers.py</code>에서 전표에 해당하는 부분만 옮겼어요</span></p>
+      <p>State 칸을 적는 방법이 이 편의 <code>TypedDict</code>와 달라요. 이 코드는 <code>@dataclass</code>를 써요 — <strong>둘 다 "이 전표에는 이런 칸이 있다"를 적는 방법</strong>이고, <code>TypedDict</code>는 딕셔너리에 이름표를 붙이는 쪽, <code>@dataclass</code>는 클래스에 칸을 선언하는 쪽이에요. 여기서는 어느 쪽인지가 중요하지 않고, <strong>칸 목록이 한자리에 적혀 있다</strong>는 것만 보면 돼요.</p>
+      <p class="run-tag run-tag--concept">제 저장소 코드 <span class="run-tag-why">— <code>subtitle_corrector/parsers.py</code>에서 전표에 해당하는 부분이에요</span></p>
       <pre><code>@dataclass
 class SubtitleEntry:
     index: int
     start: str
     end: str
-    text: str                          # 고쳐지는 칸
-    speaker: str | None = None         # 화자 (사투리 판정에 씀)
-    raw_prefix: str | None = None      # 형식마다 대사 앞뒤에 붙는 조각
-    raw_suffix: str | None = None
-    original_text: str | None = None   # 교정 전 원문</code></pre>
+    text: str                                            # 고쳐지는 칸
+    speaker: str | None = field(default=None, repr=False)       # 화자
+    raw_prefix: str | None = field(default=None, repr=False)    # 형식마다 붙는 조각
+    raw_suffix: str | None = field(default=None, repr=False)
+    original_text: str | None = field(default=None, repr=False) # 교정 전 원문</code></pre>
       <p>여기서 이 편의 <a href="#key-partial-update">부분 업데이트</a>가 아주 선명하게 나와요. LangGraph는 노드가 바뀐 칸만 돌려주면 나머지를 알아서 들고 가 주지만, <strong>이 코드에는 그걸 해 주는 프레임워크가 없어요.</strong> 그래서 손으로 해요.</p>
-      <p class="run-tag run-tag--concept">제 저장소 코드 <span class="run-tag-why">— <code>engine/pipeline.py</code>의 줄 단위 처리가 끝나는 자리예요</span></p>
+      <p class="run-tag run-tag--concept">제 저장소 코드 <span class="run-tag-why">— <code>subtitle_corrector/engine/pipeline.py</code>의 줄 단위 처리가 끝나는 자리예요</span></p>
       <pre><code>corrected_entries.append(replace(e, text=corrected_text))</code></pre>
       <p><code>replace</code>는 원래 전표를 복사하면서 <strong><code>text</code> 칸만 갈아 끼워요.</strong> <code>start</code>·<code>end</code>·<code>speaker</code>·<code>raw_prefix</code>는 손대지 않고 따라와요. 저 줄에 제가 붙여 둔 주석이 그대로 이 편 이야기예요 — <em>"필드를 하나 늘릴 때마다 여기를 고치는 실수를 막는다."</em> 칸을 새로 만들 때마다 옮겨 담는 코드를 따라 고쳐야 하는 게, LangGraph가 대신 해 주는 바로 그 일이에요.</p>
     </section>
