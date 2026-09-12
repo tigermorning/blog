@@ -130,7 +130,8 @@
     <p class="run-tag">실행: 로컬 터미널 <span class="run-tag-why">— 가상 환경을 켠 상태에서 한 번만</span></p>
     <pre><code>pip install -U langgraph langchain langchain-openai</code></pre>
     <p>첫 그래프는 LLM 없이, 손님이 쉼표로 적은 주문을 메뉴 목록으로 정리하고 접시 수를 세는 두 단계짜리예요.</p>
-    <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— langgraph 설치 후, API 키 없이 돌아가요</span></p>
+    <p>붙여넣는 자리가 위와 달라요. <code>pip install</code>은 터미널 명령이라 PowerShell 창에 그대로 치면 되지만, <strong>실행: 로컬 파이썬</strong>이 붙은 아래 블록은 파이썬 문법이에요. 같은 PowerShell 창에 붙이면 <code>'from' 키워드는 이 언어 버전에서 지원되지 않습니다</code> 같은 오류가 나요. 블록 전체를 <code>graph1.py</code> 같은 파일로 저장하고, 터미널에서 <code>python graph1.py</code>로 돌리면 돼요. 파이썬 대화형 창에 한 줄씩 붙이는 방법도 있지만, <code>class</code>나 <code>def</code>처럼 들여쓴 덩어리가 중간 빈 줄에서 끊겨서 파일로 저장하는 쪽이 편해요.</p>
+    <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— 터미널이 아니라 <code>.py</code> 파일에 저장해서 <code>python 파일이름.py</code>로 실행해요</span></p>
     <pre><code>from typing_extensions import TypedDict
 from langgraph.graph import StateGraph, START, END
 

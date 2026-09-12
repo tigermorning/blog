@@ -1290,6 +1290,13 @@ details[open] > summary .tree-toggle-icon {
   opacity: 0.75;
 }
 
+.run-tag code {
+  background: rgba(127, 127, 127, 0.3);
+  color: inherit;
+  font-size: 0.95em;
+  padding: 0.05rem 0.3rem;
+}
+
 .run-tag--concept {
   background: var(--border);
   color: var(--muted);
