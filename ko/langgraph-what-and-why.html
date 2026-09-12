@@ -131,7 +131,7 @@ while True:
     <p>그래서 <a href="langgraph-five-workflow-patterns.html#routing">6편의 라우팅</a>처럼 LLM이 입력을 읽고 갈래를 골라도, 고를 수 있는 갈래를 개발자가 미리 다 그려 뒀다면 여전히 워크플로예요. LLM이 판단을 하느냐가 아니라, <strong>그 판단이 움직일 수 있는 길을 누가 그려 뒀느냐</strong>를 봐요.</p>
     <div class="key-point" id="key-who-decides">
       <p class="key-point-label"><span class="key-point-badge">중요</span>2강에서 짚은 내용</p>
-      <p>워크플로와 에이전트를 가르는 기준은 하나예요. <strong>다음에 어느 코드가 실행될지를 누가 정하나.</strong> 개발자가 코드로 길을 미리 다 그려 뒀으면 워크플로, LLM이 매 단계 스스로 정하면 에이전트예요. LLM을 몇 번 부르는지, 도구를 쓰는지, 모델이 큰지는 기준이 아니에요. 셋 다 워크플로와 에이전트 양쪽에 똑같이 나타날 수 있어서 둘을 가르지 못해요.</p>
+      <p>워크플로와 에이전트를 가르는 기준은 하나예요. <strong>다음 걸음을 누가 정하나.</strong> 개발자가 코드로 길을 미리 다 그려 뒀으면 워크플로, LLM이 매 단계 스스로 정하면 에이전트예요. LLM을 몇 번 부르는지, 도구를 쓰는지, 모델이 큰지는 기준이 아니에요. 셋 다 워크플로와 에이전트 양쪽에 똑같이 나타날 수 있어서 둘을 가르지 못해요.</p>
     </div>
     <p id="anthropic-advice">Anthropic은 "가장 단순한 방법으로 시작하고, 자율성이 꼭 필요하다는 증거가 있을 때만 복잡도를 더하라"고 권해요. 정해진 길을 따르면 결과를 예측할 수 있고, 비용을 통제할 수 있고, 틀렸을 때 어디가 틀렸는지 바로 찾을 수 있으니까요.</p>
     <p>모든 그래프의 노드 하나하나는 <strong>증강된 LLM<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup></strong>이라고 보면 이해가 쉬워요. LLM 본체에 검색·도구·메모리가 붙은 한 덩어리요. 붙이는 도구는 크게 셋이에요.</p>
@@ -308,7 +308,7 @@ while True:
     <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 강의 1~2강이 퀴즈로 다시 짚은 내용이라, 복습할 때 이것부터 보면 돼요. 3강 것은 <a href="langgraph-state-node-edge.html#key-recap">다음 편</a>, 4~5강 것은 <a href="langgraph-branches-and-tool-loop.html#key-recap">4편</a>, 6~12강 것은 <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a>과 <a href="langgraph-patterns-orchestrator-evaluator.html#key-recap">7편</a>의 같은 목록에 있어요.</p>
     <ul class="key-recap">
       <li><a href="#key-lookup-action">도구 목록은 조회 + 행동</a> — 바깥을 바꾸는 행동 앞에 안전장치를 둬요 (1강)</li>
-      <li><a href="#key-who-decides">워크플로와 에이전트를 가르는 건 "다음에 어느 코드가 실행될지를 누가 정하나"</a> — 호출 수·도구·모델 크기는 기준이 아니에요 (2강)</li>
+      <li><a href="#key-who-decides">워크플로와 에이전트를 가르는 건 "다음 걸음을 누가 정하나"</a> — 호출 수·도구·모델 크기는 기준이 아니에요 (2강)</li>
     </ul>
 
     <h2 id="roadmap"><span class="hl">이 모듈이 앞으로 가는 길</span></h2>
