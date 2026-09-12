@@ -267,7 +267,18 @@ def count_dishes(state: Ticket):
     <p>같은 줄의 <code>state["log"]</code>는 그대로 둬요. <code>log</code>는 <code>invoke()</code>에 넣어 준 칸이라 처음부터 있거든요. <strong><code>.get()</code>은 실제로 없는 칸에만 필요해요.</strong> 그리고 기본값 <code>[]</code>를 빼고 <code>state.get("dishes")</code>라고만 쓰면 <code>None</code>이 돌아오고, <code>len(None)</code>에서 이번엔 <code>TypeError</code>가 나요. <code>len()</code>에 넘길 값이니 빈 리스트를 줘야 해요. 이렇게 바꿔서 돌려 봤어요.</p>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 순서를 뒤집은 채 .get()으로만 바꿨을 때 제 화면에 찍힌 출력이에요</span></p>
     <pre><code>{'order': ' 김치찌개,  계란말이 ,공기밥 ', 'dishes': ['김치찌개', '계란말이', '공기밥'], 'count': 0, 'log': '시작 &gt; 집계 &gt; 접수'}</code></pre>
-    <p>에러는 사라졌지만 메뉴는 셋인데 접시 수가 0이에요. 프로그램이 멈추지 않으니 틀린 줄도 모르고 넘어가기 쉬워요. 뒤집힌 흔적은 <code>log</code>의 순서(<code>집계 &gt; 접수</code>)에만 남아요. <code>KeyError</code>는 "순서가 틀렸다"고 알려 주는 신호예요. 신호를 끄지 말고 엣지를 고치는 게 맞아요.</p>
+    <p>에러는 사라졌어요. 그런데 출력이 앞뒤가 안 맞아 보여요. 같은 전표에 <strong>메뉴는 셋</strong>(<code>dishes</code>)인데 <strong>접시 수는 0</strong>(<code>count</code>)이라고 적혀 있거든요. 엣지가 뒤집혀 있으니 <code>count_dishes</code>가 <strong>먼저</strong> 돈다는 걸 시간 순서로 따라가면 풀려요.</p>
+    <table>
+      <thead><tr><th>실행 시점</th><th><code>dishes</code> 칸</th><th><code>count</code> 칸</th><th><code>log</code> 칸</th></tr></thead>
+      <tbody>
+        <tr><td>출발</td><td>없음</td><td>없음</td><td><code>'시작'</code></td></tr>
+        <tr><td><code>count_dishes</code></td><td>없음 — <code>.get</code>이 <code>[]</code>를 대신 줘요</td><td><code>len([])</code> = <strong>0</strong></td><td><code>'시작 &gt; 집계'</code></td></tr>
+        <tr><td><code>take_order</code></td><td>메뉴 셋이 <strong>이제야</strong> 생겨요</td><td>0 그대로</td><td><code>'시작 &gt; 집계 &gt; 접수'</code></td></tr>
+      </tbody>
+    </table>
+    <p><strong><code>count_dishes</code>는 딱 한 번만 돌아요.</strong> 셀 때는 아무것도 없어서 0을 적었고, 그 뒤에 메뉴가 생겼다고 누가 다시 세어 주지 않아요. 그래서 마지막 전표에 "메뉴 셋 + 접시 수 0"이 나란히 남아요.</p>
+    <p>그리고 순서가 뒤집혔다는 단서는 <code>log</code>에만 남아요. <code>'시작 &gt; 집계 &gt; 접수'</code> — 집계가 접수보다 앞에 찍혀 있죠. <code>count: 0</code>만 봐서는 "주문이 비어 있었나?" 싶지, 순서 문제인 줄은 몰라요.</p>
+    <p>여기가 이 확인 문제의 핵심이에요. 바꾸기 전에는 <code>KeyError</code>가 나면서 <strong>프로그램이 멈췄어요.</strong> 멈추면 당장은 성가시지만, 덕분에 "<code>count_dishes</code>가 <code>dishes</code>를 못 찾았다 = 순서가 틀렸다"를 그 자리에서 알았어요. <code>.get</code>은 그 멈춤만 없애요. 순서는 여전히 틀린 채로 프로그램이 끝까지 돌고, <strong>답만 조용히 틀려요.</strong> 시끄럽다고 화재경보기 배터리를 뺀 것과 같아요 — 소리는 멎었지만 불은 그대로예요. 고칠 자리는 엣지 세 줄이에요.</p>
     <p><strong>정리하면 두 줄이에요.</strong> 노드가 돌려주지 않은 칸에는 앞의 값이 그대로 남고(확인 ①), 한 번도 누가 쓴 적 없는 칸은 남아 있을 앞의 값 자체가 없어요(확인 ②). State에 선언된 칸이 곧 지금 존재하는 칸은 아니에요.</p>
 
     <h2 id="build-branch"><span class="hl">직접 만들기 ②</span> — 갈림길과 되돌아가는 선</h2>
