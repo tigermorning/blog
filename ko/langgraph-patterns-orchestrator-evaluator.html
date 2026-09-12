@@ -213,7 +213,7 @@ except Exception as e:
     <p>요리사 셋이 받은 건 요리 이름 하나짜리 쪽지뿐이었고, 손님 수를 읽으려는 순간 <code>KeyError</code>로 멈췄어요. <code>cook</code>의 타입을 <code>Party</code>로 바꿔 적어도 결과는 같았어요. 타입 힌트는 표시일 뿐이고, 실제로 들어오는 건 <code>Send</code>에 담은 딕셔너리 그대로거든요.</p>
     <p>왜 이렇게 만들었을까요? 요리사 셋이 동시에 서로 다른 요리를 맡아야 하는데, 전표의 한 칸에는 값을 하나만 적을 수 있어요. "지금 만들 요리" 칸을 전표에 두면 세 명에게 서로 다른 값을 줄 수가 없죠. 그래서 한 명씩 개인 쪽지를 주는 거예요.</p>
     <div class="key-point" id="key-send-note">
-      <p class="key-point-label"><span class="key-point-badge">중요</span>9강에서 짚은 내용</p>
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
       <p><code>Send("노드 이름", {...})</code>의 두 번째 인자(괄호 안에 넣는 두 번째 값)는 <strong>그 워커 실행 한 번에만 건네는 전용 상태</strong>예요. 이 쪽지는 전표(State)에 옮겨 적히지 않고 그 워커에게만 가요. 워커가 받는 건 이 딕셔너리 그대로라서, 메인 State의 다른 칸(주제, 섹션 목록 등)은 볼 수 없어요. 워커가 알아야 하는 건 전부 이 쪽지에 담아 줘야 해요. 워커가 쓴 결과는 쪽지가 아니라 워커의 반환값으로 따로 돌아와 리듀서가 단 칸에 모여요.</p>
     </div>
     <p>강의 실습에서는 "LangGraph의 리듀서와 병렬 실행"이라는 주제를 주고 프롬프트에 "섹션은 3~5개"라는 범위만 줬더니 오케스트레이터가 5개를 골랐어요. 그런데 결과물을 읽어 보면 한계가 드러났대요.</p>
@@ -235,7 +235,7 @@ except Exception as e:
     </table>
     <p>대가도 분명해요. 계획이 나쁘면 아래 워커 전부가 나빠지고(<strong>단일 실패 지점<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup></strong>), 워커 수를 LLM이 정하니 비용도 미리 알 수 없어요. 오케스트레이터가 섹션 20개를 계획하면 호출이 21번이에요. 그래서 <code>state["menu"][:4]</code>(목록에서 앞의 4개만 남기기)처럼 워커 수에 상한을 두고, 잘린 게 있으면 결과에 표시해 둬요.</p>
     <div class="key-point" id="key-parallel-vs-orchestrator">
-      <p class="key-point-label"><span class="key-point-badge">중요</span>9강에서 짚은 내용</p>
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
       <p>병렬화와 오케스트레이터-워커의 가장 큰 차이는 <strong>하위 작업의 개수와 종류를 누가, 언제 정하느냐</strong>예요. 병렬화는 개발자가 코드를 쓸 때 고정해서 노드를 미리 그려 두고, 오케스트레이터-워커는 LLM이 실행 중에 정해서 <code>Send</code>로 워커를 불러내요.</p>
       <p>그래서 "평가 축 3개로 노트 검수하기"처럼 어떤 입력이 와도 할 일이 늘 같은 작업에 오케스트레이터-워커를 쓰면, 얻는 것 없이 대가만 커져요. 계획용 LLM 호출이 한 번 더 들어 비용과 기다리는 시간이 늘고, 계획이 틀리면(축을 둘만 만들거나 엉뚱한 축을 넣으면) 검수 전체가 망가지고, 실행마다 축이 달라져 결과를 서로 비교할 수도 없어요. 미리 알 수 있는 건 미리 정해 두는 게 맞아요(<a href="#pattern-choice-example">아래 나쁜 선택 vs 좋은 선택</a>).</p>
     </div>
@@ -355,7 +355,7 @@ B result: {'text': '초안 +고침 +고침 (사람에게 넘김)', 'rounds': 3}<
     <p>핵심은 <code>result = a.invoke(...)</code> 한 줄이에요. <code>=</code>는 오른쪽 일이 끝까지 성공해야 왼쪽 <code>result</code>에 값을 넣어요. A는 채점과 수정이 번갈아 8번 돈 뒤 한도에 걸려, <code>invoke</code>가 결과를 돌려주기 전에 에러로 끝났어요. 그래서 <code>result</code>에는 처음에 넣어 둔 "아직 아무것도 안 들어옴"이 그대로 남았고, 네 번이나 고친 초안은 받을 길이 없어요. B는 세 번째 채점에서 <code>hand_over</code>로 빠져 평범하게 끝났고, 고쳐 온 초안을 그대로 받았어요.</p>
     <p>A가 멈춘 지점도 눈여겨볼 만해요. 노드마다 실행 횟수를 따로 세어 보니 채점 4번, 수정 4번, 모두 8번 실행한 뒤 멈췄어요. 노드는 두 종류뿐인데 한도 8에서 멈췄다는 건, <code>recursion_limit</code>이 노드 개수가 아니라 <strong>실행된 단계 수</strong>를 센다는 뜻이에요. 한도는 <code>invoke()</code>에 두 번째 값으로 <code>{"recursion_limit": 8}</code>처럼 넘겨서 얼마든지 바꿀 수 있고요.</p>
     <div class="key-point" id="key-loop-stop">
-      <p class="key-point-label"><span class="key-point-badge">중요</span>10강에서 짚은 내용</p>
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
       <p>되돌아가는 선이 있는 그래프를 <code>recursion_limit</code> 하나로만 멈추게 하면 안 돼요. 한도에 닿으면 <code>GraphRecursionError</code>라는 예외로 끝나서, 그때까지 만든 중간 결과를 하나도 돌려받지 못해요. 그래서 반복 횟수를 State에 세다가 정해 둔 횟수에서 "사람에게 넘기기" 같은 <strong>정상 출구</strong>로 빠지게 그래프 안에 그려 두고, <code>recursion_limit</code>은 그 설계가 실패했을 때를 대비한 비상용으로만 남겨요.</p>
     </div>
     <p>강의 실습에서 인상 깊었던 장면이 있어요. 성의 없는 노트 초안을 이 루프에 넣었더니, 평가 규칙("용어 정의가 있나", "예시 코드가 있나" 등)을 채우는 쪽으로 고쳐 쓰는 동안 <strong>주제가 LangGraph 리듀서에서 자바스크립트 <code>reduce</code>로 옮겨 가 버렸대요</strong>. 평가자는 규칙 목록만 채우는 방향으로 글을 바꿀 뿐, 원래 무엇을 지켜야 했는지는 몰라요. 그래서 <strong>"무엇을 잃으면 안 되는가"</strong>를 ①의 게이트처럼 코드 검사로 걸어 두는 게 필요해요.</p>
@@ -375,7 +375,7 @@ B result: {'text': '초안 +고침 +고침 (사람에게 넘김)', 'rounds': 3}<
     </table>
     <p>표를 실제 요구에 대 볼게요. "회의록을 받아, 거기서 나온 할 일 개수만큼(3개일 수도 10개일 수도) 할 일마다 담당자 배정 초안을 만든다." 요약하고, 할 일을 뽑고, 배정하는 순서가 있어 보여서 ① 체이닝을 떠올리기 쉬워요. 하지만 체이닝은 단계가 고정이라 마지막 단계 한 번에 할 일을 몰아서 처리하게 되고, 할 일마다 따로 초안을 만드는 구조가 아니에요. ③ 병렬화는 처리 노드 개수를 미리 알아야 하는데 할 일 개수는 회의록마다 달라요. ② 라우팅은 여러 갈래 중 <strong>하나</strong>만 고르니 할 일 여러 개를 동시에 다루지 못해요.</p>
     <div class="key-point" id="key-meeting-notes">
-      <p class="key-point-label"><span class="key-point-badge">중요</span>11강에서 짚은 내용</p>
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
       <p>하위 작업의 <strong>개수가 입력을 받아 봐야 정해진다</strong>면 ④ 오케스트레이터-워커예요. 회의록에서 할 일을 뽑는 계획 단계가 개수를 정하고, <code>Send</code>로 할 일마다 워커를 하나씩 불러 담당자 초안을 써요. "개수를 미리 아나?" 한 질문이 병렬화와 오케스트레이터-워커를 가르는 갈림길이에요.</p>
     </div>
     <p>그럼 언제 워크플로를 넘어 <strong>에이전트</strong>로 가야 할까요. 기준은 하나예요. <strong>필요한 단계의 조합을 개발자가 미리 늘어놓을 수 없을 때.</strong> 사내 문서로 퀴즈를 만드는 일은 경로가 뻔하니 워크플로가 낫고, "이 저장소의 버그를 찾아 고쳐 줘"는 어떤 파일을 몇 번 읽을지 경우의 수가 끝이 없으니 도구를 쥔 자율 에이전트가 필요해요. 대신 비용을 미리 계산할 수 없고, 같은 입력에 다른 길로 가서 테스트가 어렵고, 틀렸을 때 어디가 틀렸는지 짚기 어려워요. 그래서 <strong>워크플로로 먼저 해 보고, 안 된다는 증거가 나왔을 때만</strong> 옮겨요.</p>
@@ -390,7 +390,7 @@ B result: {'text': '초안 +고침 +고침 (사람에게 넘김)', 'rounds': 3}<
     </ul>
     <p>강의가 참고 자료로 건 칩 후옌(Chip Huyen)의 글 <a href="https://huyenchip.com/2025/01/07/agents.html" target="_blank" rel="noopener">Agents</a>는 에이전트가 실패하는 모습을 계획 오류·도구 오류·효율 문제로 나눠 정리해요. 에이전트로 옮긴 뒤 무엇을 지켜봐야 하는지 알고 싶을 때 이어서 읽기 좋아요.</p>
     <div class="key-point" id="key-agent-evidence">
-      <p class="key-point-label"><span class="key-point-badge">중요</span>11강에서 짚은 내용</p>
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
       <p>에이전트로 옮기는 근거는 "더 똑똑해 보여서"가 아니라 <strong>기록으로 확인한 실패 모습</strong>이어야 해요. 갈래가 끝없이 늘어나거나, 중간 결과에 따라 다음 걸음이 매번 달라져 고정된 길로는 실패하는 일이 되풀이될 때가 그 증거예요. 에이전트는 비용을 미리 알 수 없고 테스트와 원인 찾기가 어려운 만큼, 증거 없이 먼저 가지 않아요.</p>
     </div>
 
@@ -406,7 +406,7 @@ B result: {'text': '초안 +고침 +고침 (사람에게 넘김)', 'rounds': 3}<
     </ol>
     <p>한 가지 일에 여러 모양이 섞여도 돼요. 첫 편 예시였던 식당 예약 변경에 대 보면, 할 일은 늘 "예약 찾기 → 빈자리·수수료 확인 → 예약 바꾸기 → 확인 문자" 순서라 ① 프롬프트 체이닝이 뼈대예요. 빈자리가 없으면 멈추는 코드 게이트를 확인 단계 뒤에 두고, 되돌리기 어려운 '예약 바꾸기' 앞에는 사람의 확인을 끼워요. 그런데 문의가 예약 변경·취소·불만으로 섞여 들어온다면 맨 앞에 ② 라우팅을 붙여 종류별로 나눠 보내요.</p>
     <div class="key-point" id="key-pick-pattern">
-      <p class="key-point-label"><span class="key-point-badge">중요</span>12강에서 짚은 내용</p>
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
       <p>패턴은 이름을 외우는 게 아니라 <strong>내 일의 모양에 대 보는 것</strong>이에요. 순서가 정해져 있나, 종류별로 갈리나, 개수를 미리 아나, 고쳐 쓰면 나아지나를 차례로 묻고, 맞는 것 중 가장 단순한 모양을 골라요. 여러 모양을 섞어도 되지만, 길을 미리 그릴 수 있는 한 워크플로로 먼저 해요.</p>
     </div>
 
@@ -435,14 +435,14 @@ B result: {'text': '초안 +고침 +고침 (사람에게 넘김)', 'rounds': 3}<
     </table>
 
     <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
-    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 강의 9~12강이 퀴즈로 다시 짚은 내용이에요. 1~2강 것은 <a href="langgraph-what-and-why.html#key-recap">1편</a>, 3강 것은 <a href="langgraph-state-node-edge.html#key-recap">2편</a>, 4강 것은 <a href="langgraph-branch-drills.html#key-recap">3편</a>, 5강 것은 <a href="langgraph-branches-and-tool-loop.html#key-recap">4편</a>, 6~8강 것은 <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a>의 같은 목록에 있어요.</p>
+    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 강의가 퀴즈로 다시 짚은 내용이라, 복습할 때 이것부터 보면 돼요. 다른 편의 같은 목록은 <a href="langgraph-what-and-why.html#key-recap">1편</a> · <a href="langgraph-state-node-edge.html#key-recap">2편</a> · <a href="langgraph-branch-drills.html#key-recap">3편</a> · <a href="langgraph-branches-and-tool-loop.html#key-recap">4편</a> · <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a>에 있어요.</p>
     <ul class="key-recap">
-      <li><a href="#key-send-note"><code>Send</code>로 불린 워커는 자기 쪽지만 봐요</a> (9강)</li>
-      <li><a href="#key-parallel-vs-orchestrator">병렬화와 오케스트레이터-워커는 "개수를 누가, 언제 정하나"로 갈려요</a> (9강)</li>
-      <li><a href="#key-loop-stop">반복은 상한에만 맡기지 말고 정상 출구를 그래프 안에</a> (10강)</li>
-      <li><a href="#key-meeting-notes">개수를 입력을 봐야 알면 오케스트레이터-워커</a> (11강)</li>
-      <li><a href="#key-agent-evidence">에이전트로 옮기는 근거는 기록으로 확인한 실패 모습</a> (11강)</li>
-      <li><a href="#key-pick-pattern">패턴은 내 일의 모양에 대 보고, 가장 단순한 것부터</a> (12강)</li>
+      <li><a href="#key-send-note"><code>Send</code>로 불린 워커는 자기 쪽지만 봐요</a></li>
+      <li><a href="#key-parallel-vs-orchestrator">병렬화와 오케스트레이터-워커는 "개수를 누가, 언제 정하나"로 갈려요</a></li>
+      <li><a href="#key-loop-stop">반복은 상한에만 맡기지 말고 정상 출구를 그래프 안에</a></li>
+      <li><a href="#key-meeting-notes">개수를 입력을 봐야 알면 오케스트레이터-워커</a></li>
+      <li><a href="#key-agent-evidence">에이전트로 옮기는 근거는 기록으로 확인한 실패 모습</a></li>
+      <li><a href="#key-pick-pattern">패턴은 내 일의 모양에 대 보고, 가장 단순한 것부터</a></li>
     </ul>
 
     <h2><span class="hl">직접 해보기</span></h2>

@@ -318,7 +318,7 @@ print(builder.compile().invoke({"text": "아무 노트"}))</code></pre>
       </tbody>
     </table>
     <div class="key-point" id="key-router-read-only">
-      <p class="key-point-label"><span class="key-point-badge">중요</span>4강에서 짚은 내용</p>
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
       <p>라우터가 돌려주는 값은 <strong>'다음에 갈 곳의 이름'</strong>으로만 읽혀요. 전표에 값을 적는 통로는 노드가 돌려주는 딕셔너리 하나뿐이에요. 그래서 라우터 안에서 전표를 고치면 적은 값이 사라지거나(실험 1), 기록 없이 몰래 새어 들어가거나(실험 2), 목적지를 못 찾고 멈춰요(실험 3). 라우터는 읽기만 하고, 적는 일은 노드에게 맡겨요.</p>
     </div>
     <p>셋 중 제일 위험한 건 실험 2예요. 되는 것처럼 보여서 믿고 쓰게 되는데, 문자열이나 숫자 칸은 제자리에서 고칠 방법이 없어서 결국 실험 1처럼 새 값을 적게 되고, 그 값은 조용히 사라지거든요. 판정 결과를 남기고 싶으면 판정을 적는 노드를 따로 두면 돼요. 세 번째 갈래 문제의 <code>flag_too_long</code>이 딱 그런 노드예요.</p>
@@ -359,9 +359,9 @@ print(builder.compile().invoke({"text": "아무 노트"}))</code></pre>
     </table>
 
     <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
-    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 강의 4강이 퀴즈로 다시 짚은 내용이에요. 1~2강 것은 <a href="langgraph-what-and-why.html#key-recap">1편</a>, 3강 것은 <a href="langgraph-state-node-edge.html#key-recap">2편</a>, 5강 것은 <a href="langgraph-branches-and-tool-loop.html#key-recap">4편</a>, 6~12강 것은 <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a>과 <a href="langgraph-patterns-orchestrator-evaluator.html#key-recap">7편</a>의 같은 목록에 있어요.</p>
+    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 강의가 퀴즈로 다시 짚은 내용이라, 복습할 때 이것부터 보면 돼요. 다른 편의 같은 목록은 <a href="langgraph-what-and-why.html#key-recap">1편</a> · <a href="langgraph-state-node-edge.html#key-recap">2편</a> · <a href="langgraph-branches-and-tool-loop.html#key-recap">4편</a> · <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a> · <a href="langgraph-patterns-orchestrator-evaluator.html#key-recap">7편</a>에 있어요.</p>
     <ul class="key-recap">
-      <li><a href="#key-router-read-only">라우터는 길만 고르고, 전표에 적는 건 노드</a> (4강)</li>
+      <li><a href="#key-router-read-only">라우터는 길만 고르고, 전표에 적는 건 노드</a></li>
     </ul>
 
     <h2><span class="hl">다음은</span></h2>

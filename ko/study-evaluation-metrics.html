@@ -307,7 +307,7 @@
 
 <div class="wrap">
 
-  <span class="kicker">지시 설계 노드 · 8강 답을 재는 방법</span>
+  <span class="kicker">지시 설계 노드 · 답을 재는 방법</span>
   <h1>평가지표 정리 노트</h1>
   <p class="sub">exact match·F1·BLEU·ROUGE·perplexity·pass@k·LLM-as-judge — 계열별로 묶은 문제와 실무 후속질문까지 한 장에.</p>
 
@@ -422,7 +422,7 @@
       <li><b>③</b><strong>같은 판정 규칙</strong> — Q4의 micro/macro/weighted, Q6의 brevity penalty·smoothing처럼 "어떻게 채점했는지"의 규칙도 같아야 한다. 규칙이 다르면 똑같은 답에도 다른 점수가 나온다.</li>
     </ul>
     <div class="closing" style="margin:0;">
-      셋 중 하나라도 안 고정하면, <b>숫자의 차이는 지시의 효과가 아니라 조건 차이일 수 있다.</b> 그래서 실험 하나를 보고할 때는 점수 하나만 적지 말고, 이 세 조건을 반드시 같이 적어야 한다 — 이게 8강 전체를 관통하는 가장 근본적인 원칙이다.
+      셋 중 하나라도 안 고정하면, <b>숫자의 차이는 지시의 효과가 아니라 조건 차이일 수 있다.</b> 그래서 실험 하나를 보고할 때는 점수 하나만 적지 말고, 이 세 조건을 반드시 같이 적어야 한다 — 이게 이 글 전체를 관통하는 가장 근본적인 원칙이다.
     </div>
   </div>
 
@@ -668,7 +668,7 @@
       <span class="block-label">모범답</span>
       <p style="margin-bottom:10px;"><strong>아니다.</strong> 두 가지 이유가 있다.</p>
       <p style="margin-bottom:10px;">① <strong>같은 근본 결함을 공유</strong> — BLEU와 ROUGE는 계산 방식(연속 n-gram vs LCS)만 다를 뿐, 둘 다 "의미를 직접 판정하지 않는" 표면 겹침 지표다. BLEU를 하나 더 붙여도 부정어 누락이나 법리 왜곡 같은 의미 오류는 여전히 못 잡는다 — 같은 종류의 자를 두 개 대는 것과 같다.</p>
-      <p>② <strong>과업 자체가 안 맞음</strong> — BLEU는 번역 평가용, ROUGE는 요약 평가용으로 설계됐다. "요약" 품질을 보는 자리에 번역용 지표를 끌어오는 건 8강 분류표의 "과업 유형별 지표" 원칙에도 어긋난다.</p>
+      <p>② <strong>과업 자체가 안 맞음</strong> — BLEU는 번역 평가용, ROUGE는 요약 평가용으로 설계됐다. "요약" 품질을 보는 자리에 번역용 지표를 끌어오는 건 <a href="#reftable">앞의 분류표</a>가 말하는 "과업 유형별 지표" 원칙에도 어긋난다.</p>
     </div>
     <div class="block follow">
       <span class="block-label">후속질문 (Q9 LLM-as-judge 연결)</span>
@@ -830,7 +830,7 @@
     <div class="block follow">
       <span class="block-label">후속질문 (Q4·Q6과 연결)</span>
       <p class="fq">이 문제가 Q4의 micro/macro/weighted 선택 문제, Q6의 brevity penalty 문제와 근본적으로 같은 이유는?</p>
-      <p class="fa"><strong>답</strong>: 셋 다 "같은 원본 데이터·모델인데 어떤 조건(k, 평균 방식, 길이 보정)을 골랐는지에 따라 완전히 다른 숫자가 나온다"는 같은 함정이다. 그래서 숫자 하나만 보고하지 말고, 그 숫자를 만든 조건까지 반드시 같이 밝혀야 다른 사람이 그 숫자를 믿고 비교할 수 있다는 8강 전체의 원칙으로 수렴한다.</p>
+      <p class="fa"><strong>답</strong>: 셋 다 "같은 원본 데이터·모델인데 어떤 조건(k, 평균 방식, 길이 보정)을 골랐는지에 따라 완전히 다른 숫자가 나온다"는 같은 함정이다. 그래서 숫자 하나만 보고하지 말고, 그 숫자를 만든 조건까지 반드시 같이 밝혀야 다른 사람이 그 숫자를 믿고 비교할 수 있다는 이 글 전체의 원칙으로 수렴한다.</p>
     </div>
   </div>
 
@@ -1098,7 +1098,7 @@
     <div class="block follow">
       <span class="block-label">후속질문</span>
       <p class="fq">지시안 A/B/C 중 하나가 이진 판정에서 근소하게 앞섰는데 사람 검토 결과와는 어긋난다면 어떻게 해야 하나?</p>
-      <p class="fa"><strong>답</strong>: 승자를 억지로 선언하지 않는다. 점수 차이가 작거나 사람 검토와 안 맞으면, 어느 사례에서 어떤 약속이 깨졌는지 원문 근거를 함께 남겨야 한다 — 숫자 하나로 우열을 단정하지 않는 것이 8강의 결론.</p>
+      <p class="fa"><strong>답</strong>: 승자를 억지로 선언하지 않는다. 점수 차이가 작거나 사람 검토와 안 맞으면, 어느 사례에서 어떤 약속이 깨졌는지 원문 근거를 함께 남겨야 한다 — 숫자 하나로 우열을 단정하지 않는 것이 이 글의 결론.</p>
     </div>
     <p class="addq"><span class="addq-tag">추가문제</span>보고서에 "F1 = 0.73"이라는 숫자만 있고 분자·분모(계산에 쓴 실제 개수)가 없다면 뭐가 문제일까?</p>
     <div class="block ans">

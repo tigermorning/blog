@@ -175,7 +175,7 @@ print(graph.invoke({"order": " 김치찌개,  계란말이 ,공기밥 ", "log": 
     <pre><code>{'order': ' 김치찌개,  계란말이 ,공기밥 ', 'dishes': ['김치찌개', '계란말이', '공기밥'], 'count': 3, 'log': '시작 &gt; 접수'}</code></pre>
     <p><code>log</code>는 지워지지 않고 <code>take_order</code>가 적어 둔 <code>'시작 &gt; 접수'</code>에서 멈춰 있어요. 반환값에서 키를 뺀다는 건 "이번엔 이 칸을 건드리지 않는다"는 뜻이지, State에서 지우라는 뜻이 아니에요. 주방으로 치면 집계 담당이 '거쳐 간 조리대' 칸에 아무것도 적지 않고 전표를 넘긴 거예요. 그 칸에는 앞사람이 적은 글씨가 그대로 남아요.</p>
     <div class="key-point" id="key-partial-update">
-      <p class="key-point-label"><span class="key-point-badge">중요</span>3강에서 짚은 내용</p>
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
       <p>노드가 돌려준 칸만 새 값으로 바뀌고, 돌려주지 않은 칸은 <strong>이전 값 그대로</strong> 남아요(부분 업데이트). 그래서 노드는 전표 전체를 다시 적어 돌려줄 필요 없이 자기가 바꾼 칸만 돌려주면 돼요. 안 돌려준 칸이 <code>None</code>으로 비워진다, 전표에서 지워진다, 전체를 안 돌려줬으니 에러가 난다 — 이렇게 착각하기 쉬운데 셋 다 아니에요.</p>
     </div>
 
@@ -304,9 +304,9 @@ serve --&gt; __end__;</code></pre>
     </table>
 
     <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
-    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 강의 3강이 퀴즈로 다시 짚은 내용이라, 복습할 때 이것부터 보면 돼요. 1~2강 것은 <a href="langgraph-what-and-why.html#key-recap">1편</a>, 4~5강 것은 <a href="langgraph-branches-and-tool-loop.html#key-recap">4편</a>, 6~12강 것은 <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a>과 <a href="langgraph-patterns-orchestrator-evaluator.html#key-recap">7편</a>의 같은 목록에 있어요.</p>
+    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 강의가 퀴즈로 다시 짚은 내용이라, 복습할 때 이것부터 보면 돼요. 다른 편의 같은 목록은 <a href="langgraph-what-and-why.html#key-recap">1편</a> · <a href="langgraph-branch-drills.html#key-recap">3편</a> · <a href="langgraph-branches-and-tool-loop.html#key-recap">4편</a> · <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a> · <a href="langgraph-patterns-orchestrator-evaluator.html#key-recap">7편</a>에 있어요.</p>
     <ul class="key-recap">
-      <li><a href="#key-partial-update">노드가 안 돌려준 칸은 그대로 남아요</a> — 부분 업데이트 (3강)</li>
+      <li><a href="#key-partial-update">노드가 안 돌려준 칸은 그대로 남아요</a> — 부분 업데이트</li>
     </ul>
 
     <h2><span class="hl">다음은</span></h2>

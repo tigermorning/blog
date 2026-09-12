@@ -157,7 +157,7 @@
     </table>
     <p>정리하면 LLM은 "날짜 계산이 필요하니 이 도구를 이 값으로 부르자"까지만 판단하고, 계산은 코드가 맡아요. 이 역할 분담이 뒤에서 조립할 도구 루프의 출발점이에요. 다만 도구를 늘릴수록 모델이 읽어야 할 도구 설명도 함께 쌓이니(<a href="mcp-skill-context-and-search.html">도구가 많아지면 생기는 문맥 부담 — Tool Search와 Code Mode</a>), 틀리면 곤란한 계산부터 빼는 게 순서예요. 둘의 차이는 글 끝 <a href="#try">직접 해보기</a> 2번에서 재 볼 수 있어요.</p>
     <div class="key-point" id="key-code-tools">
-      <p class="key-point-label"><span class="key-point-badge">중요</span>2강에서 짚은 내용</p>
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
       <p>단순한 계산도 LLM에게 맡기지 않고 도구로 빼는 이유는 세 가지로 모여요.</p>
       <ul>
         <li><strong>틀려도 티가 안 나요.</strong> LLM이 틀린 날짜를 말할 때도 문장은 그럴듯해서, 사람이 읽어서는 잡아내기 어려워요.</li>
@@ -260,7 +260,7 @@ tool_calls: get_recipe {'dish': '계란말이'}
 ToolMessage | 계란 3개</code></pre>
     <p>요청서만 있을 때는 아무것도 안 찍혔고, <code>ToolNode</code>를 거친 뒤에야 "실행됨"이 찍혔어요. 결과("계란 3개")도 요청서 안에 숨어 있던 게 아니라 <code>ToolMessage</code>라는 새 메시지로 따로 붙었고요. 주방으로 치면 홀 직원이 요청서를 막 적은 순간에는 아직 아무도 창고에 안 갔고, 창고 담당이 다녀와서 결과를 따로 적어 붙여 준 거예요.</p>
     <div class="key-point" id="key-bind-tools">
-      <p class="key-point-label"><span class="key-point-badge">중요</span>5강에서 짚은 내용</p>
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
       <p>LLM은 글자만 만들어요. 우리 컴퓨터에 있는 함수를 직접 실행할 손이 없어요. 그래서 <code>bind_tools</code>를 붙인 모델도 "이 도구를 이 값으로 불러 달라"는 <strong>요청서</strong>(<code>tool_calls</code>)만 써서 내밀어요. 요청서를 받아 함수를 실제로 돌리는 건 우리 쪽 코드인 <code>ToolNode</code>이고, 결과는 <code>ToolMessage</code>로 메시지 목록에 따로 붙어요. 어느 모델을 쓰든 똑같아요.</p>
     </div>
     <h3 id="tool-order">순서를 정해 준 적이 없는데 — 모델은 왜 조회부터 했을까</h3>
@@ -272,7 +272,7 @@ ToolMessage | 계란 3개</code></pre>
     </ul>
     <p>다만 이건 모델의 판단이라 매번 같다는 보장이 없어요. 숫자를 지어내서 바로 판정을 부르거나, 조회를 건너뛸 수도 있어요.</p>
     <div class="key-point" id="key-tool-order">
-      <p class="key-point-label"><span class="key-point-badge">중요</span>5강에서 짚은 내용</p>
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
       <p>도구 루프에서는 도구를 부르는 순서를 모델이 정해요. 그 판단은 도구가 요구하는 값, 독스트링의 안내, 결과를 보고 다시 고를 수 있는 루프에서 나와요. 이 순서를 더 확실히 지키게 하는 방법은 약한 것부터 셋이에요.</p>
       <ol>
         <li><strong>부탁을 또렷하게</strong> — 모델에게 매번 맨 앞에 붙여 주는 기본 지시문(시스템 프롬프트)에 "조회한 뒤 판정한다"는 절차를 적어요. 여전히 모델의 판단이라 보장은 못 해요.</li>
@@ -312,11 +312,11 @@ agent.invoke({"messages": [("user", "계란말이 두 접시 만들 수 있어?"
     </table>
 
     <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
-    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 강의 2·5강이 퀴즈로 다시 짚은 내용이에요. 1~2강 것은 <a href="langgraph-what-and-why.html#key-recap">1편</a>, 3강 것은 <a href="langgraph-state-node-edge.html#key-recap">2편</a>, 4강 것은 <a href="langgraph-branch-drills.html#key-recap">3편</a>, 6~12강 것은 <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a>과 <a href="langgraph-patterns-orchestrator-evaluator.html#key-recap">7편</a>의 같은 목록에 있어요.</p>
+    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 강의가 퀴즈로 다시 짚은 내용이라, 복습할 때 이것부터 보면 돼요. 다른 편의 같은 목록은 <a href="langgraph-what-and-why.html#key-recap">1편</a> · <a href="langgraph-state-node-edge.html#key-recap">2편</a> · <a href="langgraph-branch-drills.html#key-recap">3편</a> · <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a> · <a href="langgraph-patterns-orchestrator-evaluator.html#key-recap">7편</a>에 있어요.</p>
     <ul class="key-recap">
-      <li><a href="#key-code-tools">단순한 계산도 도구로 빼요</a> — 티 안 나는 오답, 검사할 수 있는 함수, 일 나눠 맡기기 (2강)</li>
-      <li><a href="#key-bind-tools">모델은 요청서만 쓰고, 실행은 ToolNode가 해요</a> (5강)</li>
-      <li><a href="#key-tool-order">도구 루프에서는 순서를 모델이 정해요 — 확실히 하려면 코드로 박아요</a> (5강)</li>
+      <li><a href="#key-code-tools">단순한 계산도 도구로 빼요</a> — 티 안 나는 오답, 검사할 수 있는 함수, 일 나눠 맡기기</li>
+      <li><a href="#key-bind-tools">모델은 요청서만 쓰고, 실행은 ToolNode가 해요</a></li>
+      <li><a href="#key-tool-order">도구 루프에서는 순서를 모델이 정해요 — 확실히 하려면 코드로 박아요</a></li>
     </ul>
 
     <h2><span class="hl">다른 예제로 복습하기</span> — 책 저장소의 날씨 에이전트</h2>

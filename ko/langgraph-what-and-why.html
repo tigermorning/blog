@@ -116,7 +116,7 @@ while True:
       <li><strong>계획</strong> — 어떤 도구를 어떤 순서로 쓸지 정하는 판단이에요.</li>
     </ul>
     <div class="key-point" id="key-lookup-action">
-      <p class="key-point-label"><span class="key-point-badge">중요</span>1강에서 짚은 내용</p>
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
       <p>에이전트에게 맡길 일을 떠올렸다면, 그 일에 필요한 것을 <strong>조회</strong>와 <strong>행동</strong> 두 목록으로 나눠 적어 보세요. 조회는 바깥세상을 읽기만 하는 일이고, 행동은 바깥세상을 실제로 바꾸는 일이에요(위 목록의 '행동'은 도구 전체를 가리켰지만, 여기서는 바깥을 바꾸는 도구만 가리키는 좁은 뜻이에요). 이 두 목록을 합친 게 곧 그 에이전트가 쥘 도구 목록이에요.</p>
       <p>식당 예약 변경을 맡긴다면 조회는 "예약 내역 찾기 · 원하는 시간에 빈자리 확인 · 변경 수수료 확인"이고, 행동은 "예약 바꾸기 · 확인 문자 보내기"예요. 굳이 나누는 이유는 위험이 달라서예요. 조회는 틀려도 다시 하면 되지만, 행동은 한 번 하면 되돌리기 어려워요. 사람의 확인 같은 안전장치를 붙일 자리가 바로 행동 목록이에요(아래 표의 '환경 변경').</p>
     </div>
@@ -130,7 +130,7 @@ while True:
     </ul>
     <p>그래서 <a href="langgraph-five-workflow-patterns.html#routing">6편의 라우팅</a>처럼 LLM이 입력을 읽고 갈래를 골라도, 고를 수 있는 갈래를 개발자가 미리 다 그려 뒀다면 여전히 워크플로예요. LLM이 판단을 하느냐가 아니라, <strong>그 판단이 움직일 수 있는 길을 누가 그려 뒀느냐</strong>를 봐요.</p>
     <div class="key-point" id="key-who-decides">
-      <p class="key-point-label"><span class="key-point-badge">중요</span>2강에서 짚은 내용</p>
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
       <p>워크플로와 에이전트를 가르는 기준은 하나예요. <strong>다음 걸음을 누가 정하나.</strong> 개발자가 코드로 길을 미리 다 그려 뒀으면 워크플로, LLM이 매 단계 스스로 정하면 에이전트예요. LLM을 몇 번 부르는지, 도구를 쓰는지, 모델이 큰지는 기준이 아니에요. 셋 다 워크플로와 에이전트 양쪽에 똑같이 나타날 수 있어서 둘을 가르지 못해요.</p>
     </div>
     <p id="anthropic-advice">Anthropic은 "가장 단순한 방법으로 시작하고, 자율성이 꼭 필요하다는 증거가 있을 때만 복잡도를 더하라"고 권해요. 정해진 길을 따르면 결과를 예측할 수 있고, 비용을 통제할 수 있고, 틀렸을 때 어디가 틀렸는지 바로 찾을 수 있으니까요.</p>
@@ -305,10 +305,10 @@ while True:
     </table>
 
     <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
-    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 강의 1~2강이 퀴즈로 다시 짚은 내용이라, 복습할 때 이것부터 보면 돼요. 3강 것은 <a href="langgraph-state-node-edge.html#key-recap">다음 편</a>, 4~5강 것은 <a href="langgraph-branches-and-tool-loop.html#key-recap">4편</a>, 6~12강 것은 <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a>과 <a href="langgraph-patterns-orchestrator-evaluator.html#key-recap">7편</a>의 같은 목록에 있어요.</p>
+    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 강의가 퀴즈로 다시 짚은 내용이라, 복습할 때 이것부터 보면 돼요. 다른 편의 같은 목록은 <a href="langgraph-state-node-edge.html#key-recap">2편</a> · <a href="langgraph-branch-drills.html#key-recap">3편</a> · <a href="langgraph-branches-and-tool-loop.html#key-recap">4편</a> · <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a> · <a href="langgraph-patterns-orchestrator-evaluator.html#key-recap">7편</a>에 있어요.</p>
     <ul class="key-recap">
-      <li><a href="#key-lookup-action">도구 목록은 조회 + 행동</a> — 바깥을 바꾸는 행동 앞에 안전장치를 둬요 (1강)</li>
-      <li><a href="#key-who-decides">워크플로와 에이전트를 가르는 건 "다음 걸음을 누가 정하나"</a> — 호출 수·도구·모델 크기는 기준이 아니에요 (2강)</li>
+      <li><a href="#key-lookup-action">도구 목록은 조회 + 행동</a> — 바깥을 바꾸는 행동 앞에 안전장치를 둬요</li>
+      <li><a href="#key-who-decides">워크플로와 에이전트를 가르는 건 "다음 걸음을 누가 정하나"</a> — 호출 수·도구·모델 크기는 기준이 아니에요</li>
     </ul>
 
     <h2><span class="hl">다음은</span></h2>
