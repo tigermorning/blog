@@ -293,7 +293,7 @@
     <p>여기까지 오니 조회 기능 하나의 흐름이 보여요. 개발자가 기능을 준비하고, 모델은 설명을 받아 호출을 요청하고, 프로그램이 실행 결과를 돌려줘요. 그러면 <strong>같은 조회 기능을 Claude Code에서도 OpenCode에서도 쓰려면</strong> 어떻게 해야 할까요?</p>
     <p>도구 사용 기능 자체는 MCP가 나오기 전에도 있었어요. 개발자가 모델이 받는 도구 설명 형식에 맞추고, 돌아온 호출 요청을 읽고, 실제 서비스에 연결하고, 결과를 다시 보내는 부분을 직접 작성할 수 있었어요. 다만 앱이나 서비스의 연결 방식이 달라지면 그때마다 맞추는 작업이 또 생겼죠.</p>
     <p>다음 편에서는 이 중 <strong>도구를 제공하는 프로그램과 AI 앱 사이에 공통 규칙을 두는 방법</strong>을 봐요. 그 규칙이 MCP예요. 방금 살펴본 모델의 요청 · 프로그램의 실행 · 결과 전달을 기억해 두면, MCP가 맡는 부분과 제가 직접 구현할 업무 기능을 구별하기가 훨씬 쉬워져요.</p>
-    <p class="post-date">한 걸음 더: 이 세 부분이 LangGraph 코드에서는 각각 <code>bind_tools</code>(메뉴판 건네기), 모델 응답의 <code>tool_calls</code>(주문표), <code>ToolNode</code>(주방)로 나뉘어요. 직접 조립해 본 과정은 <a href="langgraph-branches-and-tool-loop.html#tool-loop">모델이 다음 길을 고르게 한다 — LangGraph 갈림길 연습과 도구 루프</a>에 있어요.</p>
+    <p class="post-date">한 걸음 더: 이 세 부분이 LangGraph 코드에서는 각각 <code>bind_tools</code>(메뉴판 건네기), 모델 응답의 <code>tool_calls</code>(주문표), <code>ToolNode</code>(주방)로 나뉘어요. 직접 조립해 본 과정은 <a href="langgraph-branches-and-tool-loop.html#tool-loop">모델이 다음 길을 고르게 한다 — 도구를 쥐여 주는 루프</a>에 있어요.</p>
 
     <h2><span class="hl">직접 해보기</span></h2>
     <p>코드 없이 종이에 하는 연습이에요. 제 업무 중에 "AI가 대신 조회해 줬으면" 싶은 것 하나를 고르고 네 줄을 적어요. ① 기능 이름을 영어 소문자로 뭐라고 붙일까(<code>get_weekly_records</code>처럼), ② 설명 한 줄 — <strong>모델이 이 설명만 읽고 "지금 이게 필요한지" 판단할 수 있게</strong> 쓸 수 있나, ③ 입력 항목은 몇 개이고 각각 어떤 모양인가(글자? 숫자? 필수인가?), ④ 입력값이 형식은 맞는데 <strong>의미가 틀릴 수 있는 경우</strong>는 뭔가. 특히 ④를 채워 보면 "파싱 성공 ≠ 의미가 맞는 호출"이 왜 따로 있는지 손에 잡혀요.</p>

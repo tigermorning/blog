@@ -96,7 +96,7 @@ IF: title과 description이 모두 있는가?
       </tbody>
     </table>
     <p>둘은 서로를 대신하지 않아요. 그래서 실제 흐름에서는 명시적인 부분은 IF 노드에, 해석이 필요한 부분은 제한된 도구를 가진 AI Agent에 나눠 맡기고, 실행 기록에서 분기 조건과 도구 호출을 함께 확인해요. 그래야 무엇이 규칙에 따른 결과이고 무엇이 AI의 판단에 따른 결과인지 구별할 수 있어요.</p>
-    <p class="post-date">같은 구분을 파이썬 코드로 옮기면 이렇게 돼요. 조건부 엣지에 규칙 함수를 걸면 IF 노드, 분류를 LLM에게 맡기면 라우팅이에요. <a href="langgraph-state-node-edge.html">흐름을 그림으로 짠다 — LangGraph의 State·Node·Edge</a>에서 규칙 쪽을, <a href="langgraph-five-workflow-patterns.html">다섯 가지 흐름 모양</a>의 ② 라우팅에서 LLM 쪽을 직접 만들어 봤어요.</p>
+    <p class="post-date">같은 구분을 파이썬 코드로 옮기면 이렇게 돼요. 조건부 엣지에 규칙 함수를 걸면 IF 노드, 분류를 LLM에게 맡기면 라우팅이에요. <a href="langgraph-state-node-edge.html">흐름을 그림으로 짠다 — LangGraph의 State·Node·Edge</a>와 <a href="langgraph-branch-drills.html">갈림길을 밀어붙인다</a>에서 규칙 쪽을, <a href="langgraph-five-workflow-patterns.html#routing">다섯 가지 흐름 모양 ①</a>의 ② 라우팅에서 LLM 쪽을 직접 만들어 봤어요.</p>
     <p>범용성은 에이전트에게 모든 <a href="ai-permissions-local-models-and-token-cost.html">권한</a>을 주는 데서 생기지 않아요. 허용된 도구 안에서 다음 행동을 선택할 수 있게 하는 데서 생겨요. 처음에는 공개 데이터를 읽기만 하는 도구만 연결하고 호출 횟수와 처리 범위를 작게 제한했어요. 발송·수정·삭제처럼 외부 상태를 바꾸는 도구가 필요하다면, 사람의 승인이나 별도의 IF 조건을 통과한 뒤에만 실행하도록 경계를 둬야 해요.</p>
 
     <h2><span class="hl">내 웹사이트에 AI를 붙이는 창구</span> — Webhook과 n8n이라는 백엔드</h2>

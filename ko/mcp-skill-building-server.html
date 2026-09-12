@@ -330,7 +330,7 @@ def get_weekly_records(week: str) -&gt; dict[str, Any]:
   "properties": { "week": { "type": "string" } },
   "required": ["week"]
 }</code></pre>
-    <p>그런데 이 JSON을 제가 어디에도 적지 않았어요. <strong>SDK가 함수의 이름·docstring·타입 힌트를 읽어서 만들어 줘요.</strong> 아까 "타입 힌트는 파이썬이 자동 검사해 주지 않는다"고 했던 그 힌트가, 여기서는 스키마를 만드는 재료로 실제로 쓰이는 거예요. LangGraph에서 <code>Literal</code> 힌트 한 줄이 모델의 답을 정해 둔 값 몇 개로 묶는 것도 같은 원리예요(<a href="langgraph-five-workflow-patterns.html#literal-limits">다섯 가지 흐름 모양의 라우팅</a>).</p>
+    <p>그런데 이 JSON을 제가 어디에도 적지 않았어요. <strong>SDK가 함수의 이름·docstring·타입 힌트를 읽어서 만들어 줘요.</strong> 아까 "타입 힌트는 파이썬이 자동 검사해 주지 않는다"고 했던 그 힌트가, 여기서는 스키마를 만드는 재료로 실제로 쓰이는 거예요. LangGraph에서 <code>Literal</code> 힌트 한 줄이 모델의 답을 정해 둔 값 몇 개로 묶는 것도 같은 원리예요(<a href="langgraph-five-workflow-patterns.html#literal-limits">다섯 가지 흐름 모양 ①의 라우팅</a>).</p>
     <p>그래서 입력이 잘못됐을 때 <strong>어디서 걸리는지가 두 층으로 갈려요.</strong></p>
     <table>
       <thead><tr><th>보낸 입력</th><th>어디서 걸리나</th><th>왜</th></tr></thead>

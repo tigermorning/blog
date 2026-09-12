@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>길을 누가 정하나 — LangGraph와 워크플로·에이전트 (1) - Tigermorning</title>
+  <meta name="description" content="LangGraph는 LLM 앱이 일하는 순서를 노드와 선으로 그려 두고 그대로 실행해 주는 파이썬 프레임워크예요. while문으로 짜던 흐름이 State·Node·Edge 세 조각으로 갈라지는 과정, 워크플로와 에이전트를 가르는 기준, LangChain·LangSmith·n8n·ComfyUI와의 관계를 완전 초보자 눈높이로 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="길을 누가 정하나 — LangGraph와 워크플로·에이전트 (1)">
+  <meta property="og:description" content="다음 걸음을 개발자가 정하느냐 LLM이 정하느냐 — 이 질문 하나가 워크플로와 에이전트를, n8n과 LangGraph를 가릅니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/langgraph-what-and-why.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">길을 누가 정하나</span> — LangGraph와 워크플로·에이전트 (1)</h1>
+    <p class="post-date">2026. 9. 11.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="mcp-skill-wikiskill-research.html">
+      <span class="post-nav-label">← 이전 시리즈</span>
+      <span class="post-nav-title">에이전트도 경험을 쌓는다 — WikiSkill 연구가 보는 Skill (14)</span>
+    </a>
+
+    <p class="one-liner">LangGraph는 LLM 앱이 일하는 순서를 공용 메모(State)·작업 칸(Node)·이동 선(Edge) 세 가지로 그려 두면 그 그림대로 실행해 주는 파이썬 프레임워크다.</p>
+
+    <div class="why-read" id="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>어디쯤인가</dt>
+        <dd><a href="posts.html#cat-agent-system">8단계</a> › <a href="posts.html#langgraph-team">에이전트 팀 꾸리기 — LangGraph</a> — 1번째 글 (전 7편)</dd>
+        <dt>뭐를 할 수 있나</dt>
+        <dd>눈앞의 LLM 시스템을 보고 "이건 워크플로인가 에이전트인가"를 흔들리지 않는 기준 하나로 가를 수 있고, 같은 일을 n8n으로 할지 LangGraph로 할지 고를 수 있어요. State·Node·Edge 세 낱말이 각각 내 코드의 무엇에 해당하는지도 잡혀요.</dd>
+        <dt>왜 배우나</dt>
+        <dd>"LLM을 여러 번 부르면 에이전트", "도구를 쓰면 에이전트" 같은 겉모습 기준으로 갈랐다가는, 정작 통제해야 할 자율성이 어디 있는지 못 찾아요.</dd>
+        <dt>왜 중요한가</dt>
+        <dd>자율성은 공짜가 아니에요. LLM이 다음 걸음을 고르게 둘수록 결과를 예측하기 어렵고, 반복이 몇 바퀴 돌지 모르니 요금 상한도 걸기 어려워요. 꼭 필요한 자리에만 주려면 지금 어디까지 줬는지부터 알아야 해요.</dd>
+        <dt>어디에 쓰나</dt>
+        <dd>새 자동화를 n8n으로 끝낼지 코드로 갈지 고르기 · 남이 만든 에이전트 코드에서 자율성이 어디 있는지 찾기 · 이 시리즈의 나머지 여섯 편을 읽을 뼈대 세우기</dd>
+      </dl>
+    </div>
+
+    <p>오늘부터 "에이전트 팀 꾸리기"라는 새 모듈이 시작됐어요. 첫 주제가 LangGraph였어요. "노드를 선으로 잇는다"는 설명만 들으면 이미지 생성할 때 쓰는 ComfyUI와 비슷해 보이는데, 다루는 대상도 잇는 방법도 달라요(<a href="#look-alikes">아래 표</a>). 제 기록을 뒤져 보니 LangGraph는 <a href="multi-agent-three-runs-abc.html">멀티 에이전트 실험</a> 때 후보로만 검토하고 쓰지 않았던 도구였어요.</p>
+    <p>이번 편은 <strong>코드를 짜기 전에 지형을 보는 편</strong>이에요. LangGraph가 내 코드를 어떤 모양으로 바꾸는지, 워크플로와 에이전트는 무엇으로 갈리는지, 이 도구가 LangChain·LangSmith·n8n 사이 어디에 앉아 있는지까지요. 세 재료로 실제 그래프를 만들어 돌려 보는 건 <a href="langgraph-state-node-edge.html">다음 편</a>이고, 이 시리즈는 전 7편이에요(<a href="#series-list">맨 아래 목록</a>).</p>
+
+    <p>일곱 편 전부가 <strong>질문 하나</strong>를 각도만 바꿔 되묻는 거예요. <strong>"다음 걸음을 누가 정하나."</strong> 개발자가 코드에 미리 박아 둔 순서를 따라가느냐, 아니면 LLM이 매번 스스로 고르느냐는 질문이요. 워크플로와 에이전트를 가르는 것도 이 질문이고, n8n과 LangGraph가 갈라지는 것도, 다음 편에서 그을 <code>add_conditional_edges</code> 한 줄이 하는 일도 전부 이 질문의 다른 얼굴이에요. 읽다가 길을 잃으면 "지금은 이 질문의 어느 면을 보고 있나"로 되돌아오면 돼요.</p>
+    <p>이번 편이 그 질문을 어떤 순서로 다루는지 미리 지도를 그려 둘게요.</p>
+    <table id="reading-map">
+      <thead><tr><th>절</th><th>여기서 답하는 것</th><th>처음 읽는다면</th></tr></thead>
+      <tbody>
+        <tr><td><a href="#quick-look">코드로 먼저 보기</a></td><td>LangGraph가 내 코드를 실제로 어떻게 바꾸나 — 세 재료의 정체</td><td>여기부터 읽으세요</td></tr>
+        <tr><td><a href="#workflow-vs-agent">먼저 낱말 정리</a></td><td>워크플로와 에이전트는 뭐가 다른가</td><td>꼭</td></tr>
+        <tr><td><a href="#langchain-family">어느 집 식구인가</a></td><td>LangChain·LangSmith와의 관계, 왜 이 프레임워크인가</td><td>꼭</td></tr>
+        <tr><td><a href="#look-alikes">헷갈리는 것들</a> · <a href="#n8n-vs-langgraph">n8n과는 뭐가 다른가</a></td><td>ComfyUI·n8n·Flowise·Dify·GraphRAG와는 뭐가 다른가</td><td>이 도구들을 모른다면 건너뛰어도 돼요</td></tr>
+        <tr><td><a href="#analogy">비유</a> · <a href="#big-picture">전체 흐름</a></td><td>이 편의 지형을 주방 한 장과 눈금자 한 줄로</td><td>꼭</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="quick-look"><span class="hl">코드로 먼저 보기</span> — while문 뭉치를 세 조각으로 뜯기</h2>
+    <p>낱말 설명에 들어가기 전에, LangGraph가 손에 쥐여 주는 게 정확히 뭔지 코드로 먼저 볼게요. 위 <a href="#why-read">'왜 배우나'</a>에 적은 "흐름을 while문과 if문으로만 짜면"이 무슨 뜻인지부터요. 파이썬 코드가 낯설다면 <a href="reading-python-code-basics.html">파이썬 코드 눈으로 읽기</a>를 먼저 보고 와도 좋아요.</p>
+    <p>국을 끓이는 일을 시킨다고 해 볼게요. 간을 보고, 싱거우면 소금을 넣고, 다시 간을 봐요. 세 번 넣으면 완성이고, 다섯 번을 봐도 안 되면 사람을 불러요. 평범한 파이썬으로 쓰면 이래요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— LangGraph 없이 짜면 어떤 모양인지 보여 주려고 적은 코드예요</span></p>
+    <pre><code>salt, tries, result = 0, 0, ""       # 소금 숟가락 수 · 간 본 횟수 · 결과
+
+while True:
+    tries += 1                       # 간을 본다
+    if salt &gt;= 3:                    # 간이 맞으면 내보내고 끝
+        result = "완성"
+        break
+    if tries &gt;= 5:                   # 다섯 번 봐도 안 되면 사람을 부르고 끝
+        result = "셰프 호출"
+        break
+    salt += 1                        # 싱거우니 소금 한 숟갈, 그리고 다시 위로</code></pre>
+    <p>열한 줄짜리라 아직은 읽을 만해요. 문제는 이 코드 안에서 <strong>성격이 다른 세 가지가 한 덩어리로 엉켜 있다</strong>는 거예요.</p>
+    <ul>
+      <li><strong>값</strong>을 담는 부분 — <code>salt</code>, <code>tries</code>, <code>result</code> 세 변수요. 지금은 셋이지만 단계가 늘면 이 목록도 같이 늘고, 각각이 어느 줄에서 바뀌는지는 코드를 전부 훑어야 알 수 있어요.</li>
+      <li><strong>일</strong>을 하는 부분 — <code>tries += 1</code>(간 보기), <code>salt += 1</code>(소금 넣기)처럼 실제로 뭔가를 하는 줄이요.</li>
+      <li><strong>길</strong>을 정하는 부분 — <code>while</code>, <code>if</code>, <code>break</code>요. "다음에 어디로 갈지"를 이 세 낱말이 나눠 맡고 있어요. 출구가 두 개(<code>break</code> 두 번)라는 사실도 코드를 끝까지 읽어야 보이고요.</li>
+    </ul>
+    <p>단계가 열 개로 늘면 이 엉킴이 바로 문제가 돼요. "지금 어느 갈래에 있나"를 알려면 들여쓰기를 눈으로 따라가야 하고, 중간에 "사람이 한 번 검토" 같은 단계를 끼우려면 <code>if</code>문 뭉치를 다시 짜야 해요. <strong>LangGraph가 하는 일은 이 셋을 억지로 떼어 놓는 것</strong>이고, 떼어 낸 세 조각에 붙인 이름이 이 글 제목의 State·Node·Edge예요.</p>
+    <table id="three-parts">
+      <thead><tr><th>LangGraph의 재료</th><th>한 줄로 말하면</th><th>위 while문 코드에서는</th></tr></thead>
+      <tbody>
+        <tr><td><strong>State</strong> (상태)</td><td>모든 단계가 함께 읽고 쓰는 값 한 묶음이에요</td><td>흩어져 있던 <code>salt</code>·<code>tries</code>·<code>result</code> 세 변수</td></tr>
+        <tr><td><strong>Node</strong> (노드)</td><td>일 한 가지만 하는 평범한 파이썬 함수예요. 길은 신경 쓰지 않아요</td><td><code>tries += 1</code>, <code>salt += 1</code>처럼 실제로 뭔가 하는 줄</td></tr>
+        <tr><td><strong>Edge</strong> (엣지·선)</td><td>어느 노드 다음에 어느 노드로 갈지를 미리 그어 둔 선이에요. 일은 하지 않아요</td><td><code>while</code>·<code>if</code>·<code>break</code>가 뒤섞여 맡고 있던 역할</td></tr>
+      </tbody>
+    </table>
+    <p>이렇게 점(노드)과 선(엣지)으로 이뤄진 구조를 컴퓨터 쪽에서 <strong>그래프<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup></strong>라고 불러요. LangGraph라는 이름이 여기서 나왔어요. 위 코드를 그래프로 다시 짜면 <a href="langgraph-state-node-edge.html#build-branch">다음 편의 직접 만들기 ②</a>의 열몇 줄이 되는데, 줄 수는 오히려 늘어나요. 대신 이런 게 생겨요.</p>
+    <ul>
+      <li><strong>길만 따로 그림이 돼요.</strong> 선을 코드로 적어 뒀으니 <a href="langgraph-state-node-edge.html#big-picture">다음 편의 흐름 그림</a>처럼 그려 볼 수 있고, <code>draw_mermaid()</code> 한 줄로 기계가 대신 그려 주기도 해요.</li>
+      <li><strong>길만 따로 고칠 수 있어요.</strong> 노드 함수는 그대로 두고 선 몇 줄만 바꿔서 순서를 바꾸거나 단계를 끼워 넣어요.</li>
+      <li><strong>값이 사라지지 않아요.</strong> 다섯 단계 전에 적어 둔 값도 State에 그대로 남아 있어요(<a href="langgraph-state-node-edge.html#merge-rules">다음 편의 합치기 규칙</a>).</li>
+      <li><strong>누가 길을 정했는지가 보여요.</strong> 선의 종류가 곧 답이라, 이 글을 관통하는 그 질문에 코드가 직접 답해 줘요(<a href="#who-decides-edges">아래 표</a>).</li>
+    </ul>
+    <p>그래서 이 글의 나머지는 이 세 조각을 하나씩 뜯어보는 과정이에요. 그럼 낱말부터 정리하고 갈게요.</p>
+
+    <h2 id="workflow-vs-agent"><span class="hl">먼저 낱말 정리</span> — 에이전트와 워크플로</h2>
+    <p>"<a href="what-is-ai-agent.html">에이전트</a>"라는 말은 사람마다 떠올리는 게 달라요. 강의는 칩 후옌(Chip Huyen)과 Anthropic의 정의를 합쳐서 이렇게 잡았어요. <strong>목표를 받으면 스스로 계획을 세우고, 행동하고, 그 결과를 보고 다음 행동을 정하는 LLM 시스템.</strong> 여기에 세 가지 재료가 있어요.</p>
+    <ul>
+      <li><strong>환경</strong> — 데이터베이스, 외부 API, 파일처럼 에이전트가 건드릴 바깥세상.</li>
+      <li><strong>행동</strong> — 환경에 손을 대는 수단이에요. 실무에서는 <strong>도구(tool)</strong>라고 불러요. 에이전트가 할 수 있는 일의 한계는 쥔 도구 목록이 정해요.</li>
+      <li><strong>계획</strong> — 어떤 도구를 어떤 순서로 쓸지 정하는 판단이에요.</li>
+    </ul>
+    <div class="key-point" id="key-lookup-action">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>1강에서 짚은 내용</p>
+      <p>에이전트에게 맡길 일을 떠올렸다면, 그 일에 필요한 것을 <strong>조회</strong>와 <strong>행동</strong> 두 목록으로 나눠 적어 보세요. 조회는 바깥세상을 읽기만 하는 일이고, 행동은 바깥세상을 실제로 바꾸는 일이에요(위 목록의 '행동'은 도구 전체를 가리켰지만, 여기서는 바깥을 바꾸는 도구만 가리키는 좁은 뜻이에요). 이 두 목록을 합친 게 곧 그 에이전트가 쥘 도구 목록이에요.</p>
+      <p>식당 예약 변경을 맡긴다면 조회는 "예약 내역 찾기 · 원하는 시간에 빈자리 확인 · 변경 수수료 확인"이고, 행동은 "예약 바꾸기 · 확인 문자 보내기"예요. 굳이 나누는 이유는 위험이 달라서예요. 조회는 틀려도 다시 하면 되지만, 행동은 한 번 하면 되돌리기 어려워요. 사람의 확인 같은 안전장치를 붙일 자리가 바로 행동 목록이에요(아래 표의 '환경 변경').</p>
+    </div>
+    <p>그런데 여기서 중요한 질문이 하나 남아요. <strong>그럼 도구를 어떤 순서로 쓸지는 누가 정하나요?</strong> "조회하고, 판단하고, 답을 써라"를 개발자가 코드에 박아 두면 <strong>워크플로<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup></strong>, 매 단계 LLM이 스스로 고르게 두면 좁은 뜻의 <strong>에이전트</strong>예요. 이 기준은 <a href="what-is-automation-workflow-agent.html">자동화·워크플로·에이전트, 뭐가 다를까</a>에서 내비 경로와 자율주행에 빗대 처음 다뤘던 것과 같아요.</p>
+    <p id="not-criteria">처음 배울 때는 겉으로 보이는 차이를 기준으로 착각하기 쉬워요. 아래 넷은 <strong>기준이 아니에요</strong>.</p>
+    <ul>
+      <li><strong>LLM을 몇 번 부르는지</strong> — 워크플로도 LLM을 여러 번 불러요. <a href="langgraph-five-workflow-patterns.html#chaining">6편의 프롬프트 체이닝</a>은 LLM 호출 여러 번을 순서대로 이은, 가장 전형적인 워크플로예요.</li>
+      <li><strong>도구를 쓰는지</strong> — 워크플로의 노드도 도구를 쥘 수 있어요. 바로 아래에서 볼 'LLM에 도구를 붙인 한 덩어리'는 워크플로와 에이전트가 함께 쓰는 기본 부품이에요.</li>
+      <li><strong>모델이 큰지 작은지</strong> — 같은 모델로 둘 다 만들 수 있어요. 오히려 워크플로 안에서 쉬운 단계는 작고 싼 모델로, 어려운 단계는 큰 모델로 나눠 보내기도 해요.</li>
+      <li><strong>무엇으로 만들었는지</strong> — n8n은 워크플로 자동화 도구, LangGraph는 에이전트 프레임워크로 카테고리부터 달라요. 하지만 카테고리는 그 제품이 <strong>무엇을 하려고 만들어졌느냐</strong>의 이야기라서, <a href="langgraph-five-workflow-patterns.html">6</a>·<a href="langgraph-patterns-orchestrator-evaluator.html">7편</a>의 다섯 패턴은 LangGraph로 그렸는데도 전부 워크플로예요. 두 도구의 차이는 <a href="#n8n-vs-langgraph">아래에서 따로 비교해요</a>.</li>
+    </ul>
+    <p>그래서 <a href="langgraph-five-workflow-patterns.html#routing">6편의 라우팅</a>처럼 LLM이 입력을 읽고 갈래를 골라도, 고를 수 있는 갈래를 개발자가 미리 다 그려 뒀다면 여전히 워크플로예요. LLM이 판단을 하느냐가 아니라, <strong>그 판단이 움직일 수 있는 길을 누가 그려 뒀느냐</strong>를 봐요.</p>
+    <div class="key-point" id="key-who-decides">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>2강에서 짚은 내용</p>
+      <p>워크플로와 에이전트를 가르는 기준은 하나예요. <strong>다음에 갈 길을 누가 정하나.</strong> 개발자가 코드로 길을 미리 다 그려 뒀으면 워크플로, LLM이 매 단계 스스로 정하면 에이전트예요. LLM을 몇 번 부르는지, 도구를 쓰는지, 모델이 큰지는 기준이 아니에요. 셋 다 워크플로와 에이전트 양쪽에 똑같이 나타날 수 있어서 둘을 가르지 못해요.</p>
+    </div>
+    <p id="anthropic-advice">Anthropic은 "가장 단순한 방법으로 시작하고, 자율성이 꼭 필요하다는 증거가 있을 때만 복잡도를 더하라"고 권해요. 정해진 길을 따르면 결과를 예측할 수 있고, 비용을 통제할 수 있고, 틀렸을 때 어디가 틀렸는지 바로 찾을 수 있으니까요.</p>
+    <p>모든 그래프의 노드 하나하나는 <strong>증강된 LLM<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup></strong>이라고 보면 이해가 쉬워요. LLM 본체에 검색·도구·메모리가 붙은 한 덩어리요. 붙이는 도구는 크게 셋이에요.</p>
+    <table id="tool-kinds">
+      <thead><tr><th>도구 종류</th><th>하는 일</th><th>주의할 점</th></tr></thead>
+      <tbody>
+        <tr><td>지식 증강</td><td>실제 DB나 문서를 찾아 와서 모델이 모르는 최신 정보를 채워요 (<a href="context-strategy-and-rag.html">RAG</a>가 대표예요)</td><td>없는 걸 지어내는 <strong>할루시네이션<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup></strong>을 줄이는 게 목적이에요</td></tr>
+        <tr><td>메모리</td><td>이전 대화를 요약하거나 찾아서 다시 꺼내요</td><td><a href="context-window-budget.html">컨텍스트 창</a>이 유한해서 필요해요</td></tr>
+        <tr><td>환경 변경</td><td>메일 보내기, 결제 취소처럼 바깥세상을 진짜로 바꿔요</td><td>되돌리기 어려우니 <strong>사람의 승인(HITL<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>)</strong> 같은 안전장치가 필요해요</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="langchain-family"><span class="hl">LangGraph는 어느 집 식구인가</span> — LangChain·LangSmith</h2>
+    <p>강의 코드를 보면 import 줄에 <code>langchain_</code>과 <code>langgraph</code>가 섞여 나와요. 둘은 경쟁 관계가 아니라 같은 회사(LangChain Inc.)가 역할을 나눠 만든 제품이에요. 표의 오른쪽 칸은 이 시리즈의 코드에서 각 제품을 어떤 이름으로 만나게 되는지예요.</p>
+    <table>
+      <thead><tr><th>이름</th><th>맡은 일</th><th>이 시리즈 코드에서 만나는 이름</th></tr></thead>
+      <tbody>
+        <tr><td><strong>LangChain</strong></td><td><strong>부품</strong> — 모델 연결, 메시지 형식, 도구 정의, 문서 로더, 벡터스토어</td><td><code>ChatOpenAI</code> — OpenAI 모델을 부르는 부품<br><code>@tool</code> — 파이썬 함수를 모델이 쓸 수 있는 도구로 바꾸는 표시<br>둘 다 <a href="langgraph-branches-and-tool-loop.html#tool-loop">4편의 직접 만들기 ③</a>에서 나와요</td></tr>
+        <tr><td><strong>LangGraph</strong></td><td><strong>배선</strong> — 부품을 어떤 순서로 돌릴지, 분기·반복·상태</td><td><code>StateGraph</code> — 흐름 그림(그래프)을 짜는 틀이라 <a href="langgraph-state-node-edge.html#build-line">다음 편의 직접 만들기 ①</a>부터 계속 써요<br><code>ToolNode</code> — 모델이 부탁한 도구를 대신 실행해 주는 노드로, 4편의 직접 만들기 ③에서 나와요</td></tr>
+        <tr><td><strong>LangSmith</strong></td><td><strong>관측</strong> — 실행 기록과 평가를 보여 주는 웹 서비스</td><td>이 시리즈 코드에는 안 나와요. 코드가 아니라 설정 몇 줄로 켜는 서비스라 <a href="langgraph-five-workflow-patterns.html#langsmith">6편</a>에서 켜 봐요</td></tr>
+      </tbody>
+    </table>
+    <p>LangChain은 <a href="prompt-execution-three-paths.html">프롬프트 세 경로 직접 실행해보기</a>에서 메시지 객체를 넘기는 모습으로 한 번 봤어요. 초기 LangChain의 "체인"은 <code>prompt | model | parser</code>처럼 <strong>한 줄로만 흐르는 파이프라인</strong>이었어요. 되돌아가는 반복이나 갈림길, 중간 상태 저장에 약해서 2024년에 LangGraph가 따로 나왔고, 지금은 LangChain의 에이전트 기능도 속으로는 LangGraph 위에서 돌아가요.</p>
+    <p>패키지 이름이 여러 개인 이유도 이거예요. 기본 자료형은 <code>langchain-core</code>, 모델 회사별 연결은 <code>langchain-openai</code>·<code>langchain-anthropic</code>·<code>langchain-google-genai</code>, 외부 서비스 연동 모음은 <code>langchain-community</code>에 들어 있어요. 한 가지 주의할 게 있어요. 옛날 자료에 나오는 <code>LLMChain</code>, <code>AgentExecutor</code>, <code>initialize_agent</code>는 1.0부터 <code>langchain-classic</code>이라는 별도 패키지로 빠졌어요. 검색해서 찾은 코드가 import 에러를 내면 버전부터 의심해 보세요.</p>
+    <p>그럼 수많은 <strong>프레임워크<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup></strong>(CrewAI, AutoGen, Claude Agent SDK…) 중에 왜 LangGraph였을까요. 강의가 든 이유는 셋이에요.</p>
+    <ul>
+      <li><strong>모델 회사에 묶이지 않아요</strong> — OpenAI든 Anthropic이든 Google이든, 노드 안에서 부르는 모델만 바꾸면 나머지 그래프는 그대로예요.</li>
+      <li><strong>흐름을 감추지 않아요</strong> — 어느 단계 다음에 어디로 갈지를 프레임워크가 알아서 정해 주는 게 아니라, State·Node·Edge로 개발자가 한 줄씩 적어요. 손이 더 가는 대신 안 적은 길로는 절대 안 가요. 이 성질이 바로 아래에서 다시 나와요.</li>
+      <li><strong>관측을 붙이기 쉬워요</strong> — 코드를 고치지 않고 환경 변수 몇 줄만 넣으면 실행 기록이 LangSmith에 남아요(<a href="langgraph-five-workflow-patterns.html#langsmith">6편</a>에서 켜 봐요).</li>
+    </ul>
+
+    <h3 id="who-decides-edges">제 기록 하나를 고쳐 적어요 — "결정 주체가 가려진다"는 말</h3>
+    <p>방금 "흐름을 감추지 않는다"를 장점으로 적었는데, 저는 예전에 정반대로 적어 뒀어요. 그래서 여기서 한 번 고치고 갈게요.</p>
+    <p><a href="multi-agent-three-runs-abc.html">멀티 에이전트 실험</a> 때 저는 "LangGraph 같은 범용 프레임워크를 쓰면 <strong>다음 행동을 누가 정하는지</strong>가 프레임워크 안에 가려진다"고 적고, 그 실험 도구로 Claude Agent SDK를 골랐어요. 여기서 "누가 정하는지"란 <a href="#key-who-decides">바로 위에서 본 그 질문</a>이에요. 한 걸음이 끝난 뒤 다음에 뭘 할지를 <strong>개발자가 코드에 박아 둔 규칙</strong>이 정하느냐, <strong>LLM</strong>이 정하느냐요. 그 실험에서 제가 비교하려던 게 정확히 그 차이였으니, 그게 안 보이는 도구는 쓸 수 없다고 판단한 거예요. 안 써 보고 내린 판단이었고요.</p>
+    <p>막상 배워 보니 반대였어요. <strong>State·Node·Edge로 직접 그린 그래프는 그 결정 주체를 선 하나하나로 드러내는 쪽</strong>이었어요. 선의 종류가 곧 답이거든요.</p>
+    <table>
+      <thead><tr><th>코드에 적은 선</th><th>이 걸음을 정한 건</th></tr></thead>
+      <tbody>
+        <tr><td><code>add_edge("add_salt", "taste")</code><br>— 고정 엣지</td><td><strong>개발자</strong>예요. "소금을 넣었으면 무조건 다시 간을 본다"를 제가 못 박아 둔 선이라, LLM이 끼어들 자리가 없어요</td></tr>
+        <tr><td><code>add_conditional_edges("taste", judge, [...])</code><br>— 조건부 엣지</td><td><strong>두 번째 자리에 앉힌 <code>judge</code></strong>예요. 그게 <code>if</code>문으로 짠 함수면 규칙이 정하는 거고(<a href="langgraph-state-node-edge.html#build-branch">다음 편의 직접 만들기 ②</a>), 그 자리에 모델을 앉히면 LLM이 정하는 거예요(<a href="langgraph-branches-and-tool-loop.html#tool-loop">4편의 직접 만들기 ③</a>)</td></tr>
+      </tbody>
+    </table>
+    <p>선을 한 줄씩 전부 제 손으로 적어야 하니, 거꾸로 그 줄만 보면 누가 정하는지가 그대로 보여요. 가려지기는커녕 <strong>코드가 그 답을 적어 놓고 있는</strong> 셈이에요.</p>
+    <p>그럼 제가 걱정했던 "가려짐"은 어디서 생길까요. <code>create_agent</code> 같은 <strong>미리 만들어진 부품</strong>을 쓸 때예요. 이 함수 한 줄을 부르면 "모델에게 묻는다 → 모델이 부탁한 도구를 실행한다 → 결과를 들고 다시 모델에게 묻는다"는 반복이 <strong>이미 배선된 채로</strong> 나와요. 몇 줄로 에이전트가 완성되니 편한데, 그 반복은 선으로 보이지 않고 중간에 "사람이 검토" 같은 제 노드를 끼워 넣을 수도 없어요. <a href="langgraph-branches-and-tool-loop.html#tool-loop">4편</a>에서 이 부품을 한 번 쓰고, 같은 걸 손으로 조립해서 나란히 비교해 봐요. <a href="#n8n-vs-langgraph">아래 n8n 비교표</a>의 'LLM 판단 범위' 줄에서 n8n의 AI Agent 노드를 두고 "칸 안의 반복은 봉인돼 있다"고 적은 것과 똑같은 상황이고요.</p>
+    <p><strong>정리하면, 가려지느냐 아니냐는 프레임워크 이름이 아니라 그 안에서 직접 그리느냐 완제품을 가져다 쓰느냐로 갈려요.</strong> 도구 이름만 보고 판단한 게 제 실수였어요.</p>
+
+    <h3>헷갈리기 쉬운 이웃들</h3>
+    <p>LangGraph와 헷갈리기 쉬운 것들도 정리해 둘게요. ComfyUI·n8n·Flowise·Dify는 노드를 선으로 잇는 <strong>생김새</strong>가 닮았고, GraphRAG는 <strong>이름</strong>에 graph가 들어가서 헷갈려요. 여기부터 <a href="#n8n-vs-langgraph">다음 절(n8n 비교)</a>까지는 "이건 LangGraph가 아니다"를 갈라 두는 자리라, 이 도구들을 들어 본 적 없다면 <a href="#analogy">주방 비유 절</a>로 건너뛰었다가 나중에 돌아와도 돼요.</p>
+    <table id="look-alikes">
+      <thead><tr><th>헷갈리는 것</th><th>정체</th><th>LangGraph와 다른 점</th></tr></thead>
+      <tbody>
+        <tr><td>ComfyUI</td><td>이미지·영상 생성 AI를 노드 상자로 이어 돌리는 화면 도구 (<a href="choosing-image-generation-tools.html">이미지 생성 도구 고르기</a>의 세계예요)</td><td>마우스로 이어요. 다루는 대상도 텍스트 LLM이 아니라 그림 생성이에요</td></tr>
+        <tr><td>n8n</td><td>노코드 워크플로 자동화 도구 (<a href="n8n-agent-delegation-and-if-node.html">IF 노드로 갈림길 만들기</a>)</td><td>셋 중 생김새가 가장 닮았지만 카테고리가 달라요. <a href="#n8n-vs-langgraph">바로 아래</a>에서 따로 봐요</td></tr>
+        <tr><td>Flowise</td><td>LangChain의 부품(모델·메모리·도구·벡터 저장소)을 화면에서 상자로 놓고 이어 돌리는 오픈소스 도구</td><td>"LangChain을 마우스로 조립하는 그림판"이에요. 개발자가 코드 대신 화면으로 그릴 때 써요. 최근 판(Agentflow)은 공유 State와 되돌림 선까지 지원해서 넷 중 LangGraph에 제일 가까워요</td></tr>
+        <tr><td>Dify</td><td>지식베이스(문서 넣고 검색), 프롬프트 편집기, 워크플로 화면, 배포·로그·권한까지 한 덩어리로 묶은 LLM 앱 제작 플랫폼</td><td>LangChain을 안 쓰고 자체 엔진이에요. 노드가 "LLM 호출·문서 검색·HTTP 요청·반복"처럼 업무 단위라서 쓰는 느낌은 n8n에 가깝고, 챗봇을 웹 앱이나 API로 바로 내놓는 데 강해요. 저는 아직 안 써 봐서 문서를 읽고 정리한 거예요</td></tr>
+        <tr><td>GraphRAG</td><td>문서에서 뽑은 개체와 관계를 지식 그래프로 저장해 검색하는 기법</td><td>여기서 graph는 <strong>지식의 구조</strong>예요. LangGraph의 graph는 <strong>실행 순서</strong>고요. 이 모듈 뒤쪽에서 배워요</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="n8n-vs-langgraph"><span class="hl">n8n과는 뭐가 다른가</span> — 워크플로 도구와 에이전트 프레임워크</h2>
+    <p>위 표에서 가장 헷갈리는 게 n8n이에요. 둘 다 노드를 선으로 잇고, 둘 다 LLM을 부를 수 있고, 둘 다 갈림길을 만들 수 있어요. 그래서 "화면으로 그리면 n8n, 코드로 쓰면 LangGraph" 정도로만 구분하기 쉬운데, 둘은 애초에 <strong>카테고리가 달라요</strong>. n8n은 <strong>워크플로 자동화 도구</strong>고, LangGraph는 <strong>에이전트를 만드는 프레임워크</strong>예요. 닮은 데가 많아서 오히려 이 차이가 잘 안 보여요.</p>
+    <table>
+      <thead><tr><th>비교 항목</th><th>n8n</th><th>LangGraph</th></tr></thead>
+      <tbody>
+        <tr><td>카테고리</td><td>워크플로 자동화 도구 — <a href="what-is-automation-workflow-agent.html">자동화·워크플로·에이전트 글</a>의 도구 표에서 내비 경로 쪽에 놓았던 도구예요</td><td>에이전트 프레임워크 — 위에서 본 CrewAI·<wbr>AutoGen·<wbr>Claude Agent SDK와 같은 줄이에요</td></tr>
+        <tr><td>만든 목적</td><td>"메일이 오면 표에 옮기고 슬랙에 알린다"처럼 사람이 정해 둔 순서를, 메일 도착이나 매일 아침 9시 같은 시작 신호(트리거)가 올 때마다 그대로 되풀이하기</td><td>LLM이 도구 결과를 보고 다음 행동을 고르는 반복을, State를 들고 끝날 때까지 통제하며 돌리기</td></tr>
+        <tr><td>흐름 짜는 방식</td><td>브라우저 화면에서 노드를 끌어다 선으로 이어요</td><td>파이썬 코드로 State·Node·Edge를 적어요</td></tr>
+        <tr><td>노드가 보는 데이터</td><td>컨베이어 벨트예요. 앞 노드가 내보낸 결과(항목 묶음)가 다음 노드의 입력이 되고, 노드는 기본적으로 바로 앞 노드 결과만 봐요. 다섯 칸 전 값이 필요하면 그 노드를 이름으로 지목해 꺼내 오거나 Set 노드로 계속 들고 다녀야 해요</td><td>화이트보드예요. State 하나를 모든 노드가 통째로 읽고, 고칠 칸만 돌려줘요. 다섯 칸 전 노드가 적어 둔 값도 State에 그대로 있어요(<a href="langgraph-state-node-edge.html#merge-rules">다음 편의 State 합치기 규칙</a>)</td></tr>
+        <tr><td>반복(루프)</td><td>돼요. Loop Over Items 노드로 항목마다 돌리거나, IF 노드의 출력을 앞 노드로 되돌려 이으면 돼요. 다만 벨트라서 바퀴마다 앞 노드 결과만 넘어오고, "지금까지 모은 것"은 따로 들고 다녀야 해요</td><td>조건부 엣지로 앞 노드에 되돌려요(<a href="langgraph-state-node-edge.html#build-branch">다음 편의 직접 만들기 ②</a>). 바퀴마다 쌓이는 값은 State 합치기 규칙이 알아서 이어 붙여요</td></tr>
+        <tr><td>외부 서비스 연결</td><td>자주 쓰는 서비스는 미리 만들어진 노드가 있어서, 노드를 고르고 화면에서 계정만 연결하면 돼요</td><td>서비스가 프로그램용으로 열어 둔 창구(API)를 부르는 함수를 직접 짜서 도구로 붙여요</td></tr>
+        <tr><td>LLM 판단 범위</td><td>사람이 그린 흐름 속 AI Agent 노드 한 칸이에요. 칸 안에서는 LLM이 도구를 고르지만, 칸 밖의 순서는 화면에 그린 선을 따라가요. 칸 안의 도구 고르기 반복은 봉인돼 있어서, 그 반복 중간에 "검토" 같은 내 노드를 끼울 수는 없어요</td><td>그래프 전체를 LLM이 다음 걸음을 고르는 루프로 짤 수도 있고(<a href="langgraph-branches-and-tool-loop.html#tool-loop">4편의 직접 만들기 ③</a>), 규칙으로 못 박을 수도 있어요(직접 만들기 ①·②)</td></tr>
+        <tr><td>시작 문턱</td><td>코드 없이 시작할 수 있어요</td><td>코드를 읽고 쓸 줄 알아야 해요</td></tr>
+      </tbody>
+    </table>
+    <p>그렇다고 n8n으로는 판단하는 AI를 아예 못 넣는 건 아니에요. AI Agent 노드로 흐름 한가운데에 판단을 한 조각 끼울 수 있어요(<a href="n8n-agent-delegation-and-if-node.html">IF 노드 vs AI Agent 노드</a>). 반대로 LangGraph로 그렸다고 다 에이전트인 것도 아니고요. 제품의 카테고리와 그걸로 만든 시스템의 종류가 따로라는 건 <a href="#not-criteria">앞의 '기준이 아니에요' 목록</a> 네 번째 항목('무엇으로 만들었는지')에서 짚은 그대로예요.</p>
+    <p>LangGraph가 n8n보다 어려운 이유도 표에 다 들어 있어요. 코드를 읽어야 하고, 외부 서비스를 직접 가져다 붙여야 하거든요. 예를 들어 "결과를 슬랙으로 보내기" 한 단계가 n8n에서는 Slack 노드를 놓고 계정을 연결하면 끝나요. LangGraph에서는 Slack의 API 설명서를 찾아 읽고, 메시지를 보내는 파이썬 함수를 짜고, Slack에서 받은 비밀 키를 <code>.env</code>에 넣고, <code>@tool</code>로 감싸 모델에 쥐여 줘야 해요(도구를 쥐여 주는 과정은 <a href="langgraph-branches-and-tool-loop.html#tool-loop">4편의 직접 만들기 ③</a>에서 봐요). 위에서 본 <code>langchain-community</code>에 이미 만들어진 연동이 있기도 하지만, 그걸 찾아 불러와 그래프에 잇는 것도 코드로 해요. 대신 그만큼 반복 횟수 상한, 특정 도구 앞의 사람 승인, State 칸 하나하나를 원하는 대로 통제할 수 있어요.</p>
+    <p>그래서 <a href="#anthropic-advice">앞에서 본 Anthropic의 권고</a>, "가장 단순한 방법으로 시작하라"는 n8n과 LangGraph 중에 고를 때도 통해요. 정해진 순서로 여러 서비스를 잇는 일이 대부분이라면 n8n으로 끝나는지부터 보고, LLM이 매번 다음 걸음을 골라야 하거나 흐름을 코드로 세밀하게 통제해야 할 때 LangGraph로 가는 순서예요.</p>
+
+    <h2 id="analogy"><span class="hl">비유</span> — 같은 주방, 두 가지 운영 방식</h2>
+    <p>식당 주방을 하나 떠올려 볼게요. 이 주방은 시리즈 내내 나오니까, 여기서 무대만 세워 둘게요.</p>
+    <p>A 주방은 벽에 <strong>동선표</strong>가 붙어 있어요. "손질대 다음은 화구, 화구 다음은 검수대." 영업 전에 사장님이 확정해 뒀고, 직원은 그 선을 따라 전표를 넘겨요. 검수대에서 갈림길이 나와도 갈 수 있는 곳은 사장님이 미리 그려 둔 두 곳뿐이에요.</p>
+    <p>B 주방은 <strong>주방장</strong>이 접시를 보고 그때그때 정해요. "이건 다시 볶고, 저건 바로 내보내고, 이건 재료부터 다시 사 와." 벽에 동선표가 없어요. 대신 주방장이 쓸 수 있는 <strong>도구 목록</strong>(화구·냉장고·전화기)이 정해져 있고, 그 목록 밖의 일은 못 해요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>사장님이 영업 전에 확정한 A 주방의 동선표</td><td><strong>워크플로</strong> — 갈 수 있는 길을 개발자가 코드로 미리 다 그려 둔 시스템</td></tr>
+        <tr><td>동선표 없이 주방장이 접시를 보고 정하는 B 주방</td><td><strong>에이전트</strong> — 매 걸음 LLM이 다음 행동을 고르는 시스템</td></tr>
+        <tr><td>주방장이 쓸 수 있는 화구·냉장고·전화기 목록</td><td><strong>도구(tool)</strong> — 에이전트가 할 수 있는 일의 한계는 쥔 도구 목록이 정해요</td></tr>
+        <tr><td>화구·냉장고·전표 양식 같은 <strong>설비 낱개</strong>를 파는 회사</td><td><strong>LangChain</strong> — 모델 연결·메시지 형식·도구 정의 같은 부품</td></tr>
+        <tr><td>그 설비를 <strong>어떤 동선으로 배치할지</strong> 그리는 설계도</td><td><strong>LangGraph</strong> — 부품을 어떤 순서로 돌릴지 정하는 배선</td></tr>
+        <tr><td>영업 중에 주방을 들여다보는 CCTV</td><td><strong>LangSmith</strong> — 실행 기록을 남겨 보여 주는 관측 서비스</td></tr>
+        <tr><td>안이 안 보이는 <strong>완제품 조리 로봇</strong> 한 대를 사서 주방에 놓기</td><td><strong><code>create_agent</code> 같은 미리 만들어진 부품</strong> — 편한 대신 그 안의 반복은 선으로 안 보여요 (<a href="#who-decides-edges">위에서 본 그 이야기</a>)</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 부품(LangChain)을 어떤 동선(LangGraph)으로 잇느냐가 이 시리즈의 주제이고, 그 동선을 <strong>사장님이 미리 긋느냐 주방장이 그때그때 정하느냐</strong>가 워크플로와 에이전트를 가르는 전부예요.</p>
+    <p>다만 여기서 비유가 끊기는 점이 있어요. A 주방의 사람 직원은 동선표에 없어도 눈치껏 옆 조리대를 도와주지만, <strong>코드로 그린 그래프는 선이 없는 곳으로는 절대 가지 않아요</strong>. 그리고 A와 B는 둘 중 하나를 고르는 게 아니에요. 실제 시스템은 대부분 A 주방 한가운데에 B 주방을 한 칸 끼워 넣은 모양이고, 그 "한 칸"이 얼마나 큰지가 아래 눈금자의 이야기예요.</p>
+
+    <h2 id="big-picture"><span class="hl">전체 흐름</span> — 자율성 눈금자 한 줄</h2>
+    <p>워크플로와 에이전트는 두 개의 상자가 아니라 <strong>눈금자 위의 위치</strong>예요. 이 시리즈에서 만들 것들을 그 눈금자에 올려 두면 이렇게 돼요. <strong>읽는 법:</strong> 왼쪽으로 갈수록 길을 개발자가 못 박아 둔 쪽이고, 오른쪽으로 갈수록 LLM이 그때그때 고르는 쪽이에요. 상자 아래 괄호는 그걸 다루는 편이고, 맨 오른쪽 하나만 테두리가 점선인데 <strong>그 안의 반복이 코드에 선으로 안 보인다</strong>는 뜻이에요.</p>
+    <svg viewBox="0 0 760 300" role="img" aria-label="다음 걸음을 누가 정하나를 왼쪽 개발자부터 오른쪽 LLM까지 눈금자로 그린 그림. 고정 엣지, if문 라우터를 쓴 조건부 엣지, 모델 라우터를 쓴 조건부 엣지, create_agent 완제품 루프 순으로 놓여 있다">
+      <defs>
+        <marker id="lgs1" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+          <path d="M0,0 L9,4.5 L0,9 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <text x="380" y="26" text-anchor="middle" font-family="var(--font-heading)" font-size="15" fill="var(--accent)">다음 걸음을 누가 정하나</text>
+
+      <text x="26" y="64" font-family="var(--font-body)" font-size="12" fill="var(--muted)">개발자가 전부 정함</text>
+      <text x="734" y="64" text-anchor="end" font-family="var(--font-body)" font-size="12" fill="var(--muted)">LLM이 매번 정함</text>
+      <line x1="26" y1="78" x2="726" y2="78" stroke="var(--muted)" stroke-width="2" marker-end="url(#lgs1)"/>
+
+      <line x1="100" y1="78" x2="100" y2="104" stroke="var(--border)" stroke-width="1.5"/>
+      <line x1="280" y1="78" x2="280" y2="104" stroke="var(--border)" stroke-width="1.5"/>
+      <line x1="460" y1="78" x2="460" y2="104" stroke="var(--border)" stroke-width="1.5"/>
+      <line x1="640" y1="78" x2="640" y2="104" stroke="var(--border)" stroke-width="1.5"/>
+
+      <rect x="24" y="104" width="152" height="82" rx="8" fill="none" stroke="var(--border)"/>
+      <text x="100" y="126" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)">고정 엣지만</text>
+      <text x="100" y="146" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">add_edge(A, B)</text>
+      <text x="100" y="165" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">순서를 못 박음</text>
+      <text x="100" y="181" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">(2편)</text>
+
+      <rect x="204" y="104" width="152" height="82" rx="8" fill="none" stroke="var(--border)"/>
+      <text x="280" y="126" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)">조건부 엣지</text>
+      <text x="280" y="146" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">라우터가 if문</text>
+      <text x="280" y="165" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">규칙이 고름</text>
+      <text x="280" y="181" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">(2·3편)</text>
+
+      <rect x="384" y="104" width="152" height="82" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="460" y="126" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--accent)">조건부 엣지</text>
+      <text x="460" y="146" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">라우터가 모델</text>
+      <text x="460" y="165" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">LLM이 고름</text>
+      <text x="460" y="181" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">(4편)</text>
+
+      <rect x="564" y="104" width="152" height="82" rx="8" fill="none" stroke="var(--muted)" stroke-dasharray="6 4"/>
+      <text x="640" y="126" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)">완제품 부품</text>
+      <text x="640" y="146" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">create_agent</text>
+      <text x="640" y="165" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">루프가 봉인됨</text>
+      <text x="640" y="181" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">(4편)</text>
+
+      <line x1="24" y1="212" x2="536" y2="212" stroke="var(--accent)" stroke-width="2"/>
+      <text x="24" y="232" font-family="var(--font-body)" font-size="11" fill="var(--accent)">여기까지는 누가 정하는지가 코드에 선으로 보여요</text>
+      <line x1="564" y1="212" x2="716" y2="212" stroke="var(--muted)" stroke-width="2" stroke-dasharray="6 4"/>
+      <text x="716" y="232" text-anchor="end" font-family="var(--font-body)" font-size="11" fill="var(--muted)">여기는 안 보여요</text>
+
+      <text x="24" y="266" font-family="var(--font-body)" font-size="11" fill="var(--muted)">왼쪽일수록 결과를 예측하기 쉽고 요금 상한을 걸기 쉬워요.</text>
+      <text x="24" y="284" font-family="var(--font-body)" font-size="11" fill="var(--muted)">오른쪽일수록 사람이 미리 생각 못 한 경우까지 처리해요.</text>
+    </svg>
+    <p>왼쪽 끝만 쓰면 그건 워크플로고, 오른쪽 칸이 커질수록 에이전트예요. 눈금자 위 어디에 앉힐지가 설계고, <a href="#anthropic-advice">위에서 본 Anthropic의 권고</a>는 "일단 왼쪽에서 시작하라"는 말이에요.</p>
+
+    <h2 id="tool-choice"><span class="hl">나쁜 선택 vs 좋은 선택</span> — 도구를 고를 때</h2>
+    <p>같은 주방에서, 매일 똑같은 3단 코스만 내는 식당의 주문 처리를 자동화한다고 해 볼게요.</p>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad"><strong>무엇을 했나:</strong> "에이전트가 요즘 대세니까"라며 곧장 B 주방을 지었어요. LangGraph로 그래프를 짜고, 라우터 자리에 모델을 앉혀 다음 조리대를 매번 LLM이 고르게 했어요.<br><br><strong>무슨 일이 생기나:</strong> 코스가 매일 같으니 LLM은 똑같은 답을 매번 새로 지어내요. 주문 하나당 호출이 여러 번 나가 요금이 붙고, 열 번에 한 번은 순서를 엉뚱하게 골라요. 게다가 틀렸을 때 "모델이 그렇게 골랐다"는 것 말고는 원인을 짚을 데가 없어요. 코드를 읽고 쓸 줄 아는 사람만 고칠 수 있는 시스템이 된 건 덤이고요.</td>
+          <td class="choice-good"><strong>무엇을 했나:</strong> 순서가 고정이라는 걸 먼저 확인하고, <a href="n8n-agent-delegation-and-if-node.html">n8n</a>으로 노드를 끌어다 이어 끝냈어요. LLM은 "손님 요청사항을 한 줄로 요약" 한 칸에만 넣었고요.<br><br><strong>무슨 일이 생기나:</strong> 결과가 매번 같고, 호출은 주문당 한 번이라 요금이 예측돼요. 틀리면 화면에서 어느 노드인지 바로 보이고, 코드를 모르는 동료도 고칠 수 있어요. 나중에 진짜로 "그때그때 판단"이 필요해지면 그 칸만 오른쪽으로 옮기면 돼요.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>핵심은 "에이전트가 나쁘다"가 아니라 <strong>눈금자의 오른쪽은 값을 치르고 사는 것</strong>이라는 거예요. 예측 가능성과 요금 통제를 내주고 유연함을 받는 거래니까, 그 유연함이 실제로 필요한지부터 보는 순서예요.</p>
+
+    <h2><span class="hl">이번 편의 수치</span></h2>
+    <table>
+      <thead><tr><th>항목</th><th>값</th><th>조건·출처</th></tr></thead>
+      <tbody>
+        <tr><td>강의 교안이 검증한 라이브러리 버전</td><td>langgraph 1.2 · langchain-core 1.6 · langchain 1.4 · langchain-openai 1.6</td><td>강의 교안 기준. 제가 2026.09.11에 새로 설치한 최신판도 1.2.11 · 1.6.2 · 1.4.0 · 1.6.2</td></tr>
+        <tr><td>LangGraph가 따로 나온 해</td><td>2024년</td><td>초기 LangChain의 "체인"이 한 줄 파이프라인이라 반복·갈림길에 약했던 게 이유예요</td></tr>
+        <tr><td>옛 자료의 <code>LLMChain</code>·<code>AgentExecutor</code>·<code>initialize_agent</code>가 빠진 버전</td><td>LangChain 1.0부터</td><td><code>langchain-classic</code>이라는 별도 패키지로 분리. 검색해 찾은 코드가 import 에러를 내면 여기부터 의심</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
+    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 강의 1~2강이 퀴즈로 다시 짚은 내용이라, 복습할 때 이것부터 보면 돼요. 3강 것은 <a href="langgraph-state-node-edge.html#key-recap">다음 편</a>, 4~5강 것은 <a href="langgraph-branches-and-tool-loop.html#key-recap">4편</a>, 6~12강 것은 <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a>과 <a href="langgraph-patterns-orchestrator-evaluator.html#key-recap">7편</a>의 같은 목록에 있어요.</p>
+    <ul class="key-recap">
+      <li><a href="#key-lookup-action">도구 목록은 조회 + 행동</a> — 바깥을 바꾸는 행동 앞에 안전장치를 둬요 (1강)</li>
+      <li><a href="#key-who-decides">워크플로와 에이전트를 가르는 건 "다음 길을 누가 정하나"</a> — 호출 수·도구·모델 크기는 기준이 아니에요 (2강)</li>
+    </ul>
+
+    <h2 id="roadmap"><span class="hl">이 모듈이 앞으로 가는 길</span></h2>
+    <p>"에이전트 팀 꾸리기"는 11일짜리 모듈이에요. 주제마다 이틀쯤 잡혀 있고, 둘째 날에 서브 퀘스트(실습 과제)가 붙어요. 9월 24~25일이 비는 건 추석 연휴 때문이에요.</p>
+    <table>
+      <thead><tr><th>날짜</th><th>주제</th><th>LangGraph에서 쓰일 것 (제 예상)</th></tr></thead>
+      <tbody>
+        <tr><td>9/11 · 9/14 · 9/15</td><td>LangGraph 기초·적용 (+서브 퀘스트 C13)</td><td>이 글(지형), <a href="langgraph-state-node-edge.html">2편</a>(State·Node·Edge), <a href="langgraph-branch-drills.html">3편</a>(갈림길 연습), <a href="langgraph-branches-and-tool-loop.html">4편</a>(도구 루프), <a href="langgraph-five-workflow-patterns.html">6편</a>·<a href="langgraph-patterns-orchestrator-evaluator.html">7편</a>(다섯 패턴)</td></tr>
+        <tr><td>9/16 · 9/17</td><td>라우팅 패턴 + RAG (+C14)</td><td>분류 노드가 조건부 엣지로 담당을 고르고, 검색 결과가 모자라면 질문을 고쳐 다시 찾는 반복</td></tr>
+        <tr><td>9/18 · 9/21</td><td>GraphRAG (+C15)</td><td>지식 그래프 검색기를 노드 하나로 끼우는 형태 — 여기서 graph는 지식의 구조예요</td></tr>
+        <tr><td>9/22 · 9/23</td><td>HITL · 상태 지속성 (+C16)</td><td>체크포인터와 <code>thread_id</code>로 단계마다 State 저장, <code>interrupt()</code>로 멈추고 사람 승인 뒤 재개</td></tr>
+        <tr><td>9/28</td><td>메인 퀘스트 06</td><td>앞의 부품을 합친 에이전트 팀</td></tr>
+        <tr><td>9/29</td><td>WRAP UP</td><td>—</td></tr>
+      </tbody>
+    </table>
+    <p>오른쪽 칸은 오늘 배운 걸 바탕으로 한 제 짐작이라, 실제 수업이 진행되면 이 표를 고쳐 적을게요.</p>
+
+    <h2><span class="hl">다음은</span></h2>
+    <p>지형은 다 봤으니 이제 손을 움직일 차례예요. <a href="langgraph-state-node-edge.html">다음 편</a>에서는 위에서 이름만 붙여 둔 State·Node·Edge로 그래프를 직접 만들어 돌려 봐요. 일직선 그래프 하나를 짜고, 노드가 돌려준 값이 전표에 어떻게 합쳐지는지 일부러 깨뜨려 확인하고, 조건부 엣지로 갈림길과 되돌아가는 반복까지 만들어요. 전부 API 키 없이 돌아가요.</p>
+
+    <h2>함께 읽으면 좋은 글</h2>
+    <ul>
+      <li><a href="what-is-automation-workflow-agent.html">자동화·워크플로·에이전트, 뭐가 다를까</a> — "다음 행동을 누가 정하나"라는 기준을 처음 세운 글이에요.</li>
+      <li><a href="n8n-agent-delegation-and-if-node.html">코딩 에이전트에게 흐름을 맡기고, IF 노드로 갈림길 만들기</a> — 위 눈금자의 왼쪽을 n8n 화면에서 만들어 본 글이에요.</li>
+      <li><a href="multi-agent-three-runs-abc.html">같은 버그를 세 방식으로 — 기준선·워크플로·오케스트레이션 실행</a> — 같은 기준을 Claude Agent SDK 코드로 비교한 실험이고, <a href="#who-decides-edges">위에서 고쳐 적은 그 기록</a>이 나온 글이에요.</li>
+      <li><a href="what-is-ai-agent.html">에이전트란 무엇인가</a> — "에이전트"라는 말이 사람마다 다르게 쓰이는 이유를 정리한 글이에요.</li>
+    </ul>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">그래프(graph) — 점(노드)과 그 점들을 잇는 선(엣지)으로 이뤄진 구조를 가리키는 말로, LangGraph에서는 이 점이 일하는 단계이고 선이 실행 순서예요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">워크플로(workflow) — 실행 경로를 개발자가 코드로 미리 정해 둔 LLM 시스템으로, <a href="what-is-automation-workflow-agent.html">자동화·워크플로·에이전트 글</a>에서 내비 경로에 빗대 처음 다뤘어요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">증강된 LLM(augmented LLM) — LLM 본체에 검색·도구·메모리를 붙여 모르는 정보를 가져오거나 바깥세상을 바꿀 수 있게 만든 기본 단위예요. <a href="#fnref3">↩</a></li>
+        <li id="fn4">할루시네이션(hallucination) — 모델이 사실이 아닌 내용을 그럴듯하게 지어내는 현상이에요. <a href="#fnref4">↩</a></li>
+        <li id="fn5">HITL(Human-in-the-Loop) — 되돌리기 어려운 행동 앞에서 사람의 승인을 받도록 흐름 중간에 사람을 끼워 두는 설계예요. <a href="#fnref5">↩</a></li>
+        <li id="fn6">프레임워크(framework) — 매번 반복되는 뼈대 코드를 미리 짜 둔 틀이라서, 개발자는 빈칸만 채우면 되는 개발 도구 묶음이에요. <a href="#fnref6">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <h3 id="series-list">"에이전트 팀 꾸리기 — LangGraph" 시리즈</h3>
+    <p class="post-date">(1) 길을 누가 정하나 — LangGraph와 워크플로·에이전트 (이 글)</p>
+    <a class="post-nav" href="langgraph-state-node-edge.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">흐름을 그림으로 짠다 — LangGraph의 State·Node·Edge</span>
+    </a>
+    <a class="post-nav" href="langgraph-branch-drills.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">갈림길을 밀어붙인다 — 세 갈래·라벨·끝나지 않는 반복</span>
+    </a>
+    <a class="post-nav" href="langgraph-branches-and-tool-loop.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">모델이 다음 길을 고르게 한다 — 도구를 쥐여 주는 루프</span>
+    </a>
+    <a class="post-nav" href="langgraph-env-troubleshooting.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">.env가 안 읽혔던 네 겹의 이유 — 강의 화면에서 API 키 넣기</span>
+    </a>
+    <a class="post-nav" href="langgraph-five-workflow-patterns.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">다섯 가지 흐름 모양 ① — 체이닝·라우팅·병렬화</span>
+    </a>
+    <a class="post-nav" href="langgraph-patterns-orchestrator-evaluator.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">다섯 가지 흐름 모양 ② — 오케스트레이터-워커·평가자-최적화자</span>
+    </a>
+
+    <a class="post-nav" href="langgraph-state-node-edge.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">흐름을 그림으로 짠다 — LangGraph의 State·Node·Edge</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>

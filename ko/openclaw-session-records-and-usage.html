@@ -153,7 +153,7 @@ openclaw models status</code></pre>
     <p>같은 화면에 있어도 하나는 돈이고 하나는 남은 양이에요. 어느 경로로 접속했는지 모른 채 숫자만 보면 "남은 비율"을 "남은 돈"으로 잘못 읽어요. 접속 경로와 숫자의 뜻은 함께 읽어야 해요. 토큰 비용의 감각은 <a href="ai-permissions-local-models-and-token-cost.html">AI에게 컴퓨터를 맡길 때 — 권한, 로컬 모델, 토큰 비용</a>에서 처음 잡았어요.</p>
 
     <h2><span class="hl">운영용 관측 도구는 따로 있다</span></h2>
-    <p>지금까지 본 화면은 "내 세션을 내가 보는" 도구예요. 여러 사람이 함께 쓰는 설비에는 관측이 더 필요하고, OpenClaw는 그 운영용 도구를 따로 갖추고 있어요. OpenTelemetry로 지표를 밖으로 내보내거나 Prometheus로 모아 보거나, audit(감사 기록)로 누가 무엇을 승인했는지 이력을 남기는 것들이에요. 오늘은 이름과 "운영용"이라는 사실까지만 알아 뒀어요. LangChain·LangGraph로 만든 앱에서 같은 역할을 하는 운영용 관측 서비스가 LangSmith인데, 켜는 법과 무엇이 보이는지는 <a href="langgraph-five-workflow-patterns.html#langsmith">다섯 가지 흐름 모양 — LangSmith로 안을 들여다보기</a>에 적어 뒀어요.</p>
+    <p>지금까지 본 화면은 "내 세션을 내가 보는" 도구예요. 여러 사람이 함께 쓰는 설비에는 관측이 더 필요하고, OpenClaw는 그 운영용 도구를 따로 갖추고 있어요. OpenTelemetry로 지표를 밖으로 내보내거나 Prometheus로 모아 보거나, audit(감사 기록)로 누가 무엇을 승인했는지 이력을 남기는 것들이에요. 오늘은 이름과 "운영용"이라는 사실까지만 알아 뒀어요. LangChain·LangGraph로 만든 앱에서 같은 역할을 하는 운영용 관측 서비스가 LangSmith인데, 켜는 법과 무엇이 보이는지는 <a href="langgraph-five-workflow-patterns.html#langsmith">다섯 가지 흐름 모양 ① — LangSmith로 안을 들여다보기</a>에 적어 뒀어요.</p>
     <p>문제를 보고할 때 쓰는 진단 번들도 있어요. 상태와 로그를 압축 파일 하나로 모아 주는데, 개인정보를 가려 주더라도 로그 요약이 들어 있으니 함부로 나누지 않고 비밀 자료처럼 다뤄요. 제품이 스스로 보내는 통계는 하루 한 번 버전 확인이 전부이고, 기능 사용 통계는 동의하기 전까지 꺼져 있어요. 정리하면 <strong>내 사용량 관찰, 문제 분석 자료, 제품 개선 통계</strong>는 목적과 개인정보 경계가 다른 세 가지예요. 데이터가 어디에 남는지의 감각은 <a href="where-does-your-data-stay.html">데이터는 어디에 남는가</a>와 같은 결이에요.</p>
 
     <h2><span class="hl">나쁜 선택 vs 좋은 선택</span> — 진료 기록을 읽을 때</h2>
