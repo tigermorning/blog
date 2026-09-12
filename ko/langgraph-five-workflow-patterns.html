@@ -44,7 +44,7 @@
         <dt>왜 배우나</dt>
         <dd>패턴 이름을 모르면 매번 흐름을 처음부터 발명하게 돼요. 이름이 붙어 있으면 "이건 라우팅이니 분류 노드 하나와 조건부 엣지면 되겠다"까지 바로 갈 수 있어요.</dd>
         <dt>왜 중요한가</dt>
-        <dd>세 모양 모두 개발자가 길을 그려 두는 <strong>워크플로</strong>예요. 예측 가능하고 요금을 통제할 수 있는 이 범위로 끝나는 일을 굳이 에이전트로 만들면, 얻는 것 없이 불확실성만 사게 돼요.</dd>
+        <dd>세 모양 모두 어느 함수를 어떤 순서로 실행할지 개발자가 미리 다 적어 두는 <strong>워크플로</strong>예요. 예측 가능하고 요금을 통제할 수 있는 이 범위로 끝나는 일을 굳이 에이전트로 만들면, 얻는 것 없이 불확실성만 사게 돼요.</dd>
         <dt>어디에 쓰나</dt>
         <dd>초안을 쓰고 검사하고 다듬는 파이프라인 · 문의를 종류별로 다른 담당에게 보내기 · 한 글을 여러 기준으로 동시에 평가하기</dd>
       </dl>
@@ -260,7 +260,7 @@ for note in [note_a, note_b]:
       <p class="key-point-label"><span class="key-point-badge">중요</span>6강에서 짚은 내용</p>
       <p>게이트를 두는 이유는 하나예요. 답이 매번 조금씩 달라지는 LLM 단계들 사이에 <strong>늘 같은 판정을 내리는 코드 검사</strong>를 끼워서, 틀린 중간 결과가 다음 단계로 흘러가지 못하게 막는 거예요. 한 단계의 실수가 뒤 단계 전체로 번지기 전에 문 앞에서 끊는 셈이에요.</p>
     </div>
-    <p>반대로 게이트가 호출 수나 시간을 줄여 주지는 않아요. 검사에서 떨어지면 보정 노드가 LLM을 한 번 더 부르니 호출은 오히려 늘 수 있고, 여러 단계를 동시에 돌려 시간을 줄이는 건 <a href="#parallel">③ 병렬화</a>의 일이에요. 다음 걸음을 LLM에게 스스로 고르게 하는 것도 게이트가 아니라 <a href="langgraph-what-and-why.html#workflow-vs-agent">에이전트</a> 쪽 이야기고요.</p>
+    <p>반대로 게이트가 호출 수나 시간을 줄여 주지는 않아요. 검사에서 떨어지면 보정 노드가 LLM을 한 번 더 부르니 호출은 오히려 늘 수 있고, 여러 단계를 동시에 돌려 시간을 줄이는 건 <a href="#parallel">③ 병렬화</a>의 일이에요. 다음에 실행할 함수를 LLM에게 스스로 고르게 하는 것도 게이트가 아니라 <a href="langgraph-what-and-why.html#workflow-vs-agent">에이전트</a> 쪽 이야기고요.</p>
     <p>그런데 <a href="#gate-limits">바로 위에서</a> 본 것처럼 코드 게이트는 규칙으로 적을 수 있는 것만 봐요. "처음 배우는 사람이 이해할 수 있는 노트인가?"를 검사하고 싶다면요? 이건 어떤 단어가 들어 있는지로는 판단할 수 없어요. 용어를 풀어 설명했는지, 설명 순서가 자연스러운지 같은 <strong>뜻</strong>을 읽어야 알 수 있어서 <code>if</code>문 규칙으로는 못 적어요.</p>
     <div class="key-point" id="key-llm-gate">
       <p class="key-point-label"><span class="key-point-badge">중요</span>6강에서 짚은 내용</p>
@@ -474,7 +474,7 @@ LANGSMITH_PROJECT=langgraph-study</code></pre>
     <h2>함께 읽으면 좋은 글</h2>
     <ul>
       <li><a href="output-format-and-metrics.html">답의 모양과 채점법</a> — 구조화 출력이 형식은 강제해도 사실까지 강제하지는 못한다는 이야기를 먼저 다룬 글이에요.</li>
-      <li><a href="langgraph-what-and-why.html">길을 누가 정하나 — LangGraph와 워크플로·에이전트</a> — 이 다섯 모양이 왜 전부 워크플로인지의 기준을 세운 시리즈 첫 편이에요.</li>
+      <li><a href="langgraph-what-and-why.html">다음에 어느 코드가 실행될까 — LangGraph와 워크플로·에이전트</a> — 이 다섯 모양이 왜 전부 워크플로인지의 기준을 세운 시리즈 첫 편이에요.</li>
       <li><a href="n8n-agent-delegation-and-if-node.html">코딩 에이전트에게 흐름을 맡기고, IF 노드로 갈림길 만들기</a> — ② 라우팅과 같은 모양을 n8n 화면에서 만든 글이에요.</li>
     </ul>
 
@@ -496,7 +496,7 @@ LANGSMITH_PROJECT=langgraph-study</code></pre>
     <h3 id="series-list">"에이전트 팀 꾸리기 — LangGraph" 시리즈</h3>
     <a class="post-nav" href="langgraph-what-and-why.html">
       <span class="post-nav-label">(1)</span>
-      <span class="post-nav-title">길을 누가 정하나 — LangGraph와 워크플로·에이전트</span>
+      <span class="post-nav-title">다음에 어느 코드가 실행될까 — LangGraph와 워크플로·에이전트</span>
     </a>
     <a class="post-nav" href="langgraph-state-node-edge.html">
       <span class="post-nav-label">(2)</span>

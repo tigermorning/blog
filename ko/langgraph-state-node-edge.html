@@ -29,10 +29,10 @@
 
     <a class="post-nav" href="langgraph-what-and-why.html">
       <span class="post-nav-label">← 이전 편</span>
-      <span class="post-nav-title">길을 누가 정하나 — LangGraph와 워크플로·에이전트 (1)</span>
+      <span class="post-nav-title">다음에 어느 코드가 실행될까 — LangGraph와 워크플로·에이전트 (1)</span>
     </a>
 
-    <p class="one-liner">LangGraph로 흐름을 짠다는 건 값을 담는 State, 일을 하는 Node, 길을 정하는 Edge 세 가지를 따로 적어 그래프 하나로 합치는 일이다.</p>
+    <p class="one-liner">LangGraph로 흐름을 짠다는 건 값을 담는 State, 일을 하는 함수인 Node, 어느 Node 다음에 어느 Node를 실행할지 정하는 Edge 세 가지를 따로 적어 하나로 합치는 일이다.</p>
 
     <div class="why-read" id="why-read">
       <p class="why-read-title">이 글을 읽기 전에</p>
@@ -50,7 +50,7 @@
       </dl>
     </div>
 
-    <p><a href="langgraph-what-and-why.html">1편</a>에서는 지형만 봤어요. LangGraph가 while문 뭉치를 값(State)·일(Node)·길(Edge) 세 조각으로 뜯는 도구라는 것, 그리고 그 길을 누가 긋느냐가 워크플로와 에이전트를 가른다는 것까지요. 이번 편에서는 그 세 조각으로 <strong>실제 그래프를 만들어 돌려 봐요</strong>. 점과 선으로 이뤄진 이 구조를 왜 <a href="langgraph-what-and-why.html#fn1">그래프</a>라고 부르는지도 1편에 적어 뒀어요.</p>
+    <p><a href="langgraph-what-and-why.html">1편</a>에서는 밑그림만 봤어요. LangGraph가 while문 뭉치를 값(State)·일하는 함수(Node)·다음에 어느 함수를 실행할지(Edge) 세 조각으로 뜯는 도구라는 것, 그리고 그 <strong>다음에 실행할 함수를 누가 고르느냐</strong>가 워크플로와 에이전트를 가른다는 것까지요. 이번 편에서는 그 세 조각으로 <strong>실제 그래프를 만들어 돌려 봐요</strong>. 점과 선으로 이뤄진 이 구조를 왜 <a href="langgraph-what-and-why.html#fn1">그래프</a>라고 부르는지도 1편에 적어 뒀어요.</p>
     <p>이번 편의 코드는 전부 <strong>API 키 없이</strong> 돌아가요. LLM은 한 번도 안 부르고, 길은 전부 규칙이 골라요. 라우터 자리에 모델을 앉히는 건 <a href="langgraph-branches-and-tool-loop.html">4편</a>이에요. 파이썬 코드 자체가 낯설다면 <a href="reading-python-code-basics.html">파이썬 코드 눈으로 읽기</a>를 먼저 보고 오면 편해요.</p>
     <p>순서는 이래요. 주방 비유로 세 낱말에 자리를 잡아 주고 → 흐름 그림 한 장을 먼저 보고 → 일직선 그래프를 하나 만들고 → 그 그래프를 <strong>일부러 깨뜨려</strong> State 합치기 규칙을 확인하고 → 조건부 엣지로 갈림길과 반복을 넣어요.</p>
 
@@ -316,7 +316,7 @@ serve --&gt; __end__;</code></pre>
 
     <h2>함께 읽으면 좋은 글</h2>
     <ul>
-      <li><a href="langgraph-what-and-why.html">길을 누가 정하나 — LangGraph와 워크플로·에이전트</a> — 이 편의 세 낱말이 어디서 나왔는지, 왜 이 도구인지를 다룬 앞 편이에요.</li>
+      <li><a href="langgraph-what-and-why.html">다음에 어느 코드가 실행될까 — LangGraph와 워크플로·에이전트</a> — 이 편의 세 낱말이 어디서 나왔는지, 왜 이 도구인지를 다룬 앞 편이에요.</li>
       <li><a href="reading-python-code-basics.html">파이썬 코드 눈으로 읽기</a> — 이 편의 코드가 낯설 때 먼저 보면 좋은 글이에요.</li>
       <li><a href="n8n-agent-delegation-and-if-node.html">코딩 에이전트에게 흐름을 맡기고, IF 노드로 갈림길 만들기</a> — 규칙으로 가르는 갈림길을 n8n 화면에서 만든 글이라, 이 편의 조건부 엣지와 나란히 보면 좋아요.</li>
       <li><a href="my-harness-flow-and-state.html">끝날 때까지 따라가기 — 실행 흐름·상태·승인과 종료 조건</a> — "중단을 완료로 표시하지 말라", 즉 반복의 정상 출구를 설계하는 이야기를 먼저 다룬 글이에요.</li>
@@ -338,7 +338,7 @@ serve --&gt; __end__;</code></pre>
     <h3 id="series-list">"에이전트 팀 꾸리기 — LangGraph" 시리즈</h3>
     <a class="post-nav" href="langgraph-what-and-why.html">
       <span class="post-nav-label">(1)</span>
-      <span class="post-nav-title">길을 누가 정하나 — LangGraph와 워크플로·에이전트</span>
+      <span class="post-nav-title">다음에 어느 코드가 실행될까 — LangGraph와 워크플로·에이전트</span>
     </a>
     <p class="post-date">(2) 흐름을 그림으로 짠다 — LangGraph의 State·Node·Edge (이 글)</p>
     <a class="post-nav" href="langgraph-branch-drills.html">
