@@ -134,7 +134,7 @@ while True:
     <p>그래서 이 글의 나머지는 이 세 조각을 하나씩 뜯어보는 과정이에요. 그럼 낱말부터 정리하고 갈게요.</p>
 
     <h2 id="workflow-vs-agent"><span class="hl">먼저 낱말 정리</span> — 에이전트와 워크플로</h2>
-    <p>"<a href="what-is-ai-agent.html">에이전트</a>"라는 말은 사람마다 떠올리는 게 달라요. 강의는 칩 후옌(Chip Huyen)과 Anthropic의 정의를 합쳐서 이렇게 잡았어요. <strong>목표를 받으면 스스로 계획을 세우고, 행동하고, 그 결과를 보고 다음 행동을 정하는 LLM 시스템.</strong> 여기에 세 가지 재료가 있어요.</p>
+    <p>"<a href="what-is-ai-agent.html">에이전트</a>"라는 말은 사람마다 떠올리는 게 달라요. 이 시리즈에서는 칩 후옌(Chip Huyen)과 Anthropic의 정의를 합쳐서 이렇게 잡을게요. <strong>목표를 받으면 스스로 계획을 세우고, 행동하고, 그 결과를 보고 다음 행동을 정하는 LLM 시스템.</strong> 여기에 세 가지 재료가 있어요.</p>
     <ul>
       <li><strong>환경</strong> — 데이터베이스, 외부 API, 파일처럼 에이전트가 건드릴 바깥세상.</li>
       <li><strong>행동</strong> — 환경에 손을 대는 수단이에요. 실무에서는 <strong>도구(tool)</strong>라고 불러요. 에이전트가 할 수 있는 일의 한계는 쥔 도구 목록이 정해요.</li>
@@ -170,7 +170,7 @@ while True:
     </table>
 
     <h2 id="langchain-family"><span class="hl">LangGraph는 어느 집 식구인가</span> — LangChain·LangSmith</h2>
-    <p>강의 코드를 보면 import 줄에 <code>langchain_</code>과 <code>langgraph</code>가 섞여 나와요. 둘은 경쟁 관계가 아니라 같은 회사(LangChain Inc.)가 역할을 나눠 만든 제품이에요. 표의 오른쪽 칸은 이 시리즈의 코드에서 각 제품을 어떤 이름으로 만나게 되는지예요.</p>
+    <p>이 시리즈의 코드를 보면 import 줄에 <code>langchain_</code>과 <code>langgraph</code>가 섞여 나와요. 둘은 경쟁 관계가 아니라 같은 회사(LangChain Inc.)가 역할을 나눠 만든 제품이에요. 표의 오른쪽 칸은 이 시리즈의 코드에서 각 제품을 어떤 이름으로 만나게 되는지예요.</p>
     <table>
       <thead><tr><th>이름</th><th>맡은 일</th><th>이 시리즈 코드에서 만나는 이름</th></tr></thead>
       <tbody>
@@ -181,7 +181,7 @@ while True:
     </table>
     <p>LangChain은 <a href="prompt-execution-three-paths.html">프롬프트 세 경로 직접 실행해보기</a>에서 메시지 객체를 넘기는 모습으로 한 번 봤어요. 초기 LangChain의 "체인"은 <code>prompt | model | parser</code>처럼 <strong>한 줄로만 흐르는 파이프라인</strong>이었어요. 되돌아가는 반복이나 갈림길, 중간 상태 저장에 약해서 2024년에 LangGraph가 따로 나왔고, 지금은 LangChain의 에이전트 기능도 속으로는 LangGraph 위에서 돌아가요.</p>
     <p>패키지 이름이 여러 개인 이유도 이거예요. 기본 자료형은 <code>langchain-core</code>, 모델 회사별 연결은 <code>langchain-openai</code>·<code>langchain-anthropic</code>·<code>langchain-google-genai</code>, 외부 서비스 연동 모음은 <code>langchain-community</code>에 들어 있어요. 한 가지 주의할 게 있어요. 옛날 자료에 나오는 <code>LLMChain</code>, <code>AgentExecutor</code>, <code>initialize_agent</code>는 1.0부터 <code>langchain-classic</code>이라는 별도 패키지로 빠졌어요. 검색해서 찾은 코드가 import 에러를 내면 버전부터 의심해 보세요.</p>
-    <p>그럼 수많은 <strong>프레임워크<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup></strong>(CrewAI, AutoGen, Claude Agent SDK…) 중에 왜 LangGraph였을까요. 강의가 든 이유는 셋이에요.</p>
+    <p>그럼 수많은 <strong>프레임워크<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup></strong>(CrewAI, AutoGen, Claude Agent SDK…) 중에 왜 LangGraph였을까요. 이유는 셋이에요.</p>
     <ul>
       <li><strong>모델 회사에 묶이지 않아요</strong> — OpenAI든 Anthropic이든 Google이든, 노드 안에서 부르는 모델만 바꾸면 나머지 그래프는 그대로예요.</li>
       <li><strong>흐름을 감추지 않아요</strong> — 어느 단계 다음에 어디로 갈지를 프레임워크가 알아서 정해 주는 게 아니라, State·Node·Edge로 개발자가 한 줄씩 적어요. 손이 더 가는 대신 안 적은 길로는 절대 안 가요. 이 성질이 바로 아래에서 다시 나와요.</li>
@@ -331,8 +331,8 @@ while True:
 
     <section class="apply-box" id="apply-blog">
       <p class="apply-box-title">내 파이프라인에 대입하면 — 이 블로그 글 한 편은 어느 쪽인가</p>
-      <p>지금 읽고 계신 이 블로그도 글 한 편이 만들어지는 순서가 저장소 안에 규칙 파일로 적혀 있어요. 강의 페이지를 읽어 오고 → 최근 글의 틀을 그대로 따라가고 → 본문을 쓰고 → <code>posts.html</code>의 알맞은 자리에 끼우고 → 앞뒤 글에 서로 링크를 걸고 → 브라우저로 열어 표와 그림이 안 깨졌는지 봐요. 이 순서를 정한 건 사람이에요. 그래서 <a href="#big-picture">위 눈금자</a>에서 왼쪽 끝, 워크플로예요.</p>
-      <p>자율성이 실제로 들어간 자리는 딱 하나예요. 강의 스텝 열두 개를 받았을 때 <strong>글 몇 편으로 낼지는 규칙 파일에 안 적혀 있어요.</strong> "짧고 얕으면 합치고, 길고 빽빽하면 쪼갠다"까지만 적혀 있고, 그래서 몇 편이 되는지는 읽어 봐야 알아요. 이 시리즈가 일곱 편이 된 것도 그렇게 정해졌어요.</p>
+      <p>지금 읽고 계신 이 블로그도 글 한 편이 만들어지는 순서가 저장소 안에 규칙 파일로 적혀 있어요. 원문 페이지를 읽어 오고 → 최근 글의 틀을 그대로 따라가고 → 본문을 쓰고 → <code>posts.html</code>의 알맞은 자리에 끼우고 → 앞뒤 글에 서로 링크를 걸고 → 브라우저로 열어 표와 그림이 안 깨졌는지 봐요. 이 순서를 정한 건 사람이에요. 그래서 <a href="#big-picture">위 눈금자</a>에서 왼쪽 끝, 워크플로예요.</p>
+      <p>자율성이 실제로 들어간 자리는 딱 하나예요. 원문 열두 단원을 받았을 때 <strong>글 몇 편으로 낼지는 규칙 파일에 안 적혀 있어요.</strong> "짧고 얕으면 합치고, 길고 빽빽하면 쪼갠다"까지만 적혀 있고, 그래서 몇 편이 되는지는 읽어 봐야 알아요. 이 시리즈가 일곱 편이 된 것도 그렇게 정해졌어요.</p>
       <p>그 한 자리를 빼면 나머지는 전부 미리 그려 둔 길이에요. 중간에 모델을 여러 번 부르고 브라우저를 여는 도구까지 쓰지만, 그건 기준이 아니에요 — <strong>갈 수 있는 길을 사람이 미리 다 그려 뒀는가</strong>가 기준이니까요.</p>
     </section>
     <section class="apply-box apply-box--repo" id="apply-repo">
@@ -344,7 +344,7 @@ while True:
     </section>
 
     <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
-    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 강의가 퀴즈로 다시 짚은 내용이라, 복습할 때 이것부터 보면 돼요. 다른 편의 같은 목록은 <a href="langgraph-state-node-edge.html#key-recap">2편</a> · <a href="langgraph-branch-drills.html#key-recap">3편</a> · <a href="langgraph-branches-and-tool-loop.html#key-recap">4편</a> · <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a> · <a href="langgraph-patterns-orchestrator-evaluator.html#key-recap">7편</a>에 있어요.</p>
+    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 복습할 때 이것부터 보면 돼요. 다른 편의 같은 목록은 <a href="langgraph-state-node-edge.html#key-recap">2편</a> · <a href="langgraph-branch-drills.html#key-recap">3편</a> · <a href="langgraph-branches-and-tool-loop.html#key-recap">4편</a> · <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a> · <a href="langgraph-patterns-orchestrator-evaluator.html#key-recap">7편</a>에 있어요.</p>
     <ul class="key-recap">
       <li><a href="#key-lookup-action">도구 목록은 조회 + 행동</a> — 바깥을 바꾸는 행동 앞에 안전장치를 둬요</li>
       <li><a href="#key-who-decides">워크플로와 에이전트를 가르는 건 "다음 걸음을 누가 정하나"</a> — 호출 수·도구·모델 크기는 기준이 아니에요</li>
@@ -390,7 +390,7 @@ while True:
     </a>
     <a class="post-nav" href="langgraph-env-troubleshooting.html">
       <span class="post-nav-label">(5)</span>
-      <span class="post-nav-title">.env가 안 읽혔던 네 겹의 이유 — 강의 화면에서 API 키 넣기</span>
+      <span class="post-nav-title">.env가 안 읽혔던 네 겹의 이유 — 원격 주피터에서 API 키 넣기</span>
     </a>
     <a class="post-nav" href="langgraph-five-workflow-patterns.html">
       <span class="post-nav-label">(6)</span>

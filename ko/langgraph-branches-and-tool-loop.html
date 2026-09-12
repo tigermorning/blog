@@ -77,7 +77,7 @@
 
     <p><a href="langgraph-state-node-edge.html">2편</a>에서 State·Node·Edge로 그래프를 만들고, <a href="langgraph-branch-drills.html">지난 편</a>에서 그 갈림길을 세 문제로 밀어붙였어요. 거기까지 길을 고른 건 "소금이 세 숟갈 이상이면 내보낸다", "60자보다 짧으면 보류한다" 같은 <strong>규칙</strong>이었어요. 라우터가 <code>if</code>문이었으니까요.</p>
     <p>이번 편에서는 그 라우터 자리에 <strong>모델</strong>을 앉혀요. 그러면 다음에 실행할 함수를 규칙이 아니라 모델이 고르게 돼요. <a href="langgraph-what-and-why.html#big-picture">1편의 자율성 눈금자</a>로 보면 왼쪽에서 오른쪽으로 한 칸 옮기는 거예요. 워크플로에서 에이전트 쪽으로 넘어가는 지점이고, 이 시리즈에서 <strong>처음으로 API 키가 필요한</strong> 편이기도 해요.</p>
-    <p>키를 넣다가 막히면 <a href="langgraph-env-troubleshooting.html">5편</a>을 보세요. 강의 화면에서 <code>.env</code>가 안 읽혔던 네 겹의 이유를 따로 정리해 뒀어요.</p>
+    <p>키를 넣다가 막히면 <a href="langgraph-env-troubleshooting.html">5편</a>을 보세요. 원격 주피터에서 <code>.env</code>가 안 읽혔던 네 겹의 이유를 따로 정리해 뒀어요.</p>
 
     <h2><span class="hl">비유</span> — 홀 직원의 창고 조회 요청서</h2>
     <p><a href="langgraph-state-node-edge.html#analogy">2편의 주방</a>에서는 검수대 직원이 맛을 보고, 싱거우면 전표를 화구로 되돌리고 간이 맞으면 홀로 내보냈어요. 이때 기준은 "소금 세 숟갈"이라는 정해진 규칙이었어요. 이번엔 손님을 직접 상대하는 홀 직원이 주인공이에요.</p>
@@ -169,7 +169,7 @@
 
     <h2 id="code-tools"><span class="hl">계산은 코드에게</span> — 단순한 함수도 좋은 도구인 이유</h2>
     <p>갈림길 연습은 여기까지예요. 이제 라우터 자리에 모델을 앉힐 차례인데, 그 전에 모델에게 쥐여 줄 도구가 왜 필요한지부터 짚을게요.</p>
-    <p>강의가 짚어 준 설계 원칙 한 줄이 기억에 남아요. <strong>LLM이 약한 계산과 정밀 작업은 코드에 맡기고, LLM은 "언제 어떤 코드를 부를지" 판단하는 데 집중시킨다.</strong> 그래서 달력, 시간대 변환기, 단위 변환기처럼 단순한 함수도 훌륭한 도구가 돼요. <a href="langgraph-what-and-why.html#tool-kinds">지난 편의 도구 종류 표</a>에 나온 세 종류가 바깥에서 정보를 가져오거나 바깥을 바꾸는 도구라면, 이쪽은 LLM이 약한 계산을 대신 해 주는 도구예요.</p>
+    <p>여기서 기억에 남는 설계 원칙 한 줄이 있어요. <strong>LLM이 약한 계산과 정밀 작업은 코드에 맡기고, LLM은 "언제 어떤 코드를 부를지" 판단하는 데 집중시킨다.</strong> 그래서 달력, 시간대 변환기, 단위 변환기처럼 단순한 함수도 훌륭한 도구가 돼요. <a href="langgraph-what-and-why.html#tool-kinds">지난 편의 도구 종류 표</a>에 나온 세 종류가 바깥에서 정보를 가져오거나 바깥을 바꾸는 도구라면, 이쪽은 LLM이 약한 계산을 대신 해 주는 도구예요.</p>
     <p>처음엔 "오늘부터 100일 뒤가 무슨 요일인지 정도는 LLM이 그냥 풀면 되지 않나" 싶었어요. 그런데 LLM에게 직접 맡길 때와 함수로 뺄 때를 나란히 놓으면 차이가 분명해요.</p>
     <table>
       <thead><tr><th>비교 항목</th><th>LLM이 직접 계산하면</th><th>함수 도구로 빼면</th></tr></thead>
@@ -187,7 +187,7 @@
       <ul>
         <li><strong>틀려도 티가 안 나요.</strong> LLM이 틀린 날짜를 말할 때도 문장은 그럴듯해서, 사람이 읽어서는 잡아내기 어려워요.</li>
         <li><strong>함수는 검사할 수 있어요.</strong> 같은 입력에 늘 같은 답을 내니(이런 성질을 '결정적'이라고 해요) 테스트 코드로 미리 확인해 둘 수 있어요.</li>
-        <li><strong>일을 나눠 맡겨요.</strong> LLM은 "지금 날짜 계산이 필요하다"는 판단을, 코드는 계산 자체를 맡아요. 강의 예제가 복습 문제의 형식 검사를 LLM 대신 파이썬 함수로 한 것도 같은 이유예요.</li>
+        <li><strong>일을 나눠 맡겨요.</strong> LLM은 "지금 날짜 계산이 필요하다"는 판단을, 코드는 계산 자체를 맡아요. 아래 예제가 복습 문제의 형식 검사를 LLM 대신 파이썬 함수로 하는 것도 같은 이유예요.</li>
       </ul>
     </div>
 
@@ -198,7 +198,7 @@
       <li><strong><a href="why-gpu-and-colab-cli.html">Colab</a></strong> — 왼쪽 열쇠 아이콘(보안 비밀)에 등록하고 <code>google.colab.userdata</code>로 읽어요.</li>
       <li><strong>임시</strong> — <code>os.environ["OPENAI_API_KEY"] = "sk-..."</code>로 직접 넣어요. 노트북 파일에 키가 그대로 남으니 저장하거나 공유하기 전에 꼭 지워요.</li>
     </ul>
-    <p>모두의연구소 강의 화면의 코드 셀에서 돌린다면 첫 번째 방법이 적힌 그대로는 안 통해요. 코드가 내 컴퓨터가 아니라 강의 서버에서 돌기 때문이에요. 제가 한참 막혔던 과정은 <a href="langgraph-env-troubleshooting.html">아래 '강의 화면에서 API 키 넣기'</a>에 따로 적어 뒀어요.</p>
+    <p>Colab처럼 <strong>브라우저로 여는 원격 주피터</strong>에서 돌린다면 첫 번째 방법이 적힌 그대로는 안 통해요. 코드가 내 컴퓨터가 아니라 그 서버에서 돌아서, <code>.env</code>도 그 서버에 둬야 하거든요. 제가 한참 막혔던 과정은 <a href="langgraph-env-troubleshooting.html">5편 '원격 주피터에서 API 키 넣기'</a>에 따로 적어 뒀어요.</p>
     <p>도구는 함수에 <code>@tool</code>을 붙여 만들어요(<a href="langgraph-what-and-why.html#langchain-family">지난 편의 식구 표</a>에서 본 LangChain 쪽 부품이에요). 여기서 제일 중요한 건 <strong>독스트링<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup></strong>이에요. LangChain이 독스트링과 타입 힌트를 읽어 <strong>JSON 스키마<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup></strong>를 만들고, 모델은 우리 파이썬 코드가 아니라 <strong>이 스키마만</strong> 봐요.</p>
     <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— OPENAI_API_KEY 환경변수 필요 (호출마다 요금이 조금 나가요)</span></p>
     <pre><code>from langchain_core.tools import tool
@@ -249,7 +249,7 @@ for m in result["messages"]:
       <li><strong><code>tools_condition</code></strong> — 마지막 메시지에 <code>tool_calls</code>가 있으면 <code>"tools"</code>를, 없으면 <code>END</code>를 돌려주는 미리 만들어진 라우터예요.</li>
     </ul>
     <p>실행하면 이런 순서로 흘러가요. 사용자 질문을 받은 모델은 답 대신 레시피와 재고를 알려 달라는 도구 요청을 내놓고(모델에 따라 두 개를 한 번에 요청하기도, 하나씩 부르기도 해요), <code>ToolNode</code>가 두 함수를 실행해 "계란 3개", "계란 4개"를 붙이고, 다시 불려 온 모델이 그걸 읽고 "한 접시만 가능하다"는 최종 답을 써요. 더 부를 도구가 없으니 <code>tools_condition</code>이 <code>END</code>를 돌려주고 끝나요.</p>
-    <p>강의 실습에서도 똑같은 장면이 나왔어요. 노트 조회 도구와 출제 가능 판정 도구를 쥐여 주고 "이 노트로 문제를 낼 수 있나" 물었더니, 모델이 먼저 조회를 불러 208자·4문장이라는 값을 받고, 그 숫자를 그대로 판정 도구의 인자(함수 괄호 안에 넣는 값)로 넣었어요. 개발자가 "조회한 뒤 판정하라"고 코드에 순서를 박지 않았는데도요. 이렇게 관찰과 행동을 번갈아 하며 다음 행동을 스스로 정하는 게 <strong>ReAct<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup></strong> 루프예요. 도구 결과라는 확실한 기준을 받아 오니 모델 기억에만 기대는 것보다 지어낼 여지가 줄어들어요.</p>
+    <p>직접 돌려 보니 똑같은 장면이 나왔어요. 노트 조회 도구와 출제 가능 판정 도구를 쥐여 주고 "이 노트로 문제를 낼 수 있나" 물었더니, 모델이 먼저 조회를 불러 208자·4문장이라는 값을 받고, 그 숫자를 그대로 판정 도구의 인자(함수 괄호 안에 넣는 값)로 넣었어요. 개발자가 "조회한 뒤 판정하라"고 코드에 순서를 박지 않았는데도요. 이렇게 관찰과 행동을 번갈아 하며 다음 행동을 스스로 정하는 게 <strong>ReAct<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup></strong> 루프예요. 도구 결과라는 확실한 기준을 받아 오니 모델 기억에만 기대는 것보다 지어낼 여지가 줄어들어요.</p>
 
     <h3 id="tool-request-only">요청서는 종이일 뿐 — 도구는 누가 실행하나</h3>
     <p>처음 보면 가장 헷갈리는 게 이 대목이에요. 모델의 답을 찍어 보면 글(<code>content</code>)은 비어 있고, <code>tool_calls</code>에 도구 이름과 넣을 값만 들어 있어요. 이 순간 도구는 이미 돌았을까요? 확인하려고 모델이 돌려주는 답과 똑같은 모양의 메시지(<code>AIMessage</code>, 모델의 답 한 통을 담는 LangChain 자료형)를 손으로 만들고, 함수 안에는 실행되는 순간 한 줄을 찍게 해 뒀어요. 모델을 부르지 않으니 API 키도 필요 없어요.</p>
@@ -289,7 +289,7 @@ ToolMessage | 계란 3개</code></pre>
       <p>LLM은 글자만 만들어요. 우리 컴퓨터에 있는 함수를 직접 실행할 손이 없어요. 그래서 <code>bind_tools</code>를 붙인 모델도 "이 도구를 이 값으로 불러 달라"는 <strong>요청서</strong>(<code>tool_calls</code>)만 써서 내밀어요. 요청서를 받아 함수를 실제로 돌리는 건 우리 쪽 코드인 <code>ToolNode</code>이고, 결과는 <code>ToolMessage</code>로 메시지 목록에 따로 붙어요. 어느 모델을 쓰든 똑같아요.</p>
     </div>
     <h3 id="tool-order">순서를 정해 준 적이 없는데 — 모델은 왜 조회부터 했을까</h3>
-    <p>앞에서 본 강의 실습에서 모델이 조회부터 한 이유는 셋이에요.</p>
+    <p>앞에서 본 실습에서 모델이 조회부터 한 이유는 셋이에요.</p>
     <ul>
       <li><strong>도구가 요구하는 값이 순서를 끌어내요.</strong> 판정 도구는 글자 수와 문장 수를 넣어야 부를 수 있어요. 모델은 처음에 그 숫자를 모르고, 알아낼 길은 조회뿐이라 조회를 먼저 할 수밖에 없어요. 서류에 모르는 칸이 있으면 먼저 알아보러 가는 것과 같아요.</li>
       <li><strong>설명서에 적어 뒀어요.</strong> 조회 도구의 독스트링에 "판정하기 전에 반드시 먼저 호출한다"는 문장이 있었어요. 모델이 보는 건 이 설명이에요. 위 코드의 <code>get_recipe</code>에 "만들 수 있는지 답하기 전에 먼저 호출한다"를 넣어 둔 것도 같은 장치예요.</li>
@@ -337,10 +337,10 @@ agent.invoke({"messages": [("user", "계란말이 두 접시 만들 수 있어?"
     </table>
 
     <section class="apply-box" id="apply-blog">
-      <p class="apply-box-title">내 파이프라인에 대입하면 — 강의 페이지를 읽어 오는 일이 도구예요</p>
-      <p><a href="langgraph-state-node-edge.html#apply-blog">블로그 글 만들기</a>의 첫 단계는 강의 페이지의 본문을 가져오는 일이에요. 이게 바로 도구예요. 그리고 이 편의 요지가 그대로 적용돼요 — <strong>모델은 "이 주소의 본문을 가져와 주세요"라는 요청서만 쓰고, 실제로 브라우저를 여는 건 따로 있는 실행 담당이에요.</strong></p>
-      <p>루프가 도는 장면도 있어요. 강의 페이지는 첫 호출에서 본문 대신 <code>Loading...</code>만 잡힐 때가 있어요. 그러면 같은 주소로 한 번 더 부르고, 그래도 비어 있으면 잠깐 기다렸다 또 불러요. <strong>몇 번 부를지는 미리 못 적어요</strong> — 돌려받은 내용을 보고 정하니까요. 이게 이 편의 되돌아가는 선이고, 그래서 여기에도 몇 바퀴까지인지가 필요해요.</p>
-      <p>도구가 둘 이상일 때(브라우저로 웹 페이지 읽기 · 저장소 안의 파일 읽기) 어느 쪽을 부를지는 부탁하는 문장이 아니라 <strong>도구에 붙은 설명 한 줄</strong>로 갈려요. 강의 주소를 줬는데 엉뚱하게 파일을 뒤진다면, 고칠 자리는 프롬프트가 아니라 그 설명이에요.</p>
+      <p class="apply-box-title">내 파이프라인에 대입하면 — 원문 페이지를 읽어 오는 일이 도구예요</p>
+      <p><a href="langgraph-state-node-edge.html#apply-blog">블로그 글 만들기</a>의 첫 단계는 정리할 원문 페이지의 본문을 가져오는 일이에요. 이게 바로 도구예요. 그리고 이 편의 요지가 그대로 적용돼요 — <strong>모델은 "이 주소의 본문을 가져와 주세요"라는 요청서만 쓰고, 실제로 브라우저를 여는 건 따로 있는 실행 담당이에요.</strong></p>
+      <p>루프가 도는 장면도 있어요. 자바스크립트로 본문을 그리는 페이지는 첫 호출에서 본문 대신 <code>Loading...</code>만 잡힐 때가 있어요. 그러면 같은 주소로 한 번 더 부르고, 그래도 비어 있으면 잠깐 기다렸다 또 불러요. <strong>몇 번 부를지는 미리 못 적어요</strong> — 돌려받은 내용을 보고 정하니까요. 이게 이 편의 되돌아가는 선이고, 그래서 여기에도 몇 바퀴까지인지가 필요해요.</p>
+      <p>도구가 둘 이상일 때(브라우저로 웹 페이지 읽기 · 저장소 안의 파일 읽기) 어느 쪽을 부를지는 부탁하는 문장이 아니라 <strong>도구에 붙은 설명 한 줄</strong>로 갈려요. 웹 주소를 줬는데 엉뚱하게 파일을 뒤진다면, 고칠 자리는 프롬프트가 아니라 그 설명이에요.</p>
     </section>
     <section class="apply-box apply-box--repo" id="apply-repo">
       <p class="apply-box-title">실제 코드에 대입하면 — 교정기의 사전 조회는 도구인데, 아직 루프가 아니에요</p>
@@ -352,7 +352,7 @@ agent.invoke({"messages": [("user", "계란말이 두 접시 만들 수 있어?"
     </section>
 
     <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
-    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 강의가 퀴즈로 다시 짚은 내용이라, 복습할 때 이것부터 보면 돼요. 다른 편의 같은 목록은 <a href="langgraph-what-and-why.html#key-recap">1편</a> · <a href="langgraph-state-node-edge.html#key-recap">2편</a> · <a href="langgraph-branch-drills.html#key-recap">3편</a> · <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a> · <a href="langgraph-patterns-orchestrator-evaluator.html#key-recap">7편</a>에 있어요.</p>
+    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 복습할 때 이것부터 보면 돼요. 다른 편의 같은 목록은 <a href="langgraph-what-and-why.html#key-recap">1편</a> · <a href="langgraph-state-node-edge.html#key-recap">2편</a> · <a href="langgraph-branch-drills.html#key-recap">3편</a> · <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a> · <a href="langgraph-patterns-orchestrator-evaluator.html#key-recap">7편</a>에 있어요.</p>
     <ul class="key-recap">
       <li><a href="#key-code-tools">단순한 계산도 도구로 빼요</a> — 티 안 나는 오답, 검사할 수 있는 함수, 일 나눠 맡기기</li>
       <li><a href="#key-bind-tools">모델은 요청서만 쓰고, 실행은 ToolNode가 해요</a></li>
@@ -392,7 +392,7 @@ agent.invoke({"messages": [("user", "계란말이 두 접시 만들 수 있어?"
         <li id="fn2">독스트링(docstring) — 파이썬 함수 맨 위에 적는 설명 문자열로, LangChain은 이것을 읽어 모델에게 보낼 도구 설명을 만들어요. <a href="#fnref2">↩</a></li>
         <li id="fn3">JSON 스키마 — 데이터가 어떤 칸과 자료형을 가져야 하는지 적은 규칙서로, <a href="mcp-skill-tool-call-anatomy.html">도구 호출 글</a>에서 메뉴판의 '주문 규칙'에 빗댔던 입력 스키마가 이것이에요. <a href="#fnref3">↩</a></li>
         <li id="fn4">ReAct(Reasoning + Acting) — 생각과 행동을 번갈아 하며 관찰 결과로 다음 행동을 정하는 루프로, <a href="agent-react-loop-and-autogpt.html">ReAct 루프 글</a>에서 그 뿌리를 다뤘어요. <a href="#fnref4">↩</a></li>
-        <li id="fn5">LLM의 답은 확률적이라 같은 질문도 실행할 때마다 도구 호출 순서나 메시지 수가 달라질 수 있어서, 이 값은 강의 실습의 한 번 실행 결과로만 읽어야 해요. <a href="#fnref5">↩</a></li>
+        <li id="fn5">LLM의 답은 확률적이라 같은 질문도 실행할 때마다 도구 호출 순서나 메시지 수가 달라질 수 있어서, 이 값은 한 번 실행한 결과로만 읽어야 해요. <a href="#fnref5">↩</a></li>
       </ol>
     </section>
 
@@ -414,7 +414,7 @@ agent.invoke({"messages": [("user", "계란말이 두 접시 만들 수 있어?"
     <p class="post-date">(4) 모델이 다음 길을 고르게 한다 — 도구를 쥐여 주는 루프 (이 글)</p>
     <a class="post-nav" href="langgraph-env-troubleshooting.html">
       <span class="post-nav-label">(5)</span>
-      <span class="post-nav-title">.env가 안 읽혔던 네 겹의 이유 — 강의 화면에서 API 키 넣기</span>
+      <span class="post-nav-title">.env가 안 읽혔던 네 겹의 이유 — 원격 주피터에서 API 키 넣기</span>
     </a>
     <a class="post-nav" href="langgraph-five-workflow-patterns.html">
       <span class="post-nav-label">(6)</span>
@@ -427,7 +427,7 @@ agent.invoke({"messages": [("user", "계란말이 두 접시 만들 수 있어?"
 
     <a class="post-nav" href="langgraph-env-troubleshooting.html">
       <span class="post-nav-label">다음 편 →</span>
-      <span class="post-nav-title">.env가 안 읽혔던 네 겹의 이유 — 강의 화면에서 API 키 넣기</span>
+      <span class="post-nav-title">.env가 안 읽혔던 네 겹의 이유 — 원격 주피터에서 API 키 넣기</span>
     </a>
 
   </main>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>설계가 코드 어디에 앉는가 — 실행 가능한 Python 하네스 읽기 (7) - Tigermorning</title>
-  <meta name="description" content="강의가 제공하는 Python 하네스를 열어 내 설계와 대조합니다. 파일별 책임 분담, Agent.run 안의 모델·도구 반복, 어댑터가 제공자 차이를 흡수하는 위치, 기본 한도 12·30·300초의 의미, 세션 저장과 지표, 그리고 같은 루프를 평가에 연결하는 구조를 완전 초보자 눈높이로 정리했습니다.">
+  <meta name="description" content="참조용 Python 하네스 구현을 열어 내 설계와 대조합니다. 파일별 책임 분담, Agent.run 안의 모델·도구 반복, 어댑터가 제공자 차이를 흡수하는 위치, 기본 한도 12·30·300초의 의미, 세션 저장과 지표, 그리고 같은 루프를 평가에 연결하는 구조를 완전 초보자 눈높이로 정리했습니다.">
   <meta property="og:type" content="article">
   <meta property="og:title" content="설계가 코드 어디에 앉는가 — 실행 가능한 Python 하네스 읽기 (7)">
   <meta property="og:description" content="함수를 외우려고 읽는 게 아니에요. 내가 문서에 적은 결정이 코드의 어느 파일에 앉는지 대조하려고 읽습니다.">
@@ -76,7 +76,7 @@
       </dl>
     </div>
 
-    <p><a href="my-harness-vertical-slice.html">6편</a>에서 제 하네스를 만들었어요. 이번 편은 강의가 함께 제공하는 <strong>실행 가능한 Python 구현</strong>을 열어 봅니다. 이 하네스는 로컬 자료 읽기와 코드 변경을 수행하고, <strong>같은 모델·도구 반복</strong>을 <a href="my-harness-benchmark-local-port.html">다음 편의 벤치마크 평가 경로</a>에도 연결해요.</p>
+    <p><a href="my-harness-vertical-slice.html">6편</a>에서 제 하네스를 만들었어요. 이번 편은 같은 설계의 <strong>실행 가능한 Python 구현</strong>을 열어 봅니다. 이 하네스는 로컬 자료 읽기와 코드 변경을 수행하고, <strong>같은 모델·도구 반복</strong>을 <a href="my-harness-benchmark-local-port.html">다음 편의 벤치마크 평가 경로</a>에도 연결해요.</p>
     <p>먼저 목적을 분명히 해 둘게요. <strong>함수를 전부 외우거나 같은 파일 구성을 재현하는 게 목표가 아니에요.</strong> 이 예제의 결정은 Python·로컬 CLI·파일 세션 저장이고, 제가 다른 언어나 플랫폼을 골랐다면 그대로 바꿀 필요도 없어요. <strong>모델 연결·도구 실행·상태·검증을 어떻게 나눴는지</strong>를 제 설계와 대조하려고 읽습니다.</p>
     <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— Claude Code 등</span></p>
     <pre><code>이 하네스를 실행하고, 내 설계의 각 기능이 어느 코드에 해당하는지 설명해 줘. 먼저 파일 읽기부터 확인하자.</code></pre>

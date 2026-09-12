@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>갈림길을 밀어붙인다 — 세 갈래·라벨·끝나지 않는 반복 (3) - Tigermorning</title>
-  <meta name="description" content="LangGraph 조건부 엣지를 강의 '더 해보기' 세 문제로 밀어붙입니다. 갈래를 셋으로 늘리고, 화살표에 라벨을 달고, 일부러 끝나지 않는 반복을 만들어 상한이 어디서 끊는지 봐요. 라우터 안에서 State를 고치면 어떻게 되는지도 세 가지 방법으로 직접 확인했습니다.">
+  <meta name="description" content="LangGraph 조건부 엣지를 '더 해보기' 세 문제로 밀어붙입니다. 갈래를 셋으로 늘리고, 화살표에 라벨을 달고, 일부러 끝나지 않는 반복을 만들어 상한이 어디서 끊는지 봐요. 라우터 안에서 State를 고치면 어떻게 되는지도 세 가지 방법으로 직접 확인했습니다.">
   <meta property="og:type" content="article">
   <meta property="og:title" content="갈림길을 밀어붙인다 — 세 갈래·라벨·끝나지 않는 반복 (3)">
   <meta property="og:description" content="되돌아가는 선은 매 바퀴 State가 바뀌어야 끝나요. 안 바뀌면 기본 상한 10007스텝까지 같은 노드를 5천 번씩 돕니다.">
@@ -75,7 +75,7 @@
       </dl>
     </div>
 
-    <p><a href="langgraph-state-node-edge.html">지난 편</a>에서 조건부 엣지로 간 맞추기 그래프를 만들었어요. 강의에는 그 실습 뒤에 "더 해보기" 문제가 세 개 붙어 있었는데, 이번 편은 그 세 문제를 푸는 편이에요. 셋 다 <strong>갈림길을 한 번씩 더 밀어붙이는</strong> 문제예요. 갈래를 늘리면 어디까지 되는지, 화살표에 이유를 적을 수 있는지, 되돌아가는 선을 아무 데나 그으면 어떻게 되는지요.</p>
+    <p><a href="langgraph-state-node-edge.html">지난 편</a>에서 조건부 엣지로 간 맞추기 그래프를 만들었어요. 이번 편은 그 뒤에 이어지는 "더 해보기" 세 문제를 푸는 편이에요. 셋 다 <strong>갈림길을 한 번씩 더 밀어붙이는</strong> 문제예요. 갈래를 늘리면 어디까지 되는지, 화살표에 이유를 적을 수 있는지, 되돌아가는 선을 아무 데나 그으면 어떻게 되는지요.</p>
     <p>이번 편도 <strong>API 키 없이</strong> 돌아가요. 길은 전부 글자 수를 세는 규칙이 골라요. 라우터 자리에 모델을 앉히는 건 <a href="langgraph-branches-and-tool-loop.html">다음 편</a>이에요.</p>
     <p>세 문제가 왜 필요한지부터 짚을게요. 갈래를 늘리는 건 <a href="langgraph-five-workflow-patterns.html#routing">6편의 라우팅</a>(입력 종류마다 다른 담당에게 보내기)의 뼈대이고, 되돌아가는 선은 <a href="langgraph-patterns-orchestrator-evaluator.html#evaluator">7편의 평가자-최적화자</a>(통과할 때까지 고쳐 쓰기)의 뼈대예요. 여기서 손으로 그어 보는 선이 나중에 패턴이라는 이름으로 다시 나와요.</p>
 
@@ -156,10 +156,10 @@
     <p>갈래 셋 가운데 <code>accept</code>와 <code>flag_too_short</code>만 있는 상태가 출발점이에요. 거기서 하나씩 밀어붙여 볼게요.</p>
 
     <h2 id="branch-drills"><span class="hl">갈림길 더 밀어붙이기</span> — 세 갈래, 라벨, 일부러 만든 무한 반복</h2>
-    <p>강의에는 <a href="langgraph-state-node-edge.html#build-branch">조건부 엣지 실습</a>(지난 편의 간 맞추기) 뒤에 "더 해보기" 문제가 세 개 붙어 있었어요. 처음엔 강의 코드를 통째로 베껴 넣었더니 실행은 되는데, 무엇을 확인했는지는 하나도 남지 않았어요. 50줄 가운데 문제마다 실제로 바뀌는 건 두세 줄뿐인데, 그 두세 줄이 나머지 속에 묻혀 버렸거든요. 그래서 <a href="langgraph-state-node-edge.html#merge-rules">지난 편의 합치기 규칙 확인하기</a> 때처럼 <strong>한 번에 몇 줄만 바꾸고, 돌리기 전에 결과를 먼저 예상한 뒤</strong> 실행하는 식으로 다시 풀었어요.</p>
+    <p><a href="langgraph-state-node-edge.html#build-branch">조건부 엣지 실습</a>(지난 편의 간 맞추기) 뒤에 붙는 "더 해보기" 문제 셋이에요. 처음엔 예제 코드를 통째로 베껴 넣었더니 실행은 되는데, 무엇을 확인했는지는 하나도 남지 않았어요. 50줄 가운데 문제마다 실제로 바뀌는 건 두세 줄뿐인데, 그 두세 줄이 나머지 속에 묻혀 버렸거든요. 그래서 <a href="langgraph-state-node-edge.html#merge-rules">지난 편의 합치기 규칙 확인하기</a> 때처럼 <strong>한 번에 몇 줄만 바꾸고, 돌리기 전에 결과를 먼저 예상한 뒤</strong> 실행하는 식으로 다시 풀었어요.</p>
 
     <h3>출발점 — 노트 분량 검사 그래프</h3>
-    <p>강의 예제는 학생이 올린 공부 노트를 받아, 복습 문제를 낼 만큼 내용이 충분한지 가르는 그래프였어요. 60자보다 짧으면 보강해 달라고 보류하고, 아니면 출제 대기열로 보내요. 구조는 그대로 두고 코드를 제 식으로 줄여 다시 짰어요.</p>
+    <p>예제로 쓸 건 학생이 올린 공부 노트를 받아, 복습 문제를 낼 만큼 내용이 충분한지 가르는 그래프예요. 60자보다 짧으면 보강해 달라고 보류하고, 아니면 출제 대기열로 보내요. 구조는 그대로 두고 코드를 제 식으로 줄여 다시 짰어요.</p>
     <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— langgraph 설치 후, API 키 없이 돌아가요</span></p>
     <pre><code>from typing_extensions import TypedDict
 from langgraph.graph import StateGraph, START, END
@@ -313,7 +313,7 @@ For troubleshooting, visit: https://docs.langchain.com/oss/python/langgraph/erro
         <tr><td>라우터</td><td><code>def triage(state):</code>처럼 <strong>갈 곳 이름만</strong> 돌려주는 함수예요. 여태 <code>return "accept"</code>처럼 글자 하나만 돌려줬어요</td></tr>
       </tbody>
     </table>
-    <p>그럼 라우터가 길을 고르는 김에 <code>verdict</code> 칸에 판정까지 적어 두면 안 될까요? 강의가 던진 질문인데 답을 몰라서 직접 해 봤어요. 위의 노트 분량 검사 그래프는 이걸 보기엔 너무 커서, <strong>노드 한 개짜리 제일 작은 그래프</strong>를 따로 만들었어요. 글자 수를 세는 판단도, 갈래도 없어요. 라우터가 전표를 고쳐 보는 것만 남겼어요.</p>
+    <p>그럼 라우터가 길을 고르는 김에 <code>verdict</code> 칸에 판정까지 적어 두면 안 될까요? 답을 몰라서 직접 해 봤어요. 위의 노트 분량 검사 그래프는 이걸 보기엔 너무 커서, <strong>노드 한 개짜리 제일 작은 그래프</strong>를 따로 만들었어요. 글자 수를 세는 판단도, 갈래도 없어요. 라우터가 전표를 고쳐 보는 것만 남겼어요.</p>
     <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— 위 코드와 이어지지 않는 새 파일이에요. 그대로 복사해 돌리면 돼요</span></p>
     <pre><code>from typing_extensions import TypedDict
 from langgraph.graph import StateGraph, START, END
@@ -456,7 +456,7 @@ TypeError: unhashable type: 'dict'</code></pre>
     <section class="apply-box" id="apply-blog">
       <p class="apply-box-title">내 파이프라인에 대입하면 — 스텝 하나를 받았을 때의 세 갈래</p>
       <p>이 편의 세 문제가 <a href="langgraph-state-node-edge.html#apply-blog">블로그 글 만들기</a>에서는 이렇게 나와요.</p>
-      <p><strong>① 세 갈래.</strong> 강의 스텝 하나를 받으면 갈 곳이 셋이에요. 짧고 얕으면 <code>합치기</code>(다음 스텝과 한 편으로), 알맞으면 <code>그대로</code>, 길고 빽빽하면 <code>쪼개기</code>(두 편으로). 위의 짧은 노트·보통 노트·긴 노트와 같은 모양이에요.</p>
+      <p><strong>① 세 갈래.</strong> 정리할 원문 한 단원을 받으면 갈 곳이 셋이에요. 짧고 얕으면 <code>합치기</code>(다음 단원과 한 편으로), 알맞으면 <code>그대로</code>, 길고 빽빽하면 <code>쪼개기</code>(두 편으로). 위의 짧은 노트·보통 노트·긴 노트와 같은 모양이에요.</p>
       <p><strong>② 이름 어긋남.</strong> 판정하는 쪽이 <code>"쪼개기"</code>를 돌려주는데 목적지 목록에는 <code>"분할"</code>로 적어 뒀다면, 짧은 스텝과 보통 스텝만 넣어 본 날은 멀쩡히 지나가요. <strong>처음으로 긴 스텝이 들어오는 날</strong>에야 터져요. 갈래를 늘렸으면 그 갈래로 실제로 가는 입력을 한 번은 넣어 봐야 하는 이유예요.</p>
       <p><strong>③ 끝나지 않는 반복.</strong> 이 블로그에는 "비유가 그 편 내용에 안 맞으면 다시 쓴다"는 규칙이 있어요. 이걸 되돌아가는 선으로 그려 놓고, 다시 쓰는 쪽이 <strong>지난번 지적을 못 받아 보면</strong> 같은 비유를 또 써요. 전표가 안 바뀌니 같은 자리를 계속 돌아요. 바퀴 수를 적는 칸과 빠져나가는 출구가 필요한 게 이 자리예요.</p>
     </section>
@@ -488,7 +488,7 @@ TypeError: unhashable type: 'dict'</code></pre>
     </section>
 
     <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
-    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 강의가 퀴즈로 다시 짚은 내용이라, 복습할 때 이것부터 보면 돼요. 다른 편의 같은 목록은 <a href="langgraph-what-and-why.html#key-recap">1편</a> · <a href="langgraph-state-node-edge.html#key-recap">2편</a> · <a href="langgraph-branches-and-tool-loop.html#key-recap">4편</a> · <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a> · <a href="langgraph-patterns-orchestrator-evaluator.html#key-recap">7편</a>에 있어요.</p>
+    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 복습할 때 이것부터 보면 돼요. 다른 편의 같은 목록은 <a href="langgraph-what-and-why.html#key-recap">1편</a> · <a href="langgraph-state-node-edge.html#key-recap">2편</a> · <a href="langgraph-branches-and-tool-loop.html#key-recap">4편</a> · <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a> · <a href="langgraph-patterns-orchestrator-evaluator.html#key-recap">7편</a>에 있어요.</p>
     <ul class="key-recap">
       <li><a href="#key-router-read-only">라우터는 길만 고르고, 전표에 적는 건 노드</a></li>
     </ul>
@@ -528,7 +528,7 @@ TypeError: unhashable type: 'dict'</code></pre>
     </a>
     <a class="post-nav" href="langgraph-env-troubleshooting.html">
       <span class="post-nav-label">(5)</span>
-      <span class="post-nav-title">.env가 안 읽혔던 네 겹의 이유 — 강의 화면에서 API 키 넣기</span>
+      <span class="post-nav-title">.env가 안 읽혔던 네 겹의 이유 — 원격 주피터에서 API 키 넣기</span>
     </a>
     <a class="post-nav" href="langgraph-five-workflow-patterns.html">
       <span class="post-nav-label">(6)</span>

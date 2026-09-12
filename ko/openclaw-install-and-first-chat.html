@@ -126,7 +126,7 @@
         <text x="420" y="125" text-anchor="middle" font-size="12" fill="var(--muted)">④에서 하나라도 실패하면 ⑤로 넘어가지 않고 멈춘다</text>
       </g>
     </svg>
-    <p><strong>읽는 법:</strong> 왼쪽에서 오른쪽으로 순서대로 가요. 굵은 상자 ④가 이 흐름의 검문소예요. 진단이 실패하면 채팅으로 넘어가지 말고 그 자리에서 멈추라는 게 강의의 지시였어요.</p>
+    <p><strong>읽는 법:</strong> 왼쪽에서 오른쪽으로 순서대로 가요. 굵은 상자 ④가 이 흐름의 검문소예요. 진단이 실패하면 채팅으로 넘어가지 말고 그 자리에서 멈춰야 해요.</p>
 
     <h2><span class="hl">① 자리를 정한다</span> — 연습 폴더와 Node 버전</h2>
     <p>이 실습은 <strong>오늘 처음 만드는 연습 폴더에서만</strong> 해요. 실제 업무 저장소, 개인 파일이 있는 곳, 홈 폴더의 설정 폴더 안에서는 하지 않아요. 새 터미널을 열고 아래를 실행해요.</p>
@@ -156,19 +156,19 @@ openclaw --version</code></pre>
         <tr><td><strong>ANTHROPIC_API_KEY</strong> (API 키)</td><td>OpenClaw가 키를 직접 들고 API<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup>를 호출</td><td>쓴 만큼 종량 과금</td><td>OpenClaw</td></tr>
       </tbody>
     </table>
-    <p>강의가 단서를 붙인 대목이 있어요. 구독 계정을 연결해도 "Claude가 구독으로 완벽하게 동작하는" 건 아니에요. 요금과 한도는 구독에서 빠지지만 실제 호출은 CLI를 거치는 우회로라서요. 그리고 어느 쪽이든 <strong>API 키 값을 메모나 화면 캡처에 남기지 않아요</strong>. 이 "열쇠를 누가 들고 있나"의 차이는 <a href="openclaw-session-records-and-usage.html">3편</a>에서 사용량 숫자를 읽을 때 다시 나와요. 두 경로가 실제로 어떻게 다른지 더 알고 싶다면 <a href="three-ways-to-run-an-llm.html">로컬이냐 API냐는 틀린 질문 — 세 갈래</a>가 도움이 돼요.</p>
+    <p>여기에 단서가 하나 붙어요. 구독 계정을 연결해도 "Claude가 구독으로 완벽하게 동작하는" 건 아니에요. 요금과 한도는 구독에서 빠지지만 실제 호출은 CLI를 거치는 우회로라서요. 그리고 어느 쪽이든 <strong>API 키 값을 메모나 화면 캡처에 남기지 않아요</strong>. 이 "열쇠를 누가 들고 있나"의 차이는 <a href="openclaw-session-records-and-usage.html">3편</a>에서 사용량 숫자를 읽을 때 다시 나와요. 두 경로가 실제로 어떻게 다른지 더 알고 싶다면 <a href="three-ways-to-run-an-llm.html">로컬이냐 API냐는 틀린 질문 — 세 갈래</a>가 도움이 돼요.</p>
 
     <h2><span class="hl">④ 진단</span> — 세 곳에서 확인하고, 실패하면 멈춘다</h2>
     <p class="run-tag">실행: 로컬 터미널</p>
     <pre><code>openclaw doctor
 openclaw gateway status</code></pre>
-    <p><code>doctor</code>는 구성 진단 명령이에요. 여기서 강의가 강조한 읽는 법이 하나 있어요. <strong>마지막 줄만 보고 성공이라고 판단하지 않는다.</strong> 경고와 오류가 중간에 있어도 마지막 줄은 멀쩡해 보일 수 있어서, 통과한 항목과 남은 항목을 화면 그대로 읽는 게 진단의 목적이에요. <code>gateway status</code>는 게이트웨이가 실행 중인지 보여 줘요. 둘 중 하나라도 실패하면 그 시점에서 멈춰요.</p>
+    <p><code>doctor</code>는 구성 진단 명령이에요. 여기서 꼭 지켜야 할 읽는 법이 하나 있어요. <strong>마지막 줄만 보고 성공이라고 판단하지 않는다.</strong> 경고와 오류가 중간에 있어도 마지막 줄은 멀쩡해 보일 수 있어서, 통과한 항목과 남은 항목을 화면 그대로 읽는 게 진단의 목적이에요. <code>gateway status</code>는 게이트웨이가 실행 중인지 보여 줘요. 둘 중 하나라도 실패하면 그 시점에서 멈춰요.</p>
 
     <h2><span class="hl">⑤ 첫 대화</span> — WebChat</h2>
     <p>WebChat은 OpenClaw가 자체로 제공하는 대화 화면이에요. 실행 중인 게이트웨이가 이 화면을 <code>http://127.0.0.1:18789</code>에서 내어 놓아요. <code>127.0.0.1</code>은 "이 컴퓨터 자신"을 가리키는 특별한 주소라 밖에서는 접속할 수 없고, <code>18789</code>는 포트<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup> 번호예요. 브라우저는 이 게이트웨이와 WebSocket<sup class="fn-ref"><a href="#fn8" id="fnref8">8</a></sup>이라는 방식으로 연결을 끊지 않은 채 메시지를 주고받아요. 화면은 저절로 열리지 않고, 아래 명령으로 열어요.</p>
     <p class="run-tag">실행: 로컬 터미널</p>
     <pre><code>openclaw dashboard</code></pre>
-    <p>게이트웨이가 멈춰 있으면 화면이 열려도 메시지를 보낼 수 없어요. 화면이 열리면 무해한 한 문장을 보내요. 강의가 쓴 문장은 이거였어요.</p>
+    <p>게이트웨이가 멈춰 있으면 화면이 열려도 메시지를 보낼 수 없어요. 화면이 열리면 무해한 한 문장을 보내요. 저는 이렇게 보냈어요.</p>
     <p class="run-tag">실행: WebChat 대화창 <span class="run-tag-why">— 브라우저로 연 대화 화면에 입력</span></p>
     <pre><code>이 메시지를 받았다면 연결 확인이라고만 답해 주세요.</code></pre>
     <p>주소를 추측해서 입력하거나, 외부에서 접속되게 포트를 열지 않아요. 기본 주소의 외부 접속은 공식 문서가 권장하지 않고, 원격 접속에는 별도 승인 절차가 있어요. 원격에서 꼭 써야 한다면 공식 문서가 안내하는 길은 Tailscale<sup class="fn-ref"><a href="#fn9" id="fnref9">9</a></sup>이에요. 게이트웨이는 <code>127.0.0.1</code>에 그대로 둔 채, Serve 기능으로 내 기기들끼리만 쓰는 HTTPS 주소를 붙이거나 Funnel 기능으로 공개 주소를 만드는 방식이에요. 이건 <a href="openclaw-telegram-channel-and-pairing.html">4편</a>의 텔레그램 연결과는 다른 길이에요. 텔레그램은 에이전트가 메시지를 받을 <strong>새 입구</strong>를 여는 것이고, Tailscale은 이미 떠 있는 WebChat 화면을 <strong>다른 기기에서도 보는</strong> 것이에요.</p>
