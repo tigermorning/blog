@@ -325,7 +325,7 @@ agent.invoke({"messages": [("user", "계란말이 두 접시 만들 수 있어?"
     <ul>
       <li>모델 이름 <code>gemini-1.5-flash</code>는 이미 서비스가 끝난 모델이라 지금 쓰는 모델 이름으로 바꿔야 해요.</li>
       <li>날씨는 미국 기상청 API를 불러서 미국 지명만 돼요. 지명 변환에는 Google Maps 키도 필요해요.</li>
-      <li>주석 처리된 <code>MemorySaver</code>·<code>thread_id</code> 줄이 바로 <a href="langgraph-what-and-why.html#roadmap">9/22 주제</a>(상태 지속성)예요. 살릴 때는 import 경로를 지금 방식인 <code>langgraph.checkpoint.memory</code>로 바꿔야 해요.</li>
+      <li>주석 처리된 <code>MemorySaver</code>·<code>thread_id</code> 줄이 <strong>상태 지속성</strong>, 즉 그래프가 멈춘 자리를 저장해 뒀다가 나중에 이어 가는 기능이에요. 살릴 때는 import 경로를 지금 방식인 <code>langgraph.checkpoint.memory</code>로 바꿔야 해요.</li>
     </ul>
 
     <h2 id="try"><span class="hl">직접 해보기</span></h2>

@@ -311,21 +311,6 @@ while True:
       <li><a href="#key-who-decides">워크플로와 에이전트를 가르는 건 "다음 걸음을 누가 정하나"</a> — 호출 수·도구·모델 크기는 기준이 아니에요 (2강)</li>
     </ul>
 
-    <h2 id="roadmap"><span class="hl">이 모듈이 앞으로 가는 길</span></h2>
-    <p>"에이전트 팀 꾸리기"는 11일짜리 모듈이에요. 주제마다 이틀쯤 잡혀 있고, 둘째 날에 서브 퀘스트(실습 과제)가 붙어요. 9월 24~25일이 비는 건 추석 연휴 때문이에요.</p>
-    <table>
-      <thead><tr><th>날짜</th><th>주제</th><th>LangGraph에서 쓰일 것 (제 예상)</th></tr></thead>
-      <tbody>
-        <tr><td>9/11 · 9/14 · 9/15</td><td>LangGraph 기초·적용 (+서브 퀘스트 C13)</td><td>이 글(밑그림), <a href="langgraph-state-node-edge.html">2편</a>(State·Node·Edge), <a href="langgraph-branch-drills.html">3편</a>(갈림길 연습), <a href="langgraph-branches-and-tool-loop.html">4편</a>(도구 루프), <a href="langgraph-five-workflow-patterns.html">6편</a>·<a href="langgraph-patterns-orchestrator-evaluator.html">7편</a>(다섯 패턴)</td></tr>
-        <tr><td>9/16 · 9/17</td><td>라우팅 패턴 + RAG (+C14)</td><td>분류 노드가 조건부 엣지로 담당을 고르고, 검색 결과가 모자라면 질문을 고쳐 다시 찾는 반복</td></tr>
-        <tr><td>9/18 · 9/21</td><td>GraphRAG (+C15)</td><td>지식 그래프 검색기를 노드 하나로 끼우는 형태 — 여기서 graph는 지식의 구조예요</td></tr>
-        <tr><td>9/22 · 9/23</td><td>HITL · 상태 지속성 (+C16)</td><td>체크포인터와 <code>thread_id</code>로 단계마다 State 저장, <code>interrupt()</code>로 멈추고 사람 승인 뒤 재개</td></tr>
-        <tr><td>9/28</td><td>메인 퀘스트 06</td><td>앞의 부품을 합친 에이전트 팀</td></tr>
-        <tr><td>9/29</td><td>WRAP UP</td><td>—</td></tr>
-      </tbody>
-    </table>
-    <p>오른쪽 칸은 오늘 배운 걸 바탕으로 한 제 짐작이라, 실제 수업이 진행되면 이 표를 고쳐 적을게요.</p>
-
     <h2><span class="hl">다음은</span></h2>
     <p>밑그림은 다 봤으니 이제 손을 움직일 차례예요. <a href="langgraph-state-node-edge.html">다음 편</a>에서는 위에서 이름만 붙여 둔 State·Node·Edge로 그래프를 직접 만들어 돌려 봐요. 일직선 그래프 하나를 짜고, 노드가 돌려준 값이 전표에 어떻게 합쳐지는지 일부러 깨뜨려 확인하고, 조건부 엣지로 갈림길과 되돌아가는 반복까지 만들어요. 전부 API 키 없이 돌아가요.</p>
 
