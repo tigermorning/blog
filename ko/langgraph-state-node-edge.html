@@ -253,7 +253,18 @@ KeyError: 'dishes'</code></pre>
       </tbody>
     </table>
     <p><code>take_order</code>는 맨 처음에 돌아도 필요한 게 다 있고, <code>count_dishes</code>는 반드시 <code>take_order</code> 뒤에 와야 해요. 그리고 LangGraph는 "이 노드가 <code>dishes</code>를 필요로 하니 <code>take_order</code>부터 돌리자" 같은 판단을 해 주지 않아요. <strong>엣지로 정한 순서 그대로 실행할 뿐</strong>이라서, 값을 만드는 노드가 그 값을 읽는 노드보다 앞에 오도록 잇는 건 사람의 몫이에요. 참고로 <code>add_node</code> 두 줄의 순서만 바꿔 보면 결과가 원래와 똑같이 나와요. 노드를 등록하는 순서는 실행 순서와 상관없어요.</p>
-    <p>에러를 없애려고 <code>state["dishes"]</code>를 <code>state.get("dishes", [])</code>로 바꾸는 방법도 떠올릴 수 있어요. <code>.get()</code>은 키가 없으면 에러를 내는 대신 뒤에 준 기본값을 돌려주는 딕셔너리 메서드예요. 엣지는 뒤집힌 그대로 두고 이것만 바꿔서 돌려 봤어요.</p>
+    <p>에러를 없애려고 <code>state["dishes"]</code>를 <code>state.get("dishes", [])</code>로 바꾸는 방법도 떠올릴 수 있어요. <code>.get()</code>은 키가 없으면 에러를 내는 대신 뒤에 준 기본값을 돌려주는 딕셔너리 메서드예요. 바꾸는 자리는 <code>count_dishes</code> 함수 안, <code>len()</code> 괄호 속 한 군데예요.</p>
+    <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— 엣지는 뒤집힌 그대로 두고 <code>count_dishes</code>의 이 줄만 바꿔요</span></p>
+    <pre><code># 바꾸기 전
+def count_dishes(state: Ticket):
+    return {"count": len(state["dishes"]), "log": state["log"] + " &gt; 집계"}
+#                        ^^^^^^^^^^^^^^^^ 없는 칸을 대괄호로 읽어서 KeyError
+
+# 바꾼 뒤
+def count_dishes(state: Ticket):
+    return {"count": len(state.get("dishes", [])), "log": state["log"] + " &gt; 집계"}
+#                        ^^^^^^^^^^^^^^^^^^^^^^^ 칸이 없으면 [] 를 대신 준다</code></pre>
+    <p>같은 줄의 <code>state["log"]</code>는 그대로 둬요. <code>log</code>는 <code>invoke()</code>에 넣어 준 칸이라 처음부터 있거든요. <strong><code>.get()</code>은 실제로 없는 칸에만 필요해요.</strong> 그리고 기본값 <code>[]</code>를 빼고 <code>state.get("dishes")</code>라고만 쓰면 <code>None</code>이 돌아오고, <code>len(None)</code>에서 이번엔 <code>TypeError</code>가 나요. <code>len()</code>에 넘길 값이니 빈 리스트를 줘야 해요. 이렇게 바꿔서 돌려 봤어요.</p>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 순서를 뒤집은 채 .get()으로만 바꿨을 때 제 화면에 찍힌 출력이에요</span></p>
     <pre><code>{'order': ' 김치찌개,  계란말이 ,공기밥 ', 'dishes': ['김치찌개', '계란말이', '공기밥'], 'count': 0, 'log': '시작 &gt; 집계 &gt; 접수'}</code></pre>
     <p>에러는 사라졌지만 메뉴는 셋인데 접시 수가 0이에요. 프로그램이 멈추지 않으니 틀린 줄도 모르고 넘어가기 쉬워요. 뒤집힌 흔적은 <code>log</code>의 순서(<code>집계 &gt; 접수</code>)에만 남아요. <code>KeyError</code>는 "순서가 틀렸다"고 알려 주는 신호예요. 신호를 끄지 말고 엣지를 고치는 게 맞아요.</p>
