@@ -1178,6 +1178,35 @@ details[open] > summary .tree-toggle-icon {
   margin-bottom: 0.1rem;
 }
 
+/* 읽기 전에 박스 안의 불릿 — 한 줄에 한 가지만 담아 눈으로 훑게 한다.
+   긴 한 문장에 여러 내용을 이어 붙이면 초보자가 읽지 않고 넘어간다. */
+.why-read dd ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.why-read dd ul li {
+  position: relative;
+  margin: 0 0 0.45rem;
+  padding-left: 0.95rem;
+}
+
+.why-read dd ul li:last-child {
+  margin-bottom: 0;
+}
+
+.why-read dd ul li::before {
+  content: "";
+  position: absolute;
+  left: 0.1rem;
+  top: 0.72em;
+  width: 0.32rem;
+  height: 0.32rem;
+  border-radius: 50%;
+  background: var(--folder-4);
+}
+
 /* 4. 나쁜 선택 vs 좋은 선택 대비표 */
 .choice-table td.choice-bad {
   background: var(--miss-bg);

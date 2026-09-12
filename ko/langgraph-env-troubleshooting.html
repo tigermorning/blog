@@ -39,14 +39,39 @@
       <dl>
         <dt>어디쯤인가</dt>
         <dd><a href="posts.html#cat-agent-system">8단계</a> › <a href="posts.html#langgraph-team">에이전트 팀 꾸리기 — LangGraph</a> — 5번째 글 (전 7편). <a href="langgraph-branches-and-tool-loop.html">4편</a>에서 처음 <strong>API 키<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup></strong>가 필요해지는데, 거기서 막혔다면 이 편이에요.</dd>
-        <dt>뭐를 할 수 있나</dt>
-        <dd>강의 서버든 남의 주피터든, 코드가 실제로 어느 폴더에서 도는지 확인하고 거기에 <code>.env</code>를 만들어 키를 읽힐 수 있어요. "비어 있음"만 나오고 에러는 안 날 때 어디를 먼저 볼지 순서가 생겨요.</dd>
-        <dt>왜 배우나</dt>
-        <dd>"프로젝트 폴더에 <code>.env</code>를 만드세요"라는 안내는 <strong>내 컴퓨터에 주피터를 설치해 돌리는 경우</strong>의 이야기예요. 강의 화면은 그렇지 않은데 안내문이 같아서, 같은 자리에서 한참 막혀요.</dd>
-        <dt>왜 중요한가</dt>
-        <dd>이 문제는 <strong>에러를 안 내요</strong>. <code>except ImportError: pass</code>가 원인을 삼키고 "비어 있음"이라는 결과만 보여 줘서, 파일을 몇 번씩 다시 만들며 엉뚱한 데를 고치게 돼요. 게다가 남의 서버에 내 키를 두는 일이라 한도 설정 같은 대비도 필요해요.</dd>
+        <dt>이런 게 궁금했다면</dt>
+        <dd>
+          <ul>
+            <li>안내대로 프로젝트 폴더에 .env를 만들었는데 키가 안 읽혀요.</li>
+            <li>에러는 한 줄도 안 나는데 계속 "비어 있음"만 나와요. 어디를 봐야 하죠?</li>
+            <li>내 API 키를 남의 강의 서버에 넣어도 괜찮나요?</li>
+          </ul>
+        </dd>
+        <dt>읽고 나면 할 수 있는 것</dt>
+        <dd>
+          <ul>
+            <li>코드가 실제로 어디서 도는지부터 확인합니다. 강의 화면의 [실행]을 눌러도 코드는 내 노트북이 아니라 강의 서버에서 돌아요 — print(os.getcwd())로 그 폴더를 찍어봐요.</li>
+            <li>"비어 있음"만 나올 때 볼 순서를 갖습니다 — 코드가 도는 곳 · python-dotenv가 깔려 있는지 · 이미 들어간 빈 값이 안 덮이는지 · 커널이 재시작됐는지.</li>
+            <li>키를 화면에 안 띄우고 형식만 확인합니다. cut -c1-18 .env면 OPENAI_API_KEY=sk- 까지만 보여서, 그 화면은 캡처해 물어봐도 키가 안 새요.</li>
+          </ul>
+        </dd>
+        <dt>모르면 이런 일이 생겨요</dt>
+        <dd>
+          <ul>
+            <li>except ImportError: pass가 원인을 삼켜서, 파일을 몇 번씩 다시 만들며 엉뚱한 데를 고치게 됩니다.</li>
+            <li>setdefault가 넣은 빈 값을 load_dotenv가 못 덮습니다. 기본값이 override=False라 빈 값도 "이미 있는" 걸로 쳐요.</li>
+            <li>평소 쓰던 키를 셀에 직접 적으면 셀 내용이 저장돼 실행 기록이나 제출물에 남습니다. 한도가 없으면 피해가 어디서 멈출지 몰라요.</li>
+          </ul>
+        </dd>
         <dt>어디에 쓰나</dt>
-        <dd>강의 서버·<a href="why-gpu-and-colab-cli.html">Colab</a>·사내 주피터에서 키 넣기 · 키가 안 읽힐 때 원인 좁히기 · 실습용 키를 안전하게 분리하기</dd>
+        <dd>
+          <ul>
+            <li>강의 서버·Colab·사내 주피터에서 키를 넣기 전에 작업 폴더부터 찍어보기</li>
+            <li>try 밖에서 일부러 import해 삼켜진 에러를 드러내기</li>
+            <li>설치는 터미널의 pip 말고 셀에서 %pip으로 해서 같은 커널 환경에 깔기</li>
+            <li>실습용 키를 따로 만들어 사용 한도를 작게 걸고, 끝나면 그 키만 폐기하기</li>
+          </ul>
+        </dd>
       </dl>
     </div>
 
