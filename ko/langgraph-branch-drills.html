@@ -278,76 +278,120 @@ For troubleshooting, visit: https://docs.langchain.com/oss/python/langgraph/erro
     <p><code>recursion_limit</code>을 빼고 기본값으로 돌려 봤더니 <code>receive</code>가 5,004번, <code>flag_too_short</code>가 5,003번 돈 뒤에야 10007스텝에서 멈췄어요. 이 노드들이 LLM을 부르는 노드였다면 호출이 만 번 가까이 쌓였을 거예요. <a href="#loop-choice">아래 '나쁜 선택 vs 좋은 선택'</a>의 정상 출구가 왜 필요한지 이 숫자가 말해 줘요.</p>
 
     <h3 id="router-no-write">라우터는 길만 고른다 — 전표에 직접 적으면?</h3>
-    <p>위의 <code>triage()</code>는 전표를 읽기만 하고 아무것도 고치지 않았어요. 그럼 라우터 안에서 전표를 고치면 어떻게 될까요? 강의가 던진 질문인데, 저는 처음에 답을 몰라서 라우터에서 전표를 고치는 방법 세 가지를 직접 해 봤어요.</p>
-    <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— langgraph 설치 후, API 키 없이 돌아가요</span></p>
+    <p>이 꼭지는 앞의 세 문제와 달리 <strong>코드를 늘리는 게 아니라 줄여서</strong> 봐요. 먼저 여태 쓴 말이 코드의 어디를 가리키는지 맞추고 갈게요.</p>
+    <table>
+      <thead><tr><th>이 글에서 부르는 말</th><th>코드에서 어디인가</th></tr></thead>
+      <tbody>
+        <tr><td>전표 (State)</td><td><code>class Note(TypedDict):</code> 아래에 적은 칸 목록이에요. 노드들이 돌려 가며 같이 쓰는 딕셔너리 하나예요</td></tr>
+        <tr><td><code>verdict</code> 칸</td><td>판정 결과를 적어 두는 칸이에요. LangGraph가 아는 이름이 아니라 <strong>제가 지은 이름</strong>이라, <code>result</code>든 <code>판정</code>이든 아무 이름이어도 똑같이 돌아가요</td></tr>
+        <tr><td>노드</td><td><code>def accept(state):</code>처럼 일을 하는 함수예요. 위에서 <code>return {"verdict": "출제 가능"}</code>처럼 <strong>전표에 적는</strong> 쪽이었어요</td></tr>
+        <tr><td>라우터</td><td><code>def triage(state):</code>처럼 <strong>갈 곳 이름만</strong> 돌려주는 함수예요. 여태 <code>return "accept"</code>처럼 글자 하나만 돌려줬어요</td></tr>
+      </tbody>
+    </table>
+    <p>그럼 라우터가 길을 고르는 김에 <code>verdict</code> 칸에 판정까지 적어 두면 안 될까요? 강의가 던진 질문인데 답을 몰라서 직접 해 봤어요. 위의 노트 분량 검사 그래프는 이걸 보기엔 너무 커서, <strong>노드 한 개짜리 제일 작은 그래프</strong>를 따로 만들었어요. 글자 수를 세는 판단도, 갈래도 없어요. 라우터가 전표를 고쳐 보는 것만 남겼어요.</p>
+    <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— 위 코드와 이어지지 않는 새 파일이에요. 그대로 복사해 돌리면 돼요</span></p>
     <pre><code>from typing_extensions import TypedDict
 from langgraph.graph import StateGraph, START, END
 
-class Note(TypedDict):
+class Note(TypedDict):                       # ① 전표에 칸 두 개만 둔다
     text: str
     verdict: str
-    history: list   # 거쳐 간 곳 기록
 
-def receive(state: Note): return {"history": ["receive"]}
+def accept(state: Note):                     # ② 노드는 하나뿐
+    print("accept가 본 verdict:", state.get("verdict"))
+    return {}
+
+def triage(state: Note) -&gt; str:              # ③ 라우터
+    state["verdict"] = "라우터가 적은 판정"   # ④ 실험 1: 라우터가 전표에 직접 적어 본다
+    return "accept"                          # ⑤ 갈 곳 이름
+
+builder = StateGraph(Note)
+builder.add_node("accept", accept)
+builder.add_conditional_edges(START, triage, ["accept"])   # ⑥ 시작하자마자 라우터를 한 번 태운다
+builder.add_edge("accept", END)
+print("최종 전표:", builder.compile().invoke({"text": "아무 노트"}))   # ⑦</code></pre>
+    <p>줄마다 무슨 일을 하는지 풀면 이래요. 조립하는 순서는 <a href="langgraph-state-node-edge.html#build-branch">지난 편</a>과 같아요.</p>
+    <table>
+      <thead><tr><th>줄</th><th>하는 일</th></tr></thead>
+      <tbody>
+        <tr><td>①</td><td>전표에 <code>text</code>·<code>verdict</code> 두 칸이 있다고 선언해요. 값을 넣는 게 아니라 <strong>칸 이름표를 붙이는</strong> 줄이에요</td></tr>
+        <tr><td>②</td><td>노드가 받는 <code>state</code>가 전표예요. <code>state.get("verdict")</code>는 그 칸을 꺼내 보되 <strong>칸이 없으면 <code>None</code></strong>을 내놔요. <code>return {}</code>는 "전표에 적을 건 없다"는 뜻이에요</td></tr>
+        <tr><td>③</td><td><code>-&gt; str</code>는 이 함수가 <strong>글자를 돌려준다</strong>는 표시예요. 노드가 아니라 라우터라는 신호이기도 해요</td></tr>
+        <tr><td>④</td><td>이번 실험의 한 줄이에요. 노드처럼 돌려주는 게 아니라, 받은 전표의 <code>verdict</code> 칸에 <strong>그 자리에서</strong> 적어요</td></tr>
+        <tr><td>⑤</td><td>돌려주는 글자는 다음에 갈 곳의 이름이에요. 여기선 갈 곳이 <code>accept</code> 하나뿐이라 늘 같은 값이에요</td></tr>
+        <tr><td>⑥</td><td>출발점이 <code>START</code>라서, 노드를 거치기도 전에 라우터부터 돌아요. 뒤의 <code>["accept"]</code>가 목적지 목록이에요</td></tr>
+        <tr><td>⑦</td><td><code>invoke(...)</code>에 넣은 딕셔너리가 <strong>처음 전표</strong>예요. 다 돌고 난 마지막 전표가 그대로 돌아와요</td></tr>
+      </tbody>
+    </table>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 위 코드를 실행했을 때 제 화면에 찍힌 출력이에요</span></p>
+    <pre><code>accept가 본 verdict: None
+최종 전표: {'text': '아무 노트'}</code></pre>
+    <p>라우터가 적은 글씨가 <strong>어디에도 없어요</strong>. 바로 다음에 도는 <code>accept</code>도 못 봤고(<code>None</code>), 마지막에 돌아온 전표에는 <code>verdict</code>라는 칸 자체가 안 생겼어요. 라우터 함수 안에서 분명히 적었는데요.</p>
+    <p>이유는 이래요. LangGraph는 노드나 라우터를 부를 때마다 전표를 <strong>새 딕셔너리로 떠서</strong> 건네줘요. 그리고 그 사본에서 값을 거둬 가는 통로는 딱 하나, <strong>노드가 <code>return</code>으로 돌려주는 딕셔너리</strong>예요. 라우터가 돌려준 <code>"accept"</code>는 갈 곳 이름으로만 읽히니, 사본에 적은 글씨는 함수가 끝나는 순간 같이 버려져요.</p>
+
+    <p>그럼 칸에 리스트가 들어 있으면 어떨까요. 위 코드에서 <strong>네 군데만</strong> 고쳐요.</p>
+    <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— 위 파일에서 이 줄들만 바꿔요</span></p>
+    <pre><code>class Note(TypedDict):
+    text: str
+    verdict: str
+    history: list                        # 바꾼 곳 1: 리스트가 든 칸을 하나 더 둔다
+
 def accept(state: Note):
-    print("accept가 받은 verdict:", state.get("verdict"), "| history:", state["history"])
+    print("accept가 본 history:", state["history"])   # 바꾼 곳 2: 찍어 볼 칸을 바꾼다
     return {}
 
 def triage(state: Note) -&gt; str:
-    state["verdict"] = "라우터가 적은 판정"   # 실험 1: 칸에 새 값 적기
-    state["history"].append("router")        # 실험 2: 리스트 안을 직접 고치기
+    state["history"].append("router")    # 바꾼 곳 3: 칸에 새로 적는 대신, 칸에 든 리스트 '안'을 고친다
     return "accept"
 
-builder = StateGraph(Note)
-builder.add_node("receive", receive)
-builder.add_node("accept", accept)
-builder.add_edge(START, "receive")
-builder.add_conditional_edges("receive", triage, ["accept"])
-builder.add_edge("accept", END)
-print(builder.compile().invoke({"text": "아무 노트"}))</code></pre>
+처음전표 = {"text": "아무 노트", "history": ["시작"]}      # 바꾼 곳 4: 시작값을 변수에 담아 넣고
+print("최종 전표:", builder.compile().invoke(처음전표))
+print("내가 넘긴 리스트:", 처음전표["history"])            #            끝난 뒤 그 변수를 다시 본다</code></pre>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 위 코드를 실행했을 때 제 화면에 찍힌 출력이에요</span></p>
-    <pre><code>accept가 받은 verdict: None | history: ['receive', 'router']
-{'text': '아무 노트', 'history': ['receive', 'router']}</code></pre>
-    <p>출력 두 줄이 왜 저 모양인지 <strong>시간 순서</strong>로 풀어 볼게요. 라우터는 <code>receive</code>와 <code>accept</code> 사이에 끼어서 한 번 돌아요.</p>
-    <table>
-      <thead><tr><th>도는 순서</th><th>이때 한 일</th><th>전표 원본에 남은 것</th></tr></thead>
-      <tbody>
-        <tr><td>① 노드 <code>receive</code></td><td><code>{"history": ["receive"]}</code>를 돌려줘요</td><td><code>history</code> 칸에 <code>['receive']</code></td></tr>
-        <tr><td>② 라우터 <code>triage</code></td><td>전표 사본을 받아 <code>verdict</code> 칸을 적고, <code>history</code> 리스트에 <code>'router'</code>를 붙여요</td><td><code>history</code>만 <code>['receive', 'router']</code>로 바뀌고, <code>verdict</code> 칸은 <strong>생기지 않아요</strong></td></tr>
-        <tr><td>③ 노드 <code>accept</code></td><td>다시 만든 전표 사본을 받아 찍어 봐요</td><td>②에서 남은 그대로예요. 그래서 <code>verdict</code>가 <code>None</code>으로 찍혀요</td></tr>
-      </tbody>
-    </table>
-    <p>한 함수 안에 나란히 쓴 두 줄인데 한 줄은 사라지고 한 줄은 남았어요. 이건 LangGraph가 정한 규칙이 아니라 <strong>파이썬이 딕셔너리를 복사하는 방식</strong>이에요. 사본을 뜰 때 칸은 새로 만들지만 <strong>칸에 든 값까지 새로 만들지는 않아요</strong>. 글자나 숫자가 든 칸에는 값이 그대로 찍히고, 리스트가 든 칸에는 <strong>그 리스트가 놓인 자리</strong>가 찍혀요. 그래서 사본의 빈 칸에 새 글씨를 쓰면 사본에만 남지만, 사본에 적힌 자리를 따라가 그 리스트를 열어 고치면 원본이 보고 있던 리스트가 고쳐져요. langgraph 없이 네 줄로 재현돼요.</p>
+    <pre><code>accept가 본 history: ['시작', 'router']
+최종 전표: {'text': '아무 노트', 'history': ['시작', 'router']}
+내가 넘긴 리스트: ['시작', 'router']</code></pre>
+    <p>이번엔 <code>'router'</code>가 <strong>남았어요</strong>. 같은 라우터 안의, 비슷하게 생긴 한 줄인데 실험 1과 결과가 정반대예요. 마지막 줄은 더 이상해요. 그래프 바깥에 있는 제 변수 <code>처음전표</code>의 리스트까지 바뀌어 있어요. 그래프에 넣기만 했는데요.</p>
+    <p>이건 LangGraph가 정한 규칙이 아니라 <strong>파이썬이 딕셔너리를 복사하는 방식</strong>이에요. 사본을 뜰 때 칸은 새로 만들지만, <strong>칸에 든 값까지 새로 만들지는 않아요</strong>. 글자나 숫자가 든 칸에는 값이 그대로 찍히고, 리스트가 든 칸에는 <strong>그 리스트가 놓인 자리</strong>가 찍혀요. langgraph 없이 여섯 줄로 재현돼요.</p>
     <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— langgraph도, API 키도 필요 없어요</span></p>
-    <pre><code>원본 = {"text": "아무 노트", "history": ["receive"]}
+    <pre><code>원본 = {"text": "아무 노트", "history": ["시작"]}
 사본 = dict(원본)                          # LangGraph가 라우터에 건네는 전표 사본과 같은 모양
 
-사본["verdict"] = "라우터가 적은 판정"      # 실험 1: 사본의 새 칸에 적기
+사본["verdict"] = "라우터가 적은 판정"      # 실험 1: 사본에 없던 칸을 만들어 적기
 사본["history"].append("router")            # 실험 2: 사본이 가리키는 리스트 안을 고치기
 
-print("사본 :", 사본)
 print("원본 :", 원본)
 print("같은 리스트인가:", 사본["history"] is 원본["history"])</code></pre>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 위 코드를 실행했을 때 제 화면에 찍힌 출력이에요</span></p>
-    <pre><code>사본 : {'text': '아무 노트', 'history': ['receive', 'router'], 'verdict': '라우터가 적은 판정'}
-원본 : {'text': '아무 노트', 'history': ['receive', 'router']}
+    <pre><code>원본 : {'text': '아무 노트', 'history': ['시작', 'router']}
 같은 리스트인가: True</code></pre>
-    <p>마지막 줄의 <code>True</code>가 둘이 갈린 이유예요. 두 딕셔너리의 <code>history</code> 칸은 <strong>같은 리스트 하나</strong>를 가리키고 있어서, 어느 쪽으로 열어 고쳐도 같은 곳이 바뀌어요. 반대로 <code>verdict</code>는 사본에만 생긴 칸이라 원본은 그런 칸이 있었다는 것도 몰라요. 위 그래프에서 라우터가 건드린 리스트는 <code>receive</code>가 <code>{"history": ["receive"]}</code>로 돌려준 바로 그 리스트예요. 라우터가 전표에 적는 통로를 쓴 게 아니라, 노드가 두고 간 리스트를 옆에서 직접 고친 거예요. 그래서 최종 결과의 <code>history</code>에는 <code>'router'</code>가 들어가 있는데, <strong>누가 언제 넣었는지는 그래프 어디에도 안 남아요</strong>.</p>
-    <p>실험 3은 라우터 본문을 <code>return {"verdict": "라우터가 적은 판정"}</code> 한 줄로 바꿔서, 노드처럼 딕셔너리를 돌려주게 한 거예요. 세 결과를 모으면 이래요.</p>
+    <p>원본에는 <code>verdict</code>가 없는데 <code>'router'</code>는 들어가 있어요. 마지막 줄의 <code>True</code>가 이유예요. 두 딕셔너리의 <code>history</code> 칸은 <strong>같은 리스트 하나</strong>를 가리키고 있어서, 어느 쪽으로 열어 고치든 같은 곳이 바뀌어요. 반대로 <code>verdict</code>는 사본에만 생긴 칸이라 원본은 그런 칸이 있었다는 것도 몰라요. 그래프에서도 마찬가지라, 라우터는 전표에 적는 통로를 쓴 게 아니라 <strong>리스트를 옆에서 직접 고친</strong> 거예요. 그래서 <code>'router'</code>가 누구 손에 언제 들어갔는지는 그래프 어디에도 안 남아요.</p>
+
+    <p>마지막으로, 라우터를 아예 노드처럼 만들면 어떻게 될까요. 실험 1의 코드에서 라우터 본문 두 줄을 한 줄로 바꿔요.</p>
+    <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— 실험 1의 파일에서 triage 본문만 바꿔요</span></p>
+    <pre><code>def triage(state: Note):
+    return {"verdict": "라우터가 적은 판정"}   # 노드처럼 딕셔너리를 돌려준다</code></pre>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 제 화면에 찍힌 트레이스백의 마지막 세 줄이에요</span></p>
+    <pre><code>    r if isinstance(r, Send) else self.ends[r] for r in result
+                                  ~~~~~~~~~^^^
+TypeError: unhashable type: 'dict'</code></pre>
+    <p>이 트레이스백<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>은 <strong>LangGraph 안쪽 코드</strong>라 우리가 쓴 줄이 아니에요. 그래도 가운데 줄의 물결과 화살표가 어디서 터졌는지 짚어 줘요. <code>self.ends</code>가 목적지 번역표이고, <code>[r]</code>의 <code>r</code>이 <strong>라우터가 돌려준 값</strong>이에요. 우리가 돌려준 딕셔너리가 <strong>대괄호 안, 열쇠 자리</strong>에 들어간 거예요. 파이썬은 열쇠로 쓸 값에서 짧은 번호를 하나 뽑아 두고 그 번호로 찾아가는데, 리스트와 딕셔너리는 나중에 안이 바뀔 수 있어서 번호를 못 뽑아요. 그게 <code>unhashable</code>이라는 말이에요.</p>
+    <p>이 실험은 목적지를 <code>["accept"]</code>라는 <strong>리스트</strong>로 줬는데도 번역표에서 터졌어요. LangGraph가 리스트를 받으면 속으로 <code>{"accept": "accept"}</code>처럼 이름이 열쇠이자 값인 번역표로 바꿔 두기 때문이에요. 목적지를 리스트로 주든 <a href="#drill-label">②처럼 딕셔너리</a>로 주든, 라우터가 돌려준 값은 결국 열쇠로 쓰여요.</p>
+
+    <p>세 실험을 한 표로 모으면 이래요.</p>
     <table>
       <thead><tr><th>라우터 안에서 한 일</th><th>결과</th><th>왜 그런가</th></tr></thead>
       <tbody>
-        <tr><td>실험 1 — <code>state["verdict"] = ...</code>로 칸에 새 값 적기</td><td>사라짐. 다음 노드도, 최종 결과도 <code>verdict</code>가 없어요</td><td>라우터가 받는 State는 매번 새로 만든 딕셔너리(전표 사본)라서, 사본에 적은 글씨는 원본으로 안 가요</td></tr>
-        <tr><td>실험 2 — <code>state["history"].append(...)</code>로 리스트 안을 고치기</td><td>남음. <code>'router'</code>가 끼어들었어요</td><td>사본의 리스트 칸이 원본과 <strong>같은 리스트</strong>를 가리키고 있어서, 그 안을 고치면 원본까지 바뀌어요. LangGraph가 받아 준 변경이 아니라 새어 들어간 거예요</td></tr>
-        <tr><td>실험 3 — <code>{"verdict": ...}</code> 딕셔너리를 돌려주기</td><td>멈춤. <code>TypeError: unhashable type: 'dict'</code><sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup></td><td>라우터의 반환값은 목적지 목록에서 이름을 찾는 열쇠로 쓰이는데, 딕셔너리는 열쇠가 될 수 없는 자료형이에요</td></tr>
+        <tr><td>실험 1 — <code>state["verdict"] = ...</code>로 칸에 새 값 적기</td><td>사라짐. 다음 노드도, 최종 전표도 <code>verdict</code>가 없어요</td><td>라우터가 받은 전표는 매번 새로 뜬 사본이라, 사본에 적은 글씨는 원본으로 안 가요</td></tr>
+        <tr><td>실험 2 — <code>state["history"].append(...)</code>로 리스트 안을 고치기</td><td>남음. <code>'router'</code>가 끼어들었어요</td><td>사본의 리스트 칸이 원본과 <strong>같은 리스트</strong>를 가리켜서, 그 안을 고치면 원본까지 바뀌어요. LangGraph가 받아 준 변경이 아니라 새어 들어간 거예요</td></tr>
+        <tr><td>실험 3 — <code>{"verdict": ...}</code> 딕셔너리를 돌려주기</td><td>멈춤. <code>TypeError: unhashable type: 'dict'</code></td><td>라우터의 반환값은 목적지 번역표에서 이름을 찾는 열쇠로 쓰이는데, 딕셔너리는 열쇠가 될 수 없는 자료형이에요</td></tr>
       </tbody>
     </table>
-    <p>실험 3의 <code>TypeError</code>는 <a href="#drill-label">②의 번역표</a>를 떠올리면 읽혀요. <code>{"보류": "flag_too_short", "통과": "accept"}</code>에서 라우터의 반환값이 들어가는 자리는 <strong>열쇠 자리</strong>예요. 파이썬은 열쇠로 쓸 값에서 짧은 번호를 하나 뽑아 두고 그 번호로 찾아가는데, 리스트와 딕셔너리는 나중에 안이 바뀔 수 있어서 번호를 못 뽑아요. 그게 <code>unhashable</code>이라는 말이에요. 이 실험은 목적지를 <code>["accept"]</code>라는 리스트로 줬는데도 같은 에러가 났어요. LangGraph가 리스트를 받으면 속으로 <code>{"accept": "accept"}</code>처럼 이름이 열쇠이자 값인 번역표로 바꿔 두기 때문이에요. 목적지를 리스트로 주든 딕셔너리로 주든, 라우터가 돌려준 값은 결국 열쇠로 쓰여요.</p>
     <div class="key-point" id="key-router-read-only">
       <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
       <p>라우터가 돌려주는 값은 <strong>'다음에 갈 곳의 이름'</strong>으로만 읽혀요. 전표에 값을 적는 통로는 노드가 돌려주는 딕셔너리 하나뿐이에요. 그래서 라우터 안에서 전표를 고치면 적은 값이 사라지거나(실험 1), 기록 없이 몰래 새어 들어가거나(실험 2), 목적지를 못 찾고 멈춰요(실험 3). 라우터는 읽기만 하고, 적는 일은 노드에게 맡겨요.</p>
     </div>
-    <p>셋 중 제일 위험한 건 실험 2예요. 되는 것처럼 보여서 믿고 쓰게 되는데, 문자열이나 숫자 칸은 제자리에서 고칠 방법이 없어서 결국 실험 1처럼 새 값을 적게 되고, 그 값은 조용히 사라지거든요. 판정 결과를 남기고 싶으면 판정을 적는 노드를 따로 두면 돼요. 세 번째 갈래 문제의 <code>flag_too_long</code>이 딱 그런 노드예요.</p>
+    <p>셋 중 제일 위험한 건 실험 2예요. 되는 것처럼 보여서 믿고 쓰게 되는데, <code>verdict</code> 같은 글자 칸은 리스트처럼 제자리에서 고칠 방법이 없어서 결국 실험 1처럼 새 값을 적게 되고, 그 값은 조용히 사라지거든요. 판정 결과를 남기고 싶으면 판정을 적는 노드를 따로 두면 돼요. <a href="#drill-three-ways">문제 ①</a>의 <code>flag_too_long</code>이 딱 그런 노드예요. 라우터는 <code>"flag_too_long"</code>이라는 이름만 돌려주고, 전표에 <code>"분할 필요 — 3000자 초과"</code>를 적는 건 같은 이름의 노드가 했어요.</p>
 
     <h3>세 문제에서 남은 것</h3>
     <table>
