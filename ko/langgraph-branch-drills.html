@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>갈림길을 밀어붙인다 — 세 갈래·라벨·끝나지 않는 반복 (3) - Tigermorning</title>
+  <meta name="description" content="LangGraph 조건부 엣지를 강의 '더 해보기' 세 문제로 밀어붙입니다. 갈래를 셋으로 늘리고, 화살표에 라벨을 달고, 일부러 끝나지 않는 반복을 만들어 상한이 어디서 끊는지 봐요. 라우터 안에서 State를 고치면 어떻게 되는지도 세 가지 방법으로 직접 확인했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="갈림길을 밀어붙인다 — 세 갈래·라벨·끝나지 않는 반복 (3)">
+  <meta property="og:description" content="되돌아가는 선은 매 바퀴 State가 바뀌어야 끝나요. 안 바뀌면 기본 상한 10007스텝까지 같은 노드를 5천 번씩 돕니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/langgraph-branch-drills.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">갈림길을 밀어붙인다</span> — 세 갈래·라벨·끝나지 않는 반복 (3)</h1>
+    <p class="post-date">2026. 9. 11.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="langgraph-state-node-edge.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">흐름을 그림으로 짠다 — LangGraph의 State·Node·Edge (2)</span>
+    </a>
+
+    <p class="one-liner">조건부 엣지를 늘리고 라벨을 달고 되돌려 잇는 일은 전부 라우터가 돌려주는 글자와 목적지 목록을 한 글자도 어긋나지 않게 맞추는 작업이다.</p>
+
+    <div class="why-read" id="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>어디쯤인가</dt>
+        <dd><a href="posts.html#cat-agent-system">8단계</a> › <a href="posts.html#langgraph-team">에이전트 팀 꾸리기 — LangGraph</a> — 3번째 글 (전 7편)</dd>
+        <dt>뭐를 할 수 있나</dt>
+        <dd>갈래를 원하는 만큼 늘리고, 화살표에 한국어 라벨을 달아 그림에 이유가 보이게 하고, 되돌아가는 선이 끝나는 반복인지 아닌지를 코드만 보고 판단할 수 있어요. 라우터 안에서 State를 고치면 왜 안 되는지도 세 가지 결과로 확인해요.</dd>
+        <dt>왜 배우나</dt>
+        <dd>라우터가 돌려준 이름이 목적지 목록에 없으면, 그 갈래에 해당하는 입력이 <strong>처음 들어오는 날</strong>에야 터져요. 짧은 노트와 보통 노트로만 테스트하면 통과하고 넘어가요.</dd>
+        <dt>왜 중요한가</dt>
+        <dd>State가 안 바뀌는 되돌아가기 선은 기본 상한(10007스텝)까지 같은 노드를 5천 번씩 돌아요. 그 노드가 LLM을 부르는 노드였다면 호출이 만 번 가까이 쌓이고, 중간 결과는 예외와 함께 사라져요.</dd>
+        <dt>어디에 쓰나</dt>
+        <dd>입력 종류마다 다른 담당에게 보내는 라우팅 · 검사에 떨어지면 고쳐 쓰는 반복 · 남이 만든 그래프에서 무한 반복 위험 찾기</dd>
+      </dl>
+    </div>
+
+    <p><a href="langgraph-state-node-edge.html">지난 편</a>에서 조건부 엣지로 간 맞추기 그래프를 만들었어요. 강의에는 그 실습 뒤에 "더 해보기" 문제가 세 개 붙어 있었는데, 이번 편은 그 세 문제를 푸는 편이에요. 셋 다 <strong>갈림길을 한 번씩 더 밀어붙이는</strong> 문제예요. 갈래를 늘리면 어디까지 되는지, 화살표에 이유를 적을 수 있는지, 되돌아가는 선을 아무 데나 그으면 어떻게 되는지요.</p>
+    <p>이번 편도 <strong>API 키 없이</strong> 돌아가요. 길은 전부 글자 수를 세는 규칙이 골라요. 라우터 자리에 모델을 앉히는 건 <a href="langgraph-branches-and-tool-loop.html">다음 편</a>이에요.</p>
+    <p>세 문제가 왜 필요한지부터 짚을게요. 갈래를 늘리는 건 <a href="langgraph-five-workflow-patterns.html#routing">6편의 라우팅</a>(입력 종류마다 다른 담당에게 보내기)의 뼈대이고, 되돌아가는 선은 <a href="langgraph-patterns-orchestrator-evaluator.html#evaluator">7편의 평가자-최적화자</a>(통과할 때까지 고쳐 쓰기)의 뼈대예요. 여기서 손으로 그어 보는 선이 나중에 패턴이라는 이름으로 다시 나와요.</p>
+
+    <h2 id="analogy"><span class="hl">비유</span> — 검수대에 갈래가 하나 더 생긴 날</h2>
+    <p><a href="langgraph-state-node-edge.html#analogy">지난 편의 그 주방</a>이에요. 검수대 직원은 원래 두 가지만 했어요. 간이 맞으면 홀로 내보내고, 싱거우면 화구로 되돌려요.</p>
+    <p>어느 날 세 번째 경우가 생겼어요. 간은 맞는데 <strong>한 접시에 담기엔 양이 너무 많은</strong> 요리가 올라온 거예요. 사장님은 소분대를 새로 놓고, 검수대에서 그리로 가는 화살표를 동선표에 하나 더 그었어요. 그런데 동선표의 화살표에 아무 글자도 없으니 나중에 보는 사람은 어느 선이 무슨 경우인지 몰라요. 그래서 화살표마다 '통과', '보류', '양 많음'이라고 이유를 적어 뒀어요.</p>
+    <p>마지막으로 사고가 하나 있었어요. 검수대가 싱거운 요리를 화구로 되돌려 보내면서 <strong>전표에 아무것도 안 적었어요</strong>. 화구 담당은 똑같은 접시를 똑같은 상태로 받아 그대로 다시 올려 보내고, 검수대는 또 싱겁다고 되돌려 보내요. 둘 다 성실히 일하는데 접시는 영원히 홀로 못 나가요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>검수대가 고를 수 있는 목적지 목록 (홀 · 화구 · 소분대)</td><td><code>add_conditional_edges</code>의 <strong>목적지 목록</strong> — 라우터가 돌려줄 수 있는 이름은 이 안에 있어야 해요</td></tr>
+        <tr><td>소분대를 새로 놓고 화살표를 하나 더 긋기</td><td><strong>갈래 늘리기</strong> — 노드를 더하고 목적지 목록에 이름을 더해요 (<a href="#drill-three-ways">문제 ①</a>)</td></tr>
+        <tr><td>화살표마다 '통과'·'보류'·'양 많음'이라고 이유 적기</td><td><strong>라벨</strong> — 목적지를 딕셔너리로 주면 그림의 화살표에 이유가 찍혀요 (<a href="#drill-label">문제 ②</a>)</td></tr>
+        <tr><td>검수대가 화구에게 — 전표에 아무것도 안 적고 되돌려 보내기</td><td><strong>State가 안 바뀌는 되돌아가기 선</strong> — 끝나지 않는 반복 (<a href="#drill-loop">문제 ③</a>)</td></tr>
+        <tr><td>검수대 직원이 전표에 직접 판정을 적으려 하기</td><td><strong>라우터가 State를 고치려는 시도</strong> — 적은 값이 사라져요 (<a href="#router-no-write">아래</a>)</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 검수대는 <strong>어디로 보낼지만</strong> 고르고, 전표에 적는 일도 요리를 바꾸는 일도 조리대(노드)의 몫이에요 — 그래서 되돌려 보낼 때는 조리대가 무언가를 바꿔 줘야 반복이 끝나요.</p>
+    <p>다만 여기서 비유가 끊기는 점이 있어요. 사람 직원이라면 세 번째로 같은 접시를 받았을 때 "어, 아까 그거네" 하고 알아채지만, <strong>그래프는 몇 바퀴째인지 스스로 세지 않아요</strong>. 바퀴 수를 세는 칸을 State에 두고 사람이 직접 세든지, 상한을 걸든지 해야 해요.</p>
+
+    <h2 id="big-picture"><span class="hl">전체 흐름</span> — 노트 분량 검사 그래프</h2>
+    <p>아래에서 만들 그래프를 먼저 볼게요. 학생이 올린 공부 노트를 받아 복습 문제를 낼 만할지 가르는 그래프예요. <strong>읽는 법:</strong> 점선은 라우터(<code>triage</code>)가 셋 중 <strong>하나만</strong> 고르는 선이고, 실선은 앞 노드가 끝나면 항상 지나가는 선이에요. 회색 상자 둘과 점선 하나는 <a href="#drill-three-ways">문제 ①</a>에서 새로 더할 것이고, 맨 아래 굵은 선은 <a href="#drill-loop">문제 ③</a>에서 일부러 그어 볼 되돌아가기 선이에요.</p>
+    <svg viewBox="0 0 760 340" role="img" aria-label="START에서 receive로 가고, receive의 라우터가 글자 수를 보고 accept·flag_too_long·flag_too_short 중 하나를 고르며, flag_too_long은 split_note로 이어지고, 문제 삼에서는 flag_too_short가 다시 receive로 돌아오는 노트 분량 검사 그래프">
+      <defs>
+        <marker id="lgd1" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+          <path d="M0,0 L9,4.5 L0,9 z" fill="var(--muted)"/>
+        </marker>
+        <marker id="lgd2" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+          <path d="M0,0 L9,4.5 L0,9 z" fill="var(--accent)"/>
+        </marker>
+      </defs>
+      <rect x="150" y="10" width="420" height="44" rx="8" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 4"/>
+      <text x="360" y="30" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">전표(State): text · verdict · parts</text>
+      <text x="360" y="46" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">되돌아가는 선이 끝나려면 이 칸 중 무언가가 매 바퀴 바뀌어야 해요</text>
+
+      <rect x="16" y="142" width="78" height="40" rx="20" fill="none" stroke="var(--border)"/>
+      <text x="55" y="167" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)">START</text>
+
+      <rect x="128" y="134" width="124" height="56" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="190" y="158" text-anchor="middle" font-family="var(--font-body)" font-size="14" fill="var(--accent)">receive</text>
+      <text x="190" y="177" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">접수 + 라우터</text>
+
+      <rect x="318" y="74" width="148" height="46" rx="8" fill="none" stroke="var(--border)"/>
+      <text x="392" y="93" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)">accept</text>
+      <text x="392" y="110" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">출제 가능</text>
+
+      <rect x="318" y="144" width="148" height="46" rx="8" fill="none" stroke="var(--muted)" stroke-dasharray="4 3"/>
+      <text x="392" y="163" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--muted)">flag_too_long</text>
+      <text x="392" y="180" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">①에서 추가</text>
+
+      <rect x="500" y="144" width="124" height="46" rx="8" fill="none" stroke="var(--muted)" stroke-dasharray="4 3"/>
+      <text x="562" y="163" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--muted)">split_note</text>
+      <text x="562" y="180" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">1000자씩 쪼개기</text>
+
+      <rect x="318" y="214" width="148" height="46" rx="8" fill="none" stroke="var(--border)"/>
+      <text x="392" y="233" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)">flag_too_short</text>
+      <text x="392" y="250" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">보류</text>
+
+      <rect x="664" y="142" width="76" height="40" rx="20" fill="none" stroke="var(--border)"/>
+      <text x="702" y="167" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)">END</text>
+
+      <line x1="94" y1="162" x2="124" y2="162" stroke="var(--muted)" stroke-width="2" marker-end="url(#lgd1)"/>
+      <line x1="252" y1="150" x2="314" y2="102" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#lgd1)"/>
+      <text x="258" y="112" font-family="var(--font-body)" font-size="11" fill="var(--muted)">통과</text>
+      <line x1="252" y1="162" x2="314" y2="164" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#lgd1)"/>
+      <text x="258" y="157" font-family="var(--font-body)" font-size="11" fill="var(--muted)">분할</text>
+      <line x1="252" y1="176" x2="314" y2="230" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#lgd1)"/>
+      <text x="258" y="222" font-family="var(--font-body)" font-size="11" fill="var(--muted)">보류</text>
+
+      <line x1="466" y1="167" x2="496" y2="167" stroke="var(--muted)" stroke-width="2" marker-end="url(#lgd1)"/>
+      <line x1="466" y1="94" x2="660" y2="152" stroke="var(--muted)" stroke-width="2" marker-end="url(#lgd1)"/>
+      <line x1="624" y1="167" x2="660" y2="164" stroke="var(--muted)" stroke-width="2" marker-end="url(#lgd1)"/>
+      <line x1="466" y1="234" x2="660" y2="178" stroke="var(--muted)" stroke-width="2" marker-end="url(#lgd1)"/>
+
+      <path d="M 392 260 L 392 300 L 190 300 L 190 194" fill="none" stroke="var(--accent)" stroke-width="2" marker-end="url(#lgd2)"/>
+      <text x="400" y="296" font-family="var(--font-body)" font-size="11" fill="var(--accent)">③ END 대신 여기로 되돌리면 — 아무것도 안 바뀌어 끝나지 않아요</text>
+    </svg>
+    <p>갈래 셋 가운데 <code>accept</code>와 <code>flag_too_short</code>만 있는 상태가 출발점이에요. 거기서 하나씩 밀어붙여 볼게요.</p>
+
+    <h2 id="branch-drills"><span class="hl">갈림길 더 밀어붙이기</span> — 세 갈래, 라벨, 일부러 만든 무한 반복</h2>
+    <p>강의에는 <a href="langgraph-state-node-edge.html#build-branch">조건부 엣지 실습</a>(지난 편의 간 맞추기) 뒤에 "더 해보기" 문제가 세 개 붙어 있었어요. 처음엔 강의 코드를 통째로 베껴 넣었더니 실행은 되는데, 무엇을 확인했는지는 하나도 남지 않았어요. 50줄 가운데 문제마다 실제로 바뀌는 건 두세 줄뿐인데, 그 두세 줄이 나머지 속에 묻혀 버렸거든요. 그래서 <a href="langgraph-state-node-edge.html#merge-rules">지난 편의 합치기 규칙 확인하기</a> 때처럼 <strong>한 번에 몇 줄만 바꾸고, 돌리기 전에 결과를 먼저 예상한 뒤</strong> 실행하는 식으로 다시 풀었어요.</p>
+
+    <h3>출발점 — 노트 분량 검사 그래프</h3>
+    <p>강의 예제는 학생이 올린 공부 노트를 받아, 복습 문제를 낼 만큼 내용이 충분한지 가르는 그래프였어요. 60자보다 짧으면 보강해 달라고 보류하고, 아니면 출제 대기열로 보내요. 구조는 그대로 두고 코드를 제 식으로 줄여 다시 짰어요.</p>
+    <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— langgraph 설치 후, API 키 없이 돌아가요</span></p>
+    <pre><code>from typing_extensions import TypedDict
+from langgraph.graph import StateGraph, START, END
+
+class Note(TypedDict):
+    text: str       # 올라온 노트 원문
+    verdict: str    # 판정 결과
+
+def receive(state: Note):
+    print(f"[receive] {len(state['text'])}자 노트 접수")
+    return {}                          # 바꾸는 칸이 없으면 빈 딕셔너리
+
+def triage(state: Note) -&gt; str:        # 라우터: 글자 수만 보고 다음 노드 이름을 돌려준다
+    if len(state["text"].strip()) &lt; 60:
+        return "flag_too_short"
+    return "accept"
+
+def flag_too_short(state: Note): return {"verdict": "보류 — 60자 미만이라 보강 필요"}
+def accept(state: Note):         return {"verdict": "출제 가능"}
+
+builder = StateGraph(Note)
+builder.add_node("receive", receive)
+builder.add_node("flag_too_short", flag_too_short)
+builder.add_node("accept", accept)
+builder.add_edge(START, "receive")
+builder.add_conditional_edges("receive", triage, ["flag_too_short", "accept"])
+builder.add_edge("flag_too_short", END)
+builder.add_edge("accept", END)
+graph = builder.compile()
+
+for text in ["State는 딕셔너리다.",
+             "State는 노드들이 함께 쓰는 딕셔너리다. 노드는 바꾼 칸만 돌려주고, 나머지 칸은 LangGraph가 그대로 남겨 둔다.",
+             "State는 딕셔너리다. " * 250]:        # 같은 문장 250번 = 3500자짜리 긴 노트
+    out = graph.invoke({"text": text})
+    print(" →", out["verdict"])</code></pre>
+    <p>돌리기 전에 예상해 보세요. 세 번째 노트(3500자)는 어떻게 판정될까요?</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 위 코드를 실행했을 때 제 화면에 찍힌 출력이에요</span></p>
+    <pre><code>[receive] 13자 노트 접수
+ → 보류 — 60자 미만이라 보강 필요
+[receive] 69자 노트 접수
+ → 출제 가능
+[receive] 3500자 노트 접수
+ → 출제 가능</code></pre>
+    <p>3500자짜리 노트도 '출제 가능'이에요. 갈래가 둘뿐이라 짧지만 않으면 무조건 통과예요. 문항 하나로는 다 덮을 수 없는 긴 노트를 걸러 낼 길이 그래프에 아예 없는 거예요. 첫 문제는 여기서 출발해요.</p>
+
+    <h3 id="drill-three-ways">① 세 번째 갈래 — 너무 긴 노트는 쪼개기</h3>
+    <p>3000자를 넘는 노트는 따로 빼서 1000자씩 쪼개기로 해요. 바꿀 곳은 네 군데예요. ⓐ 조각을 담을 칸, ⓑ 라우터의 판단 하나, ⓒ 새 노드 둘, ⓓ 목적지 목록의 이름 하나요.</p>
+    <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— 위 코드에서 이 부분만 더하거나 바꿔요</span></p>
+    <pre><code>class Note(TypedDict):
+    text: str
+    verdict: str
+    parts: list     # ⓐ 새 칸: 쪼갠 조각
+
+def triage(state: Note) -&gt; str:
+    n = len(state["text"].strip())
+    if n &lt; 60:
+        return "flag_too_short"
+    if n &gt; 3000:                       # ⓑ 판단 하나 추가
+        return "flag_too_long"
+    return "accept"
+
+def flag_too_long(state: Note): return {"verdict": "분할 필요 — 3000자 초과"}   # ⓒ 새 노드 둘
+def split_note(state: Note):
+    t = state["text"]
+    return {"parts": [t[i:i + 1000] for i in range(0, len(t), 1000)]}     # 1000자씩 자르기
+
+builder.add_node("flag_too_long", flag_too_long)
+builder.add_node("split_note", split_note)
+builder.add_conditional_edges("receive", triage,
+                              ["flag_too_short", "accept", "flag_too_long"])   # ⓓ 기존 줄을 이걸로 바꿔요
+builder.add_edge("flag_too_long", "split_note")    # 판정 다음엔 항상 쪼개기
+builder.add_edge("split_note", END)
+
+# 맨 아래 for 문: 목록은 그대로 두고 print 줄만 이렇게 바꾼 뒤, 그래프 그림을 찍는 줄을 더해요
+    print(" →", out["verdict"], "| 조각 길이:", [len(p) for p in out.get("parts", [])])
+print(graph.get_graph().draw_mermaid())</code></pre>
+    <p><code>flag_too_long</code>과 <code>split_note</code>를 둘로 나눈 데는 이유가 있어요. 목적지를 <strong>리스트</strong>로 주면 라우터가 돌려준 글자가 곧 노드 이름이어야 해요. 그래서 <code>"flag_too_long"</code>을 돌려주려면 같은 이름의 노드가 있어야 하고, 그 노드가 판정을 적은 뒤 실선을 따라 <code>split_note</code>로 넘겨요. 출력 줄의 <code>.get("parts", [])</code>는 <a href="langgraph-state-node-edge.html#merge-rules">지난 편에서 본</a> 대로, 짧은 노트처럼 <code>parts</code> 칸이 아예 생기지 않은 경우에 빈 목록을 대신 쓰려는 거예요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 제 화면에 찍힌 출력에서 긴 노트의 결과와 화살표 줄만 옮겼어요</span></p>
+    <pre><code>[receive] 3500자 노트 접수
+ → 분할 필요 — 3000자 초과 | 조각 길이: [1000, 1000, 1000, 500]
+
+__start__ --&gt; receive;
+flag_too_long --&gt; split_note;
+receive -.-&gt; accept;
+receive -.-&gt; flag_too_long;
+receive -.-&gt; flag_too_short;
+accept --&gt; __end__;
+flag_too_short --&gt; __end__;
+split_note --&gt; __end__;</code></pre>
+    <p><code>receive</code>에서 나가는 점선이 셋이 됐어요(실선·점선 읽는 법은 <a href="langgraph-state-node-edge.html#build-branch">지난 편 ②</a>에서 봤어요). 목적지 목록에 이름을 더하는 만큼 갈래가 늘어나요. 그리고 <code>flag_too_long --&gt; split_note</code>는 실선이에요. 라우터가 고르는 길은 점선, 판정 뒤에 무조건 가는 길은 실선이라는 게 그림에 그대로 드러나요.</p>
+    <p>이름을 한 군데라도 안 맞추면 어떻게 되는지도 일부러 틀려 봤어요.</p>
+    <table>
+      <thead><tr><th>일부러 한 실수</th><th>나온 에러</th><th>언제 드러나나</th></tr></thead>
+      <tbody>
+        <tr><td>라우터에만 <code>"flag_too_long"</code>을 추가하고, 목적지 목록과 새 노드는 그대로 둠</td><td><code>KeyError: 'flag_too_long'</code></td><td>실행 도중, <strong>긴 노트가 실제로 들어왔을 때만</strong>이에요. 짧은 노트와 보통 노트는 멀쩡히 판정돼요</td></tr>
+        <tr><td>목적지 목록에는 적었는데 <code>add_node("flag_too_long", ...)</code>를 빠뜨림</td><td><code>ValueError: At 'receive' node, 'triage' branch found unknown target 'flag_too_long'</code><sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup></td><td><code>compile()</code>하는 순간이에요. 노트를 하나도 넣기 전에 멈춰요</td></tr>
+      </tbody>
+    </table>
+    <p>무서운 건 첫 번째예요. 테스트 삼아 짧은 노트와 보통 노트만 넣어 보면 아무 문제 없이 돌아가다가, 긴 노트가 처음 들어오는 날에야 터져요. 게다가 <a href="langgraph-state-node-edge.html#merge-rules">트레이스백</a> 맨 아래에 <code>During task with name 'receive'</code>라고 찍혀서 <code>receive</code> 노드를 의심하게 되는데, 범인은 <code>receive</code>에 붙어서 도는 라우터예요. 라우터가 돌려줄 수 있는 이름과 목적지 목록이 한 글자도 다르지 않은지는 사람이 맞춰야 해요.</p>
+
+    <h3 id="drill-label">② 라벨 붙이기 — 화살표에 이유 적기</h3>
+    <p>이번엔 라우터가 노드 이름 대신 <code>"보류"</code>·<code>"통과"</code>·<code>"분할"</code> 같은 라벨을 돌려주게 하고, 목적지를 리스트 대신 <strong>딕셔너리</strong>로 줘요. 딕셔너리는 "이 라벨이 오면 이 노드로"라는 번역표예요.</p>
+    <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— ①까지 고친 코드에서 라우터와 add_conditional_edges 줄만 바꿔요</span></p>
+    <pre><code>def triage(state: Note) -&gt; str:
+    n = len(state["text"].strip())
+    if n &lt; 60:
+        return "보류"                  # 노드 이름 대신 라벨을 돌려준다
+    if n &gt; 3000:
+        return "분할"
+    return "통과"
+
+builder.add_conditional_edges("receive", triage,
+    {"보류": "flag_too_short", "통과": "accept", "분할": "flag_too_long"})   # 라벨 → 노드 이름 번역표</code></pre>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 제 화면에 찍힌 draw_mermaid() 출력 중 점선 세 줄이에요</span></p>
+    <pre><code>receive -. &amp;nbsp;통과&amp;nbsp; .-&gt; accept;
+receive -. &amp;nbsp;분할&amp;nbsp; .-&gt; flag_too_long;
+receive -. &amp;nbsp;보류&amp;nbsp; .-&gt; flag_too_short;</code></pre>
+    <p>판정 결과는 ①과 똑같은데, 점선 화살표 가운데에 라벨이 끼어들었어요. <code>&amp;nbsp;</code>는 HTML에서 띄어쓰기 한 칸을 뜻하는 기호라서, 이 글자를 GitHub나 Notion에 붙여 그림으로 그리면 화살표 위에 '보류', '통과', '분할'만 보여요. ①에서 화살표에 라벨이 없었던 건 라벨과 노드 이름이 같아서 생략됐기 때문이에요. 노드 이름은 영문으로 두고, 사람이 읽을 라벨만 한국어로 다는 절충이에요.</p>
+    <p>여기서 두 가지에 걸려 넘어지기 쉬워요.</p>
+    <ul>
+      <li><strong>갈림길을 두 번 붙이기.</strong> 주피터나 <a href="why-gpu-and-colab-cli.html">Colab</a>처럼 코드를 칸 단위로 나눠 돌리는 노트북에서, 원래 코드를 이미 돌린 뒤 바뀐 <code>add_conditional_edges</code> 한 줄만 새 칸에 붙여 실행하면 <code>ValueError: Branch with name `triage` already exists for node `receive`</code>가 나요. 같은 <code>builder</code>의 같은 출발 노드에 같은 라우터로 갈림길을 두 번 붙였다는 뜻이에요. <code>builder = StateGraph(Note)</code>부터 다시 만드는 칸 전체를 돌려야 해요.</li>
+      <li><strong>번역표에 없는 라벨.</strong> 라우터가 번역표에 없는 <code>"합격"</code>을 돌려주게 해 봤더니, ①의 첫 번째 실수와 같은 <code>KeyError: '합격'</code>이 났어요. 라벨을 바꿀 땐 라우터와 딕셔너리를 같이 고쳐요.</li>
+    </ul>
+
+    <h3 id="drill-loop">③ 일부러 무한 반복 — 되돌아가는데 아무것도 안 바뀌면</h3>
+    <p><code>flag_too_short</code>에서 <code>END</code>로 가던 선을 <code>receive</code>로 돌려요. 짧은 노트를 '다시 접수'시키는 거예요. 돌리기 전에 예상해 보세요. 13자 노트를 넣으면 몇 번 만에 끝날까요?</p>
+    <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— ②까지 고친 코드에서 엣지 한 줄을 바꾸고, 맨 아래 for 문을 이 한 줄로 바꿔요</span></p>
+    <pre><code>builder.add_edge("flag_too_short", "receive")    # END로 가던 선을 처음으로 되돌린다
+
+graph.invoke({"text": "State는 딕셔너리다."}, {"recursion_limit": 6})</code></pre>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 제 화면에 찍힌 출력이에요. 에러 앞의 langgraph 내부 경로는 생략했어요</span></p>
+    <pre><code>[receive] 13자 노트 접수
+[receive] 13자 노트 접수
+[receive] 13자 노트 접수
+Traceback (most recent call last):
+  ... (langgraph 내부 경로 생략) ...
+langgraph.errors.GraphRecursionError: Recursion limit of 6 reached without hitting a stop condition. You can increase the limit by setting the `recursion_limit` config key.
+For troubleshooting, visit: https://docs.langchain.com/oss/python/langgraph/errors/GRAPH_RECURSION_LIMIT</code></pre>
+    <p>끝나지 않아요. <code>receive</code>가 세 번 찍혔고, 그 사이사이 <code>flag_too_short</code>도 세 번 돌았어요(출력하는 줄이 없는 노드라 안 보일 뿐이에요). 이 그래프처럼 노드가 한 줄로 이어서 돌 때는 노드 한 번 실행이 스텝 하나라서, 3 + 3 = 6스텝에서 끊긴 거예요(여러 노드가 한 스텝에 동시에 도는 경우는 <a href="langgraph-five-workflow-patterns.html#parallel">6편 병렬화의 슈퍼스텝</a>에서 봐요). <code>draw_mermaid()</code>를 찍어 보면 <code>flag_too_short --&gt; receive;</code>라는 실선이 새로 생겨 있어요.</p>
+    <p>그런데 <a href="langgraph-state-node-edge.html#build-branch">지난 편의 간 맞추기 그래프</a>도 되돌아가는 선이 있었는데 그건 끝났잖아요. 차이는 <strong>한 바퀴 돌 때마다 State가 바뀌느냐</strong>예요. 간 맞추기에서는 <code>add_salt</code>가 돌 때마다 <code>salt</code>를 1씩 올려서 언젠가 3에 닿아요. 여기서는 되돌아가는 동안 <code>text</code>를 고치는 노드가 하나도 없어요. 똑같은 13자 노트를 똑같은 라우터가 똑같이 판정하니, 몇 바퀴를 돌아도 같은 길이에요. 되돌아가는 선이 의미가 있으려면 소금이든, 시도 횟수든, 고쳐 쓴 초안이든 매 바퀴 무언가가 달라져야 해요.</p>
+    <p><code>recursion_limit</code>을 빼고 기본값으로 돌려 봤더니 <code>receive</code>가 5,004번, <code>flag_too_short</code>가 5,003번 돈 뒤에야 10007스텝에서 멈췄어요. 이 노드들이 LLM을 부르는 노드였다면 호출이 만 번 가까이 쌓였을 거예요. <a href="#loop-choice">아래 '나쁜 선택 vs 좋은 선택'</a>의 정상 출구가 왜 필요한지 이 숫자가 말해 줘요.</p>
+
+    <h3 id="router-no-write">라우터는 길만 고른다 — 전표에 직접 적으면?</h3>
+    <p>위의 <code>triage()</code>는 전표를 읽기만 하고 아무것도 고치지 않았어요. 그럼 라우터 안에서 전표를 고치면 어떻게 될까요? 강의가 던진 질문인데, 저는 처음에 답을 몰라서 라우터에서 전표를 고치는 방법 세 가지를 직접 해 봤어요.</p>
+    <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— langgraph 설치 후, API 키 없이 돌아가요</span></p>
+    <pre><code>from typing_extensions import TypedDict
+from langgraph.graph import StateGraph, START, END
+
+class Note(TypedDict):
+    text: str
+    verdict: str
+    history: list   # 거쳐 간 곳 기록
+
+def receive(state: Note): return {"history": ["receive"]}
+def accept(state: Note):
+    print("accept가 받은 verdict:", state.get("verdict"), "| history:", state["history"])
+    return {}
+
+def triage(state: Note) -&gt; str:
+    state["verdict"] = "라우터가 적은 판정"   # 실험 1: 칸에 새 값 적기
+    state["history"].append("router")        # 실험 2: 리스트 안을 직접 고치기
+    return "accept"
+
+builder = StateGraph(Note)
+builder.add_node("receive", receive)
+builder.add_node("accept", accept)
+builder.add_edge(START, "receive")
+builder.add_conditional_edges("receive", triage, ["accept"])
+builder.add_edge("accept", END)
+print(builder.compile().invoke({"text": "아무 노트"}))</code></pre>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 위 코드를 실행했을 때 제 화면에 찍힌 출력이에요</span></p>
+    <pre><code>accept가 받은 verdict: None | history: ['receive', 'router']
+{'text': '아무 노트', 'history': ['receive', 'router']}</code></pre>
+    <p>실험 3은 라우터 본문을 <code>return {"verdict": "라우터가 적은 판정"}</code> 한 줄로 바꿔서, 노드처럼 딕셔너리를 돌려주게 한 거예요. 세 결과를 모으면 이래요.</p>
+    <table>
+      <thead><tr><th>라우터 안에서 한 일</th><th>결과</th><th>왜 그런가</th></tr></thead>
+      <tbody>
+        <tr><td>실험 1 — <code>state["verdict"] = ...</code>로 칸에 새 값 적기</td><td>사라짐. 다음 노드도, 최종 결과도 <code>verdict</code>가 없어요</td><td>라우터가 받는 State는 매번 새로 만든 딕셔너리(전표 사본)라서, 사본에 적은 글씨는 원본으로 안 가요</td></tr>
+        <tr><td>실험 2 — <code>state["history"].append(...)</code>로 리스트 안을 고치기</td><td>남음. <code>'router'</code>가 끼어들었어요</td><td>사본의 리스트 칸이 원본과 <strong>같은 리스트</strong>를 가리키고 있어서, 그 안을 고치면 원본까지 바뀌어요. LangGraph가 받아 준 변경이 아니라 새어 들어간 거예요</td></tr>
+        <tr><td>실험 3 — <code>{"verdict": ...}</code> 딕셔너리를 돌려주기</td><td>멈춤. <code>TypeError: unhashable type: 'dict'</code><sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup></td><td>라우터의 반환값은 목적지 목록에서 이름을 찾는 열쇠로 쓰이는데, 딕셔너리는 열쇠가 될 수 없는 자료형이에요</td></tr>
+      </tbody>
+    </table>
+    <div class="key-point" id="key-router-read-only">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>4강에서 짚은 내용</p>
+      <p>라우터가 돌려주는 값은 <strong>'다음에 갈 곳의 이름'</strong>으로만 읽혀요. 전표에 값을 적는 통로는 노드가 돌려주는 딕셔너리 하나뿐이에요. 그래서 라우터 안에서 전표를 고치면 적은 값이 사라지거나(실험 1), 기록 없이 몰래 새어 들어가거나(실험 2), 목적지를 못 찾고 멈춰요(실험 3). 라우터는 읽기만 하고, 적는 일은 노드에게 맡겨요.</p>
+    </div>
+    <p>셋 중 제일 위험한 건 실험 2예요. 되는 것처럼 보여서 믿고 쓰게 되는데, 문자열이나 숫자 칸은 제자리에서 고칠 방법이 없어서 결국 실험 1처럼 새 값을 적게 되고, 그 값은 조용히 사라지거든요. 판정 결과를 남기고 싶으면 판정을 적는 노드를 따로 두면 돼요. 세 번째 갈래 문제의 <code>flag_too_long</code>이 딱 그런 노드예요.</p>
+
+    <h3>세 문제에서 남은 것</h3>
+    <table>
+      <thead><tr><th>문제</th><th>바꾼 곳</th><th>확인한 것</th></tr></thead>
+      <tbody>
+        <tr><td>① 세 번째 갈래</td><td>라우터에 판단 하나, 목적지 목록에 이름 하나, 노드 둘</td><td>갈래는 필요한 만큼 늘릴 수 있어요. 대신 라우터가 돌려줄 이름과 목적지 목록은 사람이 맞춰야 해요</td></tr>
+        <tr><td>② 라벨</td><td>라우터의 반환값, 목적지를 리스트에서 딕셔너리로</td><td>라벨이 노드 이름과 다르면 그림의 화살표에 갈래의 이유가 적혀요</td></tr>
+        <tr><td>③ 무한 반복</td><td>선 하나를 <code>END</code>에서 <code>receive</code>로</td><td>되돌아가는 선은 매 바퀴 State가 바뀌어야 끝나요. 상한은 기본값에 맡기지 말고 직접 걸어요</td></tr>
+        <tr><td>라우터가 전표에 적기</td><td>라우터 안에서 State 고치기</td><td>적은 값은 사라지거나 몰래 새어 들어가요. 전표에 적는 건 노드의 일이에요</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="loop-choice"><span class="hl">나쁜 선택 vs 좋은 선택</span> — 되돌아가는 선을 그을 때</h2>
+    <p>같은 주방에서, 검수대가 퇴짜 놓은 요리를 화구로 되돌려 보내는 선을 그린다고 해 볼게요.</p>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad"><strong>무엇을 했나:</strong> <code>flag_too_short</code>에서 <code>END</code>로 가던 선을 <code>receive</code>로 돌려 "다시 접수"시켰어요. 되돌아가는 동안 <code>text</code>를 고치는 노드는 하나도 두지 않았고, 멈추는 건 상한에 맡겼어요.<br><br><strong>무슨 일이 생기나:</strong> 똑같은 13자 노트를 똑같은 라우터가 똑같이 판정하니 몇 바퀴를 돌아도 같은 길이에요. 기본값으로 돌리면 <code>receive</code> 5,004번, <code>flag_too_short</code> 5,003번을 돈 뒤 10007스텝에서 <code>GraphRecursionError</code>로 끊겨요. 그 노드가 LLM을 부르는 노드였다면 호출이 만 번 가까이 나갔고, 결과는 예외와 함께 사라져요.</td>
+          <td class="choice-good"><strong>무엇을 했나:</strong> 되돌리기 전에 <strong>무엇이 바뀌는지</strong>부터 정했어요. "보강 요청을 보내고 학생이 고쳐 올린 <code>text</code>를 받는 노드"를 사이에 두거나, 그게 없으면 <code>tries</code> 칸을 세는 노드를 두고 상한을 넘으면 사람에게 넘기는 <strong>정상 출구</strong>를 그렸어요.<br><br><strong>무슨 일이 생기나:</strong> 매 바퀴 State가 달라지니 언젠가 판정이 바뀌고, 안 바뀌어도 정상 출구로 빠져 결과가 돌아와요. <code>verdict</code> 칸에 "보강 요청 3회 초과"가 남아서 <strong>왜 덜 끝났는지</strong>가 드러나요.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>정리하면 되돌아가는 선을 그을 때 물을 건 하나예요. <strong>"이 바퀴에서 전표의 무엇이 바뀌나?"</strong> 답이 "없음"이면 그건 반복이 아니라 무한 루프예요.</p>
+
+    <h2><span class="hl">이번 편의 수치</span></h2>
+    <table>
+      <thead><tr><th>항목</th><th>값</th><th>조건·출처</th></tr></thead>
+      <tbody>
+        <tr><td>노트 분량 검사 예제의 3500자 노트</td><td>두 갈래일 때 '출제 가능' → 세 갈래로 바꾼 뒤 1000자씩 4조각 (1000 · 1000 · 1000 · 500)</td><td>제 예제, 60자 미만 보류 · 3000자 초과 분할 기준 (<a href="#drill-three-ways">문제 ①</a>)</td></tr>
+        <tr><td>State가 안 바뀌는 되돌아가기 선에서 돈 노드 수</td><td>상한 6: <code>receive</code> 3번 + <code>flag_too_short</code> 3번 · 상한을 안 줬을 때: 5,004번 + 5,003번</td><td>제 노트 예제, langgraph 1.2.11, 13자 노트 하나를 넣은 경우 (<a href="#drill-loop">문제 ③</a>)</td></tr>
+        <tr><td><code>recursion_limit</code> 기본값</td><td>10007스텝</td><td>langgraph 1.2 이후(1.0.0은 25, 1.1.0은 10000). 제가 설치한 1.2.11의 소스 코드에서 확인 (<a href="langgraph-state-node-edge.html#build-branch">2편 ②</a>)</td></tr>
+        <tr><td>라우터에서 State를 고쳐 본 세 가지 방법 중 값이 남은 경우</td><td>1가지 (리스트 안을 <code>append</code>로 고친 실험 2만)</td><td>제 실험. 나머지 둘은 값이 사라지거나 <code>TypeError</code> (<a href="#router-no-write">라우터는 길만 고른다</a>)</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
+    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 강의 4강이 퀴즈로 다시 짚은 내용이에요. 1~2강 것은 <a href="langgraph-what-and-why.html#key-recap">1편</a>, 3강 것은 <a href="langgraph-state-node-edge.html#key-recap">2편</a>, 5강 것은 <a href="langgraph-branches-and-tool-loop.html#key-recap">4편</a>, 6~12강 것은 <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a>과 <a href="langgraph-patterns-orchestrator-evaluator.html#key-recap">7편</a>의 같은 목록에 있어요.</p>
+    <ul class="key-recap">
+      <li><a href="#key-router-read-only">라우터는 길만 고르고, 전표에 적는 건 노드</a> (4강)</li>
+    </ul>
+
+    <h2><span class="hl">다음은</span></h2>
+    <p>여기까지는 길을 전부 규칙이 골랐어요. 글자 수를 세는 <code>if</code>문이 라우터였으니까요. <a href="langgraph-branches-and-tool-loop.html">다음 편</a>에서는 그 라우터 자리에 <strong>모델</strong>을 앉혀요. 모델이 "이 질문에 답하려면 재고를 조회해야겠다"고 판단하면 도구를 부르는 쪽으로, 다 알았으면 답을 쓰는 쪽으로 가는 루프를 조립해요. <a href="langgraph-what-and-why.html#big-picture">1편의 자율성 눈금자</a>에서 한 칸 오른쪽으로 옮기는 거예요.</p>
+
+    <h2>함께 읽으면 좋은 글</h2>
+    <ul>
+      <li><a href="langgraph-state-node-edge.html">흐름을 그림으로 짠다 — LangGraph의 State·Node·Edge</a> — 이 편이 밀어붙이는 조건부 엣지를 처음 그은 앞 편이에요.</li>
+      <li><a href="n8n-agent-delegation-and-if-node.html">코딩 에이전트에게 흐름을 맡기고, IF 노드로 갈림길 만들기</a> — 같은 갈림길을 n8n 화면에서 만든 글이라, 코드와 화면을 나란히 보면 좋아요.</li>
+      <li><a href="my-harness-flow-and-state.html">끝날 때까지 따라가기 — 실행 흐름·상태·승인과 종료 조건</a> — "중단을 완료로 표시하지 말라", 즉 반복의 정상 출구를 설계하는 이야기를 먼저 다룬 글이에요.</li>
+    </ul>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">ValueError — 값의 자료형은 맞지만 그 내용이 허용되지 않을 때 파이썬이 내는 에러로, 여기서는 목적지 목록에 적힌 노드 이름이 그래프에 없다는 뜻이에요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">TypeError — 그 자리에 쓸 수 없는 자료형의 값이 들어왔을 때 파이썬이 내는 에러예요. <a href="#fnref2">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <h3 id="series-list">"에이전트 팀 꾸리기 — LangGraph" 시리즈</h3>
+    <a class="post-nav" href="langgraph-what-and-why.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">길을 누가 정하나 — LangGraph와 워크플로·에이전트</span>
+    </a>
+    <a class="post-nav" href="langgraph-state-node-edge.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">흐름을 그림으로 짠다 — LangGraph의 State·Node·Edge</span>
+    </a>
+    <p class="post-date">(3) 갈림길을 밀어붙인다 — 세 갈래·라벨·끝나지 않는 반복 (이 글)</p>
+    <a class="post-nav" href="langgraph-branches-and-tool-loop.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">모델이 다음 길을 고르게 한다 — 도구를 쥐여 주는 루프</span>
+    </a>
+    <a class="post-nav" href="langgraph-env-troubleshooting.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">.env가 안 읽혔던 네 겹의 이유 — 강의 화면에서 API 키 넣기</span>
+    </a>
+    <a class="post-nav" href="langgraph-five-workflow-patterns.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">다섯 가지 흐름 모양 ① — 체이닝·라우팅·병렬화</span>
+    </a>
+    <a class="post-nav" href="langgraph-patterns-orchestrator-evaluator.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">다섯 가지 흐름 모양 ② — 오케스트레이터-워커·평가자-최적화자</span>
+    </a>
+
+    <a class="post-nav" href="langgraph-branches-and-tool-loop.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">모델이 다음 길을 고르게 한다 — 도구를 쥐여 주는 루프</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
