@@ -62,6 +62,7 @@
     <p>사이드바의 여덟 단계는 발행일이 아니라 <strong>먼저 알아야 다음이 읽히는 순서</strong>로 놓여 있어요. 웹이 어떻게 돌아가는지 모르면 AI 이야기도 비유로만 남고, 도구를 한 번도 안 써 보면 원리 이야기가 주문처럼 들리거든요. 그래서 <strong>2단계에서 손으로 먼저 써 보고 3단계에서 안쪽을 엽니다.</strong> 처음이시면 <a href="start.html">여기서부터 시작</a>에서 문 하나만 고르면 돼요.</p>
 
     <figure class="tm-diagram">
+      <div class="diagram-scroll" style="--diagram-min: 770px">
       <svg viewBox="0 0 700 890" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="tm-ov-title">
         <title id="tm-ov-title">1단계 웹과 컴퓨터부터 8단계 에이전트를 굴리는 판까지 여덟 단계가 쌓이는 순서</title>
         <defs>
@@ -126,6 +127,7 @@
           <text class="tm-tag" x="350" y="850">LangGraph · 멀티 에이전트 · OpenClaw 게이트웨이 · 하네스 보는 법 · 하네스 만들기</text>
         </g></a>
       </svg>
+      </div>
       <figcaption>박스를 누르면 그 단계로 가요. 단계가 올라갈수록 사전 지식이 더 필요해요. &ldquo;보충수업 책장&rdquo;은 이 순서에 안 묶여 있어요 — 아무 때나 곁들이는 참고 자료예요.</figcaption>
     </figure>
 
@@ -133,6 +135,7 @@
     <p>"LLM 그대로 물어서 안 되면 few-shot, 그것도 안 되면 RAG, 그것도 안 되면 파인튜닝" — 이 블로그에서 그 사다리를 밟은 글은 이거예요. 문제가 더 클수록 손이 더 많이 가는 오른쪽 칸으로 옮겨가요.</p>
 
     <figure class="tm-diagram">
+      <div class="diagram-scroll" style="--diagram-min: 840px">
       <svg viewBox="0 0 764 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="tm-a-title">
         <title id="tm-a-title">프롬프트에서 지시 설계, RAG, 파인튜닝으로 넘어가는 사다리</title>
         <defs>
@@ -172,6 +175,7 @@
           <text class="tm-tag" x="673" y="78">파인튜닝</text>
         </g></a>
       </svg>
+      </div>
       <figcaption>프롬프트 → 지시 설계 → RAG → 파인튜닝. 문맥으로 되면 ③에서 멈추고, 모델 자체가 틀렸으면 ④로 가요.</figcaption>
     </figure>
 
@@ -179,6 +183,7 @@
     <p>API로도 충분한데, 내 컴퓨터에서 돌리고 싶어지는 순간부터 막히는 지점이 하나씩 늘어요. 그 순서예요.</p>
 
     <figure class="tm-diagram">
+      <div class="diagram-scroll" style="--diagram-min: 840px">
       <svg viewBox="0 0 764 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="tm-b-title">
         <title id="tm-b-title">API 호출에서 로컬 실행, 양자화, 계산으로 넘어가는 사다리</title>
         <defs>
@@ -218,6 +223,7 @@
           <text class="tm-tag" x="673" y="78">VRAM·비용</text>
         </g></a>
       </svg>
+      </div>
       <figcaption>API → 로컬 실행 → 양자화 → VRAM·비용 계산. 마지막 칸은 "그래서 되냐 안 되냐"가 아니라 "그래서 할 만하냐"를 물어요.</figcaption>
     </figure>
 
@@ -225,6 +231,7 @@
     <p>한 번 시키고 끝나는 일과 매주 반복되는 일은 맡기는 방법이 달라져요. 반복될수록, 다른 데이터가 필요할수록, 일이 커질수록 오른쪽 칸이에요. 도구와 MCP까지 쥐여 줬는데도 한 번에 안 끝나면, 에이전트를 여럿 두기 전에 먼저 <a href="langgraph-state-node-edge.html">일의 순서를 코드로 그려 줘요</a>(⑤ 워크플로). 가장 단순한 방법부터 쓰고 복잡도는 필요할 때만 더하라는 Anthropic의 권고와 같은 순서예요.</p>
 
     <figure class="tm-diagram">
+      <div class="diagram-scroll" style="--diagram-min: 960px">
       <svg viewBox="0 0 1152 140" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="tm-c-title">
         <title id="tm-c-title">프롬프트에서 스킬, 도구, MCP, 워크플로, 멀티 에이전트로 넘어가는 사다리</title>
         <defs>
@@ -280,6 +287,7 @@
           <text class="tm-tag" x="1061" y="90">멀티 에이전트</text>
         </g></a>
       </svg>
+      </div>
       <figcaption>프롬프트 → 규칙 파일 → 도구 → MCP → 워크플로 → 멀티 에이전트. 칸이 늘어날수록 내가 매번 챙길 일도 늘어요.</figcaption>
     </figure>
 
@@ -287,6 +295,7 @@
     <p>새 에이전트 도구를 볼 때 기능표부터 비교하지 말라고 <a href="harness-observation-and-feature-map.html">하네스 시리즈</a>에서 배웠어요. 그 순서를 사다리로 그리면 이래요.</p>
 
     <figure class="tm-diagram">
+      <div class="diagram-scroll" style="--diagram-min: 840px">
       <svg viewBox="0 0 764 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="tm-d-title">
         <title id="tm-d-title">화면 관찰에서 직접 설계, 벤치마크 검증으로 넘어가는 사다리</title>
         <defs>
@@ -318,6 +327,7 @@
           <text class="tm-tag" x="576" y="78">채점 기록</text>
         </g></a>
       </svg>
+      </div>
       <figcaption>화면 관찰 → 직접 설계 → 벤치마크 검증. 남의 기능표를 믿는 대신 내가 확인한 것만 남겨요.</figcaption>
     </figure>
 
@@ -325,6 +335,7 @@
     <p>필요한 게 글자뿐인지, 물체인지, 경계선인지, 설명까지인지에 따라 꺼낼 모델이 달라져요.</p>
 
     <figure class="tm-diagram">
+      <div class="diagram-scroll" style="--diagram-min: 840px">
       <svg viewBox="0 0 764 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="tm-e-title">
         <title id="tm-e-title">OCR에서 객체 탐지, 분할, VLM으로 넘어가는 사다리</title>
         <defs>
@@ -364,6 +375,7 @@
           <text class="tm-tag" x="673" y="78">VLM</text>
         </g></a>
       </svg>
+      </div>
       <figcaption>OCR → 객체 탐지 → 분할 → VLM. 필요한 정밀도가 올라갈수록 오른쪽 칸이에요.</figcaption>
     </figure>
 
@@ -371,6 +383,7 @@
     <p>소리를 글자로 바꾸면 되는지, 내 컴퓨터에서 돌려야 하는지, 반대로 글자를 소리로 내야 하는지, 그 목소리가 실존 인물이라 따져야 할 게 있는지 — 필요한 게 늘어날수록 오른쪽 칸이에요.</p>
 
     <figure class="tm-diagram">
+      <div class="diagram-scroll" style="--diagram-min: 840px">
       <svg viewBox="0 0 764 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="tm-f-title">
         <title id="tm-f-title">STT에서 로컬 Whisper, TTS, 복제 윤리로 넘어가는 사다리</title>
         <defs>
@@ -410,6 +423,7 @@
           <text class="tm-tag" x="673" y="78">윤리 판단</text>
         </g></a>
       </svg>
+      </div>
       <figcaption>STT → 로컬 Whisper → TTS 합성 → 복제 윤리. 듣는 쪽에서 말하는 쪽으로 넘어가면 칸이 달라져요.</figcaption>
     </figure>
 
@@ -417,6 +431,7 @@
     <p>거리만 있으면 되는지, 장면 전체를 재구성해야 하는지, 그걸 점 하나하나로 바꿔야 하는지, 웹 화면에 그려야 하는지 — 사진에서 화면까지 가는 순서예요.</p>
 
     <figure class="tm-diagram">
+      <div class="diagram-scroll" style="--diagram-min: 840px">
       <svg viewBox="0 0 764 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="tm-g-title">
         <title id="tm-g-title">깊이 추정에서 NeRF·스플래팅, 스플랫 변환, 웹 최적화로 넘어가는 사다리</title>
         <defs>
@@ -456,6 +471,7 @@
           <text class="tm-tag" x="673" y="78">파일 최적화</text>
         </g></a>
       </svg>
+      </div>
       <figcaption>깊이 추정 → NeRF·스플래팅 → 스플랫 변환 → 웹 최적화. 사진 한 장이 화면에 그려지기까지예요.</figcaption>
     </figure>
 
@@ -463,6 +479,7 @@
     <p>확산모델로 충분한지, 내 컴퓨터에서 가볍게 돌려야 하는지, 반복 작업이라 자동화해야 하는지, 결과물 용도(라이선스)까지 따져야 하는지로 달라져요.</p>
 
     <figure class="tm-diagram">
+      <div class="diagram-scroll" style="--diagram-min: 840px">
       <svg viewBox="0 0 764 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="tm-h-title">
         <title id="tm-h-title">확산모델에서 잠재확산·증류, 자동화, 도구 선택으로 넘어가는 사다리</title>
         <defs>
@@ -502,6 +519,7 @@
           <text class="tm-tag" x="673" y="78">라이선스</text>
         </g></a>
       </svg>
+      </div>
       <figcaption>확산모델 → 잠재확산·증류 → 자동화 → 도구 고르기. 반복과 용도가 걸릴수록 오른쪽 칸이에요.</figcaption>
     </figure>
 
@@ -509,6 +527,7 @@
     <p>표만 읽으면 되는지, 서열에서 구조까지 알아야 하는지, 없던 걸 거꾸로 설계해야 하는지, 원자 사이 힘까지 계산해야 하는지 — 다루려는 문제가 커질수록 오른쪽 칸이에요.</p>
 
     <figure class="tm-diagram">
+      <div class="diagram-scroll" style="--diagram-min: 840px">
       <svg viewBox="0 0 764 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="tm-i-title">
         <title id="tm-i-title">표 파운데이션 모델에서 구조 예측, 단백질 역설계, 그래프 신경망으로 넘어가는 사다리</title>
         <defs>
@@ -548,6 +567,7 @@
           <text class="tm-tag" x="673" y="78">그래프 신경망</text>
         </g></a>
       </svg>
+      </div>
       <figcaption>표 읽기 → 구조 읽기 → 거꾸로 설계 → 힘 계산. 다루려는 문제가 커질수록 오른쪽 칸이에요.</figcaption>
     </figure>
 

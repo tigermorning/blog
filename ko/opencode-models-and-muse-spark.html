@@ -79,6 +79,7 @@
     <p>공식 문서가 못 박아 둔 규칙이 하나 있어요 — 제공자 이름에는 <code>/</code>와 <code>#</code>이 들어갈 수 없고, 모델 이름에는 <code>#</code>이 들어갈 수 없어요. 그래서 <strong>첫 번째 슬래시까지가 항상 제공자</strong>, <strong>마지막 <code>#</code>부터가 항상 변형</strong>으로 안전하게 잘라 읽을 수 있어요.</p>
 
     <h2><span class="hl">전체 흐름</span> — 이름 해부와 목록이 만들어지는 길</h2>
+    <div class="diagram-scroll" style="--diagram-min: 720px">
     <svg viewBox="0 0 720 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="모델 이름의 구조와 opencode 모델 목록이 만들어지는 흐름">
       <text x="10" y="22" font-family="var(--font-heading)" font-size="17" fill="var(--accent)">① 이름 해부하기</text>
 
@@ -132,6 +133,7 @@
 
       <text x="220" y="392" font-family="var(--font-body)" font-size="12" fill="var(--accent)">↑ 새 모델이 안 보이면 대개 여기가 낡은 것</text>
     </svg>
+    </div>
     <p class="post-date">읽는 법: 위쪽 두 상자는 모델 이름 한 줄을 조각으로 자른 것이고, 아래 화살표는 왼쪽 세 곳에서 모은 정보가 <strong>내 컴퓨터에 저장된 캐시<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup> 파일 하나</strong>를 거쳐 화면 목록이 된다는 뜻이에요. 화면에 없는 모델은 "존재하지 않는 모델"이 아니라 "이 캐시가 아직 모르는 모델"일 때가 많아요.</p>
 
     <h2><span class="hl">Muse Spark 1.3이 뭐길래</span></h2>

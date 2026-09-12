@@ -62,6 +62,7 @@
     <h2><span class="hl">실제 사례</span> — DeepSeek-R1-Zero</h2>
     <p>이 방식을 가장 순수한 형태로 보여준 사례가 DeepSeek-R1-Zero예요. 사람이 만든 풀이 예시(SFT)도, 사람이 고른 선호 데이터(RLHF)도 하나도 안 쓰고, 오직 "이 수학 문제의 최종 답이 맞았는가"만 채점해서 GRPO로 훈련시켰어요.</p>
     <figure class="chart">
+      <div class="diagram-scroll" style="--diagram-min: 820px">
       <svg viewBox="0 0 820 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="DeepSeek-R1-Zero 훈련 중 정확도와 응답 길이 그래프">
         <line x1="40" y1="15" x2="40" y2="185" stroke="var(--muted)" stroke-width="1.5"/>
         <line x1="40" y1="185" x2="380" y2="185" stroke="var(--muted)" stroke-width="1.5"/>
@@ -81,6 +82,7 @@
         <text x="745" y="205" font-size="11" fill="var(--muted)">Steps</text>
         <path d="M465,183 C520,178 560,168 600,150 C640,132 660,110 700,95 C730,85 750,80 760,72 C770,80 775,90 780,85 C790,78 795,82 797,80" fill="none" stroke="#2B5FA5" stroke-width="2"/>
       </svg>
+      </div>
       <figcaption>왼쪽: 답을 16번 뽑아 다수결로 정하는 cons@16(빨강)이 한 번만 찍는 pass@1(파랑)보다 항상 위. 오른쪽: 같은 훈련 구간에서 응답 길이도 우상향. (DeepSeek-R1 논문, arXiv:2501.12948 Figure 2·3을 단순화해 재구성)</figcaption>
     </figure>
     <p>왼쪽 그래프는 훈련이 실제로 정확도를 끌어올렸다는 증거예요. cons@16이 늘 pass@1보다 위인 이유는 같은 문제를 16번 풀어 다수결로 답을 정하면 한 번 풀 때의 우연한 실수가 걸러지기 때문이에요(self-consistency). 오른쪽 그래프가 더 흥미로운데, <strong>길이에는 아무 보상도 준 적이 없는데</strong> 훈련이 진행될수록 모델이 스스로 응답을 점점 길게 쓰기 시작했어요. "어려운 문제일수록 오래 생각해야 맞힐 확률이 오른다"는 걸 모델이 스스로 찾아낸 거예요 — 정답 여부만 채점하는 단순한 보상 하나가, 아무도 지시하지 않은 전략까지 만들어낸 창발적 행동이었어요. 다만 이 상관관계를 "길게 쓸수록 무조건 정확하다"로 일반화하면 안 돼요. 실제로 R1-Zero는 정확도는 올랐지만 가독성 저하·언어 혼용 같은 부작용도 있었고, 그래서 후속 모델 R1에는 사람이 만든 소량의 예시로 시작하는 콜드스타트 단계가 추가됐어요.</p>

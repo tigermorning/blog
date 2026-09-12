@@ -72,6 +72,7 @@
 
     <h2><span class="hl">전체 흐름</span> — 같은 모양, 바뀐 라우터</h2>
     <p><strong>읽는 법:</strong> 왼쪽은 <a href="langgraph-state-node-edge.html#build-branch">지난 편 ②</a>의 간 맞추기 그래프를 줄인 그림이고(내보내기·셰프 호출 두 출구는 <code>END</code> 하나로 합쳤어요), 오른쪽은 이번 편 ③에서 조립할 도구 루프예요. 실선은 앞 노드가 끝나면 항상 지나가는 선, 점선은 라우터가 둘 중 <strong>하나만</strong> 고르는 선이에요. 두 그림 모두 아래 칸에서 위 칸으로 올라가는 실선이 반복이에요. 달라진 건 점선을 고르는 기준 하나예요. 왼쪽은 전표의 숫자를 보는 규칙이고, 오른쪽은 모델이 요청서를 냈는지예요.</p>
+    <div class="diagram-scroll" style="--diagram-min: 760px">
     <svg viewBox="0 0 760 326" role="img" aria-label="왼쪽 그림: START에서 taste로 가고, 규칙 라우터가 소금이 3 이상이거나 간을 5번 봤으면 END로, 싱거우면 add_salt로 보내며 add_salt는 다시 taste로 돌아온다. 오른쪽 그림: START에서 agent로 가고, tools_condition이 tool_calls가 없으면 END로, 있으면 tools로 보내며 tools는 다시 agent로 돌아온다.">
       <defs>
         <marker id="lgah2" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
@@ -140,6 +141,7 @@
       <line x1="420" y1="306" x2="460" y2="306" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 4"/>
       <text x="470" y="310" font-family="var(--font-body)" font-size="11" fill="var(--muted)">라우터가 하나를 고르는 선 (조건부 엣지)</text>
     </svg>
+    </div>
 
     <h2 id="branch-drills"><span class="hl">갈림길 더 밀어붙이기</span> — 세 갈래, 라벨, 일부러 만든 무한 반복</h2>
     <p>강의에는 <a href="langgraph-state-node-edge.html#build-branch">조건부 엣지 실습</a>(지난 편의 간 맞추기) 뒤에 "더 해보기" 문제가 세 개 붙어 있었어요. 처음엔 강의 코드를 통째로 베껴 넣었더니 실행은 되는데, 무엇을 확인했는지는 하나도 남지 않았어요. 50줄 가운데 문제마다 실제로 바뀌는 건 두세 줄뿐인데, 그 두세 줄이 나머지 속에 묻혀 버렸거든요. 그래서 <a href="langgraph-state-node-edge.html#merge-rules">지난 편의 합치기 규칙 확인하기</a> 때처럼 <strong>한 번에 몇 줄만 바꾸고, 돌리기 전에 결과를 먼저 예상한 뒤</strong> 실행하는 식으로 다시 풀었어요.</p>

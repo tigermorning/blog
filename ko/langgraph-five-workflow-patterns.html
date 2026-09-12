@@ -71,6 +71,7 @@
 
     <h2><span class="hl">전체 흐름</span> — 다섯 모양을 한 장에</h2>
     <p><strong>읽는 법:</strong> 줄마다 하나의 패턴이에요. 실선은 항상 지나가는 선, 점선은 조건에 따라 고르거나 실행 중에 개수가 정해지는 선이에요. 빨간 테두리가 각 패턴의 <strong>핵심 장치</strong>예요. 위에서 아래로 내려갈수록 흐름을 LLM에게 조금씩 더 맡겨요.</p>
+    <div class="diagram-scroll" style="--diagram-min: 760px">
     <svg viewBox="0 0 760 575" role="img" aria-label="프롬프트 체이닝, 라우팅, 병렬화, 오케스트레이터-워커, 평가자-최적화자 다섯 패턴의 그래프 모양을 한 줄씩 그린 그림">
       <defs>
         <marker id="lgah2" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
@@ -198,6 +199,7 @@
       <line x1="12" y1="566" x2="44" y2="566" stroke="var(--muted)" stroke-width="2" stroke-dasharray="4 3"/>
       <text x="50" y="570" font-family="var(--font-body)" font-size="11" fill="var(--muted)">조건이나 실행 중에 정해짐</text>
     </svg>
+    </div>
 
     <h2 id="chaining">① <span class="hl">프롬프트 체이닝</span> — 순서대로, 사이에 검사</h2>
     <p>큰 작업을 순서가 정해진 여러 단계로 쪼개고, 각 단계의 LLM 호출이 앞 단계의 결과를 받아 처리하는 모양이에요. 강의 실습은 구어체 강의 녹취를 받아 (1) 학습자가 읽을 3문장 노트로 다듬고, (2) 다듬는 동안 핵심 용어가 사라지지 않았는지 <strong>파이썬 문자열 검사</strong>로 확인하고, (3) 통과하면 학습 목표 문장을 뽑는 파이프라인이었어요.</p>

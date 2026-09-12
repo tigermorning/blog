@@ -86,6 +86,7 @@
     <p>한 가지 더 짚고 갈 게 있어요. Claude Code와 OpenCode를 둘 다 켜 놓고 같은 로컬<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup> 서버 코드를 각각 등록하면, <strong>각 앱이 자기 몫의 서버 프로세스<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup>를 따로 띄울 수 있어요.</strong> 같은 소스 파일을 쓴다는 말이 "실행 중인 프로그램 하나를 나눠 쓴다"는 뜻은 아니에요. 같은 요리책을 보고 두 집에서 각자 요리하는 것과 비슷해요.</p>
 
     <h2><span class="hl">전체 흐름 그림</span> — 호스트 안에 클라이언트, 밖에 서버</h2>
+    <div class="diagram-scroll" style="--diagram-min: 836px">
     <svg viewBox="0 0 760 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="큰 사각형 하나가 호스트(Claude Code 또는 OpenCode)이고, 그 안에 업무 기록 서버용 클라이언트와 문서 서버용 클라이언트 두 개가 들어 있다. 각 클라이언트에서 바깥의 weekly-records 서버와 문서 서버로 MCP 메시지 화살표가 오간다. 호스트 왼쪽에는 사용자가 있다.">
       <defs>
         <marker id="arrPR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -135,6 +136,7 @@
         <text x="380" y="322" text-anchor="middle" font-size="11" fill="var(--muted)">점선 상자는 "이렇게 늘릴 수 있다"는 확장 예이고, 이번 실습에서 만드는 건 실선 쪽 하나뿐이다</text>
       </g>
     </svg>
+    </div>
     <p><strong>읽는 법:</strong> 굵은 테두리 큰 상자가 <strong>호스트</strong> 하나예요. 클라이언트는 호스트 <em>안에</em> 있고, 서버는 <em>밖에</em> 있어요. 이게 이 그림에서 제일 중요한 배치예요. 화살표가 오가는 지점을 보면, 모델과 서버는 <strong>서로 직접 말하지 않아요</strong> — 언제나 호스트를 거쳐요. 그리고 클라이언트는 서버 하나에 하나씩 붙어요. 서버를 세 개 연결하면 클라이언트도 세 개가 생겨요. 이번 수업에서 제가 클라이언트를 직접 만들거나 설치할 일은 없어요. 쓰고 있는 앱이 그 역할을 이미 하고 있어요.</p>
     <p>제 말 한마디가 이 그림 위를 어떻게 지나가는지 순서대로 적으면 이래요. 제가 호스트에 "첫째 주 기록을 읽어 줘"라고 말하고 → 모델이 쓸 도구와 입력을 골라 호출을 요청하고 → 호스트가 "이 도구 실행해도 되나요" 같은 허용 절차를 처리하고 → 클라이언트가 그 요청을 서버에 전달하고 → 서버의 파이썬 코드가 기록을 읽어 결과를 돌려주고 → 호스트가 그 결과를 모델에게 넘겨 답변을 잇게 해요. <strong>도구를 고르는 모델과 파일을 실제로 읽는 서버는 끝까지 서로 다른 역할</strong>이에요.</p>
     <table>

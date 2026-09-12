@@ -89,6 +89,7 @@
       </tbody>
     </table>
     <p><strong>읽는 법:</strong> 아래 그림에서 가운데 <code>agent.py</code>는 <strong>판단 반복만</strong> 담당해요. 왼쪽 <code>providers.py</code>와 오른쪽 <code>tools.py</code>/<code>local_agent.py</code>는 <strong>갈아 끼울 수 있는 자리</strong>고요. 화살표에 적힌 게 그 경계를 넘어 다니는 자료형이에요.</p>
+    <div class="diagram-scroll" style="--diagram-min: 760px">
     <svg viewBox="0 0 760 300" role="img" aria-label="agent.py를 중심으로 providers.py와 tools.py, local_agent.py가 어댑터로 연결된 구조 그림">
       <defs>
         <marker id="ah7" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
@@ -125,6 +126,7 @@
 
       <text x="20" y="288" font-family="var(--font-body)" font-size="11" fill="var(--muted)">제공자가 달라도 agent.py는 ModelReply를 받고, 실행 환경이 달라도 ToolRequest를 보내 ToolResult를 받아요.</text>
     </svg>
+    </div>
     <p>이렇게 나눈 목적은 딱 하나예요. <strong>파일 권한을 검사하는 코드가 모델 응답의 필드 이름에 의존하지 않게</strong> 하는 것. <a href="my-harness-interfaces.html">4편에서 어댑터</a>를 이야기할 때의 그 이유가 실제 파일 구조로 나타난 거예요.</p>
 
     <h2><span class="hl">반복의 중심</span> — 세 조각만 읽어도 돼요</h2>

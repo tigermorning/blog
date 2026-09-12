@@ -153,6 +153,7 @@ note          : "코드 작성은 끝났으며 다음 배포를 기다린다."</
 
     <h2><span class="hl">전체 흐름 그림</span> — 하나의 요청에 네 갈래가 합류해요</h2>
     <p>이제 헷갈리기 제일 쉬운 대목이에요. 프롬프트, 프로젝트 지침, Skill, MCP — 넷 다 "AI에게 뭔가 알려 주는 것"처럼 보이거든요. 그런데 <strong>합류하는 시점과 적용 범위</strong>가 서로 달라요.</p>
+    <div class="diagram-scroll" style="--diagram-min: 953px">
     <svg viewBox="0 0 780 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="가운데 에이전트를 두고 네 방향에서 정보가 합류하는 그림. 왼쪽에서 이번 요청의 프롬프트가 들어오고, 위에서 프로젝트 지침이 항상 적용되며, 아래 왼쪽에서 Skill이 이 과업일 때만 펼쳐지고, 아래 오른쪽에서 MCP 서버가 외부 기록을 조회해 응답한다. 오른쪽으로 보고서 초안이 나온다.">
       <defs>
         <marker id="arrSK" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -204,6 +205,7 @@ note          : "코드 작성은 끝났으며 다음 배포를 기다린다."</
         <text x="390" y="288" text-anchor="middle" font-size="9.5" fill="var(--muted)">아래 둘은 필요할 때 합류한다 — 왼쪽은 판정 기준, 오른쪽은 원자료</text>
       </g>
     </svg>
+    </div>
     <p><strong>읽는 법:</strong> 가운데 에이전트로 <strong>네 방향에서</strong> 정보가 들어와요. 화살표에 붙은 말이 핵심이에요 — 왼쪽은 <strong>이번 한 번만</strong>, 위쪽은 <strong>항상</strong>, 왼쪽 아래는 <strong>이 과업일 때만</strong>, 오른쪽 아래는 <strong>조회할 때마다</strong>예요. 그리고 아래 두 상자를 갈라 보세요. <strong>왼쪽(Skill)에서 오는 건 판정 기준이고, 오른쪽(MCP)에서 오는 건 원자료</strong>예요. 이 둘을 헷갈리면 "MCP를 붙였는데 왜 우리 팀 기준대로 안 나오지?" 하고 엉뚱한 데를 고치게 돼요.</p>
     <p>표로도 한 번 정리할게요.</p>
     <table>

@@ -94,6 +94,7 @@
 
     <h2><span class="hl">전체 흐름 그림</span> — 이번 편은 위 절반까지</h2>
     <p>준비부터 실제 호출까지 한 장에 그렸어요. <strong>이번 편에서 하는 건 위쪽 다섯 칸</strong>이고, 아래쪽은 다음 편에서 할 일이에요. 지금 아래쪽까지 같이 보여 주는 이유는, "지금 밟는 이 단계가 나중에 어디에 쓰이는지"를 알고 하면 헷갈릴 일이 확 줄어들기 때문이에요.</p>
+    <div class="diagram-scroll" style="--diagram-min: 960px">
     <svg viewBox="0 0 820 372" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="위쪽은 이번 편에서 Google Cloud Console에 미리 준비하는 다섯 단계다. 첫째 프로젝트를 만들고, 둘째 Google Sheets API를 켜고, 셋째 동의 화면을 만들며 Audience를 External과 Testing으로 두고 Test users에 내 계정을 등록하고, 넷째 Data Access에서 spreadsheets.readonly 범위를 고르고, 다섯째 Desktop app 형태의 OAuth 클라이언트를 만들어 JSON을 내려받는다. 그 결과물은 credentials.json 파일 하나이며 아직 어떤 사용자의 동의도 담겨 있지 않다. 아래쪽은 다음 편에서 할 일로, 프로그램을 실행하면 브라우저에 로그인과 동의 화면이 뜨고, 내가 계정을 골라 허용하면 token.json이 저장되며, 그 토큰을 붙여 Sheets API를 호출해 표 데이터를 받는다.">
       <defs>
         <marker id="arrOA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -188,6 +189,7 @@
         <text x="410" y="358" text-anchor="middle" font-size="9" fill="var(--muted)">실선 상자 = 이번 편에서 콘솔에서 직접 누르는 단계 · 점선 상자 = 다음 편에서 프로그램이 하는 일</text>
       </g>
     </svg>
+    </div>
     <p><strong>읽는 법:</strong> 가로 화살표는 <strong>순서</strong>예요 — 앞 칸을 건너뛰면 뒤 칸에서 막혀요. 위아래를 가르는 <strong>점선</strong>이 이번 편과 다음 편의 경계고, 그 사이에 낀 <strong>결과물 상자</strong>가 두 편을 잇는 유일한 물건이에요. 즉 이번 편의 목표는 딱 하나 — <strong><code>credentials.json</code> 파일 하나를 손에 쥐는 것</strong>이에요.</p>
     <p>그림에서 눈여겨볼 건, <strong>동의(⑧)가 맨 아래에 있다</strong>는 점이에요. 위쪽 다섯 칸을 다 밟아도 <strong>내 표에 대한 접근 허가는 아직 하나도 나오지 않았어요.</strong> 준비와 동의는 끝까지 별개의 일입니다.</p>
 

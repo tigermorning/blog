@@ -80,6 +80,7 @@
 
     <h2><span class="hl">게이트웨이</span> — 연결과 실행을 조정하는 한 자리</h2>
     <p>OpenClaw의 중심에는 <strong>게이트웨이</strong><sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>(gateway)가 있어요. 계속 켜 둔 프로그램 하나가 WebChat, 텔레그램 같은 채널에서 오는 메시지를 받고, 그걸 실제로 일하는 에이전트 런타임<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup>에 넘겨요. 채널이 하나면 이런 조정자가 없어도 되지만, 채널이 늘면 "어느 입구로 온 요청을 어느 대화 세션과 어느 도구로 보낼지"를 누군가 정해야 해요. OpenClaw는 그 결정을 게이트웨이 한 곳에 모아요.</p>
+    <div class="diagram-scroll" style="--diagram-min: 660px">
     <svg viewBox="0 0 720 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="채널 세 개가 게이트웨이 하나로 모이고, 게이트웨이가 에이전트 런타임과 파일·도구로 이어지는 흐름">
       <defs>
         <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -110,6 +111,7 @@
         <line x1="630" y1="94" x2="630" y2="164" stroke="var(--muted)" stroke-width="2" marker-end="url(#arr)"/>
       </g>
     </svg>
+    </div>
     <p><strong>읽는 법:</strong> 왼쪽 세 상자가 메시지가 들어오는 입구(채널), 가운데 굵은 상자가 게이트웨이, 오른쪽이 실제로 생각하고 일하는 부분이에요. 화살표는 메시지가 흐르는 방향이고, 어떤 입구로 들어와도 반드시 게이트웨이를 거쳐요. 가운데 작은 글씨 <code>127.0.0.1:18789</code>는 게이트웨이가 기본으로 자리 잡는 주소인데, 2편에서 설명해요.</p>
 
     <h2><span class="hl">나쁜 선택 vs 좋은 선택</span> — 이름이 바뀐 도구의 문서를 찾을 때</h2>

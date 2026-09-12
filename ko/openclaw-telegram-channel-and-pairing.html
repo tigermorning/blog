@@ -68,6 +68,7 @@
     <p><strong>핵심 한 줄:</strong> 입구를 여는 일(토큰)과 누구를 들일지 정하는 일(페어링)은 별개의 두 열쇠예요.</p>
 
     <h2><span class="hl">전체 흐름</span></h2>
+    <div class="diagram-scroll" style="--diagram-min: 660px">
     <svg viewBox="0 0 720 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="봇 만들기, 토큰 설정, 게이트웨이 시작, 첫 메시지, 페어링 승인, 대화의 여섯 단계">
       <defs>
         <marker id="arr4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -96,6 +97,7 @@
         <line x1="398" y1="145" x2="222" y2="170" stroke="var(--muted)" stroke-width="2" marker-end="url(#arr4)"/>
       </g>
     </svg>
+    </div>
     <p><strong>읽는 법:</strong> 세로 점선 왼쪽이 폰에서 하는 일, 오른쪽이 컴퓨터 터미널에서 하는 일이에요. 화살표가 좌우를 오가는 게 이 흐름의 특징이에요. 굵은 상자 ④가 문을 여는 열쇠 단계라, 여기를 안 하면 ③에서 보낸 메시지에 봇이 답하지 않아요.</p>
 
     <h2><span class="hl">① 봇 만들기</span> — BotFather</h2>

@@ -52,6 +52,7 @@
     <p>논문은 에이전트 루프를 <strong>에이전트·사용자·환경</strong> 세 역할로 정의해요. 매 턴마다 에이전트는 사용자나 환경으로부터 관찰(입력)을 받고, 필요하면 생각을 거쳐 행동(출력)을 내놓아요. <strong>CodeAct에서는 이 행동이 전부 파이썬 코드</strong>예요. 그리고 그 코드를 실제로 실행한 결과 — 정상적인 출력이든, 에러 메시지든 — 를 그대로 다음 관찰로 돌려받아요. JSON 방식이 "무엇을, 어떤 값으로 부를지"만 적는다면, CodeAct는 "그 호출들을 어떤 순서와 논리로 엮을지"까지 코드 문법으로 적는 셈이에요.</p>
 
     <figure>
+      <div class="diagram-scroll" style="--diagram-min: 640px">
       <svg viewBox="0 0 640 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="catitle">
         <title id="catitle">JSON 행동 루프는 도구 하나마다 한 턴이 필요하지만, 코드 행동 루프는 반복문 하나로 여러 호출을 한 턴에 묶는다</title>
         <style>
@@ -96,6 +97,7 @@
         <path d="M350,233 L388,233" class="ca-a" marker-end="url(#caarr)"/>
         <text x="20" y="308" class="ca-m">→ 논문 기준 같은 작업을 최대 30% 더 적은 행동 수로 끝낸다</text>
       </svg>
+      </div>
       <figcaption>같은 반복 작업이라도 JSON/텍스트 행동은 도구 호출 수만큼 턴이 늘고, 코드 행동은 반복문 하나로 여러 호출을 한 턴에 묶을 수 있다.</figcaption>
     </figure>
 
