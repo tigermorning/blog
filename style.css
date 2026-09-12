@@ -1180,6 +1180,23 @@ details[open] > summary .tree-toggle-icon {
   color: var(--hit-ink);
 }
 
+/* 히트맵 예시 표: 같은 값을 "숫자로 적은 줄"과 "색으로 칠한 줄"로 나란히
+   보여준다. 색 네 단계는 GitHub 기여 그래프가 실제로 쓰는 초록 단계를
+   그대로 옮긴 값이라 CSS 변수 대신 직접 적는다 — 잔디의 색 자체가 설명
+   대상이라 테마 색으로 바꾸면 그림의 뜻이 사라진다. */
+.grass-demo td {
+  text-align: center;
+}
+
+.grass-demo td:first-child {
+  text-align: left;
+}
+
+.grass-demo td.grass-0 { background: #ebedf0; }
+.grass-demo td.grass-1 { background: #9be9a8; }
+.grass-demo td.grass-2 { background: #40c463; }
+.grass-demo td.grass-3 { background: #216e39; }
+
 /* 중요 표시: 강의 퀴즈가 짚은 핵심을 퀴즈 형식 대신 본문 설명 속에 표시한다.
    라벨 알약(중요) 옆에 어느 강의에서 짚은 내용인지만 흐리게 적는다. */
 .key-point {

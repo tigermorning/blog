@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>GitHub 잔디심기란 무엇인가 - Tigermorning</title>
-  <meta name="description" content="개발자들이 말하는 'GitHub 잔디심기'가 정확히 무엇인지, 어떻게 채워지는지, 그리고 무작정 잔디만 채우려는 게 왜 큰 의미가 없는지 설명합니다.">
+  <meta name="description" content="개발자들이 말하는 'GitHub 잔디심기'가 정확히 무엇인지, GitHub의 어느 화면에 가야 보이는지, 어떻게 채워지는지, 그리고 다른 도구에서 보이는 비슷한 칸 그래프(히트맵)와는 뭐가 다른지 설명합니다.">
   <meta property="og:type" content="article">
   <meta property="og:title" content="GitHub 잔디심기란 무엇인가">
-  <meta property="og:description" content="개발자들이 말하는 'GitHub 잔디심기'가 정확히 무엇인지, 어떻게 채워지는지, 그리고 무작정 잔디만 채우려는 게 왜 큰 의미가 없는지 설명합니다.">
+  <meta property="og:description" content="개발자들이 말하는 'GitHub 잔디심기'가 정확히 무엇인지, GitHub의 어느 화면에 가야 보이는지, 어떻게 채워지는지, 그리고 다른 도구에서 보이는 비슷한 칸 그래프(히트맵)와는 뭐가 다른지 설명합니다.">
   <meta property="og:url" content="https://tigermorning.github.io/blog/ko/what-is-github-contribution-graph.html">
   <meta property="og:locale" content="ko_KR">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -33,13 +33,13 @@
         <dt>어디쯤인가</dt>
         <dd><a href="posts.html#cat-web-dev">1단계</a> › <a href="posts.html#ai-coding-setup">AI 코딩 환경 세팅</a> — 4번째 글 (전 13편). 중간부터 보셨다면 <a href="what-is-vibe-coding.html">첫 글</a>부터 보시는 게 편해요.</dd>
         <dt>뭐를 할 수 있나</dt>
-        <dd>GitHub 잔디(Contribution graph)가 정확히 뭘 기록하는지, 커밋·PR·이슈·코드 리뷰 중 뭐가 칸을 채우는지 설명할 수 있고, 분명 작업했는데 회색으로 남는 원인(비공개 저장소, 이메일 불일치)을 찾을 수 있어요.</dd>
+        <dd>GitHub 잔디(Contribution graph)가 정확히 뭘 기록하는지, 커밋·PR·이슈·코드 리뷰 중 뭐가 칸을 채우는지 설명할 수 있고, 잔디가 GitHub의 어느 화면에 있는지 찾아갈 수 있고, 분명 작업했는데 회색으로 남는 원인(비공개 저장소, 이메일 불일치)을 찾을 수 있어요.</dd>
         <dt>왜 배우나</dt>
         <dd>잔디를 "실력 성적표"로 오해하면 빈 커밋처럼 무의미한 방법으로 칸만 채우려는 함정에 빠지기 쉬운데, 도장판은 "했다"는 사실만 기록하지 "무엇을 했는지"는 기록하지 않는다는 걸 알아야 이 함정을 피할 수 있어요.</dd>
         <dt>왜 중요한가</dt>
         <dd>채용 담당자도 잔디 개수보다 어떤 저장소에 무슨 내용으로 기여했는지를 더 중요하게 본다는 걸 모르면, 정작 봐야 할 걸 안 보고 엉뚱한 지표에 시간을 쏟게 돼요.</dd>
         <dt>어디에 쓰나</dt>
-        <dd>내 GitHub 프로필에서 회색 칸이 이어지는 구간을 보고 실제로 손을 놓았던 시기를 확인하기 · "Include private contributions" 설정을 켜서 비공개 저장소 활동도 잔디에 반영하기 · 커밋한 이메일 주소와 계정 이메일이 같은지 확인해서 "잔디가 안 심기는" 문제 해결하기</dd>
+        <dd>잔디가 안 보일 때 대시보드 말고 프로필 화면(<code>github.com/아이디</code>)으로 바로 찾아가기 · 내 GitHub 프로필에서 회색 칸이 이어지는 구간을 보고 실제로 손을 놓았던 시기를 확인하기 · "Include private contributions" 설정을 켜서 비공개 저장소 활동도 잔디에 반영하기 · 커밋한 이메일 주소와 계정 이메일이 같은지 확인해서 "잔디가 안 심기는" 문제 해결하기</dd>
       </dl>
     </div>
 
@@ -53,9 +53,74 @@
 
     <p>GitHub 프로필 페이지에 가면 지난 1년치 날짜가 <strong>작은 네모 칸</strong>으로 쭉 늘어선 달력 모양 그래프가 있어요. 정식 명칭은 <strong>Contribution graph(기여 그래프)</strong>예요. 어떤 날에 활동 기록이 있으면 그날 칸이 초록색으로 칠해지고, 활동이 많았던 날일수록 초록색이 더 진해져요. 아무것도 안 한 날은 회색으로 남고요.</p>
     <p>이게 잔디밭처럼 보인다고 해서 한국 개발자들 사이에서 <strong>"잔디심기"</strong>라는 별명이 붙었어요. 저는 <strong>어린이 출석 도장판</strong>을 떠올리면 제일 잘 맞았어요. 학원이나 도서관에서 오면 도장 하나 찍어주는 그 판이요. 하루에 한 칸씩 찍히고, 판 전체를 멀리서 보면 이 사람이 얼마나 꾸준히 왔는지가 한눈에 보이죠.</p>
-    <p>이 도장판 비유가 앞으로 이 글에서 계속 쓰일 거예요. 잔디의 장점도, 함정도 전부 <strong>"도장판이 무엇을 찍고 무엇을 안 찍는가"</strong>에서 나오거든요. 그럼 먼저, 무엇을 하면 도장이 찍힐까요.</p>
+    <p>이 도장판 비유가 앞으로 이 글에서 계속 쓰일 거예요. 잔디의 장점도, 함정도 전부 <strong>"도장판이 무엇을 찍고 무엇을 안 찍는가"</strong>에서 나오거든요. 그런데 그 전에 — 저는 이 도장판이 어디에 붙어 있는지부터 한참 못 찾았어요.</p>
 
-    <h2><span class="hl">어떤 활동이 도장을 찍어주나요</span> — 도장판이 안 찍는 것도 있어요</h2>
+    <h2><span class="hl">도장판은 프로필 화면에만 붙어 있어요</span> — 제가 한참 못 찾은 이유</h2>
+    <p>GitHub를 거의 매일 쓰면서도 저는 잔디를 한 번도 못 봤어요. "다들 있다는데 나는 왜 안 보이지?" 싶어서 찾아봤는데 이유가 허무했어요. <strong>제가 평소에 들어가는 화면에는 잔디가 아예 없었던 거예요.</strong></p>
+    <p>GitHub에 로그인하면 <strong>대시보드</strong><sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>라는 첫 화면이 떠요. 최근 소식과 내 저장소 목록만 모아둔 화면이에요. 거기서 저장소 이름을 눌러 들어가면 파일 목록이 나오고, 커밋도 전부 그 안에서 하고요. 그러니까 제가 GitHub에서 쓰는 화면은 이 두 개가 전부였고, <strong>잔디가 붙어 있는 화면은 열어볼 일이 없었던 거예요.</strong></p>
+    <table>
+      <thead><tr><th>화면</th><th>주소</th><th>잔디가 보이나</th></tr></thead>
+      <tbody>
+        <tr><td>대시보드 — 로그인하면 처음 뜨는 화면</td><td><code>github.com</code></td><td>안 보여요</td></tr>
+        <tr><td>저장소 화면 — 파일 목록과 커밋 기록</td><td><code>github.com/아이디/저장소이름</code></td><td>안 보여요</td></tr>
+        <tr><td><strong>프로필 화면</strong> — 나를 소개하는 화면</td><td><code>github.com/아이디</code></td><td><strong>여기에만 있어요</strong></td></tr>
+      </tbody>
+    </table>
+    <p>가는 방법은 두 가지예요. 주소창에 <code>github.com/본인아이디</code>를 직접 치거나, 화면 오른쪽 위의 내 프로필 사진을 누르고 <strong>"Your profile"</strong>을 고르면 돼요.</p>
+    <p>저도 그제야 열어봤는데, 지난 1년 동안 기여가 <strong>2,221개</strong> 찍혀 있었어요. 잔디가 없었던 게 아니라 제가 안 보고 있었던 거죠. 그런데 더 눈에 들어온 건 개수가 아니었어요. <strong>초록 칸이 7~9월에만 몰려 있고 나머지 계절은 전부 회색</strong>이었거든요. 이 얘기는 글 뒤에서 다시 할게요.</p>
+    <p>프로필 화면까지 갔는데도 칸이 전부 회색이라면, 그건 위치 문제가 아니라 다른 문제예요 — <a href="#stamp-conditions">뒤에 나오는 "어떤 활동이 도장을 찍어주나요" 절</a>에서 볼 두 가지 조건에 걸렸을 수 있어요.</p>
+
+    <h3>나쁜 선택 vs 좋은 선택 — 잔디가 안 보일 때</h3>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad"><strong>무엇을 했나:</strong> 잔디가 안 보이니까 "내 커밋이 기록이 안 되고 있나?" 싶어서, 확인해 보려고 의미 없는 커밋을 몇 개 만들어 올렸어요.<br><br><strong>무슨 일이 생기나:</strong> 화면을 잘못 보고 있었을 뿐이니 잔디는 여전히 안 보여요. 대신 저장소에는 아무것도 바꾸지 않은 커밋만 남죠. 원인을 찾기도 전에 기록부터 지저분해져요.</td>
+          <td class="choice-good"><strong>무엇을 했나:</strong> 커밋을 더 만들기 전에 <code>github.com/본인아이디</code> 주소부터 열어서, 잔디가 있다는 그 화면을 직접 확인했어요.<br><br><strong>무슨 일이 생기나:</strong> 30초면 끝나요. 잔디가 멀쩡히 있으면 "화면을 안 보고 있었던 것"이고, 프로필에서도 회색이면 그때 비공개 저장소·이메일 설정을 보면 돼요. 원인이 두 갈래로 깔끔하게 갈려요.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2><span class="hl">이 칸 그래프의 원래 이름은 "히트맵"이에요</span> — 그래서 다른 도구에서도 보여요</h2>
+    <p>잔디를 두고 한 번쯤 헷갈리는 게 또 있어요. <strong>잔디처럼 생긴 칸 그래프를 GitHub가 아닌 곳에서 먼저 보는 경우</strong>예요. 저는 터미널에서 쓰는 AI 코딩 도구인 <a href="ai-agent-dev-environment.html">Claude Code</a>에서 제 사용 기록 화면을 열었다가, 잔디와 똑같이 생긴 칸 그래프를 봤어요. 색만 초록이 아니라 주황색이었고요. "잔디는 GitHub 거라며?" 싶었죠.</p>
+    <p>알고 보니 이 모양에는 원래 이름이 따로 있었어요. <strong>히트맵(heatmap)</strong><sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>이라고 해요. <strong>숫자를 색의 진하기로 바꿔서 보여주는 그림</strong>이라는 뜻이에요.</p>
+    <p>이름은 <strong>열화상 카메라</strong>에서 왔어요. 뜨거운 곳은 빨갛게, 차가운 곳은 파랗게 나오는 그 화면이요. 온도라는 숫자를 색으로 바꿔 보여주는 장치인데, 여기서 "열"만 빼고 원리만 가져온 게 히트맵이에요. <strong>값이 크면 진하게, 작으면 옅게.</strong></p>
+    <p>왜 굳이 색으로 바꾸는지는 나란히 놓고 보면 바로 느껴져요. 한 주치 활동 기록이라고 해볼게요.</p>
+    <table class="grass-demo">
+      <thead><tr><th></th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th></tr></thead>
+      <tbody>
+        <tr><td>숫자로 적으면</td><td>0</td><td>5</td><td>12</td><td>2</td><td>0</td></tr>
+        <tr><td>색으로 칠하면</td><td class="grass-0">&nbsp;</td><td class="grass-2">&nbsp;</td><td class="grass-3">&nbsp;</td><td class="grass-1">&nbsp;</td><td class="grass-0">&nbsp;</td></tr>
+      </tbody>
+    </table>
+    <p class="post-date">읽는 법: 위아래 두 줄은 <strong>똑같은 기록</strong>이에요. 아래 줄은 숫자를 지우고 색의 진하기로만 바꿔 칠한 것뿐이에요.</p>
+    <p>숫자 줄은 한 칸씩 읽고 머릿속에서 비교해야 하는데, 색 줄은 <strong>"수요일에 몰아서 하는구나"</strong>가 그냥 보여요. 다섯 칸이라 차이가 작아 보이지만 365칸이 되면 이 차이가 결정적이에요. GitHub가 1년치 기여 개수를 숫자표가 아니라 초록색 칸으로 보여주는 이유가 이거예요.</p>
+    <p><strong>핵심 한 줄:</strong> 히트맵은 숫자를 <em>읽게</em> 하는 그림이 아니라, 패턴을 <em>보게</em> 하는 그림이에요.</p>
+    <p>그러니까 GitHub 잔디는 히트맵의 한 종류예요. 부품을 하나씩 맞춰보면 이렇게 돼요.</p>
+    <table>
+      <thead><tr><th>히트맵의 부품</th><th>GitHub 잔디에서는</th></tr></thead>
+      <tbody>
+        <tr><td>격자의 칸 하나</td><td>하루 (1년치라서 365칸)</td></tr>
+        <tr><td>칸에 들어 있는 숫자</td><td>그날의 기여 개수(커밋·PR·이슈·리뷰)</td></tr>
+        <tr><td>색의 진하기</td><td>회색 → 연한 초록 → 진한 초록</td></tr>
+        <tr><td>색으로 읽어내는 것</td><td>언제 몰아서 했고 언제 쉬었는지</td></tr>
+      </tbody>
+    </table>
+    <p>히트맵이 워낙 잘 읽히는 방식이다 보니, 요즘은 "활동 기록"을 보여줘야 하는 도구들이 이 모양을 그대로 가져다 써요. 제가 Claude Code에서 본 주황색 칸도 그중 하나였고요. 다만 <strong>생긴 게 같다고 세는 것까지 같은 건 아니에요.</strong></p>
+    <table>
+      <thead><tr><th></th><th>GitHub 잔디</th><th>AI 코딩 도구의 사용 기록 히트맵</th></tr></thead>
+      <tbody>
+        <tr><td>어디서 보나</td><td>공개된 프로필 화면</td><td>내 컴퓨터 안, 그 도구를 켰을 때</td></tr>
+        <tr><td>누가 보나</td><td>주소만 알면 누구나</td><td>나만</td></tr>
+        <tr><td>무엇을 세나</td><td>커밋·PR·이슈·코드 리뷰</td><td>내가 그 도구를 쓴 양</td></tr>
+        <tr><td>색</td><td>초록</td><td>주황 (도구마다 달라요)</td></tr>
+        <tr><td>어느 쪽이 먼저인가</td><td><strong>원조</strong> — <a href="https://github.blog/news-insights/product-news/introducing-contributions/" target="_blank" rel="noopener">2013년 1월</a>부터</td><td>이 모양을 빌려온 쪽</td></tr>
+      </tbody>
+    </table>
+    <p>"잔디"라는 별명이 붙은 건 GitHub의 초록색 기여 그래프예요. 그러니 <strong>다른 도구에서 비슷한 칸 그래프를 먼저 봤다면, 그건 잔디를 따라 만든 것</strong>이라고 보시면 맞아요.</p>
+    <p>여기서 중요한 게 하나 따라 나와요. <strong>같은 모양이라도 무엇을 세느냐에 따라 뜻이 완전히 달라진다</strong>는 거예요. 그럼 GitHub 도장판은 정확히 무엇을 셀까요.</p>
+
+    <h2 id="stamp-conditions"><span class="hl">어떤 활동이 도장을 찍어주나요</span> — 도장판이 안 찍는 것도 있어요</h2>
     <p>도장이 찍히는 활동은 정해져 있어요. 처음 보는 단어들이라 하나씩 풀어 쓸게요.</p>
     <ul>
       <li><strong>커밋(commit)</strong>: 앞에서 말한 그 기록 한 줄을 남기는 것. 가장 흔하게 잔디를 채우는 방법이에요.</li>
@@ -83,7 +148,14 @@
     <p>GitHub 잔디심기가 뭔가요. <strong>GitHub에 이미 날짜별로 쌓여 있는 작업 기록을, 1년치 달력에 초록색 도장으로 찍어서 보여주는 그래프(Contribution graph)</strong>예요. 커밋·PR·이슈·코드 리뷰를 하면 그날 칸이 채워지고, 많이 한 날일수록 진해져요.</p>
     <p>그리고 사람들이 왜 신경 쓰는지, 왜 동시에 비판하는지도 같은 이유에서 나와요. <strong>도장판은 "했다"는 사실만 기록하고 "무엇을 했는지"는 기록하지 않아요.</strong> 그래서 남에게 실력을 증명하는 자료로는 약하고, 나 자신의 꾸준함을 확인하는 거울로는 꽤 정확해요. 저는 이제 잔디를 성적표가 아니라 거울로 보고 있어요. 이 블로그 저장소에 커밋할 때마다 칸이 하나씩 채워지는데, 그게 자랑이 아니라 <strong>"이번 주에 실제로 손을 움직였다"는 확인</strong>으로 남는 게 더 쓸모 있더라고요.</p>
 
-    <p><strong>직접 해보기</strong>: 본인 GitHub 프로필(<code>github.com/본인아이디</code>)에 들어가서 잔디를 살펴보세요. 회색 칸이 며칠째 이어지는 구간이 있다면, 그 주에 실제로 무슨 일이 있었는지 떠올려보면 도장판이 왜 거울에 가까운지 바로 느껴져요.</p>
+    <p><strong>직접 해보기</strong>: 본인 GitHub 프로필에 들어가서 잔디를 살펴보세요. 로그인하면 뜨는 대시보드가 아니라 <code>github.com/본인아이디</code> 주소, 즉 <strong>프로필 화면</strong>이에요. 회색 칸이 며칠째 이어지는 구간이 있다면, 그 주에 실제로 무슨 일이 있었는지 떠올려보면 도장판이 왜 거울에 가까운지 바로 느껴져요.</p>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">대시보드(dashboard) — 로그인 직후 뜨는, 최근 소식과 내 저장소 목록을 모아 보여주는 GitHub의 첫 화면이에요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">히트맵(heatmap) — 숫자를 색의 진하기로 바꿔 격자에 칠해서, 값을 하나씩 읽지 않아도 패턴이 눈에 들어오게 만든 그림이에요. <a href="#fnref2">↩</a></li>
+      </ol>
+    </section>
 
     <a class="post-nav" href="what-is-vibe-coding.html">
       <span class="post-nav-label">참고 글</span>
