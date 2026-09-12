@@ -293,9 +293,10 @@ serve --&gt; __end__;</code></pre>
       </tbody>
     </table>
 
-    <h2><span class="hl">이번 편의 수치</span></h2>
+    <h2 id="numbers"><span class="hl">이번 편의 수치</span> — 직접 돌려서 나온 값</h2>
+    <p>이번 편에서 <strong>직접 만들어 돌려 본 예제</strong>가 뱉은 값을 한자리에 모아 뒀어요. 같은 코드를 따라 돌렸을 때 "내 결과가 맞나"를 대조하는 기준으로 쓰면 돼요. 맨 윗줄 버전은 <a href="langgraph-what-and-why.html#numbers">1편</a>에서 이어지는 것이고, 둘째 줄 <code>recursion_limit</code>은 <strong>되돌아가는 선이 끝없이 도는 걸 막는 상한</strong>이라 요금과 직결돼요. 지금 외울 건 아니고, 결과가 다르게 나왔을 때 돌아와서 보면 되는 표예요.</p>
     <table>
-      <thead><tr><th>항목</th><th>값</th><th>조건·출처</th></tr></thead>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>어떤 조건에서 나온 값인가</th></tr></thead>
       <tbody>
         <tr><td>강의 교안이 검증한 라이브러리 버전</td><td>langgraph 1.2 · langchain-core 1.6 · langchain 1.4 · langchain-openai 1.6</td><td>강의 교안 기준. 제가 2026.09.11에 새로 설치한 최신판도 1.2.11 · 1.6.2 · 1.4.0 · 1.6.2</td></tr>
         <tr><td><code>recursion_limit</code> 기본값</td><td>10007스텝</td><td>langgraph 1.2 이후. 제가 설치한 1.2.11의 소스 코드에서 확인했고, 1.0.0은 25, 1.1.0은 10000이었어요. <code>invoke()</code>의 두 번째 인자로 변경. 제 실험에서 6으로 낮추자 6스텝에서 <code>GraphRecursionError</code></td></tr>

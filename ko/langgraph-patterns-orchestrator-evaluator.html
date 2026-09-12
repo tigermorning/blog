@@ -422,9 +422,10 @@ B result: {'text': '초안 +고침 +고침 (사람에게 넘김)', 'rounds': 3}<
       </tbody>
     </table>
 
-    <h2><span class="hl">이번 편의 수치</span></h2>
+    <h2 id="numbers"><span class="hl">이번 편의 수치</span> — 호출이 몇 번 나가나</h2>
+    <p>이번 편의 값은 거의 다 <strong>LLM 호출 횟수</strong>예요. 오케스트레이터와 평가 루프는 <strong>몇 번 부를지를 모델이 정하는</strong> 구조라, 코드를 한 줄도 안 고쳐도 호출 수가 3번에서 21번으로 뛰어요. 그게 그대로 요금이고요. 그래서 이 표는 "얼마나 열어 둘지"를 정할 때 보는 표예요. 마지막 줄의 상한은 그 열린 구조가 끝까지 안 멈출 때의 <strong>마지막 방어선</strong>이고요.</p>
     <table>
-      <thead><tr><th>항목</th><th>값</th><th>조건·출처</th></tr></thead>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>어떤 조건에서 나온 값인가</th></tr></thead>
       <tbody>
         <tr><td><code>Send</code> 워커 수</td><td>같은 그래프에서 3개 / 6개</td><td>입력만 바꿨을 때 (강의 실습과 제 예제 모두). 코드는 한 줄도 안 고쳤어요 (<a href="#orchestrator">④ 오케스트레이터-워커</a>)</td></tr>
         <tr><td>오케스트레이터가 고른 섹션 수</td><td>5개</td><td>강의 실습, 프롬프트에 "3~5개" 범위만 준 경우</td></tr>

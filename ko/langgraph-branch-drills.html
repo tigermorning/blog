@@ -347,9 +347,10 @@ print(builder.compile().invoke({"text": "아무 노트"}))</code></pre>
     </table>
     <p>정리하면 되돌아가는 선을 그을 때 물을 건 하나예요. <strong>"이 바퀴에서 전표의 무엇이 바뀌나?"</strong> 답이 "없음"이면 그건 반복이 아니라 무한 루프예요.</p>
 
-    <h2><span class="hl">이번 편의 수치</span></h2>
+    <h2 id="numbers"><span class="hl">이번 편의 수치</span> — 문제 셋을 돌려서 나온 값</h2>
+    <p>위에서 푼 <strong>세 문제를 실제로 돌렸을 때</strong> 나온 값이에요. 특히 둘째 줄을 눈여겨보세요. 되돌아가는 선을 만들어 놓고 State를 안 바꾸면 노드가 <strong>5,000번 넘게</strong> 돌아요. 그게 LLM을 부르는 노드였다면 그대로 요금이고요. 나머지 줄은 같은 문제를 따라 풀었을 때 대조할 기준으로 쓰면 돼요.</p>
     <table>
-      <thead><tr><th>항목</th><th>값</th><th>조건·출처</th></tr></thead>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>어떤 조건에서 나온 값인가</th></tr></thead>
       <tbody>
         <tr><td>노트 분량 검사 예제의 3500자 노트</td><td>두 갈래일 때 '출제 가능' → 세 갈래로 바꾼 뒤 1000자씩 4조각 (1000 · 1000 · 1000 · 500)</td><td>제 예제, 60자 미만 보류 · 3000자 초과 분할 기준 (<a href="#drill-three-ways">문제 ①</a>)</td></tr>
         <tr><td>State가 안 바뀌는 되돌아가기 선에서 돈 노드 수</td><td>상한 6: <code>receive</code> 3번 + <code>flag_too_short</code> 3번 · 상한을 안 줬을 때: 5,004번 + 5,003번</td><td>제 노트 예제, langgraph 1.2.11, 13자 노트 하나를 넣은 경우 (<a href="#drill-loop">문제 ③</a>)</td></tr>
