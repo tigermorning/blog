@@ -283,6 +283,7 @@ def count_dishes(state: Ticket):
 
     <h2 id="build-branch"><span class="hl">직접 만들기 ②</span> — 갈림길과 되돌아가는 선</h2>
     <p>실제 시스템은 일직선으로 끝나지 않아요. "간이 맞으면 내보내고, 싱거우면 소금을 넣고 다시 맛본다" 같은 갈림길이 필요하죠. <a href="langgraph-what-and-why.html#quick-look">1편의 while문 코드</a>와 하는 일이 똑같은 예제인데, 이번에는 값(State)·일(Node)·길(Edge)을 따로 떼어 적어요. 위 흐름 그림을 그대로 코드로 옮기면 이래요.</p>
+    <p>맨 끝에 <code>print</code>가 두 줄인 게 눈에 띌 거예요. 첫 줄은 <strong>결과</strong>를, 둘째 줄의 <code>draw_mermaid()</code>는 <strong>다 만든 그래프의 모양</strong>을 글자로 돌려받는 거예요. 바로 위 문장이 "흐름 그림을 코드로 옮긴다"였는데, 이건 <strong>그 반대 방향</strong>이에요 — 코드로 그린 길이 원래 그리려던 그림과 같은지 되돌려 받아 맞춰 보는 거죠.</p>
     <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— langgraph 설치 후, API 키 없이 돌아가요</span></p>
     <pre><code>from typing_extensions import TypedDict
 from langgraph.graph import StateGraph, START, END
@@ -331,7 +332,7 @@ serve --&gt; __end__;</code></pre>
     <ul>
       <li><strong>목적지를 딕셔너리로도 줄 수 있어요.</strong> <code>{"통과": "serve", "보류": "add_salt"}</code>처럼 주면 라우터가 한국어 라벨을 돌려주고 LangGraph가 노드 이름으로 번역해 줘요. 노드 이름은 영문으로, 라벨만 한국어로 두는 절충이에요.</li>
       <li><strong>조건부 엣지 하나로 분기와 반복을 다 만들어요.</strong> 이미 지나온 노드로 돌아가는 선을 그으면 그게 반복이에요.</li>
-      <li><strong>그림으로 확인하기.</strong> <code>draw_mermaid()</code>는 <strong>Mermaid<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup></strong> 문법 글자를 돌려줘요. <code>--&gt;</code>는 실선(항상 가는 길), <code>-.-&gt;</code>는 점선(조건에 따라 고르는 길)이에요. 목적지를 리스트로 줘서 라벨이 노드 이름과 같으면 화살표 라벨이 생략되고, 딕셔너리로 다른 라벨을 주면 화살표 위에 라벨이 찍혀요. <code>draw_mermaid_png()</code>는 그림 파일로 바로 그려 주지만, 기본 설정은 외부 렌더링 서비스를 부르니 인터넷이 필요해요.</li>
+      <li><strong>그림으로 확인하기.</strong> 엣지를 <code>add_edge</code> 네 줄과 <code>add_conditional_edges</code> 한 줄로 흩어 적고 나면 전체 모양이 한눈에 안 들어와요. 그래서 <code>draw_mermaid()</code>로 되돌려 받아 보는 거예요. 출력의 아랫부분 일곱 줄이 그 결과인데, 실선과 점선만 봐도 어디가 항상 가는 길이고 어디가 갈림길인지 바로 보여요. <code>draw_mermaid()</code>가 돌려주는 건 <strong>Mermaid<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup></strong> 문법 글자를 돌려줘요. <code>--&gt;</code>는 실선(항상 가는 길), <code>-.-&gt;</code>는 점선(조건에 따라 고르는 길)이에요. 목적지를 리스트로 줘서 라벨이 노드 이름과 같으면 화살표 라벨이 생략되고, 딕셔너리로 다른 라벨을 주면 화살표 위에 라벨이 찍혀요. <code>draw_mermaid_png()</code>는 그림 파일로 바로 그려 주지만, 기본 설정은 외부 렌더링 서비스를 부르니 인터넷이 필요해요.</li>
     </ul>
     <p>반복에는 늘 따라오는 위험이 있어요. <strong>끝나지 않을 수 있다</strong>는 거예요. <code>judge</code>가 항상 <code>"add_salt"</code>만 돌려주게 바꾸고 <code>graph.invoke(입력, {"recursion_limit": 6})</code>으로 돌려 보니, 여섯 스텝에서 <code>GraphRecursionError</code>가 나며 멈췄어요. 그럼 상한을 안 주면 어디서 멈출까요? 예전 자료에는 기본 25스텝이라고 나오는데, 제가 설치한 langgraph 1.2.11의 소스 코드를 열어 보니 기본값이 <strong>10007</strong>이었어요. 버전별로 받아 보니 1.0.0은 25, 1.1.0은 10000, 1.2.0은 10007이었어요. 기본 상한이 알아서 일찍 끊어 줄 거라고 기대하면 안 된다는 뜻이에요(<a href="langgraph-branch-drills.html#drill-loop">3편의 무한 반복 실험</a>에서 직접 봐요). 게다가 상한에 걸려 멈추는 건 예외라서 그때까지 만든 중간 결과를 못 받아요. 그래서 위 코드처럼 <strong><code>tries</code>를 세다가 <code>call_chef</code>로 빠지는 정상 출구</strong>를 그래프 안에 두는 게 기본이고, <code>recursion_limit</code>은 그 설계가 실패했을 때를 대비한 두 번째 안전망이에요. 그 두 번째 안전망도 기본값에 맡기지 말고 직접 적어 두는 게 좋아요. <a href="my-harness-flow-and-state.html">끝날 때까지 따라가기 — 실행 흐름·상태·승인과 종료 조건</a>에서 "중단을 완료로 표시하지 말라"고 했던 것과 같은 이야기예요.</p>
 
