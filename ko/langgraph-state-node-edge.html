@@ -371,6 +371,33 @@ serve --&gt; __end__;</code></pre>
       </table>
       <p>이 편의 <a href="#key-partial-update">부분 업데이트</a>가 실제로 발목을 잡는 자리도 여기예요. 되돌아가서 본문을 다시 쓰는 노드가 본문 칸만 돌려주면, <strong>검사에서 걸린 것 목록 칸에는 지난번 결과가 그대로 남아 있어요.</strong> 다시 검사하기 전까지는 이미 고친 문제도 목록에 남아 있는 셈이라, 그 목록을 그대로 읽고 또 고치게 돼요. 되돌아가는 선을 그릴 때는 <strong>되돌아간 노드가 어느 칸을 비우고 시작하는지</strong>까지 같이 정해야 하는 이유예요.</p>
     </section>
+    <section class="apply-box apply-box--repo" id="apply-repo">
+      <p class="apply-box-title">실제 코드에 대입하면 — 교정기의 전표와, 손으로 하는 부분 업데이트</p>
+      <p><a href="langgraph-what-and-why.html#apply-repo">1편에서 꺼낸</a> 교정기를 이 편의 세 낱말로 뜯으면 이렇게 돼요.</p>
+      <table>
+        <thead><tr><th>그래프의 낱말</th><th>교정기에서는</th></tr></thead>
+        <tbody>
+          <tr><td>State<br>(주문 전표)</td><td>자막 한 줄을 담은 <code>SubtitleEntry</code>, 그리고 그 줄에서 나온 <code>FlagItem</code>(사람이 볼 제안) 목록과 <code>AppliedNote</code>(자동으로 고친 기록) 목록</td></tr>
+          <tr><td>Node<br>(일하는 함수)</td><td>파일 읽기 · 줄마다 규칙 스물다섯 개 적용하기 · 검사해서 제안 만들기 · 문서 전체 용어 통일하기 · 파일과 보고서 쓰기</td></tr>
+          <tr><td>Edge<br>(다음 행선지)</td><td>그 순서, 그리고 화자가 사투리로 지정돼 있으면 교정 단계를 통째로 건너뛰는 선</td></tr>
+        </tbody>
+      </table>
+      <p class="run-tag run-tag--concept">제 저장소 코드 <span class="run-tag-why">— <code>subtitle_corrector/parsers.py</code>에서 전표에 해당하는 부분만 옮겼어요</span></p>
+      <pre><code>@dataclass
+class SubtitleEntry:
+    index: int
+    start: str
+    end: str
+    text: str                          # 고쳐지는 칸
+    speaker: str | None = None         # 화자 (사투리 판정에 씀)
+    raw_prefix: str | None = None      # 형식마다 대사 앞뒤에 붙는 조각
+    raw_suffix: str | None = None
+    original_text: str | None = None   # 교정 전 원문</code></pre>
+      <p>여기서 이 편의 <a href="#key-partial-update">부분 업데이트</a>가 아주 선명하게 나와요. LangGraph는 노드가 바뀐 칸만 돌려주면 나머지를 알아서 들고 가 주지만, <strong>이 코드에는 그걸 해 주는 프레임워크가 없어요.</strong> 그래서 손으로 해요.</p>
+      <p class="run-tag run-tag--concept">제 저장소 코드 <span class="run-tag-why">— <code>engine/pipeline.py</code>의 줄 단위 처리가 끝나는 자리예요</span></p>
+      <pre><code>corrected_entries.append(replace(e, text=corrected_text))</code></pre>
+      <p><code>replace</code>는 원래 전표를 복사하면서 <strong><code>text</code> 칸만 갈아 끼워요.</strong> <code>start</code>·<code>end</code>·<code>speaker</code>·<code>raw_prefix</code>는 손대지 않고 따라와요. 저 줄에 제가 붙여 둔 주석이 그대로 이 편 이야기예요 — <em>"필드를 하나 늘릴 때마다 여기를 고치는 실수를 막는다."</em> 칸을 새로 만들 때마다 옮겨 담는 코드를 따라 고쳐야 하는 게, LangGraph가 대신 해 주는 바로 그 일이에요.</p>
+    </section>
 
     <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
     <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 강의가 퀴즈로 다시 짚은 내용이라, 복습할 때 이것부터 보면 돼요. 다른 편의 같은 목록은 <a href="langgraph-what-and-why.html#key-recap">1편</a> · <a href="langgraph-branch-drills.html#key-recap">3편</a> · <a href="langgraph-branches-and-tool-loop.html#key-recap">4편</a> · <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a> · <a href="langgraph-patterns-orchestrator-evaluator.html#key-recap">7편</a>에 있어요.</p>

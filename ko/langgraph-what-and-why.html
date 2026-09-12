@@ -310,6 +310,13 @@ while True:
       <p>자율성이 실제로 들어간 자리는 딱 하나예요. 강의 스텝 열두 개를 받았을 때 <strong>글 몇 편으로 낼지는 규칙 파일에 안 적혀 있어요.</strong> "짧고 얕으면 합치고, 길고 빽빽하면 쪼갠다"까지만 적혀 있고, 그래서 몇 편이 되는지는 읽어 봐야 알아요. 이 시리즈가 일곱 편이 된 것도 그렇게 정해졌어요.</p>
       <p>그 한 자리를 빼면 나머지는 전부 미리 그려 둔 길이에요. 중간에 모델을 여러 번 부르고 브라우저를 여는 도구까지 쓰지만, 그건 기준이 아니에요 — <strong>갈 수 있는 길을 사람이 미리 다 그려 뒀는가</strong>가 기준이니까요.</p>
     </section>
+    <section class="apply-box apply-box--repo" id="apply-repo">
+      <p class="apply-box-title">실제 코드에 대입하면 — 모델을 부르는데도 눈금자 왼쪽 끝인 교정기</p>
+      <p>제가 따로 만들어 둔 <strong>한국어 자막 교정기</strong>에 같은 눈금자를 대 볼게요. 자막 한 줄을 받아 맞춤법과 띄어쓰기를 고치는 도구예요. 고치는 규칙이 스물다섯 개인데, <strong>어느 규칙 다음에 어느 규칙인지가 파일 하나에 순서대로 적혀 있어요</strong> — 외래어 받침 → 조사 띄어쓰기 → 단위 대소문자 → … 하는 식이에요. 갈 수 있는 길을 사람이 미리 다 그려 뒀으니 <a href="#big-picture">위 눈금자</a>의 왼쪽 끝, 워크플로예요.</p>
+      <p>그런데 이 도구도 <strong>언어 모델을 불러요.</strong> 규칙이 전부 끝난 뒤 마지막에 한 번, 사전으로는 답이 안 나오는 것을 물어봐요 — <code>되</code>와 <code>돼</code> 중 어느 쪽인지, 조사가 문장 구조에 맞는지 같은 것들이요. 사전을 아무리 뒤져도 문맥을 봐야 갈리는 자리거든요.</p>
+      <p>그런데도 눈금자에서 오른쪽으로 한 칸도 안 움직여요. <strong>그 패스는 자막 텍스트를 한 글자도 바꾸지 않으니까요.</strong> 사람이 확인할 제안 목록만 만들고, 실제 반영은 사람이 화면에서 골랐을 때 일어나요. 모델이 부른 것도 아니고, 다음에 무엇을 할지 정한 것도 아니에요.</p>
+      <p>이 편의 기준이 호출 수나 모델 크기가 아니라 <strong>"다음 걸음을 누가 정하나"</strong>인 이유가 여기서 그대로 보여요. 이 대입은 다음 편부터 State·Node·Edge로 뜯으면서 계속 이어 갈게요.</p>
+    </section>
 
     <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
     <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 강의가 퀴즈로 다시 짚은 내용이라, 복습할 때 이것부터 보면 돼요. 다른 편의 같은 목록은 <a href="langgraph-state-node-edge.html#key-recap">2편</a> · <a href="langgraph-branch-drills.html#key-recap">3편</a> · <a href="langgraph-branches-and-tool-loop.html#key-recap">4편</a> · <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a> · <a href="langgraph-patterns-orchestrator-evaluator.html#key-recap">7편</a>에 있어요.</p>

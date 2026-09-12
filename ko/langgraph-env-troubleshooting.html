@@ -230,6 +230,24 @@ os.environ["OPENAI_API_KEY"] = getpass.getpass("OpenAI API Key: ")</code></pre>
       <p><a href="langgraph-state-node-edge.html#apply-blog">블로그 글 만들기</a>의 첫 단계는 "강의 페이지의 본문을 가져온다"인데, <strong>그 페이지가 로그인해야 보이는 페이지라는 전제는 순서 어디에도 안 그려져 있어요.</strong> 로그아웃된 상태로 돌리면 첫 단계가 본문 대신 로그인 화면을 가져오게 돼요. 그런데 그 뒤 단계는 전부 정상으로 보여요 — 받아 온 글자를 가지고 본문을 쓰고, <code>posts.html</code>에 끼우고, 링크까지 걸어요. 에러 한 줄 없이 내용만 엉뚱한 글이 나와요.</p>
       <p>API 키가 안 읽히는 것도 같은 종류예요. 그래프 그림에는 "키가 있어야 한다"가 안 그려져 있으니, <strong>그림을 아무리 봐도 원인이 안 나와요.</strong> 이 편처럼 겹을 하나씩 걷어 내며 어디까지 값이 도착했는지 직접 찍어 보는 방법이 따로 필요한 이유예요.</p>
     </section>
+    <section class="apply-box apply-box--repo" id="apply-repo">
+      <p class="apply-box-title">실제 코드에 대입하면 — 키가 여섯 개일 때의 조용한 실패</p>
+      <p><a href="langgraph-branches-and-tool-loop.html#apply-repo">지난 편의 그 사전들</a>은 전부 API 키가 있어야 열려요. 그래서 교정기에도 이 편과 똑같은 겹이 있어요 — 키가 여섯 개라는 것만 달라요.</p>
+      <p class="run-tag run-tag--concept">제 저장소 코드 <span class="run-tag-why">— <code>subtitle_corrector/dictionary/clients.py</code> 맨 위예요</span></p>
+      <pre><code>from dotenv import load_dotenv
+
+load_dotenv()
+
+STDICT_API_KEY = os.getenv("STDICT_API_KEY")
+OPENDICT_API_KEY = os.getenv("OPENDICT_API_KEY")
+KORNORMS_API_KEY = os.getenv("KORNORMS_API_KEY")
+ONYONGEO_KEY = os.getenv("ONYONGEO_KEY")
+KRDICT_KEY = os.getenv("KRDICT_KEY")
+DIALECT_API_KEY = os.getenv("DIALECT_API_KEY")</code></pre>
+      <p><strong>이 편의 첫 겹은 여기서 안 걸려요.</strong> <code>load_dotenv()</code>가 <code>os.getenv</code>보다 위에 있으니 순서는 맞아요. 대신 다른 겹이 걸려요 — 저 대입이 <strong>모듈 맨 위, 즉 <code>import</code>되는 순간 딱 한 번</strong>이에요. 그래서 프로그램을 띄워 둔 채로 <code>.env</code>를 고치면 아무 일도 안 일어나요. 값은 이미 굳었고, 다시 읽히는 건 프로세스를 새로 띄울 때예요.</p>
+      <p>키가 여섯 개라서 생기는 문제가 하나 더 있어요. <strong>하나가 비어도 프로그램이 안 멈춰요.</strong> 그 사전만 빈 결과를 돌려주고, 교정기는 그걸 "그 낱말은 사전에 없다"로 읽어요. 그러면 멀쩡한 낱말이 모르는 낱말로 플래그돼서 나와요. 에러 한 줄 없이 결과만 달라지는, 이 편에서 본 그 모양 그대로예요.</p>
+      <p>그래서 이 도구에는 <strong>조회가 몇 번 나갔고 몇 번 실패했는지를 따로 세는 함수</strong>(<code>lookup_stats</code>·<code>failed_lookups</code>)를 뒀어요. 그래프 그림에는 "키가 있어야 한다"가 안 그려지니, 값이 어디까지 도착했는지 직접 찍어 보는 길을 따로 내 둔 거예요.</p>
+    </section>
 
     <h2><span class="hl">다음은</span></h2>
     <p>키가 들어갔으면 <a href="langgraph-branches-and-tool-loop.html#tool-loop">4편의 도구 루프</a>로 돌아가 실습을 마저 하세요. 거기까지 끝냈다면 <a href="langgraph-five-workflow-patterns.html">6편</a>이에요. 지금까지 손으로 그은 선들이 <strong>다섯 가지 이름 붙은 모양</strong>으로 다시 나와요.</p>

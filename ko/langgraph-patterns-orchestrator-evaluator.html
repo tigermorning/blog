@@ -441,6 +441,35 @@ B result: {'text': '초안 +고침 +고침 (사람에게 넘김)', 'rounds': 3}<
       <p><strong>⑤ 평가자-최적화자.</strong> 코드로 못 재는 기준이 이 블로그에도 있어요 — <strong>"그 비유가 이 편 내용에 맞는가"</strong>예요. 안 맞는 비유는 없느니만 못해요, 독자가 개념 대신 비유를 외우게 되니까요. 이건 글자 수나 링크 개수처럼 세어서는 판정이 안 나요. 그래서 다 쓴 글을 다시 읽고 통과·반려를 내는 단계를 두고, 반려면 <strong>어디가 왜 안 맞는지를 함께</strong> 본문 쓰기로 되돌려요. 이유를 안 붙이면 <a href="langgraph-branch-drills.html#apply-blog">3편의 그 반복</a>이 돼요.</p>
       <p>바퀴마다 호출이 두 번씩 늘어나니 몇 바퀴까지인지가 필요하고, <strong>그 수에 닿았을 때도 그때까지의 최선 원고를 들고 정상 출구로 나가야 해요.</strong> 예외로 끝나면 세 바퀴 돈 원고가 통째로 사라지거든요.</p>
     </section>
+    <section class="apply-box apply-box--repo" id="apply-repo">
+      <p class="apply-box-title">실제 코드에 대입하면 — 자막이 몇 개 나올지는 코드가 몰라요</p>
+      <p>이 편은 <a href="langgraph-five-workflow-patterns.html#apply-repo">교정기</a> 말고 <strong>자막·타임코드 생성기</strong> 쪽을 볼게요. 영상 하나를 받아 전사 → 대조 → 번역 → 재분할 → 스포팅까지 이어 붙여 초벌 자막을 내는 도구예요.</p>
+      <p><strong>④ 오케스트레이터-워커.</strong> 전사한 덩어리 하나가 자막 <strong>몇 개로 갈릴지를 코드에 적을 수가 없어요.</strong> 자막 하나에 담기는 글자 수는 규정(한 줄 한계 × 줄 수)이 정해 주지만, 그 덩어리에 글자가 몇 개 들어 있는지는 영상을 들어 봐야 알거든요.</p>
+      <p class="run-tag run-tag--concept">제 저장소 코드 <span class="run-tag-why">— <code>checker/resplit.py</code>의 <code>resplit_all()</code>에서 나누는 부분만 옮겼어요</span></p>
+      <pre><code>out: list[Event] = []
+for ev in events:
+    pieces = resplit(ev, max_chars_per_cue, ...)
+    out.extend(pieces)
+    if origins is not None:
+        origins.extend([ev.index] * len(pieces))
+for i, ev in enumerate(out, 1):
+    ev.index = i
+return out</code></pre>
+      <p><code>append</code>가 아니라 <code>extend</code>인 게 이 편의 요지예요. 하나 넣으면 하나 나오는 게 아니라 <strong>몇 개 나올지 모르는 것을 쏟아 붓는</strong> 자리라서요. 마지막 두 줄이 결과를 하나로 접는 부분이고요.</p>
+      <p>그리고 위의 <a href="#send-note">워커는 쪽지만 받는다</a>가 여기서 아주 구체적으로 걸려요. 번호를 다시 매기는 순간 <strong>앞 단계가 "여기 봐야 한다"고 표시해 둔 번호가 엉뚱한 자막을 가리켜요.</strong> 셋째 자막을 가리키던 표시가, 앞의 자막 하나가 셋으로 갈리면 전혀 다른 대사에 붙어요. <code>origins</code>라는 목록이 따로 있는 게 그래서예요 — 새 자막마다 원래 번호가 무엇이었는지를 같이 들고 가요. 워커에게 쪽지로 담아 보내야 하는 정보가 실제로는 이런 모양이에요.</p>
+      <p><strong>그리고 정직하게 하나.</strong> 이건 이 편의 기준으로 보면 <strong>아직 워크플로예요.</strong> 개수를 코드에 못 적는 건 맞지만, 그 개수를 정하는 건 LLM이 아니라 규정과 글자 수예요. 위의 <a href="#key-parallel-vs-orchestrator">"개수를 누가, 언제 정하나"</a>에서 <em>언제</em>만 실행 때로 옮겨졌고 <em>누가</em>는 그대로 코드예요. 이 갈림점이 얼마나 좁은지가 여기서 보여요.</p>
+      <p><strong>⑤ 평가자-최적화자.</strong> 전사 단계에 한 바퀴짜리가 있어요. 말소리가 있는 구간은 따로 세어 두는데, 전사가 내놓은 세그먼트 수가 그 <strong>90%에 못 미치면</strong> 전사가 실패했다고 보고 한 번 더 돌려요.</p>
+      <p class="run-tag run-tag--concept">제 저장소 코드 <span class="run-tag-why">— <code>checker/generate.py</code>의 재시도 부분이에요</span></p>
+      <pre><code>SUSPECT_RATIO = 0.9
+if transcript_cache is None and speech and len(segments) &lt; len(speech) * SUSPECT_RATIO:
+    retry_segments = transcribe(video, ...)
+    if len(retry_segments) &gt; len(segments):
+        segments = retry_segments
+    else:
+        say("다시 돌려도 나아지지 않았습니다 — 이번 결과를 그대로 씁니다.")</code></pre>
+      <p>여기서 볼 게 <code>else</code>예요. 다시 돌려도 안 나아졌을 때 <strong>예외를 던지지 않고 그때까지의 결과를 들고 정상 출구로 나가요.</strong> 위에서 말한 <a href="#key-loop-stop">상한에 닿았을 때도 최선을 들고 나가야 한다</a>가 이 <code>else</code> 한 줄이에요. 여기서 예외로 끝내면 몇십 분 걸린 전사가 통째로 사라지거든요.</p>
+      <p>다만 판정하는 쪽이 모델이 아니라 <strong>개수 비교</strong>예요. 그래서 "전사가 틀렸다"는 못 잡아요 — 엉뚱한 말로 받아썼어도 개수만 맞으면 통과해요. 그게 이 편의 평가자를 LLM으로 두는 이유이고, 동시에 그렇게 바꿨을 때 <strong>판정이 매번 달라질 수 있다</strong>는 값을 치르는 자리예요.</p>
+    </section>
 
     <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
     <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 강의가 퀴즈로 다시 짚은 내용이라, 복습할 때 이것부터 보면 돼요. 다른 편의 같은 목록은 <a href="langgraph-what-and-why.html#key-recap">1편</a> · <a href="langgraph-state-node-edge.html#key-recap">2편</a> · <a href="langgraph-branch-drills.html#key-recap">3편</a> · <a href="langgraph-branches-and-tool-loop.html#key-recap">4편</a> · <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a>에 있어요.</p>

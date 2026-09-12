@@ -317,6 +317,13 @@ agent.invoke({"messages": [("user", "계란말이 두 접시 만들 수 있어?"
       <p>루프가 도는 장면도 있어요. 강의 페이지는 첫 호출에서 본문 대신 <code>Loading...</code>만 잡힐 때가 있어요. 그러면 같은 주소로 한 번 더 부르고, 그래도 비어 있으면 잠깐 기다렸다 또 불러요. <strong>몇 번 부를지는 미리 못 적어요</strong> — 돌려받은 내용을 보고 정하니까요. 이게 이 편의 되돌아가는 선이고, 그래서 여기에도 몇 바퀴까지인지가 필요해요.</p>
       <p>도구가 둘 이상일 때(브라우저로 웹 페이지 읽기 · 저장소 안의 파일 읽기) 어느 쪽을 부를지는 부탁하는 문장이 아니라 <strong>도구에 붙은 설명 한 줄</strong>로 갈려요. 강의 주소를 줬는데 엉뚱하게 파일을 뒤진다면, 고칠 자리는 프롬프트가 아니라 그 설명이에요.</p>
     </section>
+    <section class="apply-box apply-box--repo" id="apply-repo">
+      <p class="apply-box-title">실제 코드에 대입하면 — 교정기의 사전 조회는 도구인데, 아직 루프가 아니에요</p>
+      <p><a href="langgraph-branch-drills.html#apply-repo">지난 편의 교정기</a>는 바깥 사전을 쉴 새 없이 조회해요. 국립국어원 표준국어대사전(<code>search_stdict</code>)·우리말샘(<code>search_opendict</code>)·어문 규범 용례(<code>search_kornorms</code>)·다듬은 말(<code>search_onyongeo</code>)로 나가는 함수가 따로 있고, 같은 낱말을 반복 조회하지 않으려고 <code>@lru_cache</code>를 달아 뒀어요. 자막에는 "그리고", "저는" 같은 말이 수없이 반복되니까요.</p>
+      <p>이 편의 낱말로 부르면 저건 전부 <strong>도구</strong>예요. 바깥에 나갔다 오고, 돌려받은 결과를 보고 다음 판단이 갈리니까요. 그런데 이 편의 <strong>루프는 아니에요.</strong> 갈림점이 하나예요 — <strong>사전을 조회할지 말지를 모델이 정하지 않아요.</strong> "이 토막은 외래어 같으니 사전에 물어본다"까지 규칙으로 코드에 적혀 있고, 모델은 그 결정에 끼지 않아요.</p>
+      <p>그래서 이걸 이 편의 루프로 바꾸면 무엇이 달라지는지가 분명해요. 지금은 <strong>몇 번 조회할지를 코드가 알아요</strong> — 규칙이 몇 개인지, 토막이 몇 개인지 세면 나오니까요. 루프로 바꾸면 못 세게 돼요. 모델이 "이 낱말은 표준국어대사전에 없으니 우리말샘에도 물어보자"고 이어 갈 수 있게 되거든요. 얻는 것은 사전을 고르는 판단이고, 잃는 것은 <strong>호출 수가 예측 가능하다는 성질</strong>이에요. 사전 API마다 하루 호출 한도가 걸려 있는 도구에서는 그게 싼 거래가 아니에요.</p>
+      <p>도구 설명 한 줄 이야기도 그대로 걸려요. 이 사전들은 <strong>겹치는 낱말에 서로 다른 답을 줘요</strong> — 표준국어대사전에 없는 말이 우리말샘에는 있고, 규정 용례는 또 다른 것을 말해요. 모델에게 넷을 다 쥐여 주면 어느 쪽을 부를지는 부탁하는 문장이 아니라 도구에 붙은 설명 한 줄로 갈려요. 규정 용례가 필요한 자리에서 우리말샘을 뒤진다면, 고칠 자리는 프롬프트가 아니라 그 설명이에요.</p>
+    </section>
 
     <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
     <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 강의가 퀴즈로 다시 짚은 내용이라, 복습할 때 이것부터 보면 돼요. 다른 편의 같은 목록은 <a href="langgraph-what-and-why.html#key-recap">1편</a> · <a href="langgraph-state-node-edge.html#key-recap">2편</a> · <a href="langgraph-branch-drills.html#key-recap">3편</a> · <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a> · <a href="langgraph-patterns-orchestrator-evaluator.html#key-recap">7편</a>에 있어요.</p>

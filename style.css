@@ -1264,6 +1264,22 @@ details[open] > summary .tree-toggle-icon {
   margin-bottom: 0;
 }
 
+/* 같은 대입이지만 비유가 아니라 **실제로 돌아가는 내 저장소 코드**에 얹어 보는
+   박스. apply-box(블로그 만들기 비유)와 색과 배지를 다르게 둔다. */
+.apply-box--repo {
+  border-color: var(--folder-8);
+  background: color-mix(in srgb, var(--folder-8) 6%, transparent);
+}
+
+.apply-box--repo .apply-box-title::before {
+  content: "코드";
+  background: var(--folder-8);
+}
+
+.apply-box--repo pre {
+  margin: 0.6rem 0 0.9rem;
+}
+
 /* 6. 전문 용어 각주 */
 .fn-ref {
   font-size: 0.75em;

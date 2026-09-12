@@ -435,6 +435,30 @@ TypeError: unhashable type: 'dict'</code></pre>
       <p><strong>② 이름 어긋남.</strong> 판정하는 쪽이 <code>"쪼개기"</code>를 돌려주는데 목적지 목록에는 <code>"분할"</code>로 적어 뒀다면, 짧은 스텝과 보통 스텝만 넣어 본 날은 멀쩡히 지나가요. <strong>처음으로 긴 스텝이 들어오는 날</strong>에야 터져요. 갈래를 늘렸으면 그 갈래로 실제로 가는 입력을 한 번은 넣어 봐야 하는 이유예요.</p>
       <p><strong>③ 끝나지 않는 반복.</strong> 이 블로그에는 "비유가 그 편 내용에 안 맞으면 다시 쓴다"는 규칙이 있어요. 이걸 되돌아가는 선으로 그려 놓고, 다시 쓰는 쪽이 <strong>지난번 지적을 못 받아 보면</strong> 같은 비유를 또 써요. 전표가 안 바뀌니 같은 자리를 계속 돌아요. 바퀴 수를 적는 칸과 빠져나가는 출구가 필요한 게 이 자리예요.</p>
     </section>
+    <section class="apply-box apply-box--repo" id="apply-repo">
+      <p class="apply-box-title">실제 코드에 대입하면 — 교정기의 세 갈래는 화자가 정해요</p>
+      <p><a href="langgraph-state-node-edge.html#apply-repo">지난 편의 교정기</a>에도 이 편의 세 갈래가 그대로 있어요. 다만 갈래를 고르는 기준이 글자 수가 아니라 <strong>그 대사의 화자가 사투리 화자로 지정돼 있는가</strong>예요.</p>
+      <p class="run-tag run-tag--concept">제 저장소 코드 <span class="run-tag-why">— <code>engine/pipeline.py</code>에서 갈림길 부분만 옮겼어요</span></p>
+      <pre><code>region, mode = resolve_dialect_mode(
+    e.speaker, dialect_map, dialect_modes, dialect_region, dialect_mode
+)
+
+if region is not None and mode == "protect":
+    protected_indices.add(e.index)
+    corrected_entries.append(replace(e))
+    continue
+
+if region is not None and mode == "assist":
+    _, dialect_flags = check_dialect(e.index, e.text, region, mode)
+    flags.extend(dialect_flags)
+    corrected_entries.append(replace(e))
+    continue
+
+# 여기부터: 사투리 미지정 화자 또는 to_standard 화자</code></pre>
+      <p><strong>① 세 갈래.</strong> <code>resolve_dialect_mode</code>가 돌려주는 <code>mode</code>가 이 편의 라우터예요. <code>"protect"</code>면 아무것도 안 고치고 원문 그대로, <code>"assist"</code>면 제안만 남기고 텍스트는 그대로, <code>"to_standard"</code>거나 사투리 지정이 없으면 규칙 스물다섯 개 쪽으로 가요. 위의 짧은 노트·보통 노트·긴 노트와 같은 모양이에요.</p>
+      <p><strong>② 이름 어긋남.</strong> 여기 걸릴 자리가 실제로 있어요. 고르는 쪽이 돌려주는 글자와 받는 쪽이 비교하는 글자가 <strong>양쪽 코드에 따로 적혀 있거든요.</strong> 한쪽을 <code>"assist"</code>에서 다른 말로 바꿔 놓으면, <strong>사투리 화자가 없는 자막으로는 아무리 돌려도 안 걸려요.</strong> 사투리 화자를 <code>assist</code>로 지정한 파일이 처음 들어오는 날에야 조용히 규칙 스물다섯 개 쪽으로 새 버려요. 게다가 에러도 안 나요 — 보호했어야 할 대사가 표준어로 고쳐져 나올 뿐이에요. 갈래를 늘렸으면 그 갈래로 실제로 가는 입력을 한 번은 넣어 봐야 하는 이유예요.</p>
+      <p><strong>③ 되돌아가는 선.</strong> 이 코드에는 아직 없어요. 줄 하나를 고치고 다시 그 줄로 돌아오는 선이 없어서, 규칙끼리 물고 도는 일이 구조적으로 안 일어나요. 대신 각 규칙 뒤에 <strong>결과를 검사하는 관문</strong>이 하나씩 붙어 있는데, 그건 <a href="langgraph-five-workflow-patterns.html#apply-repo">6편</a>에서 꺼낼게요.</p>
+    </section>
 
     <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
     <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 강의가 퀴즈로 다시 짚은 내용이라, 복습할 때 이것부터 보면 돼요. 다른 편의 같은 목록은 <a href="langgraph-what-and-why.html#key-recap">1편</a> · <a href="langgraph-state-node-edge.html#key-recap">2편</a> · <a href="langgraph-branches-and-tool-loop.html#key-recap">4편</a> · <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a> · <a href="langgraph-patterns-orchestrator-evaluator.html#key-recap">7편</a>에 있어요.</p>
