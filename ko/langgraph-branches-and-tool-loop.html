@@ -311,6 +311,13 @@ agent.invoke({"messages": [("user", "계란말이 두 접시 만들 수 있어?"
       </tbody>
     </table>
 
+    <section class="apply-box" id="apply-blog">
+      <p class="apply-box-title">내 파이프라인에 대입하면 — 강의 페이지를 읽어 오는 일이 도구예요</p>
+      <p><a href="langgraph-state-node-edge.html#apply-blog">블로그 글 만들기</a>의 첫 단계는 강의 페이지의 본문을 가져오는 일이에요. 이게 바로 도구예요. 그리고 이 편의 요지가 그대로 적용돼요 — <strong>모델은 "이 주소의 본문을 가져와 주세요"라는 요청서만 쓰고, 실제로 브라우저를 여는 건 따로 있는 실행 담당이에요.</strong></p>
+      <p>루프가 도는 장면도 있어요. 강의 페이지는 첫 호출에서 본문 대신 <code>Loading...</code>만 잡힐 때가 있어요. 그러면 같은 주소로 한 번 더 부르고, 그래도 비어 있으면 잠깐 기다렸다 또 불러요. <strong>몇 번 부를지는 미리 못 적어요</strong> — 돌려받은 내용을 보고 정하니까요. 이게 이 편의 되돌아가는 선이고, 그래서 여기에도 몇 바퀴까지인지가 필요해요.</p>
+      <p>도구가 둘 이상일 때(브라우저로 웹 페이지 읽기 · 저장소 안의 파일 읽기) 어느 쪽을 부를지는 부탁하는 문장이 아니라 <strong>도구에 붙은 설명 한 줄</strong>로 갈려요. 강의 주소를 줬는데 엉뚱하게 파일을 뒤진다면, 고칠 자리는 프롬프트가 아니라 그 설명이에요.</p>
+    </section>
+
     <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
     <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 강의가 퀴즈로 다시 짚은 내용이라, 복습할 때 이것부터 보면 돼요. 다른 편의 같은 목록은 <a href="langgraph-what-and-why.html#key-recap">1편</a> · <a href="langgraph-state-node-edge.html#key-recap">2편</a> · <a href="langgraph-branch-drills.html#key-recap">3편</a> · <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a> · <a href="langgraph-patterns-orchestrator-evaluator.html#key-recap">7편</a>에 있어요.</p>
     <ul class="key-recap">

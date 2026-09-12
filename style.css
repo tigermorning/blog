@@ -1228,6 +1228,42 @@ details[open] > summary .tree-toggle-icon {
   margin-bottom: 0.45rem;
 }
 
+/* 내 파이프라인에 대입하면: 배운 개념을 이 블로그 자체를 만드는 과정에
+   대입해 보는 박스. key-point(강의 퀴즈 핵심)와 색을 다르게 둔다. */
+.apply-box {
+  border: 2px solid var(--folder-7);
+  border-radius: 18px 4px 18px 4px;
+  background: color-mix(in srgb, var(--folder-7) 6%, transparent);
+  padding: 1rem 1.2rem 0.9rem;
+  margin: 1.5rem 0 1.8rem;
+}
+
+.apply-box-title {
+  margin: 0 0 0.7rem;
+  font-family: var(--font-subhead);
+  font-weight: var(--font-subhead-weight, 400);
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+
+.apply-box-title::before {
+  content: "대입";
+  display: inline-block;
+  margin-right: 0.5rem;
+  padding: 0.05rem 0.7rem;
+  border-radius: 999px;
+  background: var(--folder-7);
+  color: #fff;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.apply-box > p:last-child,
+.apply-box > ul:last-child,
+.apply-box > table:last-child {
+  margin-bottom: 0;
+}
+
 /* 6. 전문 용어 각주 */
 .fn-ref {
   font-size: 0.75em;

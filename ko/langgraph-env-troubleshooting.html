@@ -224,6 +224,13 @@ os.environ["OPENAI_API_KEY"] = getpass.getpass("OpenAI API Key: ")</code></pre>
       </tbody>
     </table>
 
+    <section class="apply-box" id="apply-blog">
+      <p class="apply-box-title">내 파이프라인에 대입하면 — 그래프에 안 그려진 전제</p>
+      <p>이 편만 그래프 이야기가 아니라 <strong>그래프를 돌리는 환경</strong> 이야기예요. 대입해도 같은 모양이 나와요.</p>
+      <p><a href="langgraph-state-node-edge.html#apply-blog">블로그 글 만들기</a>의 첫 단계는 "강의 페이지의 본문을 가져온다"인데, <strong>그 페이지가 로그인해야 보이는 페이지라는 전제는 순서 어디에도 안 그려져 있어요.</strong> 로그아웃된 상태로 돌리면 첫 단계가 본문 대신 로그인 화면을 가져오게 돼요. 그런데 그 뒤 단계는 전부 정상으로 보여요 — 받아 온 글자를 가지고 본문을 쓰고, <code>posts.html</code>에 끼우고, 링크까지 걸어요. 에러 한 줄 없이 내용만 엉뚱한 글이 나와요.</p>
+      <p>API 키가 안 읽히는 것도 같은 종류예요. 그래프 그림에는 "키가 있어야 한다"가 안 그려져 있으니, <strong>그림을 아무리 봐도 원인이 안 나와요.</strong> 이 편처럼 겹을 하나씩 걷어 내며 어디까지 값이 도착했는지 직접 찍어 보는 방법이 따로 필요한 이유예요.</p>
+    </section>
+
     <h2><span class="hl">다음은</span></h2>
     <p>키가 들어갔으면 <a href="langgraph-branches-and-tool-loop.html#tool-loop">4편의 도구 루프</a>로 돌아가 실습을 마저 하세요. 거기까지 끝냈다면 <a href="langgraph-five-workflow-patterns.html">6편</a>이에요. 지금까지 손으로 그은 선들이 <strong>다섯 가지 이름 붙은 모양</strong>으로 다시 나와요.</p>
 

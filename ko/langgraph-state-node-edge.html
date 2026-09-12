@@ -304,6 +304,20 @@ serve --&gt; __end__;</code></pre>
       </tbody>
     </table>
 
+    <section class="apply-box" id="apply-blog">
+      <p class="apply-box-title">내 파이프라인에 대입하면 — 블로그 글 만들기를 세 조각으로 뜯기</p>
+      <p><a href="langgraph-what-and-why.html#apply-blog">1편에서 본</a> 그 순서를 이 편의 세 낱말로 뜯으면 이렇게 돼요.</p>
+      <table>
+        <thead><tr><th>그래프의 낱말</th><th>블로그 글 만들기에서는</th></tr></thead>
+        <tbody>
+          <tr><td>State<br>(주문 전표)</td><td>강의 원문 · 지금까지 쓴 본문 HTML · 검사에서 걸린 것 목록 · 고쳐 쓴 바퀴 수</td></tr>
+          <tr><td>Node<br>(일하는 함수)</td><td>강의 페이지 읽기 · 본문 쓰기 · 검사하기 · <code>posts.html</code>에 끼우기 · 앞뒤 링크 걸기</td></tr>
+          <tr><td>Edge<br>(다음 행선지)</td><td>그 다섯을 잇는 순서, 그리고 검사에 걸리면 본문 쓰기로 되돌아가는 선 하나</td></tr>
+        </tbody>
+      </table>
+      <p>이 편의 <a href="#key-partial-update">부분 업데이트</a>가 실제로 발목을 잡는 자리도 여기예요. 되돌아가서 본문을 다시 쓰는 노드가 본문 칸만 돌려주면, <strong>검사에서 걸린 것 목록 칸에는 지난번 결과가 그대로 남아 있어요.</strong> 다시 검사하기 전까지는 이미 고친 문제도 목록에 남아 있는 셈이라, 그 목록을 그대로 읽고 또 고치게 돼요. 되돌아가는 선을 그릴 때는 <strong>되돌아간 노드가 어느 칸을 비우고 시작하는지</strong>까지 같이 정해야 하는 이유예요.</p>
+    </section>
+
     <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
     <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 강의가 퀴즈로 다시 짚은 내용이라, 복습할 때 이것부터 보면 돼요. 다른 편의 같은 목록은 <a href="langgraph-what-and-why.html#key-recap">1편</a> · <a href="langgraph-branch-drills.html#key-recap">3편</a> · <a href="langgraph-branches-and-tool-loop.html#key-recap">4편</a> · <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a> · <a href="langgraph-patterns-orchestrator-evaluator.html#key-recap">7편</a>에 있어요.</p>
     <ul class="key-recap">
