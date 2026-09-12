@@ -32,7 +32,7 @@
       <span class="post-nav-title">갈림길을 밀어붙인다 — 세 갈래·라벨·끝나지 않는 반복 (3)</span>
     </a>
 
-    <p class="one-liner">도구 루프란 조건부 엣지의 라우터 자리에 모델의 도구 요청을 읽는 <code>tools_condition</code>을 앉혀, 규칙이 고르던 갈림길을 모델이 다음 걸음을 고르는 반복으로 바꾼 LangGraph 그래프다.</p>
+    <p class="one-liner">도구 루프란 조건부 엣지의 라우터 자리에 모델의 도구 요청을 읽는 <code>tools_condition</code>을 앉혀, 규칙이 고르던 갈림길을 모델이 다음에 실행할 함수를 고르는 반복으로 바꾼 LangGraph 그래프다.</p>
 
     <div class="why-read" id="why-read">
       <p class="why-read-title">이 글을 읽기 전에</p>
@@ -51,7 +51,7 @@
     </div>
 
     <p><a href="langgraph-state-node-edge.html">2편</a>에서 State·Node·Edge로 그래프를 만들고, <a href="langgraph-branch-drills.html">지난 편</a>에서 그 갈림길을 세 문제로 밀어붙였어요. 거기까지 길을 고른 건 "소금이 세 숟갈 이상이면 내보낸다", "60자보다 짧으면 보류한다" 같은 <strong>규칙</strong>이었어요. 라우터가 <code>if</code>문이었으니까요.</p>
-    <p>이번 편에서는 그 라우터 자리에 <strong>모델</strong>을 앉혀요. 그러면 다음 걸음을 규칙이 아니라 모델이 고르게 돼요. <a href="langgraph-what-and-why.html#big-picture">1편의 자율성 눈금자</a>로 보면 왼쪽에서 오른쪽으로 한 칸 옮기는 거예요. 워크플로에서 에이전트 쪽으로 넘어가는 지점이고, 이 시리즈에서 <strong>처음으로 API 키가 필요한</strong> 편이기도 해요.</p>
+    <p>이번 편에서는 그 라우터 자리에 <strong>모델</strong>을 앉혀요. 그러면 다음에 실행할 함수를 규칙이 아니라 모델이 고르게 돼요. <a href="langgraph-what-and-why.html#big-picture">1편의 자율성 눈금자</a>로 보면 왼쪽에서 오른쪽으로 한 칸 옮기는 거예요. 워크플로에서 에이전트 쪽으로 넘어가는 지점이고, 이 시리즈에서 <strong>처음으로 API 키가 필요한</strong> 편이기도 해요.</p>
     <p>키를 넣다가 막히면 <a href="langgraph-env-troubleshooting.html">5편</a>을 보세요. 강의 화면에서 <code>.env</code>가 안 읽혔던 네 겹의 이유를 따로 정리해 뒀어요.</p>
 
     <h2><span class="hl">비유</span> — 홀 직원의 창고 조회 요청서</h2>
@@ -342,7 +342,7 @@ agent.invoke({"messages": [("user", "계란말이 두 접시 만들 수 있어?"
     <ul>
       <li><a href="agent-react-loop-and-autogpt.html">에이전트는 어떻게 스스로 반복할까 — ReAct 루프와 AutoGPT 소동</a> — 오늘 조립한 루프의 뿌리예요.</li>
       <li><a href="mcp-skill-tool-call-anatomy.html">도구 하나가 호출되기까지 — 정의·파싱·구조화 요청</a> — <code>bind_tools</code>와 <code>ToolNode</code> 사이에서 무슨 일이 일어나는지 더 자세히 봐요.</li>
-      <li><a href="langgraph-what-and-why.html">길을 누가 정하나 — LangGraph와 워크플로·에이전트</a> — 이 편이 눈금자에서 어디로 옮겨 간 건지를 그린 시리즈 첫 편이에요.</li>
+      <li><a href="langgraph-what-and-why.html">다음에 어느 코드가 실행될까 — LangGraph와 워크플로·에이전트</a> — 이 편이 눈금자에서 어디로 옮겨 간 건지를 그린 시리즈 첫 편이에요.</li>
       <li><a href="ai-code-security-basics.html">AI가 짠 백엔드 코드에서 반드시 확인할 것들</a> — API 키 같은 비밀값을 코드와 떼어 두는 원칙을 처음 다룬 글이에요.</li>
     </ul>
 
@@ -361,7 +361,7 @@ agent.invoke({"messages": [("user", "계란말이 두 접시 만들 수 있어?"
     <h3 id="series-list">"에이전트 팀 꾸리기 — LangGraph" 시리즈</h3>
     <a class="post-nav" href="langgraph-what-and-why.html">
       <span class="post-nav-label">(1)</span>
-      <span class="post-nav-title">길을 누가 정하나 — LangGraph와 워크플로·에이전트</span>
+      <span class="post-nav-title">다음에 어느 코드가 실행될까 — LangGraph와 워크플로·에이전트</span>
     </a>
     <a class="post-nav" href="langgraph-state-node-edge.html">
       <span class="post-nav-label">(2)</span>
