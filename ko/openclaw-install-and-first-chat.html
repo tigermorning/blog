@@ -172,12 +172,13 @@ openclaw gateway status</code></pre>
       </tbody>
     </table>
 
-    <h2><span class="hl">수치 표</span> — 이 편에 나온 숫자</h2>
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 설치 전에 맞춰 둘 것</h2>
+    <p>설치하다 막혔을 때 먼저 보는 두 줄이에요. 둘 다 <strong>내가 정하는 값이 아니라 이미 정해져 있는 값</strong>이라, 안 맞으면 다른 걸 아무리 고쳐도 안 돌아가요.</p>
     <table>
-      <thead><tr><th>항목</th><th>값</th><th>조건·출처</th></tr></thead>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
       <tbody>
-        <tr><td>Node.js 요구 버전</td><td>22.22.3+ / 24.15+ / 25.9+</td><td>공식 설치 문서, Node 26 권장</td></tr>
-        <tr><td>게이트웨이 기본 주소</td><td>127.0.0.1:18789</td><td>공식 문서 기본값, 외부 접속 비권장</td></tr>
+        <tr><td>설치에 필요한 Node.js 버전</td><td>22.22.3 이상<br>24.15 이상<br>25.9 이상</td><td>줄기별로 세 갈래로 적혀 있어요. <code>node -v</code>로 먼저 찍어 보고, 낮으면 <strong>다른 걸 고치기 전에 Node부터</strong> 올려요</td></tr>
+        <tr><td>게이트웨이가 열리는 기본 주소</td><td><code>127.0.0.1:18789</code></td><td><code>127.0.0.1</code>은 <strong>내 컴퓨터 안에서만</strong> 닿는 주소예요. 브라우저에서 안 열리면 이 주소와 포트부터 확인하고, <strong>바깥에서 접속되게 바꾸는 건 권하지 않아요</strong></td></tr>
       </tbody>
     </table>
 

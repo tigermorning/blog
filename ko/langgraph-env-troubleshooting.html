@@ -213,15 +213,14 @@ os.environ["OPENAI_API_KEY"] = getpass.getpass("OpenAI API Key: ")</code></pre>
       </tbody>
     </table>
 
-    <h2 id="numbers"><span class="hl">이번 편의 수치</span> — 제 환경에서 찍힌 값</h2>
-    <p>여기 적힌 건 전부 <strong>제 환경에서 나온 값</strong>이에요. 그대로 베껴 쓰라는 게 아니라 <strong>어디를 직접 찍어 봐야 하는지</strong>를 표시해 둔 자리예요. 폴더 경로도 설치된 버전도 환경마다 다르니, 값이 다르면 그게 정상이고 <strong>확인하는 방법</strong>만 가져가면 돼요. 마지막 줄만 예외로, 키를 확인할 때 앞 18글자까지만 보는 건 어느 환경에서나 그대로 지키는 게 좋아요.</p>
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 제 환경에서 찍힌 값</h2>
+    <p>여기 적힌 건 <strong>제 환경에서 나온 값</strong>이에요. 그대로 베껴 쓰라는 게 아니라 <strong>어디를 직접 찍어 봐야 하는지</strong>를 표시해 둔 자리예요. 값이 다르면 그게 정상이고, <strong>확인하는 방법</strong>만 가져가면 돼요. 마지막 줄만 예외로, 어느 환경에서나 그대로 지키는 게 좋은 습관이에요.</p>
     <table>
-      <thead><tr><th>무엇의 숫자인가</th><th>제 경우의 값</th><th>어떻게 확인했나</th></tr></thead>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>어떻게 확인하나</th></tr></thead>
       <tbody>
-        <tr><td>제 강의 서버의 작업 폴더</td><td><code>/home/jovyan</code></td><td><code>print(os.getcwd())</code> 결과. jovyan은 주피터를 서버에 띄울 때 흔히 쓰는 기본 사용자 이름이라 다른 환경에서도 같을 수 있지만, 직접 찍어 확인하는 게 맞아요</td></tr>
-        <tr><td>강의 서버에 설치된 python-dotenv</td><td>1.2.3</td><td>제 경우 <code>%pip install python-dotenv</code>로 설치된 버전, 커널 재시작 없이 동작</td></tr>
-        <tr><td>겹쳐 있던 원인 수</td><td>4겹</td><td>제 경우. 하나를 풀어도 다음 게 남아 화면이 그대로라, 순서대로 걷어 내야 했어요</td></tr>
-        <tr><td>키 형식만 확인할 때 보는 글자 수</td><td>앞 18글자 (<code>cut -c1-18 .env</code>)</td><td><code>OPENAI_API_KEY=sk-</code>까지만 보여서, 화면을 캡처해 질문해도 키가 안 새요</td></tr>
+        <tr><td>제 강의 서버의 작업 폴더</td><td><code>/home/jovyan</code></td><td><code>print(os.getcwd())</code>로 찍은 값이에요. jovyan은 주피터를 서버에 띄울 때 흔히 쓰는 기본 사용자 이름이라 비슷하게 나올 수 있지만, <strong>파일을 못 찾는 문제는 거의 다 여기서 갈려요</strong>. 경로를 손으로 적기 전에 먼저 찍어 봐요</td></tr>
+        <tr><td>한 화면을 붙잡고 있던 원인의 수</td><td>4겹</td><td>하나를 풀어도 화면이 그대로라 "아직 안 고쳐졌다"고 착각하기 쉬웠어요. <strong>증상이 안 변해도 방금 고친 게 틀린 건 아니에요.</strong> 원인을 하나씩 걷어 내며 매번 다시 확인하는 순서가 필요해요</td></tr>
+        <tr><td>키를 확인할 때 보는 글자 수</td><td>앞 18글자</td><td><code>cut -c1-18 .env</code>면 <code>OPENAI_API_KEY=sk-</code>까지만 보여요. 형식이 맞는지는 이걸로 충분하고, <strong>이 화면은 캡처해 남에게 물어봐도 키가 새지 않아요</strong></td></tr>
       </tbody>
     </table>
 

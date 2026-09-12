@@ -300,15 +300,14 @@ agent.invoke({"messages": [("user", "계란말이 두 접시 만들 수 있어?"
       </tbody>
     </table>
 
-    <h2 id="numbers"><span class="hl">이번 편의 수치</span> — 도구 루프가 실제로 몇 번 돌았나</h2>
-    <p>이번 편에서 라우터 자리에 모델을 앉히고 <strong>실제로 돌려 본 결과</strong>예요. 첫 줄의 메시지 6개가 "도구 루프 한 바퀴가 이만큼"이라는 감이고, 셋째 줄을 보면 그 루프가 <strong>노드 2개와 선 3개뿐</strong>이라는 것도 확인할 수 있어요. 모델을 실제로 부르기 시작한 편이라, 마지막 줄의 상한이 여기서부터 요금 이야기가 돼요.</p>
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 도구 루프의 크기</h2>
+    <p>이 편에서 <strong>다른 에이전트를 짤 때도 그대로 쓰이는 숫자</strong>만 모아 뒀어요. 실습 노트가 몇 자였는지 같은 예제 기록은 본문에 있는 그대로가 전부라 여기 옮기지 않았어요. 남은 세 줄은 <strong>도구 루프 한 바퀴가 얼마나 큰가</strong>를 말해요. 모델을 실제로 부르기 시작한 편이라, 이 크기가 그대로 요금과 컨텍스트 사용량이 돼요.</p>
     <table>
-      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>어떤 조건에서 나온 값인가</th></tr></thead>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
       <tbody>
-        <tr><td>강의 도구 루프 실습의 메시지 수</td><td>6개</td><td>질문 1 + (도구 요청·결과) 2쌍 + 최종 답 1, gpt-4o-mini로 1회 실행한 결과<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup></td></tr>
-        <tr><td>강의 실습에서 조회된 노트 분량 vs 출제 기준</td><td>208자 · 4문장 vs 200자 · 3문장</td><td>가상의 강의 노트 데이터</td></tr>
-        <tr><td>도구 루프에 붙은 노드 수와 선 수</td><td>노드 2개(<code>agent</code>, <code>tools</code>) · 선 3개(START→agent, 조건부 엣지, tools→agent)</td><td>제 예제 (<a href="#tool-loop">직접 만들기 ③</a>)</td></tr>
-        <tr><td><code>recursion_limit</code> 기본값</td><td>10007스텝</td><td>langgraph 1.2 이후(1.0.0은 25, 1.1.0은 10000). 도구 루프도 되돌아가는 선이라 같은 상한이 걸려요 (<a href="langgraph-branch-drills.html#drill-loop">3편 ③</a>)</td></tr>
+        <tr><td>도구를 한 번 쓰고 답할 때 쌓이는 메시지 수</td><td>6개</td><td>질문 1 + (도구 요청 · 도구 결과) 2쌍 + 최종 답 1이에요. <strong>루프가 한 바퀴 돌 때마다 2개씩 늘고, 그 전부가 다음 호출에 다시 실려 가요</strong>. 도구를 몇 번 쓰게 둘지가 곧 요금인 이유예요 (gpt-4o-mini로 1회 실행)<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup></td></tr>
+        <tr><td>도구 루프를 이루는 노드와 선</td><td>노드 2개<br>선 3개</td><td>노드는 <code>agent</code>·<code>tools</code>, 선은 START→agent · 조건부 엣지 · tools→agent예요. <strong>에이전트라고 부르는 것의 최소 형태가 이만큼</strong>이라, 여기에 검토 노드 하나를 끼우는 것도 선 하나 더 긋는 일이에요 (<a href="#tool-loop">직접 만들기 ③</a>)</td></tr>
+        <tr><td>반복을 강제로 끊는 기본 상한<br><code>recursion_limit</code></td><td>10007스텝<br>(langgraph 1.2 기준)</td><td>도구 루프도 되돌아가는 선이라 같은 상한이 걸려요. 1.0.0은 25, 1.1.0은 10000이었고요. 모델이 도구를 계속 부르면 <strong>이 숫자에 닿기 한참 전에 요금이 먼저 커져요</strong> (<a href="langgraph-branch-drills.html#numbers">3편</a>)</td></tr>
       </tbody>
     </table>
 

@@ -196,14 +196,15 @@
       </tbody>
     </table>
 
-    <h2><span class="hl">수치 표</span> — 예시 설정의 숫자</h2>
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 동시에 몇이 도나</h2>
+    <p>여럿을 붙일 때 <strong>동시에 몇 개까지 돌지 정하는 값</strong>들이에요. 예시 설정에서 가져온 숫자라 그대로 써야 하는 건 아니지만, <strong>어디에 상한이 있는지</strong>는 알아 둬야 해요. 이 값이 그대로 같은 순간에 나가는 요금이거든요.</p>
     <table>
-      <thead><tr><th>항목</th><th>값</th><th>뜻·출처</th></tr></thead>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
       <tbody>
-        <tr><td><code>agents.defaults.maxConcurrent</code></td><td>4</td><td>동시에 도는 에이전트 한도 (parallel-specialist-lanes 예시)</td></tr>
-        <tr><td><code>subagents.maxConcurrent</code></td><td>8</td><td>서브에이전트<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup> 동시 한도 (같은 예시)</td></tr>
-        <tr><td><code>messages.queue.cap</code></td><td>20</td><td>모아 두는 메시지 상한, 넘으면 <code>summarize</code>로 요약 (같은 예시)</td></tr>
-        <tr><td>에이전트 간 직접 대화</td><td>기본 <code>enabled: false</code></td><td>켜려면 명시적 활성화 + 허용 목록 (multi-agent 문서)</td></tr>
+        <tr><td>동시에 도는 에이전트 한도<br><code>agents.defaults.maxConcurrent</code></td><td>4</td><td>넘는 요청은 기다려요. 올리면 빨라지는 대신 <strong>같은 순간에 나가는 호출이 그만큼 늘어요</strong></td></tr>
+        <tr><td>한 에이전트가 동시에 쓰는 서브에이전트 한도<br><code>subagents.maxConcurrent</code></td><td>8</td><td>에이전트 한도와 <strong>곱해진다</strong>는 게 중요해요. 4 × 8이면 최악의 순간에 서른둘이 동시에 도는 셈이에요<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup></td></tr>
+        <tr><td>모아 두는 메시지 상한<br><code>messages.queue.cap</code></td><td>20</td><td>넘으면 <code>summarize</code>로 요약해 줄여요. <strong>넘친 메시지가 버려지는 게 아니라 압축된다</strong>는 뜻이라, 세부가 사라질 수 있어요</td></tr>
+        <tr><td>에이전트끼리 직접 주고받는 대화</td><td>기본 <code>enabled: false</code></td><td>꺼져 있는 게 기본이에요. 켜려면 <strong>명시적으로 활성화하고 허용 목록까지</strong> 적어야 해요. 기본값이 꺼짐인 이유를 먼저 생각해 보고 켜요</td></tr>
       </tbody>
     </table>
     <p class="post-date">※ 위 숫자는 공식 문서의 예시 값이지 권장값이 아니에요. 내 작업량과 비용에 맞춰 정하는 게 설계예요.</p>

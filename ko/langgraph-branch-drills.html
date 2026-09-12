@@ -347,15 +347,14 @@ print(builder.compile().invoke({"text": "아무 노트"}))</code></pre>
     </table>
     <p>정리하면 되돌아가는 선을 그을 때 물을 건 하나예요. <strong>"이 바퀴에서 전표의 무엇이 바뀌나?"</strong> 답이 "없음"이면 그건 반복이 아니라 무한 루프예요.</p>
 
-    <h2 id="numbers"><span class="hl">이번 편의 수치</span> — 문제 셋을 돌려서 나온 값</h2>
-    <p>위에서 푼 <strong>세 문제를 실제로 돌렸을 때</strong> 나온 값이에요. 특히 둘째 줄을 눈여겨보세요. 되돌아가는 선을 만들어 놓고 State를 안 바꾸면 노드가 <strong>5,000번 넘게</strong> 돌아요. 그게 LLM을 부르는 노드였다면 그대로 요금이고요. 나머지 줄은 같은 문제를 따라 풀었을 때 대조할 기준으로 쓰면 돼요.</p>
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 반복을 그리기 전에 볼 것</h2>
+    <p>이 편에서 <strong>다른 그래프를 짤 때도 그대로 쓰이는 숫자</strong>만 모아 뒀어요. 예제가 몇 자를 몇 조각으로 잘랐는지 같은 실행 기록은 본문에 있는 그대로가 전부라 여기 옮기지 않았어요. 남은 세 줄은 전부 <strong>되돌아가는 선을 그릴 때 물리는 값</strong>이에요.</p>
     <table>
-      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>어떤 조건에서 나온 값인가</th></tr></thead>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
       <tbody>
-        <tr><td>노트 분량 검사 예제의 3500자 노트</td><td>두 갈래일 때 '출제 가능' → 세 갈래로 바꾼 뒤 1000자씩 4조각 (1000 · 1000 · 1000 · 500)</td><td>제 예제, 60자 미만 보류 · 3000자 초과 분할 기준 (<a href="#drill-three-ways">문제 ①</a>)</td></tr>
-        <tr><td>State가 안 바뀌는 되돌아가기 선에서 돈 노드 수</td><td>상한 6: <code>receive</code> 3번 + <code>flag_too_short</code> 3번 · 상한을 안 줬을 때: 5,004번 + 5,003번</td><td>제 노트 예제, langgraph 1.2.11, 13자 노트 하나를 넣은 경우 (<a href="#drill-loop">문제 ③</a>)</td></tr>
-        <tr><td><code>recursion_limit</code> 기본값</td><td>10007스텝</td><td>langgraph 1.2 이후(1.0.0은 25, 1.1.0은 10000). 제가 설치한 1.2.11의 소스 코드에서 확인 (<a href="langgraph-state-node-edge.html#build-branch">2편 ②</a>)</td></tr>
-        <tr><td>라우터에서 State를 고쳐 본 세 가지 방법 중 값이 남은 경우</td><td>1가지 (리스트 안을 <code>append</code>로 고친 실험 2만)</td><td>제 실험. 나머지 둘은 값이 사라지거나 <code>TypeError</code> (<a href="#router-no-write">라우터는 길만 고른다</a>)</td></tr>
+        <tr><td>되돌아가는 선에서 State를 안 바꿨을 때 도는 횟수</td><td>상한 6: 노드 2개가 3번씩<br>상한 없음: 5,004번 + 5,003번</td><td>같은 값이 다시 들어오면 라우터는 같은 판단을 다시 내려요. 그래서 <strong>끝나는 조건은 State가 바퀴마다 바뀔 때만 뜻이 있어요</strong>. 13자 노트 하나로 낸 결과예요 (<a href="#drill-loop">문제 ③</a>)</td></tr>
+        <tr><td>반복을 강제로 끊는 기본 상한<br><code>recursion_limit</code></td><td>10007스텝<br>(langgraph 1.2 기준)</td><td>1스텝은 노드 하나가 한 번 실행되는 것이고, 닿으면 <code>GraphRecursionError</code>로 멈춰요. 버전마다 달라서 1.0.0은 25, 1.1.0은 10000이었어요. 만 번이면 <strong>사실상 안 막아 주는 것</strong>이라, 되돌아가는 선을 그렸으면 직접 낮춰 두는 게 맞아요 (<a href="langgraph-state-node-edge.html#numbers">2편</a>)</td></tr>
+        <tr><td>라우터에서 State를 고쳐 본 세 가지 방법 중 값이 남은 것</td><td>3가지 중 1가지</td><td>리스트 안을 <code>append</code>로 직접 고친 경우만 값이 남았고, 나머지 둘은 사라지거나 <code>TypeError</code>였어요. 우연히 되는 한 가지에 기대지 말고 <strong>전표에 적는 일은 노드에게</strong> 맡기면 돼요 (<a href="#router-no-write">라우터는 길만 고른다</a>)</td></tr>
       </tbody>
     </table>
 

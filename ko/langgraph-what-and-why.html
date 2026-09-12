@@ -293,12 +293,12 @@ while True:
     </table>
     <p>핵심은 "에이전트가 나쁘다"가 아니라 <strong>눈금자의 오른쪽은 값을 치르고 사는 것</strong>이라는 거예요. 예측 가능성과 요금 통제를 내주고 유연함을 받는 거래니까, 그 유연함이 실제로 필요한지부터 보는 순서예요.</p>
 
-    <h2 id="numbers"><span class="hl">이번 편의 수치</span> — 설치하다 막히면 볼 것</h2>
-    <p>지금까지 나온 이야기 중 <strong>숫자와 버전만</strong> 따로 모아 둔 자리예요. 세 줄 다 <a href="#langchain-family">'LangGraph는 어느 집 식구인가' 절</a>에서 나온 것이고, 다음 편부터 코드를 직접 돌릴 때 필요해요. LangChain 집안은 <strong>이름이 같아도 버전마다 코드가 달라서</strong>, 남이 쓴 예제를 그대로 붙여 넣었을 때 <code>import</code> 에러가 가장 잘 나는 자리가 여기거든요. 지금 다 외울 건 아니고, 막혔을 때 돌아와서 보면 되는 표예요.</p>
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 설치하다 막히면 볼 것</h2>
+    <p>이 편에서 <strong>다른 코드를 짤 때도 그대로 쓰이는 숫자</strong>만 모아 뒀어요. 세 줄 다 <a href="#langchain-family">'LangGraph는 어느 집 식구인가' 절</a>에서 나온 것이고, 다음 편부터 코드를 직접 돌릴 때 필요해요. LangChain 집안은 <strong>이름이 같아도 버전마다 코드가 달라서</strong>, 남이 쓴 예제를 그대로 붙여 넣었을 때 <code>import</code> 에러가 가장 잘 나는 자리가 여기거든요. 지금 다 외울 건 아니고, 막혔을 때 돌아와서 보면 되는 표예요.</p>
     <table>
-      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>그래서 뭘 하면 되나</th></tr></thead>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
       <tbody>
-        <tr><td>강의 교안이 검증한 라이브러리 버전</td><td><code>langgraph</code> 1.2<br><code>langchain</code> 1.4<br><code>langchain-core</code> 1.6<br><code>langchain-openai</code> 1.6</td><td>제가 2026.09.11에 새로 설치한 최신판도 같은 줄기(1.2.11 · 1.4.0 · 1.6.2 · 1.6.2)였어요. 그냥 최신판으로 설치해도 교안 코드가 그대로 돌아간다는 뜻이에요</td></tr>
+        <tr><td>이 시리즈의 코드가 도는 라이브러리 버전</td><td><code>langgraph</code> 1.2<br><code>langchain</code> 1.4<br><code>langchain-core</code> 1.6<br><code>langchain-openai</code> 1.6</td><td>제가 2026.09.11에 새로 설치한 최신판도 같은 줄기(1.2.11 · 1.4.0 · 1.6.2 · 1.6.2)였어요. 그냥 최신판으로 설치해도 이 시리즈 코드가 그대로 돌아간다는 뜻이에요</td></tr>
         <tr><td>LangGraph가 LangChain에서 따로 나온 해</td><td>2024년</td><td>그 전 자료(2023년까지의 "체인" 예제)는 반복·갈림길을 다루는 방식이 지금과 달라요. 검색 결과가 오래된 것 같으면 이 해를 기준으로 걸러요</td></tr>
         <tr><td><code>LLMChain</code>·<code>AgentExecutor</code>·<code>initialize_agent</code>가 빠진 버전</td><td>LangChain 1.0부터</td><td>없어진 게 아니라 <code>langchain-classic</code>이라는 별도 패키지로 옮겨 갔어요. 이 세 이름이 든 코드가 <code>import</code> 에러를 내면 코드가 아니라 <strong>버전을 먼저</strong> 의심하면 돼요</td></tr>
       </tbody>

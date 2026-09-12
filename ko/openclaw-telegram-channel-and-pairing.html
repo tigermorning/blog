@@ -154,12 +154,13 @@ openclaw pairing approve telegram &lt;코드&gt;</code></pre>
       </tbody>
     </table>
 
-    <h2><span class="hl">수치 표</span></h2>
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 페어링에 걸린 시간</h2>
+    <p>텔레그램을 붙일 때 <strong>시간이 걸려 있는 값</strong>이 하나 있어요. 이걸 모르면 "코드가 안 먹는다"에서 막혀요.</p>
     <table>
-      <thead><tr><th>항목</th><th>값</th><th>조건·출처</th></tr></thead>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
       <tbody>
-        <tr><td>페어링 대기 코드 만료</td><td>1시간</td><td>승인 전 대기 중인 코드에만 해당 (docs/channels/telegram)</td></tr>
-        <tr><td>승인 뒤 다시 코드가 필요한 경우</td><td>0회</td><td>한 번 승인하면 이후엔 코드 없이 대화</td></tr>
+        <tr><td>승인 전 대기 코드가 살아 있는 시간</td><td>1시간</td><td>승인하지 않고 두면 만료돼요. 안 먹으면 <strong>코드를 다시 받는 게 먼저</strong>고, 설정을 뒤지는 건 그다음이에요</td></tr>
+        <tr><td>승인한 뒤 코드가 다시 필요한 횟수</td><td>0회</td><td>한 번 승인하면 이후엔 코드 없이 대화해요. 뒤집으면 <strong>승인은 한 번으로 계속 열린다</strong>는 뜻이라, 누구를 승인하는지가 중요해요</td></tr>
       </tbody>
     </table>
 

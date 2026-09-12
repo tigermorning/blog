@@ -166,14 +166,14 @@
       </tbody>
     </table>
 
-    <h2><span class="hl">수치 표</span></h2>
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 예약을 걸기 전에 볼 것</h2>
+    <p>이 편에서 <strong>다음에 예약을 걸 때도 그대로 쓰이는 값</strong>만 모아 뒀어요. 실습으로 3분 뒤 알림을 걸어 본 기록은 본문에 있는 그대로가 전부라 여기 옮기지 않았어요.</p>
     <table>
-      <thead><tr><th>항목</th><th>값</th><th>조건·출처</th></tr></thead>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
       <tbody>
-        <tr><td>cron 표기식 칸 수</td><td>5</td><td>분·시·일·월·요일</td></tr>
-        <tr><td>실습의 일회성 알림</td><td>현재 UTC + 3분</td><td>성공 뒤 자동 삭제</td></tr>
-        <tr><td>실습의 반복 시보</td><td>5분 간격</td><td><code>*/5 * * * *</code>, 실행 뒤에도 목록에 남음</td></tr>
-        <tr><td><code>/loop</code> 간격 생략 시</td><td>1분 ~ 1시간 사이</td><td>에이전트가 스스로 정함, 소유자 전용 명령</td></tr>
+        <tr><td>cron 표기식의 칸 수</td><td>5칸</td><td>앞에서부터 분 · 시 · 일 · 월 · 요일이에요. <code>*/5 * * * *</code>는 "5분마다"고요. <strong>칸을 하나 빠뜨리면 뜻이 통째로 밀려요</strong></td></tr>
+        <tr><td>한 번만 도는 예약과 반복 예약의 차이</td><td>실행 뒤 자동 삭제 / 목록에 남음</td><td>일회성은 성공하면 스스로 사라지고, 반복은 계속 남아 돌아요. <strong>실수로 건 반복 예약은 지우기 전까지 멈추지 않아요</strong></td></tr>
+        <tr><td><code>/loop</code>에서 간격을 생략했을 때</td><td>1분 ~ 1시간 사이</td><td>그 범위 안에서 <strong>에이전트가 스스로 정해요</strong>. 간격이 중요하면 직접 적어 주는 게 맞아요. 소유자만 쓸 수 있는 명령이고요</td></tr>
       </tbody>
     </table>
 
