@@ -230,7 +230,20 @@ During task with name 'count_dishes' and id '...'</code></pre>
         <tr><td><code>take_order</code> 차례</td><td>—</td><td>실행될 기회조차 없어요</td></tr>
       </tbody>
     </table>
-    <p>"<code>Ticket</code>에 <code>dishes</code>라고 적어 뒀잖아?" 싶을 수 있어요. 확인하려고 첫 노드가 받은 State의 키를 찍어 봤더니 <code>['log', 'order']</code> 두 개뿐이었어요. <code>dishes</code>와 <code>count</code>는 <code>None</code>이나 빈 리스트로 들어 있던 게 아니라 <strong>아예 없었어요</strong>. TypedDict는 전표 양식에 칸 이름을 인쇄해 두는 것일 뿐, 칸을 미리 만들거나 기본값을 채워 두지 않아요. 여기서 주방 비유도 끊겨요. 종이 전표라면 빈칸을 보고 "아직 안 적혔네" 하고 넘어가겠지만, 파이썬은 없는 칸을 읽으려는 순간 그 자리에서 멈춰요.</p>
+    <p>"<code>Ticket</code>에 <code>dishes</code>라고 적어 뒀잖아?" 싶을 수 있어요. 여기가 이 편에서 제일 걸리는 자리라, State가 실제로 무엇인지부터 한 계단 내려가 볼게요.</p>
+    <p><strong>State는 그냥 파이썬 딕셔너리예요.</strong> 딕셔너리는 이름표가 붙은 서랍장이라고 보면 돼요. 값을 넣는 순간 그 이름의 서랍이 <strong>생겨요.</strong> 안 넣으면 서랍이 비어 있는 게 아니라 <strong>서랍 자체가 없어요.</strong> 그리고 <code>Ticket</code>처럼 TypedDict로 적어 둔 칸 이름은 "이 서랍장에는 이런 이름표를 쓸 겁니다"라고 <strong>적어 둔 목록</strong>일 뿐이에요. 목록을 적는다고 서랍이 생기지는 않아요. LangGraph 없이 파이썬만으로 확인할 수 있어요.</p>
+    <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— 그래프 없이 이 다섯 줄만 따로 돌려 봐도 돼요</span></p>
+    <pre><code>t: Ticket = {"order": "김치찌개,계란말이", "log": "시작"}
+
+print(list(t.keys()))    # 실제로 만들어진 칸
+print(t.get("dishes"))   # 없는 칸을 .get()으로 꺼내면
+print(t["dishes"])       # 없는 칸을 대괄호로 꺼내면</code></pre>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 위 세 줄을 실행했을 때 제 화면에 찍힌 출력이에요</span></p>
+    <pre><code>['order', 'log']
+None
+KeyError: 'dishes'</code></pre>
+    <p><code>Ticket</code>에 칸 이름을 넷 적어 뒀는데 실제로 있는 건 둘뿐이에요. <code>dishes</code>와 <code>count</code>는 <code>None</code>이나 빈 리스트로 들어 있던 게 아니라 <strong>아예 없어요</strong>. 그리고 <code>invoke()</code>에 넘긴 딕셔너리가 <strong>곧 시작 State</strong>라서, 그래프도 서랍 두 개짜리로 출발해요. 순서를 뒤집은 그래프에서 첫 노드가 받은 State의 키를 찍어 봤더니 정말 <code>['log', 'order']</code> 두 개였어요.</p>
+    <p>여기서 주방 비유도 끊겨요. 종이 전표는 칸이 <strong>인쇄돼 있어서</strong> "칸은 있는데 아직 안 적혔다"가 가능해요. 딕셔너리에는 그 중간 상태가 없어요 — <strong>있거나, 아예 없거나</strong> 둘뿐이에요. 그리고 없는 칸을 대괄호로 읽으려 하면 파이썬은 빈 값을 주는 대신 그 자리에서 멈춰요. 위 출력의 <code>None</code>과 <code>KeyError</code>가 그 차이예요.</p>
     <p>그래서 노드마다 <strong>읽는 칸</strong>과 <strong>만드는 칸</strong>을 나눠 보면 순서가 저절로 정해져요.</p>
     <table>
       <thead><tr><th>노드</th><th>읽는 칸 (먼저 있어야 하는 것)</th><th>만드는 칸</th></tr></thead>
