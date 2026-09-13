@@ -58,9 +58,9 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>폴더를 상대 경로로 적으면, 내가 그 폴더에서 앱을 열었을 때만 되고 다른 데서 열면 실패합니다.</li>
-            <li>버전을 못 박지 않으면 잠금 파일이 조용히 갱신돼 어제와 다른 조합으로 돌면서 원인 모를 차이가 생겨요.</li>
-            <li>AI가 MCP 대신 파일을 직접 읽어 답해도 내용은 맞을 수 있습니다 — 확인하려던 경로는 한 번도 안 지났는데 성공으로 착각해요.</li>
+            <li>폴더를 상대 경로로 적으면, 내가 그 폴더에서 앱을 열었을 때만 되고 다른 데서 열면 실패합니다. <a class="suspect-jump" href="#suspect-other-folder">언제 의심하나 ↓</a></li>
+            <li>버전을 못 박지 않으면 잠금 파일이 조용히 갱신돼 어제와 다른 조합으로 돌면서 원인 모를 차이가 생겨요. <a class="suspect-jump" href="#suspect-lock-changed">언제 의심하나 ↓</a></li>
+            <li>AI가 MCP 대신 파일을 직접 읽어 답해도 내용은 맞을 수 있습니다 — 확인하려던 경로는 한 번도 안 지났는데 성공으로 착각해요. <a class="suspect-jump" href="#suspect-direct-read">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -382,6 +382,43 @@ command -v uv
     <p>② <strong>같은 질문을 두 가지 방식으로 물어보기.</strong> 먼저 "첫 주 업무 기록 읽어 줘"라고만 하고, 다음엔 "<code>weekly-records</code> MCP 도구로 읽어 줘"라고 해 보세요. <strong>두 번의 호출 기록을 나란히</strong> 놓고 보면, 답변이 같아 보여도 지나온 길이 다를 수 있다는 걸 알게 돼요.</p>
     <p>③ <strong>서버를 고치고 다시 시작하지 않아 보기.</strong> <a href="mcp-skill-building-server.html">3편</a>의 실험대로 <code>@mcp.tool()</code> 한 줄을 지우고 저장한 뒤, <strong>앱을 다시 시작하지 않은 채로</strong> 도구 목록을 보세요. 그다음 다시 시작하고 또 보세요. 표 마지막 줄의 "실행 중인 프로세스가 새 소스를 다시 읽어야 한다"가 무슨 말인지 이때 확 와닿아요.</p>
     <p>세 실험 다 <strong>정상 동작이 아니라 실패의 모양을 눈에 익히는 게</strong> 목적이에요. 이제 업무 데이터를 가져오는 통로 하나가 준비됐어요. 같은 방식으로 문서 검색·달력 조회·다른 팀 기록도 붙일 수 있고요. 그런데 여기서 새 문제가 생겨요 — <strong>도구를 자꾸 붙이면 대화는 짧은데 문맥이 자꾸 커지거든요.</strong> 그 이야기는 다음 편에서 할게요.</p>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 연결은 된 것 같은데 믿어도 될지 모를 때</h2>
+    <p>연결 문제는 대개 막힌 단계를 가르면 풀려요. 그런데 이 편의 실수 몇 개는 <strong>막히지도 않아요.</strong> 한 폴더에서는 되고, 답도 맞고, 오류도 없거든요. 그래서 "되는 것 같다"는 순간에 한 번 더 열어 볼 자리를 정해 둬야 해요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-other-folder">
+          <td>실습 폴더에서 앱을 열면 되던 <code>weekly-records</code>가, <strong>다른 폴더에서 앱을 열자</strong> 목록에서 사라지거나 연결 실패로 떠요</td>
+          <td>MCP 설정의 <code>--directory</code> 뒤 값, 그리고 그 설정이 저장된 자리예요. 서버 코드와 <code>data</code> 폴더는 대개 범인이 아니에요</td>
+          <td>목록에 <strong>아예 없으면</strong> 경로 문제가 아니라, 프로젝트 폴더에 둔 설정이라 그 폴더를 열 때만 읽히는 경우예요. <strong>실패로 뜨면</strong> <code>--directory</code> 값이 <code>/</code>나 <code>C:\</code>처럼 맨 위 폴더부터 시작하는지 봐요. 아니면 상대 경로라 절대 경로로 바꿔요</td>
+        </tr>
+        <tr id="suspect-lock-changed">
+          <td>서버 코드는 안 건드렸는데 <strong><code>uv.lock</code>이 바뀌어 있거나</strong>(git을 쓴다면 변경 목록에 떠요), 서버가 잠금 파일이 맞지 않는다는 오류로 멈춰요</td>
+          <td>MCP 설정의 <code>args</code>에 <code>"--locked"</code>가 있는지, 그리고 <code>pyproject.toml</code>의 <code>dependencies</code>가 최근에 바뀌었는지예요. AI에게 패키지 추가를 부탁한 직후라면 거기가 먼저예요</td>
+          <td><code>--locked</code>가 없으면 넣어요. 오류로 멈춘 거라면 <code>--locked</code>가 제 일을 한 거라, <code>pyproject.toml</code>의 변경이 의도한 것인지부터 봐요. 의도한 변경이면 실습 폴더에서 <code>uv lock</code>으로 잠금 파일을 새로 맞추고 앱을 다시 시작하고, 아니면 그 변경을 되돌려요</td>
+        </tr>
+        <tr id="suspect-direct-read">
+          <td>답변 내용은 원본과 맞는데, 호출 기록을 펼치면 <strong><code>get_weekly_records</code>가 아니라 파일 읽기 도구</strong>가 찍혀 있어요</td>
+          <td>호출 기록의 <strong>호출한 도구</strong> 칸이에요. 입력에 <code>week-one.json</code> 같은 파일 경로가 보이면 AI가 파일을 직접 연 거예요</td>
+          <td>MCP 목록에 <code>get_weekly_records</code>가 있는지 먼저 봐요. 있으면 "이번에는 weekly-records MCP 도구를 사용해서 읽어 줘"로 다시 요청하고, 호출 기록에 그 도구 이름과 <code>week-one</code>이 찍히는지 봐요. 그전까지는 MCP 연결이 확인된 게 아니에요</td>
+        </tr>
+        <tr id="suspect-filled-null">
+          <td>답변에 TASK-102의 <strong>배포 날짜</strong>나 TASK-103의 <strong>담당자 이름</strong>이 나와요. 원본에서는 둘 다 비어 있는 값이에요</td>
+          <td>호출 기록의 <strong>받은 결과</strong>에서 그 두 칸이에요. 답변 문장만 봐서는 그 값이 어디서 생겼는지 못 가려요</td>
+          <td>받은 결과의 <code>deployed_at</code>·<code>owner</code>가 <code>null</code>인데 답변에만 값이 있으면 모델이 문장을 만들다 지어낸 거예요. 결과에부터 값이 들어 있으면 서버가 원본과 다른 걸 돌려준 거라, <code>data/week-one.json</code>과 서버 코드를 봐요</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>세 번째 줄은 증상이라고 부르기도 어려워요. 답이 맞으니 아무도 호출 기록을 안 펼치거든요. 그래서 처음 연결한 날에는 <strong>답이 맞아도</strong> 호출 기록을 한 번 펼쳐 봐요.</p>
+    <p>등록을 AI에게 맡겼다면 설정을 한 번 보여 달라고 해요. 이때 <strong>고치기 전에 먼저 보여 달라고</strong> 해야, 설정이 어느 파일에 들어갔는지 알게 돼서 다음에 연결이 끊겼을 때 거기부터 열 수 있어요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— 서버를 등록한 프로젝트 폴더에서</span></p>
+    <pre><code>지금 쓰는 앱에 등록된 MCP 서버 설정을 찾아서 표로 보여 줘. 아직 설정과 코드는 고치지 마.
+1. 설정이 들어 있는 파일의 경로, 그리고 그 설정이 이 프로젝트 폴더에서만 읽히는지 어느 폴더에서나 읽히는지
+2. 서버마다 이름, command, args 전체
+3. weekly-records의 --directory 값이 절대 경로인지, 그 폴더에 pyproject.toml·uv.lock·weekly_records_server.py·data 폴더가 실제로 있는지
+4. args에 --locked가 있는지
+5. uv.lock이 pyproject.toml과 맞는지 확인하는 명령을 실행한 결과(잠금 파일을 새로 만들거나 고치는 명령은 실행하지 마)</code></pre>
 
     <section class="footnotes">
       <ol>

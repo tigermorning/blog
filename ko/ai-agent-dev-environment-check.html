@@ -53,8 +53,8 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>"설치됐습니다"라는 AI의 말을 믿고 넘어갔다가 한참 뒤 엉뚱한 데서 막힙니다. 터미널에서 node --version을 직접 쳐보면 그 자리에서 알 수 있어요.</li>
-            <li>"안 돼요"라고만 전달해서 AI도 감으로 짚게 만듭니다. 실제 오류 화면을 그대로 붙여넣으면 원인 후보가 단번에 좁혀져요.</li>
+            <li>"설치됐습니다"라는 AI의 말을 믿고 넘어갔다가 한참 뒤 엉뚱한 데서 막힙니다. 터미널에서 node --version을 직접 쳐보면 그 자리에서 알 수 있어요. <a class="suspect-jump" href="#suspect-late-not-found">언제 의심하나 ↓</a></li>
+            <li>"안 돼요"라고만 전달해서 AI도 감으로 짚게 만듭니다. 실제 오류 화면을 그대로 붙여넣으면 원인 후보가 단번에 좁혀져요. <a class="suspect-jump" href="#suspect-vague-report">언제 의심하나 ↓</a></li>
             <li>출처를 확인 안 한 curl ... | bash를 그냥 실행하게 됩니다. 이건 받아온 스크립트를 파일로 열어보는 단계 없이 곧바로 실행하는 방식이에요.</li>
           </ul>
         </dd>
@@ -104,7 +104,7 @@
     <h3>Node.js와 npm은 "nvm"으로 관리한다</h3>
     <p><strong>nvm(Node Version Manager)</strong>은 Node.js 자체를 하나만 딱 고정해서 설치하는 게 아니라, <strong>여러 버전을 넣어두고 필요할 때마다 골라서 쓸 수 있게</strong> 해주는 관리자예요. 왜 이렇게 복잡하게 하냐면, 프로젝트마다 필요한 Node.js 버전이 다를 수 있어서예요 — 한 프로젝트의 Node.js가 다른 프로젝트를 덮어쓰면 안 되니까요.</p>
     <p>더 실용적인 이유도 있어요. Node.js를 시스템 깊은 곳에 직접 설치하면, npm으로 뭔가를 <strong>전역 설치</strong>(<code>npm install -g</code> — 특정 프로젝트 안이 아니라 컴퓨터 어디서나 쓸 수 있게 까는 것)할 때 "이 폴더에 쓸 권한이 없다"는 <code>EACCES</code> 에러가 나서 관리자 권한을 따로 붙여야 하는 경우가 많다고 해요. 시스템 폴더는 아무나 못 건드리게 잠겨 있으니까요. nvm은 잠긴 시스템 폴더가 아니라 제 계정 폴더 안에서 관리되기 때문에, 이 권한 문제를 대부분 피할 수 있어요.</p>
-    <p><strong>Windows에서 주의할 점</strong>: 윈도우용 nvm(nvm-windows)은 이름만 같을 뿐, 원래 맥·리눅스용 nvm과는 완전히 다른 별도의 프로그램이라고 해요. 그래서 인터넷에서 본 nvm 명령어가 윈도우에서 그대로 안 통하는 경우가 있어요. 대표적으로 윈도우용에는 <code>--lts</code>라는 줄임 옵션이 없어서, 버전 번호를 직접 찾아 적어줘야 해요. (<strong>LTS</strong>는 Long Term Support의 줄임말로, "오래 관리해주기로 약속된 안정 버전"이라는 뜻이에요. 특별한 이유가 없으면 이걸 쓰는 게 안전해요.)</p>
+    <p><strong>Windows에서 주의할 점</strong>: 윈도우용 nvm(nvm-windows)은 이름만 같을 뿐, 원래 맥·리눅스용 nvm과는 완전히 다른 별도의 프로그램이라고 해요. 그래서 인터넷에서 본 nvm 명령어가 윈도우에서 그대로 안 통하는 경우가 있어요. 대표적으로 윈도우용에는 <code>--lts</code>라는 옵션이 없어서, 대시 없이 <code>nvm install lts</code>라고 적어야 해요. (<strong>LTS</strong>는 Long Term Support의 줄임말로, "오래 관리해주기로 약속된 안정 버전"이라는 뜻이에요. 특별한 이유가 없으면 이걸 쓰는 게 안전해요.)</p>
 
     <h3>uv, Git, Claude Code</h3>
     <ul>
@@ -158,6 +158,35 @@ claude --version</code></pre>
       <li><code>claude --version</code> → 2.1.207</li>
     </ul>
     <p>이 숫자들이 바로 나오기까지 새 창을 여러 번 열고 닫고, 재시작하고, 원인을 찾아 헤맨 하루였어요. 그래도 결국 여섯 개 다 숫자가 나오는 걸 눈으로 확인했다는 게, 오늘 제일 뿌듯한 부분이에요. 처음 시작할 때는 "설치해줘"라는 말 한마디로 끝날 줄 알았는데, 막상 겪어보니 그 한마디 뒤에 npm이 두 번 실행되는 순서가 있었고, nvm이 권한 문제를 피하려고 계정 폴더 안에서 조용히 버전을 관리해주고 있었고, 오류가 났을 땐 화면 그대로 붙여넣는 게 감으로 짚는 것보다 훨씬 빨랐다는 사실까지 하나씩 딸려 나왔어요. 다음에 새 도구를 또 설치할 일이 생기면, 이번처럼 버전 확인 명령부터 먼저 쳐볼 것 같아요.</p>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 설치를 맡긴 뒤 다른 일을 하다 막힐 때</h2>
+    <p>설치 문제는 설치하는 날이 아니라 <strong>며칠 뒤 다른 일을 하다가</strong> 드러날 때가 많아요. 그때는 에러가 난 명령이 범인처럼 보여서 엉뚱한 곳을 고치게 되죠. 그래서 설치를 맡긴 직후에 한 번, 낯선 에러가 난 순간에 한 번 확인해요.</p>
+    <p>증상이 아직 없어도, <strong>AI에게 이런 부탁을 한 직후</strong>라면 한 번 확인하고 넘어가요.</p>
+    <ul>
+      <li>"Claude Code 설치해 줘", "uv 깔아 줘" — AI가 실행하려는 명령이 <code>curl ... | bash</code>나 <code>irm ... | iex</code>처럼 받자마자 실행하는 모양이면, 그 주소가 공식 문서에 적힌 주소(예: <code>https://claude.ai/install.ps1</code>)와 한 글자까지 같은지</li>
+      <li>"설치 끝났어"라는 답을 받았을 때 — 내가 새로 연 PowerShell 창에서 본문의 버전 확인 명령에 숫자가 나오는지</li>
+    </ul>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-late-not-found">
+          <td>"설치됐습니다"를 듣고 넘어갔는데, 며칠 뒤 AI가 <code>npm run dev</code>나 <code>npx</code>를 실행하다가 <code>'npm' 용어가 ... 인식되지 않습니다</code>로 멈춰요</td>
+          <td>실패한 그 명령이 아니라 <strong>그 전에 건너뛴 설치 확인</strong>이에요. 프로젝트 코드는 대개 범인이 아니에요</td>
+          <td>새 PowerShell 창에서 본문의 버전 확인 명령을 한 줄씩 쳐요. 숫자가 안 나오는 도구가 범인이에요. 재시작해도 안 나오면 <a href="ai-agent-dev-environment.html#suspect-desktop-space">1편의 이 줄</a>처럼 설치가 다른 공간에서 일어났는지 봐요</td>
+        </tr>
+        <tr id="suspect-nvm-use">
+          <td>nvm으로 Node.js를 설치했다는데 새 창에서 <code>node --version</code>이 <strong>인식되지 않아요</strong></td>
+          <td>설치된 목록이 아니라 <strong>지금 쓰기로 켜 둔 버전</strong>이에요. <code>nvm list</code>를 넣으면 설치된 버전이 나오고, 쓰는 중인 버전 앞에는 <code>*</code>가 붙어요</td>
+          <td><code>*</code>가 붙은 줄이 없으면 <code>nvm use</code> 뒤에 목록의 버전 번호를 붙여 켜고, 새 창에서 <code>node --version</code>을 다시 쳐요. 윈도우용 nvm은 설치와 켜기가 따로라, 설치만으로는 <code>node</code>가 안 잡힐 수 있어요</td>
+        </tr>
+        <tr id="suspect-vague-report">
+          <td>"설치가 안 돼요"라고 했더니 AI가 <strong>재설치, 설정 바꾸기, 다른 도구 깔기를 번갈아</strong> 권해요</td>
+          <td>AI의 답이 아니라 <strong>내가 보낸 메시지</strong>예요. 실행한 명령과 빨간 글씨 원문이 들어 있었는지 봐요</td>
+          <td>본문의 틀대로 환경·명령·출력을 나눠 다시 보내고, 원인을 추정하지 말고 확인할 순서만 달라고 해요. 그 순서를 따라가기 전까지는 설정을 바꾸자는 제안은 미뤄 둬요</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>목록의 첫 항목에는 증상이 없어요. 받자마자 실행하는 명령은 잘못된 주소여도 설치가 멀쩡히 끝난 것처럼 보일 수 있어서, 실행 전에 주소를 보는 것 말고는 알아챌 기회가 없거든요.</p>
 
     <a class="post-nav" href="my-first-web-project.html">
       <span class="post-nav-label">다음 편 →</span>

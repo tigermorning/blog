@@ -58,9 +58,9 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>완료 기준을 먼저 보면, 차단 요인이 적혀 있던 일이 완료 칸에 들어가 팀장이 도와줄 일을 못 봅니다.</li>
-            <li>빈 날짜에 오늘을 채우면 빈칸이 사라져 보고서는 매끄러워지지만, 있지도 않은 배포가 완료 건수로 집계돼요.</li>
-            <li>담당자가 비었다고 비슷한 일 하던 사람 이름을 적으면, 정해진 것처럼 보여서 아무도 그 일을 안 챙깁니다.</li>
+            <li>완료 기준을 먼저 보면, 차단 요인이 적혀 있던 일이 완료 칸에 들어가 팀장이 도와줄 일을 못 봅니다. <a class="suspect-jump" href="#suspect-blocker-not-risk">언제 의심하나 ↓</a></li>
+            <li>빈 날짜에 오늘을 채우면 빈칸이 사라져 보고서는 매끄러워지지만, 있지도 않은 배포가 완료 건수로 집계돼요. <a class="suspect-jump" href="#suspect-filled-blank">언제 의심하나 ↓</a></li>
+            <li>담당자가 비었다고 비슷한 일 하던 사람 이름을 적으면, 정해진 것처럼 보여서 아무도 그 일을 안 챙깁니다. <a class="suspect-jump" href="#suspect-filled-blank">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -328,6 +328,42 @@ note          : "코드 작성은 끝났으며 다음 배포를 기다린다."</
     <p>④ <strong>내 판정과 AI 초안을 대조하기.</strong> ①에서 적어 둔 TASK-104의 판정과 AI가 만든 초안의 판정이 <strong>같은지</strong> 보세요. 다르다면 승패를 가리지 말고 <strong>어느 쪽이 팀 규칙과 맞는지</strong>를 규칙 문서로 확인하세요. 여기서 <strong>내가 틀린 경우가 더 값져요</strong> — 규칙 중에 내가 못 읽고 넘어간 줄이 있다는 뜻이고, 그 줄이 8편에서 Skill에 꼭 들어가야 할 문장이거든요.</p>
     <p>⑤ <strong>오른쪽 칸을 세 줄 이상 채우기.</strong> 위의 '이번 결과 vs 다음에도 쓸 지식' 표를 빈 종이에 다시 그리고, <strong>오른쪽 칸만</strong> 채워 보세요. 세 줄이 안 나오면 아직 재료가 부족한 거예요 — 보고서를 다시 훑으며 "이 문장을 쓸 때 내가 뭘 알고 있어야 했지?"를 물어보면 한두 줄이 더 나와요.</p>
     <p>여기까지 오면 <strong>보고서 한 편</strong>과 <strong>다시 쓸 지식 목록</strong>이 손에 남아요. 다음 편에서는 그 목록을 실제 <code>SKILL.md</code> 파일로 옮겨서, 다음 주에 새 대화를 열어도 같은 기준이 적용되게 만들어 볼게요.</p>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — AI가 만든 첫 보고서 초안이 그럴듯할 때</h2>
+    <p>이 편의 실수들은 보고서를 <strong>더 매끄럽게</strong> 만들어요. 빈칸이 채워지고, 위험 칸이 조용히 비고, 기한은 약속처럼 읽히죠. 에러는 하나도 안 나요. 그래서 초안이 읽기 좋을수록 원본과 한 번 더 맞춰 봐야 해요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-blocker-not-risk">
+          <td>원본 <code>blocker</code> 칸에 글이 적힌 업무가 보고서에서 <strong>완료나 진행</strong> 칸에 들어가 있어요. 첫 주 보고서인데 위험이 0건으로 나오기도 해요</td>
+          <td>그 업무의 판정 근거예요. AI가 완료 기준을 먼저 적용했는지, 차단 요인을 아예 안 읽었는지 봐요. 기록 파일은 대개 범인이 아니에요 — <code>blocker</code> 값은 원본에 그대로 있거든요</td>
+          <td><code>data/week-one.json</code>에서 <code>blocker</code>가 <code>null</code>이 아닌 업무를 전부 찾아 보고서의 위험 칸과 맞춰 봐요. 빠진 업무가 있으면 "위험 → 완료 → 진행 순서로 한 범주에만 넣는다"는 규칙 문장을 짚어 그 업무만 다시 판단하게 해요</td>
+        </tr>
+        <tr id="suspect-filled-blank">
+          <td>원본에서 비어 있던 칸이 보고서에서는 <strong>채워져 있어요</strong>. <code>deployed_at</code>이 <code>null</code>인 업무에 배포 날짜가 붙어 있거나, <code>owner</code>가 빈 업무에 사람 이름이 적혀 있어요</td>
+          <td>보고서에 나온 <strong>날짜와 담당자 이름</strong> 하나하나예요. 각각이 원본의 어느 필드에서 왔는지 봐요. 날짜가 채워지면 완료 건수가, 이름이 채워지면 확인할 사항 목록이 달라져요</td>
+          <td>근거 필드를 못 대는 값이 곧 채워 넣은 값이에요. 날짜는 '미기록'으로 되돌리고 그 업무의 판정도 다시 봐요. 담당자는 '미정'으로 바꿔 확인할 사항에 올려요</td>
+        </tr>
+        <tr id="suspect-today-date">
+          <td>첫 주 보고서에서 TASK-102가 <strong>기한 초과</strong>나 위험으로 들어가 있어요. 또는 같은 <code>week-one.json</code>으로 며칠 뒤 다시 만들었더니 분류가 달라졌어요</td>
+          <td>보고서에 적힌 <strong>보고 기준일</strong>이에요. 원본 위쪽의 <code>report_date</code>(<code>2026-09-04</code>) 대신 오늘 날짜가 들어가 있는지 봐요. AI가 계산 코드를 짰다면 <code>date.today()</code>나 <code>datetime.now()</code>가 들어간 줄이요</td>
+          <td>TASK-102의 기한 <code>2026-09-07</code>은 기준일보다 뒤라 첫 주엔 기한 초과가 아니에요. 그런데도 초과로 나왔다면 오늘 날짜로 비교한 거예요. "기한은 report_date와 비교해"를 붙여 다시 시켜요</td>
+        </tr>
+        <tr id="suspect-rules-unread">
+          <td>보고서가 그럴듯한데 <strong>TASK-104</strong>가 '지연'이나 위험으로 들어가 있어요. 기한과 보고 기준일이 둘 다 <code>2026-09-04</code>인 업무예요</td>
+          <td>에이전트 화면의 <strong>도구 호출 기록</strong>이에요. <code>team-weekly-report/references/team-rules.md</code>를 실제로 읽은 줄이 있는지 봐요. 보고서 문장은 대개 범인이 아니에요 — 기준 없이도 문장은 잘 나오거든요</td>
+          <td>읽은 흔적이 없으면 일반 상식으로 쓴 보고서예요. 파일 경로를 알려 주고 다시 시켜요. 읽었는데도 지연이면 "기한이 보고 기준일과 같으면 지연이 아니다" 줄을 짚어 그 업무만 다시 판단하게 해요</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>두 번째 줄이 제일 놓치기 쉬워요. 나머지는 규칙과 어긋나서 눈에 걸리는데, 채워 넣은 값은 빈칸을 없애 보고서를 <strong>더 완성돼 보이게</strong> 하거든요. 그래서 팀장에게 보내기 직전에 날짜와 이름만이라도 원본과 맞춰 봐요.</p>
+    <p>대조를 에이전트에게 맡길 수도 있어요. 이때 고치기 전에 <strong>근거부터 보여 달라고</strong> 해요. 다만 그 표도 AI가 만든 거라, 한두 줄은 원본 파일을 직접 열어 맞춰 봐요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— 초안을 만든 그 대화에 이어서</span></p>
+    <pre><code>방금 만든 주간 보고서를 원본과 대조해서 업무 ID마다 한 줄씩 표로 보여 줘. 아직 보고서는 고치지 마.
+1. 넣은 범주(위험·완료·진행), 근거로 쓴 필드 이름과 data/week-one.json의 실제 값
+2. 적용한 team-weekly-report/references/team-rules.md 문장을 그대로 인용. 이번 작업에서 그 파일을 실제로 읽지 않았다면 "읽지 않음"이라고 적어
+3. 보고서에는 값이 있는데 원본에서는 null이거나 비어 있는 칸(배포 날짜·담당자 등)
+4. 기한 비교에 쓴 기준일과, 그 값을 어디서 가져왔는지(report_date인지 다른 날짜인지)</code></pre>
 
     <section class="footnotes">
       <ol>

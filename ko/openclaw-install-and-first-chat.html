@@ -58,10 +58,10 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>폴더를 따로 만들었다고 격리가 끝난 게 아니에요. 어디서 설치하든 자격 증명은 홈 폴더의 ~/.openclaw/ 에 모이니, 실제 업무 키를 넣으면 연습이 끝나도 그대로 남아요.</li>
-            <li>진단 출력의 마지막 줄 "done"만 보고 넘어가면, 중간 경고를 놓친 채 다음 단계로 가서 나중에 어디가 원인인지 못 가려요.</li>
-            <li>Node 버전이 안 맞는데 억지로 바꾸면 다른 프로그램이 깨져요. 안 맞으면 그 자리에서 멈추는 게 맞아요.</li>
-            <li>게이트웨이 주소를 바깥에서 접속되게 열면 안 돼요. 기본 주소의 외부 공개는 공식 문서도 권하지 않아요.</li>
+            <li>폴더를 따로 만들었다고 격리가 끝난 게 아니에요. 어디서 설치하든 자격 증명은 홈 폴더의 ~/.openclaw/ 에 모이니, 실제 업무 키를 넣으면 연습이 끝나도 그대로 남아요. <a class="suspect-jump" href="#suspect-key-in-home">언제 의심하나 ↓</a></li>
+            <li>진단 출력의 마지막 줄 "done"만 보고 넘어가면, 중간 경고를 놓친 채 다음 단계로 가서 나중에 어디가 원인인지 못 가려요. <a class="suspect-jump" href="#suspect-doctor-middle-line">언제 의심하나 ↓</a></li>
+            <li>Node 버전이 안 맞는데 억지로 바꾸면 다른 프로그램이 깨져요. 안 맞으면 그 자리에서 멈추는 게 맞아요. <a class="suspect-jump" href="#suspect-node-range">언제 의심하나 ↓</a></li>
+            <li>게이트웨이 주소를 바깥에서 접속되게 열면 안 돼요. 기본 주소의 외부 공개는 공식 문서도 권하지 않아요. <a class="suspect-jump" href="#suspect-gateway-reachable">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -210,6 +210,40 @@ openclaw gateway status</code></pre>
 
     <h2><span class="hl">직접 해보기</span></h2>
     <p>설치가 끝났다는 증거를 네 가지 화면에서 모아 보세요. <code>openclaw --version</code>의 버전 숫자, 온보딩 완료 화면, <code>openclaw gateway status</code>의 상태, WebChat의 첫 응답. 이 넷을 순서대로 확인했다면 설치가 된 거예요. 어느 하나가 안 나오면 <code>openclaw --version</code>부터 다시 봐요. 설치 자체가 안 됐는지, 설치는 됐는데 게이트웨이가 안 떴는지, 게이트웨이는 떴는데 인증이 안 됐는지가 순서대로 갈려요. WebChat 응답이 없다면 게이트웨이 상태와 오류 문구를 같이 봐요. 이건 <a href="terminal-practice.html">PowerShell 명령어 실습</a>에서 익힌 "명령 하나 치고 출력 읽기"의 연장이에요.</p>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 설치했는데 대화가 안 되거나, 되는데 찜찜할 때</h2>
+    <p>설치 단계의 실수는 그 자리에서 안 터지고 <strong>한두 단계 뒤에</strong> 증상으로 나와요. 진단 경고를 지나친 대가는 채팅에서, 홈 폴더에 남은 키는 연습이 끝난 뒤에 만나요. 그래서 막힌 단계보다 한 칸 앞을 먼저 열어 보는 게 순서예요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-node-range">
+          <td><code>npm install</code>이 에러로 끝나거나, AI가 <strong>"Node 버전부터 바꾸자"</strong>고 제안해요</td>
+          <td><code>node --version</code>에 찍힌 숫자예요. 공식 문서의 요구 범위(22.22.3 이상, 24.15 이상, 25.9 이상)와 맞춰 봐요 (<a href="#numbers">이 글에 나온 숫자</a>)</td>
+          <td>범위 밖이면 설치를 이어 가지 말고 멈춰요. 같은 컴퓨터의 다른 프로그램이 지금 Node 버전에 기대고 있을 수 있어서, AI가 바꾸자고 해도 바로 따르지 않아요</td>
+        </tr>
+        <tr id="suspect-doctor-middle-line">
+          <td>WebChat이나 텔레그램 연결에서 막혔는데, 설치 때 기억나는 건 <strong><code>doctor</code>가 마지막에 멀쩡히 끝났다</strong>는 것뿐이에요</td>
+          <td><code>openclaw doctor</code> 출력의 <strong>중간 줄</strong>이에요. 경고나 오류가 중간에 있어도 마지막 줄은 멀쩡해 보일 수 있어요</td>
+          <td><code>openclaw doctor</code>를 다시 돌려 위에서 아래까지 읽어요. 경고나 오류 줄이 하나라도 있으면 지금 막힌 단계보다 그 항목을 먼저 해결하고, <code>openclaw gateway status</code>도 같은 방식으로 봐요</td>
+        </tr>
+        <tr id="suspect-webchat-silent">
+          <td><code>openclaw dashboard</code>로 WebChat 화면은 열렸는데, 첫 문장을 보내도 <strong>답이 안 와요</strong></td>
+          <td>화면이 아니라 <code>openclaw gateway status</code>예요. 게이트웨이가 멈춰 있으면 화면이 열려도 메시지를 보낼 수 없어요. 전날 <code>openclaw daemon stop</code>으로 멈춰 뒀다면 꺼져 있는 게 당연해요</td>
+          <td>네 화면을 처음부터 순서대로 다시 짚어요. <code>openclaw --version</code>이 안 나오면 설치, 게이트웨이가 안 떠 있으면 게이트웨이, 둘 다 멀쩡하면 인증 쪽이에요. 그 단계에 뜬 오류 문구를 같이 봐요</td>
+        </tr>
+        <tr id="suspect-key-in-home">
+          <td>연습 폴더 <code>~/openclaw-lab</code>을 통째로 지웠는데, <code>ls -la ~/.openclaw</code>를 치면 <strong>폴더와 파일이 그대로</strong> 나와요</td>
+          <td>홈 폴더의 <code>~/.openclaw/</code>예요. 어디서 설치하든 설정·상태·자격 증명은 여기 모여서, 연습 폴더를 지워도 같이 지워지지 않아요. 기본 설정 파일 위치는 <code>openclaw config file</code>로 확인해요</td>
+          <td>파일 이름으로만 무엇이 남았는지 보고, 안에 토큰이나 키가 보이면 복사·공유하지 않아요. 온보딩에 실제 업무 키를 넣었다면, 그 키는 발급한 곳에서 폐기하고 새로 발급받는 게 안전해요</td>
+        </tr>
+        <tr id="suspect-gateway-reachable">
+          <td>다른 기기에서도 WebChat을 쓰고 싶어 AI에게 맡겼더니, <strong>같은 와이파이의 폰에서 <code>http://(내 컴퓨터 IP 주소):18789</code>로 화면이 열려요</strong></td>
+          <td>게이트웨이가 연결을 받는 주소예요. 터미널에서 <code>netstat -an</code>을 치고 <code>18789</code>가 든 줄의 주소를 봐요</td>
+          <td><code>127.0.0.1</code>이면 이 컴퓨터 안에서만 받고, <code>0.0.0.0</code>이나 <code>*</code>면 바깥 연결도 받는 상태라 AI가 바꾼 설정을 되돌려요. 다만 <code>127.0.0.1</code>이어도 Tailscale Funnel 같은 길로 공개 주소를 붙였다면 바깥에서 닿으니, 이 확인만으로 안전하다고 끝내지 않아요</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>마지막 줄은 증상이 오히려 "성공"처럼 보여요. 폰에서 화면이 열리니 잘 됐다고 느끼거든요. 그래서 원격 접속을 AI에게 맡긴 날은 결과가 잘 돌아도 이 줄을 한 번 확인해요.</p>
 
     <section class="footnotes">
       <ol>

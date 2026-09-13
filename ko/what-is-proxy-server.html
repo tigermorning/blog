@@ -51,8 +51,8 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>이 구조 없이 배포하면, 누구나 개발자 도구 네트워크 탭에서 키를 그대로 복사해 가요. 키 하나가 새면 그 키로 걸리는 요금과 남용을 전부 내가 떠안아요.</li>
-            <li>중계 서버를 세워도 아무 주소에서나 오는 요청을 다 받아주면 안 돼요. 그럼 키를 숨긴 의미가 없어져요.</li>
+            <li>이 구조 없이 배포하면, 누구나 개발자 도구 네트워크 탭에서 키를 그대로 복사해 가요. 키 하나가 새면 그 키로 걸리는 요금과 남용을 전부 내가 떠안아요. <a class="suspect-jump" href="#suspect-key-in-browser">언제 의심하나 ↓</a></li>
+            <li>중계 서버를 세워도 아무 주소에서나 오는 요청을 다 받아주면 안 돼요. 그럼 키를 숨긴 의미가 없어져요. <a class="suspect-jump" href="#suspect-proxy-passthrough">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -113,6 +113,47 @@ app.post('/api/npc-line', async (req, res) => {
 
     <h2><span class="hl">바뀐 건 위치 하나뿐</span></h2>
     <p>프록시를 세워도 "브라우저가 요청하고 서버가 응답한다"는 기본 구조는 그대로예요. 딱 한 가지, <strong>키가 어디 있느냐</strong>만 바뀌었어요. 이 서버는 딱 이 중계 역할만 하기 때문에 만들기도 어렵지 않아요 — 위 예시처럼 20~30줄이면 충분해요. 다만 이 프록시 서버도 아무 주소에서나 오는 요청을 다 받아주면 안 되는데, 그걸 정하는 규칙이 다음 번외편인 CORS예요.</p>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 외부 AI를 부르는 기능을 배포하기 전</h2>
+    <p>키가 노출된 코드도 화면은 똑같이 잘 돌아가요. 그래서 대개 요금이나 사용량으로 처음 알게 되는데, 그때는 키가 이미 남의 손에 있어요. 배포한 사이트의 <strong>네트워크 탭에 무엇이 찍히는지</strong>를 방문자 눈으로 먼저 봐요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-key-in-browser">
+          <td>배포한 사이트의 네트워크 탭에서 AI를 부르는 요청을 눌렀더니, 요청 주소가 <strong>우리 서버가 아니라 외부 AI 회사 주소</strong>예요. 요청 헤더에 <code>Authorization: Bearer sk-...</code>도 보여요</td>
+          <td>화면 코드에서 외부 AI 주소로 직접 fetch하는 줄이에요. 에디터 전체 검색에 그 회사 주소나 <code>Authorization</code>을 넣어 봐요</td>
+          <td>보였다면 이미 누구나 복사할 수 있던 키라, 먼저 <a href="ai-code-security-basics.html#suspect-key-leaked">보안 편의 이 줄</a>대로 키를 새로 발급받아요. 그다음 호출을 프록시 서버로 옮기고 새 키는 서버 환경변수에만 넣어요</td>
+        </tr>
+        <tr id="suspect-key-sent-to-proxy">
+          <td>요청 주소는 <code>/api/...</code>로 우리 서버를 향하는데, 그 요청의 보내는 내용(Payload)이나 헤더에 <strong>키가 여전히 실려</strong> 있어요</td>
+          <td>화면 코드가 키를 어디서 꺼내는지예요. <code>VITE_</code>나 <code>NEXT_PUBLIC_</code>이 붙은 환경변수에서 키를 읽어 서버로 보내고 있는지 봐요</td>
+          <td>키는 화면이 보내는 게 아니라 서버가 자기 환경변수에서 꺼내야 해요. 공개 접두사가 붙어 있었다면 그 키도 이미 브라우저에 실렸던 거라 새로 발급받아요 (<a href="connecting-frontend-backend.html#suspect-public-prefix-secret">연결 편의 이 줄</a>)</td>
+        </tr>
+        <tr id="suspect-proxy-wrong-host">
+          <td>프록시로 바꿨더니 배포한 사이트에서만 <strong>404</strong>가 떠요. 요청 주소를 보면 화면이 올라간 주소 뒤에 <code>/api/npc-line</code>이 붙어 있어요</td>
+          <td>화면 코드의 <code>fetch('/api/...')</code> 줄이에요. 앞에 서버 주소가 없는 짧은 주소는 <strong>화면이 올라간 곳</strong>으로 가요</td>
+          <td>프록시 서버가 화면과 다른 주소(예: <code>...onrender.com</code>)에 있다면 그 서버 주소를 붙여야 해요. 주소는 환경변수로 빼 두면 개발과 배포에서 따로 넣을 수 있어요 (<a href="connecting-frontend-backend.html#suspect-hardcoded-localhost">연결 편의 이 줄</a>)</td>
+        </tr>
+        <tr id="suspect-empty-body">
+          <td>프록시를 거치게 바꾼 뒤 AI가 <strong>입력을 못 받은 것처럼</strong> 엉뚱하게 답하거나 에러를 내요. 서버에서 <code>req.body</code>를 찍어 보면 <code>undefined</code>나 <code>{}</code>예요</td>
+          <td>화면 쪽 fetch의 <code>headers</code>와, 서버 파일 위쪽의 <code>app.use(express.json())</code> 줄이에요</td>
+          <td>화면 쪽에 <code>'Content-Type': 'application/json'</code>이 빠져 있거나 서버에 <code>express.json()</code>이 없으면, 서버가 보낸 내용을 JSON으로 읽지 못해 빈 채로 넘겨요. 둘 다 있는지 봐요</td>
+        </tr>
+        <tr id="suspect-proxy-passthrough">
+          <td>키는 안 보이는데, AI 회사의 사용량 화면에 <strong>우리 화면이 쓰지 않는 모델이나 유난히 긴 요청</strong>이 찍혀요</td>
+          <td>프록시 서버 코드에서 받은 내용을 외부로 넘기는 줄이에요. 위 예시의 <code>JSON.stringify(req.body)</code>처럼 <strong>받은 걸 통째로</strong> 넘기는지 봐요</td>
+          <td>통째로 넘기면 프록시를 부르는 누구나 모델과 길이를 마음대로 정해 우리 키로 쓸 수 있어요. 서버가 필요한 칸(예: <code>npc</code>, <code>situation</code>)만 꺼내 요청을 직접 만들게 해요. CORS로 허용 주소를 좁히는 것도 필요하지만, 브라우저 밖에서 직접 부르는 건 못 막아요 (<a href="what-is-cors.html#suspect-allow-all">CORS 편의 이 줄</a>)</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>둘째 줄이 제일 헷갈려요. 주소가 <code>/api/...</code>로 바뀌어서 프록시를 세운 것처럼 보이는데, 키는 그대로 브라우저에 있거든요. 그래서 요청 주소만 보지 말고 <strong>보내는 내용까지</strong> 열어 봐요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— 화면과 프록시 서버 코드가 있는 프로젝트 폴더에서</span></p>
+    <pre><code>이 프로젝트에서 외부 AI API를 부르는 흐름을 전부 찾아서, 한 곳마다 파일 이름과 줄 번호를 표로 보여 줘.
+1) 화면(브라우저) 코드에서 외부 AI 주소로 직접 요청하는 곳
+2) 화면 코드가 API 키를 읽거나 요청에 실어 보내는 곳 (키 값은 보여 주지 마)
+3) 프록시 서버가 받은 요청 본문을 그대로 외부 API로 넘기는 곳
+4) 프록시 서버의 CORS 허용 주소 설정
+아직 코드는 고치지 마.</code></pre>
 
     <a class="post-nav" href="mcp-skill-google-oauth-setup.html">
       <span class="post-nav-label">참고 글</span>

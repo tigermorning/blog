@@ -110,6 +110,30 @@
 
     <p><strong>직접 해보기</strong>: 본인 GitHub 프로필(<code>github.com/본인아이디</code>)에 들어가서 잔디를 살펴보세요. 회색 칸이 며칠째 이어지는 구간이 있다면, 그 주에 실제로 무슨 일이 있었는지 떠올려보면 도장판이 왜 거울에 가까운지 바로 느껴져요.</p>
 
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 분명 작업했는데 칸이 회색일 때</h2>
+    <p>잔디가 회색이면 "작업이 제대로 안 올라갔나" 싶어 파일부터 다시 보게 되는데, 원인은 대개 작업이 아니라 <strong>기록에 붙은 꼬리표</strong>에 있어요. 먼저 그 커밋이 GitHub 저장소에 올라가 있는지 보고(<a href="learning-git-3.html#suspect-not-pushed">Git 3편의 이 줄</a>), 올라가 있는데도 회색이면 이메일, 저장소 공개 여부, 브랜치 셋 중 하나예요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-email-mismatch">
+          <td>커밋하고 push까지 했는데 그날 칸이 회색이에요. GitHub 저장소의 커밋 목록을 보면 그 커밋 작성자 자리에 <strong>내 프로필 사진 대신 기본 아이콘</strong>이 붙어 있어요</td>
+          <td>커밋에 적힌 <strong>이메일</strong>이에요. 저장소 폴더에서 <code>git log -1 --format=%ae</code>를 넣으면 마지막 커밋의 이메일이 나와요. GitHub <strong>Settings → Emails</strong>에 등록된 이메일과 맞춰 봐요</td>
+          <td>다르면 앞으로의 커밋은 <code>git config --global user.email</code>을 계정 이메일로 고치면 돼요. 이미 한 커밋은 그 이메일을 GitHub Emails에 추가하면 내 계정과 이어지는데, 내가 실제로 받는 주소여야 인증이 돼요. 이메일을 AI가 알아서 채웠다면 여기서 어긋나기 쉬워요 (<a href="git-commit-concept.html#suspect-identity-unknown">커밋 글의 이 줄</a>)</td>
+        </tr>
+        <tr id="suspect-private-contrib">
+          <td>거의 매일 커밋하는데 <strong>프로필 잔디가 텅 비어 있어요</strong>. 작업하는 저장소 이름 옆에 Private 표시가 붙어 있어요</td>
+          <td>프로필 설정의 <strong>Include private contributions</strong>예요. 비공개 저장소 활동은 이 설정이 꺼져 있으면 잔디에 안 나와요</td>
+          <td>켜면 비공개 활동도 칸에 반영돼요. 다른 사람에게는 개수만 보이고, 저장소 이름과 내용은 감춰져요</td>
+        </tr>
+        <tr id="suspect-not-on-main">
+          <td>커밋하고 push도 했고 작성자 사진도 내 것인데, <strong>칸이 안 채워져요</strong></td>
+          <td>그 커밋이 GitHub 저장소의 <strong>기본 줄기(main)</strong>에 들어갔는지예요. 잔디는 기본 줄기(그리고 <code>gh-pages</code>)에 들어간 커밋만 세요</td>
+          <td>GitHub 저장소에서 브랜치를 main으로 둔 채 커밋 목록을 열어 그 커밋이 있는지 봐요. 다른 브랜치에만 있으면 main에 합친 뒤에 칸이 채워져요 (<a href="learning-git-6.html#suspect-not-merged">Git 6편의 이 줄</a>)</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>첫째 줄은 한 번 어긋나면 그 컴퓨터에서 하는 커밋이 전부 회색이 돼요. 그래서 새 컴퓨터에서 처음 커밋하는 날, 저장소 커밋 목록에 내 사진이 붙는지 한 번 보고 넘어가요.</p>
+
     <a class="post-nav" href="what-is-vibe-coding.html">
       <span class="post-nav-label">참고 글</span>
       <span class="post-nav-title">바이브 코딩이란 무엇인가</span>

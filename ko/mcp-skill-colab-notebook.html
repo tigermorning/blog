@@ -58,9 +58,9 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>셀만 생기고 계산은 안 된 상태를 "다 됐다"고 착각합니다.</li>
-            <li>기준을 안 정하면 같은 자료로 30분과 12.9분이 둘 다 나옵니다 — 기록 있는 날만 세느냐, 없는 날을 0분으로 넣느냐의 차이예요.</li>
-            <li>임시 노트북에 결과를 남긴 채 닫으면 다음에 열었을 때 계산도 결과도 없습니다.</li>
+            <li>셀만 생기고 계산은 안 된 상태를 "다 됐다"고 착각합니다. <a class="suspect-jump" href="#suspect-cell-not-run">언제 의심하나 ↓</a></li>
+            <li>기준을 안 정하면 같은 자료로 30분과 12.9분이 둘 다 나옵니다 — 기록 있는 날만 세느냐, 없는 날을 0분으로 넣느냐의 차이예요. <a class="suspect-jump" href="#suspect-average-basis">언제 의심하나 ↓</a></li>
+            <li>임시 노트북에 결과를 남긴 채 닫으면 다음에 열었을 때 계산도 결과도 없습니다. <a class="suspect-jump" href="#suspect-scratchpad">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -302,6 +302,49 @@ print(average)</code></pre>
     <p>⑤ <strong>런타임을 새로 시작해 보기.</strong> 두 번째 셀만 단독으로 실행해서 <strong>일부러 실패시켜</strong> 보세요. "문서에는 적혀 있는데 런타임은 모른다"를 <strong>직접 겪어 보는 것</strong>이 이 편의 핵심 감각이에요. 확인했으면 위에서부터 다시 실행하세요.</p>
     <p>⑥ <strong>보관 결정하기.</strong> 남길 게 있으면 <strong>Copy to Drive</strong>로 옮기고 제목을 붙이세요. 안 남길 거면 그냥 닫되, <strong>"이건 사라지는 노트북"이라는 걸 알고 닫는 것</strong>과 모르고 닫는 것은 달라요.</p>
     <p>여기까지 하면 계산의 <strong>입력·과정·결과·기준</strong>이 한 문서에 나란히 남아요. 다음 편에서는 방향을 한 번 더 틀어서, <strong>팀이 실제로 쓰는 공유 표(구글 스프레드시트)를 읽어 오는 준비</strong>를 합니다. 여기서 미리 짚어 둘 게 하나 있어요 — <strong>Colab에 로그인해 있다는 사실이 다른 앱의 접근 동의까지 대신해 주지는 않아요.</strong> 그래서 다음 편에서는 Google Workspace용 <strong>credential JSON</strong>을 새로 준비하는 절차부터 시작해요.</p>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 에이전트가 Colab에서 계산했다고 할 때</h2>
+    <p>Colab 연결의 문제는 대개 <strong>"했다"는 말과 화면이 어긋나는</strong> 모양으로 와요. 에이전트는 셀을 만들었다는데 출력이 없고, 노트북에는 코드가 멀쩡히 있는데 런타임은 그 값을 모르죠. 문서(노트북)와 계산(런타임)이 다른 곳이라, 한쪽만 보고 "됐다"고 판단하면 어긋나요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-cell-not-run">
+          <td>에이전트는 셀을 만들었다고 하는데 <strong>셀 아래에 출력이 없어요</strong>. <code>print(37 + 5)</code>를 넣었는데 42가 안 보여요</td>
+          <td>에이전트 화면의 <strong>도구 호출 기록</strong>이에요. <code>add_code_cell</code>만 있고 <code>run_code_cell</code>이 없는지 봐요. 셀에 적힌 코드는 대개 범인이 아니에요</td>
+          <td><code>run_code_cell</code>이 없으면 "그 셀을 실행해 줘"를 따로 시켜요. 불렀는데도 출력이 없으면 Colab 화면 오른쪽 위의 런타임 상태와 셀에 찍힌 오류 메시지를 봐요 — 오른쪽 위 Connect를 안 눌렀을 수 있어요</td>
+        </tr>
+        <tr id="suspect-average-basis">
+          <td>같은 학습 시간 기록인데 <strong>평균이 사람이나 대화마다 달라요</strong>. 한쪽은 30분, 다른 쪽은 12.9분처럼요. 두 셀 모두 오류 없이 돌았어요</td>
+          <td>평균을 낸 코드 셀의 <strong>나누는 수</strong>예요. <code>len(minutes)</code>처럼 기록 개수인지, 7 같은 날짜 수인지 봐요. 그 셀 바로 위 텍스트 셀에 기준이 적혀 있는지도요</td>
+          <td>나누는 수가 다르면 둘 다 계산은 맞아요. 틀린 쪽을 찾지 말고 "기록 없는 날을 어떻게 볼지"를 팀이 정해 텍스트 셀에 적은 뒤, 그 기준대로 다시 실행해요</td>
+        </tr>
+        <tr id="suspect-scratchpad">
+          <td>결과 화면 위쪽에 <strong>Cannot save changes</strong>와 <strong>Copy to Drive</strong>가 떠 있어요. 또는 어제 계산한 노트북을 다시 열었더니 셀이 하나도 없어요</td>
+          <td>지금 탭에 열린 <strong>노트북 이름</strong>이에요. <code>scratchpad</code> 같은 임시 노트북이면 닫는 순간 내용이 남지 않아요</td>
+          <td>닫기 전에 Copy to Drive로 내 드라이브에 복사하고 알아볼 수 있는 제목을 붙여요. 복사본이 드라이브에 실제로 생겼는지 확인한 뒤에 원래 탭을 닫아요</td>
+        </tr>
+        <tr id="suspect-runtime-reset">
+          <td>저장해 둔 노트북을 다시 열어 평균 셀만 실행했더니 <code>NameError: name 'minutes' is not defined</code>가 나요. 코드는 화면에 멀쩡히 적혀 있는데요</td>
+          <td>그 셀의 코드가 아니라 <strong>런타임</strong>이에요. 런타임이 새로 시작되면 위쪽 셀에서 만든 값이 전부 사라져요. 한동안 안 쓰다가 돌아왔을 때도 런타임이 끊겨 있을 수 있어요</td>
+          <td>맨 위 셀부터 순서대로 다시 실행해요(런타임 메뉴의 모두 실행). 에이전트에게 맡길 때도 "이 셀만"이 아니라 "위에서부터 차례로 실행해 줘"라고 해요</td>
+        </tr>
+        <tr id="suspect-wrong-notebook">
+          <td>에이전트는 셀을 넣었다는데 <strong>내가 보고 있는 Colab 탭에는 새 셀이 없어요</strong>. 에러도 안 났어요</td>
+          <td>에이전트가 붙잡고 있는 <strong>노트북 이름</strong>이에요. Colab 탭을 여러 개 열어 뒀다면 다른 탭의 노트북을 만지고 있을 수 있어요</td>
+          <td>"연결된 노트북 이름과 지금 들어 있는 셀을 확인해 줘"로 받은 이름을 Chrome 탭 이름과 맞춰요. 다르면 그 이름의 탭을 찾아가 보고, 필요 없는 Colab 탭은 닫고 이어 가요</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>두 번째 줄이 제일 놓치기 쉬워요. 나머지는 출력이 없거나 오류가 나서 알게 되는데, 기준이 다른 두 평균은 <strong>둘 다 멀쩡히 돌아가거든요</strong>. 그래서 숫자를 보고서에 옮기기 전에 나누는 수부터 확인해요.</p>
+    <p>결과 화면을 캡처해 과제나 채팅에 올리기 직전에는 <strong>주소창</strong>도 한 번 봐요. 연결 도구가 연 탭 주소에는 연결용 임시 값이 들어 있어서, 노트북 이름과 결과 화면만 남기고 주소창은 잘라 내요.</p>
+    <p>셀이 늘어나면 어느 셀이 어느 값에 기대는지 눈으로 따라가기 어려워요. 다시 실행하기 전에 에이전트에게 노트북 구조부터 <strong>보여 달라고</strong> 해요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— Colab 노트북이 연결된 대화에서</span></p>
+    <pre><code>연결된 노트북을 읽기만 해서 아래를 표로 보여 줘. 아직 셀을 추가하거나 실행하거나 고치지 마.
+1. 노트북 이름
+2. 셀마다 위에서부터 번호, 종류(코드·텍스트), 첫 줄
+3. 코드 셀마다 출력이 붙어 있는지, 오류 메시지가 있다면 그 문장 (도구로 알 수 없으면 모른다고 적어)
+4. 코드 셀이 다른 셀에서 만든 변수를 쓰는지, 쓴다면 그 변수를 만든 셀 번호
+5. 평균을 내는 셀이 있다면 무엇으로 나누는지, 그리고 그 기준이 적힌 텍스트 셀이 있는지</code></pre>
 
     <section class="footnotes">
       <ol>

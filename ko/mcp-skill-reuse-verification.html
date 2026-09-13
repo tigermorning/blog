@@ -58,9 +58,9 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>지난주 문장을 복사하면, 이미 배포되고 확인까지 끝난 일이 계속 "진행 중"으로 잘못 보고됩니다.</li>
-            <li>고칠 때 이번 입력의 정답을 적어 넣으면 그 업무 하나는 맞지만 다음 주엔 아무 도움이 안 돼요.</li>
-            <li>이번 문제를 잡으려고 넣은 설명이 전에는 잘되던 사례를 망가뜨릴 수 있습니다 — 고친 뒤 예전 입력으로 되돌려 확인해야 해요.</li>
+            <li>지난주 문장을 복사하면, 이미 배포되고 확인까지 끝난 일이 계속 "진행 중"으로 잘못 보고됩니다. <a class="suspect-jump" href="#suspect-copied-last-week">언제 의심하나 ↓</a></li>
+            <li>고칠 때 이번 입력의 정답을 적어 넣으면 그 업무 하나는 맞지만 다음 주엔 아무 도움이 안 돼요. <a class="suspect-jump" href="#suspect-answer-in-fix">언제 의심하나 ↓</a></li>
+            <li>이번 문제를 잡으려고 넣은 설명이 전에는 잘되던 사례를 망가뜨릴 수 있습니다 — 고친 뒤 예전 입력으로 되돌려 확인해야 해요. <a class="suspect-jump" href="#suspect-regression-week-one">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -350,6 +350,42 @@
     <p>④ <strong>near-miss 요청 하나를 직접 지어내기.</strong> 예시 두 개 말고 <strong>내 업무에서 나올 법한</strong> 요청을 하나 만드세요. "보고서와 단어는 겹치는데 해야 할 일은 다른" 문장이면 돼요. 그리고 그 요청에 Skill이 꺼내지는지 확인하세요 — 꺼내진다면 <code>description</code>의 "안 쓸 상황"에 그 경우를 한 줄 추가할 차례예요.</p>
     <p>⑤ <strong>고친 뒤 첫 주까지 되돌려 보기.</strong> 무엇 하나를 고쳤다면 둘째 주로 재확인한 다음 <strong>반드시 첫 주 기록으로도</strong> 한 번 더 돌리세요. 첫 주 결과가 이전과 달라졌다면, 이번 수정이 <strong>다른 자리를 건드린</strong> 거예요. 이걸 발견하는 게 실패가 아니라 <strong>이 연습의 성과</strong>입니다.</p>
     <p>여기까지 하면 Skill이 <strong>내 손을 떠나서도 같은 기준을 적용한다</strong>는 근거가 파일로 남아요. 다음 편에서는 방향을 조금 틀어서, <strong>계산 과정을 실행 가능한 셀로 남기는 Colab 연결</strong>을 살펴볼게요. 지금까지는 판단을 문서로 남겼다면, 이번엔 <strong>돌려 볼 수 있는 형태</strong>로 남기는 이야기예요.</p>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 둘째 주 결과를 믿어도 될지 모를 때</h2>
+    <p>재사용에서 생기는 문제는 대부분 <strong>이번 주 보고서만 보면 멀쩡해요</strong>. 지난주 문장이 섞여도, 정답을 외운 규칙이 들어가도, 고친 규칙이 첫 주를 망가뜨려도 둘째 주 결과는 그럴듯하거든요. 그래서 다른 주의 기록이나 이전 결과와 <strong>나란히 놓았을 때</strong> 비로소 보여요.</p>
+    <p>증상이 아직 없어도, <strong>AI에게 이런 부탁을 한 직후</strong>라면 한 번 확인하고 넘어가요.</p>
+    <ul>
+      <li>"둘째 주 보고서도 만들어 줘"를 첫 주 보고서를 만든 대화에 이어서 했다면 — 결과가 좋아도 Skill 덕인지 알 수 없으니 새 대화에서 한 번 더 시켜 보기</li>
+      <li>"이 결과가 팀 규칙과 다른 이유를 찾아 줘. 고칠 부분 하나를 정해서 다시 확인하자" — 바뀐 줄에 업무 번호가 들어가지 않았는지, 첫 주 기록으로도 다시 돌렸는지</li>
+    </ul>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-copied-last-week">
+          <td>둘째 주 보고서에 TASK-102가 <strong>여전히 '진행'</strong>이고, 근거로 <code>deployed_at</code> <code>null</code>·운영 확인 미실시 같은 <strong>첫 주 값</strong>이 적혀 있어요</td>
+          <td>보고서를 만든 <strong>대화</strong>와 도구 호출 기록이에요. 첫 주 보고서가 떠 있는 대화에 이어서 시켰는지, 자료 요청이 <code>{"week":"week-two"}</code>였는지 봐요. 둘 다 맞으면 Skill 폴더에 지난주 판정이 적혀 있지 않은지 봐요 (<a href="mcp-skill-writing-skill-md.html#suspect-answer-in-skill">8편</a>)</td>
+          <td>보고서에 TASK-101·103·104가 보이면 첫 주 기록을 읽은 거예요. 둘째 주 TASK-102에는 <code>deployed_at</code> <code>2026-09-07</code>과 운영 확인 통과가 들어 있으니, 근거가 이 값과 다르면 지난주 문장을 가져온 거예요. 새 대화에서 다시 만들어요</td>
+        </tr>
+        <tr id="suspect-answer-in-fix">
+          <td>어긋난 걸 AI에게 고치게 했더니 둘째 주 보고서는 맞게 나와요. 그런데 <strong>바뀐 줄</strong>에 <code>TASK-202</code> 같은 업무 번호나 "위험이다" 같은 정답이 들어 있어요</td>
+          <td>이번에 고친 파일(<code>SKILL.md</code>나 <code>references/team-rules.md</code>)의 바뀐 줄이에요. 프로젝트를 Git으로 관리한다면 <code>git diff</code>로 바로 보여요</td>
+          <td>업무 번호가 들어간 줄은 다음 주에 쓸 데가 없어요. "배포했더라도 운영 확인이 통과하지 않았으면 위험으로 다룬다"처럼 번호 없이도 성립하는 기준으로 바꿔 적고, 둘째 주로 다시 돌려 여전히 맞는지 봐요</td>
+        </tr>
+        <tr id="suspect-regression-week-one">
+          <td>규칙을 고친 뒤 <strong>첫 주 기록</strong>으로 다시 만들었더니 <code>first-week-report.md</code>와 판정이 달라진 업무가 생겨요. 기한 당일인 TASK-104가 '지연'이 되는 식으로요</td>
+          <td>이번에 새로 넣은 규칙 문장이에요. 첫 주 기록과 기준선 파일은 그대로라, 둘 사이에서 달라진 건 규칙뿐이에요</td>
+          <td>두 결과의 업무 ID별 범주를 나란히 놓고 달라진 줄만 골라요. 그 업무를 규칙 문서로 다시 판정해 새 결과가 틀렸다면, 새 문장의 조건이 너무 넓은 거라 좁혀 적어요</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>세 번째 줄은 첫 주를 다시 돌려 보지 않으면 영영 안 보여요. 둘째 주 보고서가 맞게 나온 순간이 제일 멈추고 싶은 때라서, <strong>고친 직후</strong>에 첫 주까지 돌리는 걸 한 묶음으로 해요. <code>first-week-report.md</code>를 지우면 이 비교 자체를 못 하니 그대로 둬요.</p>
+    <p>Skill이 새 대화에서 아예 안 꺼내지거나 "제목만 알려 줘"에 보고서 전체가 돌아온다면, 고칠 곳은 보고서도 규칙 문서도 아니라 <code>description</code> 한 줄이에요 (<a href="mcp-skill-writing-skill-md.html#suspect-broad-description">8편</a>).</p>
+    <p>고친 뒤의 점검도 에이전트에게 먼저 <strong>보여 달라고</strong> 해요. 곧바로 "다시 고쳐 줘"로 가면 이번 입력의 정답이 한 줄 더 늘어나기 쉬워요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— Skill을 고친 뒤, 실습 폴더를 연 대화에서</span></p>
+    <pre><code>team-weekly-report 스킬을 고친 내용을 점검하려고 해. 아래를 표로 보여 줘. 아직 파일은 고치지 말고, 보고서도 새로 만들지 마.
+1. 이번에 SKILL.md와 references/team-rules.md에서 바뀐 줄(Git으로 관리 중이면 git diff 기준)과, 그중 TASK- 같은 업무 번호나 특정 날짜가 들어간 줄
+2. first-week-report.md와, 고친 뒤 첫 주 기록으로 다시 만든 결과가 있다면 두 결과의 업무 ID별 범주를 나란히. 달라진 업무에는 표시
+3. second-week-report.md에 적힌 보고 기준일과 업무 ID 목록</code></pre>
 
     <section class="footnotes">
       <ol>

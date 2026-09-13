@@ -53,8 +53,8 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>오류 메시지에 옛 이름이 뜰 때 "다른 프로그램이 잘못 깔렸나" 하고 지워 버리면, 멀쩡한 설치를 망가뜨리고 원인은 그대로 남아요.</li>
-            <li>지금 이름으로만 검색하면 옛 이름으로 남은 해결 글을 통째로 놓쳐요.</li>
+            <li>오류 메시지에 옛 이름이 뜰 때 "다른 프로그램이 잘못 깔렸나" 하고 지워 버리면, 멀쩡한 설치를 망가뜨리고 원인은 그대로 남아요. <a class="suspect-jump" href="#suspect-old-name-seen">언제 의심하나 ↓</a></li>
+            <li>지금 이름으로만 검색하면 옛 이름으로 남은 해결 글을 통째로 놓쳐요. <a class="suspect-jump" href="#suspect-search-old-name">언제 의심하나 ↓</a></li>
             <li>집사 비유가 끊기는 지점이 있어요 — 사람 집사는 상식으로 위험한 부탁을 거절하지만, 에이전트는 정해 준 경계만큼만 거절해요.</li>
           </ul>
         </dd>
@@ -159,6 +159,37 @@
       </tbody>
     </table>
     <p class="post-date">※ 위 수치는 강의가 인용한 npm 기록과 OpenClaw 공식 문서 기준이에요. "수백 개"는 정확한 숫자가 아니라 문서의 표현을 그대로 옮긴 거예요.</p>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 낯선 이름이 보이거나 해결 글이 안 나올 때</h2>
+    <p>이름이 바뀐 이력은 설치하거나 오류를 고치는 날 <strong>오류 메시지와 검색 결과</strong>로 만나요. 둘 다 "같은 도구의 다른 이름"이라는 것만 떠올리면 풀리는데, 그 생각이 안 나면 멀쩡한 설치를 의심하게 돼요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-old-name-seen">
+          <td>오류 메시지나 서비스 목록에 <strong><code>clawdbot-gateway</code>처럼 옛 이름</strong>이 보여서, 다른 프로그램이 같이 깔린 것처럼 느껴져요</td>
+          <td>지우기 전에, 이 컴퓨터에 <strong>예전 이름으로 설치한 적이 있는지</strong>예요. 그랬다면 옛 서비스 이름이 남아 있을 수 있고, 그건 다른 프로그램이 아니라 같은 도구의 흔적이에요</td>
+          <td>지우지 말고 진단 명령(<a href="openclaw-install-and-first-chat.html">2편</a>의 <code>openclaw doctor</code>)을 먼저 돌려 출력을 끝까지 읽어요. Linux·WSL2는 옛 서비스를 새 이름으로 자동으로 옮겨 주고, macOS의 옛 실행 설정은 진단이 찾아서 알려 줘요</td>
+        </tr>
+        <tr id="suspect-search-old-name">
+          <td>오류 문장을 검색했는데 <strong>OpenClaw로는 해결 글이 거의 안 나와요</strong></td>
+          <td>검색어예요. 오류 문장 옆에 붙인 도구 이름이 지금 이름 하나뿐인지 봐요</td>
+          <td>오류 문장은 그대로 두고 이름만 Clawdbot, Moltbot, Warelay로 바꿔 한 번씩 더 검색해요. 2026년 1월 30일 전에 쓰인 글은 옛 이름으로 남아 있어요. 다만 옛 글의 명령은 지금 버전과 다를 수 있으니, 찾은 방법은 공식 문서와 한 번 맞춰 봐요</td>
+        </tr>
+        <tr id="suspect-ai-old-name">
+          <td>AI 챗봇에게 OpenClaw 오류를 물었더니 <strong>모르는 도구라고 하거나, 엉뚱한 프로그램 이야기</strong>를 해요</td>
+          <td>질문에 넣은 이름이에요. 웹 검색 없이 답하는 AI는 학습한 시점까지의 글만 알아서, 이름이 바뀐 뒤의 새 이름을 모를 수 있어요</td>
+          <td>"OpenClaw(옛 이름 Clawdbot, Moltbot)"처럼 옛 이름을 괄호로 같이 적어 다시 물어요. 답에 나온 명령은 바로 치지 말고, 공식 문서에 같은 명령이 있는지 먼저 봐요</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>첫째 줄이 제일 비싸게 끝날 수 있어요. 검색이 안 되는 건 시간만 들지만, 옛 이름을 보고 지우기부터 하면 설치를 다시 해야 하거든요. 그래서 낯선 이름을 봤을 때는 지우는 명령보다 진단 명령이 먼저예요.</p>
+    <p class="run-tag">실행: AI 챗봇 대화창에 붙여넣기</p>
+    <pre><code>OpenClaw(옛 이름 Clawdbot, Moltbot, Warelay)를 쓰다가 아래 오류가 났어.
+1. 오류에 보이는 이름이 같은 도구의 옛 이름인지, 정말 다른 프로그램인지 먼저 판단해 줘.
+2. 답에 쓰는 명령이 지금 이름(openclaw) 기준인지 옛 이름 기준인지 표시해 줘.
+아직 무엇을 지우라고는 하지 마.
+
+[여기에 오류 메시지 붙여넣기]</code></pre>
 
     <h2><span class="hl">이 시리즈가 가는 길</span></h2>
     <p>다룰 것이 열 덩어리인데, 내용 무게에 맞춰 여덟 편으로 다시 묶었어요. 순서는 이래요. 먼저 <a href="openclaw-install-and-first-chat.html">설치하고 첫 대화</a>를 나눠요. 그다음 <a href="openclaw-session-records-and-usage.html">기록과 사용량</a>을 읽는 눈을 만들어요. <a href="openclaw-telegram-channel-and-pairing.html">텔레그램을 연결</a>하고, <a href="openclaw-security-boundaries.html">경계를 긋고</a>, <a href="openclaw-multi-agent-bindings.html">역할을 나누고</a>, <a href="openclaw-automations-scheduling.html">시간표를 짜고</a>, 마지막으로 <a href="openclaw-pi-core-and-extensions.html">뼈대(pi)와 확장 기능</a>을 둘러봐요. 에이전트가 뭔지부터 궁금하다면 <a href="ai-agent-beginner-guide.html">AI 에이전트 쉽게 이해하기</a>를 먼저 읽고 오시면 편해요.</p>

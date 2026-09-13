@@ -58,9 +58,9 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>모델이 도구를 직접 돌린다고 착각하면, 도구가 안 불릴 때 프롬프트만 고치게 됩니다 — 볼 곳은 <strong>함수 바로 아래 적어 둔 설명문(독스트링)</strong>이에요. 모델이 읽는 건 코드가 아니라 그 문장이거든요.</li>
-            <li>parse_docstring=True를 빼면 성실히 쓴 Args 설명이 모델에게 아예 전달되지 않습니다.</li>
-            <li>도구 루프도 되돌아가는 선이라 몇 번까지 돌지 안 정하면 호출 요금이 그대로 쌓입니다. 도구를 한 번 쓰고 답해도 메시지가 6개 쌓이고, 그 전부가 다음 호출에 다시 실려 가요.</li>
+            <li>모델이 도구를 직접 돌린다고 착각하면, 도구가 안 불릴 때 프롬프트만 고치게 됩니다 — 볼 곳은 <strong>함수 바로 아래 적어 둔 설명문(독스트링)</strong>이에요. 모델이 읽는 건 코드가 아니라 그 문장이거든요. <a class="suspect-jump" href="#suspect-tool-not-called">언제 의심하나 ↓</a></li>
+            <li>parse_docstring=True를 빼면 성실히 쓴 Args 설명이 모델에게 아예 전달되지 않습니다. <a class="suspect-jump" href="#suspect-docstring-error">언제 의심하나 ↓</a></li>
+            <li>도구 루프도 되돌아가는 선이라 몇 번까지 돌지 안 정하면 호출 요금이 그대로 쌓입니다. 도구를 한 번 쓰고 답해도 메시지가 6개 쌓이고, 그 전부가 다음 호출에 다시 실려 가요. <a class="suspect-jump" href="#suspect-message-pileup">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -97,8 +97,8 @@
     <p>다만 여기서 비유가 끊기는 점이 있어요. 사람 홀 직원은 급하면 창고에 직접 들어갈 수도 있지만, 모델에게는 그런 손이 아예 없어요. 요청서를 적는 게 모델이 할 수 있는 전부예요. 정말 그런지는 <a href="#tool-request-only">아래 '요청서는 종이일 뿐'</a>에서 코드로 확인해요.</p>
 
     <h2><span class="hl">전체 흐름</span> — 같은 모양, 바뀐 라우터</h2>
-    <p><strong>읽는 법:</strong> 왼쪽은 <a href="langgraph-state-node-edge.html#build-branch">2편 ②</a>의 간 맞추기 그래프를 줄인 그림이고(내보내기·셰프 호출 두 출구는 <code>END</code> 하나로 합쳤어요), 오른쪽은 이번 편 ③에서 조립할 도구 루프예요. 실선은 앞 노드가 끝나면 항상 지나가는 선, 점선은 라우터가 둘 중 <strong>하나만</strong> 고르는 선이에요. 두 그림 모두 아래 칸에서 위 칸으로 올라가는 실선이 반복이에요. 달라진 건 점선을 고르는 기준 하나예요. 왼쪽은 전표의 숫자를 보는 규칙이고, 오른쪽은 모델이 요청서를 냈는지예요.</p>
-    <svg viewBox="0 0 760 326" role="img" aria-label="왼쪽 그림: START에서 taste로 가고, 규칙 라우터가 소금이 3 이상이거나 간을 5번 봤으면 END로, 싱거우면 add_salt로 보내며 add_salt는 다시 taste로 돌아온다. 오른쪽 그림: START에서 agent로 가고, tools_condition이 tool_calls가 없으면 END로, 있으면 tools로 보내며 tools는 다시 agent로 돌아온다.">
+    <p><strong>읽는 법:</strong> 왼쪽은 <a href="langgraph-state-node-edge.html#build-branch">2편 ②</a>의 간 맞추기 그래프를 줄인 그림이고(<code>serve</code>·<code>call_chef</code> 두 출구는 <code>END</code> 하나로 합쳤어요), 오른쪽은 이번 편 ③에서 조립할 도구 루프예요. 실선은 앞 노드가 끝나면 항상 지나가는 선, 점선은 라우터가 둘 중 <strong>하나만</strong> 고르는 선이에요. 두 그림 모두 아래 칸에서 위 칸으로 올라가는 실선이 반복이에요. 달라진 건 점선을 고르는 기준 하나예요. 왼쪽은 State에 적힌 <code>salt</code>·<code>tries</code> 숫자를 보는 규칙이고, 오른쪽은 모델 답에 도구 요청(<code>tool_calls</code>)이 있는지예요.</p>
+    <svg viewBox="0 0 760 326" role="img" aria-label="왼쪽 그림: START에서 taste로 가고, judge()가 salt가 3 이상이거나 tries가 5 이상이면 END로, 둘 다 아니면 add_salt로 보내며 add_salt는 다시 taste로 돌아온다. 오른쪽 그림: START에서 agent로 가고, tools_condition이 tool_calls가 없으면 END로, 있으면 tools로 보내며 tools는 다시 agent로 돌아온다.">
       <defs>
         <marker id="lgah2" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
           <path d="M0,0 L9,4.5 L0,9 z" fill="var(--muted)"/>
@@ -108,35 +108,35 @@
         </marker>
       </defs>
 
-      <text x="185" y="26" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">지난 편 ② 간 맞추기</text>
-      <text x="185" y="46" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">규칙 judge()가 전표의 소금 수를 읽고 고른다</text>
+      <text x="185" y="26" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">지난 편 ② 규칙이 고르는 반복</text>
+      <text x="185" y="46" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">judge()가 State의 salt·tries를 읽고 고른다</text>
 
       <rect x="8" y="108" width="60" height="36" rx="18" fill="none" stroke="var(--border)"/>
       <text x="38" y="131" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">START</text>
 
       <rect x="98" y="96" width="104" height="60" rx="8" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
       <text x="150" y="122" text-anchor="middle" font-family="var(--font-body)" font-size="14" fill="var(--ink)">taste</text>
-      <text x="150" y="142" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">간 보기</text>
+      <text x="150" y="142" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">tries에 1 더하기</text>
 
       <rect x="300" y="108" width="60" height="36" rx="18" fill="none" stroke="var(--border)"/>
       <text x="330" y="131" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">END</text>
 
       <rect x="98" y="216" width="104" height="52" rx="8" fill="none" stroke="var(--border)"/>
       <text x="150" y="240" text-anchor="middle" font-family="var(--font-body)" font-size="14" fill="var(--ink)">add_salt</text>
-      <text x="150" y="258" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">소금 한 숟갈</text>
+      <text x="150" y="258" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">salt에 1 더하기</text>
 
       <line x1="68" y1="126" x2="94" y2="126" stroke="var(--muted)" stroke-width="2" marker-end="url(#lgah2)"/>
       <line x1="202" y1="126" x2="296" y2="126" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#lgah2)"/>
       <text x="249" y="103" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">salt ≥ 3</text>
       <text x="249" y="117" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">또는 tries ≥ 5</text>
       <line x1="130" y1="156" x2="130" y2="212" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#lgah2)"/>
-      <text x="122" y="190" text-anchor="end" font-family="var(--font-body)" font-size="11" fill="var(--muted)">싱거움</text>
+      <text x="122" y="190" text-anchor="end" font-family="var(--font-body)" font-size="11" fill="var(--muted)">둘 다 아니면</text>
       <line x1="170" y1="216" x2="170" y2="160" stroke="var(--accent)" stroke-width="2" marker-end="url(#lgah2a)"/>
-      <text x="178" y="190" font-family="var(--font-body)" font-size="11" fill="var(--accent)">다시 간 보기</text>
+      <text x="178" y="190" font-family="var(--font-body)" font-size="11" fill="var(--accent)">taste로 다시</text>
 
       <line x1="380" y1="14" x2="380" y2="282" stroke="var(--border)" stroke-dasharray="3 4"/>
 
-      <text x="575" y="26" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">이번 편 ③ 도구 루프</text>
+      <text x="575" y="26" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">이번 편 ③ 모델이 고르는 반복</text>
       <text x="575" y="46" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">tools_condition이 모델 답의 tool_calls를 읽고 고른다</text>
 
       <rect x="398" y="108" width="60" height="36" rx="18" fill="none" stroke="var(--border)"/>
@@ -151,7 +151,7 @@
 
       <rect x="488" y="216" width="104" height="52" rx="8" fill="none" stroke="var(--border)"/>
       <text x="540" y="240" text-anchor="middle" font-family="var(--font-body)" font-size="14" fill="var(--ink)">tools</text>
-      <text x="540" y="258" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">ToolNode가 실행</text>
+      <text x="540" y="258" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">도구 함수 실행</text>
 
       <line x1="458" y1="126" x2="484" y2="126" stroke="var(--muted)" stroke-width="2" marker-end="url(#lgah2)"/>
       <line x1="592" y1="126" x2="686" y2="126" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#lgah2)"/>
@@ -159,7 +159,7 @@
       <line x1="520" y1="156" x2="520" y2="212" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#lgah2)"/>
       <text x="512" y="190" text-anchor="end" font-family="var(--font-body)" font-size="11" fill="var(--muted)">tool_calls 있음</text>
       <line x1="560" y1="216" x2="560" y2="160" stroke="var(--accent)" stroke-width="2" marker-end="url(#lgah2a)"/>
-      <text x="568" y="190" font-family="var(--font-body)" font-size="11" fill="var(--accent)">결과 들고 다시</text>
+      <text x="568" y="190" font-family="var(--font-body)" font-size="11" fill="var(--accent)">결과 들고 agent로</text>
 
       <line x1="120" y1="306" x2="160" y2="306" stroke="var(--muted)" stroke-width="2"/>
       <text x="170" y="310" font-family="var(--font-body)" font-size="11" fill="var(--muted)">항상 지나가는 선 (add_edge)</text>
@@ -350,6 +350,53 @@ agent.invoke({"messages": [("user", "계란말이 두 접시 만들 수 있어?"
       <p>얻는 것은 사전을 고르는 판단이고, 잃는 것은 <strong>조회가 어디서 몇 겹으로 나가는지를 코드만 읽고 알 수 있다는 성질</strong>이에요. 이 도구는 지금도 자막 40줄에 조회가 1,119건 나가요(제가 실측해 저장소 주석에 적어 둔 숫자예요). 그래서 실패한 조회를 두 번까지 다시 부르는 대기 시간과, 한 API가 연속 다섯 번 실패하면 그 사전을 건너뛰는 차단기를 따로 달아 뒀어요. <strong>이미 이만큼 조이고 있는 자리에 "몇 번 부를지를 모델이 정한다"를 얹는 건 싼 거래가 아니에요.</strong></p>
       <p>도구가 여럿일 때의 이야기도 그대로 걸려요. 다만 여기서는 <a href="#apply-blog">위 박스</a>처럼 "엉뚱한 도구를 고른다"가 아니라 더 고약해요 — <strong>이 사전들은 겹치는 낱말에 서로 다른 답을 줘요.</strong> 어문 규범 용례는 <code>Schiller</code>를 <code>실러</code>로 적고 <code>쉴러</code>를 틀린 표기로 들지만, 우리말샘에는 <code>쉴러^검사</code>가 표제어로 올라 있어요. 그래서 이 도구는 그 자리에서 자동으로 안 고치고 <strong>"둘 다 근거가 있습니다"라고 사람에게 넘겨요.</strong> 모델에게 넷을 다 쥐여 주면 그 판단까지 모델이 대신하게 되는데, 어느 쪽을 골랐는지가 기록에 안 남아요.</p>
     </section>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 도구를 쥐여 줬는데 모델이 이상하게 굴 때</h2>
+    <p>도구 루프의 문제는 에러보다 <strong>이상한 답</strong>으로 먼저 드러나요. 도구를 안 부르고 답하거나, 불러 놓고 결과와 다른 숫자를 쓰거나, 잘 끝났는데 요금만 커요. 그래서 최종 답 문장만 읽지 말고, <code>pretty_print()</code>로 찍힌 메시지를 위에서부터 한 통씩 보는 게 첫 확인이에요. 갈림길 자체가 말썽일 때(목적지 이름 에러, 끝나지 않는 반복)는 <a href="langgraph-branch-drills.html#suspect">3편의 표</a>에 있어요.</p>
+    <p>증상이 아직 없어도, <strong>AI에게 이런 부탁을 한 직후</strong>라면 한 번 확인하고 넘어가요.</p>
+    <ul>
+      <li>"이 함수를 도구로 만들어 줘" — 독스트링 첫 줄에 <strong>언제 부르는 도구인지</strong>가 적혀 있는지, <code>parse_docstring=True</code>와 <code>Args:</code>가 짝으로 있는지</li>
+      <li>"도구를 하나 더 붙여 줘" — 새 도구가 <code>bind_tools(...)</code>와 <code>ToolNode(...)</code> <strong>양쪽 목록</strong>에 다 들어갔는지</li>
+      <li>"답을 찾을 때까지 도구를 계속 쓰게 해 줘" — 몇 번 부르고 멈추는지 정해져 있는지</li>
+    </ul>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-tool-not-called">
+          <td>도구를 쥐여 줬는데 출력에 <strong>도구 결과 메시지(<code>ToolMessage</code>)가 한 통도 없이</strong> 모델 답 하나로 끝나요</td>
+          <td>먼저 <code>bind_tools</code> 줄이에요. <code>llm.bind_tools(TOOLS)</code>는 도구를 붙인 <strong>새 모델</strong>을 돌려줘서, 그 결과를 변수에 안 받았거나 <code>agent</code> 노드가 원래 모델을 부르면 도구가 없는 것과 같아요. 그 줄이 맞으면 <code>@tool</code> 함수 바로 아래의 독스트링이에요</td>
+          <td><code>print(get_recipe.description)</code>으로 모델이 받는 설명을 찍어 봐요. 무엇을 알려 주는 도구인지, 언제 먼저 불러야 하는지가 안 읽히면 질문 문장보다 그 설명부터 고쳐요 (<a href="#try">직접 해보기</a> 1번)</td>
+        </tr>
+        <tr id="suspect-docstring-error">
+          <td>모델을 부르기도 전에, 도구 함수를 정의하는 칸에서 <code>ValueError: Found invalid Google-Style docstring.</code>이 나요</td>
+          <td>그 <code>@tool(parse_docstring=True)</code> 함수의 독스트링이에요. API 키나 모델 설정은 범인이 아니에요. 첫 줄 설명과 <code>Args:</code> 사이에 <strong>빈 줄</strong>이 없거나, 제목을 <code>인자:</code>·<code>Parameters:</code>처럼 다르게 적어도 이 에러가 나요</td>
+          <td>빈 줄과 영어 <code>Args:</code>를 맞춘 뒤 <code>print(get_recipe.args)</code>로 인자마다 <code>description</code>이 찍히는지 봐요. AI가 에러를 없앤다며 <code>parse_docstring=True</code>를 지웠다면 되돌려요. 에러는 사라지지만 <code>Args:</code> 설명이 인자 칸에서 빠져요 (<a href="#tool-loop">직접 만들기 ③</a>)</td>
+        </tr>
+        <tr id="suspect-message-pileup">
+          <td>에러 없이 잘 끝나는데, 돌린 횟수에 비해 <strong>API 요금이나 토큰 사용량이 예상보다 훨씬 많아요</strong></td>
+          <td><code>agent</code> 노드의 <code>llm.invoke(state["messages"])</code> 줄이에요. 쌓인 메시지를 <strong>통째로</strong> 다시 싣는 자리라, 도구를 한 번 더 부를 때마다 실어 가는 양이 늘어요</td>
+          <td>결과 메시지 중 <code>AIMessage</code>마다 붙은 <code>usage_metadata</code>의 <code>input_tokens</code>를 찍으면 바퀴마다 커지는 게 보여요. <code>ToolMessage</code> 개수로 도구를 몇 번 불렀는지 세고, 상한은 <a href="#try">직접 해보기</a> 3번처럼 걸어요. 아예 안 끝난다면 <a href="langgraph-branch-drills.html#suspect-endless-loop">3편의 끝나지 않는 반복</a>과 같은 증상이에요</td>
+        </tr>
+        <tr id="suspect-made-up-number">
+          <td>최종 답이 그럴듯한데 <strong>숫자가 틀려요</strong>. 접시 수나 날짜처럼 계산이 끼는 답이고, 에러는 하나도 없어요</td>
+          <td><code>pretty_print()</code> 출력에서 최종 답 <strong>위</strong>에 있는 도구 결과 메시지예요. 최종 답 문장은 아무리 자연스러워도 근거가 못 돼요</td>
+          <td>답에 쓴 숫자가 도구 결과에 그대로 있는지 맞춰 봐요. 레시피 조회 없이 "계란 2개쯤"으로 짐작했거나, 결과를 받아 놓고 나눗셈을 틀렸다면 조회와 계산을 함수 하나로 합쳐요 (<a href="#tool-choice">나쁜 선택 vs 좋은 선택</a>)</td>
+        </tr>
+        <tr id="suspect-tool-list-mismatch">
+          <td>도구 결과 메시지에 <code>Error: check_stock is not a valid tool, try one of [get_recipe].</code> 같은 문장이 찍혀요. 프로그램은 멈추지 않고 루프가 계속 돌아요</td>
+          <td><code>bind_tools(...)</code>에 넘긴 목록과 <code>ToolNode(...)</code>에 넘긴 목록이에요. 모델은 앞의 목록을 보고 요청서를 쓰는데, 실행은 뒤의 목록에 있는 함수만 해요</td>
+          <td>두 줄이 같은 목록 변수(위 코드의 <code>TOOLS</code>)를 쓰는지 봐요. 따로 적혀 있으면 한 변수로 묶어요 (<a href="#tool-request-only">요청서는 종이일 뿐</a>)</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>네 번째 줄이 제일 놓치기 쉬워요. 에러도 없고 문장도 자연스러워서, 답만 읽어서는 못 잡거든요. 계산이 끼는 답을 처음 받았을 때 도구 결과 메시지와 한 번 맞춰 보고 넘어가요.</p>
+    <p>모델이 받는 설명과 실제로 실행되는 목록은 코드 여러 곳에 흩어져 있어요. 에이전트에게 맡길 때는 고치기 전에 <strong>한 표로 모아 보여 달라고</strong> 해야 어긋난 자리가 내 눈에 보여요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— LangGraph 코드가 있는 프로젝트 폴더에서</span></p>
+    <pre><code>이 프로젝트에서 @tool을 붙인 함수와 bind_tools·ToolNode·create_agent를 쓰는 곳을 전부 찾아서 표로 보여 줘. 아직 코드는 고치지 마.
+1. @tool 함수마다: 파일 이름과 줄 번호, parse_docstring=True 여부, 독스트링 첫 줄, Args: 항목 이름과 실제 인자 이름이 맞는지
+2. bind_tools에 넘긴 도구 목록과 ToolNode(또는 create_agent의 tools=)에 넘긴 도구 목록, 그리고 한쪽에만 있는 도구
+3. bind_tools의 결과를 받은 변수와, 모델을 부르는 노드가 실제로 쓰는 변수가 같은지
+4. 도구 호출 횟수 상한이나 recursion_limit이 어디에 몇으로 걸려 있는지 (없으면 없다고)</code></pre>
 
     <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
     <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 복습할 때 이것부터 보면 돼요. 다른 편의 같은 목록은 <a href="langgraph-what-and-why.html#key-recap">1편</a> · <a href="langgraph-state-node-edge.html#key-recap">2편</a> · <a href="langgraph-branch-drills.html#key-recap">3편</a> · <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a> · <a href="langgraph-patterns-orchestrator-evaluator.html#key-recap">7편</a>에 있어요.</p>

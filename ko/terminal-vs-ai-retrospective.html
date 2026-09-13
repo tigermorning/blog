@@ -51,9 +51,9 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>직접 해본 경험 없이 AI 결과만 승인하면, 경로가 이상하게 적혀 있어도 그런가 보다 하고 넘어가요. 손으로 해본 것이 맡길 자격을 만들어 줘요.</li>
-            <li>나도 모르는 걸 AI가 대신 정해 버리면, 나중에 왜 그렇게 됐는지 스스로 설명 못 하는 상태가 돼요. 정리는 됐는데 이해는 안 된 거예요.</li>
-            <li>확인이 목적인 일을 AI에게 시키면 오히려 한 다리 건너 듣는 셈이 돼요. 직접 치면 1초예요.</li>
+            <li>직접 해본 경험 없이 AI 결과만 승인하면, 경로가 이상하게 적혀 있어도 그런가 보다 하고 넘어가요. 손으로 해본 것이 맡길 자격을 만들어 줘요. <a class="suspect-jump" href="#suspect-cant-read-path">언제 의심하나 ↓</a></li>
+            <li>나도 모르는 걸 AI가 대신 정해 버리면, 나중에 왜 그렇게 됐는지 스스로 설명 못 하는 상태가 돼요. 정리는 됐는데 이해는 안 된 거예요. <a class="suspect-jump" href="#suspect-cant-find-later">언제 의심하나 ↓</a></li>
+            <li>확인이 목적인 일을 AI에게 시키면 오히려 한 다리 건너 듣는 셈이 돼요. 직접 치면 1초예요. <a class="suspect-jump" href="#suspect-asked-ai-location">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -133,6 +133,30 @@
     <p>쓰고 보니 이것도 결국 같은 이야기였어요. 기억나는 번호를 추측해서 치는 대신 출처를 먼저 확인하는 것 — <code>pwd</code>로 위치를 확인하고, <code>ls</code>로 결과를 확인하고, dry-run 목록을 읽고 승인하던 것과 정확히 같은 순서예요.</p>
 
     <p><strong>이번 8편을 끝으로, "바이브 코딩으로 웹 만들기" 시리즈를 마칩니다.</strong> 1편에서는 "작업대"가 왜 필요한지도 몰랐어요. 8교시를 지나면서 그 작업대를 차리고, 위에 첫 파일을 올려보고, 직접 손을 움직여보고, AI에게 맡겨보고, 마지막으로 그 둘을 비교하는 데까지 왔네요. 시리즈 전체를 한 문장으로 줄이면 이거 같아요 — <strong>AI에게 맡기는 능력과 직접 확인하는 능력은 서로 반대말이 아니라, 한쪽이 없으면 다른 쪽도 성립하지 않는 한 쌍이었다.</strong> 다음 수업부터는 이 위에 프레임워크를 올리는 이야기로 이어져요.</p>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 맡길지 직접 할지 판단이 흔들릴 때</h2>
+    <p>"결과를 눈으로 확인할 수 있으면 맡긴다"는 규칙은 <strong>승인 버튼 앞</strong>과 <strong>며칠 뒤 파일을 찾을 때</strong> 시험받아요. 둘 다 에러는 안 나고, 내가 설명을 못 하겠는 순간으로 나타나요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-cant-read-path">
+          <td>AI가 내민 목록 앞에서 <strong>경로가 맞는지 판단이 안 서서</strong>, 그냥 "승인"을 누르고 싶어요</td>
+          <td>목록의 <strong>제안 위치 경로 한 줄</strong>이에요. 내 <code>pwd</code> 결과에서 출발해 그 경로까지 <code>cd</code>로 따라갈 수 있는지 봐요</td>
+          <td>경로의 폴더 부분에 <code>ls</code>를 직접 쳐 봐요. 없는 폴더인데 새로 만든다는 말이 계획에 없거나, 어디인지 내가 설명을 못 하겠으면 승인하지 말고 "이 경로가 작업 폴더 기준으로 어디인지 풀어서 말해 줘"라고 물어요. 승인 뒤 결과가 목록과 어긋날 때는 <a href="ai-folder-cleanup.html#suspect-plan-mismatch">7편의 이 줄</a>을 봐요</td>
+        </tr>
+        <tr id="suspect-cant-find-later">
+          <td>정리하고 며칠 뒤 <strong>파일이 어디 갔는지 모르겠고</strong>, 찾아내도 왜 그 폴더에 들어갔는지 설명이 안 돼요</td>
+          <td>정리할 때 받은 <strong>이동 전후 목록</strong>이에요. 대화를 끝내기 전에 그 목록을 따로 남겨 뒀는지 봐요</td>
+          <td>목록이 없으면 정리한 폴더에서 <code>Get-ChildItem -Recurse -Filter draft.docx</code>처럼 이름으로 찾아요. 찾은 자리를 설명할 수 없다면 내가 판단을 넘긴 파일이라, 다음부터는 "질문 목록으로 따로 받기"에 넣어요</td>
+        </tr>
+        <tr id="suspect-asked-ai-location">
+          <td>AI에게 "지금 어느 폴더야?"라고 물었더니, 받은 경로가 <strong>내 창의 <code>pwd</code> 결과와 달라요</strong></td>
+          <td>둘 중 누가 틀렸는지보다 <strong>누구의 위치를 물었는지</strong>예요. AI의 답은 AI가 작업하는 폴더 기준이거나, 대화 앞부분을 기억해서 말한 것일 수 있어요</td>
+          <td>내 위치는 내 창에서 <code>pwd</code>를 직접 쳐서 알아요. AI의 작업 폴더가 궁금하면 <code>pwd</code>를 실제로 실행해 출력을 보여 달라고 해요. 기억으로 답한 경로와 실행한 결과는 다를 수 있어요</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>첫째 줄의 "못 읽겠다"는 느낌은 실패가 아니라, 그 일은 아직 맡길 준비가 안 됐다는 신호예요. 그럴 땐 <a href="terminal-practice.html">6편</a>처럼 같은 일을 연습 폴더에서 손으로 한 번 해 보고 돌아와요.</p>
 
     <a class="post-nav" href="translation-review-automation-idea.html">
       <span class="post-nav-label">다음 편 →</span>

@@ -51,9 +51,9 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>오래 걸리는 작업을 동기로 짜면 그 시간 내내 스크롤도 버튼도 안 먹힙니다. 자바스크립트는 창구를 하나만 쓰거든요.</li>
-            <li>"동시에 되고 있다"를 진짜 동시로 믿게 됩니다. 대부분은 아주 빠르게 번갈아 하는 것뿐이에요.</li>
-            <li>즉시 끝나는 계산까지 비동기로 만들면 코드 읽기만 어려워지고 얻는 게 없어요. 기다림이 있는 곳에만 필요해요.</li>
+            <li>오래 걸리는 작업을 동기로 짜면 그 시간 내내 스크롤도 버튼도 안 먹힙니다. 자바스크립트는 창구를 하나만 쓰거든요. <a class="suspect-jump" href="#suspect-frozen-page">언제 의심하나 ↓</a></li>
+            <li>"동시에 되고 있다"를 진짜 동시로 믿게 됩니다. 대부분은 아주 빠르게 번갈아 하는 것뿐이에요. <a class="suspect-jump" href="#suspect-async-still-frozen">언제 의심하나 ↓</a></li>
+            <li>즉시 끝나는 계산까지 비동기로 만들면 코드 읽기만 어려워지고 얻는 게 없어요. 기다림이 있는 곳에만 필요해요. <a class="suspect-jump" href="#suspect-async-everywhere">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -165,6 +165,29 @@
     <p>답은 <strong>B</strong>예요. A는 컴퓨터 안에서 즉시 끝나는 계산이라 기다림이 없지만, B는 네트워크를 왕복해야 해서 언제 끝날지 모르는 기다림이 있어요. 기다림이 있는 곳에만 비동기가 필요해요. A까지 비동기로 만들 필요는 없어요 — 비동기는 공짜가 아니라, 코드의 실행 순서를 읽기 어렵게 만드는 비용이 있기 때문이에요.</p>
 
     <p>오늘 배운 동기·비동기 구분은, 결국 <a href="webpage-three-layers.html">지난 글</a>의 JavaScript가 "동작(무엇을 누르면 무엇이 바뀌는지)"을 맡는다는 이야기와 그대로 이어져요. 그 계층 안에서도 "즉시 바뀌는 것"과 "기다렸다가 바뀌는 것"이 나뉘어 있었던 거예요.</p>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 화면이 굳거나 값이 늦게 올 때</h2>
+    <p>오늘 배운 내용은 코드보다 <strong>화면에서 먼저</strong> 보여요. 버튼이 안 먹히거나, 잠깐 빈 값이 보였다가 채워지거나, 숫자 대신 알 수 없는 글자가 찍히는 식이에요. AI에게 기능을 맡겼다면 아래 세 가지가 제일 자주 나와요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-frozen-page">
+          <td>버튼을 누르면 <strong>몇 초 동안 화면 전체가 굳어요</strong> — 스크롤도 안 되고 다른 버튼도 안 눌리고, 돌던 애니메이션까지 멈춰요. 그러다 결과가 한꺼번에 나타나요</td>
+          <td>그 버튼을 눌렀을 때 실행되는 함수예요. 그 안에서 <strong>결과를 기다리며 서 있는 줄</strong>을 찾아요 — 아주 많이 도는 반복문이거나, 큰 자료를 통째로 훑는 계산이거나요. 서버 코드는 대개 범인이 아니에요. 서버는 제때 답했는데 화면 쪽이 멈춘 거니까요</td>
+          <td>의심되는 구간 앞뒤에 <code>console.time("여기")</code>와 <code>console.timeEnd("여기")</code>를 넣고 브라우저 개발자 도구 콘솔에서 몇 ms가 찍히는지 봐요. 그 시간이 화면 굳은 시간과 비슷하면 그 줄이에요. 네트워크를 다녀오는 줄이면 기다리지 말고 걸어 두는 방식(<code>fetch</code> + <code>await</code>)으로 바꿔요</td>
+        </tr>
+        <tr id="suspect-async-still-frozen">
+          <td>AI가 함수에 <code>async</code>를 붙여 줬는데 <strong>화면은 여전히 멈춰요</strong>. 또는 여러 작업을 한꺼번에 시작했더니 전체가 오히려 더 느려졌어요</td>
+          <td>그 함수 안에서 <strong>실제로 시간을 쓰는 줄이 기다림인지 계산인지</strong>예요. <code>await</code> 뒤에 붙은 게 <code>fetch</code>처럼 바깥을 다녀오는 일이면 기다림이고, 그냥 반복문이면 계산이에요</td>
+          <td><code>async</code>는 창구를 늘리는 표시가 아니라 <strong>기다리는 동안 자리를 비켜 주는</strong> 표시예요. 계산이 무거우면 붙여도 그대로 창구를 차지해요. 위와 같은 방법으로 그 구간의 ms를 재서 계산 쪽이면, 일을 잘게 나누거나 계산량 자체를 줄이는 쪽으로 고쳐요</td>
+        </tr>
+        <tr id="suspect-async-everywhere">
+          <td>화면에 <code>[object Promise]</code>나 <code>undefined</code>가 찍혀요. 코드를 열어 보면 거의 모든 함수에 <code>async</code>가 붙어 있는데, 어디서 무엇을 기다리는지는 안 읽혀요</td>
+          <td><code>[object Promise]</code>가 찍힌 값을 <strong>만들어 낸 함수를 부르는 줄</strong>이에요. 그 앞에 <code>await</code>가 빠져 있는지 봐요. 그리고 <code>async</code>가 붙은 함수 목록도 같이 훑어요</td>
+          <td>함수마다 "이 안에 네트워크나 파일 왕복이 있나?"를 물어요. 없으면 <code>async</code>를 떼도 되는 함수예요. 붙은 자리가 줄어들수록 <code>await</code>를 빠뜨린 곳도 눈에 띄어요 — 화면에 <code>[object Promise]</code>가 찍혔다면 그건 "아직 안 온 결과를 그대로 그린" 자리예요</td>
+        </tr>
+      </tbody>
+    </table>
 
     <a class="post-nav" href="ai-game-making-tetris-to-mine.html">
       <span class="post-nav-label">다음 편 →</span>

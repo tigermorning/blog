@@ -51,9 +51,9 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>서브에이전트를 정의해 둔 것만으로 분업이 일어났다고 보면, 리드가 한 번도 안 불렀는데 "멀티 에이전트를 써봤다"는 결론만 남아요.</li>
-            <li>턴 예산이 다른 실행을(A 25턴, B 12+18턴, C 40턴) 그대로 비교하면, 비용 차이가 구조 때문인지 예산 때문인지 못 가려요.</li>
-            <li>result.json이 이미 있는데 덮어쓰고 다시 돌리면, 이전 기록과 뭐가 달라졌는지 비교할 길이 사라져요.</li>
+            <li>서브에이전트를 정의해 둔 것만으로 분업이 일어났다고 보면, 리드가 한 번도 안 불렀는데 "멀티 에이전트를 써봤다"는 결론만 남아요. <a class="suspect-jump" href="#suspect-locator-not-called">언제 의심하나 ↓</a></li>
+            <li>턴 예산이 다른 실행을(A 25턴, B 12+18턴, C 40턴) 그대로 비교하면, 비용 차이가 구조 때문인지 예산 때문인지 못 가려요. <a class="suspect-jump" href="#suspect-budget-compare">언제 의심하나 ↓</a></li>
+            <li>result.json이 이미 있는데 덮어쓰고 다시 돌리면, 이전 기록과 뭐가 달라졌는지 비교할 길이 사라져요. <a class="suspect-jump" href="#suspect-rerun-skipped">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -282,6 +282,48 @@ cat runs/C-sympy__sympy-24909/result.json
 cat runs/C-sympy__sympy-24909/changes.diff</code></pre>
     <p>윈도우라면 <code>.venv/bin/python</code> 대신 <code>.venv\Scripts\python</code>이에요. <code>changes.diff</code>의 <strong>diff</strong>는 "고치기 전과 후의 차이"를 줄 단위로 적은 파일이에요. 앞에 <code>-</code>가 붙은 줄은 지워진 줄, <code>+</code>가 붙은 줄은 새로 들어간 줄이에요.</p>
     <p>러너는 이미 <code>result.json</code>이 있는 실행을 건너뛰어요. 다시 돌리기 전에 기존 결과가 있는지 확인하세요. 같은 파일을 덮어쓰고 나면 이전 기록과 무엇이 달라졌는지 비교할 길이 없어져요.</p>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 세 실행을 돌리고 결과 파일을 열었을 때</h2>
+    <p>이 실험의 실수들은 에러로 멈추지 않아요. 러너가 오류가 나도 죽지 않고 끝까지 채점하고, 결과가 이미 있으면 조용히 건너뛰게 짜여 있거든요. 그래서 <strong>파일은 멀쩡하게 쌓이는데 그 안의 숫자가 생각과 다른 뜻</strong>인 모습으로 나타나요.</p>
+    <p>증상이 아직 없어도, <strong>AI에게 이런 부탁을 한 직후</strong>라면 한 번 확인하고 넘어가요.</p>
+    <ul>
+      <li>"실험 구현을 해 줘" — 끝났다는 요약 말고, 실제로 실행한 명령과 <code>runs/</code> 아래 생긴 파일 경로를 보여 줬는지 (<a href="what-is-vibe-coding.html#suspect-claimed-done">바이브 코딩 글의 이 줄</a>)</li>
+      <li>"탐색 담당은 읽기만 하게 해 줘" — B의 <code>allowed_tools</code>, C의 <code>tools</code> 목록에 <code>Read</code>, <code>Grep</code>, <code>Glob</code> 말고 다른 도구가 끼지 않았는지</li>
+      <li>"중간에 나한테 묻지 말고 끝까지 돌게 해 줘" — <code>permission_mode="bypassPermissions"</code>가 붙은 호출의 <code>cwd</code>(작업 폴더)가 실험용으로 받아 둔 저장소 복사본인지, 내 작업 폴더가 아닌지</li>
+    </ul>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-locator-not-called">
+          <td>C 실행이 <code>resolved</code>로 끝났고, 에이전트가 정리해 준 요약에 <strong>"locator로 원인을 찾아 고쳤다"</strong>는 말이 있어요</td>
+          <td>요약이 아니라 <strong>C의 세션 전사</strong>예요. SDK가 남기는 JSONL 파일(한 줄에 기록 하나씩 쌓인 텍스트 파일)이라 메모장으로도 열려요. <code>resolved</code>는 고쳐졌는지만 알려 주고, 누가 찾았는지는 몰라요</td>
+          <td>전사에서 <code>locator</code>를 검색해, 리드가 <strong>도구 호출로</strong> locator를 부른 줄이 있는지 봐요. "locator에게 맡기겠다"는 리드의 말 한 줄은 호출이 아니에요. 부른 줄이 없으면 그 C는 리드 혼자 40턴 안에서 푼 실행이라, 분업 효과의 근거가 못 돼요 (<a href="multi-agent-judging-records.html">4편의 판정문 예</a>)</td>
+        </tr>
+        <tr id="suspect-turns-exhausted">
+          <td>실패한 실행의 기록에 <code>error</code>로 오류 문장이 적혀 있어요. <strong>실험 스크립트가 고장 난 것처럼</strong> 보여요</td>
+          <td>같은 <code>result.json</code>의 <code>num_turns</code>예요. 그 호출의 턴 예산(A 25, B의 locator 12·fixer 18, C 40)과 나란히 놓고 봐요. 오류 문장이 턴 한도를 넘었다는 내용인지도 같이 봐요</td>
+          <td>예산에 닿았다면 코드 고장이 아니라 턴을 다 쓴 <strong>관측 결과</strong>예요. 고치게 하기 전에 <code>changes.diff</code>와 전사로 어디까지 찾고 어디서 멈췄는지 읽어요. 이때 <code>max_turns</code>를 올려 버리면 그 실행만 예산이 달라져 비교가 더 어긋나요</td>
+        </tr>
+        <tr id="suspect-budget-compare">
+          <td>세 실행의 <code>cost_usd</code>를 나란히 놓으니 한 방식이 <strong>확 싸거나 확 비싸서</strong>, "이 구조가 낫다"는 말이 나오려고 해요</td>
+          <td>각 실행의 <code>num_turns</code>와 턴 예산이에요. A 25, B 12+18, C 40으로 <strong>예산부터 달라요</strong>. B의 숫자는 두 호출이 합쳐진 값이고요</td>
+          <td>예산에 닿은 실행이 하나라도 있으면, 그 비용은 예산에서 끊긴 값이라 구조끼리의 차이로 읽을 수 없어요. 닿지 않았어도 조건이 다른 건 그대로라, 구조를 비교하려면 턴 예산을 같게 두고 다시 돌려요 (<a href="multi-agent-judging-records.html">4편</a>)</td>
+        </tr>
+        <tr id="suspect-rerun-skipped">
+          <td>프롬프트나 설정을 고치고 같은 명령으로 다시 돌렸는데 <strong>순식간에 끝나고</strong>, <code>result.json</code> 내용도 전과 똑같아요</td>
+          <td>그 실행의 폴더(예: <code>runs/A-sympy__sympy-24909/</code>)예요. 러너는 <code>result.json</code>이 이미 있는 실행을 건너뛰어요. 고친 코드가 안 먹힌 게 아니에요</td>
+          <td>파일 탐색기나 <code>ls -l</code>로 <code>result.json</code>의 수정 시각이 방금인지 봐요. 예전 시각이면 건너뛴 거예요. 다시 돌리려면 그 폴더를 지우지 말고 <code>runs</code> 밖으로 통째로 옮겨 둔 뒤 돌려요. 그래야 이전 기록과 새 기록을 나란히 비교할 수 있어요</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>첫째 줄이 제일 놓치기 쉬워요. <code>resolved</code>가 참이고 요약도 그럴듯해서 전사를 열 이유가 안 보이거든요. 그래서 C는 결과가 좋게 나왔을 때일수록 결론을 적기 전에 전사부터 열어요.</p>
+    <p>기록 파일이 많아 직접 뒤지기 어렵다면 에이전트에게 찾게 해도 돼요. 이때 <strong>다시 돌리지 말고 이미 있는 파일만 보여 달라고</strong> 해요. 다시 돌리면 비용이 또 들고, 비교해야 할 원래 기록이 흐트러질 수 있어요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— arms.py가 있는 실험 폴더에서</span></p>
+    <pre><code>이 폴더의 arms.py와 runs 폴더를 보고 아래를 표로 보여 줘. 코드는 고치지 말고, 실험도 다시 돌리지 마.
+1. A, B의 locator·fixer, C 호출마다 max_turns, cwd, permission_mode, 허용 도구 목록(allowed_tools 또는 tools)과 그 줄 번호
+2. runs 아래 실행 폴더마다 result.json의 resolved, num_turns, cost_usd, error 값
+3. num_turns가 그 호출의 max_turns에 닿은 실행
+4. C 실행마다 세션 전사(JSONL) 파일 경로, 그리고 리드가 locator를 실제로 부른 도구 호출 줄 (있으면 그 줄을 그대로 인용하고, 없으면 없다고 적어 줘)</code></pre>
 
     <p>세 실행이 남긴 파일이 쌓였어요. 다음 편에서는 이 기록을 어떻게 채점하고, 어디까지 결론을 말할 수 있는지 봐요. "테스트가 통과했다"만으로는 왜 부족한지가 핵심이에요.</p>
 

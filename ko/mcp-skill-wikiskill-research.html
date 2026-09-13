@@ -58,9 +58,9 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>한 번 해 보고 알게 된 걸 곧바로 규칙으로 적으면, 그날 그 입력에서만 맞았던 임시방편이 모두가 따르는 공식 절차가 돼요. "볼트가 안 풀리면 망치로 두드린다"가 정비소 규칙이 되는 식이에요.</li>
-            <li>고친 지침을 확인 없이 바로 쓰면, 그 수정이 나아진 건지 나빠진 건지 알 방법이 없이 절차가 계속 흘러가요.</li>
-            <li>쌓인 기록이 두꺼워지는 걸 실력이라 여기면, 정작 찾을 때 뭐가 규칙이고 뭐가 그날 메모인지 안 보여요.</li>
+            <li>한 번 해 보고 알게 된 걸 곧바로 규칙으로 적으면, 그날 그 입력에서만 맞았던 임시방편이 모두가 따르는 공식 절차가 돼요. "볼트가 안 풀리면 망치로 두드린다"가 정비소 규칙이 되는 식이에요. <a class="suspect-jump" href="#suspect-one-off-rule">언제 의심하나 ↓</a></li>
+            <li>고친 지침을 확인 없이 바로 쓰면, 그 수정이 나아진 건지 나빠진 건지 알 방법이 없이 절차가 계속 흘러가요. <a class="suspect-jump" href="#suspect-unverified-edit">언제 의심하나 ↓</a></li>
+            <li>쌓인 기록이 두꺼워지는 걸 실력이라 여기면, 정작 찾을 때 뭐가 규칙이고 뭐가 그날 메모인지 안 보여요. <a class="suspect-jump" href="#suspect-bloated-skill">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -269,6 +269,42 @@
     <p>④ <strong>고친 다음에 반드시 다시 재기.</strong> <a href="mcp-skill-reuse-verification.html">9편</a>에서 했던 것처럼 <strong>새 대화</strong>를 열고, <strong>고치기 전에 통과했던 입력</strong>을 다시 넣어 보세요. 좋아졌으면 채택하고, <strong>나빠졌으면 되돌리세요.</strong> 이 되돌리는 동작이 그림의 <strong>관문</strong>이고, 없으면 순환이 그냥 표류합니다.</p>
     <p>⑤ <strong>"안 남길 것"도 한 줄 정하기.</strong> 무엇을 남길지만큼 <strong>무엇은 안 남길지</strong>가 중요해요. 예를 들어 <strong>한 번뿐인 환경 오류</strong>나 <strong>제가 오타를 냈던 시행</strong>은 지식이 아니에요. 이 기준을 한 줄로 적어 두면 폴더가 두꺼워지기만 하는 걸 막아 줍니다.</p>
     <p>정답은 하나가 아니에요. 이 편이 드리는 건 <strong>연구가 쓴 결론</strong>이 아니라 <strong>경험·지식·절차를 갈라 보는 자</strong>예요. 그 자로 제 폴더를 재 보는 건 <strong>제 조건에서 직접</strong> 해야 하는 일이고요.</p>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 지침을 고친 뒤 AI가 전과 다르게 굴 때</h2>
+    <p>Skill을 AI와 함께 고쳐 나가다 보면, 이 편의 문제는 논문 속 얘기가 아니라 <strong>지침을 고친 뒤</strong>의 증상으로 만나요. 셋 다 에러는 안 나고 결과가 조금씩 흔들리는 걸로 드러나요. 그래서 지침을 고친 날과 결과가 달라진 날을 이어 보는 데서 출발해요.</p>
+    <p>증상이 아직 없어도, <strong>AI에게 이런 부탁을 한 직후</strong>라면 한 번 확인하고 넘어가요.</p>
+    <ul>
+      <li>"방금 알게 된 거 Skill에 적어 둬", "다음부터 이렇게 하라고 추가해 줘" — 더해진 줄이 조건 없이 <strong>"항상 ~한다"</strong>로 적히지 않았는지</li>
+      <li>"이 Skill 더 좋게 고쳐 줘" — 고치기 전에 통과했던 입력과 결과가 <strong>비교할 수 있게 남아 있는지</strong></li>
+    </ul>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-one-off-rule">
+          <td>지침에 한 줄을 더한 뒤로, <strong>상관없는 입력에서도</strong> 그날만 필요했던 행동을 AI가 되풀이해요. 전에는 잘 되던 입력이 이상하게 나오기도 해요</td>
+          <td><code>SKILL.md</code> 본문에서 <strong>최근에 더한 줄</strong>이에요. 전에 잘 되던 입력까지 흔들린다면 입력 파일은 대개 범인이 아니에요</td>
+          <td>그 줄이 어떤 입력에서 나온 건지 떠올려 봐요. 한 번의 입력에서만 나온 거라면 본문에서 빼서 <code>references/</code> 문서에 "이런 상황에서 이렇게 했다"로 조건과 함께 옮겨요. 그다음 전에 통과하던 입력을 새 대화에서 다시 넣어 봐요</td>
+        </tr>
+        <tr id="suspect-unverified-edit">
+          <td>지난번에 통과하던 입력이 이번엔 다르게 나오는데, 그 사이 <strong>Skill의 어느 줄이 언제 바뀌었는지</strong> 모르겠어요. AI에게 지침 수정을 여러 번 맡긴 뒤에 생기기 쉬워요</td>
+          <td>Skill 폴더의 <strong>변경 이력</strong>이에요. Git으로 관리한다면 그 폴더의 <a href="git-commit-concept.html">커밋</a> 기록과 <code>git diff</code>, 아니면 고치기 전 사본이 남아 있는지 봐요</td>
+          <td>고치기 전 버전과 고친 버전으로 <strong>새 대화를 따로 열어</strong> 같은 입력을 넣어 봐요. 고친 쪽이 나빠졌으면 되돌려요. 비교할 입력이 없으면 좋아졌는지 말할 수 없으니, 고칠 때마다 통과했던 입력 한두 건을 같이 남겨요 (<a href="mcp-skill-reuse-verification.html">9편</a>)</td>
+        </tr>
+        <tr id="suspect-bloated-skill">
+          <td>지침을 고칠 때마다 <code>SKILL.md</code>가 길어지는데 결과는 나아지지 않고, 적어 둔 규칙을 AI가 <strong>가끔 빼먹어요</strong></td>
+          <td>본문에 섞인 <strong>그날 메모</strong>예요. 날짜, 특정 작업 번호(예: <code>TASK-102</code>), "이번에는" 같은 말이 들어간 줄이 표시예요</td>
+          <td>그런 줄을 골라 <code>references/</code> 문서로 내리고, 본문에는 여러 입력에서 반복된 절차만 남겨요. 한 번뿐인 환경 오류나 오타를 낸 시행은 지식이 아니라서 남기지 않아요. 줄인 뒤에도 예전 입력으로 다시 재 봐요</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>두 번째 줄이 제일 놓치기 쉬워요. 수정 하나하나는 그럴듯해서, 비교할 예전 입력이 없으면 나빠진 걸 <strong>나빠졌다고 말할 근거</strong>부터 없거든요. 그래서 Skill을 고치기 <strong>직전</strong>에 통과한 입력을 먼저 챙겨 둬요.</p>
+    <p>AI에게 정리를 맡길 때는 바로 고치게 하지 말고 먼저 보여 달라고 해요. 어느 줄이 그날 메모인지는 그 입력을 겪은 내가 제일 잘 가를 수 있어요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— Skill 폴더가 있는 프로젝트 폴더에서</span></p>
+    <pre><code>이 프로젝트의 Skill 폴더(SKILL.md와 references/)를 읽고, 아래를 파일 이름과 줄 번호로 보여 줘. 아직 아무것도 고치지 마.
+1. SKILL.md 본문에서 날짜, 특정 작업 번호, "이번에는"처럼 한 번의 실행에서만 맞았을 것 같은 내용이 적힌 줄
+2. "항상", "반드시"로 적힌 규칙 중 어떤 상황에서 쓰는 규칙인지 조건이 안 적힌 줄
+3. 본문과 references/ 문서에 같은 규칙이 겹쳐 있거나 서로 어긋나는 곳
+4. Git으로 관리 중이라면 이 폴더에서 최근에 더해지거나 바뀐 줄과 그 날짜</code></pre>
 
     <h2><span class="hl">열네 편을 닫으며</span></h2>
     <p>돌아보면 이 시리즈는 <strong>도구 호출 한 번을 뜯어보는 데서</strong> 시작했어요(<a href="mcp-skill-tool-call-anatomy.html">1편</a>). 거기서 <a href="mcp-skill-protocol-roles.html">호스트·클라이언트·서버</a>로 역할을 갈랐고, <a href="mcp-skill-building-server.html">서버를 직접 만들어</a> <a href="mcp-skill-host-connection.html">첫 호출을 눈으로 확인</a>했죠. 도구가 늘면 <a href="mcp-skill-context-and-search.html">그 자체로 부담</a>이라는 것도 배웠고요.</p>

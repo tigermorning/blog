@@ -51,10 +51,10 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>자료만 붙여 놓으면 모델이 빈틈을 상식으로 메워요. 근거 원칙과 출처 표시를 문장으로 안 박아두면 걸러낼 방법이 없어요.</li>
-            <li>배포 뒤 다른 주소끼리의 요청 허용 설정을 안 맞추면, 완성한 챗봇이 사용자 화면에서 통째로 먹통이 돼요.</li>
-            <li>"검색 결과가 있다"와 "질문에 맞는 근거다"는 다른 사실이에요. 이걸 구별 안 하면 관련 없는 조각으로 자신 있게 답해요.</li>
-            <li>모델이 꺼져 있는 상황을 생성 실패처럼 보여주면, 사용자가 검색이나 프롬프트 문제로 오해해요.</li>
+            <li>자료만 붙여 놓으면 모델이 빈틈을 상식으로 메워요. 근거 원칙과 출처 표시를 문장으로 안 박아두면 걸러낼 방법이 없어요. <a class="suspect-jump" href="#suspect-common-sense-fill">언제 의심하나 ↓</a></li>
+            <li>배포 뒤 다른 주소끼리의 요청 허용 설정을 안 맞추면, 완성한 챗봇이 사용자 화면에서 통째로 먹통이 돼요. <a class="suspect-jump" href="#suspect-deploy-cors">언제 의심하나 ↓</a></li>
+            <li>"검색 결과가 있다"와 "질문에 맞는 근거다"는 다른 사실이에요. 이걸 구별 안 하면 관련 없는 조각으로 자신 있게 답해요. <a class="suspect-jump" href="#suspect-any-chunk-confident">언제 의심하나 ↓</a></li>
+            <li>모델이 꺼져 있는 상황을 생성 실패처럼 보여주면, 사용자가 검색이나 프롬프트 문제로 오해해요. <a class="suspect-jump" href="#suspect-engine-off">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -131,6 +131,35 @@ systemctl set-environment OLLAMA_ORIGINS="https://YOUR_ID.github.io"</code></pre
     <h2><span class="hl">정리</span></h2>
     <p>오늘 확인한 건 결국 두 층의 분리였다 — <strong>배포 환경의 연결 조건</strong>(어디서 Ollama를 부르는가)과 <strong>답변 근거의 조건</strong>(무엇을 근거로 답할 수 있는가)은 서로 다른 층에서 검증해야 한다는 것. 다음 편에서는 이렇게 나온 답변을 사람이 매번 읽지 않고도 판정할 수 있게, 답변 뒤에 심사위원 하나를 더 두는 LLM-as-a-Judge로 넘어간다.</p>
 
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 배포한 챗봇이 답을 안 주거나 엉뚱하게 답할 때</h2>
+    <p>이 단계의 문제는 두 층으로 갈린다. <strong>답이 아예 안 오는가</strong>(연결 층), 아니면 <strong>답은 오는데 자료 밖 이야기를 하는가</strong>(근거 층). 두 층은 열어 볼 자리가 전혀 다르니, 증상부터 어느 쪽인지 가르고 들어간다.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-deploy-cors">
+          <td><strong>로컬에서는 잘 되던 챗봇이 배포한 주소에서만</strong> 답을 못 받아 온다. 콘솔에는 요청이 막혔다는 메시지가 뜨는데 다른 화면은 멀쩡하다</td>
+          <td>앱 코드가 아니라 Ollama를 켜는 쪽의 환경 변수 <code>OLLAMA_ORIGINS</code>다. 배포해도 서버가 대신 호출해 주는 게 아니라 <strong>사용자 브라우저가 계속 자기 <code>localhost:11434</code>를 부르기</strong> 때문이다</td>
+          <td>배포 주소를 <code>OLLAMA_ORIGINS</code>에 넣고 <strong>앱을 재시작한 뒤</strong> 실제 배포 주소에서 다시 연다. 로컬 개발 서버에서 되던 건 아무 증거가 안 된다. Safari는 연결과 임베딩이 불안정할 수 있으니 Chrome·Edge로 먼저 확인한다</td>
+        </tr>
+        <tr id="suspect-engine-off">
+          <td>질문을 넣으면 <strong>답이 영영 안 나오거나 생성 실패처럼 보이는데</strong>, 검색과 프롬프트를 아무리 고쳐도 그대로다</td>
+          <td>채팅을 시작하기 전 <code>GET /api/tags</code>로 연결을 확인하는 부분과, 그 결과를 보여주는 배너다</td>
+          <td>먼저 Ollama가 켜져 있는지 본다. 꺼져 있었다면 코드 문제가 아니다. 그리고 연결 실패를 생성 실패와 같은 화면으로 보여주고 있지 않은지 확인해, 배너와 재시도로 갈라 놓는다 — 안 그러면 다음에도 검색·프롬프트부터 뒤지게 된다</td>
+        </tr>
+        <tr id="suspect-common-sense-fill">
+          <td>답변 안에 <strong>자료에 없는 날짜나 설명이 자연스럽게 섞여</strong> 있다. 출처 표시가 없거나 엉뚱한 ID가 붙어 있다</td>
+          <td><code>buildPrompt()</code>가 조립한 <strong>최종 문자열</strong>이다. 자료를 붙이기 전에 근거 원칙과 <code>[ID]</code> 표시 규칙이 문장으로 들어가 있는지 본다</td>
+          <td>실제로 모델에 보낸 프롬프트를 그대로 찍어 읽는다. 청크만 이어 붙어 있고 "근거에 있는 내용만 답한다", "근거 조각의 <code>[ID]</code>를 표시한다" 같은 문장이 없으면 모델을 탓할 일이 아니다. 자료를 붙이는 것만으로는 범위가 안 잠긴다</td>
+        </tr>
+        <tr id="suspect-any-chunk-confident">
+          <td>자료 범위 밖 질문에도 챗봇이 <strong>자신 있게 답한다.</strong> 화면에 약한 근거 경고는 안 뜬다</td>
+          <td>최고 유사도를 0.55와 비교하는 분기와, 그때 프롬프트에 덧붙이는 문구다</td>
+          <td>자료와 상관없는 질문("내일 날씨")을 넣고 그때의 최고 점수를 찍어 본다. 0.55보다 낮은데 프롬프트가 평소와 똑같다면 보수화 분기가 안 걸린 것이다. <strong>검색 결과가 있다</strong>는 사실과 <strong>질문에 맞는 근거다</strong>는 사실은 다르다</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>위 두 줄은 연결 층, 아래 두 줄은 근거 층이다. 답이 아예 안 오는데 프롬프트를 고치거나, 답이 이상한데 <code>OLLAMA_ORIGINS</code>를 만지는 게 이 단계에서 시간을 가장 많이 먹는 길이다.</p>
 
     <a class="post-nav" href="rag-chatbot-llm-judge.html">
       <span class="post-nav-label">다음 편 →</span>

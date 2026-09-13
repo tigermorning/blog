@@ -59,8 +59,8 @@
         <dd>
           <ul>
             <li>겉모습으로 가르면 틀립니다 — LLM 호출 횟수도, 도구 사용 여부도, 모델 크기도, 무엇으로 만들었는지도 기준이 아니에요.</li>
-            <li>자율성은 공짜가 아닙니다. LLM이 다음 함수를 고를수록 결과를 예측하기 어렵고, 반복이 몇 바퀴 돌지 몰라 요금 상한도 걸기 어려워요.</li>
-            <li>미리 만들어진 부품을 쓰면 편한 대신, 그 반복이 선으로 안 보이고 중간에 "사람이 검토" 같은 단계를 끼울 수도 없어요.</li>
+            <li>자율성은 공짜가 아닙니다. LLM이 다음 함수를 고를수록 결과를 예측하기 어렵고, 반복이 몇 바퀴 돌지 몰라 요금 상한도 걸기 어려워요. <a class="suspect-jump" href="#suspect-order-flips">언제 의심하나 ↓</a></li>
+            <li>미리 만들어진 부품을 쓰면 편한 대신, 그 반복이 선으로 안 보이고 중간에 "사람이 검토" 같은 단계를 끼울 수도 없어요. <a class="suspect-jump" href="#suspect-action-without-check">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -343,6 +343,48 @@ while True:
       <p>그런데도 눈금자에서 오른쪽으로 한 칸도 안 움직여요. <strong>그 마지막 단계는 자막 텍스트를 한 글자도 바꾸지 않으니까요.</strong> 사람이 확인할 제안 목록만 만들고, 실제 반영은 사람이 화면에서 골랐을 때 일어나요. 모델이 다음에 무엇을 할지 정한 것도 아니고요.</p>
       <p>이 편의 기준이 호출 수나 모델 크기가 아니라 <strong>"다음 걸음을 누가 정하나"</strong>인 이유가 여기서 그대로 보여요. 이 대입은 <a href="langgraph-state-node-edge.html#apply-repo">다음 편에서 State·Node·Edge로 뜯으면서</a> 이어 갈게요.</p>
     </section>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — AI가 짜 준 에이전트 코드를 처음 돌려 볼 때</h2>
+    <p>이 편에서 고른 것들은 코드를 돌리기 시작하면 증상으로 돌아와요. 옛 예제는 첫 줄부터 에러를 내지만, 자율성을 잘못 준 그래프는 <strong>돌아가긴 해요</strong>. 그래서 "가끔 순서가 틀린다", "요금이 생각보다 많다" 같은 말이 먼저 나와요.</p>
+    <p>증상이 아직 없어도, <strong>AI에게 이런 부탁을 한 직후</strong>라면 한 번 확인하고 넘어가요.</p>
+    <ul>
+      <li>"에이전트로 만들어 줘" — 순서가 매일 같은 일인데 모델이 다음 단계를 고르게 짜지 않았는지</li>
+      <li>"도구를 붙여서 알아서 처리하게 해 줘" — 붙은 도구 중에 메일 보내기·결제 취소처럼 <strong>바깥을 바꾸는 도구</strong>가 있는지</li>
+      <li>"이 예제가 돌아가게 고쳐 줘" — 코드를 고친 게 아니라 LangChain을 <strong>옛 버전으로 낮춰 설치</strong>하지 않았는지. 이 시리즈 코드는 1.x 버전에서 돌아요</li>
+    </ul>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-old-import">
+          <td>검색해서 찾은 예제나 AI가 짜 준 코드를 돌렸더니, <code>LLMChain</code>·<code>AgentExecutor</code>·<code>initialize_agent</code>가 든 <code>import</code> 줄에서 <strong>바로 에러</strong>가 나요</td>
+          <td>코드 로직이 아니라 <strong>설치된 버전</strong>이에요. 에러가 난 <code>import</code> 줄과, 터미널에서 <code>pip show langchain</code>으로 본 버전을 같이 봐요</td>
+          <td>버전이 1.0 이상이면 그 세 이름은 <code>langchain-classic</code>으로 옮겨 간 거라, 코드가 옛 방식으로 짜인 거예요. AI에게 다시 부탁할 때는 설치된 버전을 같이 알려 줘요 (<a href="#numbers">이 글에 나온 숫자</a>)</td>
+        </tr>
+        <tr id="suspect-order-flips">
+          <td>늘 같은 순서여야 하는 단계가 <strong>열 번에 한 번쯤</strong> 뒤바뀌어요. 재고를 깎기 전에 손님 알림이 먼저 나가는 식이에요</td>
+          <td>그래프를 조립하는 줄들이에요. 그 단계들 사이에 <code>add_edge</code>가 없고, <code>add_conditional_edges</code>에 넘긴 함수가 <strong>모델에게 다음 단계를 묻고</strong> 있는지 봐요. 노드 함수 본문은 대개 범인이 아니에요</td>
+          <td>매번 같은 순서여야 하는 구간이면 모델에게 묻는 선을 <code>add_edge</code>로 바꿔요. 그래프는 선이 없는 길로는 안 가서, 뒤바뀔 길 자체가 사라져요 (<a href="#tool-choice">나쁜 선택 vs 좋은 선택</a>)</td>
+        </tr>
+        <tr id="suspect-router-calls">
+          <td>요청 한 건을 처리했을 뿐인데 API 사용량 화면의 호출 수가 <strong>단계 수만큼</strong> 늘어 있어요. 하루 요금도 요청 수로 어림한 것보다 몇 배 많아요</td>
+          <td>다음 단계를 고르는 자리에서 모델을 부르는 곳이에요. 라우터 함수 안의 모델 호출 줄과, 그 호출이 <strong>매번 같은 답</strong>을 내는 구간을 찾아요</td>
+          <td>한 번 돌리고 호출 기록(사용량 화면이나 <a href="langgraph-five-workflow-patterns.html#langsmith">6편의 LangSmith</a>)에서 호출 수를 세요. 답이 늘 같은 호출은 <code>if</code>문 규칙이나 고정 엣지로 바꿔요. 도구 루프에서 바퀴마다 요금이 커지는 거라면 <a href="langgraph-branches-and-tool-loop.html#suspect-message-pileup">4편의 요금 줄</a>을 봐요</td>
+        </tr>
+        <tr id="suspect-action-without-check">
+          <td>에이전트가 <strong>사람 확인 없이</strong> 메일을 보내거나 예약·결제를 바꿔 버렸어요</td>
+          <td>에이전트에게 쥐여 준 <strong>도구 목록</strong>이에요. <code>create_agent</code>나 도구를 넘기는 줄에 어떤 함수들이 들어갔는지 봐요. 프롬프트에 "확인받고 해"라고 적어 둔 것만으로는 막히지 않아요</td>
+          <td>도구를 조회(읽기만 함)와 행동(바깥을 바꿈)으로 나눠 적어요. 행동 도구마다 실행 직전에 사람이 승인하는 단계가 코드에 있는지 봐요. 없으면 그 앞에 승인 단계를 둘 수 있게 흐름을 다시 짜요 (<a href="#key-lookup-action">조회와 행동</a>)</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>마지막 줄은 증상을 기다리면 안 되는 줄이에요. 앞의 셋은 다시 돌리면 되지만, 나간 메일이나 취소된 결제는 되돌리기 어렵거든요. 그래서 행동 도구를 붙인 코드는 <strong>처음 돌려 보기 전에</strong> 확인해요.</p>
+    <p>코드를 직접 읽기 어렵다면 확인을 맡겨도 돼요. 이때 고치기 전에 <strong>먼저 표로 보여 달라고</strong> 해요. 어느 선을 누가 정하는지 내 눈으로 봐야, 어디까지 모델에게 맡길지 내가 정할 수 있어요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— LangGraph·LangChain 코드가 있는 프로젝트 폴더에서</span></p>
+    <pre><code>이 프로젝트의 LangGraph·LangChain 코드를 살펴서 아래를 파일 이름과 줄 번호로 표로 보여 줘. 아직 코드는 고치지 마.
+1. 설치된 langgraph·langchain·langchain-core 버전, 그리고 LLMChain·AgentExecutor·initialize_agent를 import하는 줄
+2. add_edge와 add_conditional_edges로 그은 선 전부. 조건부 엣지마다 넘긴 함수가 if문 규칙인지 모델 호출인지
+3. create_agent를 쓰는 곳과 에이전트에 넘긴 도구 목록. 도구마다 읽기만 하는지, 메일·결제·파일 쓰기처럼 바깥을 바꾸는지
+4. 바깥을 바꾸는 도구 앞에 사람이 승인하는 단계가 있는지 (없으면 없다고)</code></pre>
 
     <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
     <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 복습할 때 이것부터 보면 돼요. 다른 편의 같은 목록은 <a href="langgraph-state-node-edge.html#key-recap">2편</a> · <a href="langgraph-branch-drills.html#key-recap">3편</a> · <a href="langgraph-branches-and-tool-loop.html#key-recap">4편</a> · <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a> · <a href="langgraph-patterns-orchestrator-evaluator.html#key-recap">7편</a>에 있어요.</p>

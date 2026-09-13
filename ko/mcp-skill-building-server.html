@@ -58,9 +58,9 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>자료 위치를 상대 경로로 적으면, 호스트가 다른 폴더에서 서버를 띄우는 순간 "그런 파일이 없다"로 실패합니다.</li>
-            <li>이 프로젝트 전용으로 따로 만든 파이썬 공간(가상환경)에 패키지를 깔아 놓고, 정작 AI 앱은 그 바깥의 다른 파이썬을 실행하면 "분명히 설치했는데 못 찾는다"가 나와요.</li>
-            <li>표준 출력이 곧 통신 통로라서, 디버깅용 출력을 무심코 넣으면 통신 자체가 깨집니다.</li>
+            <li>자료 위치를 상대 경로로 적으면, 호스트가 다른 폴더에서 서버를 띄우는 순간 "그런 파일이 없다"로 실패합니다. <a class="suspect-jump" href="#suspect-relative-data-path">언제 의심하나 ↓</a></li>
+            <li>이 프로젝트 전용으로 따로 만든 파이썬 공간(가상환경)에 패키지를 깔아 놓고, 정작 AI 앱은 그 바깥의 다른 파이썬을 실행하면 "분명히 설치했는데 못 찾는다"가 나와요. <a class="suspect-jump" href="#suspect-module-not-found">언제 의심하나 ↓</a></li>
+            <li>표준 출력이 곧 통신 통로라서, 디버깅용 출력을 무심코 넣으면 통신 자체가 깨집니다. <a class="suspect-jump" href="#suspect-debug-print">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -402,6 +402,50 @@ def get_weekly_records(week: str) -&gt; dict[str, Any]:
     <p>② <strong>대장에 한 줄 더 적어 보기.</strong> <code>WEEK_FILES</code>에 <code>"week-three": "week-three.json"</code>을 추가하되 파일은 만들지 마세요. 그러면 <code>week-three</code> 요청이 <strong>이제 허용 검사는 통과하고 파일 열기에서 실패</strong>해요. 같은 요청이 다른 지점에서 걸리는 걸 보면, 검사가 왜 여러 층인지 손에 잡혀요.</p>
     <p>③ <strong>안내판을 떼어 보기.</strong> <code>@mcp.tool()</code> 한 줄을 잠깐 지웠다가 다음 편에서 호스트에 연결해 보세요. 함수는 파일에 그대로 있는데 <strong>도구 목록에서는 사라져요.</strong> "코드에 있다"와 "도구로 공개돼 있다"가 다른 상태라는 걸 이보다 빨리 체감하는 방법은 없어요.</p>
     <p>세 실험 다 <strong>정상 동작을 확인하는 게 아니라 실패하는 모습을 보는 것</strong>이 목적이에요. 어디서 어떻게 실패하는지 미리 봐 두면, 다음 편에서 호스트 연결이 안 될 때 어디부터 볼지 알게 돼요.</p>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 만든 서버를 앱에 붙였는데 안 될 때</h2>
+    <p>이 편의 실수들은 파일을 저장할 때가 아니라 <strong>호스트에 붙인 뒤</strong> 드러나요. 서버를 띄우는 건 제가 아니라 호스트라서, 실행 폴더도 파이썬도 내 터미널과 다를 수 있거든요. 그리고 실수마다 드러나는 단계가 달라요. 연결부터 실패하는 것, 도구 목록에서만 빠지는 것, 불러 봐야 비로소 실패하는 것이 있어요.</p>
+    <p>증상이 아직 없어도, <strong>AI에게 이런 부탁을 한 직후</strong>라면 한 번 확인하고 넘어가요.</p>
+    <ul>
+      <li>"입력이 조금 달라도 알아서 찾게 해 줘" — 허용 검사 앞에 비슷한 주차를 골라 주는 코드가 생기지 않았는지. <code>week-three</code>를 물었는데 오류 대신 다른 주 기록이 오면 추측이 들어간 거예요</li>
+      <li>"파일 읽는 부분 깔끔하게 정리해 줘" — <code>DATA_DIR = Path(__file__).with_name("data")</code> 줄이 그대로 남았는지</li>
+      <li>"도구 설명 짧게 다듬어 줘" — docstring에 <code>week-one</code>·<code>week-two</code>처럼 받을 수 있는 값이 남았는지</li>
+    </ul>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-module-not-found">
+          <td>호스트의 MCP 목록에서 <code>weekly-records</code>가 <strong>연결 실패</strong>로 떠요. 패키지 설치는 분명히 끝났다고 들었어요</td>
+          <td>서버 코드가 아니라 호스트에 등록한 <strong>실행 명령</strong>이에요. <code>uv</code>로 실습 폴더를 지정해 실행하는지, 그냥 <code>python</code>으로 실행하는지 봐요</td>
+          <td>등록된 명령을 터미널에 그대로 쳐 봐요. <code>ModuleNotFoundError: No module named 'mcp'</code>가 나오면 <code>.venv</code> 밖의 파이썬이 돈 거고, 오류 없이 바로 끝나면 진입점 없는 파일을 <code>python</code>으로 실행한 거예요. 둘 다 <code>uv --directory</code> · <code>run --locked</code> · <code>mcp run</code> 모양으로 등록을 바꿔요 (<a href="mcp-skill-host-connection.html">4편</a>)</td>
+        </tr>
+        <tr id="suspect-tool-not-listed">
+          <td><code>weekly-records</code>는 연결됐는데, 그 아래 도구 목록에 <strong><code>get_weekly_records</code>가 들어간 이름이 없어요</strong></td>
+          <td>공개할 함수 바로 위의 <code>@mcp.tool()</code> 줄이에요. 함수 본문이나 <code>data</code> 폴더는 목록을 만들 때 쓰이지 않아서 이 증상과 상관없어요</td>
+          <td>그 줄이 <code>def get_weekly_records</code> 바로 위에 있는지 봐요. <code>load_weekly_records</code> 위에 붙어 있으면 목록에 그 이름이 대신 떠요. 고쳤다면 앱을 다시 시작해야 목록이 바뀌어요 (<a href="mcp-skill-host-connection.html">4편</a>)</td>
+        </tr>
+        <tr id="suspect-relative-data-path">
+          <td>도구 목록에는 잘 뜨는데, <strong>불러 보면</strong> 호출 기록의 받은 결과에 <code>No such file or directory</code> 오류가 와요</td>
+          <td>오류에 찍힌 <strong>경로</strong>와, 서버 파일에서 기록 파일을 여는 줄이에요. 연결까지는 됐으니 실행 명령보다 이쪽이 먼저예요</td>
+          <td>찍힌 경로가 <code>data/week-one.json</code>처럼 짧거나 실습 폴더가 아닌 곳이면 상대 경로로 찾은 거예요. 파일을 여는 줄이 <code>DATA_DIR</code>을 거치는지 봐요. 실습 폴더의 <code>data</code>를 제대로 가리키는데도 없다면 <code>data</code> 폴더가 옮겨졌는지 확인해요</td>
+        </tr>
+        <tr id="suspect-debug-print">
+          <td>디버깅하려고 <code>print()</code>를 넣은 뒤부터 <strong>연결이 끊기거나 오류가 나요</strong></td>
+          <td>이 서버 파일에서 <code>file=sys.stderr</code>가 없는 <code>print(</code> 줄이에요</td>
+          <td>찾아서 <code>file=sys.stderr</code>를 붙이고 앱을 다시 시작해요. 증상과 확인 순서는 <a href="mcp-skill-protocol-roles.html#suspect-print-stdout">2편의 같은 증상</a>에 있어요</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>세 번째 줄이 제일 늦게 드러나요. 연결도 되고 도구 목록도 멀쩡해서 다 된 줄 알았다가, 실제로 부르는 순간에야 실패하거든요. 그래서 연결한 날 도구를 <strong>한 번은 꼭 불러 봐요.</strong></p>
+    <p>AI가 서버 파일을 여러 번 고쳤다면 한 번에 훑어보게 맡겨도 돼요. 이때 <strong>고치기 전에 먼저 보여 달라고</strong> 해요. 여러 곳이 한꺼번에 바뀌면 어느 수정이 증상을 없앴는지 알 수 없게 돼요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— 서버 파일이 있는 실습 폴더에서</span></p>
+    <pre><code>이 실습 폴더의 MCP 서버 코드를 보고 아래를 표로 보여 줘. 아직 코드는 고치지 마.
+1. 기록 파일을 여는 줄마다 파일 이름과 줄 번호, 그 경로가 Path(__file__) 기준인지 현재 작업 폴더 기준(상대 경로)인지
+2. @mcp.tool()이 붙은 함수 이름 전부와, 붙지 않은 함수 이름 전부
+3. 공개된 도구의 docstring에 받을 수 있는 week 값이 적혀 있는지
+4. WEEK_FILES 검사 앞에서 입력을 비슷한 다른 값으로 바꿔 주는 코드가 있는지
+5. file=sys.stderr 없이 쓰인 print( 의 줄 번호
+6. .venv 안의 파이썬 경로, 그 환경에 설치된 mcp 버전이 pyproject.toml에 적힌 버전과 같은지</code></pre>
 
     <section class="footnotes">
       <ol>

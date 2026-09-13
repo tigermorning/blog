@@ -51,9 +51,9 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>"AI가 왜 이 도구를 안 쓰지?" 같은 문제가 생겼을 때 원인이 모델 쪽인지 하네스 쪽인지 구분이 안 됩니다.</li>
-            <li>도구 설명을 개발자용 메모처럼 대충 적게 됩니다. 설명이 모호하면 모델은 빈 자리를 그럴듯한 추측으로 채워요 — 재고 조회를 물었는데 이름이 비슷한 주문 조회를 부르는 식으로요.</li>
-            <li>MCP를 붙였으니 실행까지 안전해졌다고 오해합니다. MCP는 도구 목록과 사용법을 주고받는 통신 규격일 뿐, 검증·실행·결과 되돌리기는 여전히 하네스 몫이에요.</li>
+            <li>"AI가 왜 이 도구를 안 쓰지?" 같은 문제가 생겼을 때 원인이 모델 쪽인지 하네스 쪽인지 구분이 안 됩니다. <a class="suspect-jump" href="#suspect-tool-not-called">언제 의심하나 ↓</a></li>
+            <li>도구 설명을 개발자용 메모처럼 대충 적게 됩니다. 설명이 모호하면 모델은 빈 자리를 그럴듯한 추측으로 채워요 — 재고 조회를 물었는데 이름이 비슷한 주문 조회를 부르는 식으로요. <a class="suspect-jump" href="#suspect-wrong-tool">언제 의심하나 ↓</a></li>
+            <li>MCP를 붙였으니 실행까지 안전해졌다고 오해합니다. MCP는 도구 목록과 사용법을 주고받는 통신 규격일 뿐, 검증·실행·결과 되돌리기는 여전히 하네스 몫이에요. <a class="suspect-jump" href="#suspect-mcp-unchecked">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -314,6 +314,35 @@ You have access to the following functions:
     </figure>
 
     <p>실습에서는 이 셋 중 MCP로, 문서 검색 서버를 실제로 등록해봤다. 그 실습과, 도구 설명 계약을 실제로 표 형식으로 채우는 방법은 다음 편에서 이어간다.</p>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 도구를 붙인 AI가 엉뚱하게 답하거나 멋대로 실행할 때</h2>
+    <p>도구를 붙인 뒤의 문제는 대부분 "AI가 이상하다" 한마디로 먼저 느껴져요. 그런데 모델이 쓴 요청, 하네스가 실행한 결과, 최종 답을 한 줄씩 떼어 보면 어느 자리에서 샜는지 거의 바로 갈려요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-tool-not-called">
+          <td>재고를 물었는데 챗봇이 <strong>도구를 부른 흔적 없이 "7개 남았습니다"처럼 숫자를 바로 말해요</strong>. 실제 재고와 안 맞아요</td>
+          <td>모델에 보낸 요청과 모델이 돌려준 <strong>원본 응답</strong>이에요. 요청에 도구 목록(<code>tools</code>)이 실렸는지, 응답에 도구 호출 요청(OpenAI는 <code>tool_calls</code>, Anthropic은 <code>tool_use</code> 블록)이 있는지 봐요</td>
+          <td>요청에 도구 목록이 없으면 앱이 안 실은 거예요. 목록은 있는데 호출 요청이 없으면 모델 쪽이라 설명 문장을 봐요. 호출 요청은 있는데 결과가 안 돌아왔다면 하네스 쪽이라, 요청을 받아 함수를 실행하는 코드를 봐요</td>
+        </tr>
+        <tr id="suspect-wrong-tool">
+          <td>실행 기록을 보니 재고 질문인데 <strong><code>get_order_status(order_id="A-17")</code>처럼 이름이 비슷한 다른 도구</strong>가 불렸어요</td>
+          <td>함수 코드가 아니라 <strong>두 도구의 설명 문장</strong>(<code>description</code>)이에요. 모델은 코드를 못 보고 이 문장만 읽어요</td>
+          <td>두 설명을 나란히 놓고, 설명만 읽어서 재고 수량 질문엔 어느 쪽인지 가를 수 있는지 봐요. 내가 못 가르면 모델도 못 가르는 거예요. 설명마다 쓰는 때와 안 쓰는 때를 한 문장씩 적어요(<a href="tool-contract-and-schema.html">2편의 여섯 칸</a> 중 ③)</td>
+        </tr>
+        <tr id="suspect-misread-result">
+          <td>도구는 <code>{"available_quantity": 7, "warehouse_id": "BUSAN-02"}</code>를 제대로 돌려줬는데, <strong>최종 답은 다른 창고 이야기처럼 말하거나 수량을 바꿔 말해요</strong></td>
+          <td>도구 코드가 아니라 <strong>실행 결과와 최종 답 사이</strong>예요. 실행 기록에서 모델에 되돌려 넣은 결과 원문과 최종 답을 나란히 봐요</td>
+          <td>결과 원문에는 맞는 값이 있는데 답이 다르면 읽는 단계에서 샌 거예요. 결과에 답과 상관없는 필드가 많으면 봐야 할 값만 남기게 줄여요(2편의 ⑤ 반환 형식). 결과가 기록되지 않아 나란히 볼 수 없다면 기록부터 남겨요</td>
+        </tr>
+        <tr id="suspect-mcp-unchecked">
+          <td>코딩 에이전트에 남이 만든 MCP 서버를 붙였더니, AI가 그 서버 도구로 <strong>파일 삭제나 메시지 전송 같은 일을 묻지 않고 실행해요</strong></td>
+          <td>MCP 연결이 아니라 <strong>하네스의 허용 설정</strong>이에요. Claude Code라면 <code>/permissions</code>에서 그 도구가 묻지 않고 허용하는 목록에 들어 있는지 봐요. 예전 확인 창에서 다시 묻지 말라는 쪽을 고른 적이 있으면 거기 남아 있어요</td>
+          <td>쓰기·삭제·전송 도구는 허용 목록에서 빼서 매번 묻게 해요. 넘어온 값을 검사하는지는 MCP가 아니라 그 서버의 코드가 정해요. 무엇을 검사하는지 확인하기 전에는 조회 도구만 열어 둬요(<a href="tool-permission-and-evaluation.html">3편</a>의 서버 쪽 검증)</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>둘째·셋째 줄을 가르려면 요청, 실행 결과, 최종 답이 한 줄씩 남아 있어야 해요. 기록이 없으면 세 실패가 모두 "답이 이상하다" 하나로 뭉쳐 보여요. 그래서 도구를 붙이는 첫날부터 이 세 줄을 파일로 남기게 해 둬요. 남기는 모양은 <a href="tool-contract-and-schema.html">2편</a>의 트레이스에 있어요.</p>
 
     <p class="post-date">한 걸음 더: 여기서 정의한 모델·도구·에이전트·하네스라는 낱말을, 이번엔 Claude Code·opencode·Aider 같은 <strong>실제 하네스 여러 개를 나란히 놓고</strong> 비교하는 시리즈가 <a href="harness-observation-and-feature-map.html">에이전트 하네스 톺아보기</a>예요. "이 도구가 뭘 지원하나"라는 기능표보다 "내 일이 어디서 막히는가"부터 관찰하는 법을 다뤄요.</p>
 

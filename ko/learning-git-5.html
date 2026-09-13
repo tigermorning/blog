@@ -50,9 +50,9 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>cron 시각을 한국시간으로 적으면 엉뚱한 때 돌아갑니다.</li>
-            <li>자동화는 저장소 쓰기 권한을 기본으로 못 가져서, 설정을 안 열어두면 마지막 push 단계에서 권한 오류가 나요.</li>
-            <li>이 시스템은 자기가 실행한 횟수만 셀 뿐 내가 직접 올린 글은 모릅니다. 자동 3개에 수동 2개면 그날 5개가 나가요 — 애초에 그걸 막으려고 만든 건데요.</li>
+            <li>cron 시각을 한국시간으로 적으면 엉뚱한 때 돌아갑니다. <a class="suspect-jump" href="#suspect-cron-utc">언제 의심하나 ↓</a></li>
+            <li>자동화는 저장소 쓰기 권한을 기본으로 못 가져서, 설정을 안 열어두면 마지막 push 단계에서 권한 오류가 나요. <a class="suspect-jump" href="#suspect-write-permission">언제 의심하나 ↓</a></li>
+            <li>이 시스템은 자기가 실행한 횟수만 셀 뿐 내가 직접 올린 글은 모릅니다. 자동 3개에 수동 2개면 그날 5개가 나가요 — 애초에 그걸 막으려고 만든 건데요. <a class="suspect-jump" href="#suspect-double-publish">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -122,7 +122,7 @@ ko/learning-git-6.html</code></pre>
       <li>커밋하고 push</li>
       <li>(덤으로) sitemap.xml에도 새 글 주소를 자동으로 추가</li>
     </ol>
-    <p>한 번 실행에 딱 하나만 처리하기 때문에, 아무리 큐에 글이 쌓여 있어도 하루 3번(3개)을 절대 넘지 않아요.</p>
+    <p>한 번 실행에 딱 하나만 처리하기 때문에, 시간표대로만 돌면 아무리 큐에 글이 쌓여 있어도 하루 3개를 넘지 않아요.</p>
 
     <h2>3. <span class="hl">저장소 권한 설정, 그리고 하루 발행 개수 챙기기</span></h2>
     <p>그런데 여기까지 만들고 돌려보니 한 번에 되지 않았어요. 위 4단계의 마지막이 "커밋하고 push"인데, 이건 사람이 아니라 GitHub Actions가 제 저장소에 직접 글을 쓰는 행위거든요. GitHub은 안전을 위해 자동화에게 기본적으로 <strong>읽기 권한만</strong> 주기 때문에, 쓰기 권한은 제가 따로 열어줘야 했어요.</p>
@@ -134,6 +134,47 @@ ko/learning-git-6.html</code></pre>
     <p>이 설정을 안 해두면, 자동화가 실행은 되는데 마지막에 push하는 단계에서 권한 오류가 나요.</p>
 
     <p>이제 자동으로 잘 도는데, 돌려놓고 보니 이 시스템이 못 보는 사각지대가 하나 있었어요. 처음 정한 목표가 "하루 최대 3개"였잖아요. 그런데 이 자동화는 <strong>자기가 실행한 횟수만</strong> 셀 뿐, 제가 그날 직접 커밋해서 올린 글은 전혀 몰라요. 자동으로 3개가 나가고 제가 직접 2개를 더 올리면, 그날 하루에 5개가 나가버리는 거죠. 애초에 이 시스템을 만든 이유가 "한꺼번에 쏟아내지 않기"였는데 말이에요. 그래서 "오늘 이미 직접 올린 게 있으니 큐에 있는 글은 내일로 미뤄야 한다"는 판단만큼은 <strong>사람(저와 Claude)이 따로 챙겨야 하는 부분</strong>으로 남았어요.</p>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 예약 발행이 안 되거나 엉뚱하게 될 때</h2>
+    <p>자동화는 내가 안 보는 사이에 돌아서, 문제도 <strong>한참 뒤에 결과로</strong> 만나요. 글이 안 올라왔거나, 이상한 시각에 올라왔거나, 너무 많이 올라왔거나요. 이때 제일 먼저 열 곳은 코드가 아니라 저장소의 <strong>Actions 탭</strong>이에요. 언제 돌았는지, 어느 단계에서 멈췄는지가 실행 기록에 다 남아 있어요.</p>
+    <p>증상이 아직 없어도, <strong>AI에게 이런 부탁을 한 직후</strong>라면 한 번 확인하고 넘어가요.</p>
+    <ul>
+      <li>"매일 아침 9시에 돌게 해 줘" — Claude가 적은 <code>cron</code> 시각이 UTC로 바뀌어 있는지. 한국시간 09시면 <code>'0 0 * * *'</code>이어야 해요</li>
+      <li>"이 글은 지금 바로 올려 줘" — 큐를 거치지 않는 발행이라, 오늘 자동화가 이미 몇 편 냈는지 먼저 세어 봤는지</li>
+    </ul>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-not-running">
+          <td>정한 시각이 지났는데 글이 안 올라왔고, Actions 탭에 <strong>실행 기록이 아예 없어요</strong></td>
+          <td>워크플로 파일의 <strong>위치</strong>예요. 정확히 <code>.github/workflows/</code> 폴더 안이어야 하고, 기본 줄기인 <code>main</code>에 올라가 있어야 해요. 예약 실행은 main에 있는 파일만 봐요</td>
+          <td>GitHub 저장소 페이지에서 <code>.github</code> → <code>workflows</code> 폴더를 눌러 파일이 보이는지 봐요. 폴더 이름 끝의 <code>s</code> 하나, 앞의 점 하나만 달라도 GitHub이 못 읽어요. 다른 브랜치에만 있다면 main에 병합해야 해요 (<a href="learning-git-6.html">6편</a>)</td>
+        </tr>
+        <tr id="suspect-write-permission">
+          <td>Actions 탭에 <strong>빨간 X</strong>가 찍혀 있고, 눌러 보면 로그 끝의 push하는 자리에 <code>Permission to ... denied to github-actions[bot]</code>과 <code>error: 403</code>이 있어요</td>
+          <td><strong>Settings → Actions → General</strong>의 Workflow permissions예요. 글을 옮기고 커밋하는 스크립트 앞부분은 대개 범인이 아니에요 — 권한은 GitHub에 써 넣는 push에서야 걸리거든요</td>
+          <td>Read and write permissions로 바꾸고 저장한 뒤, 실패한 실행 화면의 Re-run jobs로 다시 돌려요. 워크플로 파일 안에 <code>permissions:</code> 줄이 따로 있으면 그 줄이 우선이라, 거기 <code>contents: read</code>로 적혀 있지 않은지도 봐요</td>
+        </tr>
+        <tr id="suspect-cron-utc">
+          <td>글이 올라오긴 하는데 <strong>기대한 시각과 딱 9시간 어긋나요</strong>. 아침 9시를 기대했는데 저녁 6시에 올라오는 식이에요</td>
+          <td>워크플로 파일의 <code>cron:</code> 줄이에요. 따옴표 안 두 번째 숫자가 시각이에요</td>
+          <td>그 숫자가 한국시간 그대로(예: <code>'0 9 * * *'</code>)면 9시간을 빼서 적어요. 몇 분쯤 늦게 도는 건 GitHub이 바쁠 때 생기는 대기라, 시각 계산이 틀린 게 아니에요</td>
+        </tr>
+        <tr id="suspect-double-publish">
+          <td>에러는 하나도 없는데, 어떤 날 사이트에 <strong>새 글이 4~5개</strong> 올라와 있어요</td>
+          <td>큐 파일이 아니라 <strong>그날의 커밋 기록</strong>이에요. 자동화가 한 커밋과 내가 직접 한 커밋이 섞여 있어요</td>
+          <td>저장소의 Commits 화면에서 그날 커밋의 작성자 이름을 보고 자동화 몫과 내 몫을 나눠 세요. 합이 3을 넘으면 이 사각지대예요. 자동화는 내 커밋을 못 세니, 직접 올린 날은 큐의 글을 사람이 미뤄야 해요</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>마지막 줄은 자동화 입장에서는 <strong>고장이 아니라서</strong> Actions 탭이 온통 초록이에요. 그래서 증상을 기다리지 말고, 직접 글을 올리기 직전에 오늘 나간 글 수부터 세요.</p>
+    <p>워크플로 파일을 직접 읽기 어렵다면 Claude에게 점검을 맡겨요. 이때 <strong>고치기 전에 보여 달라고</strong> 해요. 시각이나 권한을 Claude가 알아서 바꾸면, 다음 실행이 끝날 때까지 뭐가 달라졌는지 모르고 기다리게 되거든요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— 블로그 저장소 폴더에서</span></p>
+    <pre><code>이 저장소의 GitHub Actions 예약 발행 설정을 점검해서 표로 보여 줘. 아직 파일은 고치지 마.
+1. .github/workflows/ 안의 워크플로 파일 이름과, 그 파일이 main 브랜치에 커밋되어 있는지
+2. cron 줄마다 적힌 값과, 그걸 한국시간으로 바꾸면 몇 시인지
+3. 워크플로 파일 안의 permissions 설정 (없으면 없다고)
+4. 오늘(한국시간) main에 들어온 커밋을 자동화가 한 것과 사람이 한 것으로 나눈 개수</code></pre>
 
     <p>이 스크립트는 발행할 때마다 <code>sitemap.xml</code>도 자동으로 갱신하는데, sitemap이 왜 필요한지는 아래 글에서 자세히 다뤘어요.</p>
 

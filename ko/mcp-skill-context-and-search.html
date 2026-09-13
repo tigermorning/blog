@@ -58,8 +58,8 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>증상만 보고 아무 기능이나 켜면, 원인이 다른 쪽이었을 때 아무것도 안 바뀝니다.</li>
-            <li>검색 장면이 안 보인다고 설정이 고장 났다고 결론 내립니다. 이미 찾아둔 정의를 재사용했거나, 정의가 짧아 그냥 미리 읽었을 수 있어요.</li>
+            <li>증상만 보고 아무 기능이나 켜면, 원인이 다른 쪽이었을 때 아무것도 안 바뀝니다. <a class="suspect-jump" href="#suspect-context-no-change">언제 의심하나 ↓</a></li>
+            <li>검색 장면이 안 보인다고 설정이 고장 났다고 결론 내립니다. 이미 찾아둔 정의를 재사용했거나, 정의가 짧아 그냥 미리 읽었을 수 있어요. <a class="suspect-jump" href="#suspect-search-not-shown">언제 의심하나 ↓</a></li>
             <li>도구가 두세 개뿐인데 검색 기능을 켜면 단계만 하나 늘어 오히려 손해일 수 있습니다.</li>
           </ul>
         </dd>
@@ -404,6 +404,40 @@ return result;</code></pre>
     <p>② <strong>검색 장면이 나오는지 두 번 확인하기.</strong> 새 대화에서 첫 주를 요청하고, 이어서 같은 대화에서 둘째 주를 요청해 보세요. 두 번째에 검색이 안 나온다면 <strong>왜 안 나왔는지</strong>를 한 줄로 적어 보세요 — 재사용인지, 애초에 미리 실렸는지요. <strong>안 보였다는 관찰을 결론으로 바꾸지 않는 연습</strong>이에요.</p>
     <p>③ <strong>일부러 필드를 골라 달라고 해보기.</strong> Code Mode를 쓸 수 있다면 "<code>blocker</code>가 적힌 항목의 ID와 사유만"을 요청하고, 실행 기록에서 <strong>모델에게 실제로 전달된 값</strong>이 전체 기록인지 추려진 값인지 확인해 보세요. 둘 다 최종 답은 두 줄로 나올 테니, <strong>답변만 보고는 절대 구분 못 한다</strong>는 걸 여기서 체감하게 돼요.</p>
     <p>여기까지 오면 통로도 뚫렸고, 그 통로가 문맥을 어떻게 쓰는지도 봤어요. 그런데 아직 안 정한 게 하나 있어요. <strong>TASK-102는 '개발 완료'인데, 이걸 우리 팀 주간보고의 '완료'에 넣어도 되나요?</strong> 이건 도구가 정해 줄 수 없는, <strong>우리 팀만의 판정 기준</strong>이에요. 그리고 이런 기준은 매주 반복돼요. 그 반복되는 판단을 어디에 적어 두는가 — 다음 편의 <strong>Skill</strong> 이야기예요.</p>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 기능을 켰는데 달라진 게 안 보일 때</h2>
+    <p>문맥 문제는 오류 없이 <strong>숫자와 실행 기록</strong>으로만 드러나요. 그래서 헷갈리기 쉬운 순간이 두 가지예요. 기능을 켰는데 숫자가 안 줄어드는 순간, 그리고 기능이 켜졌는데 기록에 기대한 장면이 안 보이는 순간이요. 둘 다 설정부터 뒤집기 전에 <strong>언제·어디서 달라졌는지</strong>를 먼저 봐야 해요.</p>
+    <p>증상이 아직 없어도, <strong>AI에게 이런 부탁을 한 직후</strong>라면 한 번 확인하고 넘어가요.</p>
+    <ul>
+      <li>"Tool Search 켜 줘", "Code Mode 켜 줘" — 연결된 도구가 두세 개뿐이라면 검색 단계만 늘 수 있어요. 켰다면 지금 대화가 아니라 <strong>새 대화</strong>에서 확인해요</li>
+      <li>"우리 팀 기록 전부 보여 줘"처럼 범위 없는 부탁 — 호출 입력에 주차가 들어갔는지, 받은 결과가 몇 건인지</li>
+    </ul>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-context-no-change">
+          <td>도구 정의를 나중에 읽는 기능을 켰는데도 <strong>문맥 사용량 숫자가 거의 그대로</strong>예요</td>
+          <td>숫자가 <strong>언제</strong> 커지는지예요. 새 대화에서 <code>ping</code>처럼 짧은 한 마디만 보낸 뒤의 숫자와, 도구를 한 번 부른 직후의 숫자를 나란히 봐요</td>
+          <td>도구를 부른 직후에 크게 뛰면 실행 후 부담이라, 호출 기록의 받은 결과 크기를 보고 조회 범위나 돌려줄 항목을 좁혀요. 짧은 한 마디 뒤부터 이미 크다면 도구 정의가 아니라 호스트 지시나 규칙 문서 몫일 수 있어요. Claude Code라면 <code>/context</code>로 항목별 사용량을 볼 수 있어요</td>
+        </tr>
+        <tr id="suspect-search-not-shown">
+          <td>Tool Search를 켰다는데 호출 기록에 <strong>검색 장면이 안 보여요</strong>. 도구 호출은 됐고 결과도 맞아요</td>
+          <td>지금 대화가 설정을 바꾸기 <strong>전부터</strong> 열려 있던 건지, 그리고 같은 대화 <strong>앞쪽</strong>에 이미 검색 항목이 있었는지예요. 설정값부터 뒤집을 자리는 아니에요</td>
+          <td>설정 전에 열린 대화라면 새 대화에서 다시 봐요. 앞쪽에 검색이 이미 있었다면 찾아 둔 정의를 재사용한 거라 정상이고, 새 대화의 첫 요청에서도 없다면 도구가 적어 <code>auto</code> 설정이 정의를 미리 실었을 수 있어요. 호출과 결과가 맞으면 고칠 건 없어요</td>
+        </tr>
+        <tr id="suspect-execute-only">
+          <td>OpenCode에서 Code Mode를 켰더니 실행 기록에 <code>get_weekly_records</code> 대신 <strong><code>execute</code>만 보여요</strong></td>
+          <td><code>execute</code> 항목을 펼친 <strong>안쪽 코드</strong>예요. 서버 코드나 MCP 등록은 대개 범인이 아니에요</td>
+          <td>코드 안에 <code>tools["weekly-records"].get_weekly_records(...)</code> 호출이 있고, 결과의 <code>week</code>가 요청한 주차와 같으면 MCP를 제대로 거친 거예요. 그런 호출이 없는데 답이 나왔다면 <a href="mcp-skill-host-connection.html#suspect-direct-read">4편의 같은 확인</a>으로 넘어가요</td>
+        </tr>
+        <tr id="suspect-text-result">
+          <td>Code Mode에서 "<code>blocker</code>가 적힌 항목만" 달라고 했더니 <strong>빈 결과</strong>가 와요. 그런데 원본 파일에는 <code>blocker</code> 값이 적힌 항목이 있어요</td>
+          <td><code>execute</code> 안의 코드에서 <strong>결과를 꺼내는 줄</strong>이에요. <code>result.records</code>처럼 필드 이름으로 읽는 부분이요</td>
+          <td>코드 안에서 고르지 말고 결과를 통째로 돌려 달라고 다시 요청해 봐요. 이름표 붙은 객체가 아니라 긴 글자 덩어리로 오면, 구조화된 결과가 없어 텍스트로 전달된 거라 필드 이름으로는 못 찾아요</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>첫 번째 줄이 헛수고가 제일 커요. 기능을 켰다 껐다 반복해도 숫자가 그대로인데, 원인은 설정이 아니라 도구가 돌려준 자료의 양이거든요. 그래서 기능을 켜기 전에 <strong>숫자가 언제 뛰는지</strong>부터 한 번 봐요.</p>
 
     <section class="footnotes">
       <ol>

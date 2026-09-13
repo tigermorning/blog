@@ -58,10 +58,10 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>예약(시간표)과 그걸 울리는 스케줄러(종 장치)가 별개예요. 게이트웨이가 꺼져 있어서 안 울린 건데 예약이 사라진 줄 알고 다시 만들면, 켜는 순간 같은 시보 두 개가 돌아요.</li>
-            <li>반복 예약은 지우지 않는 한 계속 실행되고 그때마다 토큰을 써요. 5분 시보를 켜 두고 자면 밤새 매시간 12번씩 호출돼 이유 모를 비용이 쌓여요.</li>
-            <li>예약은 내가 안 볼 때 실행돼요. 그래서 권한 경계가 직접 대화할 때보다 더 중요해요.</li>
-            <li>cron 칸을 하나 빠뜨리면 뜻이 통째로 밀려요.</li>
+            <li>예약(시간표)과 그걸 울리는 스케줄러(종 장치)가 별개예요. 게이트웨이가 꺼져 있어서 안 울린 건데 예약이 사라진 줄 알고 다시 만들면, 켜는 순간 같은 시보 두 개가 돌아요. <a class="suspect-jump" href="#suspect-silent-schedule">언제 의심하나 ↓</a></li>
+            <li>반복 예약은 지우지 않는 한 계속 실행되고 그때마다 토큰을 써요. 5분 시보를 켜 두고 자면 밤새 매시간 12번씩 호출돼 이유 모를 비용이 쌓여요. <a class="suspect-jump" href="#suspect-overnight-cost">언제 의심하나 ↓</a></li>
+            <li>예약은 내가 안 볼 때 실행돼요. 그래서 권한 경계가 직접 대화할 때보다 더 중요해요. <a class="suspect-jump" href="#suspect-unattended-action">언제 의심하나 ↓</a></li>
+            <li>cron 칸을 하나 빠뜨리면 뜻이 통째로 밀려요. <a class="suspect-jump" href="#suspect-cron-shifted">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -206,6 +206,34 @@
 
     <h2><span class="hl">직접 해보기</span></h2>
     <p>내가 매일 손으로 하는 반복 확인 하나를 고르세요(예: "오늘 회의 목록 정리"). 그걸 cron 표기식 한 줄로 적어 보고(예: 평일 오전 8시 → <code>0 8 * * 1-5</code>), 같은 걸 "사람의 문장" 한 줄로도 적어 봐요. 그다음 5편의 권한 기준 메모를 꺼내, 이 예약이 실행될 때 에이전트가 어느 권한 모드로 도는지 확인해요. 예약은 내가 안 볼 때 실행되니, 권한 경계가 대화 때보다 더 중요해요. 이런 자동화 흐름을 화면으로 짜는 다른 도구는 <a href="n8n-agent-delegation-and-if-node.html">n8n</a>에서 봤어요. 어느 쪽이 내 일에 맞는지는 "대화로 시킬 일인가, 그림으로 그릴 일인가"로 갈려요.</p>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 시간표를 걸어 둔 뒤에</h2>
+    <p>예약의 문제는 <strong>내가 화면 앞에 없을 때</strong> 생겨요. 그래서 에러 창이 아니라 안 온 메시지, 겹쳐 온 메시지, 아침에 늘어 있는 사용량처럼 <strong>다음 날 알아채는 모습</strong>으로 보여요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-silent-schedule">
+          <td>예약한 시각이 지났는데 <strong>아무 메시지도 안 와요</strong>. 목록에는 그 작업이 그대로 있고요. 반대로 나중에 <strong>같은 메시지가 두 번씩</strong> 오기도 해요</td>
+          <td>예약 목록이 아니라 <strong>종 장치 쪽</strong>이에요 — <code>openclaw gateway status</code>로 게이트웨이가 켜져 있는지부터 봐요. 시간표는 SQLite에 남아 있어서 목록에 보이는 게 정상이에요</td>
+          <td>게이트웨이가 켜져 있으면 <code>openclaw automations runs --id &lt;job-id&gt;</code>로 실행 기록을 봐요. 기록이 0건이면 스케줄러가 멈춰 있던 거예요 — 여기서 <strong>예약을 새로 만들면 안 돼요.</strong> 켜는 순간 같은 시보가 둘이 돌아요. 두 번씩 오고 있다면 <code>list</code>에서 이름이 비슷한 작업을 찾아 하나를 <code>remove</code>로 지워요</td>
+        </tr>
+        <tr id="suspect-overnight-cost">
+          <td>아무것도 안 시켰는데 <strong>밤사이 사용량과 요금이 늘어 있어요</strong>. 호출 시각이 5분·1시간처럼 일정한 간격으로 찍혀 있는 게 특징이에요</td>
+          <td>3편의 <code>/usage cost</code> 화면에서 호출이 찍힌 <strong>시각의 간격</strong>이에요. 그다음 <code>openclaw automations list</code>에서 그 간격의 반복 작업을 찾아요</td>
+          <td>간격이 일정하면 사람이 아니라 시간표가 부른 거예요. 실습으로 만든 시보가 남아 있는지 목록에서 확인하고 <code>openclaw automations remove &lt;job-id&gt;</code>로 지워요. <code>/loop</code>로 만든 건 대화창에서 <code>/loop status</code>로 보고 <code>/loop stop</code>으로 꺼요. 일회성은 저절로 사라지지만 <strong>반복은 지우기 전까지 안 멈춰요</strong></td>
+        </tr>
+        <tr id="suspect-unattended-action">
+          <td>예약이 돈 뒤에 <strong>파일이 바뀌어 있거나 메시지가 나가 있어요</strong>. 그 시각에 저는 화면 앞에 없었고, 승인 창을 본 적도 없어요</td>
+          <td>그 예약의 상세 정보예요 — 어떤 프롬프트를 실행하게 돼 있는지, 그리고 그 실행이 <strong>어느 권한 모드</strong>로 도는지 봐요(5편의 권한 기준 메모와 같이요)</td>
+          <td>예약에 넣은 그 프롬프트를 대화창에서 <strong>손으로 한 번</strong> 돌려 봐요. 대화에서 승인을 묻는 동작이 하나라도 있으면, 예약으로 돌 때는 그 승인을 눌러 줄 사람이 없어요. 그런 프롬프트는 읽고 알려 주는 데까지로 좁히고, 실제로 바꾸는 일은 사람이 보는 자리에서 해요</td>
+        </tr>
+        <tr id="suspect-cron-shifted">
+          <td>매일 아침 8시에 오라고 했는데 <strong>5분마다 와요</strong>. 또는 아예 안 와요</td>
+          <td>예약을 만들 때 넣은 <strong>표기식 문자열</strong>이에요. 먼저 칸이 다섯 개인지 세어 봐요</td>
+          <td>앞에서부터 분 · 시 · 일 · 월 · 요일이에요. 평일 오전 8시는 <code>0 8 * * 1-5</code>고, 칸이 네 개면 뜻이 한 칸씩 통째로 밀려요(<a href="#numbers">이 글에 나온 숫자</a>). 헷갈리면 표기식 대신 대화창의 <code>/loop</code>를 쓰거나, 사람의 문장("매주 평일 오전 7시에 …")으로 확인받고 만드는 길을 써요</td>
+        </tr>
+      </tbody>
+    </table>
 
     <section class="footnotes">
       <ol>

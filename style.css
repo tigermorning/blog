@@ -1309,6 +1309,25 @@ details[open] > summary .tree-toggle-icon {
   margin: 0.6rem 0 0.9rem;
 }
 
+/* 이럴 때 의심하세요: 바이브 코딩 중에 만나는 증상에서 원인 자리로 가는 표.
+   읽기 전에 박스의 "모르면 이런 일이 생겨요" 불릿이 각 행으로 바로 이어진다. */
+.suspect-table td:first-child {
+  background: color-mix(in srgb, var(--folder-6) 7%, transparent);
+}
+
+.suspect-table tr {
+  scroll-margin-top: 1rem;
+}
+
+.suspect-table tr:target td {
+  background: color-mix(in srgb, var(--folder-4) 18%, transparent);
+}
+
+.why-read a.suspect-jump {
+  font-size: 0.85em;
+  white-space: nowrap;
+}
+
 /* 6. 전문 용어 각주 */
 .fn-ref {
   font-size: 0.75em;

@@ -58,8 +58,8 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>"했어요"를 곧바로 완료로 여기면, 실제로는 결과 줄이 없어서 파일이 없는데 그 위에 다음 작업을 쌓게 돼요.</li>
-            <li>구독 로그인이면 화면 숫자가 "남은 양"이고 API 키면 "든 돈"이에요. 어느 경로로 붙었는지 모른 채 숫자만 보면 남은 비율을 남은 돈으로 잘못 읽어 예산이 처음부터 틀어져요.</li>
+            <li>"했어요"를 곧바로 완료로 여기면, 실제로는 결과 줄이 없어서 파일이 없는데 그 위에 다음 작업을 쌓게 돼요. <a class="suspect-jump" href="#suspect-said-done-no-file">언제 의심하나 ↓</a></li>
+            <li>구독 로그인이면 화면 숫자가 "남은 양"이고 API 키면 "든 돈"이에요. 어느 경로로 붙었는지 모른 채 숫자만 보면 남은 비율을 남은 돈으로 잘못 읽어 예산이 처음부터 틀어져요. <a class="suspect-jump" href="#suspect-percent-read-as-money">언제 의심하나 ↓</a></li>
             <li>문제 보고용 진단 번들에는 로그 요약이 들어 있어요. 개인정보를 가려 주더라도 비밀 자료처럼 다뤄야 해요.</li>
           </ul>
         </dd>
@@ -208,6 +208,40 @@ openclaw models status</code></pre>
 
     <h2><span class="hl">직접 해보기</span></h2>
     <p>WebChat에서 "워크스페이스에 오늘 날짜 메모를 하나 남겨 줘"라고 시켜 보세요. 그다음 세 곳을 순서대로 봐요. 답변 문장, <code>~/.openclaw/workspace/memory/</code>의 새 파일과 수정 시각, 그리고 <code>/usage tokens</code>의 입력·출력 숫자. 셋이 서로 맞으면 "했다"가 진짜예요. 하나라도 어긋나면 어디가 어긋났는지가 그날의 공부예요.</p>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 답은 왔는데 결과나 숫자가 안 맞을 때</h2>
+    <p>이 편의 실수는 답변 문장과 사용량 숫자를 <strong>그대로 믿은 다음 단계</strong>에서 드러나요. "만들었어요"를 믿고 맡긴 다음 일이 막히거나, 비율을 돈으로 읽은 예산이 어긋나는 식이에요. 그래서 막힌 자리보다 그 앞의 말과 숫자를 기록과 맞춰 보는 게 먼저예요.</p>
+    <p>증상이 아직 없어도, <strong>AI에게 이런 부탁을 한 직후</strong>라면 한 번 확인하고 넘어가요.</p>
+    <ul>
+      <li>"구독 말고 API 키로 바꿔 줘"(또는 그 반대) — <code>openclaw models status</code>에 바뀐 경로가 보이는지. 같은 사용량 화면이라도 이제 숫자의 뜻이 달라요</li>
+      <li>"오류 보고용 자료를 모아 줘" — 만들어진 진단 번들을 공개 게시판이나 단체 대화방에 올리기 전에 멈추기. 개인정보를 가려 줘도 로그 요약이 들어 있어요</li>
+    </ul>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-said-done-no-file">
+          <td>"메모 파일을 만들었어요"라는 답을 받고 다음 일을 맡겼더니, <strong>그 파일을 찾을 수 없다</strong>는 답이나 오류가 와요</td>
+          <td>답변 문장이 아니라 기본 워크스페이스의 <code>~/.openclaw/workspace/memory/</code>예요. <code>ls -la</code>로 새 파일이 있는지, 수정 시각이 그 대화 시각과 맞는지 봐요</td>
+          <td>파일이 없으면 세션 기록(<code>openclaw-agent.sqlite</code>, SQLite를 여는 프로그램으로 열려요)에서 그 답의 <code>toolCall</code>과 같은 <code>toolCallId</code>를 단 <code>toolResult</code> 줄을 찾아요. 짝이 없으면 말만 한 거예요. 짝이 있어도 결과 내용이 오류이거나, 워크스페이스 밖 다른 경로에 만들었을 수 있어요</td>
+        </tr>
+        <tr id="suspect-percent-read-as-money">
+          <td><code>/status</code>에 <strong>40%</strong> 같은 비율이 보여서, 예산이 40% 남았다고 계산하고 있어요</td>
+          <td>숫자가 아니라 <strong>내 인증 경로</strong>예요. 터미널에서 <code>openclaw models status</code>로 인증 프로필을 봐요</td>
+          <td>구독 로그인이면 그 비율은 제공사가 계산한 남은 한도라 돈과 무관하고, 한도가 초기화되는 시각에 따라 달라져요. API 키일 때 보이는 건 호출마다 계산한 추정 비용이라, 실제 청구액은 제공사의 결제 화면에서 따로 봐요</td>
+        </tr>
+        <tr id="suspect-input-tokens-grow">
+          <td>같은 대화를 오래 이어 가니, 짧게 물어도 <code>/usage tokens</code>의 <strong>입력 토큰이 답 하나마다 눈에 띄게 커져요</strong></td>
+          <td>입력과 출력 두 숫자 중 어느 쪽이 불어나는지예요. WebChat의 직접 메시지는 메인 세션이라는 하나로 이어지는 대화라, 앞의 대화가 함께 들어가요</td>
+          <td>출력은 그대로인데 입력만 커지면 질문 탓이 아니라 이어 붙인 대화 탓이에요. 비용이 신경 쓰이면 이 대화를 계속 이어 붙일지 여기서 정해요 (<a href="tokens-and-context-window-cost.html#suspect-input-tokens">토큰 비용 글의 이 줄</a>)</td>
+        </tr>
+        <tr id="suspect-auth-profile-expired">
+          <td>어제까지 답하던 WebChat이 <strong>오늘은 답을 안 하거나 오류를 내요</strong>. 설정은 건드린 적이 없어요</td>
+          <td>터미널의 두 표예요. <code>openclaw status --usage</code>로 게이트웨이가 살아 있는지, <code>openclaw models status</code>로 인증 프로필 상태를 봐요</td>
+          <td>연결이 죽었거나 인증이 만료된 프로필이 있으면 이 표에서 먼저 보여요. 게이트웨이부터 꺼져 있다면 <a href="openclaw-install-and-first-chat.html#suspect-webchat-silent">2편의 이 줄</a>부터 봐요</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>첫째 줄을 제일 자주 만나요. 답변이 매끄러우면 파일 목록을 열 이유가 안 보이거든요. 그래서 파일을 만드는 일을 맡긴 뒤에는, 그 파일 위에 다음 일을 올리기 전에 폴더부터 한 번 열어 봐요.</p>
 
     <section class="footnotes">
       <ol>

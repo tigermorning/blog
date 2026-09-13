@@ -59,10 +59,10 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>"남은 대화는 누가 받나"를 안 정하면, 새로 붙인 입구에서 온 메시지가 어떤 규칙에도 안 맞아 오류도 없이 조용히 사라져요.</li>
-            <li>작업 폴더를 나눴다고 안전이 끝난 게 아니에요. 폴더 밖 경로를 막으려면 별도 격리 장치가 필요해요.</li>
-            <li>설정을 줄이려고 두 에이전트가 같은 상태 폴더를 쓰면 인증과 세션이 충돌해서 한쪽 로그인이 다른 쪽을 덮어써요.</li>
-            <li>동시 실행 한도는 곱해져요. 에이전트가 넷이고 그 하나하나가 다시 보조 대화(서브에이전트)를 여덟까지 열 수 있으면, 최악의 순간에 서른둘이 동시에 도는 셈이고, 그게 그대로 그 순간의 요금이에요.</li>
+            <li>"남은 대화는 누가 받나"를 안 정하면, 새로 붙인 입구에서 온 메시지가 어떤 규칙에도 안 맞아 오류도 없이 조용히 사라져요. <a class="suspect-jump" href="#suspect-silent-drop">언제 의심하나 ↓</a></li>
+            <li>작업 폴더를 나눴다고 안전이 끝난 게 아니에요. 폴더 밖 경로를 막으려면 별도 격리 장치가 필요해요. <a class="suspect-jump" href="#suspect-workspace-escape">언제 의심하나 ↓</a></li>
+            <li>설정을 줄이려고 두 에이전트가 같은 상태 폴더를 쓰면 인증과 세션이 충돌해서 한쪽 로그인이 다른 쪽을 덮어써요. <a class="suspect-jump" href="#suspect-shared-state">언제 의심하나 ↓</a></li>
+            <li>동시 실행 한도는 곱해져요. 에이전트가 넷이고 그 하나하나가 다시 보조 대화(서브에이전트)를 여덟까지 열 수 있으면, 최악의 순간에 서른둘이 동시에 도는 셈이고, 그게 그대로 그 순간의 요금이에요. <a class="suspect-jump" href="#suspect-concurrency-bill">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -238,6 +238,35 @@
 
     <h2><span class="hl">직접 해보기</span></h2>
     <p>설치하지 않고 종이에 해 보는 연습이에요. 내가 맡기고 싶은 역할을 두 개 고르고(예: "기사 요약", "코드 검토"), 각각에 대해 네 줄을 적어요. ① 어느 채널 계정에서 오는 대화가 이 역할로 가나(binding), ② 이 역할의 작업 폴더는 어디인가(workspace), ③ 둘 중 누가 default인가, ④ 허용·승인·중단 세 칸(standing orders). 네 줄이 다 채워지면 위 JSON 예시에 그대로 옮길 수 있어요. 역할이 늘면 다음 질문이 자연히 따라와요. "역할마다 토큰을 얼마나 쓰나?" 그 답은 <a href="openclaw-session-records-and-usage.html">3편</a>의 사용량 화면에 있어요.</p>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 역할을 여럿 둔 뒤 뭔가 이상할 때</h2>
+    <p>이 편의 실수들은 빨간 오류 화면으로 오지 않아요. 대부분 <strong>"에러는 하나도 없는데 뭔가 안 온다"</strong>거나 <strong>"한 번 시킨 것치고 요금이 많다"</strong>는 모습으로 먼저 와요. 그래서 증상에서 거꾸로 짚어 가는 표를 붙여 둘게요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-silent-drop">
+          <td>새로 붙인 입구(다른 채널, 같은 채널의 다른 계정)에서 말을 걸었는데 <strong>답도 안 오고 에러도 안 떠요</strong>. 원래 쓰던 입구에서는 멀쩡히 답해요</td>
+          <td><code>openclaw.json</code>의 <code>bindings</code> 배열과 <code>agents.entries</code>예요. 답을 못 한 에이전트의 프롬프트나 성격 설정은 대개 범인이 아니에요 — 거기까지 가지도 못했거든요</td>
+          <td><code>agents.entries</code> 안에 <code>default: true</code>가 붙은 에이전트가 하나라도 있는지 먼저 봐요. 없으면 그거예요. 있다면 그 입구의 <code>channel</code>·<code>account</code> 글자가 <code>bindings</code>에 적힌 것과 한 글자씩 맞는지 봐요</td>
+        </tr>
+        <tr id="suspect-workspace-escape">
+          <td>한 에이전트에게 시킨 일인데 <strong>그 에이전트 폴더 바깥의 파일이 바뀌어</strong> 있어요. 다른 에이전트 폴더나 그 위 상위 폴더까지요</td>
+          <td>그 에이전트의 <code>workspace</code> 값과, 같은 시각의 세션 기록이에요. <a href="openclaw-session-records-and-usage.html">3편</a>에서 본 것처럼 말한 것 말고 <strong>실제 도구 호출</strong>을 봐야 어느 경로를 건드렸는지 나와요</td>
+          <td><code>workspace</code>는 기본 작업 경로일 뿐 울타리가 아니에요. 기록에 폴더 밖 경로가 찍혀 있으면 설정으로 막을 게 아니라 sandbox를 따로 둬야 해요</td>
+        </tr>
+        <tr id="suspect-shared-state">
+          <td>한쪽 에이전트에 로그인하면 <strong>다른 쪽 로그인이 풀려요</strong>. 번갈아 쓸 때마다 다시 인증하라고 하거나, 앞 대화를 기억 못 해요</td>
+          <td>두 에이전트의 상태 폴더 경로예요. <code>~/.openclaw/agents/&lt;agentId&gt;/</code>가 서로 다른 <code>agentId</code>를 가리키는지 봐요</td>
+          <td>경로가 겹쳤으면 그거예요 — 인증 프로필과 세션이 같은 자리를 서로 덮어써요. 설정을 줄이려고 한 곳으로 모아 뒀다면 다시 나눠요. 함께 봐야 할 자료는 공유 문서를 따로 두는 쪽이 맞아요</td>
+        </tr>
+        <tr id="suspect-concurrency-bill">
+          <td>한 번 시킨 일치고 <strong>호출 수나 요금이 이상하게 많아요</strong>. 또는 부탁이 몰리는 시간에 답이 한참 뒤에 와요</td>
+          <td>설정의 두 값이에요 — <code>agents.defaults.maxConcurrent</code>와 <code>subagents.maxConcurrent</code>. 그리고 <a href="openclaw-session-records-and-usage.html">3편</a>의 사용량 화면이요</td>
+          <td>두 값을 <strong>곱해서</strong> 봐요. 4 × 8이면 최악의 순간에 서른둘이 동시에 도는 셈이에요. 사용량 화면의 호출 수가 그 근처면 한도가 원인이고, 한참 적으면 다른 데를 봐야 해요 (<a href="#numbers">이 글에 나온 숫자</a>)</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>증상이 아직 없어도, <strong>에이전트를 하나 더 늘린 직후</strong>라면 두 가지만 확인하고 넘어가요. <code>default: true</code>가 여전히 하나 있는지, 새 에이전트의 상태 폴더가 기존 것과 겹치지 않는지요.</p>
 
     <section class="footnotes">
       <ol>

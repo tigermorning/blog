@@ -58,9 +58,9 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>앱마다 코드를 따로 만들면 저장 위치가 바뀌는 날 두 벌을 다 고쳐야 하고, 한 벌만 고치면 팀원과 내 숫자가 달라집니다.</li>
-            <li>"연결했다"와 "자료를 받았다"를 같은 상태로 착각하게 됩니다 — 메뉴판을 받은 것과 음식을 받은 것은 달라요.</li>
-            <li>서버가 시작될 때 상태 문구를 표준 출력으로 찍으면, 그 문장이 통신 통로에 섞여 나가 메시지 해석이 깨집니다.</li>
+            <li>앱마다 코드를 따로 만들면 저장 위치가 바뀌는 날 두 벌을 다 고쳐야 하고, 한 벌만 고치면 팀원과 내 숫자가 달라집니다. <a class="suspect-jump" href="#suspect-two-apps-differ">언제 의심하나 ↓</a></li>
+            <li>"연결했다"와 "자료를 받았다"를 같은 상태로 착각하게 됩니다 — 메뉴판을 받은 것과 음식을 받은 것은 달라요. <a class="suspect-jump" href="#suspect-connected-not-read">언제 의심하나 ↓</a></li>
+            <li>서버가 시작될 때 상태 문구를 표준 출력으로 찍으면, 그 문장이 통신 통로에 섞여 나가 메시지 해석이 깨집니다. <a class="suspect-jump" href="#suspect-print-stdout">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -392,6 +392,41 @@ print("서버가 시작되었습니다!", file=sys.stderr)</code></pre>
     <h2><span class="hl">직접 해보기</span></h2>
     <p>이번에도 코드 없이 종이에 하는 연습이에요. 지금 쓰는 AI 앱(Claude Code든 ChatGPT든)을 하나 떠올리고 세 칸을 채워 보세요. ① 그 앱에서 <strong>호스트 역할</strong>을 하는 건 정확히 뭔가 — 화면인가, 프로그램 전체인가? ② 내가 연결하고 싶은 <strong>서버</strong>는 뭘 해 주는 프로그램인가 — 한 문장으로 적어 보세요. ③ 그 서버에 <code>tools/list</code>를 보냈을 때 <strong>돌아왔으면 하는 도구 이름 두세 개</strong>는 뭔가?</p>
     <p>③을 적다 보면 재밌는 게 하나 걸려요. 도구 이름을 적으면서 "이건 도구일까 자료일까"가 헷갈리는 항목이 반드시 하나쯤 나와요. 그게 이번 편에서 말한 <strong>"동사 하나로 정답을 정하지 않는다"</strong>가 실제로 걸리는 지점이에요. 헷갈렸다는 사실 자체를 기록해 두면 다음 편에서 서버 코드를 볼 때 훨씬 잘 붙어요.</p>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 서버를 붙였는데 앱마다 결과가 다를 때</h2>
+    <p>이 편의 실수들은 서버 코드 한 줄보다 <strong>앱 화면의 증상</strong>으로 먼저 만나요. 역할이 셋으로 나뉘어 있어서, 증상이 보이는 곳(호스트)과 원인이 있는 곳(서버 코드, 서버 등록)이 다르거든요. 그래서 먼저 "지금 어느 역할에서 멈췄나"를 갈라야 해요.</p>
+    <p>증상이 아직 없어도, <strong>AI에게 이런 부탁을 한 직후</strong>라면 한 번 확인하고 넘어가요.</p>
+    <ul>
+      <li>"서버에 로그 좀 찍어 줘", "디버깅용 출력 넣어 줘" — 새로 생긴 <code>print(</code>에 <code>file=sys.stderr</code>가 붙었는지</li>
+      <li>"이거 OpenCode에도 붙여 줘" — 조회 코드를 새로 만든 게 아니라, 같은 서버 파일을 등록했는지</li>
+    </ul>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-two-apps-differ">
+          <td>같은 주를 물었는데 <strong>Claude Code에서 본 숫자와 OpenCode에서 본 숫자가 달라요</strong>. 둘 다 에러는 없어요</td>
+          <td>두 앱의 <strong>호출 기록에서 받은 결과</strong>를 나란히 놓아요. 결과가 같은데 보고서 숫자만 다르면 서버 문제가 아니라 답변을 만드는 쪽 문제예요</td>
+          <td>결과부터 다르면 두 앱에 등록된 서버 실행 명령의 파일 경로를 맞춰 봐요. 경로가 같은데도 다르면, 서버 코드를 고친 뒤 <strong>한쪽 앱만 다시 시작했는지</strong> 봐요. 앱마다 서버 프로세스를 따로 띄워서, 안 다시 시작한 쪽은 옛 코드로 돌아요 (<a href="mcp-skill-host-connection.html">4편</a>)</td>
+        </tr>
+        <tr id="suspect-connected-not-read">
+          <td>호스트의 MCP 목록에는 <code>weekly-records</code>가 연결돼 있는데, AI가 <strong>기록에 없는 내용</strong>을 말하거나 기록을 못 읽는다고 해요</td>
+          <td>연결 표시가 아니라 이번 답변의 <strong>호출 기록</strong>이에요. 연결됐다는 건 도구 목록(<code>tools/list</code>)을 받았다는 데까지예요</td>
+          <td>호출 기록에 <code>get_weekly_records</code> 실행(<code>tools/call</code>)이 있는지 봐요. 없으면 모델은 메뉴판만 본 상태예요. 어디부터 볼지는 <a href="mcp-skill-tool-call-anatomy.html#suspect-no-tool-call">1편의 같은 증상</a>에 있어요</td>
+        </tr>
+        <tr id="suspect-print-stdout">
+          <td>서버에 출력 한 줄을 넣은 뒤부터 호스트에서 <strong>연결이 실패하거나</strong>, 로그에 JSON으로 읽을 수 없다는 에러가 찍혀요. 도구 로직은 하나도 안 바꿨어요</td>
+          <td>서버 파일의 <code>print(</code> 줄이에요. 서버 시작 부분뿐 아니라 도구 함수 안에 넣은 확인용 출력도 봐요</td>
+          <td><code>file=sys.stderr</code>가 없는 <code>print(</code>를 찾아 붙여요. 결과는 <code>return</code>으로만 돌려줘요. 앱에 따라 에러 없이 넘어가기도 해서, <strong>멀쩡해 보여도 찾아서 고쳐 두는 게</strong> 안전해요. 고친 뒤에는 호스트를 다시 시작해야 새 코드로 떠요</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>세 번째 줄은 AI와 고치다가 생기기 쉬워요. 뭔가 안 될 때 확인용 출력을 넣어 보는 건 흔한 방법인데, stdio 서버에서는 그 출력이 통신 통로로 나가거든요. 원인을 찾으려고 넣은 줄이 새 원인이 되는 셈이에요.</p>
+    <p>서버 코드와 앱 설정을 직접 뒤지기 어렵다면 확인을 맡겨도 돼요. 이때 <strong>고치기 전에 먼저 보여 달라고</strong> 해요. 어느 앱이 어느 파일을 실행하는지 내 눈으로 봐 두면, 다음에 숫자가 어긋날 때 어디부터 열지 알게 돼요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— MCP 서버 코드가 있는 실습 폴더에서</span></p>
+    <pre><code>이 폴더의 MCP 서버 코드와, Claude Code·OpenCode에 서버를 등록한 설정을 찾아 표로 보여 줘. 아직 코드는 고치지 마.
+1. 서버 파일에서 file=sys.stderr 없이 쓰인 print( 와, 그 밖에 표준 출력으로 글자를 내보내는 줄의 파일 이름과 줄 번호
+2. 앱별로 등록된 서버 이름, 실행 명령, 인자에 적힌 서버 파일 경로. 두 앱이 같은 파일을 가리키는지
+3. 서버 파일 말고 기록 파일을 따로 읽는 조회 코드가 또 있다면 그 위치</code></pre>
 
     <section class="footnotes">
       <ol>

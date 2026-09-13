@@ -51,9 +51,9 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>"요즘 뜨는 기능이니 붙여보자"로 고르면, 결과가 좋아져도 도구 덕인지 조건이 달라져서인지 가릴 수 없게 돼요.</li>
-            <li>Agent Teams를 켜면 팀원 하나가 곧 세션 하나라 토큰이 팀원 수에 비례해 늘어요. 모르고 켜면 비용이 훅 올라가요.</li>
-            <li>herdr 같은 관측 도구가 창을 '유휴'로 표시했다고 해서 테스트가 통과한 건 아니에요. 결과 판정 층은 따로 필요해요.</li>
+            <li>"요즘 뜨는 기능이니 붙여보자"로 고르면, 결과가 좋아져도 도구 덕인지 조건이 달라져서인지 가릴 수 없게 돼요. <a class="suspect-jump" href="#suspect-tool-looks-better">언제 의심하나 ↓</a></li>
+            <li>Agent Teams를 켜면 팀원 하나가 곧 세션 하나라 토큰이 팀원 수에 비례해 늘어요. 모르고 켜면 비용이 훅 올라가요. <a class="suspect-jump" href="#suspect-teams-cost">언제 의심하나 ↓</a></li>
+            <li>herdr 같은 관측 도구가 창을 '유휴'로 표시했다고 해서 테스트가 통과한 건 아니에요. 결과 판정 층은 따로 필요해요. <a class="suspect-jump" href="#suspect-idle-not-passed">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -156,6 +156,51 @@ permission:
 
     <h2><span class="hl">직접 해보기</span></h2>
     <p>지금 내 작업에서 가장 아픈 문제 하나를 위 표의 왼쪽 열에서 골라 보세요. 그 도구를 붙였을 때 4편의 "고정·조작·측정" 표에서 <strong>어느 칸이 바뀌는지</strong> 한 줄로 적고, 기준선을 다시 세워야 하는지(조율·모델 층) 아니면 그대로 얹어도 되는지(관측 층) 표시해요. 도구 이름에 끌려 붙이는 게 아니라, 문제에서 출발해 조건 변화를 먼저 적는 습관이 이 시리즈에서 남기고 싶은 전부예요.</p>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 새 도구를 켜거나 에이전트 파일을 옮긴 뒤</h2>
+    <p>새 도구의 실수는 대부분 에러 없이 지나가요. 켜 둔 설정이 조용히 무시되거나, 도구는 제대로 돌았는데 그 표시를 다른 뜻으로 읽는 식이에요. 그래서 <strong>결과가 좋아 보이거나 화면이 "끝남"을 보일 때</strong>가 한 번 확인할 때예요.</p>
+    <p>증상이 아직 없어도, <strong>AI에게 이런 부탁을 한 직후</strong>라면 한 번 확인하고 넘어가요.</p>
+    <ul>
+      <li>"locator를 서브에이전트 파일로 옮겨 줘" — 파일 머리에 <code>name</code>과 <code>description</code>이 있는지, <code>tools</code>에 Read·Grep·Glob만 있는지(OpenCode라면 <code>permission</code>의 <code>edit</code>·<code>bash</code>가 <code>deny</code>인지)</li>
+      <li>"이 에이전트로 다시 비교해 줘" — CLI 호출은 <code>result.json</code>과 <code>changes.diff</code>를 안 남기니, 비용·턴·수정 범위를 어디에 적기로 했는지</li>
+    </ul>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-tool-looks-better">
+          <td>새 도구를 붙이고 같은 문제를 돌렸더니 <strong>통과가 늘거나 비용이 줄었어요</strong></td>
+          <td>그 도구가 바꾸는 층이에요. 네 문제 표의 "바꾸는 층" 열에서 Agent Teams·Workflows는 다음 행동의 주체를, oh-my-claudecode는 모델을 바꾸고, herdr는 조건을 안 바꿔요</td>
+          <td>4편의 고정·조작·측정 표에 바뀐 칸을 한 줄로 적어요. 조율이나 모델 층이 바뀌었다면, 같은 문제로 기준선을 다시 돌려 견주기 전까지 좋아진 이유를 도구 덕으로 적지 않아요. oh-my-claudecode는 프레임워크 프롬프트도 같이 들어와서, 모델 배분 효과만 따로 떼기 어려워요</td>
+        </tr>
+        <tr id="suspect-teams-cost">
+          <td>Agent Teams로 조사를 맡긴 날, <strong>사용량이나 요금이 평소 한 세션의 몇 배</strong>로 찍혀요</td>
+          <td>그 조사에서 띄운 팀원 수, 그리고 <code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS</code>를 넣은 <code>settings.json</code>이 어느 쪽인지예요. 홈 폴더의 <code>~/.claude/</code>에 넣었다면 모든 프로젝트에서 켜져 있어요</td>
+          <td>팀원 하나가 곧 세션 하나라, 팀원 수만큼 늘어난 게 고장이 아니라 원래 값이에요. 서로 반박해야 풀리는 조사가 아니면 서브에이전트로 돌리고, 설정은 필요한 프로젝트의 <code>.claude/settings.json</code>에만 둬요</td>
+        </tr>
+        <tr id="suspect-teams-in-sdk">
+          <td><code>arms.py</code> 같은 SDK 실행에 Agent Teams를 켜고 돌렸는데, 기록에 <strong>팀원끼리 주고받은 메시지가 없고</strong> 결과가 리드에게만 돌아와요</td>
+          <td>설정 줄이 아니라 <strong>실행 방식</strong>이에요. 사람이 대화하는 세션인지, 코드가 부르는 SDK 실행인지 봐요</td>
+          <td>팀원은 대화형 세션에서만 만들어져서, SDK 실행에서는 켜 두어도 서브에이전트로 돌아가요. 이 기록을 "Agent Teams 결과"로 적으면 서브에이전트 실행을 팀 실행이라고 잘못 적는 거예요</td>
+        </tr>
+        <tr id="suspect-agent-file-unused">
+          <td><code>.claude/agents/locator.md</code>를 만들었는데, 버그 찾기를 부탁해도 <strong>Claude가 locator를 안 부르고 직접 뒤져요</strong></td>
+          <td>두 군데예요. agents 폴더를 <strong>이번에 처음 만들었는지</strong>, 그리고 파일 머리의 <code>description</code>이 내 부탁과 맞는 말로 적혔는지요</td>
+          <td>폴더를 처음 만들었다면 세션을 다시 시작해요. 그 뒤로는 저장만 해도 몇 초 안에 반영돼요. Claude는 부탁과 <code>description</code>을 견줘 맡길지 정하니, 꼭 맡기려면 프롬프트에 <code>@agent-locator</code>라고 불러요</td>
+        </tr>
+        <tr id="suspect-idle-not-passed">
+          <td>herdr 화면에서 에이전트 창이 전부 <strong>유휴(idle)</strong>로 바뀌어서, 다 끝났다고 결과를 모으려고 해요</td>
+          <td>창의 상태 표시가 아니라 실행마다 남은 결과 기록이에요. 유휴는 실행이 끝났다는 뜻일 뿐이에요</td>
+          <td>실행마다 테스트가 통과했는지 따로 열어 봐요. 끝났지만 테스트가 실패한 실행도 똑같이 유휴로 보여요 (<a href="multi-agent-judging-records.html#suspect-pass-only">4편의 이 줄</a>)</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>셋째 줄은 에러가 하나도 안 나서 제일 늦게 알아요. 켜 둔 설정이 조용히 무시되고 실행은 멀쩡히 끝나거든요. 그래서 새 기능을 SDK 실험에 끼우려면, 돌리기 전에 그 기능이 어떤 실행 방식에서 동작하는지부터 확인해요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— 에이전트 정의 파일을 둔 프로젝트 폴더에서</span></p>
+    <pre><code>이 프로젝트에서 아래를 찾아 표로 보여 줘. 아직 아무것도 고치지 마.
+1. .claude/agents/와 .opencode/agents/에 있는 에이전트 정의 파일마다 파일 경로, name, description, 허용 도구(tools 또는 permission), model, maxTurns
+2. 그중 파일을 고칠 수 있는 도구가 열려 있는 에이전트
+3. CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS가 들어 있는 settings.json의 경로 (프로젝트의 .claude/와 홈 폴더의 ~/.claude/ 둘 다)
+4. 에이전트 비교 결과(비용·턴·수정 범위)를 적는 파일이 있다면 그 경로, 없으면 없다고</code></pre>
 
     <h2><span class="hl">이어서 읽기</span> — 같은 발상이 opencode에서는 어떻게 생겼나</h2>
     <p>여기서 "어느 모델이 그 행동을 하는가"를 바꾸는 도구로 소개한 oh-my-claudecode는, 터미널형 도구 opencode 쪽에도 같은 계보의 형제가 있어요. <a href="opencode-sisyphus-orchestration.html">혼자 일하던 에이전트를 팀으로 — Sisyphus와 오케스트레이션 플러그인</a>에서 그 3층 구조(계획·조율·작업)와 역할별 모델 배정을 신문 편집국 비유로 풀어 봤어요. 그 앞 편인 <a href="opencode-models-and-muse-spark.html">모델 이름이 왜 이렇게 많을까</a>는 "모델을 나눈다"는 말을 실제로 실행하려면 먼저 정리해야 하는 것 — 제공자·버전·요금 티어·추론 강도라는 네 축을 다뤄요.</p>

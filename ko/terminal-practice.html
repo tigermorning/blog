@@ -51,10 +51,10 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>터미널에는 휴지통이 없어요. 삭제나 이동을 잘못된 위치에서 실행하면 되돌릴 방법이 없어요.</li>
-            <li>명령을 쳤다는 사실과 그게 됐다는 사실은 달라요. 다음 출력으로 확인하지 않으면 안 된 줄도 모르고 넘어가요.</li>
-            <li>명령이 안 통할 때 "이 컴퓨터는 안 되나 보다"라고 포기하면, 사실은 이 환경에서 부르는 이름이 다를 뿐인 걸 놓쳐요.</li>
-            <li>이름에 공백이 들어가는데 따옴표로 안 감싸면, 컴퓨터가 한 이름을 두 개로 잘라 읽어요.</li>
+            <li>터미널에는 휴지통이 없어요. 삭제나 이동을 잘못된 위치에서 실행하면 되돌릴 방법이 없어요. <a class="suspect-jump" href="#suspect-delete-path">언제 의심하나 ↓</a></li>
+            <li>명령을 쳤다는 사실과 그게 됐다는 사실은 달라요. 다음 출력으로 확인하지 않으면 안 된 줄도 모르고 넘어가요. <a class="suspect-jump" href="#suspect-mv-renamed">언제 의심하나 ↓</a></li>
+            <li>명령이 안 통할 때 "이 컴퓨터는 안 되나 보다"라고 포기하면, 사실은 이 환경에서 부르는 이름이 다를 뿐인 걸 놓쳐요. <a class="suspect-jump" href="#suspect-other-name">언제 의심하나 ↓</a></li>
+            <li>이름에 공백이 들어가는데 따옴표로 안 감싸면, 컴퓨터가 한 이름을 두 개로 잘라 읽어요. <a class="suspect-jump" href="#suspect-space-name">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -145,6 +145,35 @@ ls</code></pre>
     <p>새 개념은 거의 없는 시간이었는데도, 손으로 반복하고 나니 읽어서 아는 것과 다른 게 두 가지 남았어요.</p>
     <p>하나는 <strong>순서</strong>예요. 3편에서는 명령을 먼저 치고 결과가 이상해서 뒤늦게 <code>pwd</code>를 봤어요. 오늘은 반대로 했어요 — 움직이기 전에 <code>pwd</code>, 옮기고 나서 <code>ls</code>. 명령어 목록을 외운 것보다, 위험한 명령 앞뒤를 확인으로 감싸는 이 순서가 실제로 손에 남은 것 같아요.</p>
     <p>다른 하나는 <strong>이름은 껍데기일 수 있다</strong>는 감각이에요. 제가 <code>ls</code>라고 친 것이 사실은 <code>Get-ChildItem</code>이었다는 걸 알고 나니, 명령어가 안 통할 때 "이 컴퓨터는 안 되나 보다"라고 포기하는 대신 "이 환경에서는 이걸 뭐라고 부르지?"를 먼저 묻게 됐어요. 3편의 <code>touch</code>도, 오늘의 <code>ls</code>도 결국 같은 이야기였어요.</p>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 폴더를 옮기고 지우는 명령 앞뒤에서</h2>
+    <p>이 편의 실수는 대부분 <strong>에러 없이</strong> 지나가요. 명령이 멀쩡히 끝났는데 파일이 엉뚱한 데 가 있거나, 지우고 나서야 위치가 틀린 걸 알게 되죠. 그래서 증상을 기다리기보다, 명령이 끝난 직후의 출력과 명령을 치기 직전의 경로를 봐야 해요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-delete-path">
+          <td>파일 정리를 맡겼더니 AI가 <code>rm</code>·<code>Remove-Item</code>·<code>del</code>이 든 명령을 <strong>실행해도 되냐고 물어요</strong>. 문서에서 복사해 온 줄에 이런 명령이 들어 있을 때도 같은 순간이에요</td>
+          <td>명령 뒤에 붙은 <strong>경로</strong>와 옵션이에요. <code>-Recurse</code>나 <code>-rf</code>는 폴더 안의 것까지 전부, <code>-Force</code>는 숨김·읽기 전용 파일까지 지워요. 경로가 <code>.</code>이나 <code>*</code>, 폴더 이름 하나뿐이면 "지금 서 있는 곳" 기준이에요</td>
+          <td>허락하기 전에 거절하고 "작업 폴더 경로와 이 명령으로 지워질 파일 목록부터 보여 줘"라고 해요. 직접 칠 때는 <code>pwd</code>와 <code>ls 경로</code>로 같은 걸 봐요. 터미널에서 지운 건 휴지통에 안 가서, 허락한 뒤에는 확인할 기회가 없어요</td>
+        </tr>
+        <tr id="suspect-mv-renamed">
+          <td><code>mv</code>가 에러 없이 끝났는데 <strong>옮긴 폴더 안에 파일이 없어요</strong>. 대신 대상 폴더 이름을 단 확장자 없는 파일이 하나 생겼어요</td>
+          <td><code>mv</code> 줄의 <strong>대상 경로 철자</strong>예요. 대상으로 적은 폴더가 실제로 없으면, 옮기기가 아니라 이름 바꾸기로 처리돼요</td>
+          <td>옮긴 폴더에 <code>ls</code>를 쳐서 파일 이름이 보이는지 봐요. 안 보이면 그 한 칸 위에서 <code>ls</code>로 낯선 파일을 찾아 <code>mv 낯선이름 원래이름.txt</code>로 되돌린 뒤, 폴더 철자를 고쳐 다시 옮겨요</td>
+        </tr>
+        <tr id="suspect-other-name">
+          <td>책이나 AI가 알려 준 <code>touch</code>, <code>which</code> 같은 명령이 <strong>인식할 수 없다는 빨간 에러</strong>로 끝나요. 따로 설치하는 프로그램도 아닌데요</td>
+          <td>컴퓨터가 아니라 <strong>이 환경에서 그 일을 부르는 이름</strong>이에요. 에러 난 이름으로 <code>Get-Command 이름</code>을 쳐서 PowerShell이 아는 이름인지 봐요</td>
+          <td>못 찾으면 없는 이름이라, 하려는 일을 적어 AI에게 "Windows PowerShell에서는 이걸 뭐라고 불러?"라고 물어요. 이름이 아니라 문법이 달라서 막히는 경우는 <a href="terminal-shell-kernel-prompt.html#suspect-wrong-shell">5편의 이 줄</a>에 있어요</td>
+        </tr>
+        <tr id="suspect-space-name">
+          <td><code>cd</code>나 <code>mkdir</code>에 공백이 든 이름을 줬더니, <strong>이름 뒷부분 낱말을 받아 줄 매개 변수를 찾을 수 없다는 에러</strong>가 나요</td>
+          <td>명령 줄에서 <strong>공백이 들어간 이름</strong>이에요. 에러에 찍힌 낱말이 이름의 뒷부분(예: <code>my project</code>의 <code>project</code>)이면 그거예요</td>
+          <td>이름 전체를 따옴표로 감싸 다시 쳐요(예: <code>cd "my project"</code>). bash 같은 다른 셸에서는 에러 없이 <code>my</code>와 <code>project</code> 두 폴더가 따로 생기기도 하니, 만든 뒤 <code>ls</code>로 한 번 더 봐요</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>첫째 줄만은 뒤늦게 알아채면 늦어요. 나머지는 <code>ls</code>로 찾아 되돌릴 수 있지만, 지운 파일은 되돌릴 자리가 없으니 <strong>허락하기 직전</strong>이 확인할 유일한 때예요. 파일 정리를 AI에게 맡길 때 실제로 옮기기 전에 계획부터 받는 방법은 <a href="ai-folder-cleanup.html">다음 편</a>에 있어요.</p>
 
     <hr>
 

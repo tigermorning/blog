@@ -58,9 +58,9 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>'개발 완료'라는 글자만 보고 완료 칸에 넣으면, 고객은 아직 아무것도 못 받았는데 완료 건수만 늘어나고 그 건이 다음 주에 또 나타나요.</li>
-            <li>팀 기준을 어디에도 안 적어 두면 사람마다 같은 기록을 다르게 판정해서, 같은 주에 나온 두 보고서의 숫자가 안 맞아요.</li>
-            <li>Skill을 붙여 두면 팀 규칙이 바뀔 때 알아서 따라올 거라 믿으면, 옛 기준으로 몇 주치 보고서가 그대로 나가요. 모델을 고친 게 아니라 읽을 자료를 둔 것뿐이라 참조 문서를 사람이 고쳐야 해요.</li>
+            <li>'개발 완료'라는 글자만 보고 완료 칸에 넣으면, 고객은 아직 아무것도 못 받았는데 완료 건수만 늘어나고 그 건이 다음 주에 또 나타나요. <a class="suspect-jump" href="#suspect-dev-done-counted">언제 의심하나 ↓</a></li>
+            <li>팀 기준을 어디에도 안 적어 두면 사람마다 같은 기록을 다르게 판정해서, 같은 주에 나온 두 보고서의 숫자가 안 맞아요. <a class="suspect-jump" href="#suspect-numbers-mismatch">언제 의심하나 ↓</a></li>
+            <li>Skill을 붙여 두면 팀 규칙이 바뀔 때 알아서 따라올 거라 믿으면, 옛 기준으로 몇 주치 보고서가 그대로 나가요. 모델을 고친 게 아니라 읽을 자료를 둔 것뿐이라 참조 문서를 사람이 고쳐야 해요. <a class="suspect-jump" href="#suspect-rule-changed">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -351,6 +351,30 @@ note          : "코드 작성은 끝났으며 다음 배포를 기다린다."</
     <p>② <strong>같은 기록으로 서로 다른 두 문장 써 보기.</strong> 그 항목 하나를 놓고 <strong>내부 진척 보고용 문장</strong>과 <strong>고객·상급자 보고용 문장</strong>을 각각 한 줄씩 써 보세요. 두 문장이 <strong>둘 다 참인데 인상이 다르다</strong>면, 그 차이를 만든 게 바로 여러분 팀의 판정 기준이에요. 그걸 한 문장으로 적어 두세요 — 7편에서 쓸 재료예요.</p>
     <p>③ <strong>기준을 빼고 요청해 보고, 넣고 다시 요청해 보기.</strong> AI에게 기록만 주고 "완료 몇 건인지 세 줘"라고 해 본 다음, 이번엔 "완료는 배포와 운영 확인까지 끝난 건만 센다"를 붙여서 다시 물어보세요. <strong>답이 달라지는 지점</strong>이 곧 "이건 어딘가에 적어 둬야 하는 지식"이라는 신호예요.</p>
     <p>여기까지 오면 <strong>무엇을 적어야 하는지</strong>는 손에 잡혔어요. 다음 편에서는 가상 제품팀의 규칙 문서를 실제로 읽히고, <strong>첫 주간 보고서 한 편을 끝까지 완성</strong>해 볼게요. Skill 파일을 쓰는 건 그다음(8편)이에요 — 순서가 반대면 적을 게 없거든요.</p>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — AI가 쓴 주간 보고서가 팀 기준과 어긋날 때</h2>
+    <p>판정 기준이 빠진 보고서는 에러를 내지 않아요. 문장은 매끄럽고 기록도 정확히 옮겨져 있어서, <strong>완료 건수나 분류</strong>를 사람이 짚어 볼 때에야 어긋난 게 보여요. 원인은 대개 기록을 가져오는 쪽이 아니라 <strong>기준이 어디에 적혀 있느냐</strong>에 있어요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-dev-done-counted">
+          <td>AI가 쓴 주간 보고서의 <strong>완료</strong> 목록에, 원본 기록에서 <code>deployed_at</code>이 <code>null</code>인 업무가 들어 있어요. 지난주에 완료로 보고한 업무가 이번 주 기록에 또 올라오기도 해요</td>
+          <td>보고서를 만든 요청이에요. 프롬프트·프로젝트 지침·Skill 중 어디에 "완료는 배포와 운영 확인까지"가 적혀 있는지 봐요. 기록을 가져온 MCP 서버(<code>get_weekly_records</code>)는 대개 범인이 아니에요 — 원자료를 그대로 줄 뿐이거든요</td>
+          <td>완료 목록의 업무마다 원본에서 <code>deployed_at</code>과 <code>verification</code>을 찾아봐요. 하나라도 비었는데 완료에 들어갔다면 <code>status</code> 글자만 보고 센 거예요. 기준 한 문장을 요청에 붙여 다시 시키고, 한 건씩 판정하는 법은 <a href="mcp-skill-first-weekly-report.html">7편</a>에서 따라가요</td>
+        </tr>
+        <tr id="suspect-numbers-mismatch">
+          <td>같은 주 기록으로 만든 보고서 두 개의 <strong>완료 건수가 서로 달라요</strong>. 다른 팀원이 만든 것이든, 내가 새 대화에서 다시 만든 것이든요</td>
+          <td>두 보고서를 만든 <strong>요청 문장</strong>이에요. 기록이 같다면 차이는 기준에서 나와요. 한쪽 대화에서만 "우리 팀은 이렇게 세요"를 설명했을 가능성이 커요</td>
+          <td>두 요청을 나란히 놓고 완료 기준 문장이 양쪽에 똑같이 있는지 봐요. 한쪽에만 있거나 문장이 다르면, 그 기준을 파일 한 곳에 적고 둘 다 그 파일을 읽게 해요. 그 파일이 곧 Skill의 재료예요 (<a href="ai-skills-and-rules-files.html#suspect-reprompt">재프롬프트 문제</a>)</td>
+        </tr>
+        <tr id="suspect-rule-changed">
+          <td>팀이 완료 기준을 바꿨는데, 그 뒤에 Skill로 만든 보고서도 <strong>예전과 똑같이</strong> 분류돼요. 에러나 경고는 하나도 없어요</td>
+          <td>Skill 폴더 안의 <strong>규칙 문서</strong>(참조 자료)예요. 모델이나 대화창 설정은 범인이 아니에요 — Skill은 그 파일을 읽을 뿐, 팀에서 바뀐 결정을 알 길이 없어요</td>
+          <td>규칙 문서를 열어 바뀐 기준 문장이 들어 있는지 찾아봐요. 예전 문장 그대로라면 사람이 고쳐야 해요. 고친 뒤에는 지난 보고서와 같은 기록으로 한 번 더 돌려, 어느 업무의 분류가 바뀌었는지 봐요 (<a href="mcp-skill-reuse-verification.html#suspect-regression-week-one">9편</a>)</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>세 번째 줄이 제일 놓치기 쉬워요. 앞의 둘은 숫자를 맞춰 보면 드러나는데, 기준이 바뀐 뒤의 보고서는 <strong>지난주와 똑같아 보여서</strong> 오히려 안심하게 되거든요. 그래서 증상을 기다리지 말고 <strong>팀 기준이 바뀐 날</strong> 규칙 문서부터 고쳐요.</p>
 
     <section class="footnotes">
       <ol>

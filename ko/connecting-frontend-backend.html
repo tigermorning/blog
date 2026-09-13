@@ -51,9 +51,9 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>앱 전체를 한 프롬프트에 통째로 시키게 됩니다. AI의 집중력에도 한계가 있어서 초보에게 거의 항상 실패해요.</li>
-            <li>명세 문서 없이 프론트와 백엔드를 각자 만들어 서서히 어긋납니다. AI를 쓰면 양쪽에 "얼추 맞는" 걸 따로 만들어 오히려 심해질 수 있어요.</li>
-            <li>NEXT_PUBLIC_이나 VITE_ 접두사가 붙은 값에 비밀키를 넣게 됩니다. 그 접두사는 "브라우저에 공개"라는 뜻이에요.</li>
+            <li>앱 전체를 한 프롬프트에 통째로 시키게 됩니다. AI의 집중력에도 한계가 있어서 초보에게 거의 항상 실패해요. <a class="suspect-jump" href="#suspect-one-big-prompt">언제 의심하나 ↓</a></li>
+            <li>명세 문서 없이 프론트와 백엔드를 각자 만들어 서서히 어긋납니다. AI를 쓰면 양쪽에 "얼추 맞는" 걸 따로 만들어 오히려 심해질 수 있어요. <a class="suspect-jump" href="#suspect-contract-drift">언제 의심하나 ↓</a></li>
+            <li>NEXT_PUBLIC_이나 VITE_ 접두사가 붙은 값에 비밀키를 넣게 됩니다. 그 접두사는 "브라우저에 공개"라는 뜻이에요. <a class="suspect-jump" href="#suspect-public-prefix-secret">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -95,6 +95,48 @@
     <p>연결 부담 자체를 줄이는 길도 있었어요. 프론트·백엔드·DB를 한 묶음으로 다루는 스타터(예: Next.js 풀스택 + Supabase)를 쓰면, 둘이 한 프로젝트 안에 있어서 CORS나 주소 불일치 같은 문제가 애초에 줄어들어요. 다만 만능은 아니에요 — <a href="deploying-and-free-hosting.html">앞서 본 RLS</a>처럼 보안 설정을 안 켜면 남의 데이터가 노출될 수 있으니, 편리함과 함께 점검은 여전히 사람의 몫이었어요.</p>
 
     <p>여기까지가 화면 뒤에서 일어나는 일들의 전체 그림이었어요. 서버가 왜 필요한지에서 시작해서, 주소가 화면이 되는 여정, 백엔드가 실제로 하는 일과 지켜야 할 보안, 세상에 내보내는 배포, 그리고 이 모든 걸 잇는 연결까지 — 여섯 편에 걸쳐 정리해봤어요. 다음엔 이 백엔드가 다루는 <strong>데이터베이스</strong> 이야기로 이어져요.</p>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 화면과 서버를 이은 뒤 어딘가 어긋날 때</h2>
+    <p>연결 단계의 문제는 대부분 "각자는 멀쩡하다"는 모습으로 나타나요. 화면만 보면 화면이, 서버만 보면 서버가 잘 돌아서, AI에게 한쪽만 보여 주면 멀쩡한 쪽을 고치기 쉬워요. 그래서 먼저 <strong>둘 사이에 실제로 오간 요청</strong>을 봐요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-hardcoded-localhost">
+          <td>배포한 사이트에서 데이터가 안 와요. <a href="domain-http-and-packets.html#suspect-read-status">네트워크 탭</a>에서 그 요청을 눌러 보면 요청 주소가 <strong><code>http://localhost:3000/...</code></strong>이에요</td>
+          <td>화면 코드에서 fetch에 넘긴 서버 주소예요. 에디터 전체 검색에 <code>localhost</code>를 넣어 봐요</td>
+          <td>주소를 코드에 직접 적은 곳을 환경변수 하나로 모아서, 개발할 때는 localhost, 배포 때는 배포한 서버 주소가 들어가게 해 달라고 해요. 이 주소는 비밀값이 아니라 공개 접두사를 써도 괜찮아요. 넣은 뒤엔 화면 쪽도 새로 배포해야 해요 (<a href="deploying-and-free-hosting.html#suspect-env-missing">배포 편의 이 줄</a>)</td>
+        </tr>
+        <tr id="suspect-contract-drift">
+          <td>어제까지 되던 화면이, AI에게 <strong>서버 쪽만 고쳐 달라고 한 뒤</strong> 일부 칸에 <code>undefined</code>가 뜨거나 비어요</td>
+          <td>주고받을 데이터를 적어 둔 <strong>명세 문서</strong>예요. 그런 문서가 아예 없다면 그것부터 원인 후보예요</td>
+          <td>응답의 칸 이름과 모양을 화면 코드가 읽는 이름과 맞춰 봐요 (<a href="mock-data-and-rest-api.html#suspect-shape-mismatch">목업 편의 이 줄</a>). 어긋난 곳을 찾으면 코드보다 문서를 먼저 고치고, AI에게 문서 기준으로 양쪽을 맞춰 달라고 해요</td>
+        </tr>
+        <tr id="suspect-no-error-state">
+          <td>서버가 꺼져 있거나 느릴 때 화면이 <strong>아무 안내 없이</strong> 빈 채로 멈춰 있어요. 고장인지 기다리는 중인지 알 수가 없어요</td>
+          <td>fetch를 부르는 코드 주변이에요. 로딩 중 표시와, 실패했을 때 보여 줄 문구를 다루는 줄(<code>catch</code> 같은)이 있는지 봐요</td>
+          <td>서버를 켜 둔 터미널을 잠깐 끄고 화면을 새로고침해 봐요. 에러 안내가 안 나오면 에러 상태가 빠진 거예요. 느릴 때는 네트워크 탭 위쪽의 속도 제한 메뉴를 느린 쪽으로 바꾸고 로딩 표시가 보이는지 봐요</td>
+        </tr>
+        <tr id="suspect-public-prefix-secret">
+          <td><code>.env</code>에 <code>VITE_OPENAI_KEY</code>처럼 <strong>공개 접두사와 비밀 키 이름이 한 줄에</strong> 붙어 있어요</td>
+          <td><code>.env</code> 파일과 배포 플랫폼 환경변수 화면의 이름 목록이에요. Supabase 공개(anon) 키처럼 처음부터 공개용으로 만든 키는 예외지만, 그 대신 <a href="deploying-and-free-hosting.html#suspect-rls-off">RLS</a>가 켜져 있어야 해요</td>
+          <td>배포한 사이트에서 개발자 도구를 열고 <code>Ctrl + Shift + F</code>로 그 키 값의 앞 몇 글자를 검색해 봐요. 나오면 누구나 볼 수 있는 상태라 키를 새로 발급받고 <a href="what-is-proxy-server.html">프록시 서버</a> 뒤로 옮겨요. 안 나와도 아직 안 불러온 파일에 있을 수 있어서, 비밀 키에 공개 접두사가 붙어 있다는 것만으로 옮길 이유가 돼요</td>
+        </tr>
+        <tr id="suspect-one-big-prompt">
+          <td>한 번에 크게 시켰더니 AI는 "완성했어요"라는데 <strong>여러 기능이 동시에 안 되고</strong>, 하나를 고치면 다른 게 망가져요</td>
+          <td>마지막 커밋 이후 <strong>바뀐 파일 목록</strong>이에요. 터미널의 <code>git status</code>나 에디터의 소스 제어 칸에서 봐요</td>
+          <td>바뀐 파일이 수십 개면 원인을 좁히기 어려운 상태예요. 지금 상태를 커밋으로 남겨 두고, 기능 하나를 화면-API-저장까지 끝낼 때마다 돌려 보고 커밋해요 (<a href="git-commit-concept.html#suspect-no-commit-yet">커밋 편의 이 줄</a>)</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>저장 버튼을 눌러도 아무 일이 없다면 표보다 먼저 요청이 나가기는 하는지 봐요. 안 나가면 <a href="mock-data-and-rest-api.html#suspect-mock-not-saved">목업 편의 이 줄</a>, 나갔는데 실패했다면 <a href="domain-http-and-packets.html#suspect-read-status">상태 숫자</a>, CORS 에러라면 <a href="what-is-cors.html#suspect-not-server">CORS 편의 이 줄</a>이에요.</p>
+    <p>배포 전 점검을 AI에게 맡길 때도 <strong>먼저 목록으로 보여 달라고</strong> 해요. "점검해 줘"라고만 하면 AI가 알아서 고치다가 멀쩡한 연결까지 건드릴 수 있어요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— 화면과 서버 코드가 있는 프로젝트 폴더에서</span></p>
+    <pre><code>배포 전에 이 프로젝트의 화면-서버 연결을 점검하려고 해. 아래 네 가지를 찾아서 한 곳마다 파일 이름과 줄 번호를 표로 보여 줘.
+1) 화면 코드에 localhost나 서버 주소를 직접 적은 곳
+2) VITE_나 NEXT_PUBLIC_ 같은 공개 접두사가 붙었는데 이름이나 쓰임새로 봐서 비밀 키로 보이는 환경변수 (값은 보여 주지 마)
+3) fetch 같은 서버 호출 중에 로딩 표시나 에러 처리가 없는 곳
+4) 화면 코드가 읽는 응답의 칸 이름과 서버 코드가 돌려주는 칸 이름이 서로 다른 곳
+아직 코드는 고치지 마.</code></pre>
 
     <a class="post-nav" href="what-is-proxy-server.html">
       <span class="post-nav-label">다음 편 →</span>

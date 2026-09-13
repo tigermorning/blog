@@ -51,9 +51,9 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>매번 설명을 다시 하느라 그때그때 결과가 달라집니다. 이걸 재프롬프트 문제라고 불러요.</li>
-            <li>출처가 불분명한 스킬을 열어보지 않고 켜게 됩니다. 스킬은 결국 AI에게 주는 지시문과 실행 코드라, 켜는 순간 그게 그대로 돌아요.</li>
-            <li>세 가지 역할을 섞어서 엉뚱한 걸 고릅니다. 연결이 필요한 자리에 규칙 파일을 적거나, 상시 규칙을 스킬로 만드는 식이에요.</li>
+            <li>매번 설명을 다시 하느라 그때그때 결과가 달라집니다. 이걸 재프롬프트 문제라고 불러요. <a class="suspect-jump" href="#suspect-reprompt">언제 의심하나 ↓</a></li>
+            <li>출처가 불분명한 스킬을 열어보지 않고 켜게 됩니다. 스킬은 결국 AI에게 주는 지시문과 실행 코드라, 켜는 순간 그게 그대로 돌아요. <a class="suspect-jump" href="#suspect-unknown-skill">언제 의심하나 ↓</a></li>
+            <li>세 가지 역할을 섞어서 엉뚱한 걸 고릅니다. 연결이 필요한 자리에 규칙 파일을 적거나, 상시 규칙을 스킬로 만드는 식이에요. <a class="suspect-jump" href="#suspect-needs-connection">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -114,6 +114,46 @@ description: 사용자용 안내 문구를 우리 서비스 말투(정중하고 
     <p class="post-date">한 걸음 더: 규칙 파일과 같은 발상으로 "에이전트 역할" 자체를 마크다운 파일 하나(.claude/agents/, .opencode/agents/)로 정의하는 법은 <a href="multi-agent-ecosystem-tools.html">실험이 남긴 네 문제와 도구들</a>에 있어요.</p>
     <p class="post-date">한 걸음 더: 스킬이 "경험을 다음 작업에 재사용하는 장치"라는 관점을 실제 연구(ExpeL·Voyager·WikiSkill)와 함께 훨씬 깊게 다룬 글이 <a href="harness-experience-and-reflection.html">성공은 자산으로, 실패는 설명으로 — 경험·스킬 축적과 반성</a>이에요.</p>
     <p class="post-date">한 걸음 더: 여기서 말한 스킬과, MCP 서버가 내놓는 "Prompt(대화 템플릿)"는 이름이 비슷해도 서로 다른 것이에요. 둘의 경계를 <a href="mcp-skill-protocol-roles.html">호스트·클라이언트·서버가 나누는 대화 — MCP 연결 구조와 메시지</a>에서 갈라 뒀어요 — 스킬은 MCP 없이도 쓸 수 있어요.</p>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 적어 둔 걸 AI가 모르는 것처럼 굴 때</h2>
+    <p>스킬과 규칙 파일의 문제는 에러로 오지 않아요. <strong>"분명 적어 뒀는데 AI가 모른 척한다"</strong>로 먼저 느껴지죠. 대부분 파일이 없거나, 있는데 안 읽혔거나, 꺼낼 순간을 AI가 못 알아본 거예요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-reprompt">
+          <td>같은 부탁인데 <strong>대화를 새로 열 때마다 결과 형식이 달라져요</strong>. 지난번엔 표였던 보고서가 이번엔 문단으로 나오고, 말투도 조금씩 바뀌어요</td>
+          <td>AI의 실력이 아니라 <strong>그 설명이 어디에 적혀 있는지</strong>예요. 지난 대화창에서만 설명했다면 새 대화는 그 내용을 전혀 몰라요</td>
+          <td>결과가 마음에 들었던 대화에서 내가 준 설명을 찾아 SKILL.md나 규칙 파일로 옮겨 적어요. 그다음 새 대화 두 개에서 같은 부탁을 해 보고, 형식이 같게 나오는지 봐요</td>
+        </tr>
+        <tr id="suspect-rules-not-read">
+          <td>규칙 파일에 "이 폴더는 건드리지 마"를 적어 뒀는데, Claude Code가 <strong>처음부터 그 규칙을 모르는 것처럼</strong> 굴어요</td>
+          <td>규칙 내용보다 <strong>파일 이름과 위치</strong>예요. Claude Code는 <code>AGENTS.md</code>가 아니라 <code>CLAUDE.md</code>만 자동으로 읽어요. 그 파일이 Claude Code를 실행한 프로젝트 폴더 맨 위에 있는지도 봐요</td>
+          <td>새 대화 첫 질문으로 "이 프로젝트 규칙 파일에 적힌 '하지 말 것'을 그대로 말해 봐"라고 물어요. 못 대거나 파일 내용과 다르면 안 읽힌 거예요. AGENTS.md에만 적었다면 같은 내용을 CLAUDE.md에도 둬요</td>
+        </tr>
+        <tr id="suspect-skill-not-used">
+          <td>스킬을 만들어 뒀는데 딱 그 일을 부탁해도 <strong>AI가 스킬 없이 제멋대로 해요</strong>. "한 문장 40자 이내" 같은 스킬 속 규칙이 결과에 안 보여요</td>
+          <td>본문 지시가 아니라 <strong>SKILL.md 맨 위 <code>description</code> 한 줄</strong>이에요. AI는 평소 이 줄만 보고 꺼낼지를 정해서, 본문은 아직 읽지도 않았을 수 있어요</td>
+          <td>"<code>tone-polish</code> 스킬로 다듬어 줘"처럼 이름을 대고 부탁해 봐요. 이름을 대면 되고 그냥 부탁하면 안 된다면, <code>description</code>에 내가 실제로 쓰는 말("안내문", "공지 다듬기" 등)을 넣어요. 무슨 일을 하든 늘 지켜야 하는 규칙이라면 스킬이 아니라 규칙 파일로 옮겨요</td>
+        </tr>
+        <tr id="suspect-needs-connection">
+          <td>규칙 파일에 "매출은 우리 DB에서 가져와서 보고해"라고 적었는데, AI가 <strong>접근할 수 없다고 하거나 그럴듯한 숫자를 내놓아요</strong></td>
+          <td>규칙 파일이 아니라 <strong>AI에게 붙어 있는 연결 목록</strong>이에요. 규칙 파일은 행동 방식을 알려 줄 뿐, DB에 닿는 길을 만들어 주지 못해요. Claude Code라면 <code>/mcp</code>로 붙어 있는 MCP 서버를 볼 수 있어요</td>
+          <td>목록에 그 DB 연결이 없으면, 그 숫자는 DB에서 온 게 아니에요. 한 건만 골라 원래 자리에서 직접 찾아 맞춰 봐요. 연결은 <a href="mcp-usb-c-for-ai.html">MCP</a>로 붙이고, 규칙 파일에는 "숫자는 그 연결로만 가져와"처럼 행동만 적어요</td>
+        </tr>
+        <tr id="suspect-unknown-skill">
+          <td>받아 온 스킬을 켠 뒤, AI가 <strong>부탁한 적 없는 명령을 실행하거나 파일을 고치겠다고</strong> 허락을 구해요. 명령 안에 모르는 인터넷 주소가 들어 있기도 해요</td>
+          <td>그 스킬 폴더 전체예요. <code>SKILL.md</code> 본문의 지시와, 같이 들어 있는 스크립트 파일이요. Claude Code라면 프로젝트나 홈 폴더의 <code>.claude/skills</code> 아래에 있어요</td>
+          <td>허락은 일단 거절하고, 그 명령이 본문이나 스크립트 어디에 적혀 있는지 찾아요. 내 부탁과 상관없는 일을 시키는 줄이 있으면 스킬 폴더를 치워요. 권한을 미리 다 풀어 뒀다면 이 허락 창조차 안 뜨니, <a href="ai-permissions-local-models-and-token-cost.html">권한 설정</a>도 같이 봐요</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>다섯째 줄은 스킬이 이미 돌기 시작한 뒤에야 보여요. 그래서 남의 스킬은 증상을 기다리지 말고 <strong>켜기 전에</strong> 안을 읽어요. 코드를 직접 읽기 어렵다면 에이전트에게 먼저 보여 달라고 해요. 다만 AI가 읽어 준 요약은 첫 거름망이라, 일부러 알아보기 어렵게 쓴 코드는 놓칠 수 있어요. 출처가 불분명하면 켜지 않는 게 먼저예요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— 받아 온 스킬 폴더를 둔 곳에서, 켜기 전에</span></p>
+    <pre><code>받아 온 스킬 폴더 [폴더 이름] 안의 SKILL.md와 같이 들어 있는 파일을 전부 읽고, 아래를 표로 보여 줘. 파일은 실행하지 마.
+1. description 한 줄: 어떤 부탁을 할 때 이 스킬이 꺼내지는지
+2. 본문 지시 중 명령 실행, 파일 삭제·이동, 인터넷 주소로 무언가 보내기, API 키나 환경 변수 읽기에 해당하는 줄 (파일 이름과 줄 번호)
+3. 스크립트 파일마다 하는 일 한 줄 요약, 그리고 코드에 들어 있는 인터넷 주소 전부
+아직 스킬을 켜거나 아무것도 고치지 마.</code></pre>
 
     <a class="post-nav" href="ai-permissions-local-models-and-token-cost.html">
       <span class="post-nav-label">다음 편 →</span>

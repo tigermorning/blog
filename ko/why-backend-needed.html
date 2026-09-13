@@ -51,8 +51,8 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>내 노트북은 상담원이 될 수 없어요. 밤에는 잠을 자고 카페에 가면 연결도 끊겨요.</li>
-            <li>회원가입·로그인·결제처럼 다른 사람과 정보를 주고받거나 오래 보관해야 하는 기능을 서버 없이 만들려 하면, 애초에 안 되는 걸 되게 하려고 시간을 낭비해요.</li>
+            <li>내 노트북은 상담원이 될 수 없어요. 밤에는 잠을 자고 카페에 가면 연결도 끊겨요. <a class="suspect-jump" href="#suspect-localhost-link">언제 의심하나 ↓</a></li>
+            <li>회원가입·로그인·결제처럼 다른 사람과 정보를 주고받거나 오래 보관해야 하는 기능을 서버 없이 만들려 하면, 애초에 안 되는 걸 되게 하려고 시간을 낭비해요. <a class="suspect-jump" href="#suspect-local-only-save">언제 의심하나 ↓</a></li>
             <li>서버가 한 곳에만 있으면 먼 나라에서 접속하는 사람은 지구 반 바퀴를 돌아 답을 받아요.</li>
           </ul>
         </dd>
@@ -100,6 +100,34 @@
     <p>이 구조가 왜 이렇게 생겼는지는 역사를 보면 이해가 쉬워요. 1969년, 미국 국방부 프로젝트로 <strong>ARPANET</strong>이라는 네트워크가 처음 컴퓨터 몇 대를 연결했어요. 원래 목적은 한 곳이 고장 나도 다른 경로로 정보가 전달되게 하는 것이었죠. 1970~80년대에 이 여러 네트워크들이 서로 통신할 수 있는 공통 규칙, <strong>TCP/IP</strong>가 자리를 잡으면서 "네트워크들의 네트워크", 즉 진짜 인터넷이 됐어요.</p>
     <p>1989~91년에는 스위스 CERN의 <strong>팀 버너스리(Tim Berners-Lee)</strong>가 문서끼리 링크로 연결되는 <strong>월드와이드웹(Web)</strong>과, 그 문서를 주고받는 규칙인 <strong>HTTP</strong>를 만들었어요. 지금 우리가 브라우저 주소창에 뭔가를 치는 순간마다 쓰는 바로 그 기술이에요. 2000년대 이후로는 AWS·Google Cloud 같은 <strong>클라우드</strong> 회사들이 등장해서, 예전엔 직접 사야 했던 서버를 이제는 빌려 쓸 수 있게 됐어요. 제가 지금 배우는 "서버를 몇 분 만에 띄운다"는 감각은, 이 클라우드 시대가 있어서 가능한 거였어요.</p>
     <p>정리하면, 화면이 안 열렸던 이유는 간단했어요. 제 화면은 손님(클라이언트)만 있고 상담원(서버)이 없는 상태였던 거예요. 다음 글에서는 이 서버에 어떻게 <strong>주소(도메인)</strong>가 붙고, 그 주소를 타고 요청이 실제로 어떤 길을 지나가는지 — 네트워크의 기본기를 하나씩 따라가볼게요.</p>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 내 컴퓨터에서는 되는데 남이 쓰면 안 될 때</h2>
+    <p>서버가 없어서 생기는 문제는 내 컴퓨터에서는 거의 안 보여요. 나는 늘 같은 컴퓨터, 같은 브라우저로 열어 보니까요. 그래서 대개 <strong>남이 열어 본 순간</strong>이나 다른 기기로 열어 본 순간에 드러나요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-localhost-link">
+          <td>내 화면에서는 잘 열리는데, 링크를 받은 친구는 <strong>"안 열린다"</strong>고 해요</td>
+          <td>내가 보낸 <strong>링크의 앞부분</strong>이에요. 복사해 온 주소창을 다시 봐요</td>
+          <td><code>localhost</code>, <code>127.0.0.1</code>, <code>file:///</code>로 시작하면 전부 내 컴퓨터 안을 가리키는 주소라, 친구 쪽에서는 친구 자기 컴퓨터를 찾아요. 남에게 보내려면 배포해서 받은 주소를 보내야 해요 (<a href="deploying-and-free-hosting.html">배포와 무료 호스팅</a>)</td>
+        </tr>
+        <tr id="suspect-refresh-lost">
+          <td>저장 버튼을 눌렀는데 <strong>새로고침하면 입력한 게 다 사라져요</strong></td>
+          <td>저장 버튼을 누를 때 서버로 요청이 나가는지예요. 개발자 도구(<code>F12</code>)의 <a href="domain-http-and-packets.html">네트워크(Network) 탭</a>에서 봐요</td>
+          <td>요청이 한 줄도 안 나가면 화면 속에만 넣어 둔 거예요. 확인 순서는 <a href="mock-data-and-rest-api.html#suspect-mock-not-saved">목업 편의 이 줄</a>에 있어요</td>
+        </tr>
+        <tr id="suspect-local-only-save">
+          <td>회원가입이나 글쓰기가 새로고침해도 잘 남아 있어요. 그런데 <strong>다른 브라우저나 핸드폰으로 열면 계정도 글도 없어요</strong></td>
+          <td>저장하는 코드에 <code>localStorage</code>(브라우저 안의 작은 저장 칸)가 쓰였는지 봐요. 개발자 도구의 애플리케이션(Application) 탭에서 로컬 스토리지(Local storage)를 열면 저장된 값이 보여요</td>
+          <td>같은 주소를 시크릿 창으로 열어 봐요. 거기서 안 보이면 <strong>지금 이 브라우저 안에만</strong> 저장된 거예요. 남과 주고받거나 다른 기기에서도 남아야 하는 기능이라 서버가 있어야 해요</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>셋째 줄이 제일 늦게 알아채요. 내 브라우저에서는 새로고침해도 잘 남아 있어서, 서버 없이도 다 된 것처럼 보이거든요. 그래서 기능을 만들고 나면 <strong>다른 브라우저로 한 번</strong> 열어 봐요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— 화면 코드가 있는 프로젝트 폴더에서</span></p>
+    <pre><code>이 프로젝트에서 사용자가 입력한 걸 저장하거나 불러오는 코드를 전부 찾아서 표로 보여 줘.
+한 곳마다 파일 이름, 줄 번호, 어떤 기능인지(회원가입, 로그인, 글쓰기 등), 어디에 저장하는지(화면 속 변수, localStorage, 서버로 요청) 적어 줘.
+그중 다른 사람 화면에도 보여야 하거나 다른 기기에서도 남아 있어야 하는데 서버로 보내지 않는 곳은 따로 표시해 줘. 아직 코드는 고치지 마.</code></pre>
 
     <a class="post-nav" href="domain-http-and-packets.html">
       <span class="post-nav-label">다음 편 →</span>

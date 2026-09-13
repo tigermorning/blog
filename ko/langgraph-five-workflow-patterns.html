@@ -58,8 +58,8 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>코드 게이트가 글자만 봅니다. 틀린 설명도 용어가 들어 있으면 통과하고, 뜻이 맞아도 State를 state로 적으면 떨어져요.</li>
-            <li>형식을 묶었으니 분류도 맞을 거라 믿게 됩니다. 실습에서 6건 중 4건만 맞았는데(67%) 에러는 한 번도 안 났어요.</li>
+            <li>코드 게이트가 글자만 봅니다. 틀린 설명도 용어가 들어 있으면 통과하고, 뜻이 맞아도 State를 state로 적으면 떨어져요. <a class="suspect-jump" href="#suspect-gate-letters">언제 의심하나 ↓</a></li>
+            <li>형식을 묶었으니 분류도 맞을 거라 믿게 됩니다. 실습에서 6건 중 4건만 맞았는데(67%) 에러는 한 번도 안 났어요. <a class="suspect-jump" href="#suspect-route-wrong">언제 의심하나 ↓</a></li>
             <li>이 범위로 끝나는 일을 굳이 에이전트로 만들면, 얻는 것 없이 불확실성만 사게 됩니다.</li>
           </ul>
         </dd>
@@ -514,6 +514,54 @@ LANGSMITH_PROJECT=langgraph-study</code></pre>
       <p>같은 자리를 여러 검사가 <strong>같은 제안으로</strong> 잡는 일이 흔해요(행 끝 <code>나</code>를 조사 검사와 띄어쓰기 검사가 둘 다 <code>백 배나</code>로 제안해요). 그래서 이 리듀서는 이어 붙이지 않고 <strong>이미 나온 제안이면 버려요.</strong> <code>seen_fixes</code>가 지금까지 나온 제안을 담아 두는 자루고, 거기 있으면 <code>continue</code>로 건너뛰니 <strong>먼저 온 것만 남아요.</strong> 남는 쪽이 규칙 이름과 근거를 정확히 말해 주는 검사가 되도록, 목록 안의 순서까지 일부러 맞춰 뒀어요 — 도로명 검사를 합성어 검사보다 위에 적어 둔 게 그 때문이에요.</p>
       <p><strong>이 코드를 이 편의 병렬 분기로 그대로 옮기면 깨져요.</strong> 지금은 목록을 위에서 아래로 도니까 "먼저"가 제 뜻대로예요. 갈래를 따로 그어 동시에 돌리면 <strong>어느 검사 결과가 먼저 도착할지가 보장되지 않아요.</strong> 그러면 같은 자막을 두 번 돌렸을 때 남는 제안의 <em>이유 문구</em>가 달라져요. 개수도 내용도 같은데 설명만 바뀌니 알아채기도 어려워요. 리듀서가 <code>operator.add</code>처럼 순서를 안 따지는 것이면 상관없지만, <strong>먼저 온 것을 이기게 하는 리듀서는 병렬화와 같이 못 써요.</strong></p>
     </section>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 나누고 합친 그래프의 결과가 이상할 때</h2>
+    <p>이 편의 실수는 대부분 <strong>에러 없이 결과만 틀려요</strong>. 게이트가 틀린 노트를 통과시키고, 분류가 엉뚱한 갈래를 고르고, 순서대로 이은 노드가 앞 값을 덮어써요. 그래서 끝까지 돌았다고 넘어가지 말고 결과 칸을 직접 열어 봐야 해요. 분류 값이 목적지 목록에 없어서 <code>KeyError</code>로 멈추는 경우는 <a href="langgraph-branch-drills.html#suspect-missing-target">3편의 첫 줄</a>과 같아요.</p>
+    <p>증상이 아직 없어도, <strong>AI에게 이런 부탁을 한 직후</strong>라면 한 번 확인하고 넘어가요.</p>
+    <ul>
+      <li>"이 검사들을 동시에 돌려 줘" — 여러 노드가 함께 쓰는 칸마다 리듀서가 붙었는지</li>
+      <li>"에러가 나니까 순서대로 돌게 바꿔 줘" — 리스트 칸이 리듀서 없이 남아, 뒤 노드가 앞 결과를 덮어쓰지 않는지</li>
+      <li>"LangSmith로 기록 남기게 해 줘" — 개인정보나 밖으로 나가면 안 되는 자료를 넣기 전에, <code>.env</code>의 <code>LANGSMITH_TRACING=true</code>가 켜진 채인지</li>
+    </ul>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-gate-letters">
+          <td>게이트 판정과 내가 읽은 판정이 <strong>거꾸로</strong>예요. 통과한 노트를 읽어 보니 설명이 틀렸거나, 뜻이 맞는 노트가 계속 보정 노드로 가요</td>
+          <td>게이트 함수의 검사 줄이에요. <code>t not in state["note"]</code>처럼 <strong>글자가 들어 있는지만</strong> 보는 줄이면, 뜻은 처음부터 안 봐요</td>
+          <td>판정이 이상했던 노트를 그 검사 줄에 직접 넣어 돌려 봐요. <code>State</code>와 <code>state</code>처럼 표기만 달랐다면 비교 전에 둘 다 <code>.lower()</code>로 맞추고, 틀린 설명이 통과한 거라면 코드 게이트로는 못 잡으니 LLM 게이트를 얹어요 (<a href="#gate-limits">게이트가 못 보는 것</a>)</td>
+        </tr>
+        <tr id="suspect-route-wrong">
+          <td>에러는 한 번도 안 나는데, <strong>어떤 종류의 입력만</strong> 엉뚱한 처리 노드의 답을 받아요. 예약 문의에 주문 접수 답이 나가는 식이에요</td>
+          <td>분류 노드가 State에 적은 분류 값과 <code>reason</code> 칸이에요. 처리 노드의 프롬프트는 대개 범인이 아니에요. 잘못 온 입력을 성실히 처리했을 뿐이거든요</td>
+          <td>정답을 아는 입력 몇 건을 돌려 분류 값을 정답과 맞춰 보고, 틀린 건의 <code>reason</code>을 읽어요. 한 입력이 두 부류의 성질을 같이 갖고 있었다면 프롬프트를 다듬기보다 "코드가 있으면 코드예제 우선" 같은 우선순위를 정해요 (<a href="#literal-limits">Literal이 못 막는 것</a>)</td>
+        </tr>
+        <tr id="suspect-invalid-update">
+          <td>검사 노드를 동시에 돌게 바꾸자마자 <code>InvalidUpdateError</code>가 나요. 에러 문장 앞머리 <code>At key '...'</code>에 칸 이름이 찍히고 <code>Can receive only one value per step</code>이 이어져요</td>
+          <td>에러에 찍힌 <strong>칸 이름</strong>의 State 선언 줄과, 그 칸을 <code>return</code>하는 노드들이에요. 갈래를 나눈 것 자체는 잘못이 아니에요</td>
+          <td>그 칸에 값이 여럿 들어와야 한다면 <code>Annotated[list, operator.add]</code>처럼 리듀서를 달고, 아니면 노드마다 칸을 나눠요. AI가 에러를 없앤다며 동시 실행을 포기하자고 하면, 에러는 사라져도 시간이 늘어요 (<a href="#parallel-error-cause">에러의 진짜 원인</a>)</td>
+        </tr>
+        <tr id="suspect-silent-overwrite">
+          <td>에러는 없는데, 여러 노드가 쌓아야 할 리스트 칸에 <strong>마지막 노드의 값 하나만</strong> 남아 있어요. "총 3건"이어야 할 자리에 1건이에요</td>
+          <td>그 칸의 State 선언이에요. <code>checks: list</code>처럼 리듀서 없이 적혀 있고, 노드들이 <code>add_edge</code>로 <strong>순서대로</strong> 이어져 있으면 뒤 노드가 앞 값을 덮어써요</td>
+          <td>결과에서 그 칸의 개수를 값을 쓰는 노드 수와 맞춰 봐요. 모자라면 병렬일 때와 같은 리듀서를 달아요. <code>InvalidUpdateError</code>를 피하려고 갈래를 한 줄로 이어 붙인 경우가 딱 이 모양이에요 (<a href="#parallel-error-cause">표의 마지막 줄</a>)</td>
+        </tr>
+        <tr id="suspect-merge-order">
+          <td>합친 목록에서 <code>checks[0]</code>을 맛 점수로 꺼내 썼는데 <strong>다른 검사의 점수</strong>가 나와요. 코드에 적은 순서와 합쳐진 순서가 달라요</td>
+          <td>합친 칸을 읽는 노드에서 <code>[0]</code>처럼 <strong>자리 번호로</strong> 꺼내는 줄이에요. 먼저 들어온 값만 남기도록 직접 만든 리듀서도 같은 가정에 기대고 있어요</td>
+          <td>병렬 결과의 순서는 보장되지 않아요. 노드를 하나 더하거나 이름을 바꾸면 순서가 또 바뀔 수 있어요. 항목마다 <code>("맛", 4)</code>처럼 이름표를 붙이고 이름으로 찾아 꺼내요 (<a href="#parallel">③ 병렬화</a>)</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>두 번째 줄이 제일 놓치기 쉬워요. 분류 값이 세 값 중 하나로만 나오니 그래프는 늘 멀쩡히 끝나고, 틀린 갈래로 간 입력도 그 갈래의 답을 그럴듯하게 받아요. 라우팅을 붙인 직후에 정답을 아는 입력 몇 건으로 한 번 재 보고 넘어가요.</p>
+    <p>이 편의 문제 대부분은 State 선언 한 줄과 그 칸을 쓰는 노드들이 서로 멀리 떨어져 있어서 생겨요. 에이전트에게 맡길 때는 고치기 전에 <strong>칸마다 누가 쓰는지 한 표로</strong> 보여 달라고 해요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— LangGraph 코드가 있는 프로젝트 폴더에서</span></p>
+    <pre><code>이 프로젝트에서 StateGraph를 쓰는 곳을 전부 찾아서, 그래프마다 아래를 표로 보여 줘. 아직 코드는 고치지 마.
+1. State 클래스의 칸마다: 리듀서(Annotated[..., ...])가 붙었는지
+2. 칸마다 그 칸을 return하는 노드 이름 전부, 그리고 그 노드들이 한 노드(또는 START)에서 여러 갈래로 나뉘어 동시에 도는지, 순서대로 도는지
+3. 리듀서 없이 노드 둘 이상이 쓰는 칸의 파일 이름과 줄 번호
+4. 합친 리스트 칸을 [0]처럼 자리 번호로 꺼내 쓰는 줄의 파일 이름과 줄 번호
+5. 분류 결과로 다음 노드를 고르는 곳마다: 분류 값 후보(Literal)와 목적지 딕셔너리 열쇠가 서로 맞는지, reason 같은 근거 칸이 있는지</code></pre>
 
     <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
     <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 복습할 때 이것부터 보면 돼요. 다른 편의 같은 목록은 <a href="langgraph-what-and-why.html#key-recap">1편</a> · <a href="langgraph-state-node-edge.html#key-recap">2편</a> · <a href="langgraph-branch-drills.html#key-recap">3편</a> · <a href="langgraph-branches-and-tool-loop.html#key-recap">4편</a> · <a href="langgraph-patterns-orchestrator-evaluator.html#key-recap">7편</a>에 있어요.</p>

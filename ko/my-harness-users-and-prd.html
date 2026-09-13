@@ -53,8 +53,8 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>내가 안 정한 결정은 사라지는 게 아니라 AI가 대신 채워요. 터미널 도구를 생각했는데 웹 서버가 나오고, 확인받고 저장하려 했는데 곧바로 저장하는 코드가 들어가요.</li>
-            <li>"하면 안 되는 일"을 안 적어 두면, 담당자를 지어내 요약을 매끈하게 만들거나 검사 기대값을 바꿔 통과시키는 걸 걸러낼 기준이 없어요. 둘 다 겉보기엔 성공이에요.</li>
+            <li>내가 안 정한 결정은 사라지는 게 아니라 AI가 대신 채워요. 터미널 도구를 생각했는데 웹 서버가 나오고, 확인받고 저장하려 했는데 곧바로 저장하는 코드가 들어가요. <a class="suspect-jump" href="#suspect-filled-decision">언제 의심하나 ↓</a></li>
+            <li>"하면 안 되는 일"을 안 적어 두면, 담당자를 지어내 요약을 매끈하게 만들거나 검사 기대값을 바꿔 통과시키는 걸 걸러낼 기준이 없어요. 둘 다 겉보기엔 성공이에요. <a class="suspect-jump" href="#suspect-test-edited">언제 의심하나 ↓</a></li>
             <li>도구가 실패했는데 빈 값을 성공처럼 돌려주면, 모델은 "소금을 받았다"고 믿고 그다음을 이어가요. 틀린 답이 나와도 어디서 틀어졌는지 추적이 안 돼요.</li>
           </ul>
         </dd>
@@ -326,6 +326,37 @@ claude</code></pre>
       <li><strong>비교할 것</strong> — AI가 먼저 제안한 기능 목록과, 제가 직접 쓴 시나리오를 나란히 놓아요. AI 목록에만 있고 제 시나리오엔 없는 기능이 있다면 그게 <strong>"빠진 결정을 대신 채운 자리"</strong>예요.</li>
     </ol>
     <p>정답은 하나가 아니에요. 다음 편에서는 이 사용자가 요청을 <strong>어디에 입력할지</strong>(터미널인지 웹 화면인지), 그리고 <strong>어떤 모델에 연결할지</strong>를 정합니다.</p>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 설계 대화를 하는데 AI가 앞서 나갈 때</h2>
+    <p>빠진 결정을 AI가 채운 흔적은 대화창보다 <strong>폴더와 문서</strong>에 먼저 남아요. 대화에서는 "좋은 선택입니다"처럼 자연스럽게 지나가서, 내가 고른 줄 알고 넘어가기 쉽거든요.</p>
+    <p>증상이 아직 없어도, <strong>AI에게 이런 말을 한 직후</strong>라면 문서를 한 번 열어 봐요.</p>
+    <ul>
+      <li>"터미널이랑 웹 중에 뭐가 나아? 추천해 줘" — 추천을 들은 것뿐인데 <code>PRD.md</code>에 <code>CHOSEN</code>으로 적히지 않았는지</li>
+      <li>"좋아, 그걸로 기록해 줘" — 이유 줄에 내 사정("혼자 쓰고 실습 폴더 안에서만")이 들어갔는지, AI의 설명 문장만 들어갔는지</li>
+    </ul>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-filled-decision">
+          <td>"코드는 아직 만들지 마"로 시작했는데, 대화 몇 번 뒤 <strong>폴더에 코드 파일이 생겨 있거나</strong> <code>PRD.md</code>에 내가 답한 적 없는 항목이 <code>CHOSEN</code>으로 바뀌어 있어요</td>
+          <td>폴더의 파일 목록과 <code>PRD.md</code>의 <strong>상태·결정·이유 줄</strong>이에요. git을 쓰고 있다면 터미널의 <code>git status</code>에 새로 생긴 파일이 바로 보여요</td>
+          <td><code>CHOSEN</code>마다 "내가 대화에서 뭐라고 답해서 이렇게 됐지?"를 대 봐요. 못 대는 항목은 AI가 채운 거라, 본문의 "내가 답하지 않은 선택은 OPEN으로 남겨 줘"로 되돌려요. 이유 줄이 비어 있어도 같은 경우예요</td>
+        </tr>
+        <tr id="suspect-test-edited">
+          <td>AI가 "테스트 통과했어요"로 끝냈는데, 바뀐 파일 목록에 <strong>테스트 파일도 들어 있어요</strong></td>
+          <td>테스트 파일에서 <strong>바뀐 줄</strong>이에요. <code>git diff</code>로 그 파일만 열어 <code>assert</code> 줄의 기대값이 달라졌는지 봐요. 고친 코드 쪽만 읽으면 이 줄을 놓쳐요</td>
+          <td>기대값이 바뀌었다면 실패를 숨긴 거예요. 원래 기대값으로 돌려 다시 돌려 봐요. 같은 지름길을 막으려면 D01의 "원하지 않는 행동" 칸에 "검사 기대값을 바꾸지 않는다"를 적고 부탁할 때 같이 붙여요. 기대값을 처음 정할 때 생기는 문제는 <a href="my-harness-acceptance.html#suspect-expected-copied">5편의 이 줄</a>이에요</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>도구 실패를 빈 값으로 삼키는 하네스는 코드를 짠 뒤에야 증상이 보여요. 그 확인 자리는 <a href="my-harness-interfaces.html#suspect-empty-as-success">4편의 이 줄</a>에 있어요. 개발 도우미에게 부탁해서 잘 나온 결과를 내 하네스가 동작한 것으로 착각하는 경우는 <a href="my-harness-vertical-slice.html#suspect-dev-assistant-record">6편의 이 줄</a>이에요.</p>
+    <p>대화가 길어졌다면 결정 상태를 에이전트에게 한 번 모아 보여 달라고 해요. 어느 칸을 내가 정했고 어느 칸이 아직 비었는지 눈으로 봐야 다음 질문을 고를 수 있어요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— 설계 문서가 있는 폴더에서</span></p>
+    <pre><code>PRD.md와 DECISIONS.md를 읽고 결정 항목(D01~)을 표로 보여 줘. 아직 아무것도 고치지 마.
+1. ID, 상태(OPEN / CHOSEN / DEFERRED), 적힌 결정
+2. 이유 줄에 사용자 사정(누가·어디서·왜)이 들어 있는지, 도구 설명만 있는지, 비어 있는지
+3. DEFERRED인데 미룬 이유가 없는 항목
+4. 이 폴더에 설계 문서가 아닌 파일(코드, 설정)이 있다면 그 파일 이름</code></pre>
 
     <h2>함께 읽으면 좋은 글</h2>
     <ul>

@@ -51,10 +51,10 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>한쪽의 입력 모양을 다른 쪽에 억지로 옮기려다, 인터페이스 차이를 버그로 착각해서 존재하지 않는 API를 찾아 헤매게 돼요.</li>
-            <li>이력을 입력에 넣었다는 사실과 모델이 그걸 원하는 방식으로 참조했다는 건 다른 얘기예요. 참조가 안 보이면 안 보인다고 그대로 적어야 해요.</li>
-            <li>호출이 실패한 것(일시적 서버 오류 같은)과 지시가 실패한 것은 다른 문제예요.</li>
-            <li>내 컴퓨터에서 돌린다는 사실이 품질을 보장하지 않아요. 작은 모델은 이력을 넣은 호출에서 응답이 아주 짧아지기도 해요.</li>
+            <li>한쪽의 입력 모양을 다른 쪽에 억지로 옮기려다, 인터페이스 차이를 버그로 착각해서 존재하지 않는 API를 찾아 헤매게 돼요. <a class="suspect-jump" href="#suspect-wrong-shape">언제 의심하나 ↓</a></li>
+            <li>이력을 입력에 넣었다는 사실과 모델이 그걸 원하는 방식으로 참조했다는 건 다른 얘기예요. 참조가 안 보이면 안 보인다고 그대로 적어야 해요. <a class="suspect-jump" href="#suspect-history-ignored">언제 의심하나 ↓</a></li>
+            <li>호출이 실패한 것(일시적 서버 오류 같은)과 지시가 실패한 것은 다른 문제예요. <a class="suspect-jump" href="#suspect-call-failed">언제 의심하나 ↓</a></li>
+            <li>내 컴퓨터에서 돌린다는 사실이 품질을 보장하지 않아요. 작은 모델은 이력을 넣은 호출에서 응답이 아주 짧아지기도 해요. <a class="suspect-jump" href="#suspect-short-local">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -168,6 +168,41 @@ save_run("ollama-with-history.txt", [
 
     <h2><span class="hl">정리</span></h2>
     <p>환경을 고르는 기준은 세 코드를 같은 모양으로 만드는 일이 아니었다. 구독 로그인으로 에이전트 실행을 관찰할지, API 키와 범용 메시지 추상화를 쓸지, 로컬 모델의 조건과 한계를 시험할지 결정하는 일이었다. 어느 경로든 비교할 질문은 같다 — user 요청을 고정하고 system만 바꿨을 때 문체·구조·추가 정보 요청이 무엇이 달라지는지, 앞선 대화 이력을 넣었을 때 새 응답이 그 이력을 실제로 반영하는지를 원문으로 확인하는 것.</p>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 세 경로를 직접 돌리다 막히거나 결과가 이상할 때</h2>
+    <p>세 경로를 AI에게 짜 달라고 하면, 막히는 자리는 대개 코드 줄보다 <strong>경로 사이의 차이</strong>예요. 한 경로에서 되던 모양을 다른 경로에 옮기거나, 호출 실패를 지시 실패로 읽거나, 이력을 넣었으니 참조했겠지 하고 넘어갈 때 생겨요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-wrong-shape">
+          <td>"LangChain 코드처럼 이력도 넣어 줘"라고 했더니 Claude Agent SDK 코드에서 <code>unexpected keyword argument</code>가 들어간 <code>TypeError</code>가 나고, AI가 <strong>옵션 이름을 계속 바꿔 가며</strong> 다시 시도해요</td>
+          <td>에러가 가리키는 줄의 <strong>함수와 거기 넘긴 모양</strong>이에요. <code>query()</code>나 <code>ClaudeAgentOptions(...)</code>에 role 딕셔너리 목록처럼 다른 경로의 입력 모양을 넣고 있는지 봐요</td>
+          <td>AI의 기억 말고 설치된 패키지에 물어요. 파이썬에서 <code>help(ClaudeAgentOptions)</code>를 실행하면 받을 수 있는 이름이 나와요. 거기 없는 이름이면 버그가 아니라 그 경로가 원래 그렇게 받지 않는 거라, 이 SDK에서는 앞선 대화를 설명한 문장을 새 user 메시지에 담는 쪽으로 가요</td>
+        </tr>
+        <tr id="suspect-history-ignored">
+          <td>이력을 넣고 돌렸는데 마지막 답이 <strong>앞에서 제안한 "주문번호 또는 운송장 번호"를 이어받지 않고</strong> 처음 받은 질문처럼 답해요</td>
+          <td>모델에 <strong>실제로 넘긴 메시지 목록</strong>이에요. 호출 직전에 목록을 출력해 보고, assistant 답(<code>AIMessage</code>나 <code>"assistant"</code> 줄)이 두 user 질문 사이에 순서대로 들어갔는지 봐요</td>
+          <td>목록이 맞다면 이력을 뺀 판을 같이 돌려 두 원문을 나란히 비교해요. 차이가 안 보이면 "이력을 넣었으나 응답에서 분명한 참조를 확인하지 못했다"라고 그대로 적어요. 넣었다는 사실이 참조했다는 증거는 아니에요</td>
+        </tr>
+        <tr id="suspect-call-failed">
+          <td>system 문구를 바꾸고 돌렸더니 <strong>출력 파일이 아예 안 생기고</strong> 터미널에 긴 트레이스백(에러가 난 경로를 줄줄이 적은 기록)이 남았어요</td>
+          <td>트레이스백의 <strong>맨 마지막 줄</strong>이에요. <code>503 UNAVAILABLE</code>처럼 공급자 쪽 오류인지, API 키 인증 오류인지 봐요. 방금 바꾼 system 문구는 이런 오류를 만들지 않아요</td>
+          <td>호출이 실패했다면 모델은 답을 쓰지도 않은 거예요. 지시를 그대로 둔 채 잠시 뒤 다시 돌려요. 인증 오류라면 <code>GEMINI_API_KEY</code>를 설정한 터미널과 코드를 실행한 터미널이 같은지 봐요. 새로 연 터미널에는 설정이 없을 수 있어요. 오류 없이 답만 이상할 때 가르는 법은 <a href="context-engineering-basics.html#suspect-error-not-prompt">4편의 이 줄</a>에 있어요</td>
+        </tr>
+        <tr id="suspect-short-local">
+          <td><code>ollama-with-history.txt</code>의 답이 <strong>한두 줄로 아주 짧아요</strong>. 다른 경로는 같은 입력에 길게 답했어요</td>
+          <td>코드보다 <strong>모델 태그</strong>예요. <code>qwen3.5:2b</code>의 <code>2b</code>는 매개변수가 약 20억 개인 작은 모델이라는 뜻이에요. 내 컴퓨터에서 돈 들이지 않고 반복해 볼 수 있는 대신, 답의 품질은 보장되지 않아요</td>
+          <td>같은 모델로 이력을 뺀 판도 돌려 봐요. 이력을 넣을 때만 짧아지면 그 모델의 조건으로 기록하고, 메모리가 허락하면 더 큰 태그로 같은 입력을 비교해요. 긴 문서를 넣었는데 내용을 모르는 듯 답한다면 입력이 잘렸을 수 있어요 (<a href="running-local-llm-with-ollama.html#suspect-truncated">Ollama 글의 이 줄</a>)</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>둘째 줄은 에러가 없어서 제일 놓치기 쉬워요. 그래서 이력을 넣은 판을 돌릴 때는 이력을 뺀 판도 처음부터 같이 돌려 원문을 남겨 둬요.</p>
+    <p>첫째 줄처럼 AI가 없는 옵션을 붙들고 도는 중이라면, 더 고치게 하지 말고 설치된 패키지 기준으로 대조부터 시켜요. AI가 기억하는 사용법과 내 컴퓨터에 깔린 버전이 다를 수 있거든요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— 세 경로 실습 코드가 있는 폴더에서</span></p>
+    <pre><code>이 폴더에서 Claude Agent SDK, LangChain, Ollama를 호출하는 곳을 전부 찾아 아래를 표로 보여 줘. 아직 코드는 고치지 마.
+1. 호출마다 파일 이름·줄 번호, 부르는 함수, 넘기는 입력의 모양(비동기 생성기 / 메시지 객체 목록 / role 딕셔너리 목록)
+2. 설치된 패키지 버전과, 그 버전에서 그 함수가 실제로 받는 인자 이름 (네 기억 말고 설치된 패키지의 소스나 help() 결과 기준)
+3. 2에 없는 인자나 다른 경로의 입력 모양을 쓰고 있는 줄</code></pre>
 
     <p class="post-date">코드가 낯설다면: 이 글의 파이썬 블록을 한 줄씩 한국어로 읽는 법은 <a href="reading-python-code-basics.html">파이썬 코드 눈으로 읽기 — 함수·변수·반복·오류·async</a>에 정리해 두었어요.</p>
     <p class="post-date">한 걸음 더: 여기서 처음 부른 Claude Agent SDK의 query()로 같은 버그를 세 방식(단일·워크플로·오케스트레이션)으로 고쳐 비교한 글이 <a href="multi-agent-three-runs-abc.html">같은 버그를 세 방식으로 — 기준선·워크플로·오케스트레이션 실행</a>이에요. allowed_tools로 읽기 전용 서브에이전트를 만들고 agents= 로 리드에 붙이는 코드가 나와요.</p>

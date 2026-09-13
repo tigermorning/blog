@@ -51,9 +51,9 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>"~하지 마라"는 금지 문장을 안전장치로 여기게 됩니다. "소수점 쓰지 마라"는 조건이 9.11을 분수 9/11로 읽게 만들어 오답으로 갔어요.</li>
-            <li>think를 켜두면 늘 더 정확할 거라 믿습니다. think:false와 기본 think:true 둘 다 정답이었는데 후자의 thinking 기록은 10,249자로 다섯 배였어요.</li>
-            <li>temperature 0으로 같은 답이 재현되는 걸 정답의 증거로 읽습니다. 세 번 모두 같은 오답 "9월 11일"이 나왔어요.</li>
+            <li>"~하지 마라"는 금지 문장을 안전장치로 여기게 됩니다. "소수점 쓰지 마라"는 조건이 9.11을 분수 9/11로 읽게 만들어 오답으로 갔어요. <a class="suspect-jump" href="#suspect-negative-instruction">언제 의심하나 ↓</a></li>
+            <li>think를 켜두면 늘 더 정확할 거라 믿습니다. think:false와 기본 think:true 둘 다 정답이었는데 후자의 thinking 기록은 10,249자로 다섯 배였어요. <a class="suspect-jump" href="#suspect-thinking-cost">언제 의심하나 ↓</a></li>
+            <li>temperature 0으로 같은 답이 재현되는 걸 정답의 증거로 읽습니다. 세 번 모두 같은 오답 "9월 11일"이 나왔어요. <a class="suspect-jump" href="#suspect-stable-wrong">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -125,6 +125,29 @@
 
     <h2><span class="hl">정리</span></h2>
     <p>프롬프트 한 줄이 답의 모양과 내용을 바꾸는 걸 직접 관측했다. 이제 이 관찰을 재는 기준과 함께 설계에 쓰는 법으로 넘어갈 차례다.</p>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 프롬프트를 고친 뒤 답이 이상해질 때</h2>
+    <p>여기서 본 것들은 에러 없이 지나가요. 답은 또박또박 오는데 <strong>내용이 틀렸거나</strong>, 맞는 답 하나를 얻느라 시간과 사용량만 늘어난 모양으로 와요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-negative-instruction">
+          <td>"~하지 마"를 넣은 뒤부터 답이 더 이상해졌어요. 금지한 것이 그대로 나오거나, <strong>질문을 아예 다르게 읽은 답</strong>이 와요 — "소수점 쓰지 마라"가 9.11을 분수 9/11로 읽게 만든 것처럼요</td>
+          <td>프롬프트에서 "~하지 마라", "절대 ~ 금지" 같은 문장이에요. 모델이나 샘플링 설정이 아니라 이 줄부터 봐요</td>
+          <td>그 금지 문장만 빼고 같은 질문을 다시 보내 비교해요. 꼭 필요한 제약이면 하지 말 것 대신 원하는 모습을 적어요("두 수를 소수 자리까지 비교해 큰 쪽을 답하라")</td>
+        </tr>
+        <tr id="suspect-thinking-cost">
+          <td>답은 전과 똑같은데 <strong>기다리는 시간이 길어지고 사용량이 늘었어요.</strong> 응답에 풀이 과정이 길게 딸려 와요</td>
+          <td>호출할 때 준 think(추론) 설정이에요. 켜 둔 채로 기본값처럼 쓰고 있는지 봐요</td>
+          <td>같은 질문을 think를 끈 판과 켠 판으로 한 번씩 돌려 정답 여부와 길이를 함께 적어요. 끈 쪽도 정답이면 켜 둘 이유가 없어요 — 이 글의 실측에서는 둘 다 정답인데 켠 쪽의 thinking 기록이 10,249자였어요</td>
+        </tr>
+        <tr id="suspect-stable-wrong">
+          <td>여러 번 돌려도 <strong>답이 글자까지 똑같이 나와서</strong> 믿고 넘어갔는데, 나중에 보니 그 답이 틀려 있었어요</td>
+          <td>호출 설정의 temperature예요. 0으로 두면 같은 답이 반복되는데, 그건 재현일 뿐 정답이라는 뜻이 아니에요 — 이 글에서는 세 번 모두 같은 오답("9월 11일")이 나왔어요</td>
+          <td>정답을 내가 이미 아는 질문 몇 개를 섞어 함께 돌려 채점해요. 추론이 틀리고 있으면 샘플링 설정을 만지지 말고 질문과 예시부터 손봐요. temperature와 top_k는 확률 분포의 모양만 바꾸고 후보의 순서는 안 바꿔요</td>
+        </tr>
+      </tbody>
+    </table>
 
     <a class="post-nav" href="why-instructions-work-training-lineage.html">
       <span class="post-nav-label">다음 편 →</span>

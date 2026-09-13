@@ -58,9 +58,9 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>루프를 남이 짜 주면 그 안에서 어떤 결정이 일어나는지가 안 보여요. 인수를 언제 검사하는지, 실패한 결과를 어떻게 돌려주는지, 몇 번째에 멈추는지가 전부 남의 판단으로 정해져 있어요.</li>
-            <li>사용량을 모르는 실행의 토큰·비용을 0으로 적으면 "이 방식은 공짜"라는 사실과 다른 결론이 보고서에 남아요.</li>
-            <li>completed는 "모델이 답을 돌려줬다"는 상태일 뿐인데 정답으로 세면, 실제보다 높은 정확도가 나와요.</li>
+            <li>루프를 남이 짜 주면 그 안에서 어떤 결정이 일어나는지가 안 보여요. 인수를 언제 검사하는지, 실패한 결과를 어떻게 돌려주는지, 몇 번째에 멈추는지가 전부 남의 판단으로 정해져 있어요. <a class="suspect-jump" href="#suspect-loop-not-mine">언제 의심하나 ↓</a></li>
+            <li>사용량을 모르는 실행의 토큰·비용을 0으로 적으면 "이 방식은 공짜"라는 사실과 다른 결론이 보고서에 남아요. <a class="suspect-jump" href="#suspect-zero-tokens">언제 의심하나 ↓</a></li>
+            <li>completed는 "모델이 답을 돌려줬다"는 상태일 뿐인데 정답으로 세면, 실제보다 높은 정확도가 나와요. <a class="suspect-jump" href="#suspect-completed-as-correct">언제 의심하나 ↓</a></li>
             <li>모델 연결 코드가 바뀌었다고 파일 권한 검사 코드까지 고쳐야 한다면, 두 자리가 섞여 있다는 신호예요.</li>
           </ul>
         </dd>
@@ -299,6 +299,30 @@ async with asyncio.timeout(self.limits.tool_timeout_seconds):
       <li><strong>비교할 것</strong> — 제 하네스와 이 예제가 <strong>다르게 판단하는 지점</strong>을 하나 찾아 이유를 적어요. 다르다고 틀린 게 아니에요 — 다른 결정을 했으면 다른 게 맞아요.</li>
     </ol>
     <p>여기까지 읽었다면 <strong>제품의 요청·실행 루프</strong>와 <strong>평가의 문제 준비·채점 경로</strong>를 구별할 수 있어요. 다만 <strong>경로 이식 코드가 있다는 사실만으로 모든 원본 과제가 로컬에서 검증되었다고 단정하지 않습니다.</strong> 실제 열 문제의 실행 성공과 점수는 다음 편에서 직접 만들어 봅니다.</p>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 에이전트처럼 안 굴거나, 기록이 너무 깨끗할 때</h2>
+    <p>이 편의 내용은 대개 <strong>"에러는 없는데 이상한" 모습</strong>으로 먼저 보여요. 한 번 답하고 끝나거나, 성공률이 이상하게 높거나, 비용 칸이 유난히 깨끗하거나요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-loop-not-mine">
+          <td>에이전트를 만들었다는데 <strong>파일을 안 읽고 한 번 답하고 끝나요</strong>. 반대로 같은 도구를 계속 부르며 안 끝나기도 하고요. 몇 번에서 멈출지 바꾸려는데 <strong>그걸 정하는 줄이 제 코드에 없어요</strong></td>
+          <td>제 코드에서 <strong>도구를 실제로 실행하는 줄</strong>과 그걸 감싼 반복문이에요. 둘 다 없고 라이브러리 함수 한 번 부르고 끝난다면 루프가 남의 것이에요. <code>import</code> 줄도 같이 봐요 — 모델 API용 SDK는 루프를 안 줘요</td>
+          <td>왕복 한 번은 "글 보내고 글 받기"가 전부라, 파일을 여는 건 제 프로그램이어야 해요. 도구 결과를 대화 뒤에 붙여 다시 부르는 줄이 제 코드에 있는지 찾아요. 없다면 멈추는 횟수·인수 검사 규칙은 그 라이브러리의 옵션에서 바꿔야 하고, 그 판단이 무엇인지부터 읽어야 해요 (<a href="#loop-and-sdk">루프를 누가 짜는가</a>)</td>
+        </tr>
+        <tr id="suspect-zero-tokens">
+          <td>실행 기록의 토큰 수가 <strong>비어 있거나 0</strong>인데, 며칠 뒤 제공자 사용량 화면에는 요금이 찍혀 있어요</td>
+          <td>실행 기록의 사용량 칸이에요. <code>usage_known=False</code>처럼 <strong>"값을 못 받았다"는 표시</strong>가 함께 있는지 봐요. 그리고 제공자 대시보드의 같은 날짜 사용량도요</td>
+          <td>두 숫자를 나란히 놓아요. 기록이 0인데 대시보드에 값이 있으면 그 0은 "안 썼다"가 아니라 <strong>"못 받았다"</strong>예요. 보고서에는 0 대신 '알 수 없음'으로 적고, 일부만 알려졌으면 부분 합계와 관측 수를 같이 적어요</td>
+        </tr>
+        <tr id="suspect-completed-as-correct">
+          <td>성공률이 <strong>이상하게 높아요</strong>. 그런데 성공으로 센 시행 하나를 골라 결과 파일을 열어 보면 비어 있거나 요구와 달라요</td>
+          <td>성공을 세는 코드예요. 상태값(<code>completed</code>)으로 세는지, <strong>별도 채점 결과</strong>로 세는지 봐요</td>
+          <td><code>completed</code>는 "모델이 텍스트를 돌려줬다"는 뜻이라 정답 여부와 다른 값이에요. 정답은 모델과 분리된 채점(<code>grading.py</code>가 돌리는 원본 검사)에서 가져와요. 파일 읽기는 됐는데 내용이 틀린 경우는 <strong>두 사실을 나눠</strong> 기록해요</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>모델 제공자를 바꿨을 뿐인데 도구 파일이나 권한 검사 코드까지 수정 목록에 오르는 경우는, 두 자리가 섞였다는 신호예요. 그 확인 자리는 <a href="my-harness-interfaces.html#suspect-provider-leak">4편의 이 줄</a>에 있어요.</p>
 
     <h2>함께 읽으면 좋은 글</h2>
     <ul>
