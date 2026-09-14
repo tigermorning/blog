@@ -32,7 +32,7 @@
       <span class="post-nav-title">④ 오케스트레이터-워커 — 몇 갈래일지 LLM이 정한다 (9)</span>
     </a>
 
-    <p class="one-liner">평가자-최적화자란 한 LLM 호출이 결과를 만들고 다른 호출이 평가해서 피드백을 주며, 기준을 넘을 때까지 되돌아가 고쳐 쓰되 바퀴 수 상한과 정상 출구를 반드시 두는 워크플로다.</p>
+    <p class="one-liner">평가자-최적화자란 한 LLM이 만들고 다른 LLM이 평가해, 기준에 못 미치면 <strong>앞 단계로 되돌아가는 순환 구조</strong>의 워크플로다(바퀴 수 상한과 정상 출구는 필수).</p>
 
     <div class="why-read" id="why-read">
       <p class="why-read-title">이 글을 읽기 전에</p>
@@ -69,6 +69,20 @@
       </dl>
     </div>
 
+    <section class="pattern-map" id="pattern-map">
+      <p class="pattern-map-title">다섯 모양 한눈에</p>
+      <table>
+        <thead><tr><th>흐름 모양</th><th>한 문장으로</th><th>돌려 보기 전에는 모르는 것</th></tr></thead>
+        <tbody>
+          <tr><td><a href="langgraph-pattern-chaining.html">① 프롬프트 체이닝</a></td><td>순서대로 진행. 사이의 통과 여부는 <strong>코드</strong>가 판단</td><td>없음 — 길이 한 줄로 고정</td></tr>
+          <tr><td><a href="langgraph-pattern-routing.html">② 라우팅</a></td><td><strong>LLM</strong>이 분류한 갈래로 분기. 셋 중 딱 하나만</td><td>어느 갈래로 갈지</td></tr>
+          <tr><td><a href="langgraph-pattern-parallelization.html">③ 병렬화</a></td><td>정해진 갈래를 동시에 진행하고 한 칸에 합치기</td><td>없음 — 갈래 개수가 고정</td></tr>
+          <tr><td><a href="langgraph-pattern-orchestrator-worker.html">④ 오케스트레이터-워커</a></td><td>오케스트레이터가 워커에게 일을 동적으로 나눠 주기</td><td>워커를 몇 개 부를지</td></tr>
+          <tr class="is-current"><td>⑤ 평가자-최적화자</td><td>기준에 못 미치면 앞으로 되돌아가는 순환 구조</td><td>몇 바퀴 돌지</td></tr>
+        </tbody>
+      </table>
+      <p>위에서 아래로 갈수록 <strong>개발자가 미리 정해 두는 것이 줄고, LLM이 실행 중에 정하는 것이 늘어요.</strong> 그래도 다섯 다 워크플로예요. 갈 수 있는 길 자체는 전부 개발자가 미리 그려 뒀거든요.</p>
+    </section>
     <h2 id="analogy"><span class="hl">비유</span> — 시식 담당이 되돌린다</h2>
     <p><a href="langgraph-pattern-orchestrator-worker.html">지난 편</a>의 그 저녁 주방이에요. 내보내기 전에 <strong>시식 담당</strong>이 맛을 봐요. 기준에 못 미치면 조리사에게 되돌리면서 <strong>무엇이 부족한지 적어</strong> 보내요. 조리사는 그 메모를 보고 고쳐요. 세 번을 넘기면 더 붙들지 않고 사장님을 불러요.</p>
     <table>

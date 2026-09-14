@@ -32,7 +32,7 @@
       <span class="post-nav-title">② 라우팅 — 먼저 분류하고, 한 갈래로 (7)</span>
     </a>
 
-    <p class="one-liner">병렬화란 서로 독립인 하위 작업을 개수가 정해진 채로 동시에 돌리고, 그 결과를 리듀서로 한 칸에 합치는 워크플로다.</p>
+    <p class="one-liner">병렬화란 서로 독립인 하위 작업을 <strong>동시에</strong> 돌리고, 한꺼번에 들어온 결과를 <strong>합치는 법(리듀서)</strong>을 미리 정해 두는 워크플로다.</p>
 
     <div class="why-read" id="why-read">
       <p class="why-read-title">이 글을 읽기 전에</p>
@@ -68,6 +68,20 @@
       </dl>
     </div>
 
+    <section class="pattern-map" id="pattern-map">
+      <p class="pattern-map-title">다섯 모양 한눈에</p>
+      <table>
+        <thead><tr><th>흐름 모양</th><th>한 문장으로</th><th>돌려 보기 전에는 모르는 것</th></tr></thead>
+        <tbody>
+          <tr><td><a href="langgraph-pattern-chaining.html">① 프롬프트 체이닝</a></td><td>순서대로 진행. 사이의 통과 여부는 <strong>코드</strong>가 판단</td><td>없음 — 길이 한 줄로 고정</td></tr>
+          <tr><td><a href="langgraph-pattern-routing.html">② 라우팅</a></td><td><strong>LLM</strong>이 분류한 갈래로 분기. 셋 중 딱 하나만</td><td>어느 갈래로 갈지</td></tr>
+          <tr class="is-current"><td>③ 병렬화</td><td>정해진 갈래를 동시에 진행하고 한 칸에 합치기</td><td>없음 — 갈래 개수가 고정</td></tr>
+          <tr><td><a href="langgraph-pattern-orchestrator-worker.html">④ 오케스트레이터-워커</a></td><td>오케스트레이터가 워커에게 일을 동적으로 나눠 주기</td><td>워커를 몇 개 부를지</td></tr>
+          <tr><td><a href="langgraph-pattern-evaluator-optimizer.html">⑤ 평가자-최적화자</a></td><td>기준에 못 미치면 앞으로 되돌아가는 순환 구조</td><td>몇 바퀴 돌지</td></tr>
+        </tbody>
+      </table>
+      <p>위에서 아래로 갈수록 <strong>개발자가 미리 정해 두는 것이 줄고, LLM이 실행 중에 정하는 것이 늘어요.</strong> 그래도 다섯 다 워크플로예요. 갈 수 있는 길 자체는 전부 개발자가 미리 그려 뒀거든요.</p>
+    </section>
     <h2><span class="hl">비유</span> — 검사 담당 셋이 한 접시를</h2>
     <p><a href="langgraph-what-and-why.html#analogy">그 주방</a>에서 새 메뉴를 내기 전엔 맛·온도·모양 담당 셋이 <strong>한 접시를 동시에</strong> 검사하고 검수표 한 장에 각자 한 줄씩 적어요.</p>
     <table>
@@ -126,7 +140,17 @@
       <line x1="300" y1="66" x2="356" y2="66" stroke="var(--muted)" stroke-width="2" marker-end="url(#lgp3)"/>
       <line x1="300" y1="105" x2="356" y2="72" stroke="var(--muted)" stroke-width="2" marker-end="url(#lgp3)"/>
       <line x1="470" y1="66" x2="522" y2="66" stroke="var(--muted)" stroke-width="2" marker-end="url(#lgp3)"/>
+      <text x="415" y="103" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">도착 순서는 보장 안 됨</text>
     </svg>
+
+    <h3 id="why-reducer">리듀서라는 말은 왜 나오나 — 세 걸음</h3>
+    <p>동시에 돌리면 시간만 줄고 끝이면 좋겠지만, 두 가지가 따라와요. 이 세 걸음이 병렬화의 전부예요.</p>
+    <ol>
+      <li><strong>동시에 출발하니 순서가 꼬여요.</strong> 세 갈래가 같이 떠나면 누가 먼저 도착할지 정해지지 않아요. 코드에 적은 순서대로 결과가 쌓일 거라 믿으면 안 돼요.</li>
+      <li><strong>합치는 자리에 답이 한꺼번에 들어오면 멈춰요.</strong> 세 결과가 State의 <strong>같은 칸</strong>으로 동시에 오면, LangGraph는 무엇을 남기고 무엇을 버릴지 정할 수 없어서 <code>InvalidUpdateError</code>를 내요.</li>
+      <li><strong>그래서 State 선언에 "여러 개 오면 다 더해라"를 적어 둬요.</strong> 이 <strong>합치는 법</strong>이 바로 <strong>리듀서</strong>예요. <code>Annotated[list, operator.add]</code> 한 줄이 그 말이에요.</li>
+    </ol>
+    <p>2번은 에러라 바로 눈에 띄지만 1번은 조용해요. 리듀서를 달아 에러를 없애도 순서는 여전히 안 정해져 있어서, 결과를 <code>[0]</code> 같은 자리 번호로 꺼내 쓰면 그때부터 소리 없이 틀려요. 아래에서 둘 다 직접 내 봐요.</p>
 
     <h2><span class="hl">동시에 돌리고, 합친다</span></h2>
     <p>이 패턴은 일부러 <strong>에러부터</strong> 내 보는 게 빨라요. 검사 노드 셋이 같은 <code>checks</code> 칸에 동시에 쓰는 그래프를, 합치는 법 없이 한 번, 합치는 법을 붙여서 한 번 돌려요.</p>

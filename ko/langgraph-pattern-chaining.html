@@ -32,7 +32,7 @@
       <span class="post-nav-title">.env가 안 읽혔던 네 겹의 이유 — 원격 주피터에서 API 키 넣기 (5)</span>
     </a>
 
-    <p class="one-liner">프롬프트 체이닝이란 큰 작업을 순서가 정해진 여러 단계로 쪼개고, 단계 사이에 결정적인 코드 검사(게이트)를 끼워 틀린 중간 결과가 다음 단계로 흘러가지 못하게 막는 워크플로다.</p>
+    <p class="one-liner">프롬프트 체이닝이란 큰 작업을 순서가 정해진 단계로 쪼개 차례차례 진행하고, 단계 사이의 통과 여부는 LLM이 아니라 <strong>코드가 판단</strong>하게 하는 워크플로다.</p>
 
     <div class="why-read" id="why-read">
       <p class="why-read-title">이 글을 읽기 전에</p>
@@ -73,6 +73,20 @@
 
     <p>여기까지 <a href="langgraph-state-node-edge.html">2편</a>에서 세 재료로 그래프를 만들고, <a href="langgraph-branch-drills.html">3편</a>에서 갈림길을 밀어붙이고, <a href="langgraph-branches-and-tool-loop.html">4편</a>에서 라우터 자리에 모델을 앉혀 봤어요. 이번 편부터는 그렇게 그은 선들이 <strong>이름 붙은 모양</strong>으로 다시 나와요. 다섯 가지인데, 자율성을 조금씩 늘려 가는 순서로 한 편에 하나씩 봐요. 모두 LLM을 여러 번 부르고, 뒤로 갈수록 개수나 반복 여부를 LLM이 정하는데도 에이전트가 아닌 이유는 <a href="langgraph-what-and-why.html#key-who-decides">1편에서 정리한 기준</a> 그대로예요. 호출 횟수나 도구 사용 여부가 아니라, <strong>갈 수 있는 길을 개발자가 미리 다 그려 뒀는가</strong>가 기준이거든요.</p>
 
+    <section class="pattern-map" id="pattern-map">
+      <p class="pattern-map-title">다섯 모양 한눈에</p>
+      <table>
+        <thead><tr><th>흐름 모양</th><th>한 문장으로</th><th>돌려 보기 전에는 모르는 것</th></tr></thead>
+        <tbody>
+          <tr class="is-current"><td>① 프롬프트 체이닝</td><td>순서대로 진행. 사이의 통과 여부는 <strong>코드</strong>가 판단</td><td>없음 — 길이 한 줄로 고정</td></tr>
+          <tr><td><a href="langgraph-pattern-routing.html">② 라우팅</a></td><td><strong>LLM</strong>이 분류한 갈래로 분기. 셋 중 딱 하나만</td><td>어느 갈래로 갈지</td></tr>
+          <tr><td><a href="langgraph-pattern-parallelization.html">③ 병렬화</a></td><td>정해진 갈래를 동시에 진행하고 한 칸에 합치기</td><td>없음 — 갈래 개수가 고정</td></tr>
+          <tr><td><a href="langgraph-pattern-orchestrator-worker.html">④ 오케스트레이터-워커</a></td><td>오케스트레이터가 워커에게 일을 동적으로 나눠 주기</td><td>워커를 몇 개 부를지</td></tr>
+          <tr><td><a href="langgraph-pattern-evaluator-optimizer.html">⑤ 평가자-최적화자</a></td><td>기준에 못 미치면 앞으로 되돌아가는 순환 구조</td><td>몇 바퀴 돌지</td></tr>
+        </tbody>
+      </table>
+      <p>위에서 아래로 갈수록 <strong>개발자가 미리 정해 두는 것이 줄고, LLM이 실행 중에 정하는 것이 늘어요.</strong> 그래도 다섯 다 워크플로예요. 갈 수 있는 길 자체는 전부 개발자가 미리 그려 뒀거든요.</p>
+    </section>
     <h2><span class="hl">비유</span> — 코스 요리와 검수대</h2>
     <p><a href="langgraph-what-and-why.html#analogy">1편의 주방</a>으로 다시 가 볼게요. 점심엔 코스 요리가 나가요. 손질, 조리, 플레이팅을 순서대로 하되 단계 사이에 <strong>검수대</strong>가 있어서 덜 된 접시는 다음 단계로 못 넘어가요.</p>
     <table>
@@ -106,7 +120,7 @@
     </section>
 
     <h2><span class="hl">전체 흐름</span></h2>
-    <svg viewBox="0 0 700 100" role="img" aria-label="입력이 LLM 노드, 코드 게이트, LLM 노드를 차례로 지나 출력으로 가는 그림. 게이트에서 실패하면 보정 또는 중단으로 빠진다">
+    <svg viewBox="0 -12 700 112" role="img" aria-label="입력이 LLM 노드, 코드 게이트, LLM 노드를 차례로 지나 출력으로 가는 그림. 게이트에서 실패하면 보정 또는 중단으로 빠진다">
       <defs>
         <marker id="lgc1" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
           <path d="M0,0 L9,4.5 L0,9 z" fill="var(--muted)"/>

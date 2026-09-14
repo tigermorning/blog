@@ -1473,3 +1473,55 @@ details[open] > summary .tree-toggle-icon {
   color: var(--muted);
   border-top-color: var(--muted);
 }
+
+/* 다섯 모양 한눈에: LangGraph 패턴 다섯 편이 나란히 쓰는 비교표. 편마다
+   자기 줄에 .is-current를 달아, 지금 읽는 모양이 사다리의 어디쯤인지
+   매 편에서 같은 자리로 보이게 한다. */
+.pattern-map {
+  border: 2px solid var(--folder-3);
+  border-radius: 18px 4px 18px 4px;
+  background: color-mix(in srgb, var(--folder-3) 6%, transparent);
+  padding: 1rem 1.2rem 0.9rem;
+  margin: 1.5rem 0 1.8rem;
+}
+
+.pattern-map-title {
+  margin: 0 0 0.7rem;
+  font-family: var(--font-subhead);
+  font-weight: var(--font-subhead-weight, 400);
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+
+.pattern-map-title::before {
+  content: "지도";
+  display: inline-block;
+  margin-right: 0.5rem;
+  padding: 0.05rem 0.7rem;
+  border-radius: 999px;
+  background: var(--folder-3);
+  color: #fff;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.pattern-map table {
+  margin: 0 0 0.7rem;
+  font-size: 0.95rem;
+}
+
+.pattern-map tr.is-current td {
+  background: color-mix(in srgb, var(--folder-3) 16%, var(--bg));
+  font-weight: 600;
+}
+
+.pattern-map tr.is-current td:first-child::after {
+  content: " (이 글)";
+  font-weight: 400;
+  font-size: 0.85em;
+  color: var(--muted);
+}
+
+.pattern-map > p:last-child {
+  margin-bottom: 0;
+}

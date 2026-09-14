@@ -32,7 +32,7 @@
       <span class="post-nav-title">③ 병렬화 — 동시에 돌리고, 합친다 (8)</span>
     </a>
 
-    <p class="one-liner">오케스트레이터-워커란 하위 작업의 개수를 개발자가 미리 정하지 않고, LLM이 입력을 본 뒤 실행 중에 정해서 Send로 워커를 필요한 만큼 불러내는 워크플로다.</p>
+    <p class="one-liner">오케스트레이터-워커란 중앙 LLM(오케스트레이터)이 전체 작업을 쪼개 워커에게 <strong>동적으로 나눠 주고</strong> 결과를 다시 모으는, 그래서 워커를 몇 개 부를지가 실행 중에야 정해지는 워크플로다.</p>
 
     <div class="why-read" id="why-read">
       <p class="why-read-title">이 글을 읽기 전에</p>
@@ -70,6 +70,20 @@
       </dl>
     </div>
 
+    <section class="pattern-map" id="pattern-map">
+      <p class="pattern-map-title">다섯 모양 한눈에</p>
+      <table>
+        <thead><tr><th>흐름 모양</th><th>한 문장으로</th><th>돌려 보기 전에는 모르는 것</th></tr></thead>
+        <tbody>
+          <tr><td><a href="langgraph-pattern-chaining.html">① 프롬프트 체이닝</a></td><td>순서대로 진행. 사이의 통과 여부는 <strong>코드</strong>가 판단</td><td>없음 — 길이 한 줄로 고정</td></tr>
+          <tr><td><a href="langgraph-pattern-routing.html">② 라우팅</a></td><td><strong>LLM</strong>이 분류한 갈래로 분기. 셋 중 딱 하나만</td><td>어느 갈래로 갈지</td></tr>
+          <tr><td><a href="langgraph-pattern-parallelization.html">③ 병렬화</a></td><td>정해진 갈래를 동시에 진행하고 한 칸에 합치기</td><td>없음 — 갈래 개수가 고정</td></tr>
+          <tr class="is-current"><td>④ 오케스트레이터-워커</td><td>오케스트레이터가 워커에게 일을 동적으로 나눠 주기</td><td>워커를 몇 개 부를지</td></tr>
+          <tr><td><a href="langgraph-pattern-evaluator-optimizer.html">⑤ 평가자-최적화자</a></td><td>기준에 못 미치면 앞으로 되돌아가는 순환 구조</td><td>몇 바퀴 돌지</td></tr>
+        </tbody>
+      </table>
+      <p>위에서 아래로 갈수록 <strong>개발자가 미리 정해 두는 것이 줄고, LLM이 실행 중에 정하는 것이 늘어요.</strong> 그래도 다섯 다 워크플로예요. 갈 수 있는 길 자체는 전부 개발자가 미리 그려 뒀거든요.</p>
+    </section>
     <h2><span class="hl">비유</span> — 헤드셰프가 메뉴 수를 정한다</h2>
     <p><a href="langgraph-what-and-why.html#analogy">그 주방</a>의 저녁, 단체 손님이 들어와요. 인원이 몇인지, 뭘 못 먹는 사람이 있는지는 주문서를 봐야 알아요. 헤드셰프가 주문서를 읽고 <strong>그 자리에서 메뉴 수를 정해요</strong>. "오늘은 다섯 접시." 그리고 요리사마다 쪽지를 한 장씩 건네요. 쪽지에는 자기가 맡은 요리 하나만 적혀 있고, 다른 요리사가 뭘 하는지는 안 적혀 있어요. 다 만들어지면 한 상에 모아 내보내요.</p>
     <table>
