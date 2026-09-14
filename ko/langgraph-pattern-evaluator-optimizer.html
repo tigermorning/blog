@@ -38,7 +38,7 @@
       <p class="why-read-title">이 글을 읽기 전에</p>
       <dl>
         <dt>어디쯤인가</dt>
-        <dd><a href="posts.html#cat-agent-system">8단계</a> › <a href="posts.html#langgraph-team">에이전트 팀 꾸리기 — LangGraph</a> — 10번째 글 (전 10편, 마지막). 다섯 패턴은 <a href="langgraph-pattern-chaining.html">체이닝</a> · <a href="langgraph-pattern-routing.html">라우팅</a> · <a href="langgraph-pattern-parallelization.html">병렬화</a> · <a href="langgraph-pattern-orchestrator-worker.html">오케스트레이터-워커</a> · 이번 편으로 끝나요.</dd>
+        <dd><a href="posts.html#cat-agent-system">8단계</a> › <a href="posts.html#langgraph-team">에이전트 팀 꾸리기 — LangGraph</a> — 10번째 글 (전 16편). 다섯 패턴은 <a href="langgraph-pattern-chaining.html">체이닝</a> · <a href="langgraph-pattern-routing.html">라우팅</a> · <a href="langgraph-pattern-parallelization.html">병렬화</a> · <a href="langgraph-pattern-orchestrator-worker.html">오케스트레이터-워커</a> · 이번 편으로 끝나요.</dd>
         <dt>이런 게 궁금했다면</dt>
         <dd>
           <ul>
@@ -396,7 +396,7 @@ if transcript_cache is None and speech and len(segments) &lt; len(speech) * SUSP
     <p>정답은 없어요. 모델 답은 실행할 때마다 달라질 수 있으니, 제 조건에서 몇 번 돌려 보고 기록으로 비교하는 게 요령이에요.</p>
 
     <h2><span class="hl">다음은</span></h2>
-    <p>이걸로 "에이전트 팀 꾸리기" 시리즈 열 편이 끝나요. 다음 수업부터는 오늘의 ② 라우팅에 RAG를 붙이고, 이어서 GraphRAG, 사람 승인과 상태 저장(HITL·상태 지속성)으로 넘어가요. 오늘 그린 되돌아가는 선 중간에 사람이 끼어드는 게 HITL이고, 그 지점에서 State를 저장해 뒀다가 나중에 이어 가는 게 상태 지속성이에요.</p>
+    <p>다섯 패턴은 이걸로 다 봤어요. <a href="newsletter-agent-skeleton.html">다음 편</a>부터는 배운 패턴을 한 프로젝트에 모아요. 매일 아침 AI 소식을 모아 다섯 건을 고르고, 요약하고, 원문과 대조한 뒤 디스코드로 보내는 <strong>뉴스레터 에이전트</strong>를 여섯 편에 걸쳐 만들어요. 기사를 묶음으로 나눠 고르는 자리에 ③ 병렬화가, 고른 기사 수만큼 요약을 펼치는 자리에 ④의 <code>Send</code>가, 요약을 원문과 대조하는 자리에 ⑤의 평가자가 들어가요.</p>
 
     <h2>함께 읽으면 좋은 글</h2>
     <ul>
@@ -452,10 +452,34 @@ if transcript_cache is None and speech and len(segments) &lt; len(speech) * SUSP
       <span class="post-nav-title">④ 오케스트레이터-워커 — 몇 갈래일지 LLM이 정한다</span>
     </a>
     <p class="post-date">(10) ⑤ 평가자-최적화자 — 통과할 때까지 고쳐 쓰기 (이 글)</p>
+    <a class="post-nav" href="newsletter-agent-skeleton.html">
+      <span class="post-nav-label">(11)</span>
+      <span class="post-nav-title">뉴스레터 에이전트를 빈 노드 다섯 개로 먼저 세운다</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-collect.html">
+      <span class="post-nav-label">(12)</span>
+      <span class="post-nav-title">기사를 어디서 가져올까 — RSS·관문·수집 노드</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-select.html">
+      <span class="post-nav-label">(13)</span>
+      <span class="post-nav-title">100건에서 5건 고르기 — 점수 대신 비교, 예선과 본선</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-summarize-verify.html">
+      <span class="post-nav-label">(14)</span>
+      <span class="post-nav-title">요약을 세 칸으로 받고 원문과 대조한다</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-publish-schedule.html">
+      <span class="post-nav-label">(15)</span>
+      <span class="post-nav-title">디스코드로 매일 아침 받아 보기 — 웹훅과 GitHub Actions</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-metrics-config.html">
+      <span class="post-nav-label">(16)</span>
+      <span class="post-nav-title">돌고 나서 재 본다 — 실행 기록과 설정 파일</span>
+    </a>
 
-    <a class="post-nav" href="multi-agent-split-gains-and-losses.html">
-      <span class="post-nav-label">다음 시리즈 →</span>
-      <span class="post-nav-title">나눠서 얻는 것과 잃는 것</span>
+    <a class="post-nav" href="newsletter-agent-skeleton.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">뉴스레터 에이전트를 빈 노드 다섯 개로 먼저 세운다 (11)</span>
     </a>
 
   </main>

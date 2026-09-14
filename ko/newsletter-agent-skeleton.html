@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>뉴스레터 에이전트를 빈 노드 다섯 개로 먼저 세운다 (11) - Tigermorning</title>
+  <meta name="description" content="매일 AI 소식을 모아 다섯 건만 골라 요약해 보내는 뉴스레터 에이전트를, 빈 노드 다섯 개로 먼저 끝까지 이어 세웁니다. State 칸 정하기, 리듀서를 두 칸에만 붙이는 이유, 같은 이름으로 노드 갈아 끼우기.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="뉴스레터 에이전트를 빈 노드 다섯 개로 먼저 세운다 (11)">
+  <meta property="og:description" content="덮어써야 할 칸에 리듀서를 붙이면, 9건을 5건으로 줄이는 노드를 지나고도 결과가 14건이 돼요. 에러는 안 나요.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/newsletter-agent-skeleton.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">뉴스레터 에이전트</span>를 빈 노드 다섯 개로 먼저 세운다 (11)</h1>
+    <p class="post-date">2026. 9. 14.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="langgraph-pattern-evaluator-optimizer.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">⑤ 평가자-최적화자 — 통과할 때까지 고쳐 쓰기 (10)</span>
+    </a>
+
+    <p class="one-liner">뉴스레터 에이전트의 뼈대란 수집·선별·요약·검수·발행 다섯 단계를 <strong>아무 일도 하지 않는 빈 함수</strong>로 먼저 이어, 첫날부터 처음부터 끝까지 실행되게 만든 LangGraph 그래프다.</p>
+
+    <div class="why-read" id="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>어디쯤인가</dt>
+        <dd><a href="posts.html#cat-agent-system">8단계</a> › <a href="posts.html#langgraph-team">에이전트 팀 꾸리기 — LangGraph</a> — 11번째 글 (전 16편). 11~16편은 뉴스레터 에이전트 하나를 처음부터 끝까지 만드는 연속 실습이고, 이 글이 그 첫 편이에요.</dd>
+        <dt>이런 게 궁금했다면</dt>
+        <dd>
+          <ul>
+            <li>매일 여러 사이트를 돌며 AI 소식을 찾아 읽는 일을 프로그램에 맡기고 싶은데, 어디서부터 만들어야 할까?</li>
+            <li>수집 기능, 요약 기능을 하나씩 완성한 다음 마지막에 이어 붙이면 안 되나?</li>
+            <li>아무 일도 안 하는 빈 함수를 먼저 만드는 게 무슨 의미가 있지?</li>
+          </ul>
+        </dd>
+        <dt>읽고 나면 할 수 있는 것</dt>
+        <dd>
+          <ul>
+            <li>"매일 뉴스를 골라 보내기" 같은 큰 일을, 받는 것과 내놓는 것이 분명한 다섯 단계로 나눠요.</li>
+            <li>첫날부터 끝까지 도는 프로그램을 세워 두고, 한 단계씩 진짜 코드로 바꿔 가요.</li>
+            <li>단계 사이에 넘기는 값 가운데 어느 것은 쌓아야 하고 어느 것은 덮어써야 하는지 가려요.</li>
+          </ul>
+        </dd>
+        <dt>모르면 이런 일이 생겨요</dt>
+        <dd>
+          <ul>
+            <li>함수를 다 만들고 잇는 날에야 "앞 함수가 준 이름과 뒤 함수가 찾는 이름이 다르네"를 만나요. 이름이 틀린 값은 에러 없이 사라져요. <a class="suspect-jump" href="#suspect-key-typo">언제 의심하나 ↓</a></li>
+            <li>9건을 5건으로 줄이는 단계를 지났는데 결과가 14건이 돼요. 에러가 안 나서 한참 뒤에 알아채요. <a class="suspect-jump" href="#suspect-reducer-grow">언제 의심하나 ↓</a></li>
+            <li>함수를 고쳐 다시 정의했는데 결과가 그대로라, 멀쩡한 코드를 뒤져요. <a class="suspect-jump" href="#suspect-stale-app">언제 의심하나 ↓</a></li>
+          </ul>
+        </dd>
+        <dt>어디에 쓰나</dt>
+        <dd>
+          <ul>
+            <li><strong>같은 걸 찾으러 매일 여러 사이트를 돌고 있을 때.</strong> 같은 발표를 매체마다 서너 번 읽는 일을 하루 한 번 받는 다섯 건 요약으로 바꾸는 출발점이에요.</li>            <li>채용 공고 모으기나 경쟁사 가격 알림처럼 "모으고 → 고르고 → 정리해서 → 보내는" 다른 일에 같은 다섯 칸 뼈대 쓰기</li>
+          </ul>
+        </dd>
+      </dl>
+    </div>
+
+    <h2 id="what-we-build"><span class="hl">무엇을 만드나</span> — 하루 100건 남짓에서 다섯 건</h2>
+    <p>매일 쏟아지는 AI 소식을 여러 사이트에서 찾아 읽기는 번거로워요. 그래서 최신 기사를 자동으로 모아 중요한 것만 골라 요약해 매일 아침 보내 주는 <strong>AI 뉴스레터 에이전트</strong>를 만들어요.</p>
+    <p>기사는 TechCrunch·The Verge·OpenAI 블로그·DeepMind 블로그 같은 해외 매체와 AI타임스·전자신문 같은 한국어 매체의 <strong>RSS<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup></strong>, 그리고 Hacker News의 <strong>공개 API<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup></strong>까지 11곳에서 가져와요. 최근 24시간이면 대략 50~120건인데, 실시간 소스라 돌리는 시각마다 달라요. 가져오는 건 매체가 공개한 제목·짧은 소개글·원문 링크뿐이고, 본문 전체를 다시 퍼뜨리지는 않아요. 그중 <strong>다섯 건</strong>만 남겨 내보내는 게 목표예요.</p>
+    <p>"뉴스레터 에이전트"를 한 덩어리로 보면 어디부터 손댈지 안 보여요. 다섯 단계로 쪼개면 단계마다 무엇을 받아 무엇을 내놓는지가 한 줄로 적혀요. 이 다섯 단계가 그래프의 <strong>노드<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup></strong> 다섯 개가 돼요.</p>
+    <table>
+      <thead><tr><th>단계</th><th>무엇을 하나</th><th>입력 → 출력</th><th>채우는 편</th></tr></thead>
+      <tbody>
+        <tr><td>① 수집<br><code>collect</code></td><td>어디서 얼마나 가져올지 정해요. 경로마다 안정성·법적 위험·품질이 달라요</td><td>시간 창(24시간) → 기사 목록</td><td><a href="newsletter-agent-collect.html">12편</a></td></tr>
+        <tr><td>② 선별<br><code>select</code></td><td>100건을 사람이 다 읽으면 반쪽 자동화라, 중요한 것만 추려요</td><td>기사 목록 → 다섯 건</td><td><a href="newsletter-agent-select.html">13편</a></td></tr>
+        <tr><td>③ 요약(취재)<br><code>report</code></td><td>어떤 관점으로 요약할지 정해 초안을 써요</td><td>다섯 건 → 요약이 붙은 초안</td><td><a href="newsletter-agent-summarize-verify.html">14편</a></td></tr>
+        <tr><td>④ 검수<br><code>verify</code></td><td>AI가 원문과 다른 말을 쓰지 않았는지 확인해요</td><td>초안 → 통과한 초안</td><td><a href="newsletter-agent-summarize-verify.html">14편</a></td></tr>
+        <tr><td>⑤ 발행<br><code>publish</code></td><td>다른 사람이 볼 수 있는 곳으로 내보내요</td><td>통과한 초안 → 메시지</td><td><a href="newsletter-agent-publish-schedule.html">15편</a></td></tr>
+      </tbody>
+    </table>
+    <p>실행 기록을 재고 설정을 파일로 빼는 운영은 <a href="newsletter-agent-metrics-config.html">16편</a>이에요. 단계마다 방법이 여럿이라, 선택지를 늘어놓고 하나를 고르며 <strong>무엇을 포기했는지</strong>를 같이 적어요. 도구는 <a href="langgraph-what-and-why.html">1편</a>부터 써 온 LangGraph이고, <a href="langgraph-pattern-chaining.html">6</a>~<a href="langgraph-pattern-evaluator-optimizer.html">10편</a>의 워크플로 패턴을 곳곳에 가져다 써요.</p>
+
+    <h3 id="before-start">시작 전에 적어 두기 — 내가 매일 챙겨 보는 소식</h3>
+    <p>코드를 쓰기 전에 <strong>매일 챙겨 보는 분야 소식, 그걸 접하는 경로, 가장 번거로운 점 하나</strong>를 적어 보세요. <a href="langgraph-what-and-why.html#key-lookup-action">1편에서 맡길 일을 조회와 행동으로 나눠 적어 본 것</a>과 같은 결의 준비예요. "뉴스가 너무 많다"처럼 뭉뚱그리지 말고 <strong>장면</strong>으로 적어요.</p>
+    <ul>
+      <li>"AI 소식을 X·뉴스 사이트·해외 블로그 세 군데서 따로 봐서, 같은 발표를 매체만 바꿔 서너 번 읽는다."</li>
+      <li>"영어 기사는 제목만 보고 넘겨서, 중요한 걸 놓친 줄도 모른다."</li>
+    </ul>
+    <p>적은 번거로움은 다섯 단계 가운데 한 곳에 떨어져요. 여러 사이트를 도는 건 ① 수집, 같은 발표를 여러 번 읽는 건 ② 선별에서 겹치는 기사 거르기, 영어라 안 읽는 건 ③ 요약을 한국어로 받기, 매일 들어가 봐야 하는 건 ⑤ 발행이 풀어요. 적어 둔 문장은 <a href="newsletter-agent-metrics-config.html">16편</a>에서 "무엇을 중요하게 볼지, 무엇을 버릴지"를 적는 설정 파일(<code>audience.yaml</code>)의 문장으로 옮겨요.</p>
+
+    <h2 id="analogy"><span class="hl">비유</span> — 개업 전 리허설, 빈 접시로 한 바퀴</h2>
+    <p><a href="langgraph-what-and-why.html#analogy">1편에서 세운</a> 뒤 10편까지 이어 온 그 식당 주방이에요. 저녁 영업만 하던 주방이 이제 <strong>매일 아침 "오늘의 한 상"</strong>을 내기로 했어요. 장보기·재료 고르기·조리·시식·내보내기 다섯 자리가 새로 생겨요.</p>
+    <p>사장님은 재료부터 사지 않고 <strong>전표 양식의 칸</strong>(장 본 재료·고른 재료·완성 접시·거쳐 간 자리)부터 정해 인쇄해요. 그다음 직원들에게 <strong>빈 접시</strong>를 들려 장보기 자리부터 내보내는 창구까지 한 바퀴 돌게 해요. 직원은 자리마다 아무것도 조리하지 않고 '거쳐 간 자리' 칸에 한 줄만 적어 넘겨요. 리허설이 끝나면 자리마다 진짜 담당을 세우지만, 벽의 동선표는 그대로 둬요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>사장님이 매일 아침 다섯 접시짜리 "오늘의 한 상"을 내기로 정하기</td><td><strong>뉴스레터 에이전트</strong> — 하루 100건 남짓에서 다섯 건을 골라 요약해 발행해요</td></tr>
+        <tr><td>사장님이 리허설 전에 전표 양식의 칸 이름부터 인쇄하기</td><td><strong>State 설계</strong> — 개발자가 <code>Brief</code>에 단계 사이를 건너갈 칸을 먼저 선언해요</td></tr>
+        <tr><td>사장님이 직원들에게 빈 접시를 들려 동선을 한 바퀴 돌게 하기</td><td><strong>걸어 다니는 뼈대<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup></strong> — 빈 노드 다섯 개를 이어 그래프를 끝까지 한 번 실행해요</td></tr>
+        <tr><td>자리마다 직원이 전표 '거쳐 간 자리' 칸에 한 줄만 적고 넘기기</td><td><strong>빈 노드</strong> — 노드가 진짜 결과 없이 <code>log</code>에 한 줄만 돌려줘요</td></tr>
+        <tr><td>사장님이 자리 하나에 진짜 담당을 세우기 (동선표는 그대로)</td><td><strong>노드 갈아 끼우기</strong> — 개발자가 같은 이름으로 함수를 다시 정의하면 <code>build()</code>가 그 함수를 붙여요</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 요리가 하나도 없어도 동선이 끝까지 돌면, 어느 자리에서 전표 칸이 어긋나는지는 개업 첫날이 아니라 리허설 날에 드러나요.</p>
+    <p>다만 여기서 비유가 끊기는 점이 둘 있어요. 사람 직원은 칸 이름이 조금 달라도 알아듣지만 그래프는 선언에 없는 이름의 값을 <strong>에러 없이 버리고</strong>, 리허설은 한 번으로 끝나지만 뼈대는 자리 하나를 바꿀 때마다 <strong>다시 돌려요</strong>.</p>
+
+    <h2 id="big-picture"><span class="hl">전체 흐름</span> — 빈 노드 다섯 개와 State 하나</h2>
+    <p><strong>읽는 법:</strong> 가운데 상자 다섯 개가 노드이고 화살표 순서대로 한 번씩 실행돼요. 맨 위 점선 상자는 모든 노드가 함께 읽고 쓰는 State, 노드 아래 첫 줄은 그 노드가 값을 적는 칸, 둘째 줄은 진짜 코드로 바꾸는 편이에요. 맨 아래 <code>log</code>에는 노드마다 한 줄씩 쌓여요.</p>
+    <svg viewBox="0 0 760 256" role="img" aria-label="START에서 collect, select, report, verify, publish를 차례로 지나 END로 가는 일직선 그래프와, 다섯 노드가 함께 쓰는 State Brief">
+      <defs>
+        <marker id="nl11a" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+          <path d="M0,0 L9,4.5 L0,9 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <g text-anchor="middle" font-family="var(--font-body)">
+        <rect x="88" y="10" width="604" height="50" rx="8" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 4"/>
+        <text x="390" y="31" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">State Brief: hours · collected · picked · drafted · log</text>
+        <text x="390" y="50" font-size="11" fill="var(--muted)">drafted · log 두 칸만 리듀서(operator.add)로 쌓고, 나머지는 덮어써요</text>
+
+        <g stroke="var(--border)" stroke-width="1.5" stroke-dasharray="3 3">
+          <line x1="138" y1="60" x2="138" y2="96"/>
+          <line x1="264" y1="60" x2="264" y2="96"/>
+          <line x1="390" y1="60" x2="390" y2="96"/>
+          <line x1="516" y1="60" x2="516" y2="96"/>
+          <line x1="642" y1="60" x2="642" y2="96"/>
+        </g>
+
+        <rect x="8" y="108" width="54" height="34" rx="17" fill="none" stroke="var(--border)"/>
+        <text x="35" y="130" font-size="12" fill="var(--ink)">START</text>
+
+        <rect x="88" y="96" width="100" height="58" rx="8" fill="none" stroke="var(--border)"/>
+        <text x="138" y="120" font-size="13" fill="var(--ink)">collect</text>
+        <text x="138" y="140" font-size="10" fill="var(--muted)">수집 · 빈 노드</text>
+
+        <rect x="214" y="96" width="100" height="58" rx="8" fill="none" stroke="var(--border)"/>
+        <text x="264" y="120" font-size="13" fill="var(--ink)">select</text>
+        <text x="264" y="140" font-size="10" fill="var(--muted)">선별 · 빈 노드</text>
+
+        <rect x="340" y="96" width="100" height="58" rx="8" fill="none" stroke="var(--border)"/>
+        <text x="390" y="120" font-size="13" fill="var(--ink)">report</text>
+        <text x="390" y="140" font-size="10" fill="var(--muted)">취재 · 빈 노드</text>
+
+        <rect x="466" y="96" width="100" height="58" rx="8" fill="none" stroke="var(--border)"/>
+        <text x="516" y="120" font-size="13" fill="var(--ink)">verify</text>
+        <text x="516" y="140" font-size="10" fill="var(--muted)">검수 · 빈 노드</text>
+
+        <rect x="592" y="96" width="100" height="58" rx="8" fill="none" stroke="var(--border)"/>
+        <text x="642" y="120" font-size="13" fill="var(--ink)">publish</text>
+        <text x="642" y="140" font-size="10" fill="var(--muted)">발행 · 빈 노드</text>
+
+        <rect x="712" y="108" width="42" height="34" rx="17" fill="none" stroke="var(--border)"/>
+        <text x="733" y="130" font-size="12" fill="var(--ink)">END</text>
+
+        <g stroke="var(--muted)" stroke-width="2" marker-end="url(#nl11a)">
+          <line x1="62" y1="125" x2="84" y2="125"/>
+          <line x1="188" y1="125" x2="210" y2="125"/>
+          <line x1="314" y1="125" x2="336" y2="125"/>
+          <line x1="440" y1="125" x2="462" y2="125"/>
+          <line x1="566" y1="125" x2="588" y2="125"/>
+          <line x1="692" y1="125" x2="708" y2="125"/>
+        </g>
+
+        <g font-size="11" fill="var(--ink)">
+          <text x="138" y="176">collected에 적음</text>
+          <text x="264" y="176">picked에 적음</text>
+          <text x="390" y="176">drafted에 적음</text>
+          <text x="516" y="176">log만 적음</text>
+          <text x="642" y="176">log만 적음</text>
+        </g>
+        <g font-size="11" fill="var(--accent)">
+          <text x="138" y="194">12편에서 채움</text>
+          <text x="264" y="194">13편에서 채움</text>
+          <text x="390" y="194">14편에서 채움</text>
+          <text x="516" y="194">14편에서 채움</text>
+          <text x="642" y="194">15편에서 채움</text>
+        </g>
+
+        <rect x="88" y="210" width="604" height="36" rx="8" fill="none" stroke="var(--border)"/>
+        <text x="390" y="233" font-size="12" fill="var(--ink)">log — 노드마다 한 줄씩 쌓여 다섯 줄. 지금은 다섯 줄 모두 0건이에요</text>
+      </g>
+    </svg>
+    <p>뒤 편은 선을 그대로 두고 상자 속만 바꿔요. 취재를 기사 수만큼 펼치는 <a href="newsletter-agent-summarize-verify.html">14편</a>에서만 <code>select</code> → <code>report</code> 선 하나를 손봐요.</p>
+
+    <h2 id="build-order"><span class="hl">만드는 순서 고르기</span> — 선택지 넷</h2>
+    <p>가장 흔한 순서는 수집·선별·요약 함수를 차례로 완성한 다음 마지막에 이어 붙이는 거예요. 그러면 끝까지 가기 전에는 <strong>실제로 도는 물건이 하나도 없고</strong>, 붙이는 날에야 "이 함수가 돌려주는 모양과 저 함수가 받는 모양이 다르네"를 발견해요. 순서를 네 가지로 놓고 비교해 봐요.</p>
+    <table>
+      <thead><tr><th>만드는 순서</th><th>얻는 장점</th><th>치르는 대가</th></tr></thead>
+      <tbody>
+        <tr><td>① 부품을 다 만들고 마지막에 조립</td><td>한 번에 한 가지만 생각하고, 함수마다 따로 시험하기 좋아요</td><td>조립하는 날까지 도는 물건이 없고, 단계 사이 규격 어긋남이 가장 늦게 한꺼번에 드러나요</td></tr>
+        <tr><td><strong>② 빈 노드로 뼈대를 세우고 하나씩 채우기 (고른 순서)</strong></td><td>로그만 남기는 <strong>스텁<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup></strong> 다섯 개를 먼저 이어요. 첫날부터 도는 물건이 있고, 규격(State 칸)이 맨 처음 정해지고, 어디까지 만들었는지 로그에 보여요</td><td>뒤에 무엇이 필요할지 다 모르는 채로 State를 처음에 설계해야 하고, 중간에 칸이 늘면 앞 노드를 다시 봐야 해요</td></tr>
+        <tr><td>③ 노드 하나를 완성할 때마다 그래프를 새로 그리기</td><td>그때 필요한 만큼만 State를 정의해요</td><td>그래프 정의를 매번 다시 쓰고 무엇이 바뀌었는지 대조해야 해요. 비슷한 코드가 여러 벌 생겨요</td></tr>
+        <tr><td>④ 그래프 없이 <strong>노트북<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup></strong> 셀을 순서대로 실행</td><td>가장 단순하고, 이것저것 시험해 보는 탐색 단계에 맞아요</td><td>되돌아가기나 여러 갈래로 펼치기를 표현하지 못하고, 매일 자동으로 도는 프로그램으로 옮길 때 전부 다시 써야 해요</td></tr>
+      </tbody>
+    </table>
+    <p>여기서는 ②를 골라요. 매번 전체를 돌리니 "지금 어디까지 왔나"가 로그로 보이고, 12편의 수집 결과가 13편 선별의 입력이 되는 것도 보여요. 약점인 State 미리 설계도 부담이 작아요. 다섯 단계를 나눌 때 단계마다 받는 것과 내놓는 것을 이미 적었고, State의 칸은 그걸 코드로 옮긴 것뿐이거든요.</p>
+    <p>조건이 달라지면 다른 순서가 맞아요. 소스 하나를 이리저리 찔러 보는 날이면 ④가 가장 빠르고, 하루 만에 끝낼 작은 스크립트면 ①도 괜찮아요. 무엇을 포기했는지 알고 고르면 돼요.</p>
+
+    <h2 id="state-first"><span class="hl">State부터 정한다</span> — 기사 한 건의 모양과 칸 다섯</h2>
+    <p>노드를 쓰기 전에 <strong>기사 한 건을 어떤 모양으로 들고 다닐지</strong>부터 정해요. 소스마다 기사를 가리키는 값을 <code>link</code>·<code>url</code>·<code>id</code>처럼 다른 이름으로 주고, 시각 형식도 제각각이에요. 한 모양으로 바꿔 두지 않으면 뒤 코드마다 <code>if source == "hackernews": ...</code> 같은 분기가 붙어요. 그래서 기사 한 건은 어느 소스에서 왔든 다섯 칸짜리 딕셔너리로 통일해요. <code>title</code>(제목) · <code>url</code>(원문 주소) · <code>source</code>(매체 이름) · <code>at</code>(발행 시각) · <code>summary</code>(매체가 붙인 짧은 소개글, <a href="newsletter-agent-collect.html">12편</a> 수집 코드는 앞 300자까지)예요.</p>
+    <p>14편에서는 모델이 쓴 요약 칸(<code>headline</code>·<code>summary</code>·<code>why</code>)이 붙는데, <code>summary</code>는 이름이 같아서 소개글 자리를 모델의 요약이 덮어써요.</p>
+    <p>그다음이 그래프 전체가 함께 쓰는 State인데, 칸을 고르는 기준은 하나예요.</p>
+    <div class="key-point" id="key-state-crossing">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>State에는 <strong>단계 사이를 실제로 건너가는 값</strong>만 올려요. 처음에 넣어 수집 노드가 읽는 설정값 <code>hours</code>와, 단계의 결과물(<code>collected</code>·<code>picked</code>·<code>drafted</code>·<code>log</code>)이에요. 프롬프트 문자열이나 인터넷 연결 세션처럼 한 노드 안에서만 쓰는 것까지 올리면 모든 노드가 들고 다니게 되어, 무엇이 어디서 쓰이는지 추적할 수 없어요.</p>
+    </div>
+
+    <h3 id="skeleton-code">빈 노드 다섯 개로 세우기</h3>
+    <p>11~16편의 코드는 노트북 하나에 이어 붙여 가요. 12편은 이 편의 셀을 실행해 둔 노트북에서 시작하니, 새 노트북에 여기서부터 차례로 붙여 넣으세요.</p>
+    <p class="run-tag">실행: Colab 같은 원격 주피터 또는 로컬 주피터 <span class="run-tag-why">— 노트북 첫 셀에서 한 번만. 맨 앞 <code>!</code>는 셀 안에서 터미널 명령을 돌린다는 표시예요</span></p>
+    <pre><code>! pip install -q langgraph</code></pre>
+    <p>이제 뼈대 전체예요. 노드 다섯 개는 진짜 일 없이 <code>log</code>에 한 줄만 남겨요.</p>
+    <p class="run-tag">실행: Colab 같은 원격 주피터 또는 로컬 주피터 <span class="run-tag-why">— API 키 없이 돌아가요</span></p>
+    <pre><code>import operator
+from typing import Annotated, TypedDict
+from langgraph.graph import StateGraph, START, END
+
+class Brief(TypedDict):
+    hours:     int                              # 수집 시간 창(시간)
+    collected: list                             # ① 수집한 기사
+    picked:    list                             # ② 선별해 남긴 다섯 건
+    drafted:   Annotated[list, operator.add]    # ③ 취재한 초안 — 워커들이 나눠 채운다
+    log:       Annotated[list, operator.add]    # 무슨 일이 있었는지
+
+def collect(s: dict) -&gt; dict:                  # ① 자료 수집  — 12편에서 채운다
+    return {"collected": [], "log": [f"① 수집   {s['hours']}시간 창 · 0건 (빈 노드)"]}
+
+def select(s: dict) -&gt; dict:                   # ② 중요도 선별 — 13편에서 채운다
+    return {"picked": [], "log": [f"② 선별   {len(s['collected'])} → 0건 (빈 노드)"]}
+
+def report(s: dict) -&gt; dict:                   # ③ 요약       — 14편에서 채운다
+    return {"drafted": [], "log": [f"③ 취재   {len(s['picked'])}건 (빈 노드)"]}
+
+def verify(s: dict) -&gt; dict:                   # ④ 검수       — 14편에서 채운다
+    return {"log": [f"④ 검수   {len(s['drafted'])}건 (빈 노드)"]}
+
+def publish(s: dict) -&gt; dict:                  # ⑤ 발행       — 15편에서 채운다
+    return {"log": [f"⑤ 발행   {len(s['drafted'])}건 (빈 노드)"]}
+
+def build():                                    # 노드를 이름으로 찾아 붙인다
+    g = StateGraph(Brief)
+    for name in ("collect", "select", "report", "verify", "publish"):
+        g.add_node(name, globals()[name])
+    g.add_edge(START, "collect")
+    g.add_edge("collect", "select")
+    g.add_edge("select", "report")
+    g.add_edge("report", "verify")
+    g.add_edge("verify", "publish")
+    g.add_edge("publish", END)
+    return g
+
+INIT = {"hours": 24,
+        "collected": [], "picked": [], "drafted": [], "log": []}
+
+def run():
+    return build().compile().invoke(INIT)
+
+for line in run()["log"]:
+    print(line)</code></pre>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 위 코드를 실행했을 때 제 화면에 찍힌 출력이에요 (langgraph 1.2.11)</span></p>
+    <pre><code>① 수집   24시간 창 · 0건 (빈 노드)
+② 선별   0 → 0건 (빈 노드)
+③ 취재   0건 (빈 노드)
+④ 검수   0건 (빈 노드)
+⑤ 발행   0건 (빈 노드)</code></pre>
+    <p>아무것도 안 했는데 다섯 줄이 순서대로 찍혔어요. 이 다섯 줄이 앞으로의 진행 표시예요.</p>
+    <p><code>class Brief(TypedDict)</code>는 <strong>TypedDict<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup></strong>로 State의 칸 이름을 적어 둔 거예요(<a href="langgraph-state-node-edge.html#build-line">2편의 전표</a>와 같은 방식). <code>f"...{s['hours']}..."</code>는 중괄호 안의 값을 글자 속에 끼워 넣는 문자열이고, <code>INIT</code>은 그래프에 처음 넣는 State예요.</p>
+
+    <h2 id="code-points"><span class="hl">코드에서 짚을 세 가지</span></h2>
+
+    <h3 id="partial-return">노드는 자기가 바꾼 칸만 돌려준다</h3>
+    <p><code>verify</code>와 <code>publish</code>는 <code>log</code> 하나만 돌려줘요. 돌려주지 않은 칸은 앞의 값이 그대로 남아요(<a href="langgraph-state-node-edge.html#key-partial-update">2편의 부분 업데이트</a>). 덕분에 State에 칸을 하나 더해도 기존 노드를 고칠 필요가 없어요. 14편에서 검수 통과분을 담을 칸이 새로 생겨도, 그 칸을 모르는 <code>collect</code>·<code>select</code>는 한 줄도 안 바뀌어요.</p>
+
+    <h3 id="reducer-where">리듀서는 drafted와 log 두 칸에만 붙인다</h3>
+    <p><code>Annotated[list, operator.add]</code>가 붙은 칸은 다섯 중 둘뿐이에요. 이게 <strong>리듀서<sup class="fn-ref"><a href="#fn8" id="fnref8">8</a></sup></strong>로, 새 값이 오면 덮어쓰지 말고 <code>+</code>로 이어 붙이라는 표시예요. 왜 두 칸에만 붙였는지는 <strong>그 칸에 누가, 몇 번 쓰나</strong>를 보면 풀려요.</p>
+    <ul>
+      <li><strong><code>drafted</code></strong> — 14편에서 취재 워커 다섯이 <strong>동시에</strong> 이 칸에 한 건씩 넣어요(<a href="langgraph-pattern-orchestrator-worker.html#send-note">9편의 Send</a>). 리듀서 없이 동시에 쓰면 <a href="langgraph-pattern-parallelization.html#key-reducer">8편의 <code>InvalidUpdateError</code></a>가 나고, 다섯 건이 다 남아야 하니 합쳐야 해요.</li>
+      <li><strong><code>log</code></strong> — 다섯 노드가 <strong>모두 한 줄씩</strong> 보태요. 덮어쓰면 마지막 한 줄만 남아요.</li>
+      <li><strong><code>collected</code>·<code>picked</code></strong> — 한 노드가 쓰고 다음 노드가 읽어요. 이런 칸은 <strong>덮어쓰는 게 맞아요</strong>.</li>
+    </ul>
+    <p>리스트가 긴 칸이라서 붙이는 게 아니에요. 가장 긴 <code>collected</code>(100건 남짓)엔 안 붙였어요. <code>TypedDict</code>에 <code>Annotated</code>를 두 개까지만 쓸 수 있어서도 아니고(그런 제한은 없어요), 실행이 느려져서 아껴 쓰는 것도 아니에요. 덮어써야 할 칸에 붙이면 생기는 문제는 속도가 아니라 <strong>틀린 결과</strong>예요. 9건을 적는 노드 뒤에 <strong>그 9건을 읽어 5건만 같은 칸에 돌려주는 노드</strong>를 두고, 리듀서 없이 한 번, 붙여서 한 번 돌려 봤어요.</p>
+    <p class="run-tag">실행: Colab 같은 원격 주피터 또는 로컬 주피터 <span class="run-tag-why">— API 키 없이 돌아가요. 뼈대 셀 아래에 붙여도 뼈대는 안 바뀌어요</span></p>
+    <pre><code>class Right(TypedDict):
+    collected: list                              # 리듀서 없음 → 덮어쓰기
+
+class Wrong(TypedDict):
+    collected: Annotated[list, operator.add]     # 리듀서를 잘못 붙임 → 이어 붙이기
+
+def fetch_nine(s):                               # 기사 9건을 적는다
+    return {"collected": [f"기사{i}" for i in range(1, 10)]}
+
+def keep_five(s):                                # 9건을 읽어 5건만 남겨 같은 칸에 돌려준다
+    return {"collected": s["collected"][:5]}
+
+def demo(schema):
+    g = StateGraph(schema)
+    g.add_node("fetch_nine", fetch_nine)
+    g.add_node("keep_five", keep_five)
+    g.add_edge(START, "fetch_nine")
+    g.add_edge("fetch_nine", "keep_five")
+    g.add_edge("keep_five", END)
+    out = g.compile().invoke({"collected": []})
+    print(schema.__name__, len(out["collected"]), out["collected"])
+
+demo(Right)
+demo(Wrong)</code></pre>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 위 코드를 실행했을 때 제 화면에 찍힌 출력이에요</span></p>
+    <pre><code>Right 5 ['기사1', '기사2', '기사3', '기사4', '기사5']
+Wrong 14 ['기사1', '기사2', '기사3', '기사4', '기사5', '기사6', '기사7', '기사8', '기사9', '기사1', '기사2', '기사3', '기사4', '기사5']</code></pre>
+    <p><code>Wrong</code>은 5건으로 줄이는 노드를 지났는데 14건이 됐어요. <code>keep_five</code>가 돌려준 5건이 칸을 바꾸지 못하고 이미 있던 9건 뒤에 <strong>이어 붙어서</strong> 9 + 5 = 14예요. <code>기사1</code>~<code>기사5</code>가 두 번 나오는데, 에러는 한 줄도 없어요.</p>
+    <p>더 곤란한 건 빈 뼈대에서는 이 실수가 <strong>아예 안 보인다</strong>는 점이에요. 뼈대의 <code>collected</code>·<code>picked</code>에도 리듀서를 붙여 돌려 봤는데, 로그 다섯 줄이 한 글자도 다르지 않았어요. 빈 리스트끼리 이어 붙여도 빈 리스트거든요. 칸을 읽어 줄여서 다시 쓰는 노드가 생겨야 드러나는데, 이 시리즈에서는 <a href="newsletter-agent-summarize-verify.html">14편</a> 검수가 그 자리예요. 그래서 통과분은 리듀서가 붙은 <code>drafted</code>가 아니라 리듀서 없는 새 칸에 담아요.</p>
+    <div class="key-point" id="key-reducer-where">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>리듀서를 붙일지는 칸이 긴지, 실행이 느려지는지가 아니라 <strong>"그 칸에 여러 곳이 쓰거나, 쓸 때마다 쌓아야 하나"</strong>로 정해요. <code>drafted</code>는 취재 워커 여럿이 동시에 쓰고 <code>log</code>는 모든 노드가 한 줄씩 보태니 <code>operator.add</code>로 합쳐요. <code>collected</code>·<code>picked</code>처럼 한 노드가 쓰고 다음 노드가 읽는 칸에 붙이면, 9건을 5건으로 줄였는데 14건이 되는 틀린 숫자가 에러 없이 나와요.</p>
+    </div>
+
+    <h3 id="swap-by-name">build()는 노드를 이름으로 찾는다</h3>
+    <p><code>build()</code> 안의 <code>globals()[name]</code>이 이 뼈대의 교체 장치예요. <code>globals()</code>는 지금 노트북에 정의된 <strong>이름과 그 이름이 가리키는 값을 묶은 딕셔너리</strong>라, <code>globals()["collect"]</code>는 <strong>지금 그 이름에 붙어 있는 함수</strong>를 꺼내요. 그래서 뒤 편에서 <code>collect</code>를 같은 이름으로 다시 정의하고 <code>run()</code>만 다시 부르면, 조립 코드는 한 줄도 안 고치고 새 함수가 붙어요. 기사 9건짜리 가짜 <code>collect</code>로 확인해 봤어요.</p>
+    <p class="run-tag">실행: Colab 같은 원격 주피터 또는 로컬 주피터 <span class="run-tag-why">— API 키 없이 돌아가요. 12편에서 진짜 <code>collect</code>로 다시 덮어쓰니 그대로 둬도 괜찮아요</span></p>
+    <pre><code>def collect(s: dict) -&gt; dict:                  # 같은 이름으로 다시 정의한다
+    fake = [{"title": f"기사 {i}", "url": f"https://example.com/{i}",
+             "source": "test", "at": "", "summary": ""} for i in range(1, 10)]
+    return {"collected": fake,
+            "log": [f"① 수집   {s['hours']}시간 창 · {len(fake)}건 (가짜 기사)"]}
+
+for line in run()["log"]:
+    print(line)</code></pre>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 위 코드를 실행했을 때 제 화면에 찍힌 출력이에요</span></p>
+    <pre><code>① 수집   24시간 창 · 9건 (가짜 기사)
+② 선별   9 → 0건 (빈 노드)
+③ 취재   0건 (빈 노드)
+④ 검수   0건 (빈 노드)
+⑤ 발행   0건 (빈 노드)</code></pre>
+    <p>첫 줄이 0에서 벗어났고, 둘째 줄의 <code>9 → 0건</code>이 수집 결과가 선별로 건너갔다는 증거예요. 다섯 칸 모양을 따른 고정 가짜 값도 뼈대에서는 괜찮은 껍데기예요.</p>
+    <p>두 가지는 조심해요. 하나, 교체가 되는 건 <code>run()</code>이 매번 <code>build()</code>부터 다시 하기 때문이에요. 조립할 때 함수 자체를 붙여 두니, <code>app = build().compile()</code>을 변수에 담아 두고 <code>app.invoke(INIT)</code>를 되풀이하면 <code>collect</code>를 고쳐도 반영이 안 돼요. 제가 그렇게 해 보니 <code>app.invoke</code>의 첫 줄은 옛 로그 그대로였고, <code>run()</code>을 부르자 새 로그가 찍혔어요. 둘, 이름 목록에 <code>"colect"</code>처럼 오타가 있으면 조립 단계에서 <code>KeyError: 'colect'</code>로 멈춰요. 그 이름의 함수가 딕셔너리에 없다는 뜻이에요.</p>
+
+    <h2 id="why-stubs"><span class="hl">어차피 지울 코드인데 왜 만들까</span> — 걸어 다니는 뼈대</h2>
+    <p>위 <code>collect</code>·<code>select</code>의 몸통은 12편, 13편에서 통째로 지워져요. 그런데도 먼저 만드는 이 방식을 <strong>걸어 다니는 뼈대(walking skeleton)</strong>라고 불러요. 단계마다 입출력 모양만 맞춘 껍데기(빈 값이나 고정 가짜 값 + 로그 한 줄)를 만들어 → 전부 잇고 → 하나씩 진짜 구현으로 바꾸는 방식이에요. 그러니 "어차피 지울 코드"는 반만 맞아요. 지워지는 건 함수의 <strong>안쪽</strong>뿐이고, 빈 노드가 세운 네 가지는 16편까지 남아요.</p>
+    <ol>
+      <li><strong>규격을 고정해요.</strong> 주고받을 칸(State)과 실행 순서(엣지)가 첫날 <code>Brief</code> 선언과 <code>build()</code> 한 곳에 적히고, 뒤의 노드는 모두 그 규격을 보고 만들어져요. 부품을 따로 만들면 이 어긋남을 대개 마감 직전에야 알아요.</li>
+      <li><strong>늘 도는 상태를 지켜요.</strong> 노드 하나를 진짜로 바꿀 때마다 전체를 돌려 다른 데가 안 깨졌는지 바로 봐요.</li>
+      <li><strong>진행도가 보여요.</strong> 가짜 <code>collect</code>를 넣자 첫 줄만 9건으로 바뀐 것처럼, 0에서 벗어난 줄 수가 곧 "어디까지 왔나"예요.</li>
+      <li><strong>교체 비용이 0이에요.</strong> 같은 이름의 함수만 다시 정의하면 끼워져요.</li>
+    </ol>
+    <p>주의할 게 둘 있어요. 첫째, <strong>뼈대가 두꺼워지면 의미가 없어요.</strong> 껍데기에 조건 분기나 임시 로직을 넣으면 걷어낼 일이 또 생겨요(<a href="#stub-choice">아래 나쁜 선택 vs 좋은 선택</a>). 둘째, <strong>State를 처음에 완벽하게 설계하려 들지 마세요.</strong> 필요한 칸을 지금 다 모르는 것도, 14편처럼 중간에 칸이 느는 것도 정상이에요. 미리 정할 건 칸 목록이 아니라 <strong>어느 단계가 어느 단계에 무엇을 넘겨주는지</strong>예요.</p>
+    <div class="key-point" id="key-stub-role">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>빈 노드에서 지워지는 건 함수 안쪽뿐이에요. 첫날 고정한 규격(State 칸·실행 순서), 늘 끝까지 도는 상태, 로그로 보이는 진행도, 같은 이름으로 갈아 끼우는 장치는 끝까지 남아요.</p>
+    </div>
+
+    <h2 id="stub-choice"><span class="hl">나쁜 선택 vs 좋은 선택</span> — 빈 노드 속을 무엇으로 채우나</h2>
+    <p>리허설 날 빈 접시 대신 "대충 비슷한 반찬"을 올려 두고 싶은 유혹이 있어요. 뼈대의 <code>select</code> 자리에서 대 볼게요.</p>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad"><strong>무엇을 했나:</strong> 빈 <code>select</code>에 "제목에 AI가 들어간 기사를 앞에서 5건"이라는 임시 조건을 넣어 그럴듯한 결과가 나오게 했어요.<br><br><strong>무슨 일이 생기나:</strong> 로그에 <code>9 → 5건</code>이 찍혀 선별이 이미 된 것처럼 보여요. 진행도가 거짓말을 하는 거죠. 13편에서 진짜 선별로 바꿀 때 이 조건과, 거기 맞춰 짠 뒤쪽 코드까지 찾아 걷어내야 해요.</td>
+          <td class="choice-good"><strong>무엇을 했나:</strong> 빈 <code>select</code>는 <code>picked</code>를 빈 리스트로 두고 <code>(빈 노드)</code> 로그 한 줄만 남겼어요. 모양 확인이 필요하면 고정 가짜 값만 썼어요.<br><br><strong>무슨 일이 생기나:</strong> 로그의 <code>0건 (빈 노드)</code>만 봐도 안 채운 자리가 보여요. 13편에서는 같은 이름으로 함수를 통째로 다시 정의하면 끝이고, 걷어낼 임시 코드가 없어요.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>껍데기는 <strong>얇을수록</strong> 제 역할을 해요.</p>
+
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 뼈대를 세우기 전에 볼 것</h2>
+    <p><a href="#what-we-build">무엇을 만드나</a>와 <a href="#state-first">State부터 정한다</a>에 나온 값 가운데 뒤 편이나 내 분야로 옮길 때 다시 쓰는 것만 모았어요.</p>
+    <table>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
+      <tbody>
+        <tr><td>이 코드가 도는 langgraph 버전</td><td>1.2.11</td><td><a href="langgraph-state-node-edge.html#build-line">2편</a>부터 쓴 1.2 줄기예요. 결과가 다르면 버전부터 맞춰 봐요</td></tr>
+        <tr><td>수집 시간 창<br><code>hours</code></td><td>24시간</td><td>하루 한 번 받는 뉴스레터라 하루치를 봐요. 더 자주 돌리면 줄여야 같은 기사를 다시 보내지 않아요</td></tr>
+        <tr><td>수집 소스와 하루 기사 수</td><td>11곳 · 최근 24시간 50~120건</td><td>실행 시각마다 달라요. 선별이 몇 건 중에서 다섯을 고르는지 감을 잡는 값이에요</td></tr>
+        <tr><td>발행 건수</td><td>5건</td><td><a href="newsletter-agent-select.html">13편</a>의 선별 구조가 이 수를 목표로 짜여요</td></tr>
+        <tr><td>기사 한 건에 담는 피드 소개글 길이<br><code>summary</code></td><td>앞 300자</td><td><a href="newsletter-agent-collect.html">12편</a> 수집 코드가 자르는 길이예요. 본문이 아니라서 요약 재료로 쓸 본문은 따로 가져와야 해요</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 뼈대를 세우고 노드를 하나씩 바꿀 때</h2>
+    <p>이 편의 실수들은 대부분 <strong>에러 없이</strong> 건수가 이상하거나, 칸이 비어 있거나, 고친 게 안 먹힌 모습으로 먼저 보여요.</p>
+    <p>증상이 아직 없어도, <strong>AI에게 "이 노드를 진짜로 구현해 줘"라고 부탁한 직후</strong>라면 한 번 확인해요.</p>
+    <ul>
+      <li>"collect를 RSS에서 기사 가져오게 바꿔 줘" — 돌려주는 키 이름이 <code>Brief</code> 선언과 같은지, 함수 이름이 <code>collect</code> 그대로인지</li>
+      <li>"여러 개를 동시에 처리하게 바꿔 줘" — <code>collected</code>나 <code>picked</code>에 <code>Annotated[..., operator.add]</code>가 덧붙지 않았는지</li>
+    </ul>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-reducer-grow">
+          <td>줄이는 단계를 지났는데 <strong>건수가 오히려 늘었어요</strong>. 9건을 5건으로 줄였을 텐데 14건이고, 목록 뒤쪽에 앞의 항목이 한 번 더 붙어 있어요. 에러는 없어요</td>
+          <td><code>class Brief</code>에서 그 칸의 선언 줄이에요. 줄이는 노드의 <code>[:5]</code>는 범인이 아니에요. 함수는 5건을 제대로 돌려줬어요</td>
+          <td>그 칸의 <code>len()</code>을 찍고 앞부분이 뒤에서 반복되는지 봐요. 한 노드가 쓰고 다음이 읽는 칸이면 리듀서를 떼요 (<a href="#reducer-where">리듀서는 두 칸에만</a>)</td>
+        </tr>
+        <tr id="suspect-key-typo">
+          <td>노드가 돌았고 로그 줄도 찍혔는데, <strong>다음 단계가 읽는 칸이 빈 리스트</strong>예요. 에러 문장은 한 줄도 없어요</td>
+          <td>그 노드의 <code>return</code> 딕셔너리 키 이름이에요. <code>"picked"</code>를 <code>"pickd"</code>처럼 한 글자만 틀려도 선언에 없는 이름이라, 제가 돌려 보니 에러 없이 버려지고 <code>picked</code>는 빈 채로 남았어요</td>
+          <td><code>print(run())</code>으로 State 전체를 찍어 칸마다 건수를 보고, <code>return</code>의 키를 <code>Brief</code> 선언과 한 글자씩 대조해요 (<a href="#state-first">State부터 정한다</a>)</td>
+        </tr>
+        <tr id="suspect-stale-app">
+          <td>함수를 고쳐 다시 정의했는데 <strong>로그가 옛날 그대로</strong>라, 고친 함수만 계속 들여다보게 돼요</td>
+          <td>함수가 아니라 그래프를 부르는 줄이에요. <code>app = build().compile()</code>을 변수에 담아 두고 <code>app.invoke()</code>를 되풀이하는 셀이 있는지 봐요</td>
+          <td><code>run()</code>을 불러 <code>build()</code>부터 다시 조립해요. 새 로그가 찍히면 함수는 멀쩡했던 거예요 (<a href="#swap-by-name">이름으로 찾는다</a>)</td>
+        </tr>
+        <tr id="suspect-log-str">
+          <td>실행하다가 <code>TypeError: can only concatenate list (not "str") to list</code>가 나요</td>
+          <td>노드가 <code>log</code>에 돌려주는 값이에요. <code>[f"..."]</code>처럼 대괄호로 감싸야 하는데 <code>f"..."</code> 글자만 돌려준 노드가 있어요. <code>log</code>는 리스트끼리 <code>+</code>로 잇는 칸이라 멈춘 거예요</td>
+          <td>노드마다 <code>"log":</code> 바로 뒤가 <code>[</code>로 시작하는지 훑어요. 제가 <code>verify</code> 하나만 대괄호를 빼고 돌렸을 때 이 문장이 그대로 나왔어요. 방금 새로 정의한 노드부터 봐요</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— 뉴스레터 에이전트 노트북이나 LangGraph 코드가 있는 프로젝트 폴더에서</span></p>
+    <pre><code>이 프로젝트의 LangGraph State 선언과 노드 함수를 찾아서 표로 보여 줘. 아직 코드는 고치지 마.
+1. State의 칸마다: 리듀서(Annotated[..., operator.add] 등)가 붙었는지, 그 칸에 값을 돌려주는 노드 이름 전부
+2. 리듀서가 붙은 칸 가운데, 한 노드가 읽고 줄여서 같은 칸에 다시 돌려주는 곳이 있는지
+3. 노드 return 딕셔너리의 키 가운데 State 선언에 없는 이름이 있는지
+4. 조립한 그래프를 변수에 담아 두고 함수를 고친 뒤에도 그 변수를 다시 쓰는 곳이 있는지</code></pre>
+
+    <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
+    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 다른 편의 같은 목록은 <a href="langgraph-what-and-why.html#key-recap">1편</a> · <a href="newsletter-agent-collect.html#key-recap">12편</a> · <a href="newsletter-agent-select.html#key-recap">13편</a> · <a href="newsletter-agent-summarize-verify.html#key-recap">14편</a> · <a href="newsletter-agent-publish-schedule.html#key-recap">15편</a> · <a href="newsletter-agent-metrics-config.html#key-recap">16편</a>에 있어요.</p>
+    <ul class="key-recap">
+      <li><a href="#key-state-crossing">State에는 단계 사이를 건너가는 값만</a></li>
+      <li><a href="#key-reducer-where">리듀서는 여러 곳이 쓰거나 쌓아야 하는 칸에만 — 덮어쓸 칸에 붙이면 9건→5건이 14건</a></li>
+      <li><a href="#key-stub-role">빈 노드가 세운 규격·늘 도는 상태·진행도·교체 장치는 끝까지 남는다</a></li>
+    </ul>
+
+    <h2><span class="hl">다음은</span></h2>
+    <p>지금 로그 다섯 줄은 모두 0이에요. <a href="newsletter-agent-collect.html">12편</a>에서는 기사를 어디서 가져올지 경로를 골라 <code>collect</code>를 진짜 함수로 갈아 끼우고, 첫 줄과 둘째 줄의 <code>→</code> 왼쪽에 실제로 모인 기사 수가 찍혀요.</p>
+
+    <h2>함께 읽으면 좋은 글</h2>
+    <ul>
+      <li><a href="langgraph-state-node-edge.html">흐름을 그림으로 짠다 — LangGraph의 State·Node·Edge</a> — State 선언과 부분 업데이트를 처음 확인한 글이에요.</li>
+      <li><a href="langgraph-pattern-parallelization.html">③ 병렬화 — 동시에 돌리고, 합친다</a> — 리듀서가 왜 필요한지 에러부터 내 본 글이에요.</li>
+      <li><a href="langgraph-pattern-orchestrator-worker.html">④ 오케스트레이터-워커 — 몇 갈래일지 LLM이 정한다</a> — 14편 취재 워커들의 구조예요.</li>
+      <li><a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" rel="noopener">Anthropic — Building Effective Agents</a> — 단계마다 쓰는 워크플로 패턴의 원래 정리예요.</li>
+    </ul>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">RSS — 사이트가 새 글 목록을 정해진 형식의 파일로 내놓아, 프로그램이 화면을 긁지 않고도 새 글을 읽어 갈 수 있게 한 통로예요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">공개 API — 서비스가 외부 프로그램이 데이터를 요청해 받아 가도록 약속된 형식으로 열어 둔 창구예요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">노드 — 그래프에서 State를 받아 바꾼 칸만 딕셔너리로 돌려주는 파이썬 함수 한 개로, <a href="langgraph-state-node-edge.html#build-line">2편</a>에서 처음 만들었어요. <a href="#fnref3">↩</a></li>
+        <li id="fn4">걸어 다니는 뼈대(walking skeleton) — 모든 단계를 진짜 일은 하지 않는 얇은 껍데기로 먼저 이어, 처음부터 끝까지 한 번 실행되게 만든 최소한의 프로그램이에요. <a href="#fnref4">↩</a></li>
+        <li id="fn5">스텁(stub) — 받는 값과 돌려주는 값의 모양만 맞추고 속은 비워 둔 임시 함수예요. <a href="#fnref5">↩</a></li>
+        <li id="fn6">노트북 — 주피터처럼 코드를 셀 단위로 나눠 실행하고, 앞 셀에서 만든 이름을 뒤 셀이 이어 쓰는 실행 환경이에요. <a href="#fnref6">↩</a></li>
+        <li id="fn7">TypedDict — 딕셔너리에 어떤 키가 들어갈지 미리 적어 두는 파이썬 문법으로, <a href="langgraph-state-node-edge.html#build-line">2편</a>에서 State 선언에 처음 썼어요. <a href="#fnref7">↩</a></li>
+        <li id="fn8">리듀서(reducer) — 같은 칸에 값이 여러 번 들어올 때 덮어쓰지 않고 어떻게 합칠지 정한 규칙으로, <a href="langgraph-pattern-parallelization.html#why-reducer">8편</a>에서 처음 다뤘어요. <a href="#fnref8">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <h3 id="series-list">"에이전트 팀 꾸리기 — LangGraph" 시리즈</h3>
+    <a class="post-nav" href="langgraph-what-and-why.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">다음에 어느 코드가 실행될까 — LangGraph와 워크플로·에이전트</span>
+    </a>
+    <a class="post-nav" href="langgraph-state-node-edge.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">흐름을 그림으로 짠다 — LangGraph의 State·Node·Edge</span>
+    </a>
+    <a class="post-nav" href="langgraph-branch-drills.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">갈림길을 밀어붙인다 — 세 갈래·라벨·끝나지 않는 반복</span>
+    </a>
+    <a class="post-nav" href="langgraph-branches-and-tool-loop.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">모델이 다음 길을 고르게 한다 — 도구를 쥐여 주는 루프</span>
+    </a>
+    <a class="post-nav" href="langgraph-env-troubleshooting.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">.env가 안 읽혔던 네 겹의 이유 — 원격 주피터에서 API 키 넣기</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-chaining.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">① 프롬프트 체이닝 — 순서대로, 사이에 검사</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-routing.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">② 라우팅 — 먼저 분류하고, 한 갈래로</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-parallelization.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">③ 병렬화 — 동시에 돌리고, 합친다</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-orchestrator-worker.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">④ 오케스트레이터-워커 — 몇 갈래일지 LLM이 정한다</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-evaluator-optimizer.html">
+      <span class="post-nav-label">(10)</span>
+      <span class="post-nav-title">⑤ 평가자-최적화자 — 통과할 때까지 고쳐 쓰기</span>
+    </a>
+    <p class="post-date">(11) 뉴스레터 에이전트를 빈 노드 다섯 개로 먼저 세운다 (이 글)</p>
+    <a class="post-nav" href="newsletter-agent-collect.html">
+      <span class="post-nav-label">(12)</span>
+      <span class="post-nav-title">기사를 어디서 가져올까 — RSS·관문·수집 노드</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-select.html">
+      <span class="post-nav-label">(13)</span>
+      <span class="post-nav-title">100건에서 5건 고르기 — 점수 대신 비교, 예선과 본선</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-summarize-verify.html">
+      <span class="post-nav-label">(14)</span>
+      <span class="post-nav-title">요약을 세 칸으로 받고 원문과 대조한다</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-publish-schedule.html">
+      <span class="post-nav-label">(15)</span>
+      <span class="post-nav-title">디스코드로 매일 아침 받아 보기 — 웹훅과 GitHub Actions</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-metrics-config.html">
+      <span class="post-nav-label">(16)</span>
+      <span class="post-nav-title">돌고 나서 재 본다 — 실행 기록과 설정 파일</span>
+    </a>
+
+    <a class="post-nav" href="newsletter-agent-collect.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">기사를 어디서 가져올까 — RSS·관문·수집 노드 (12)</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
