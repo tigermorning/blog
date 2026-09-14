@@ -302,7 +302,7 @@ ToolMessage | 계란 3개</code></pre>
       <ol>
         <li><strong>부탁을 또렷하게</strong> — 모델에게 매번 맨 앞에 붙여 주는 기본 지시문(시스템 프롬프트)에 "조회한 뒤 판정한다"는 절차를 적어요. 여전히 모델의 판단이라 보장은 못 해요.</li>
         <li><strong>도구를 하나로 합치기</strong> — 판정 도구가 노트 이름만 받아서 안에서 조회까지 하게 바꿔요. 순서가 함수 코드 안에 박혀서, 모델이 숫자를 옮겨 적을 일이 아예 없어져요.</li>
-        <li><strong><a href="langgraph-what-and-why.html#workflow-vs-agent">워크플로</a>로 바꾸기</strong> — 조회 노드와 판정 노드를 고정 엣지(<code>add_edge</code>)로 이어요. 순서를 그래프가 정하니 가장 확실해요. <a href="langgraph-five-workflow-patterns.html#chaining">다음 편의 프롬프트 체이닝</a>이 이 모양이에요.</li>
+        <li><strong><a href="langgraph-what-and-why.html#workflow-vs-agent">워크플로</a>로 바꾸기</strong> — 조회 노드와 판정 노드를 고정 엣지(<code>add_edge</code>)로 이어요. 순서를 그래프가 정하니 가장 확실해요. <a href="langgraph-pattern-chaining.html#chaining">6편의 프롬프트 체이닝</a>이 이 모양이에요.</li>
       </ol>
     </div>
     <p>이 <code>agent ↔ tools</code> 루프는 너무 자주 쓰여서 한 줄짜리 부품도 있어요.</p>
@@ -399,7 +399,7 @@ agent.invoke({"messages": [("user", "계란말이 두 접시 만들 수 있어?"
 4. 도구 호출 횟수 상한이나 recursion_limit이 어디에 몇으로 걸려 있는지 (없으면 없다고)</code></pre>
 
     <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
-    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 복습할 때 이것부터 보면 돼요. 다른 편의 같은 목록은 <a href="langgraph-what-and-why.html#key-recap">1편</a> · <a href="langgraph-state-node-edge.html#key-recap">2편</a> · <a href="langgraph-branch-drills.html#key-recap">3편</a> · <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a> · <a href="langgraph-patterns-orchestrator-evaluator.html#key-recap">7편</a>에 있어요.</p>
+    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 복습할 때 이것부터 보면 돼요. 다른 편의 같은 목록은 <a href="langgraph-what-and-why.html#key-recap">1편</a> · <a href="langgraph-state-node-edge.html#key-recap">2편</a> · <a href="langgraph-branch-drills.html#key-recap">3편</a> · <a href="langgraph-pattern-chaining.html#key-recap">6편</a> · <a href="langgraph-pattern-routing.html#key-recap">7편</a> · <a href="langgraph-pattern-parallelization.html#key-recap">8편</a> · <a href="langgraph-pattern-orchestrator-worker.html#key-recap">9편</a> · <a href="langgraph-pattern-evaluator-optimizer.html#key-recap">10편</a>에 있어요.</p>
     <ul class="key-recap">
       <li><a href="#key-code-tools">단순한 계산도 도구로 빼요</a> — 티 안 나는 오답, 검사할 수 있는 함수, 일 나눠 맡기기</li>
       <li><a href="#key-bind-tools">모델은 요청서만 쓰고, 실행은 ToolNode가 해요</a></li>
@@ -423,7 +423,7 @@ agent.invoke({"messages": [("user", "계란말이 두 접시 만들 수 있어?"
     </ol>
     <p>정답은 없어요. 모델 답은 실행할 때마다 달라질 수 있으니, 제 조건에서 몇 번 돌려 보고 기록으로 비교하는 게 요령이에요.</p>
     <h2><span class="hl">다음은</span></h2>
-    <p>여기까지 오면 그래프 하나 안에서 자율성 눈금자의 왼쪽 끝과 오른쪽 끝을 다 써 본 셈이에요. 다음은 두 갈래예요. 키를 넣다가 막히셨다면 <a href="langgraph-env-troubleshooting.html">5편</a>에서 <code>.env</code>가 안 읽혔던 네 겹의 이유를 먼저 풀고 오세요. 잘 돌아갔다면 <a href="langgraph-five-workflow-patterns.html">6편</a>으로 건너뛰어도 돼요. 지금까지 손으로 그은 선들이 <strong>다섯 가지 이름 붙은 모양</strong>으로 다시 나와요.</p>
+    <p>여기까지 오면 그래프 하나 안에서 자율성 눈금자의 왼쪽 끝과 오른쪽 끝을 다 써 본 셈이에요. 다음은 두 갈래예요. 키를 넣다가 막히셨다면 <a href="langgraph-env-troubleshooting.html">5편</a>에서 <code>.env</code>가 안 읽혔던 네 겹의 이유를 먼저 풀고 오세요. 잘 돌아갔다면 <a href="langgraph-pattern-chaining.html">6편</a>으로 건너뛰어도 돼요. 지금까지 손으로 그은 선들이 <strong>다섯 가지 이름 붙은 모양</strong>으로 다시 나와요.</p>
 
     <h2>함께 읽으면 좋은 글</h2>
     <ul>
@@ -463,13 +463,25 @@ agent.invoke({"messages": [("user", "계란말이 두 접시 만들 수 있어?"
       <span class="post-nav-label">(5)</span>
       <span class="post-nav-title">.env가 안 읽혔던 네 겹의 이유 — 원격 주피터에서 API 키 넣기</span>
     </a>
-    <a class="post-nav" href="langgraph-five-workflow-patterns.html">
+    <a class="post-nav" href="langgraph-pattern-chaining.html">
       <span class="post-nav-label">(6)</span>
-      <span class="post-nav-title">다섯 가지 흐름 모양 ① — 체이닝·라우팅·병렬화</span>
+      <span class="post-nav-title">① 프롬프트 체이닝 — 순서대로, 사이에 검사</span>
     </a>
-    <a class="post-nav" href="langgraph-patterns-orchestrator-evaluator.html">
+    <a class="post-nav" href="langgraph-pattern-routing.html">
       <span class="post-nav-label">(7)</span>
-      <span class="post-nav-title">다섯 가지 흐름 모양 ② — 오케스트레이터-워커·평가자-최적화자</span>
+      <span class="post-nav-title">② 라우팅 — 먼저 분류하고, 한 갈래로</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-parallelization.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">③ 병렬화 — 동시에 돌리고, 합친다</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-orchestrator-worker.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">④ 오케스트레이터-워커 — 몇 갈래일지 LLM이 정한다</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-evaluator-optimizer.html">
+      <span class="post-nav-label">(10)</span>
+      <span class="post-nav-title">⑤ 평가자-최적화자 — 통과할 때까지 고쳐 쓰기</span>
     </a>
 
     <a class="post-nav" href="langgraph-env-troubleshooting.html">

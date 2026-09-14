@@ -77,7 +77,7 @@
     </div>
 
     <p><a href="langgraph-branches-and-tool-loop.html#tool-loop">4편의 도구 루프</a>에서 이 시리즈 처음으로 API 키가 필요해져요. 저는 키 넣는 방법 세 가지 중 <code>.env</code>를 골랐는데, 거기서 한참 막혔어요. 파일은 분명히 만들었는데 "키 설정 여부: 비어 있음"만 나오고, <strong>에러는 한 줄도 안 났거든요</strong>.</p>
-    <p>풀고 보니 막힌 이유가 네 겹이었어요. 하나를 풀어도 다음 게 그대로 남아 있어서 계속 같은 화면이 나왔던 거예요. 같은 데서 막힐 분을 위해 순서대로 적어 둘게요. 이 편은 LangGraph 문법이 아니라 <strong>실행 환경</strong> 이야기라, 키가 잘 들어갔다면 <a href="langgraph-five-workflow-patterns.html">6편</a>으로 건너뛰어도 돼요.</p>
+    <p>풀고 보니 막힌 이유가 네 겹이었어요. 하나를 풀어도 다음 게 그대로 남아 있어서 계속 같은 화면이 나왔던 거예요. 같은 데서 막힐 분을 위해 순서대로 적어 둘게요. 이 편은 LangGraph 문법이 아니라 <strong>실행 환경</strong> 이야기라, 키가 잘 들어갔다면 <a href="langgraph-pattern-chaining.html">6편</a>으로 건너뛰어도 돼요.</p>
 
     <h2 id="analogy"><span class="hl">비유</span> — 남의 식당 주방을 빌려 하루 장사하기</h2>
     <p>먼저 비유 없이 사실만 말하면 이래요. <strong>브라우저의 노트북 화면에서 [실행]을 눌러도, 코드는 제 노트북이 아니라 남의 서버에서 돕니다.</strong> 그래서 제 노트북에 만든 파일은 그 코드가 볼 수 없어요. 이 한 문장이 네 함정 중 첫 번째이자, 나머지 셋의 배경이에요. 그럼 <a href="langgraph-what-and-why.html#analogy">시리즈 내내 쓰던 그 주방</a>으로 옮겨 볼게요.</p>
@@ -308,7 +308,7 @@ DIALECT_API_KEY = os.getenv("DIALECT_API_KEY")</code></pre>
 4. load_dotenv를 부르는 곳마다 override 값</code></pre>
 
     <h2><span class="hl">다음은</span></h2>
-    <p>키가 들어갔으면 <a href="langgraph-branches-and-tool-loop.html#tool-loop">4편의 도구 루프</a>로 돌아가 실습을 마저 하세요. 거기까지 끝냈다면 <a href="langgraph-five-workflow-patterns.html">6편</a>이에요. 지금까지 손으로 그은 선들이 <strong>다섯 가지 이름 붙은 모양</strong>으로 다시 나와요.</p>
+    <p>키가 들어갔으면 <a href="langgraph-branches-and-tool-loop.html#tool-loop">4편의 도구 루프</a>로 돌아가 실습을 마저 하세요. 거기까지 끝냈다면 <a href="langgraph-pattern-chaining.html">6편</a>이에요. 지금까지 손으로 그은 선들이 <strong>다섯 가지 이름 붙은 모양</strong>으로 다시 나와요.</p>
 
     <h2>함께 읽으면 좋은 글</h2>
     <ul>
@@ -347,18 +347,30 @@ DIALECT_API_KEY = os.getenv("DIALECT_API_KEY")</code></pre>
       <span class="post-nav-title">모델이 다음 길을 고르게 한다 — 도구를 쥐여 주는 루프</span>
     </a>
     <p class="post-date">(5) .env가 안 읽혔던 네 겹의 이유 — 원격 주피터에서 API 키 넣기 (이 글)</p>
-    <a class="post-nav" href="langgraph-five-workflow-patterns.html">
+    <a class="post-nav" href="langgraph-pattern-chaining.html">
       <span class="post-nav-label">(6)</span>
-      <span class="post-nav-title">다섯 가지 흐름 모양 ① — 체이닝·라우팅·병렬화</span>
+      <span class="post-nav-title">① 프롬프트 체이닝 — 순서대로, 사이에 검사</span>
     </a>
-    <a class="post-nav" href="langgraph-patterns-orchestrator-evaluator.html">
+    <a class="post-nav" href="langgraph-pattern-routing.html">
       <span class="post-nav-label">(7)</span>
-      <span class="post-nav-title">다섯 가지 흐름 모양 ② — 오케스트레이터-워커·평가자-최적화자</span>
+      <span class="post-nav-title">② 라우팅 — 먼저 분류하고, 한 갈래로</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-parallelization.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">③ 병렬화 — 동시에 돌리고, 합친다</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-orchestrator-worker.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">④ 오케스트레이터-워커 — 몇 갈래일지 LLM이 정한다</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-evaluator-optimizer.html">
+      <span class="post-nav-label">(10)</span>
+      <span class="post-nav-title">⑤ 평가자-최적화자 — 통과할 때까지 고쳐 쓰기</span>
     </a>
 
-    <a class="post-nav" href="langgraph-five-workflow-patterns.html">
+    <a class="post-nav" href="langgraph-pattern-chaining.html">
       <span class="post-nav-label">다음 편 →</span>
-      <span class="post-nav-title">다섯 가지 흐름 모양 ① — 체이닝·라우팅·병렬화</span>
+      <span class="post-nav-title">① 프롬프트 체이닝 — 순서대로, 사이에 검사</span>
     </a>
 
   </main>

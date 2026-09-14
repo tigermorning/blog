@@ -149,18 +149,59 @@ while True:
     <p>그런데 여기서 중요한 질문이 하나 남아요. <strong>그럼 도구를 어떤 순서로 쓸지는 누가 정하나요?</strong> "조회하고, 판단하고, 답을 써라"를 개발자가 코드에 박아 두면 <strong>워크플로<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup></strong>, 매 단계 LLM이 스스로 고르게 두면 좁은 뜻의 <strong>에이전트</strong>예요. 이 기준은 <a href="what-is-automation-workflow-agent.html">자동화·워크플로·에이전트, 뭐가 다를까</a>에서 내비 경로와 자율주행에 빗대 처음 다뤘던 것과 같아요.</p>
     <p id="not-criteria">처음 배울 때는 겉으로 보이는 차이를 기준으로 착각하기 쉬워요. 아래 넷은 <strong>기준이 아니에요</strong>.</p>
     <ul>
-      <li><strong>LLM을 몇 번 부르는지</strong> — 워크플로도 LLM을 여러 번 불러요. <a href="langgraph-five-workflow-patterns.html#chaining">6편의 프롬프트 체이닝</a>은 LLM 호출 여러 번을 순서대로 이은, 가장 전형적인 워크플로예요.</li>
+      <li><strong>LLM을 몇 번 부르는지</strong> — 워크플로도 LLM을 여러 번 불러요. <a href="langgraph-pattern-chaining.html#chaining">6편의 프롬프트 체이닝</a>은 LLM 호출 여러 번을 순서대로 이은, 가장 전형적인 워크플로예요.</li>
       <li><strong>도구를 쓰는지</strong> — 워크플로의 노드도 도구를 쥘 수 있어요. 바로 아래에서 볼 'LLM에 도구를 붙인 한 덩어리'는 워크플로와 에이전트가 함께 쓰는 기본 부품이에요.</li>
       <li><strong>모델이 큰지 작은지</strong> — 같은 모델로 둘 다 만들 수 있어요. 오히려 워크플로 안에서 쉬운 단계는 작고 싼 모델로, 어려운 단계는 큰 모델로 나눠 보내기도 해요.</li>
-      <li><strong>무엇으로 만들었는지</strong> — n8n은 워크플로 자동화 도구, LangGraph는 에이전트 프레임워크로 카테고리부터 달라요. 하지만 카테고리는 그 제품이 <strong>무엇을 하려고 만들어졌느냐</strong>의 이야기라서, <a href="langgraph-five-workflow-patterns.html">6</a>·<a href="langgraph-patterns-orchestrator-evaluator.html">7편</a>의 다섯 패턴은 LangGraph로 그렸는데도 전부 워크플로예요. 두 도구의 차이는 <a href="#n8n-vs-langgraph">아래에서 따로 비교해요</a>.</li>
+      <li><strong>무엇으로 만들었는지</strong> — n8n은 워크플로 자동화 도구, LangGraph는 에이전트 프레임워크로 카테고리부터 달라요. 하지만 카테고리는 그 제품이 <strong>무엇을 하려고 만들어졌느냐</strong>의 이야기라서, <a href="langgraph-pattern-chaining.html">6</a>~<a href="langgraph-pattern-evaluator-optimizer.html">10편</a>의 다섯 패턴은 LangGraph로 그렸는데도 전부 워크플로예요. 두 도구의 차이는 <a href="#n8n-vs-langgraph">아래에서 따로 비교해요</a>.</li>
     </ul>
-    <p>그래서 <a href="langgraph-five-workflow-patterns.html#routing">6편의 라우팅</a>처럼 LLM이 입력을 읽고 갈래를 골라도, 고를 수 있는 갈래를 개발자가 미리 다 그려 뒀다면 여전히 워크플로예요. LLM이 판단을 하느냐가 아니라, <strong>그 판단이 움직일 수 있는 길을 누가 그려 뒀느냐</strong>를 봐요.</p>
+    <p>그래서 <a href="langgraph-pattern-routing.html#routing">7편의 라우팅</a>처럼 LLM이 입력을 읽고 갈래를 골라도, 고를 수 있는 갈래를 개발자가 미리 다 그려 뒀다면 여전히 워크플로예요. LLM이 판단을 하느냐가 아니라, <strong>그 판단이 움직일 수 있는 길을 누가 그려 뒀느냐</strong>를 봐요.</p>
     <div class="key-point" id="key-who-decides">
       <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
       <p>워크플로와 에이전트를 가르는 기준은 하나예요. <strong>다음 걸음을 누가 정하나.</strong> 개발자가 코드로 길을 미리 다 그려 뒀으면 워크플로, LLM이 매 단계 스스로 정하면 에이전트예요. LLM을 몇 번 부르는지, 도구를 쓰는지, 모델이 큰지는 기준이 아니에요. 셋 다 워크플로와 에이전트 양쪽에 똑같이 나타날 수 있어서 둘을 가르지 못해요.</p>
     </div>
     <p id="anthropic-advice">Anthropic은 "가장 단순한 방법으로 시작하고, 자율성이 꼭 필요하다는 증거가 있을 때만 복잡도를 더하라"고 권해요. 정해진 길을 따르면 결과를 예측할 수 있고, 비용을 통제할 수 있고, 틀렸을 때 어디가 틀렸는지 바로 찾을 수 있으니까요.</p>
-    <p>모든 그래프의 노드 하나하나는 <strong>증강된 LLM<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup></strong>이라고 보면 이해가 쉬워요. LLM 본체에 검색·도구·메모리가 붙은 한 덩어리요. 붙이는 도구는 크게 셋이에요.</p>
+    <p>모든 그래프의 노드 하나하나는 <strong>증강된 LLM<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup></strong>이라고 보면 이해가 쉬워요. LLM 본체에 검색·도구·메모리가 붙은 한 덩어리요. 붙이는 도구는 크게 셋이에요. 그림으로 그리면 이래요.</p>
+    <svg viewBox="0 0 700 300" role="img" aria-label="입력(In)이 LLM을 거쳐 출력(Out)으로 나가는 그림. LLM 아래로 검색·도구·메모리 세 창구가 점선 양방향 화살표로 매달려 있고, 각각 질의·결과, 호출·응답, 읽기·쓰기를 주고받는다">
+      <defs>
+        <marker id="augArrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+          <path d="M0,0 L9,4.5 L0,9 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+
+      <ellipse cx="90" cy="55" rx="48" ry="32" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="90" y="62" text-anchor="middle" font-family="var(--font-heading)" font-size="20" fill="var(--accent)">In</text>
+
+      <ellipse cx="610" cy="55" rx="48" ry="32" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="610" y="62" text-anchor="middle" font-family="var(--font-heading)" font-size="20" fill="var(--accent)">Out</text>
+
+      <rect x="295" y="20" width="110" height="70" rx="12" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+      <text x="350" y="52" text-anchor="middle" font-family="var(--font-heading)" font-size="22" fill="var(--accent)">LLM</text>
+      <text x="350" y="74" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">증강된 LLM</text>
+
+      <line x1="139" y1="55" x2="293" y2="55" stroke="var(--muted)" stroke-width="2" marker-end="url(#augArrow)"/>
+      <line x1="407" y1="55" x2="562" y2="55" stroke="var(--muted)" stroke-width="2" marker-end="url(#augArrow)"/>
+
+      <line x1="318" y1="90" x2="140" y2="200" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="6 4" marker-start="url(#augArrow)" marker-end="url(#augArrow)"/>
+      <line x1="350" y1="90" x2="350" y2="200" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="6 4" marker-start="url(#augArrow)" marker-end="url(#augArrow)"/>
+      <line x1="382" y1="90" x2="560" y2="200" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="6 4" marker-start="url(#augArrow)" marker-end="url(#augArrow)"/>
+
+      <text x="205" y="150" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">질의 · 결과</text>
+      <text x="390" y="148" text-anchor="start" font-family="var(--font-body)" font-size="12" fill="var(--muted)">호출 · 응답</text>
+      <text x="495" y="150" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">읽기 · 쓰기</text>
+
+      <rect x="30" y="200" width="170" height="70" rx="8" fill="none" stroke="var(--border)"/>
+      <text x="115" y="228" text-anchor="middle" font-family="var(--font-body)" font-size="15" fill="var(--ink)">검색 (Retrieval)</text>
+      <text x="115" y="250" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">지식 증강</text>
+
+      <rect x="265" y="200" width="170" height="70" rx="8" fill="none" stroke="var(--border)"/>
+      <text x="350" y="228" text-anchor="middle" font-family="var(--font-body)" font-size="15" fill="var(--ink)">도구 (Tools)</text>
+      <text x="350" y="250" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">환경 변경</text>
+
+      <rect x="500" y="200" width="170" height="70" rx="8" fill="none" stroke="var(--border)"/>
+      <text x="585" y="228" text-anchor="middle" font-family="var(--font-body)" font-size="15" fill="var(--ink)">메모리 (Memory)</text>
+      <text x="585" y="250" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">대화 기록</text>
+    </svg>
+    <p>화살표가 양쪽을 가리키는 게 핵심이에요. LLM이 일방적으로 명령만 내리는 게 아니라, 검색엔 <strong>질의를 보내고 결과를 받고</strong>, 도구는 <strong>부르고 응답을 받고</strong>, 메모리는 <strong>읽고 쓰는</strong> 주고받음이거든요. 이 셋을 표로 정리하면 이래요.</p>
     <table id="tool-kinds">
       <thead><tr><th>도구 종류</th><th>하는 일</th><th>주의할 점</th></tr></thead>
       <tbody>
@@ -177,7 +218,7 @@ while True:
       <tbody>
         <tr><td><strong>LangChain</strong></td><td><strong>부품</strong> — 모델 연결, 메시지 형식, 도구 정의, 문서 로더, 벡터스토어</td><td><code>ChatOpenAI</code> — OpenAI 모델을 부르는 부품<br><code>@tool</code> — 파이썬 함수를 모델이 쓸 수 있는 도구로 바꾸는 표시<br>둘 다 <a href="langgraph-branches-and-tool-loop.html#tool-loop">4편의 직접 만들기 ③</a>에서 나와요</td></tr>
         <tr><td><strong>LangGraph</strong></td><td><strong>배선</strong> — 부품을 어떤 순서로 돌릴지, 분기·반복·상태</td><td><code>StateGraph</code> — 흐름 그림(그래프)을 짜는 틀이라 <a href="langgraph-state-node-edge.html#build-line">다음 편의 직접 만들기 ①</a>부터 계속 써요<br><code>ToolNode</code> — 모델이 부탁한 도구를 대신 실행해 주는 노드로, 4편의 직접 만들기 ③에서 나와요</td></tr>
-        <tr><td><strong>LangSmith</strong></td><td><strong>관측</strong> — 실행 기록과 평가를 보여 주는 웹 서비스</td><td>이 시리즈 코드에는 안 나와요. 코드가 아니라 설정 몇 줄로 켜는 서비스라 <a href="langgraph-five-workflow-patterns.html#langsmith">6편</a>에서 켜 봐요</td></tr>
+        <tr><td><strong>LangSmith</strong></td><td><strong>관측</strong> — 실행 기록과 평가를 보여 주는 웹 서비스</td><td>이 시리즈 코드에는 안 나와요. 코드가 아니라 설정 몇 줄로 켜는 서비스라 <a href="langgraph-pattern-parallelization.html#langsmith">8편</a>에서 켜 봐요</td></tr>
       </tbody>
     </table>
     <p>LangChain은 <a href="prompt-execution-three-paths.html">프롬프트 세 경로 직접 실행해보기</a>에서 메시지 객체를 넘기는 모습으로 한 번 봤어요. 초기 LangChain의 "체인"은 <code>prompt | model | parser</code>처럼 <strong>한 줄로만 흐르는 파이프라인</strong>이었어요. 되돌아가는 반복이나 갈림길, 중간 상태 저장에 약해서 2024년에 LangGraph가 따로 나왔고, 지금은 LangChain의 에이전트 기능도 속으로는 LangGraph 위에서 돌아가요.</p>
@@ -186,7 +227,7 @@ while True:
     <ul>
       <li><strong>모델 회사에 묶이지 않아요</strong> — OpenAI든 Anthropic이든 Google이든, 노드 안에서 부르는 모델만 바꾸면 나머지 그래프는 그대로예요.</li>
       <li><strong>흐름을 감추지 않아요</strong> — 어느 단계 다음에 어디로 갈지를 프레임워크가 알아서 정해 주는 게 아니라, State·Node·Edge로 개발자가 한 줄씩 적어요. 손이 더 가는 대신 안 적은 길로는 절대 안 가요. 이 성질이 바로 아래에서 다시 나와요.</li>
-      <li><strong>관측을 붙이기 쉬워요</strong> — 코드를 고치지 않고 환경 변수 몇 줄만 넣으면 실행 기록이 LangSmith에 남아요(<a href="langgraph-five-workflow-patterns.html#langsmith">6편</a>에서 켜 봐요).</li>
+      <li><strong>관측을 붙이기 쉬워요</strong> — 코드를 고치지 않고 환경 변수 몇 줄만 넣으면 실행 기록이 LangSmith에 남아요(<a href="langgraph-pattern-parallelization.html#langsmith">8편</a>에서 켜 봐요).</li>
     </ul>
 
     <h3 id="who-decides-edges">누가 정하는지는 선의 종류에 적혀 있어요</h3>
@@ -368,7 +409,7 @@ while True:
         <tr id="suspect-router-calls">
           <td>요청 한 건을 처리했을 뿐인데 API 사용량 화면의 호출 수가 <strong>단계 수만큼</strong> 늘어 있어요. 하루 요금도 요청 수로 어림한 것보다 몇 배 많아요</td>
           <td>다음 단계를 고르는 자리에서 모델을 부르는 곳이에요. 라우터 함수 안의 모델 호출 줄과, 그 호출이 <strong>매번 같은 답</strong>을 내는 구간을 찾아요</td>
-          <td>한 번 돌리고 호출 기록(사용량 화면이나 <a href="langgraph-five-workflow-patterns.html#langsmith">6편의 LangSmith</a>)에서 호출 수를 세요. 답이 늘 같은 호출은 <code>if</code>문 규칙이나 고정 엣지로 바꿔요. 도구 루프에서 바퀴마다 요금이 커지는 거라면 <a href="langgraph-branches-and-tool-loop.html#suspect-message-pileup">4편의 요금 줄</a>을 봐요</td>
+          <td>한 번 돌리고 호출 기록(사용량 화면이나 <a href="langgraph-pattern-parallelization.html#langsmith">8편의 LangSmith</a>)에서 호출 수를 세요. 답이 늘 같은 호출은 <code>if</code>문 규칙이나 고정 엣지로 바꿔요. 도구 루프에서 바퀴마다 요금이 커지는 거라면 <a href="langgraph-branches-and-tool-loop.html#suspect-message-pileup">4편의 요금 줄</a>을 봐요</td>
         </tr>
         <tr id="suspect-action-without-check">
           <td>에이전트가 <strong>사람 확인 없이</strong> 메일을 보내거나 예약·결제를 바꿔 버렸어요</td>
@@ -387,7 +428,7 @@ while True:
 4. 바깥을 바꾸는 도구 앞에 사람이 승인하는 단계가 있는지 (없으면 없다고)</code></pre>
 
     <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
-    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 복습할 때 이것부터 보면 돼요. 다른 편의 같은 목록은 <a href="langgraph-state-node-edge.html#key-recap">2편</a> · <a href="langgraph-branch-drills.html#key-recap">3편</a> · <a href="langgraph-branches-and-tool-loop.html#key-recap">4편</a> · <a href="langgraph-five-workflow-patterns.html#key-recap">6편</a> · <a href="langgraph-patterns-orchestrator-evaluator.html#key-recap">7편</a>에 있어요.</p>
+    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 복습할 때 이것부터 보면 돼요. 다른 편의 같은 목록은 <a href="langgraph-state-node-edge.html#key-recap">2편</a> · <a href="langgraph-branch-drills.html#key-recap">3편</a> · <a href="langgraph-branches-and-tool-loop.html#key-recap">4편</a> · <a href="langgraph-pattern-chaining.html#key-recap">6편</a> · <a href="langgraph-pattern-routing.html#key-recap">7편</a> · <a href="langgraph-pattern-parallelization.html#key-recap">8편</a> · <a href="langgraph-pattern-orchestrator-worker.html#key-recap">9편</a> · <a href="langgraph-pattern-evaluator-optimizer.html#key-recap">10편</a>에 있어요.</p>
     <ul class="key-recap">
       <li><a href="#key-lookup-action">도구 목록은 조회 + 행동</a> — 바깥을 바꾸는 행동 앞에 안전장치를 둬요</li>
       <li><a href="#key-who-decides">워크플로와 에이전트를 가르는 건 "다음 걸음을 누가 정하나"</a> — 호출 수·도구·모델 크기는 기준이 아니에요</li>
@@ -435,13 +476,25 @@ while True:
       <span class="post-nav-label">(5)</span>
       <span class="post-nav-title">.env가 안 읽혔던 네 겹의 이유 — 원격 주피터에서 API 키 넣기</span>
     </a>
-    <a class="post-nav" href="langgraph-five-workflow-patterns.html">
+    <a class="post-nav" href="langgraph-pattern-chaining.html">
       <span class="post-nav-label">(6)</span>
-      <span class="post-nav-title">다섯 가지 흐름 모양 ① — 체이닝·라우팅·병렬화</span>
+      <span class="post-nav-title">① 프롬프트 체이닝 — 순서대로, 사이에 검사</span>
     </a>
-    <a class="post-nav" href="langgraph-patterns-orchestrator-evaluator.html">
+    <a class="post-nav" href="langgraph-pattern-routing.html">
       <span class="post-nav-label">(7)</span>
-      <span class="post-nav-title">다섯 가지 흐름 모양 ② — 오케스트레이터-워커·평가자-최적화자</span>
+      <span class="post-nav-title">② 라우팅 — 먼저 분류하고, 한 갈래로</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-parallelization.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">③ 병렬화 — 동시에 돌리고, 합친다</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-orchestrator-worker.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">④ 오케스트레이터-워커 — 몇 갈래일지 LLM이 정한다</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-evaluator-optimizer.html">
+      <span class="post-nav-label">(10)</span>
+      <span class="post-nav-title">⑤ 평가자-최적화자 — 통과할 때까지 고쳐 쓰기</span>
     </a>
 
     <a class="post-nav" href="langgraph-state-node-edge.html">

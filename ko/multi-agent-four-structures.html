@@ -220,7 +220,7 @@
         <tr id="suspect-critique-loop">
           <td>비평-수정을 돌렸더니 <strong>바퀴마다 새 지적이 나오고</strong> 결론이 안 나요. 사용량은 바퀴 수만큼 늘어요</td>
           <td>비평자에게 준 지시문이에요. <strong>확인할 항목 목록</strong>과 <strong>되돌릴 최대 횟수</strong>가 적혀 있는지 봐요. 둘 다 없으면 끝낼 기준이 없어요</td>
-          <td>바퀴마다 나온 지적을 나란히 놓고, 처음 정한 항목 안의 지적인지 새로 생긴 기준인지 갈라 봐요. 항목과 횟수를 적고, 횟수에 닿으면 그때까지의 초안과 남은 지적을 들고 사람에게 넘기게 해요. 코드로 짠 루프라면 <a href="langgraph-patterns-orchestrator-evaluator.html#suspect-loop-no-result">LangGraph 7편의 이 줄</a>도 같이 봐요</td>
+          <td>바퀴마다 나온 지적을 나란히 놓고, 처음 정한 항목 안의 지적인지 새로 생긴 기준인지 갈라 봐요. 항목과 횟수를 적고, 횟수에 닿으면 그때까지의 초안과 남은 지적을 들고 사람에게 넘기게 해요. 코드로 짠 루프라면 <a href="langgraph-pattern-evaluator-optimizer.html#suspect-loop-no-result">LangGraph 10편의 이 줄</a>도 같이 봐요</td>
         </tr>
         <tr id="suspect-critique-wrong">
           <td>비평을 반영한 뒤 읽어 보니, 초안에서 <strong>맞던 내용이 빠지거나 틀리게 바뀌었어요</strong></td>
@@ -242,7 +242,7 @@
     </a>
 
     <h2><span class="hl">이어서 읽기</span> — 한 게이트웨이 안의 라우터로 보기</h2>
-    <p>오케스트레이터-워커, 팬아웃·합성, 비평-수정은 에이전트 여럿이 아니라 <strong>한 그래프 안의 LLM 호출</strong>로도 만들 수 있어요. LangGraph의 <code>Send</code>, 리듀서, 되돌아가는 선으로 같은 모양을 조립해 본 글이 <a href="langgraph-patterns-orchestrator-evaluator.html">다섯 가지 흐름 모양 ② — 오케스트레이터-워커·평가자-최적화자</a>예요.</p>
+    <p>오케스트레이터-워커, 팬아웃·합성, 비평-수정은 에이전트 여럿이 아니라 <strong>한 그래프 안의 LLM 호출</strong>로도 만들 수 있어요. LangGraph의 <code>Send</code>, 리듀서, 되돌아가는 선으로 같은 모양을 조립해 본 글이 <a href="langgraph-pattern-orchestrator-worker.html">④ 오케스트레이터-워커</a>와 <a href="langgraph-pattern-evaluator-optimizer.html">⑤ 평가자-최적화자</a>예요.</p>
     <p>네 구조 중 "역할을 나누고 문맥은 공유하지 않는" 쪽을 실제 설정 파일로 보고 싶다면 <a href="openclaw-multi-agent-bindings.html">한 게이트웨이에 여러 역할 — 바인딩·델리게이트·스탠딩 오더</a>가 그 예예요. 에이전트 간 직접 대화가 기본으로 닫혀 있는 이유도 거기서 다뤄요.</p>
 
     <hr>

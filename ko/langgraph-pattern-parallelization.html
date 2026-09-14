@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>③ 병렬화 — 동시에 돌리고, 합친다 (8) - Tigermorning</title>
+  <meta name="description" content="LLM 호출 여러 개를 동시에 돌리고 리듀서로 합치는 병렬화를 LangGraph로 만듭니다. 리듀서 없이 같은 State 칸에 동시에 쓰면 무슨 일이 나는지 직접 에러를 내 보고, LangSmith로 실행 기록을 들여다보는 법까지 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="③ 병렬화 — 동시에 돌리고, 합친다 (8)">
+  <meta property="og:description" content="여러 노드가 같은 State 칸에 동시에 쓰면 LangGraph는 에러를 냅니다. 합치는 법을 선언하지 않았기 때문이에요.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/langgraph-pattern-parallelization.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">③ 병렬화</span> — 동시에 돌리고, 합친다 (8)</h1>
+    <p class="post-date">2026. 9. 14.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="langgraph-pattern-routing.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">② 라우팅 — 먼저 분류하고, 한 갈래로 (7)</span>
+    </a>
+
+    <p class="one-liner">병렬화란 서로 독립인 하위 작업을 개수가 정해진 채로 동시에 돌리고, 그 결과를 리듀서로 한 칸에 합치는 워크플로다.</p>
+
+    <div class="why-read" id="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>어디쯤인가</dt>
+        <dd><a href="posts.html#cat-agent-system">8단계</a> › <a href="posts.html#langgraph-team">에이전트 팀 꾸리기 — LangGraph</a> — 8번째 글 (전 10편). <a href="langgraph-pattern-routing.html">지난 편</a>은 하나만 고르는 라우팅이었고, <a href="langgraph-pattern-orchestrator-worker.html">다음 편</a>부터는 개수를 LLM이 정하는 두 모양이에요.</dd>
+        <dt>이런 게 궁금했다면</dt>
+        <dd>
+          <ul>
+            <li>여러 노드가 동시에 같은 칸에 쓰면 어떻게 되나요?</li>
+            <li>동시에 돌린 결과의 순서는 보장되나요?</li>
+          </ul>
+        </dd>
+        <dt>읽고 나면 할 수 있는 것</dt>
+        <dd>
+          <ul>
+            <li>한 글을 여러 기준으로 동시에 평가하고, 그 결과들을 한 칸에 모으는 규칙(리듀서)을 정해 합칩니다.</li>
+          </ul>
+        </dd>
+        <dt>모르면 이런 일이 생겨요</dt>
+        <dd>
+          <ul>
+            <li>같은 칸에 동시에 쓰는 노드가 둘 이상이면 <code>InvalidUpdateError</code>로 멈춰요. <a class="suspect-jump" href="#suspect-invalid-update">언제 의심하나 ↓</a></li>
+          </ul>
+        </dd>
+        <dt>어디에 쓰나</dt>
+        <dd>
+          <ul>
+            <li>한 글을 여러 기준으로 동시에 평가하고 결과를 한 칸에 모으기</li>
+            <li>같은 검사를 여러 번 돌려 다수결로 판정하기</li>
+          </ul>
+        </dd>
+      </dl>
+    </div>
+
+    <h2><span class="hl">비유</span> — 검사 담당 셋이 한 접시를</h2>
+    <p><a href="langgraph-what-and-why.html#analogy">그 주방</a>에서 새 메뉴를 내기 전엔 맛·온도·모양 담당 셋이 <strong>한 접시를 동시에</strong> 검사하고 검수표 한 장에 각자 한 줄씩 적어요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>검사 담당 셋이 한 접시를 동시에 보고, 검수표 한 장에 각자 줄을 더하기</td><td><strong>③ 병렬화</strong> — 동시에 도는 노드 + 결과를 합치는 <strong>리듀서</strong></td></tr>
+      </tbody>
+    </table>
+    <p>다만 여기서 비유가 끊기는 점이 있어요. 사람은 검수표에 줄을 더하는 걸 당연하게 하지만, LangGraph는 <strong>"합치는 법"을 선언하지 않으면</strong> 동시에 들어온 두 값을 에러로 막아요. 아래에서 직접 봐요.</p>
+
+    <section class="quiz-box" id="quiz-parallel">
+      <p class="quiz-box-title">이 상황엔 어떤 패턴?</p>
+      <p class="quiz-question">"완성된 요리 접시 하나를 놓고 맛 담당·온도 담당·모양 담당 셋이 동시에 채점하고, 세 점수를 한 검수표에 모아 '재작업 필요 여부'를 판정해야 한다." 가장 적합한 패턴은?</p>
+      <ol class="quiz-options">
+        <li>라우팅 — 접시 종류에 따라 채점 담당 한 명만 부른다</li>
+        <li class="quiz-answer">병렬화 — 세 채점을 동시에 돌리고 리듀서로 합친다</li>
+        <li>오케스트레이터-워커 — 채점 담당 수를 LLM이 그때그때 정한다</li>
+        <li>프롬프트체이닝 — 맛 채점 후 그 결과로 온도 채점을 한다</li>
+      </ol>
+      <div class="quiz-breakdown">
+        <p><strong>문제를 쪼개면:</strong> 세 기준(맛/온도/모양)은 서로 독립적이에요. 한 채점이 다른 채점 결과를 몰라도 되고, "동시에"라는 조건이 명시돼 있어요. 게다가 채점 담당 수(3명)는 요리 종류와 무관하게 항상 고정이에요.</p>
+        <p><strong>2번인 이유:</strong> 하위작업의 개수·종류를 이미 다 알고 있고(맛/온도/모양 셋), 서로 안 봐도 되는 일을 동시에 실행한 뒤 결과는 리듀서(검수표)로 합쳐요.</p>
+        <p><strong>다른 선택지가 아닌 이유:</strong></p>
+        <ul>
+          <li><strong>1(라우팅):</strong> 하나만 골라 보내는 게 아니라 셋 다 필요해요. 접시 종류와 무관하게 매번 세 기준을 다 채점해야 해요.</li>
+          <li><strong>3(오케스트레이터-워커):</strong> 채점 축 3개는 실행 전에 이미 고정된 값이에요. LLM이 매번 축 개수를 정하면 계획 호출 비용만 늘고, 실행마다 축이 달라져 결과 비교도 안 돼요.</li>
+          <li><strong>4(체이닝):</strong> 맛 채점이 온도 채점 결과를 필요로 하지 않아요. 순서로 묶으면 병렬로 끝날 일이 괜히 느려져요.</li>
+        </ul>
+      </div>
+      <p class="quiz-takeaway">한 줄로: 병렬화 = "몇 개, 뭔지 미리 다 알고, 서로 안 봐도 되는 일을 동시에."</p>
+    </section>
+
+    <h2 id="parallel"><span class="hl">전체 흐름</span></h2>
+    <svg viewBox="0 0 700 130" role="img" aria-label="입력이 세 평가 노드로 동시에 팬아웃되고, 세 결과가 리듀서 하나로 팬인되어 출력으로 가는 그림">
+      <defs>
+        <marker id="lgp3" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+          <path d="M0,0 L9,4.5 L0,9 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <rect x="110" y="48" width="52" height="36" rx="18" fill="none" stroke="var(--border)"/>
+      <text x="136" y="71" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">In</text>
+      <rect x="210" y="12" width="90" height="30" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="255" y="32" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">평가 ①</text>
+      <rect x="210" y="51" width="90" height="30" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="255" y="71" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">평가 ②</text>
+      <rect x="210" y="90" width="90" height="30" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="255" y="110" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">평가 ③</text>
+      <rect x="360" y="48" width="110" height="36" rx="6" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="415" y="71" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">합치기(리듀서)</text>
+      <rect x="526" y="48" width="52" height="36" rx="18" fill="none" stroke="var(--border)"/>
+      <text x="552" y="71" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">Out</text>
+      <line x1="162" y1="61" x2="206" y2="29" stroke="var(--muted)" stroke-width="2" marker-end="url(#lgp3)"/>
+      <line x1="162" y1="66" x2="206" y2="66" stroke="var(--muted)" stroke-width="2" marker-end="url(#lgp3)"/>
+      <line x1="162" y1="71" x2="206" y2="103" stroke="var(--muted)" stroke-width="2" marker-end="url(#lgp3)"/>
+      <line x1="300" y1="27" x2="356" y2="60" stroke="var(--muted)" stroke-width="2" marker-end="url(#lgp3)"/>
+      <line x1="300" y1="66" x2="356" y2="66" stroke="var(--muted)" stroke-width="2" marker-end="url(#lgp3)"/>
+      <line x1="300" y1="105" x2="356" y2="72" stroke="var(--muted)" stroke-width="2" marker-end="url(#lgp3)"/>
+      <line x1="470" y1="66" x2="522" y2="66" stroke="var(--muted)" stroke-width="2" marker-end="url(#lgp3)"/>
+    </svg>
+
+    <h2><span class="hl">동시에 돌리고, 합친다</span></h2>
+    <p>이 패턴은 일부러 <strong>에러부터</strong> 내 보는 게 빨라요. 검사 노드 셋이 같은 <code>checks</code> 칸에 동시에 쓰는 그래프를, 합치는 법 없이 한 번, 합치는 법을 붙여서 한 번 돌려요.</p>
+    <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— langgraph 설치 후, API 키 없이 돌아가요</span></p>
+    <pre><code>import operator
+from typing import Annotated
+from typing_extensions import TypedDict
+from langgraph.graph import StateGraph, START, END
+
+class BadPlate(TypedDict):
+    checks: list                                   # 리듀서 없음: 기본은 덮어쓰기
+
+class Plate(TypedDict):
+    checks: Annotated[list, operator.add]          # 여러 값이 오면 + 로 이어 붙인다
+    verdict: str
+
+def check_taste(state): return {"checks": [("맛", 4)]}
+def check_temp(state):  return {"checks": [("온도", 2)]}
+def check_look(state):  return {"checks": [("모양", 5)]}
+
+def aggregate(state):
+    low = [name for name, score in state["checks"] if score &lt; 3]
+    return {"verdict": f"총 {len(state['checks'])}건, 다시 할 것: {low or '없음'}"}
+
+def build(schema):
+    b = StateGraph(schema)
+    for name, fn in [("taste", check_taste), ("temp", check_temp), ("look", check_look)]:
+        b.add_node(name, fn)
+        b.add_edge(START, name)          # START에서 세 갈래로 동시에 (팬아웃)
+        b.add_edge(name, "aggregate")    # 세 갈래가 한곳으로 (팬인)
+    b.add_node("aggregate", aggregate)
+    b.add_edge("aggregate", END)
+    return b.compile()
+
+try:
+    build(BadPlate).invoke({"checks": []})
+except Exception as e:
+    print(type(e).__name__, "|", str(e).splitlines()[0])
+
+print(build(Plate).invoke({"checks": []}))</code></pre>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 위 코드를 실행했을 때 제 화면에 찍힌 출력이에요</span></p>
+    <pre><code>InvalidUpdateError | At key 'checks': Can receive only one value per step. Use an Annotated key to handle multiple values.
+{'checks': [('모양', 5), ('맛', 4), ('온도', 2)], 'verdict': "총 3건, 다시 할 것: ['온도']"}</code></pre>
+    <p>에러 문장은 "한 스텝에 이 키로 값을 하나만 받을 수 있으니, 여러 값을 받으려면 Annotated 키를 쓰라"는 뜻이에요. 왜 이런 일이 생기는지는 LangGraph의 실행 단위를 알면 풀려요.</p>
+    <ul>
+      <li><strong>슈퍼스텝<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup></strong> — LangGraph는 노드를 하나씩 도는 게 아니라, 실행 준비가 된 노드를 한 스텝에 <strong>모두 동시에</strong> 돌리고, 스텝이 끝나면 반환값을 한꺼번에 State에 합쳐요. 세 검사 노드는 같은 스텝에서 돌았어요.</li>
+      <li><strong>기본 규칙은 덮어쓰기</strong>예요. 노드가 돌려준 키만 새 값으로 바뀌고 돌려주지 않은 키는 그대로 남는다는 건 <a href="langgraph-state-node-edge.html#merge-rules">2편의 합치기 규칙 확인하기</a>에서 직접 봤어요. 그런데 같은 스텝에 같은 키로 값이 셋 오면 무엇을 남길지 정할 수 없어요. LangGraph는 아무거나 고르지 않고 에러를 내요.</li>
+      <li><strong>리듀서<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup></strong>로 합치는 법을 알려 줘요. <code>Annotated[list, operator.add]</code>는 "이 칸은 리스트이고, 여러 값이 오면 <code>+</code>로 이어 붙여라"예요. <code>Annotated</code>는 타입에 덧붙임 정보를 다는 파이썬 표준 문법인데, 파이썬은 무시하고 LangGraph가 읽어서 합치는 규칙으로 써요. <a href="langgraph-branches-and-tool-loop.html#tool-loop">4편</a>의 <code>MessagesState</code>가 메시지를 쌓아 올리던 것도 이 장치 덕분이었어요.</li>
+    </ul>
+    <p>고친 쪽 출력을 보면 세 결과가 다 살았고, <code>aggregate</code>는 셋이 다 모인 뒤에 <strong>한 번만</strong> 돌았어요("총 3건"). 이렇게 한 노드에서 여러 갈래로 펼치는 걸 <strong>팬아웃</strong>, 여러 갈래가 하나로 모이는 걸 <strong>팬인</strong>이라고 해요. 그런데 <code>checks</code>의 순서가 모양·맛·온도예요. 코드에 적은 순서(맛·온도·모양)와 달라요. <strong>병렬 결과의 순서는 보장되지 않아요.</strong> 그래서 항목마다 이름표를 붙여 두는(<code>("맛", 4)</code>) 게 안전해요.</p>
+    <p>성의 없이 쓴 노트 초안을 정확성·명확성·예시 세 축으로 동시에 평가해 봤어요. 점수가 축마다 다르게 나오고 각 코멘트가 자기 축 이야기만 했어요. 한 호출에 기준을 다 몰아넣는 것보다 나은 점은 셋이에요. 모델의 주의가 가장 눈에 띄는 결함 하나로 쏠리지 않고, 한 축의 프롬프트만 고치거나 축을 하나 더하는 게 쉽고, 세 번 연달아 부를 시간에 한 번 부르는 시간이면 끝나요. 다만 <strong>시간은 줄어도 호출 수와 요금은 그대로</strong>예요. 같은 검사를 여러 번 돌려 다수결로 판정하는 투표 방식도 같은 모양으로 만들 수 있어요.</p>
+
+    <h3 id="parallel-error-cause">에러의 진짜 원인 — 병렬 실행이 아니라 한 칸에 동시에 쓰기</h3>
+    <p>이 수업은 병렬로 돌리자마자 에러가 나는 장면으로 시작해서, 저는 처음에 "LangGraph는 병렬로 돌리면 에러가 난다"고 읽었어요. 그런데 에러는 병렬 실행 자체가 아니라 <strong>한 칸에 동시에 쓴 것</strong> 때문이에요. 근거가 셋 있어요.</p>
+    <ul>
+      <li><strong>에러 문장이 고치는 법을 알려 줘요.</strong> "여러 값을 받으려면 Annotated 키를 쓰라"고 했죠. 병렬 실행을 지원하지 않는 거라면 고칠 방법도 없어야 해요.</li>
+      <li><strong>위 코드의 두 번째 실행이 반례예요.</strong> 세 갈래는 그대로 두고 리듀서만 붙인 <code>Plate</code>는 에러 없이 돌아서 "총 3건"을 찍었어요.</li>
+      <li><strong>칸을 따로 두면 리듀서도 필요 없어요.</strong> 아래처럼 검사마다 자기 칸에 쓰게 하면 셋이 동시에 돌아도 에러가 안 나요.</li>
+    </ul>
+    <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— langgraph 설치 후, API 키 없이 돌아가요</span></p>
+    <pre><code>from typing_extensions import TypedDict
+from langgraph.graph import StateGraph, START, END
+
+class Scores(TypedDict):          # 리듀서 없음. 대신 검사마다 칸을 따로 둔다
+    taste: int
+    temp: int
+    look: int
+
+def check_taste(state): return {"taste": 4}
+def check_temp(state):  return {"temp": 2}
+def check_look(state):  return {"look": 5}
+
+b = StateGraph(Scores)
+b.add_node("check_taste", check_taste)
+b.add_node("check_temp", check_temp)
+b.add_node("check_look", check_look)
+for name in ["check_taste", "check_temp", "check_look"]:
+    b.add_edge(START, name)       # 세 갈래가 동시에
+    b.add_edge(name, END)
+print(b.compile().invoke({}))</code></pre>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 위 코드를 실행했을 때 제 화면에 찍힌 출력이에요</span></p>
+    <pre><code>{'taste': 4, 'temp': 2, 'look': 5}</code></pre>
+    <p>정리하면 에러는 <strong>같은 스텝, 같은 칸, 리듀서 없음</strong> 세 조건이 모두 겹칠 때만 나요. 하나만 빠져도 안 나요.</p>
+    <table>
+      <thead><tr><th>그래프 모양</th><th>실행 결과</th></tr></thead>
+      <tbody>
+        <tr><td>동시에, 같은&nbsp;칸, 리듀서&nbsp;없음</td><td><code>InvalidUpdateError</code></td></tr>
+        <tr><td>동시에, 같은&nbsp;칸, 리듀서&nbsp;있음</td><td>셋 다 이어 붙어 남아요 (위&nbsp;<code>Plate</code>)</td></tr>
+        <tr><td>동시에, 칸을&nbsp;따로</td><td>각자 자기 칸에 들어가요 (바로 위 코드)</td></tr>
+        <tr><td>순서대로, 같은&nbsp;칸, 리듀서&nbsp;없음</td><td>에러 없이 덮어써서 마지막 값만 남아요</td></tr>
+      </tbody>
+    </table>
+    <p>마지막 줄이 LangGraph가 동시 쓰기에서만 에러를 내는 이유예요. <code>BadPlate</code>의 세 검사를 맛, 온도, 모양 순서로 이어 돌리면 에러 없이 <code>{'checks': [('모양', 5)]}</code>만 남아요. 순서대로 돌 때는 뒤 노드가 앞 노드의 값을 보고 돌았으니, 덮어쓴 것도 뒤 노드가 고른 결과예요. 동시에 돈 노드들은 서로의 값을 못 본 채 썼으니, 하나만 골라 남기면 나머지가 소리 없이 사라져요. 그래서 LangGraph는 조용히 틀리는 대신 눈에 띄게 멈춰요.</p>
+    <p>비슷하게 오해하기 쉬운 것도 둘 있어요. 노드를 가르는 건 함수 이름이 아니라 <code>add_node</code>에 준 노드 이름이라서, 같은 함수를 두 노드에 붙여도 괜찮아요(노드 이름이 겹치면 실행하기도 전에 <code>add_node</code>에서 <code>ValueError</code>로 막혀요). 그리고 State에 리스트를 못 쓰는 것도 아니에요. 위 <code>Plate</code>의 <code>checks</code>도, <a href="langgraph-branches-and-tool-loop.html#tool-loop">4편</a>의 <code>MessagesState</code>도 리스트 칸이에요.</p>
+    <div class="key-point" id="key-reducer">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>동시에 도는 두 노드가 같은 칸에 값을 돌려주면 <code>InvalidUpdateError</code>가 나요. State의 기본 규칙이 덮어쓰기라서, 같은 스텝에 같은 칸으로 값이 둘 오면 무엇을 남길지 정할 수 없거든요. LangGraph는 아무거나 골라 하나를 몰래 버리는 대신 에러로 알려 줘요. 고치는 법은 그 칸에 합치는 규칙(리듀서, 예: <code>Annotated[list, operator.add]</code>)을 달거나, 노드마다 칸을 따로 두는 거예요.</p>
+    </div>
+
+    <h2 id="langsmith"><span class="hl">LangSmith로 안을 들여다보기</span></h2>
+    <p>오늘 만든 그래프는 노드가 서너 개라 <code>stream()</code>으로도 충분했어요. 하지만 서비스에서는 하루 수천 건이 흐르고 그중 몇 건이 이상한 답을 내요. 그 몇 건을 찾아 "어느 노드에서 어떤 프롬프트로 무엇을 받았는지" 보려면 <code>print()</code>로는 안 돼요. 게다가 LLM은 같은 입력에도 다르게 답하니, 문제가 난 그 순간의 기록이 없으면 재현조차 못 해요.</p>
+    <p><strong>LangSmith</strong>는 이 기록을 남기고 보여 주는 웹 서비스예요. 환경 변수만 넣으면 LangChain·LangGraph의 모든 호출이 자동으로 기록돼요. 코드는 안 고쳐요. 실행 한 번이 하나의 <strong>트레이스<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup></strong>로 남고, 그 안에 노드별 입력·출력, 모델에게 간 프롬프트 전문, 토큰 사용량, 걸린 시간이 계층으로 쌓여요.</p>
+    <p class="run-tag">실행: 프로젝트의 .env 파일에 저장 <span class="run-tag-why">— load_dotenv()로 읽으면 LangChain·LangGraph가 알아서 기록을 보내요</span></p>
+    <pre><code>LANGSMITH_TRACING=true
+LANGSMITH_API_KEY=lsv2_...
+LANGSMITH_PROJECT=langgraph-study</code></pre>
+    <ul>
+      <li>smith.langchain.com에서 가입하면 개인 무료 요금제로 월 5,000 트레이스까지 쓸 수 있어요(2026년 9월 기준). 오늘 실습 분량은 한참 못 미쳐요. 켜지 않아도 공부에는 지장 없어요.</li>
+      <li>옛 자료에 <code>LANGCHAIN_TRACING_V2</code>, <code>LANGCHAIN_API_KEY</code>가 보이면 예전 이름이에요.</li>
+      <li>LangChain을 안 쓰는 함수는 <code>langsmith</code> 패키지의 <code>@traceable</code> 데코레이터를 붙이면 같이 기록돼요.</li>
+      <li><strong>주의:</strong> 추적을 켜면 프롬프트와 입력·출력이 전부 LangSmith 서버로 가요. 개인정보나 밖으로 나가면 안 되는 자료로 실습할 땐 끄거나 조심해야 해요. 키는 <code>.env</code>에만 두고 깃에 올리지 않아요. Colab 같은 원격 주피터에서 셀을 돌린다면 이 <code>.env</code>는 내 컴퓨터가 아니라 그 서버에 둬야 하고, 읽어 줄 python-dotenv가 설치돼 있는지도 먼저 봐야 해요(<a href="langgraph-env-troubleshooting.html">5편의 API 키 막힘 기록</a>).</li>
+    </ul>
+    <p>켜고 나서 앞의 그래프를 다시 돌리면 이런 게 보인대요. 병렬화 그래프는 세 평가 노드가 시간축에서 겹쳐 그려져서, 전체 시간이 가장 느린 노드에 가깝다는 걸 눈으로 확인할 수 있어요. <code>stream()</code>은 State의 변화만 보여 줬지만, LangSmith는 <strong>모델이 본 것 자체</strong>를 보여 줘요. 에이전트 기록을 "답변이 아니라 흔적으로" 보는 감각은 <a href="openclaw-session-records-and-usage.html">답변이 아니라 흔적을 본다 — 세션 기록과 사용량</a>에서 처음 다뤘어요.</p>
+
+    <h2 id="reducer-choice"><span class="hl">나쁜 선택 vs 좋은 선택</span> — 세 검사 결과를 한 칸에 모을 때</h2>
+    <p>같은 주방에서, 검사 담당 셋이 한 접시를 동시에 보고 검수표 한 장에 각자 소견을 적는다고 해 볼게요.</p>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad"><strong>무엇을 했나:</strong> State에 <code>notes: list</code> 칸 하나를 두고, 세 검사 노드가 모두 <code>return {"notes": [내 소견]}</code>으로 그 칸에 돌려주게 했어요. 합치는 법은 따로 정하지 않았어요.<br><br><strong>무슨 일이 생기나:</strong> <code>InvalidUpdateError</code>가 나면서 그래프가 멈춰요. 같은 슈퍼스텝에 같은 칸으로 값이 셋 들어왔는데 LangGraph는 무엇을 남길지 모르거든요. 문제는 <strong>병렬로 돌려서</strong> 난 에러라고 오해하기 쉽다는 거예요. 그래서 병렬화를 포기하고 <code>for</code>문 순차 실행으로 되돌아가면, 에러는 사라지지만 시간은 세 배로 늘어요.</td>
+          <td class="choice-good"><strong>무엇을 했나:</strong> 칸 선언에 <strong>합치는 법</strong>을 같이 적었어요. <code>notes: Annotated[list, operator.add]</code>처럼요. "여러 값이 오면 이어 붙여라"라는 뜻이에요.<br><br><strong>무슨 일이 생기나:</strong> 세 소견이 모두 리스트에 쌓여요. 순서는 실행마다 달라질 수 있으니, 순서가 중요하면 소견에 누가 적었는지를 함께 넣어요. 에러의 원인이 병렬이 아니라 <strong>합치는 법을 안 정한 것</strong>이었다는 게 여기서 분명해져요.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>정리하면 병렬화에서 물을 건 하나예요. <strong>"이 칸에 값이 둘 이상 들어올 수 있나?"</strong> 그렇다면 그 칸에는 반드시 합치는 법이 붙어 있어야 해요.</p>
+
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span></h2>
+    <table>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
+      <tbody>
+        <tr><td>리듀서 없이 같은 칸에 동시에 썼을 때</td><td><code>InvalidUpdateError</code>로 중단</td><td>병렬로 갈라진 노드 셋이 같은 슈퍼스텝에 같은 칸을 반환하면 LangGraph가 <strong>합치는 법을 모른다고 멈춰요</strong>. 에러 메시지만 보면 병렬이 문제 같지만 원인은 선언이에요 (<a href="#parallel-error-cause">에러의 진짜 원인</a>)</td></tr>
+        <tr><td>병렬 결과가 합쳐지는 순서</td><td>정해져 있지 않음</td><td>리듀서 <code>operator.add</code>를 붙이면 3건 모두 합쳐지지만 <strong>순서는 실행마다 달라질 수 있어요</strong>. 순서가 중요하면 합친 뒤에 정렬하거나 아예 병렬로 갈라지 않아야 해요</td></tr>
+        <tr><td>LangSmith 개인 무료 요금제</td><td>월 5,000 트레이스</td><td>한 번 실행이 트레이스 하나예요. 켜 두고 실습하는 정도면 넉넉하지만, 반복 루프를 자동으로 돌리면 금세 닳아요. 요금제는 바뀔 수 있으니 켤 때 한 번 확인하면 돼요</td></tr>
+      </tbody>
+    </table>
+
+    <section class="apply-box" id="apply-blog">
+      <p class="apply-box-title">내 파이프라인에 대입하면 — 검사 셋을 동시에 돌려요</p>
+      <p>다 쓴 글 하나를 검사 셋에 동시에 넣어요 — 링크 검사 · 표 열 이름 검사 · 본문 순서 검사. 셋 다 결과를 <strong>"걸린 것 목록" 한 칸에 써요.</strong> 그래서 이 편의 그 에러가 그대로 나고, <code>operator.add</code>를 달아 주면 세 목록이 이어 붙어요.</p>
+    </section>
+    <section class="apply-box apply-box--repo" id="apply-repo">
+      <p class="apply-box-title">실제 코드에 대입하면 — 검사 스물다섯 개를 모으는 리듀서 하나가 위험해요</p>
+      <p><a href="langgraph-pattern-chaining.html#apply-repo">교정기</a>에 이 패턴도 들어 있어요. 고치는 규칙은 <a href="langgraph-pattern-chaining.html#apply-repo">스물네 개</a>였고, 고치지 않고 제안만 만드는 검사는 <strong>스물다섯 개</strong>예요. 비슷한 수지만 다른 목록이에요. 고친 줄 하나를 검사 스물다섯 개에 넣고, 나온 제안을 <strong>한 목록에 모아요.</strong> 여기까지는 이 편의 병렬화 그대로예요. 문제는 모으는 방법이에요.</p>
+      <p class="run-tag run-tag--concept">제 저장소 코드 <span class="run-tag-why">— <code>subtitle_corrector/engine/pipeline.py</code>에서 검사 결과를 모으는 부분이에요. <code>checks</code>는 검사 스물다섯 개의 결과 목록이고, <code>f.suggested_fix</code>는 그 검사가 내놓은 고침 제안이에요</span></p>
+      <pre><code>for f in checks:
+    if not f:
+        continue
+    if f.suggested_fix and f.suggested_fix in seen_fixes:
+        continue
+    if f.suggested_fix:
+        seen_fixes.add(f.suggested_fix)
+    flags.append(f)</code></pre>
+      <p>같은 자리를 여러 검사가 <strong>같은 제안으로</strong> 잡는 일이 흔해요(행 끝 <code>나</code>를 조사 검사와 띄어쓰기 검사가 둘 다 <code>백 배나</code>로 제안해요). 그래서 이 리듀서는 이어 붙이지 않고 <strong>이미 나온 제안이면 버려요.</strong> <code>seen_fixes</code>가 지금까지 나온 제안을 담아 두는 자루고, 거기 있으면 <code>continue</code>로 건너뛰니 <strong>먼저 온 것만 남아요.</strong> 남는 쪽이 규칙 이름과 근거를 정확히 말해 주는 검사가 되도록, 목록 안의 순서까지 일부러 맞춰 뒀어요 — 도로명 검사를 합성어 검사보다 위에 적어 둔 게 그 때문이에요.</p>
+      <p><strong>이 코드를 이 편의 병렬 분기로 그대로 옮기면 깨져요.</strong> 지금은 목록을 위에서 아래로 도니까 "먼저"가 제 뜻대로예요. 갈래를 따로 그어 동시에 돌리면 <strong>어느 검사 결과가 먼저 도착할지가 보장되지 않아요.</strong> 그러면 같은 자막을 두 번 돌렸을 때 남는 제안의 <em>이유 문구</em>가 달라져요. 개수도 내용도 같은데 설명만 바뀌니 알아채기도 어려워요. 리듀서가 <code>operator.add</code>처럼 순서를 안 따지는 것이면 상관없지만, <strong>먼저 온 것을 이기게 하는 리듀서는 병렬화와 같이 못 써요.</strong></p>
+    </section>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span></h2>
+    <p>증상이 아직 없어도, <strong>AI에게 "이 검사들을 동시에 돌려 줘"라고 부탁한 직후</strong>라면 한 번 확인하고 넘어가요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-invalid-update">
+          <td>검사 노드를 동시에 돌게 바꾸자마자 <code>InvalidUpdateError</code>가 나요. 에러 문장 앞머리 <code>At key '...'</code>에 칸 이름이 찍히고 <code>Can receive only one value per step</code>이 이어져요</td>
+          <td>에러에 찍힌 <strong>칸 이름</strong>의 State 선언 줄과, 그 칸을 <code>return</code>하는 노드들이에요. 갈래를 나눈 것 자체는 잘못이 아니에요</td>
+          <td>그 칸에 값이 여럿 들어와야 한다면 <code>Annotated[list, operator.add]</code>처럼 리듀서를 달고, 아니면 노드마다 칸을 나눠요. AI가 에러를 없앤다며 동시 실행을 포기하자고 하면, 에러는 사라져도 시간이 늘어요 (<a href="#parallel-error-cause">에러의 진짜 원인</a>)</td>
+        </tr>
+        <tr id="suspect-silent-overwrite">
+          <td>에러는 없는데, 여러 노드가 쌓아야 할 리스트 칸에 <strong>마지막 노드의 값 하나만</strong> 남아 있어요. "총 3건"이어야 할 자리에 1건이에요</td>
+          <td>그 칸의 State 선언이에요. <code>checks: list</code>처럼 리듀서 없이 적혀 있고, 노드들이 <code>add_edge</code>로 <strong>순서대로</strong> 이어져 있으면 뒤 노드가 앞 값을 덮어써요</td>
+          <td>결과에서 그 칸의 개수를 값을 쓰는 노드 수와 맞춰 봐요. 모자라면 병렬일 때와 같은 리듀서를 달아요. <code>InvalidUpdateError</code>를 피하려고 갈래를 한 줄로 이어 붙인 경우가 딱 이 모양이에요 (<a href="#parallel-error-cause">표의 마지막 줄</a>)</td>
+        </tr>
+        <tr id="suspect-merge-order">
+          <td>합친 목록에서 <code>checks[0]</code>을 맛 점수로 꺼내 썼는데 <strong>다른 검사의 점수</strong>가 나와요. 코드에 적은 순서와 합쳐진 순서가 달라요</td>
+          <td>합친 칸을 읽는 노드에서 <code>[0]</code>처럼 <strong>자리 번호로</strong> 꺼내는 줄이에요. 먼저 들어온 값만 남기도록 직접 만든 리듀서도 같은 가정에 기대고 있어요</td>
+          <td>병렬 결과의 순서는 보장되지 않아요. 노드를 하나 더하거나 이름을 바꾸면 순서가 또 바뀔 수 있어요. 항목마다 <code>("맛", 4)</code>처럼 이름표를 붙이고 이름으로 찾아 꺼내요</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— LangGraph 코드가 있는 프로젝트 폴더에서</span></p>
+    <pre><code>이 프로젝트에서 START나 한 노드에서 여러 갈래로 동시에 나뉘는 곳을 전부 찾아서 표로 보여 줘. 아직 코드는 고치지 마.
+1. 그 갈래들이 쓰는 State 칸마다 리듀서(Annotated[..., ...])가 붙었는지
+2. 리듀서 없이 노드 둘 이상이 쓰는 칸의 파일 이름과 줄 번호
+3. 합친 리스트 칸을 [0]처럼 자리 번호로 꺼내 쓰는 줄의 파일 이름과 줄 번호</code></pre>
+
+    <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
+    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 다른 편의 같은 목록은 <a href="langgraph-what-and-why.html#key-recap">1편</a> · <a href="langgraph-state-node-edge.html#key-recap">2편</a> · <a href="langgraph-branch-drills.html#key-recap">3편</a> · <a href="langgraph-branches-and-tool-loop.html#key-recap">4편</a> · <a href="langgraph-pattern-chaining.html#key-recap">6편</a> · <a href="langgraph-pattern-routing.html#key-recap">7편</a>에 있어요.</p>
+    <ul class="key-recap">
+      <li><a href="#key-reducer">동시에 같은 칸에 쓰면 에러, 리듀서로 합치는 법을 알려 줘요</a></li>
+    </ul>
+
+    <h2><span class="hl">직접 해보기</span></h2>
+    <ol>
+      <li><strong>병렬의 이득을 숫자로</strong> — 바꿀 것: 세 평가를 병렬 그래프와 <code>for</code>문 순차 실행 두 가지로 돌려요. 측정할 것: 전체 걸린 시간과 LLM 호출 수. 비교할 것: 호출 수는 같은데 시간만 줄어드는지 확인해요. 병렬화가 무엇을 아끼고 무엇은 못 아끼는지가 숫자로 보여요.</li>
+    </ol>
+    <p>정답은 없어요. 모델 답은 실행할 때마다 달라질 수 있으니, 제 조건에서 몇 번 돌려 보고 기록으로 비교하는 게 요령이에요.</p>
+
+    <h2><span class="hl">다음은</span></h2>
+    <p>여기까지 세 모양은 <strong>갈래 수가 코드에 적혀 있었어요</strong>. 체이닝은 한 줄, 라우팅은 미리 적어 둔 갈래 중 하나, 병렬화는 노드 세 개요. <a href="langgraph-pattern-orchestrator-worker.html">다음 편</a>부터는 그 수를 <strong>돌려 보기 전에는 모르는</strong> 경우를 다뤄요. 몇 갈래일지 LLM이 정하는 오케스트레이터-워커부터예요.</p>
+
+    <h2>함께 읽으면 좋은 글</h2>
+    <ul>
+      <li><a href="output-format-and-metrics.html">답의 모양과 채점법</a> — 구조화 출력이 형식은 강제해도 사실까지 강제하지는 못한다는 이야기를 먼저 다룬 글이에요.</li>
+      <li><a href="langgraph-what-and-why.html">다음에 어느 코드가 실행될까 — LangGraph와 워크플로·에이전트</a> — 이 다섯 모양이 왜 전부 워크플로인지의 기준을 세운 시리즈 첫 편이에요.</li>
+    </ul>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">슈퍼스텝(super-step) — 실행 준비가 된 노드를 한꺼번에 돌리고 그 반환값을 모아 State에 한 번에 반영하는 LangGraph의 실행 단위예요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">리듀서(reducer) — 같은 State 칸에 여러 값이 들어올 때 어떻게 합칠지 정해 두는 함수로, <code>operator.add</code>를 주면 이어 붙여요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">트레이스(trace) — 요청부터 최종 답까지 무슨 일이 있었는지 단계별로 남긴 실행 기록이에요. <a href="#fnref3">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <h3 id="series-list">"에이전트 팀 꾸리기 — LangGraph" 시리즈</h3>
+    <a class="post-nav" href="langgraph-what-and-why.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">다음에 어느 코드가 실행될까 — LangGraph와 워크플로·에이전트</span>
+    </a>
+    <a class="post-nav" href="langgraph-state-node-edge.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">흐름을 그림으로 짠다 — LangGraph의 State·Node·Edge</span>
+    </a>
+    <a class="post-nav" href="langgraph-branch-drills.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">갈림길을 밀어붙인다 — 세 갈래·라벨·끝나지 않는 반복</span>
+    </a>
+    <a class="post-nav" href="langgraph-branches-and-tool-loop.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">모델이 다음 길을 고르게 한다 — 도구를 쥐여 주는 루프</span>
+    </a>
+    <a class="post-nav" href="langgraph-env-troubleshooting.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">.env가 안 읽혔던 네 겹의 이유 — 원격 주피터에서 API 키 넣기</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-chaining.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">① 프롬프트 체이닝 — 순서대로, 사이에 검사</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-routing.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">② 라우팅 — 먼저 분류하고, 한 갈래로</span>
+    </a>
+    <p class="post-date">(8) ③ 병렬화 — 동시에 돌리고, 합친다 (이 글)</p>
+    <a class="post-nav" href="langgraph-pattern-orchestrator-worker.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">④ 오케스트레이터-워커 — 몇 갈래일지 LLM이 정한다</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-evaluator-optimizer.html">
+      <span class="post-nav-label">(10)</span>
+      <span class="post-nav-title">⑤ 평가자-최적화자 — 통과할 때까지 고쳐 쓰기</span>
+    </a>
+
+    <a class="post-nav" href="langgraph-pattern-orchestrator-worker.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">④ 오케스트레이터-워커 — 몇 갈래일지 LLM이 정한다</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>

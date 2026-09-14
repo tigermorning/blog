@@ -1328,6 +1328,77 @@ details[open] > summary .tree-toggle-icon {
   white-space: nowrap;
 }
 
+/* 확인 문제: 객관식 시나리오 하나로 패턴 선택 감각을 연습하는 박스.
+   key-point(개념 요약)와 달리 보기 4개 + 정답/오답 풀이 + 한 줄 요약까지 다 보여 준다. */
+.quiz-box {
+  border: 2px solid var(--folder-9);
+  border-radius: 4px 18px 4px 18px;
+  background: color-mix(in srgb, var(--folder-9) 6%, transparent);
+  padding: 1rem 1.2rem 0.9rem;
+  margin: 1.5rem 0 1.8rem;
+}
+
+.quiz-box-title {
+  margin: 0 0 0.7rem;
+  font-family: var(--font-subhead);
+  font-weight: var(--font-subhead-weight, 400);
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+
+.quiz-box-title::before {
+  content: "문제";
+  display: inline-block;
+  margin-right: 0.5rem;
+  padding: 0.05rem 0.7rem;
+  border-radius: 999px;
+  background: var(--folder-9);
+  color: #fff;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.quiz-question {
+  margin: 0 0 0.7rem;
+}
+
+.quiz-options {
+  margin: 0 0 0.9rem;
+  padding-left: 1.4rem;
+}
+
+.quiz-options li {
+  margin-bottom: 0.35rem;
+}
+
+.quiz-answer {
+  font-weight: 600;
+}
+
+.quiz-answer::after {
+  content: " ← 정답";
+  font-weight: 400;
+  font-size: 0.85em;
+  color: var(--hit-ink);
+}
+
+.quiz-breakdown p,
+.quiz-breakdown ul {
+  margin: 0 0 0.7rem;
+}
+
+.quiz-breakdown ul {
+  padding-left: 1.2rem;
+}
+
+.quiz-takeaway {
+  margin: 0.8rem 0 0;
+  padding-top: 0.7rem;
+  border-top: 1px dashed var(--border);
+  font-family: var(--font-subhead);
+  font-weight: var(--font-subhead-weight, 400);
+}
+
 /* 6. 전문 용어 각주 */
 .fn-ref {
   font-size: 0.75em;
