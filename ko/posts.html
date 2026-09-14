@@ -36,14 +36,24 @@
       <p class="search-status" id="search-status" hidden></p>
       <div class="list-controls" id="list-controls">
         <button type="button" id="category-filter-clear" hidden>전체 목록 보기</button>
-        <div class="page-size-control" id="page-size-control">
-          <label for="page-size">페이지당 글 수</label>
-          <select id="page-size">
-            <option value="20" selected>20개</option>
-            <option value="50">50개</option>
-            <option value="100">100개</option>
-            <option value="all">전체보기</option>
-          </select>
+        <div class="list-controls-right">
+          <div class="page-size-control" id="sort-control">
+            <label for="post-sort">정렬</label>
+            <select id="post-sort">
+              <option value="ladder" selected>단계순</option>
+              <option value="newest">최신순</option>
+              <option value="oldest">오래된순</option>
+            </select>
+          </div>
+          <div class="page-size-control" id="page-size-control">
+            <label for="page-size">페이지당 글 수</label>
+            <select id="page-size">
+              <option value="20" selected>20개</option>
+              <option value="50">50개</option>
+              <option value="100">100개</option>
+              <option value="all">전체보기</option>
+            </select>
+          </div>
         </div>
       </div>
     </div>
@@ -510,6 +520,9 @@
         </ul>
       </details>
     </div>
+    </div>
+
+    <ul class="title-list flat-list" id="flat-list" hidden></ul>
 
     <nav class="pagination" id="pagination" aria-label="글 목록 페이지 이동"></nav>
   </main>
@@ -532,8 +545,26 @@
       var pageSizeSelect = document.getElementById('page-size');
       var pagination = document.getElementById('pagination');
       var filterClear = document.getElementById('category-filter-clear');
+      var sortSelect = document.getElementById('post-sort');
+      var flatList = document.getElementById('flat-list');
       var currentPage = 1;
       var categoryScope = null; // 사이드바 카테고리를 눌렀을 때 채워지는 .post-subcategory/.post-group
+
+      // 최신순/오래된순으로 볼 때 쓰려고 글마다 날짜·원래 순서·소분류 이름을
+      // 미리 뽑아 둔다. 날짜 칸이 "외부"인 외부 링크는 stamp가 null이라
+      // 어느 방향으로 정렬하든 항상 맨 뒤로 간다.
+      var meta = items.map(function (li, i) {
+        var dateEl = li.querySelector('.title-list-date');
+        var m = (dateEl ? dateEl.textContent.trim() : '').match(/^(\d{4})\.(\d{2})\.(\d{2})$/);
+        var sub = li.closest('.post-subcategory');
+        var subTitle = sub ? sub.querySelector('.post-subcategory-title') : null;
+        return {
+          li: li,
+          order: i,
+          stamp: m ? Number(m[1] + m[2] + m[3]) : null,
+          category: subTitle ? subTitle.textContent.trim() : ''
+        };
+      });
 
       function currentScope() {
         for (var i = 0; i < scopeRadios.length; i++) {
@@ -550,23 +581,94 @@
         return pageSizeSelect.value === 'all' ? items.length : parseInt(pageSizeSelect.value, 10);
       }
 
-      function matchedItems() {
+      function matchesQuery(li) {
         var query = norm(input.value.trim());
-        var scope = currentScope();
-        if (!query) return items;
+        if (!query) return true;
 
-        return items.filter(function (li) {
-          var a = li.querySelector('a');
-          var href = a.getAttribute('href');
-          var titleText = norm(a.querySelector('.title-list-title').textContent);
+        var a = li.querySelector('a');
+        var href = a.getAttribute('href');
+        var titleText = norm(a.querySelector('.title-list-title').textContent);
 
-          if (scope === 'title') {
-            return titleText.indexOf(query) !== -1;
-          }
-          var data = (typeof SEARCH_DATA !== 'undefined') ? SEARCH_DATA[href] : null;
-          var bodyText = norm(data ? data.text : titleText);
-          return bodyText.indexOf(query) !== -1;
+        if (currentScope() === 'title') {
+          return titleText.indexOf(query) !== -1;
+        }
+        var data = (typeof SEARCH_DATA !== 'undefined') ? SEARCH_DATA[href] : null;
+        var bodyText = norm(data ? data.text : titleText);
+        return bodyText.indexOf(query) !== -1;
+      }
+
+      function matchedItems() {
+        if (!norm(input.value.trim())) return items;
+        return items.filter(matchesQuery);
+      }
+
+      // 날짜순 보기에서 쓸 목록. 검색어·카테고리 범위를 먼저 적용하고,
+      // 같은 글이 두 소분류에 걸쳐 있으면 앞에 나온 것만 남긴 뒤 정렬한다.
+      function sortedMeta(mode) {
+        var seen = {};
+        var list = meta.filter(function (m) {
+          if (!matchesQuery(m.li)) return false;
+          if (categoryScope && !categoryScope.contains(m.li)) return false;
+          var href = m.li.querySelector('a').getAttribute('href');
+          if (seen[href]) return false;
+          seen[href] = true;
+          return true;
         });
+
+        var dir = mode === 'oldest' ? 1 : -1;
+        return list.sort(function (a, b) {
+          if (a.stamp === null || b.stamp === null) {
+            if (a.stamp === b.stamp) return a.order - b.order;
+            return a.stamp === null ? 1 : -1;
+          }
+          if (a.stamp !== b.stamp) return (a.stamp - b.stamp) * dir;
+          return a.order - b.order;
+        });
+      }
+
+      function renderFlat(mode) {
+        var list = sortedMeta(mode);
+        var query = norm(input.value.trim());
+        var totalPages = 1;
+        var start = 0;
+        var end = list.length;
+
+        if (!query) {
+          var pageSize = currentPageSize();
+          totalPages = Math.max(1, Math.ceil(list.length / pageSize));
+          if (currentPage > totalPages) currentPage = totalPages;
+          start = (currentPage - 1) * pageSize;
+          end = start + pageSize;
+        }
+
+        flatList.innerHTML = '';
+        list.slice(start, end).forEach(function (m) {
+          var clone = m.li.cloneNode(true);
+          clone.hidden = false;
+          if (m.category) {
+            var a = clone.querySelector('a');
+            var cat = document.createElement('span');
+            cat.className = 'title-list-cat';
+            cat.textContent = m.category;
+            a.insertBefore(cat, a.querySelector('.title-list-date'));
+          }
+          flatList.appendChild(clone);
+        });
+
+        groups.forEach(function (group) { group.hidden = true; });
+        flatList.hidden = false;
+        filterClear.hidden = !categoryScope;
+        pageSizeControl.hidden = !!query;
+
+        if (query) {
+          pagination.hidden = true;
+          status.hidden = false;
+          status.textContent = list.length > 0 ? (list.length + '개 글을 찾았어요.') : '일치하는 글이 없어요.';
+        } else {
+          renderPagination(totalPages);
+          pagination.hidden = totalPages <= 1;
+          status.hidden = true;
+        }
       }
 
       function renderPagination(totalPages) {
@@ -609,6 +711,13 @@
       function render() {
         var query = norm(input.value.trim());
         if (query) categoryScope = null;
+
+        var mode = sortSelect.value;
+        if (mode !== 'ladder') {
+          renderFlat(mode);
+          return;
+        }
+        flatList.hidden = true;
 
         if (query) {
           var matches = matchedItems();
@@ -694,6 +803,10 @@
         });
       }
       pageSizeSelect.addEventListener('change', function () {
+        currentPage = 1;
+        render();
+      });
+      sortSelect.addEventListener('change', function () {
         currentPage = 1;
         render();
       });

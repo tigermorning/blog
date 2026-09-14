@@ -585,6 +585,14 @@ main th {
   color: #fff;
 }
 
+.list-controls-right {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-left: auto;
+}
+
 .page-size-control {
   display: flex;
   align-items: center;
@@ -720,6 +728,22 @@ body.list-page .site-header {
   line-height: 1.4;
   color: var(--muted);
   font-style: italic;
+}
+
+/* 최신순/오래된순 목록은 카테고리 묶음이 사라지므로 글마다 소분류 이름을
+   같이 보여 준다. 좁은 화면에서는 제목이 밀리니 숨긴다. */
+.title-list-cat {
+  flex: 0 0 auto;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .title-list-cat {
+    display: none;
+  }
 }
 
 .title-list li.review-item {
