@@ -285,7 +285,8 @@ for line in run()["log"]:
       <li><strong><code>log</code></strong> — 다섯 노드가 <strong>모두 한 줄씩</strong> 보태요. 덮어쓰면 마지막 한 줄만 남아요.</li>
       <li><strong><code>collected</code>·<code>picked</code></strong> — 한 노드가 쓰고 다음 노드가 읽어요. 이런 칸은 <strong>덮어쓰는 게 맞아요</strong>.</li>
     </ul>
-    <p>리스트가 긴 칸이라서 붙이는 게 아니에요. 가장 긴 <code>collected</code>(100건 남짓)엔 안 붙였어요. <code>TypedDict</code>에 <code>Annotated</code>를 두 개까지만 쓸 수 있어서도 아니고(그런 제한은 없어요), 실행이 느려져서 아껴 쓰는 것도 아니에요. 덮어써야 할 칸에 붙이면 생기는 문제는 속도가 아니라 <strong>틀린 결과</strong>예요. 9건을 적는 노드 뒤에 <strong>그 9건을 읽어 5건만 같은 칸에 돌려주는 노드</strong>를 두고, 리듀서 없이 한 번, 붙여서 한 번 돌려 봤어요.</p>
+    <p>세 줄을 한 문장으로 줄이면 <strong>그 칸에 값이 두 번 이상 들어오나</strong>예요. 동시에 들어오면 합쳐야 하고, 차례로 쌓아야 하면 이어 붙여야 하고, 한 번 쓰고 끝이면 덮어쓰면 돼요. 칸이 얼마나 긴지는 기준이 아니에요. 다섯 중 가장 긴 <code>collected</code>(100건 남짓)에 안 붙은 게 그 증거고요. 둘만 붙은 것도 <code>Annotated</code>를 두 개까지만 쓸 수 있어서가 아니라(그런 제한은 없어요) 해당하는 칸이 둘뿐이어서예요.</p>
+    <p>이 판단을 틀렸을 때 세 경우 중 <strong>에러로 알려주는 건 하나뿐</strong>이에요. 동시에 쓰는 <code>drafted</code>에 안 붙이면 8편의 <code>InvalidUpdateError</code>가 나죠. 나머지 둘은 조용해요. <code>log</code>에 안 붙여 줄이 사라지는 것도, 덮어쓸 칸에 붙여 건수가 부풀어 오르는 것도 에러가 한 줄도 안 나요. 그중 부풀어 오르는 쪽을 직접 돌려 봤어요. 9건을 적는 노드 뒤에 <strong>그 9건을 읽어 5건만 같은 칸에 돌려주는 노드</strong>를 두고, 리듀서 없이 한 번, 붙여서 한 번요.</p>
     <p class="run-tag">실행: Colab 같은 원격 주피터 또는 로컬 주피터 <span class="run-tag-why">— API 키 없이 돌아가요. 뼈대 셀 아래에 붙여도 뼈대는 안 바뀌어요</span></p>
     <pre><code>class Right(TypedDict):
     collected: list                              # 리듀서 없음 → 덮어쓰기
