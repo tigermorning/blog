@@ -318,13 +318,22 @@ Wrong 14 ['기사1', '기사2', '기사3', '기사4', '기사5', '기사6', '기
     <p>더 곤란한 건 빈 뼈대에서는 이 실수가 <strong>아예 안 보인다</strong>는 점이에요. 뼈대의 <code>collected</code>·<code>picked</code>에도 리듀서를 붙여 돌려 봤는데, 로그 다섯 줄이 한 글자도 다르지 않았어요. 빈 리스트끼리 이어 붙여도 빈 리스트거든요. 칸을 읽어 줄여서 다시 쓰는 노드가 생겨야 드러나는데, 이 시리즈에서는 <a href="newsletter-agent-summarize-verify.html">14편</a> 검수가 그 자리예요. 그래서 통과분은 리듀서가 붙은 <code>drafted</code>가 아니라 리듀서 없는 새 칸에 담아요.</p>
 
     <h3 id="reducer-vs-add">리듀서가 곧 operator.add는 아니다</h3>
-    <p>리듀서는 <strong>역할의 이름</strong>이고, <code>operator.add</code>는 그 역할을 맡을 수 있는 <strong>함수 중 하나</strong>예요. 주방으로 치면 리듀서는 "전표 칸에 새 내용이 오면 어떻게 적을지 정하는 담당" 자리이고, <code>operator.add</code>는 그 자리에 앉은 "아래에 이어 적는 직원" 한 명이에요. <code>Annotated[타입, 함수]</code>의 <strong>두 번째 자리에 넣은 함수</strong>가 그 칸의 리듀서가 되고, LangGraph는 새 값이 올 때마다 <code>함수(기존 값, 새 값)</code>을 불러 그 결과를 칸에 적어요.</p>
-    <p><code>operator.add</code>는 LangGraph 기능이 아니라 파이썬에 원래 있는 함수로, 하는 일은 <code>+</code> 기호와 같아요.</p>
+    <p>규칙 자체는 한 줄이에요. <code>Annotated[타입, 함수]</code>의 <strong>두 번째 자리에 넣은 함수</strong>가 그 칸의 리듀서가 되고, LangGraph는 그 칸에 새 값이 올 때마다 <code>함수(기존 값, 새 값)</code>을 불러 <strong>돌아온 값을 칸에 적어요</strong>. 바로 위 <code>Wrong</code>을 이 규칙으로 한 줄씩 되짚으면 14건이 어디서 나왔는지 보여요.</p>
+    <table>
+      <thead><tr><th>지나는 노드</th><th>LangGraph가 부르는 것</th><th>칸에 남는 값</th></tr></thead>
+      <tbody>
+        <tr><td>시작 전</td><td>—</td><td><code>[]</code></td></tr>
+        <tr><td><code>fetch_nine</code><br>9건을 돌려줌</td><td><code>operator.add([], 9건)</code></td><td>9건</td></tr>
+        <tr><td><code>keep_five</code><br>5건을 돌려줌</td><td><code>operator.add(9건, 5건)</code></td><td><strong>14건</strong></td></tr>
+      </tbody>
+    </table>
+    <p><code>keep_five</code>가 "이 5건으로 해 달라"고 돌려줘도, 그 값은 함수의 <strong>두 번째 인자로 들어갈 뿐</strong>이에요. 칸에 적히는 건 언제나 함수가 돌려준 값이고요.</p>
+    <p>그런데 여기 불린 <code>operator.add</code>는 LangGraph 기능이 아니에요. 파이썬에 원래 있는 함수로, 하는 일이 <code>+</code> 기호와 같아요.</p>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 주석은 실행했을 때 나온 값이에요</span></p>
     <pre><code>import operator
 operator.add(3, 5)                # 8                 (3 + 5)
 operator.add(["a"], ["b", "c"])   # ['a', 'b', 'c']   (리스트 + 리스트 = 이어 붙이기)</code></pre>
-    <p>리스트끼리 <code>+</code>하면 이어 붙으니까, 리듀서 자리에 넣었을 때 "이어 붙이기"로 동작한 거예요. 그 자리에는 다른 함수도 넣을 수 있어요.</p>
+    <p>리스트끼리 <code>+</code>하면 이어 붙으니까, 리듀서 자리에 넣었을 때 "이어 붙이기"로 동작한 거예요. 바꿔 말하면 <strong>리듀서는 역할의 이름</strong>이고, <code>operator.add</code>는 그 역할을 맡을 수 있는 <strong>함수 중 하나</strong>예요. 주방으로 치면 리듀서는 "전표 칸에 새 내용이 오면 어떻게 적을지 정하는 담당" 자리이고, <code>operator.add</code>는 그 자리에 앉은 "아래에 이어 적는 직원" 한 명이에요. 그 자리에는 다른 직원도 앉힐 수 있어요.</p>
     <table>
       <thead><tr><th>두 번째 자리에 넣는 것</th><th>새 값이 오면</th></tr></thead>
       <tbody>
