@@ -28,6 +28,10 @@
     svg[aria-labelledby="tm-c-title"] .tm-title { font-size: 18.9px; }
     svg[aria-labelledby="tm-c-title"] .tm-tag { font-size: 15.1px; }
     svg[aria-labelledby="tm-c-title"] .tm-arrowcap { font-size: 15.8px; }
+    /* 사다리④도 같은 이유(970유닛 캔버스, 배율 차이 970/764 ≈ 1.27). */
+    svg[aria-labelledby="tm-wf-title"] .tm-title { font-size: 15.9px; }
+    svg[aria-labelledby="tm-wf-title"] .tm-tag { font-size: 12.7px; }
+    svg[aria-labelledby="tm-wf-title"] .tm-arrowcap { font-size: 13.3px; }
   </style>
 </head>
 <body>
@@ -306,7 +310,61 @@
       <figcaption>프롬프트 → 규칙 파일 → 도구 → MCP → 워크플로 → 멀티 에이전트. 칸이 늘어날수록 내가 매번 챙길 일도 늘어요.</figcaption>
     </figure>
 
-    <h2><span class="hl">사다리 ④ — 도구 하나 고를 때</span></h2>
+    <h2><span class="hl">사다리 ④ — 워크플로 하나 그릴 때</span></h2>
+    <p>바로 위 사다리에서 <a href="langgraph-what-and-why.html">⑤ 흐름 짜 주기</a>까지 왔다면, 그 안에서 한 번 더 갈려요. 흐름의 모양이 다섯 가지 있고, 오른쪽으로 갈수록 내가 미리 정해 두는 게 줄고 LLM이 실행 중에 정하는 게 늘어요. 왼쪽에서 안 될 때만 오른쪽으로 옮겨요.</p>
+
+    <figure class="tm-diagram">
+      <svg viewBox="0 0 970 140" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="tm-wf-title">
+        <title id="tm-wf-title">프롬프트 체이닝에서 라우팅, 병렬화, 오케스트레이터-워커, 평가자-최적화자로 넘어가는 사다리</title>
+        <defs>
+          <marker id="tm-am-wf" markerWidth="9" markerHeight="9" refX="4.5" refY="4.5" orient="auto">
+            <path d="M0,0 L9,4.5 L0,9 z" fill="var(--border)"/>
+          </marker>
+        </defs>
+
+        <path d="M176,72 L212,72" class="tm-arrow" marker-end="url(#tm-am-wf)"/>
+        <text x="194" y="21" class="tm-arrowcap">갈래가 갈리면</text>
+        <path d="M370,72 L406,72" class="tm-arrow" marker-end="url(#tm-am-wf)"/>
+        <text x="388" y="21" class="tm-arrowcap">한꺼번에 해야 하면</text>
+        <path d="M564,72 L600,72" class="tm-arrow" marker-end="url(#tm-am-wf)"/>
+        <text x="582" y="21" class="tm-arrowcap">개수를 모르면</text>
+        <path d="M758,72 L794,72" class="tm-arrow" marker-end="url(#tm-am-wf)"/>
+        <text x="776" y="21" class="tm-arrowcap">고쳐 써야 하면</text>
+
+        <a href="langgraph-pattern-chaining.html" class="tm-node"><g style="--nc:var(--folder-1)">
+          <rect class="tm-box" x="22" y="34" width="150" height="76" rx="14"/>
+          <text class="tm-title" x="97" y="66">① 순서대로 잇기</text>
+          <text class="tm-tag" x="97" y="90">프롬프트 체이닝</text>
+        </g></a>
+
+        <a href="langgraph-pattern-routing.html" class="tm-node"><g style="--nc:var(--folder-2)">
+          <rect class="tm-box" x="216" y="34" width="150" height="76" rx="14"/>
+          <text class="tm-title" x="291" y="66">② 하나만 고르기</text>
+          <text class="tm-tag" x="291" y="90">라우팅</text>
+        </g></a>
+
+        <a href="langgraph-pattern-parallelization.html" class="tm-node"><g style="--nc:var(--folder-3)">
+          <rect class="tm-box" x="410" y="34" width="150" height="76" rx="14"/>
+          <text class="tm-title" x="485" y="66">③ 동시에 돌리기</text>
+          <text class="tm-tag" x="485" y="90">병렬화</text>
+        </g></a>
+
+        <a href="langgraph-pattern-orchestrator-worker.html" class="tm-node"><g style="--nc:var(--folder-4)">
+          <rect class="tm-box" x="604" y="34" width="150" height="76" rx="14"/>
+          <text class="tm-title" x="679" y="66">④ 개수를 맡기기</text>
+          <text class="tm-tag" x="679" y="90">오케스트레이터-워커</text>
+        </g></a>
+
+        <a href="langgraph-pattern-evaluator-optimizer.html" class="tm-node"><g style="--nc:var(--folder-5)">
+          <rect class="tm-box" x="798" y="34" width="150" height="76" rx="14"/>
+          <text class="tm-title" x="873" y="66">⑤ 되돌려 고치기</text>
+          <text class="tm-tag" x="873" y="90">평가자-최적화자</text>
+        </g></a>
+      </svg>
+      <figcaption>순서대로 → 하나만 → 동시에 → 개수를 맡기고 → 되돌려 고치기. 오른쪽 칸일수록 돌려 보기 전에는 모르는 게 많아져요.</figcaption>
+    </figure>
+
+    <h2><span class="hl">사다리 ⑤ — 도구 하나 고를 때</span></h2>
     <p>새 에이전트 도구를 볼 때 기능표부터 비교하지 말라고 <a href="harness-observation-and-feature-map.html">하네스 시리즈</a>에서 배웠어요. 그 순서를 사다리로 그리면 이래요.</p>
 
     <figure class="tm-diagram">
@@ -344,7 +402,7 @@
       <figcaption>화면 관찰 → 직접 설계 → 벤치마크 검증. 남의 기능표를 믿는 대신 내가 확인한 것만 남겨요.</figcaption>
     </figure>
 
-    <h2><span class="hl">사다리 ⑤ — 이미지 하나 안 읽힐 때</span></h2>
+    <h2><span class="hl">사다리 ⑥ — 이미지 하나 안 읽힐 때</span></h2>
     <p>필요한 게 글자뿐인지, 물체인지, 경계선인지, 설명까지인지에 따라 꺼낼 모델이 달라져요.</p>
 
     <figure class="tm-diagram">
@@ -390,7 +448,7 @@
       <figcaption>OCR → 객체 탐지 → 분할 → VLM. 필요한 정밀도가 올라갈수록 오른쪽 칸이에요.</figcaption>
     </figure>
 
-    <h2><span class="hl">사다리 ⑥ — 소리·목소리를 다룰 때</span></h2>
+    <h2><span class="hl">사다리 ⑦ — 소리·목소리를 다룰 때</span></h2>
     <p>소리를 글자로 바꾸면 되는지, 내 컴퓨터에서 돌려야 하는지, 반대로 글자를 소리로 내야 하는지, 그 목소리가 실존 인물이라 따져야 할 게 있는지 — 필요한 게 늘어날수록 오른쪽 칸이에요.</p>
 
     <figure class="tm-diagram">
@@ -436,7 +494,7 @@
       <figcaption>STT → 로컬 Whisper → TTS 합성 → 복제 윤리. 듣는 쪽에서 말하는 쪽으로 넘어가면 칸이 달라져요.</figcaption>
     </figure>
 
-    <h2><span class="hl">사다리 ⑦ — 사진 한 장에서 공간을 되찾을 때</span></h2>
+    <h2><span class="hl">사다리 ⑧ — 사진 한 장에서 공간을 되찾을 때</span></h2>
     <p>거리만 있으면 되는지, 장면 전체를 재구성해야 하는지, 그걸 점 하나하나로 바꿔야 하는지, 웹 화면에 그려야 하는지 — 사진에서 화면까지 가는 순서예요.</p>
 
     <figure class="tm-diagram">
@@ -482,7 +540,7 @@
       <figcaption>깊이 추정 → NeRF·스플래팅 → 스플랫 변환 → 웹 최적화. 사진 한 장이 화면에 그려지기까지예요.</figcaption>
     </figure>
 
-    <h2><span class="hl">사다리 ⑧ — 그림 하나 만들 때</span></h2>
+    <h2><span class="hl">사다리 ⑨ — 그림 하나 만들 때</span></h2>
     <p>확산모델로 충분한지, 내 컴퓨터에서 가볍게 돌려야 하는지, 반복 작업이라 자동화해야 하는지, 결과물 용도(라이선스)까지 따져야 하는지로 달라져요.</p>
 
     <figure class="tm-diagram">
@@ -528,7 +586,7 @@
       <figcaption>확산모델 → 잠재확산·증류 → 자동화 → 도구 고르기. 반복과 용도가 걸릴수록 오른쪽 칸이에요.</figcaption>
     </figure>
 
-    <h2><span class="hl">사다리 ⑨ — 과학 데이터 하나 다룰 때</span></h2>
+    <h2><span class="hl">사다리 ⑩ — 과학 데이터 하나 다룰 때</span></h2>
     <p>표만 읽으면 되는지, 서열에서 구조까지 알아야 하는지, 없던 걸 거꾸로 설계해야 하는지, 원자 사이 힘까지 계산해야 하는지 — 다루려는 문제가 커질수록 오른쪽 칸이에요.</p>
 
     <figure class="tm-diagram">
@@ -574,7 +632,7 @@
       <figcaption>표 읽기 → 구조 읽기 → 거꾸로 설계 → 힘 계산. 다루려는 문제가 커질수록 오른쪽 칸이에요.</figcaption>
     </figure>
 
-    <p style="color:var(--muted); font-size:0.92rem;">사다리는 이 아홉 개가 전부는 아니에요. 카테고리 안에서 번호가 매겨진 시리즈(예: MCP와 Skill 14편, 멀티 에이전트 5편)는 전부 같은 종류의 사다리고, 그 글들은 <a href="posts.html">글 목록</a>에서 순서대로 읽으면 돼요.</p>
+    <p style="color:var(--muted); font-size:0.92rem;">사다리는 이 열 개가 전부는 아니에요. 카테고리 안에서 번호가 매겨진 시리즈(예: MCP와 Skill 14편, 멀티 에이전트 5편)는 전부 같은 종류의 사다리고, 그 글들은 <a href="posts.html">글 목록</a>에서 순서대로 읽으면 돼요.</p>
 
     <a class="post-nav" href="posts.html">
       <span class="post-nav-label">← 목록으로</span>
