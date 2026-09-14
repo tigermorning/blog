@@ -316,6 +316,36 @@ demo(Wrong)</code></pre>
 Wrong 14 ['기사1', '기사2', '기사3', '기사4', '기사5', '기사6', '기사7', '기사8', '기사9', '기사1', '기사2', '기사3', '기사4', '기사5']</code></pre>
     <p><code>Wrong</code>은 5건으로 줄이는 노드를 지났는데 14건이 됐어요. <code>keep_five</code>가 돌려준 5건이 칸을 바꾸지 못하고 이미 있던 9건 뒤에 <strong>이어 붙어서</strong> 9 + 5 = 14예요. <code>기사1</code>~<code>기사5</code>가 두 번 나오는데, 에러는 한 줄도 없어요.</p>
     <p>더 곤란한 건 빈 뼈대에서는 이 실수가 <strong>아예 안 보인다</strong>는 점이에요. 뼈대의 <code>collected</code>·<code>picked</code>에도 리듀서를 붙여 돌려 봤는데, 로그 다섯 줄이 한 글자도 다르지 않았어요. 빈 리스트끼리 이어 붙여도 빈 리스트거든요. 칸을 읽어 줄여서 다시 쓰는 노드가 생겨야 드러나는데, 이 시리즈에서는 <a href="newsletter-agent-summarize-verify.html">14편</a> 검수가 그 자리예요. 그래서 통과분은 리듀서가 붙은 <code>drafted</code>가 아니라 리듀서 없는 새 칸에 담아요.</p>
+
+    <h3 id="reducer-vs-add">리듀서가 곧 operator.add는 아니다</h3>
+    <p>리듀서는 <strong>역할의 이름</strong>이고, <code>operator.add</code>는 그 역할을 맡을 수 있는 <strong>함수 중 하나</strong>예요. 주방으로 치면 리듀서는 "전표 칸에 새 내용이 오면 어떻게 적을지 정하는 담당" 자리이고, <code>operator.add</code>는 그 자리에 앉은 "아래에 이어 적는 직원" 한 명이에요. <code>Annotated[타입, 함수]</code>의 <strong>두 번째 자리에 넣은 함수</strong>가 그 칸의 리듀서가 되고, LangGraph는 새 값이 올 때마다 <code>함수(기존 값, 새 값)</code>을 불러 그 결과를 칸에 적어요.</p>
+    <p><code>operator.add</code>는 LangGraph 기능이 아니라 파이썬에 원래 있는 함수로, 하는 일은 <code>+</code> 기호와 같아요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 주석은 실행했을 때 나온 값이에요</span></p>
+    <pre><code>import operator
+operator.add(3, 5)                # 8                 (3 + 5)
+operator.add(["a"], ["b", "c"])   # ['a', 'b', 'c']   (리스트 + 리스트 = 이어 붙이기)</code></pre>
+    <p>리스트끼리 <code>+</code>하면 이어 붙으니까, 리듀서 자리에 넣었을 때 "이어 붙이기"로 동작한 거예요. 그 자리에는 다른 함수도 넣을 수 있어요.</p>
+    <table>
+      <thead><tr><th>두 번째 자리에 넣는 것</th><th>새 값이 오면</th></tr></thead>
+      <tbody>
+        <tr><td>아무것도 안 넣음<br><code>collected: list</code></td><td>새 값으로 덮어써요. LangGraph의 기본 동작이에요</td></tr>
+        <tr><td><code>operator.add</code></td><td><code>기존 값 + 새 값</code>. 리스트면 뒤에 이어 붙여요</td></tr>
+        <tr><td><code>add_messages</code><br>(LangGraph 제공)</td><td>대화 메시지 목록에 보태되, id가 같은 메시지는 새것으로 바꿔 끼워요</td></tr>
+        <tr><td>직접 만든 함수</td><td><code>(기존 값, 새 값)</code>을 받아 돌려준 값이 칸에 적혀요</td></tr>
+      </tbody>
+    </table>
+    <p>직접 만든 리듀서도 위 실험에 그대로 끼워 볼 수 있어요. 이미 있는 항목은 빼고 새 항목만 보태는 함수예요.</p>
+    <p class="run-tag">실행: Colab 같은 원격 주피터 또는 로컬 주피터 <span class="run-tag-why">— 바로 위 <code>Right</code>·<code>Wrong</code> 셀을 실행해 둔 노트북에서. <code>demo()</code>를 다시 써요</span></p>
+    <pre><code>def merge_unique(old, new):                      # 기존에 없는 항목만 뒤에 보탠다
+    return old + [x for x in new if x not in old]
+
+class Unique(TypedDict):
+    collected: Annotated[list, merge_unique]
+
+demo(Unique)</code></pre>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 위 코드를 실행했을 때 제 화면에 찍힌 출력이에요</span></p>
+    <pre><code>Unique 9 ['기사1', '기사2', '기사3', '기사4', '기사5', '기사6', '기사7', '기사8', '기사9']</code></pre>
+    <p>이번엔 14건이 아니라 9건이에요. <code>keep_five</code>가 돌려준 5건이 모두 이미 있는 기사라 하나도 안 보태졌거든요. 중복은 사라졌지만 5건으로 줄지도 않았어요. 리듀서를 무엇으로 바꾸든 <strong>줄여서 다시 쓰는 칸은 리듀서가 없어야</strong> <code>Right</code>처럼 5건이 남아요.</p>
     <div class="key-point" id="key-reducer-where">
       <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
       <p>리듀서를 붙일지는 칸이 긴지, 실행이 느려지는지가 아니라 <strong>"그 칸에 여러 곳이 쓰거나, 쓸 때마다 쌓아야 하나"</strong>로 정해요. <code>drafted</code>는 취재 워커 여럿이 동시에 쓰고 <code>log</code>는 모든 노드가 한 줄씩 보태니 <code>operator.add</code>로 합쳐요. <code>collected</code>·<code>picked</code>처럼 한 노드가 쓰고 다음 노드가 읽는 칸에 붙이면, 9건을 5건으로 줄였는데 14건이 되는 틀린 숫자가 에러 없이 나와요.</p>
@@ -340,6 +370,57 @@ for line in run()["log"]:
 ⑤ 발행   0건 (빈 노드)</code></pre>
     <p>첫 줄이 0에서 벗어났고, 둘째 줄의 <code>9 → 0건</code>이 수집 결과가 선별로 건너갔다는 증거예요. 다섯 칸 모양을 따른 고정 가짜 값도 뼈대에서는 괜찮은 껍데기예요.</p>
     <p>두 가지는 조심해요. 하나, 교체가 되는 건 <code>run()</code>이 매번 <code>build()</code>부터 다시 하기 때문이에요. 조립할 때 함수 자체를 붙여 두니, <code>app = build().compile()</code>을 변수에 담아 두고 <code>app.invoke(INIT)</code>를 되풀이하면 <code>collect</code>를 고쳐도 반영이 안 돼요. 제가 그렇게 해 보니 <code>app.invoke</code>의 첫 줄은 옛 로그 그대로였고, <code>run()</code>을 부르자 새 로그가 찍혔어요. 둘, 이름 목록에 <code>"colect"</code>처럼 오타가 있으면 조립 단계에서 <code>KeyError: 'colect'</code>로 멈춰요. 그 이름의 함수가 딕셔너리에 없다는 뜻이에요.</p>
+
+    <h2 id="draw-graph"><span class="hl">뼈대를 그림으로 뽑는다</span> — draw_mermaid와 mermaid.live</h2>
+    <p>빈 노드 다섯 개가 선언한 순서대로 이어졌는지는 <code>build()</code> 코드를 눈으로 따라가는 대신, 그래프에게 직접 그리게 해서 확인해요. 주방으로 치면 사장님이 동선표를 손으로 다시 그리지 않고, 실제로 쓰는 전표 규칙에서 동선표를 뽑아 벽에 붙이는 거예요. 선언에서 뽑은 그림이라 <strong>선언과 어긋날 수가 없어요</strong>.</p>
+    <p class="run-tag">실행: Colab 같은 원격 주피터 또는 로컬 주피터 <span class="run-tag-why">— 뼈대 셀을 실행해 둔 노트북에서</span></p>
+    <pre><code>print(build().compile().get_graph().draw_mermaid())</code></pre>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 위 코드를 실행했을 때 제 화면에 찍힌 출력이에요 (langgraph 1.2.11)</span></p>
+    <pre><code>---
+config:
+  flowchart:
+    curve: linear
+---
+graph TD;
+	__start__([&lt;p&gt;__start__&lt;/p&gt;]):::first
+	collect(collect)
+	select(select)
+	report(report)
+	verify(verify)
+	publish(publish)
+	__end__([&lt;p&gt;__end__&lt;/p&gt;]):::last
+	__start__ --&gt; collect;
+	collect --&gt; select;
+	report --&gt; verify;
+	select --&gt; report;
+	verify --&gt; publish;
+	publish --&gt; __end__;
+	classDef default fill:#f2f0ff,line-height:1.2
+	classDef first fill-opacity:0
+	classDef last fill:#bfb6fc</code></pre>
+    <p>그림이 아니라 글자가 나와요. 이 글자가 <strong>Mermaid<sup class="fn-ref"><a href="#fn9" id="fnref9">9</a></sup></strong> 문법이에요. 위아래 <code>---</code> 사이는 선 모양 같은 설정 구역, <code>graph TD</code>는 위에서 아래로 그리라는 뜻, <code>A --&gt; B</code>는 A에서 B로 가는 화살표예요. <code>report --&gt; verify</code>가 <code>select --&gt; report</code>보다 먼저 적혀 있는데, 그림은 적힌 순서가 아니라 화살표 연결대로 그려져서 괜찮아요.</p>
+    <p>이 글자를 그림으로 바꾸는 가장 쉬운 곳이 Mermaid 공식 온라인 편집기 <a href="https://mermaid.live" target="_blank" rel="noopener">mermaid.live</a>예요. 무료이고 로그인도 필요 없어요.</p>
+    <ol>
+      <li>mermaid.live를 열면 왼쪽 <strong>Code</strong> 칸에 샘플 코드가 들어 있어요. 칸을 누르고 Ctrl+A, Delete로 전부 지워요.</li>
+      <li>위 출력을 <code>---</code> 첫 줄부터 끝까지 통째로 복사해 붙여 넣어요.</li>
+      <li>저장이나 실행 버튼은 없어도 돼요. 오른쪽에 <code>__start__</code> → <code>collect</code> → … → <code>publish</code> → <code>__end__</code>가 세로 한 줄로 이어진 그림이 바로 나와요.</li>
+    </ol>
+    <p>이름이 비슷한 mermaid.ai는 계정으로 들어가는 다른 편집기라 화면 구성이 달라요. 처음에는 mermaid.live가 단순해요.</p>
+    <p><strong>붙였는데 그림이 안 바뀌면</strong> 복사한 글자부터 봐요. 제가 첫 줄 <code>---</code>만 빼고 붙여 보니, 오른쪽에는 <strong>원래 있던 샘플 그림이 그대로 남고</strong> 왼쪽 코드 칸 아래에만 <code>Syntax error</code>와 <code>UnknownDiagramError: No diagram type detected</code>가 떴어요. 여는 <code>---</code>가 없으니 Mermaid가 <code>config:</code>를 그림 문법으로 읽으려다 실패한 거예요. 그림이 그대로라 아무 일도 안 일어난 것처럼 보여요.</p>
+    <ul>
+      <li>첫 줄이 빠졌거나 <code>--</code>(대시 2개)로 잘렸으면 <code>---</code>(대시 3개)로 고쳐요. 설정 구역은 그림에 꼭 필요하지 않아서, <code>---</code>부터 두 번째 <code>---</code>까지 지우고 <code>graph TD;</code>부터 붙여도 돼요.</li>
+      <li>Mermaid는 그림 문법만 읽어요. 노트북에서 실행할 파이썬 코드(<code>from typing import ...</code>)를 Code 칸에 붙이면 같은 오류가 나요. 파이썬은 주피터 셀에서 실행하고, Code 칸에는 <code>draw_mermaid()</code>가 <strong>출력한 글자</strong>만 붙여요.</li>
+    </ul>
+    <p>복사하기 번거로우면 노트북 안에서 바로 그림으로 볼 수도 있어요.</p>
+    <p class="run-tag">실행: Colab 같은 원격 주피터 또는 로컬 주피터 <span class="run-tag-why">— 인터넷이 열린 환경에서. 그림을 만들 때 Mermaid 글자를 외부 서비스 mermaid.ink로 보내요</span></p>
+    <pre><code>from IPython.display import Image
+Image(build().compile().get_graph().draw_mermaid_png())</code></pre>
+    <p>셀에서 외부 접속이 막혀 있으면 이 줄이 실패해요. 그럴 땐 <code>draw_mermaid()</code> 글자를 mermaid.live에 붙이는 쪽으로 돌아가면 돼요.</p>
+    <p>그림은 뼈대에서 끝나지 않아요. <a href="newsletter-agent-summarize-verify.html">14편</a>에서 취재를 여러 워커로 펼친 뒤 같은 줄로 다시 뽑아 이 그림과 나란히 두면, 구조가 바뀐 자리만 눈에 들어와요.</p>
+    <div class="key-point" id="key-draw-graph">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p><code>draw_mermaid()</code>는 그래프 선언에서 그림 글자를 뽑으니, 그림과 선언은 늘 같아요. 엣지를 바꿀 때마다 다시 뽑아 전후를 대조해요. mermaid.live에 붙였는데 그림이 그대로면 코드 칸 아래 <code>Syntax error</code>부터 보고, 첫 줄 <code>---</code>가 온전한지 확인해요.</p>
+    </div>
 
     <h2 id="why-stubs"><span class="hl">어차피 지울 코드인데 왜 만들까</span> — 걸어 다니는 뼈대</h2>
     <p>위 <code>collect</code>·<code>select</code>의 몸통은 12편, 13편에서 통째로 지워져요. 그런데도 먼저 만드는 이 방식을 <strong>걸어 다니는 뼈대(walking skeleton)</strong>라고 불러요. 단계마다 입출력 모양만 맞춘 껍데기(빈 값이나 고정 가짜 값 + 로그 한 줄)를 만들어 → 전부 잇고 → 하나씩 진짜 구현으로 바꾸는 방식이에요. 그러니 "어차피 지울 코드"는 반만 맞아요. 지워지는 건 함수의 <strong>안쪽</strong>뿐이고, 빈 노드가 세운 네 가지는 16편까지 남아요.</p>
@@ -406,6 +487,11 @@ for line in run()["log"]:
           <td>함수가 아니라 그래프를 부르는 줄이에요. <code>app = build().compile()</code>을 변수에 담아 두고 <code>app.invoke()</code>를 되풀이하는 셀이 있는지 봐요</td>
           <td><code>run()</code>을 불러 <code>build()</code>부터 다시 조립해요. 새 로그가 찍히면 함수는 멀쩡했던 거예요 (<a href="#swap-by-name">이름으로 찾는다</a>)</td>
         </tr>
+        <tr id="suspect-mermaid-blank">
+          <td><code>draw_mermaid()</code> 출력을 mermaid.live에 붙였는데 <strong>오른쪽 그림이 샘플 그대로</strong>예요. 저장·실행 버튼을 찾게 돼요</td>
+          <td>붙여 넣은 글자의 첫 줄이에요. <code>---</code>가 빠졌거나 <code>--</code>로 잘렸는지, 출력 대신 파이썬 코드를 붙이지 않았는지 봐요</td>
+          <td>왼쪽 코드 칸 아래에 <code>Syntax error</code>가 떠 있는지 봐요. 첫 줄을 <code>---</code>로 고치거나 설정 구역을 지우고 <code>graph TD;</code>부터 다시 붙여요 (<a href="#draw-graph">그림으로 뽑는다</a>)</td>
+        </tr>
         <tr id="suspect-log-str">
           <td>실행하다가 <code>TypeError: can only concatenate list (not "str") to list</code>가 나요</td>
           <td>노드가 <code>log</code>에 돌려주는 값이에요. <code>[f"..."]</code>처럼 대괄호로 감싸야 하는데 <code>f"..."</code> 글자만 돌려준 노드가 있어요. <code>log</code>는 리스트끼리 <code>+</code>로 잇는 칸이라 멈춘 거예요</td>
@@ -425,6 +511,7 @@ for line in run()["log"]:
     <ul class="key-recap">
       <li><a href="#key-state-crossing">State에는 단계 사이를 건너가는 값만</a></li>
       <li><a href="#key-reducer-where">리듀서는 여러 곳이 쓰거나 쌓아야 하는 칸에만 — 덮어쓸 칸에 붙이면 9건→5건이 14건</a></li>
+      <li><a href="#key-draw-graph">draw_mermaid() 그림은 선언에서 뽑아 늘 같다 — 붙였는데 그대로면 첫 줄 --- 확인</a></li>
       <li><a href="#key-stub-role">빈 노드가 세운 규격·늘 도는 상태·진행도·교체 장치는 끝까지 남는다</a></li>
     </ul>
 
@@ -449,6 +536,7 @@ for line in run()["log"]:
         <li id="fn6">노트북 — 주피터처럼 코드를 셀 단위로 나눠 실행하고, 앞 셀에서 만든 이름을 뒤 셀이 이어 쓰는 실행 환경이에요. <a href="#fnref6">↩</a></li>
         <li id="fn7">TypedDict — 딕셔너리에 어떤 키가 들어갈지 미리 적어 두는 파이썬 문법으로, <a href="langgraph-state-node-edge.html#build-line">2편</a>에서 State 선언에 처음 썼어요. <a href="#fnref7">↩</a></li>
         <li id="fn8">리듀서(reducer) — 같은 칸에 값이 여러 번 들어올 때 덮어쓰지 않고 어떻게 합칠지 정한 규칙으로, <a href="langgraph-pattern-parallelization.html#why-reducer">8편</a>에서 처음 다뤘어요. <a href="#fnref8">↩</a></li>
+        <li id="fn9">Mermaid — 상자와 화살표를 <code>A --&gt; B</code> 같은 글자로 적으면 도구가 그림으로 바꿔 주는 다이어그램 문법이에요. <a href="#fnref9">↩</a></li>
       </ol>
     </section>
 

@@ -518,6 +518,34 @@ for line in run()["log"]:                       # 그래프는 그대로, 노드
 3. 중복을 거르는 키를 만드는 줄 — 주소의 ? 뒤를 통째로 떼는지
 4. 날짜를 읽는 줄 — 시간대 표시가 없는 날짜를 어떻게 처리하는지</code></pre>
 
+    <h2 id="field-nk"><span class="hl">실전 적용기</span> — 북한 뉴스에 같은 잣대 대기</h2>
+    <p>이 편의 잣대(사다리·관문·수집 노드)를 제 관심 분야인 북한 뉴스에 그대로 대 봤어요. 2026-09-14에 잰 값이에요. AI 뉴스 예시와 같은 코드, 다른 소스예요.</p>
+    <table>
+      <thead><tr><th>소스</th><th>칸</th><th>피드 모양</th><th>관문</th><th>판정</th></tr></thead>
+      <tbody>
+        <tr><td>통일부 북한동향 API</td><td>① 공식 API</td><td>data.go.kr 활용신청, 승인 완료</td><td>호출 후 확인</td><td>tier1(1차 소스). 키 발급 직후라 활성화 1~2시간 대기 중이었어요</td></tr>
+        <tr><td>연합뉴스 북한 섹션</td><td>② RSS</td><td>90건·7일치 아카이브형</td><td>G1·G2·G3 통과</td><td>tier2 속보. RSS 요약이 70~88자라 원문 추출이 필수예요</td></tr>
+        <tr><td>Daily NK</td><td>② RSS</td><td>최신 10건만</td><td>G1·G2·G3 통과</td><td>tier2 전문. RSS 자체가 1,400자 넘는 본문이라 든든하지만, 10건 창이라 하루 2~3회 수집을 검토해요</td></tr>
+        <tr><td>38North</td><td>② RSS</td><td>8건·2주치</td><td>G1 3/3·G2 일간 탈락·G3 통과</td><td>주간枠. 영문 분석지라 일간 창 기여가 0인 게 정상이에요</td></tr>
+        <tr><td>RFA 한국어</td><td>② RSS</td><td>30건(종합 한국어면)</td><td>G2 24시간 창 기여 0</td><td>후보. 최신 글이 2.5일 전이라 72시간 창에서야 2건이 들어와요</td></tr>
+      </tbody>
+    </table>
+    <p>G1은 처음에 아홉 건 중 일곱 건만 600자를 넘었어요(통과율 0.778). 떨어진 두 건은 38North의 긴 분석 글인데, 본문 추출이 0자를 돌려줬어요. 그런데 같은 글의 RSS 요약 길이가 17,857자였어요. 원문이 없는 게 아니라 못 받아온 거였죠.</p>
+    <p>범인은 <code>trafilatura.fetch_url()</code>이었어요. 이 함수는 자기 기본 이름표로 요청하는데, 38North는 그 이름표를 막아요. 못 받으면 <code>None</code>을 돌려주고, 추출은 0자가 되고, 표에는 "본문 없는 소스"로 얌전히 찍혀요. <code>requests</code>에 정상 이름표를 달아 받은 다음 <code>extract()</code>에 넘기니 응답은 200, 추출은 2,940~19,989자였어요. 네 소스를 세 건씩 다시 재니 열두 건이 전부 통과했어요. <span class="key-point-badge">중요</span> <strong id="key-empty-is-not-absent">추출이 0자면 소스를 의심하기 전에 내 요청을 의심해요.</strong> RSS 요약 길이를 원문 길이 옆 칸에 같이 찍어 두지 않았으면 못 잡았을 거예요. 0은 "없다"가 아니라 "못 가져왔다"일 수 있거든요.</p>
+    <p>G3에서는 같은 함정을 한 번 더 밟았어요. 이번엔 파이썬 기본 모듈 <code>urllib.robotparser</code>로 38North의 robots.txt를 읽으니 <code>can_fetch</code>이 전부 거짓이 나왔어요. 그런데 파일을 브라우저로 열어 보니 전면 허용이었어요. 원인은 이름표였어요. <code>urllib</code> 기본 이름표로는 그 사이트가 403을 돌려주고, 파일을 못 받으면 파서는 조용히 "전부 금지" 모드로 들어가요. <code>requests</code>에 정상 이름표를 달아 파일을 직접 받아 <code>parse()</code>에 넘기니 아홉 개가 전부 참이 됐어요. <strong>robots.txt를 코드로 읽을 땐 이름표부터 의심해요.</strong></p>
+    <p>수집 노드의 시간 창도 돌려 봤어요(RFA 포함 4곳).</p>
+    <table>
+      <thead><tr><th>시간 창</th><th>총건수</th><th>연합뉴스</th><th>Daily NK</th><th>RFA</th><th>38North</th></tr></thead>
+      <tbody>
+        <tr><td>6시간</td><td>7</td><td>4</td><td>3</td><td>0</td><td>0</td></tr>
+        <tr><td>24시간</td><td>13</td><td>9</td><td>4</td><td>0</td><td>0</td></tr>
+        <tr><td>72시간</td><td>41</td><td>33</td><td>6</td><td>2</td><td>0</td></tr>
+      </tbody>
+    </table>
+    <p>창을 열두 배로 늘려도 건수는 여섯 배만 늘어요. 발행 리듬이 창보다 세요. 38North는 72시간에서도 0건이라 주간지로 확정했고, 6시간 7건이면 일간 최소치는 되니 "모자라는 날엔 적게 낸다"는 규칙으로 받아요.</p>
+    <p>조용한 실패 실험도 했어요. RFA 주소를 일부러 틀리게(도메인에서 한 글자 빼기) 바꾸고 72시간으로 돌리니 39건에 <code>dead: ['RFA-KO']</code>가 찍혔어요. <code>dead.append</code> 줄을 지우고 다시 돌리니 역시 39건인데 단서가 하나도 없었어요. 두 건이 어디로 갔는지 알 방법이 없죠. 줄을 되살리니 41건으로 돌아왔어요. 이 편의 말을 숫자로 확인한 셈이에요. <strong>기록이 있을 때와 없을 때의 차이는 건수가 아니라 단서예요.</strong></p>
+    <p>소스를 더 늘리는 실험에서는 반대 교훈이 나왔어요. RFA를 넣기 전 12건, 넣은 후 13건이었는데, 늘어난 1건은 Daily NK의 새 글이었고 RFA 기여는 0이었어요. 피드는 정상(30건)인데 최신 글이 24시간 창 밖에 있었거든요. <strong>소스를 늘린다고 건수가 늘지 않아요.</strong> 그래서 중·일·영문 후보도 같은 잣대로 재 봤어요. NK News는 300건 아카이브에 당일 신선, 요약 346자라 유료벽 확인용 G1 검사가 남았고, Daily NK 영문판은 빈 피드라 탈락, 연합뉴스 일문판 북한면은 같은 회사 기사의 번역이라 새 신호가 없어 탈락, 중국신문망 국제면은 북한 특화가 아니라 '朝鮮' 키워드 필터 조건부로 남았어요.</p>
+
     <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
     <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 다른 편의 같은 목록은 <a href="langgraph-what-and-why.html#key-recap">1편</a> · <a href="newsletter-agent-skeleton.html#key-recap">11편</a> · <a href="newsletter-agent-select.html#key-recap">13편</a> · <a href="newsletter-agent-summarize-verify.html#key-recap">14편</a> · <a href="newsletter-agent-publish-schedule.html#key-recap">15편</a> · <a href="newsletter-agent-metrics-config.html#key-recap">16편</a>에 있어요.</p>
     <ul class="key-recap">
@@ -526,6 +554,8 @@ for line in run()["log"]:                       # 그래프는 그대로, 노드
       <li><a href="#key-feed-window">10건 피드는 하루 발행량부터</a></li>
       <li><a href="#key-g1-first">본문 관문이 먼저 — 없으면 요약을 지어낸다</a></li>
       <li><a href="#key-log-skips">결과를 바꾸는 건너뜀만 기록하고, 404를 실패로 보이게</a></li>
+      <li><a href="#key-empty-is-not-absent">추출 0자는 "본문 없음"이 아니라 "못 받음"일 수 있다</a></li>
+      <li><a href="#field-nk">같은 잣대를 내 분야에 — 북한 뉴스 적용기</a></li>
     </ul>
 
     <h2><span class="hl">다음은</span></h2>
