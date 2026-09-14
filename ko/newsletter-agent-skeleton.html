@@ -446,17 +446,17 @@ Image(build().compile().get_graph().draw_mermaid_png())</code></pre>
     </div>
 
     <h2 id="stub-choice"><span class="hl">나쁜 선택 vs 좋은 선택</span> — 빈 노드 속을 무엇으로 채우나</h2>
-    <p>리허설 날 빈 접시 대신 "대충 비슷한 반찬"을 올려 두고 싶은 유혹이 있어요. 뼈대의 <code>select</code> 자리에서 대 볼게요.</p>
+    <p>빈 노드는 리허설이에요. 접시에 뭘 담을지는 나중이고, 지금은 접시가 제자리에 있는지와 나오는 순서만 맞춰 한 바퀴 돌아보는 거죠. 그런데 빈 접시가 허전해서 "대충 비슷한 반찬"이라도 올려 두고 싶어져요. 코드에서는 <strong>몇 줄짜리 임시 규칙</strong>이 그 반찬이에요. 앞의 <a href="#swap-by-name">가짜 <code>collect</code></a>가 기사 9건을 채워 둔 상태에서, <code>select</code> 자리를 두 가지로 채워 볼게요.</p>
     <table class="choice-table">
       <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
       <tbody>
         <tr>
-          <td class="choice-bad"><strong>무엇을 했나:</strong> 빈 <code>select</code>에 "제목에 AI가 들어간 기사를 앞에서 5건"이라는 임시 조건을 넣어 그럴듯한 결과가 나오게 했어요.<br><br><strong>무슨 일이 생기나:</strong> 로그에 <code>9 → 5건</code>이 찍혀 선별이 이미 된 것처럼 보여요. 진행도가 거짓말을 하는 거죠. 13편에서 진짜 선별로 바꿀 때 이 조건과, 거기 맞춰 짠 뒤쪽 코드까지 찾아 걷어내야 해요.</td>
-          <td class="choice-good"><strong>무엇을 했나:</strong> 빈 <code>select</code>는 <code>picked</code>를 빈 리스트로 두고 <code>(빈 노드)</code> 로그 한 줄만 남겼어요. 모양 확인이 필요하면 고정 가짜 값만 썼어요.<br><br><strong>무슨 일이 생기나:</strong> 로그의 <code>0건 (빈 노드)</code>만 봐도 안 채운 자리가 보여요. 13편에서는 같은 이름으로 함수를 통째로 다시 정의하면 끝이고, 걷어낼 임시 코드가 없어요.</td>
+          <td class="choice-bad"><strong>무엇을 했나:</strong> 빈 <code>select</code>에 <code>s["collected"][:5]</code>, 즉 "앞에서 다섯 건"이라는 임시 규칙을 한 줄 넣었어요. <strong>들어온 값을 읽어서</strong> 결과를 만드는 코드예요.<br><br><strong>무슨 일이 생기나:</strong> 로그가 <code>② 선별   9 → 5건</code>으로 찍혀요. 바로 앞에서 "0에서 벗어난 줄 수가 곧 진행도"라고 했는데, 이 줄은 <strong>아직 안 만든 선별을 다 만든 것으로 세요</strong>. 게다가 <code>picked</code>에는 "그냥 앞에서 다섯 건"이 담기는데, 뒤쪽 노드를 만들 때는 그게 골라진 다섯 건인 줄 알고 짜게 돼요. 13편에서 진짜 선별로 바꾸면 <code>picked</code>의 성격이 달라지니, 이 한 줄만 지우는 게 아니라 <strong>그 한 줄을 믿고 짠 곳을 찾아다녀야</strong> 해요.</td>
+          <td class="choice-good"><strong>무엇을 했나:</strong> <code>picked</code>를 빈 리스트로 두고 <code>(빈 노드)</code> 꼬리표가 붙은 로그 한 줄만 남겼어요. 모양 확인이 꼭 필요하면 고정 가짜 값을 쓰되, 어느 쪽이든 <strong>들어온 값을 읽지 않아요</strong>. 무엇이 들어오든 늘 같은 값이 나와요.<br><br><strong>무슨 일이 생기나:</strong> 로그가 <code>② 선별   9 → 0건 (빈 노드)</code>으로 찍혀요. 9건이 들어왔는데 0건이 나갔으니 <strong>안 채운 자리라는 게 줄에 그대로 보여요</strong>. 결과가 그럴듯하지 않으니 뒤쪽 노드도 이 값을 믿고 짤 수가 없고요. 13편에서는 같은 이름으로 함수를 통째로 다시 정의하면 끝이라, 걷어낼 임시 코드가 한 줄도 없어요.</td>
         </tr>
       </tbody>
     </table>
-    <p>껍데기는 <strong>얇을수록</strong> 제 역할을 해요.</p>
+    <p>두 선택을 가른 건 "가짜냐 진짜냐"가 아니라 <strong>들어온 값을 읽느냐</strong>예요. 읽지 않는 껍데기는 결과가 늘 같아서 아무도 진짜로 착각하지 않고, 지울 때도 함수 하나로 끝나요. 읽는 순간 결과가 그럴듯해지고, 그 그럴듯함에 뒤쪽 코드가 기대기 시작해요. 껍데기는 <strong>얇을수록</strong> 제 역할을 해요.</p>
 
     <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 뼈대를 세우기 전에 볼 것</h2>
     <p><a href="#what-we-build">무엇을 만드나</a>와 <a href="#state-first">State부터 정한다</a>에 나온 값 가운데 뒤 편이나 내 분야로 옮길 때 다시 쓰는 것만 모았어요.</p>
