@@ -59,7 +59,7 @@
         <dd>
           <ul>
             <li>폴더를 상대 경로로 적으면, 내가 그 폴더에서 앱을 열었을 때만 되고 다른 데서 열면 실패합니다. <a class="suspect-jump" href="#suspect-other-folder">언제 의심하나 ↓</a></li>
-            <li>버전을 못 박지 않으면 잠금 파일이 조용히 갱신돼 어제와 다른 조합으로 돌면서 원인 모를 차이가 생겨요. <a class="suspect-jump" href="#suspect-lock-changed">언제 의심하나 ↓</a></li>
+            <li>버전을 못 박지 않으면 <code>pyproject.toml</code>이 바뀌었을 때 잠금 파일이 조용히 갱신돼 어제와 다른 조합으로 돌면서 원인 모를 차이가 생겨요. <a class="suspect-jump" href="#suspect-lock-changed">언제 의심하나 ↓</a></li>
             <li>AI가 MCP 대신 파일을 직접 읽어 답해도 내용은 맞을 수 있습니다 — 확인하려던 경로는 한 번도 안 지났는데 성공으로 착각해요. <a class="suspect-jump" href="#suspect-direct-read">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
@@ -223,7 +223,7 @@
           <td class="choice-good">번호부에 "3층 302호"라고 적는다 = <code>--directory</code>에 실습 폴더의 <strong>절대 경로</strong>를 적는다 → 앱을 어디서 열든 uv가 같은 프로젝트를 찾고, 그 폴더가 서버 파일 상대 경로의 출발점이 된다.</td>
         </tr>
         <tr>
-          <td class="choice-bad">"버전은 알아서 맞춰 주세요"로 둔다 = <code>--locked</code> 없이 실행한다 → 잠금 파일이 조용히 갱신되고, 어제와 다른 패키지 조합으로 돌면서 원인 모를 차이가 생긴다.</td>
+          <td class="choice-bad">"버전은 알아서 맞춰 주세요"로 둔다 = <code>--locked</code> 없이 실행한다 → <code>pyproject.toml</code>이 바뀌면 잠금 파일이 조용히 갱신되고, 어제와 다른 패키지 조합으로 돌면서 원인 모를 차이가 생긴다.</td>
           <td class="choice-good"><code>uv run --locked</code>로 못 박는다 → 확정된 조합이 아니면 <strong>아예 시작하지 않고 오류로 멈춘다.</strong> 원인이 "잠금 파일 불일치" 하나로 좁혀진다.</td>
         </tr>
         <tr>
@@ -246,20 +246,22 @@
       <li>기존에 쓰던 다른 MCP 연결이 <strong>지워지지 않고 남아 있는가</strong></li>
     </ul>
     <p>마지막 항목이 은근히 자주 깨져요. 설정 파일 전체를 새로 써 버리면서 원래 있던 항목이 사라지는 경우가 있거든요.</p>
-    <p>설정 파일의 뼈대는 대략 이렇게 생겼어요. 앱마다 감싸는 키 이름이 다르지만, <strong>안쪽의 <code>command</code>와 <code>args</code>는 공통</strong>이에요.</p>
-    <p class="run-tag">실행: 호스트의 MCP 설정 파일로 저장 <span class="run-tag-why">— Claude Code는 프로젝트 폴더의 .mcp.json, OpenCode는 버전에 따라 위치가 달라요</span></p>
+    <p>설정 파일의 뼈대는 대략 이렇게 생겼어요. Claude Code의 <code>.mcp.json</code> 모양이에요. 앱마다 감싸는 키 이름과 칸 모양은 다르지만, <strong>무엇을 어떤 인자로 실행할지 적는다는 건 공통</strong>이에요.</p>
+    <p class="run-tag">실행: 호스트의 MCP 설정 파일로 저장 <span class="run-tag-why">— Claude Code 기준, 프로젝트 폴더의 .mcp.json이에요. OpenCode는 구조와 위치가 달라요</span></p>
     <pre><code>{
-  "weekly-records": {
-    "command": "uv",
-    "args": [
-      "--directory", "/Users/student/mcp-skill-practice",
-      "run", "--locked",
-      "mcp", "run", "weekly_records_server.py",
-      "--transport", "stdio"
-    ]
+  "mcpServers": {
+    "weekly-records": {
+      "command": "uv",
+      "args": [
+        "--directory", "/Users/student/mcp-skill-practice",
+        "run", "--locked",
+        "mcp", "run", "weekly_records_server.py",
+        "--transport", "stdio"
+      ]
+    }
   }
 }</code></pre>
-    <p>이게 <a href="mock-data-and-rest-api.html">목업 데이터와 REST API</a>에서 처음 봤던 JSON<sup class="fn-ref"><a href="#fn10" id="fnref10">10</a></sup>이에요. 바깥 이름표가 서버 이름, <code>command</code>가 실행할 프로그램, <code>args</code>가 그 뒤에 이어 붙는 인자들의 <strong>목록</strong>이에요. 명령줄에서 빈칸으로 나뉘던 조각들이 여기서는 대괄호 안에 하나씩 따로 들어가는 거죠.</p>
+    <p>이게 <a href="mock-data-and-rest-api.html">목업 데이터와 REST API</a>에서 처음 봤던 JSON<sup class="fn-ref"><a href="#fn10" id="fnref10">10</a></sup>이에요. <code>mcpServers</code> 안의 이름표가 서버 이름, <code>command</code>가 실행할 프로그램, <code>args</code>가 그 뒤에 이어 붙는 인자들의 <strong>목록</strong>이에요. 명령줄에서 빈칸으로 나뉘던 조각들이 여기서는 대괄호 안에 하나씩 따로 들어가는 거죠.</p>
     <p>OpenCode를 쓴다면 한 가지 더 있어요. <strong>V1과 V2의 설정 구조가 달라요.</strong> V1은 <code>mcp</code> 바로 아래에, V2는 <code>mcp.servers</code> 아래에 서버를 등록해요. 그래서 이렇게 물어보는 게 안전해요.</p>
     <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— Claude Code 등</span></p>
     <pre><code>내 OpenCode 버전을 확인하고, 그 버전에 맞게 연결해 줘.</code></pre>

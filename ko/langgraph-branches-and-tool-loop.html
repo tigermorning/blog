@@ -38,7 +38,7 @@
       <p class="why-read-title">이 글을 읽기 전에</p>
       <dl>
         <dt>어디쯤인가</dt>
-        <dd><a href="posts.html#cat-agent-system">8단계</a> › <a href="posts.html#langgraph-team">에이전트 팀 꾸리기 — LangGraph</a> — 4번째 글 (전 7편). 중간부터 보셨다면 <a href="langgraph-what-and-why.html">1편</a>부터 보시는 게 편해요.</dd>
+        <dd><a href="posts.html#cat-agent-system">8단계</a> › <a href="posts.html#langgraph-team">에이전트 팀 꾸리기 — LangGraph</a> — 4번째 글 (전 10편). 중간부터 보셨다면 <a href="langgraph-what-and-why.html">1편</a>부터 보시는 게 편해요.</dd>
         <dt>이런 게 궁금했다면</dt>
         <dd>
           <ul>
@@ -59,8 +59,8 @@
         <dd>
           <ul>
             <li>모델이 도구를 직접 돌린다고 착각하면, 도구가 안 불릴 때 프롬프트만 고치게 됩니다 — 볼 곳은 <strong>함수 바로 아래 적어 둔 설명문(독스트링)</strong>이에요. 모델이 읽는 건 코드가 아니라 그 문장이거든요. <a class="suspect-jump" href="#suspect-tool-not-called">언제 의심하나 ↓</a></li>
-            <li>parse_docstring=True를 빼면 성실히 쓴 Args 설명이 모델에게 아예 전달되지 않습니다. <a class="suspect-jump" href="#suspect-docstring-error">언제 의심하나 ↓</a></li>
-            <li>도구 루프도 되돌아가는 선이라 몇 번까지 돌지 안 정하면 호출 요금이 그대로 쌓입니다. 도구를 한 번 쓰고 답해도 메시지가 6개 쌓이고, 그 전부가 다음 호출에 다시 실려 가요. <a class="suspect-jump" href="#suspect-message-pileup">언제 의심하나 ↓</a></li>
+            <li>parse_docstring=True를 빼면 성실히 쓴 Args 설명이 인자마다 붙지 않고, 도구 설명 글 뒤에 통째로 섞여 들어갑니다. <a class="suspect-jump" href="#suspect-docstring-error">언제 의심하나 ↓</a></li>
+            <li>도구 루프도 되돌아가는 선이라 몇 번까지 돌지 안 정하면 호출 요금이 그대로 쌓입니다. 도구 둘을 하나씩 불러 답하기만 해도 메시지가 6개 쌓이고, 그 전부가 다음 호출에 다시 실려 가요. <a class="suspect-jump" href="#suspect-message-pileup">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -90,7 +90,7 @@
         <tr><td>홀 직원 손에 쥐여 준 창고 품목 안내문 — 홀 직원은 창고 안이 아니라 이 안내문만 봐요</td><td><code>bind_tools</code>로 모델에게 건네는 도구 설명 — <code>@tool</code> 함수의 독스트링으로 만들고, 모델은 파이썬 코드가 아니라 이것만 봐요</td></tr>
         <tr><td>검수대가 "요청서가 있으면 창고로, 없으면 홀로" 가르기</td><td><code>tools_condition</code> — 모델의 마지막 답에 <code>tool_calls</code>가 있으면 <code>tools</code>로, 없으면 <code>END</code>로 보내는 미리 만들어진 라우터예요</td></tr>
         <tr><td>검수대 직원이 동선표에 없는 조리대 이름을 외치기</td><td>목적지 목록에 없는 이름을 돌려주는 라우터 — 그 갈래로 갈 입력이 처음 들어올 때 에러로 멈춰요 (<a href="langgraph-branch-drills.html#branch-drills">갈림길 연습 ①</a>)</td></tr>
-        <tr><td>검수대 직원이 전표에 몰래 적기</td><td>라우터 안에서 State 고치기 — 적은 값이 사라지거나 몰래 새어 들어가요 (<a href="langgraph-branch-drills.html#router-no-write">아래에서 직접 확인</a>)</td></tr>
+        <tr><td>검수대 직원이 전표에 몰래 적기</td><td>라우터 안에서 State 고치기 — 적은 값이 사라지거나 몰래 새어 들어가요 (<a href="langgraph-branch-drills.html#router-no-write">3편에서 직접 확인</a>)</td></tr>
       </tbody>
     </table>
     <p><strong>핵심 한 줄:</strong> 동선표 모양은 지난 편과 같고, 전표를 어디로 보낼지 정하는 기준만 규칙표에서 홀 직원의 요청서로 바뀌었어요.</p>
@@ -108,7 +108,7 @@
         </marker>
       </defs>
 
-      <text x="185" y="26" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">지난 편 ② 규칙이 고르는 반복</text>
+      <text x="185" y="26" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">2편 ② 규칙이 고르는 반복</text>
       <text x="185" y="46" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">judge()가 State의 salt·tries를 읽고 고른다</text>
 
       <rect x="8" y="108" width="60" height="36" rx="18" fill="none" stroke="var(--border)"/>
@@ -168,8 +168,8 @@
     </svg>
 
     <h2 id="code-tools"><span class="hl">계산은 코드에게</span> — 단순한 함수도 좋은 도구인 이유</h2>
-    <p>갈림길 연습은 여기까지예요. 이제 라우터 자리에 모델을 앉힐 차례인데, 그 전에 모델에게 쥐여 줄 도구가 왜 필요한지부터 짚을게요.</p>
-    <p>여기서 기억에 남는 설계 원칙 한 줄이 있어요. <strong>LLM이 약한 계산과 정밀 작업은 코드에 맡기고, LLM은 "언제 어떤 코드를 부를지" 판단하는 데 집중시킨다.</strong> 그래서 달력, 시간대 변환기, 단위 변환기처럼 단순한 함수도 훌륭한 도구가 돼요. <a href="langgraph-what-and-why.html#tool-kinds">지난 편의 도구 종류 표</a>에 나온 세 종류가 바깥에서 정보를 가져오거나 바깥을 바꾸는 도구라면, 이쪽은 LLM이 약한 계산을 대신 해 주는 도구예요.</p>
+    <p>이제 라우터 자리에 모델을 앉힐 차례인데, 그 전에 모델에게 쥐여 줄 도구가 왜 필요한지부터 짚을게요.</p>
+    <p>여기서 기억에 남는 설계 원칙 한 줄이 있어요. <strong>LLM이 약한 계산과 정밀 작업은 코드에 맡기고, LLM은 "언제 어떤 코드를 부를지" 판단하는 데 집중시킨다.</strong> 그래서 달력, 시간대 변환기, 단위 변환기처럼 단순한 함수도 훌륭한 도구가 돼요. <a href="langgraph-what-and-why.html#tool-kinds">1편의 도구 종류 표</a>에 나온 세 종류가 바깥에서 정보를 가져오거나 바깥을 바꾸는 도구라면, 이쪽은 LLM이 약한 계산을 대신 해 주는 도구예요.</p>
     <p>처음엔 "오늘부터 100일 뒤가 무슨 요일인지 정도는 LLM이 그냥 풀면 되지 않나" 싶었어요. 그런데 LLM에게 직접 맡길 때와 함수로 뺄 때를 나란히 놓으면 차이가 분명해요.</p>
     <table>
       <thead><tr><th>비교 항목</th><th>LLM이 직접 계산하면</th><th>함수 도구로 빼면</th></tr></thead>
@@ -199,7 +199,7 @@
       <li><strong>임시</strong> — <code>os.environ["OPENAI_API_KEY"] = "sk-..."</code>로 직접 넣어요. 노트북 파일에 키가 그대로 남으니 저장하거나 공유하기 전에 꼭 지워요.</li>
     </ul>
     <p>Colab처럼 <strong>브라우저로 여는 원격 주피터</strong>에서 돌린다면 첫 번째 방법이 적힌 그대로는 안 통해요. 코드가 내 컴퓨터가 아니라 그 서버에서 돌아서, <code>.env</code>도 그 서버에 둬야 하거든요. 제가 한참 막혔던 과정은 <a href="langgraph-env-troubleshooting.html">5편 '원격 주피터에서 API 키 넣기'</a>에 따로 적어 뒀어요.</p>
-    <p>도구는 함수에 <code>@tool</code>을 붙여 만들어요(<a href="langgraph-what-and-why.html#langchain-family">지난 편의 식구 표</a>에서 본 LangChain 쪽 부품이에요). 여기서 제일 중요한 건 <strong>독스트링<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup></strong>이에요. LangChain이 독스트링과 타입 힌트를 읽어 <strong>JSON 스키마<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup></strong>를 만들고, 모델은 우리 파이썬 코드가 아니라 <strong>이 스키마만</strong> 봐요.</p>
+    <p>도구는 함수에 <code>@tool</code>을 붙여 만들어요(<a href="langgraph-what-and-why.html#langchain-family">1편의 식구 표</a>에서 본 LangChain 쪽 부품이에요). 여기서 제일 중요한 건 <strong>독스트링<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup></strong>이에요. LangChain이 독스트링과 타입 힌트를 읽어 <strong>JSON 스키마<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup></strong>를 만들고, 모델은 우리 파이썬 코드가 아니라 <strong>이 스키마만</strong> 봐요.</p>
     <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— OPENAI_API_KEY 환경변수 필요 (호출마다 요금이 조금 나가요)</span></p>
     <pre><code>from langchain_core.tools import tool
 from langchain_openai import ChatOpenAI
@@ -243,7 +243,7 @@ for m in result["messages"]:
     m.pretty_print()</code></pre>
     <p>한 줄씩 짚어 볼게요.</p>
     <ul>
-      <li><strong><code>parse_docstring=True</code></strong> — 이걸 빼면 독스트링의 <code>Args:</code> 설명이 스키마에 안 들어가요. 성실하게 써 두고도 모델에게 전달이 안 되는 셈이라 꼭 확인할 값이에요. 제 컴퓨터에서 <code>get_recipe</code>의 스키마를 찍어 보니 <code>"dish": {"description": "요리 이름. 예: \"계란말이\"", "type": "string"}</code>처럼 타입 힌트는 <code>type</code>이, <code>Args:</code>는 <code>description</code>이 돼 있었어요.</li>
+      <li><strong><code>parse_docstring=True</code></strong> — 이걸 빼면 독스트링의 <code>Args:</code> 설명이 인자별 스키마 칸에 안 들어가요. 도구 설명 글 뒤에 통째로 붙어 가긴 하지만, 성실하게 써 두고도 인자마다 설명이 붙지 않는 셈이라 꼭 확인할 값이에요. 제 컴퓨터에서 <code>get_recipe</code>의 스키마를 찍어 보니 <code>"dish": {"description": "요리 이름. 예: \"계란말이\"", "type": "string"}</code>처럼 타입 힌트는 <code>type</code>이, <code>Args:</code>는 <code>description</code>이 돼 있었어요.</li>
       <li><strong><code>MessagesState</code></strong> — <code>messages</code> 칸 하나짜리 미리 만들어진 State예요. 새 메시지가 오면 덮어쓰지 않고 뒤에 쌓이게 설정돼 있어서 대화 기록을 따로 관리할 필요가 없어요.</li>
       <li><strong><code>bind_tools</code>는 도구를 실행하지 않아요.</strong> 모델 응답의 <code>tool_calls</code> 칸에 "이 도구를 이 값으로 불러 달라"는 요청만 담겨요. 실제 실행은 <code>ToolNode</code>가 하고, 결과를 <code>ToolMessage</code>로 메시지 목록에 붙여요. 정말 그런지 <a href="#tool-request-only">아래에서 직접 확인해요</a>.</li>
       <li><strong><code>tools_condition</code></strong> — 마지막 메시지에 <code>tool_calls</code>가 있으면 <code>"tools"</code>를, 없으면 <code>END</code>를 돌려주는 미리 만들어진 라우터예요.</li>
@@ -330,7 +330,7 @@ agent.invoke({"messages": [("user", "계란말이 두 접시 만들 수 있어?"
     <table>
       <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
       <tbody>
-        <tr><td>도구를 한 번 쓰고 답할 때 쌓이는 메시지 수</td><td>6개</td><td>질문 1 + (도구 요청 · 도구 결과) 2쌍 + 최종 답 1이에요. <strong>루프가 한 바퀴 돌 때마다 2개씩 늘고, 그 전부가 다음 호출에 다시 실려 가요</strong>. 도구를 몇 번 쓰게 둘지가 곧 요금인 이유예요 (gpt-4o-mini로 1회 실행)<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup></td></tr>
+        <tr><td>도구 둘을 하나씩 불러 답할 때 쌓이는 메시지 수</td><td>6개</td><td>질문 1 + (도구 요청 · 도구 결과) 2쌍 + 최종 답 1이에요. <strong>루프가 한 바퀴 돌 때마다 2개씩 늘고, 그 전부가 다음 호출에 다시 실려 가요</strong>. 도구를 몇 번 쓰게 둘지가 곧 요금인 이유예요 (gpt-4o-mini로 1회 실행)<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup></td></tr>
         <tr><td>도구 루프를 이루는 노드와 선</td><td>노드 2개<br>선 3개</td><td>노드는 <code>agent</code>·<code>tools</code>, 선은 START→agent · 조건부 엣지 · tools→agent예요. <strong>에이전트라고 부르는 것의 최소 형태가 이만큼</strong>이라, 여기에 검토 노드 하나를 끼우는 것도 선 하나 더 긋는 일이에요 (<a href="#tool-loop">직접 만들기 ③</a>)</td></tr>
         <tr><td>반복을 강제로 끊는 기본 상한<br><code>recursion_limit</code></td><td>10007스텝<br>(langgraph 1.2 기준)</td><td>도구 루프도 되돌아가는 선이라 같은 상한이 걸려요. 1.0.0은 25, 1.1.0은 10000이었고요. 모델이 도구를 계속 부르면 <strong>이 숫자에 닿기 한참 전에 요금이 먼저 커져요</strong> (<a href="langgraph-branch-drills.html#numbers">3편</a>)</td></tr>
       </tbody>

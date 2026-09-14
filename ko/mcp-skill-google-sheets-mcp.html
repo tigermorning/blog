@@ -439,7 +439,7 @@ def read_sheet_header(spreadsheet_id: str) -&gt; dict:
         </tr>
         <tr>
           <td class="choice-bad">청구기호 대신 도서관 홈페이지 주소를 통째로 내민다 = <code>spreadsheet_id</code> 자리에 <strong>표 URL 전체</strong>를 넣는다 → 입력 검사가 없었다면 한참 뒤에 <strong>알아보기 어려운 API 오류</strong>로 튀어나온다.</td>
-          <td class="choice-good">청구기호 형식부터 확인한다 = <strong><code>re.fullmatch</code>로 ID 모양을 먼저 검사</strong>한다 → <strong>"URL 말고 ID를 넣으세요"</strong>가 즉시 나온다.</td>
+          <td class="choice-good">청구기호 형식부터 확인한다 = <strong><code>re.fullmatch</code>로 ID 모양을 먼저 검사</strong>한다 → Google에 묻기 전에 <strong>바로 멈춘다</strong>. 터미널에서 함수를 직접 부르면 <strong>"URL 말고 ID를 넣으세요"</strong>라는 안내가, 도구로 부르면 오류 문장 괄호 안의 <code>ValueError</code>가 그 단서로 남는다.</td>
         </tr>
         <tr>
           <td class="choice-bad">기사가 받은 서류를 <strong>로비에서 큰 소리로 읽는다</strong> = 오류가 나면 <strong>원래 메시지를 그대로</strong> 호스트에 돌려준다 → 파일 경로 같은 내용이 <strong>대화 기록에 남는다</strong>.</td>
@@ -460,7 +460,7 @@ def read_sheet_header(spreadsheet_id: str) -&gt; dict:
         <tr><td><code>access_denied</code> / 테스트 사용자 제한</td><td><strong>③ 동의 화면</strong></td><td>동의 화면에서 취소·거부했는지 → <strong>로그인한 계정과 Test users 등록</strong>이 일치하는지 → 조직 정책</td></tr>
         <tr><td><code>redirect_uri_mismatch</code></td><td><strong>② 결과를 돌려받는 자리</strong></td><td>도구가 요구하는 <strong>앱 종류</strong>(Desktop app인지)와 <strong>등록한 반환 주소</strong></td></tr>
         <tr><td>API가 꺼져 있다는 오류</td><td><strong>⑥⑦ API 호출</strong></td><td><strong>credential을 만든 그 프로젝트</strong>에서 API가 켜져 있는지 (다른 프로젝트에 켜 뒀을 수 있어요)</td></tr>
-        <tr><td><code>insufficient permissions</code></td><td><strong>범위 또는 파일 권한</strong></td><td>요청한 scope → 실제로 <strong>동의한 범위</strong> → 대상 파일의 <strong>접근 권한</strong> — 이 셋은 서로 다른 조건이에요</td></tr>
+        <tr><td>권한이 부족하다는 403 오류 (<code>insufficient authentication scopes</code> · <code>The caller does not have permission</code>)</td><td><strong>범위 또는 파일 권한</strong></td><td>요청한 scope → 실제로 <strong>동의한 범위</strong> → 대상 파일의 <strong>접근 권한</strong> — 이 셋은 서로 다른 조건이에요</td></tr>
         <tr><td><code>invalid_grant</code> / 재로그인 필요</td><td><strong>⑤ 토큰 재사용</strong></td><td>도구의 재인증 안내 확인 → <strong>토큰 만료·철회</strong> 가능성</td></tr>
       </tbody>
     </table>
@@ -482,7 +482,7 @@ def read_sheet_header(spreadsheet_id: str) -&gt; dict:
         <tr><td>MCP로 공개하는 함수</td><td><strong>1개</strong></td><td><code>read_sheet_header</code> — <code>load_token</code>·<code>read_header</code>는 안에서만 쓰임</td></tr>
         <tr><td>도구가 받는 입력</td><td>1개</td><td><code>spreadsheet_id</code> (문자열)</td></tr>
         <tr><td>오류 시 호스트로 나가는 정보</td><td><strong>오류 종류 이름 1개</strong></td><td><code>type(error).__name__</code>만 — 원래 메시지 내역은 내보내지 않음</td></tr>
-        <tr><td>트러블슈팅 갈래</td><td>5가지</td><td><code>access_denied</code> · <code>redirect_uri_mismatch</code> · API 꺼짐 · <code>insufficient permissions</code> · <code>invalid_grant</code></td></tr>
+        <tr><td>트러블슈팅 갈래</td><td>5가지</td><td><code>access_denied</code> · <code>redirect_uri_mismatch</code> · API 꺼짐 · 403 권한 부족 · <code>invalid_grant</code></td></tr>
         <tr><td>Testing 상태 앱의 갱신 토큰 유효 기간</td><td><strong>7일</strong></td><td>Sheets·Drive 등의 권한을 요청하는 <strong>External + Testing</strong> 앱 기준 — 이름·이메일·프로필 등 기본 사용자 정보 범위만 요청한 경우는 예외</td></tr>
       </tbody>
     </table>

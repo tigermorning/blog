@@ -92,7 +92,7 @@
       <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
       <tbody>
         <tr><td>창구에 들어온 사람 한 명</td><td>업무 기록 한 건 — 예: <strong>TASK-102</strong></td></tr>
-        <tr><td>① 위험 신호부터 확인</td><td>팀 규칙의 <strong>위험 기준</strong> — 차단 요인·운영 확인 실패·기한 초과</td></tr>
+        <tr><td>① 위험 신호부터 확인</td><td>팀 규칙의 <strong>위험 기준</strong> — 차단 요인·운영 확인 실패·완료 전 기한 초과</td></tr>
         <tr><td>② 진료가 다 끝났는지 확인</td><td>팀 규칙의 <strong>완료 기준</strong> — 배포 + 기준일 이내 배포일 + 운영 확인 통과</td></tr>
         <tr><td>③ 남으면 대기 줄</td><td><strong>진행</strong> — 위험도 완료도 아닌 나머지</td></tr>
         <tr><td>한 사람은 한 줄에만</td><td>업무 하나는 <strong>한 범주에만</strong> 넣기</td></tr>
@@ -165,7 +165,7 @@ note          : "코드 작성은 끝났으며 다음 배포를 기다린다."</
         <rect x="195" y="86" width="330" height="76" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
         <text x="360" y="108" text-anchor="middle" font-size="10.5" font-weight="700">① 위험 기준에 걸리나?</text>
         <text x="360" y="127" text-anchor="middle" font-size="9.5" fill="var(--muted)">차단 요인 있음 · 배포했는데 운영 확인 미통과</text>
-        <text x="360" y="143" text-anchor="middle" font-size="9.5" fill="var(--muted)">· 기준일을 지난 기한 · 근거가 빠졌거나 모순됨</text>
+        <text x="360" y="143" text-anchor="middle" font-size="9.5" fill="var(--muted)">· 완료 전에 기준일을 지난 기한 · 근거가 빠졌거나 모순됨</text>
         <line x1="527" y1="124" x2="592" y2="124" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrWR)"/>
         <text x="559" y="117" text-anchor="middle" font-size="9" fill="var(--muted)">예</text>
         <rect x="598" y="100" width="167" height="48" rx="8" fill="none" stroke="var(--accent)" stroke-width="3"/>
@@ -238,7 +238,7 @@ note          : "코드 작성은 끝났으며 다음 배포를 기다린다."</
           <td class="choice-good">위험 신호부터 훑고 그다음에 완료를 본다 = <strong>위험 → 완료 → 진행</strong> 순서를 지키고 한 업무를 한 범주에만 넣는다 → 도움이 필요한 일이 보고서 맨 위에서 먼저 보인다.</td>
         </tr>
         <tr>
-          <td class="choice-bad">기한이 지났는지를 <strong>컴퓨터의 오늘 날짜</strong>로 비교한다 → 같은 <code>week-one.json</code>을 읽고도 실습을 9월에 돌리면 '진행', 11월에 돌리면 '지연'이 나온다.</td>
+          <td class="choice-bad">기한이 지났는지를 <strong>컴퓨터의 오늘 날짜</strong>로 비교한다 → 같은 <code>week-one.json</code>을 읽고도 실습을 9월 7일까지 돌리면 TASK-102가 '진행', 9월 8일부터 돌리면 '지연'으로 나온다.</td>
           <td class="choice-good">기한을 파일 위쪽의 <code>report_date</code>(2026-09-04)와 비교한다 → 언제 돌려도 같은 결과가 나오고, 결과가 달라지면 그건 규칙이나 기록이 바뀐 것이다.</td>
         </tr>
         <tr>

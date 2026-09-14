@@ -218,7 +218,7 @@ Chrome에서 노트북을 실행해 보고 싶어.</code></pre>
     <pre><code>minutes = [20, 30, 40]
 average = sum(minutes) / len(minutes)
 print(average)</code></pre>
-    <p>줄별로 읽어 볼게요. 첫 줄의 대괄호는 여러 값을 차례로 담는 <strong>리스트<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup></strong>예요. <code>sum(minutes)</code>는 그 값을 다 더한 <strong>합(90)</strong>, <code>len(minutes)</code>는 <strong>기록의 개수(3)</strong>, <code>/</code>로 나누면 <strong>30</strong>이 나와요. 다만 Python은 나눗셈 결과를 소수로 다루는 편이라 화면에는 <strong><code>30.0</code></strong>처럼 찍힐 수 있어요 — 틀린 게 아니에요.</p>
+    <p>줄별로 읽어 볼게요. 첫 줄의 대괄호는 여러 값을 차례로 담는 <strong>리스트<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup></strong>예요. <code>sum(minutes)</code>는 그 값을 다 더한 <strong>합(90)</strong>, <code>len(minutes)</code>는 <strong>기록의 개수(3)</strong>, <code>/</code>로 나누면 <strong>30</strong>이 나와요. 다만 Python의 <code>/</code>는 나눗셈 결과를 늘 소수로 돌려줘서 화면에는 <strong><code>30.0</code></strong>으로 찍혀요 — 틀린 게 아니에요.</p>
     <p>여기서 <strong>손으로 먼저 적어 보는 연습</strong>을 하나 권해요. 마지막 값 <code>40</code>을 <code>70</code>으로 바꾸기 <strong>전에</strong>, 바뀐 합계·기록 수·예상 평균을 종이에 먼저 적어 두는 거예요. 그다음 실행해서 맞춰 보세요. 이렇게 하면 코드가 <strong>내가 이해한 대로 도는지</strong>를 매번 확인하게 돼요.</p>
 
     <h3>Colab이 대신 정해 주지 않는 것</h3>
@@ -284,7 +284,7 @@ print(average)</code></pre>
         <tr><td>연결 검증용 계산</td><td><code>print(37 + 5)</code> → <strong>42</strong></td><td>답을 미리 아는 계산이라야 <strong>연결</strong>을 검증할 수 있음</td></tr>
         <tr><td>MCP 서버용 Python 요구 버전</td><td><strong>3.13 이상</strong></td><td>노트북 안의 Python이 아니라 <strong>내 컴퓨터에서 서버를 띄울</strong> Python</td></tr>
         <tr><td>학습 시간 기록</td><td>3개 (20 · 30 · 40분)</td><td>합계 90분 — 학습용 가상 기록</td></tr>
-        <tr><td>기록이 있는 날만 낸 평균</td><td>30분 (<code>30.0</code>으로 표시될 수 있음)</td><td>90 ÷ 3 — Python은 나눗셈 결과를 소수로 다룸</td></tr>
+        <tr><td>기록이 있는 날만 낸 평균</td><td>30분 (<code>30.0</code>으로 표시)</td><td>90 ÷ 3 — Python의 <code>/</code>는 결과를 늘 소수로 돌려줌</td></tr>
         <tr><td>기록 없는 날을 0분으로 넣은 평균</td><td>약 12.9분</td><td>90 ÷ 7 — <strong>일주일 7일 기준으로 제가 계산해 본 값</strong>이며, 어느 쪽을 쓸지는 팀이 정할 문제</td></tr>
         <tr><td>마지막 값을 40 → 70으로 바꾸면</td><td>합계 120분 · 평균 40분</td><td>실행 전에 <strong>손으로 먼저 적어 보는</strong> 연습용</td></tr>
         <tr><td>기록이 하나도 없을 때</td><td><code>len</code>이 <strong>0</strong> → 0으로 나눔</td><td>코드보다 <strong>"자료 없음"을 어떻게 표기할지</strong>를 먼저 정할 것</td></tr>

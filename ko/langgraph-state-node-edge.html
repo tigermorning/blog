@@ -38,7 +38,7 @@
       <p class="why-read-title">이 글을 읽기 전에</p>
       <dl>
         <dt>어디쯤인가</dt>
-        <dd><a href="posts.html#cat-agent-system">8단계</a> › <a href="posts.html#langgraph-team">에이전트 팀 꾸리기 — LangGraph</a> — 2번째 글 (전 7편)</dd>
+        <dd><a href="posts.html#cat-agent-system">8단계</a> › <a href="posts.html#langgraph-team">에이전트 팀 꾸리기 — LangGraph</a> — 2번째 글 (전 10편)</dd>
         <dt>이런 게 궁금했다면</dt>
         <dd>
           <ul>
@@ -96,7 +96,7 @@
       </tbody>
     </table>
     <p><strong>핵심 한 줄:</strong> 요리를 잘하는 건 조리대(노드)의 몫이고, 전표가 어디로 갈지는 동선표(엣지)가 정해요 — LangGraph는 그 동선표를 코드로 쓰는 도구예요.</p>
-    <p>다만 여기서 비유가 끊기는 점이 있어요. 사람 직원은 동선표에 없어도 눈치껏 옆 조리대를 도와주지만, 그래프는 <strong>선이 없는 곳으로는 절대 가지 않아요</strong>. 그리고 검수대(라우터)는 다음 목적지를 고르는 일만 해요. 전표에 값을 적는 건 노드가 반환값으로 하는 일이에요. 라우터가 전표에 직접 적으려 하면 무슨 일이 생기는지는 <a href="langgraph-branch-drills.html#router-no-write">3편에서 직접 해 봤어요</a>.</p>
+    <p>다만 여기서 비유가 끊기는 점이 있어요. 사람 직원은 동선표에 없어도 눈치껏 옆 조리대를 도와주지만, 그래프는 <strong>그어 둔 선을 따라가요</strong>(노드 코드에서 행선지를 직접 지정하는 고급 방법도 따로 있지만, 그것도 코드에 적어야 가요). 그리고 검수대(라우터)는 다음 목적지를 고르는 일만 해요. 전표에 값을 적는 건 노드가 반환값으로 하는 일이에요. 라우터가 전표에 직접 적으려 하면 무슨 일이 생기는지는 <a href="langgraph-branch-drills.html#router-no-write">3편에서 직접 해 봤어요</a>.</p>
 
     <h2 id="big-picture"><span class="hl">전체 흐름</span> — 간 맞추기 그래프 한 장</h2>
     <p>아래에서 직접 만들 두 번째 예제를 그림으로 먼저 볼게요. <a href="langgraph-what-and-why.html#quick-look">1편에서 while문으로 봤던</a> 바로 그 간 맞추기를, 이번에는 세 조각으로 뜯어 그린 모습이에요. <strong>읽는 법:</strong> 실선은 앞 노드가 끝나면 항상 지나가는 선이고, 점선은 라우터가 여러 갈래 중 <strong>하나만</strong> 고르는 선이에요. <code>add_salt</code>에서 <code>taste</code>로 올라가는 실선이 "다시 간 보기", 즉 반복이에요. 반복이 끝나는 출구가 두 개(<code>serve</code>, <code>call_chef</code>)라는 점도 눈여겨보세요.</p>
@@ -357,7 +357,7 @@ serve --&gt; __end__;</code></pre>
     <ul>
       <li><strong>목적지를 딕셔너리로도 줄 수 있어요.</strong> <code>{"통과": "serve", "보류": "add_salt"}</code>처럼 주면 라우터가 한국어 라벨을 돌려주고 LangGraph가 노드 이름으로 번역해 줘요. 노드 이름은 영문으로, 라벨만 한국어로 두는 절충이에요.</li>
       <li><strong>조건부 엣지 하나로 분기와 반복을 다 만들어요.</strong> 이미 지나온 노드로 돌아가는 선을 그으면 그게 반복이에요.</li>
-      <li><strong>그림으로 확인하기.</strong> 엣지를 <code>add_edge</code> 네 줄과 <code>add_conditional_edges</code> 한 줄로 흩어 적고 나면 전체 모양이 한눈에 안 들어와요. 그래서 <code>draw_mermaid()</code>로 되돌려 받아 보는 거예요. 출력의 아랫부분 일곱 줄이 그 결과인데, 실선과 점선만 봐도 어디가 항상 가는 길이고 어디가 갈림길인지 바로 보여요. <code>draw_mermaid()</code>가 돌려주는 건 <strong>Mermaid<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup></strong> 문법 글자를 돌려줘요. <code>--&gt;</code>는 실선(항상 가는 길), <code>-.-&gt;</code>는 점선(조건에 따라 고르는 길)이에요. 목적지를 리스트로 줘서 라벨이 노드 이름과 같으면 화살표 라벨이 생략되고, 딕셔너리로 다른 라벨을 주면 화살표 위에 라벨이 찍혀요. <code>draw_mermaid_png()</code>는 그림 파일로 바로 그려 주지만, 기본 설정은 외부 렌더링 서비스를 부르니 인터넷이 필요해요.</li>
+      <li><strong>그림으로 확인하기.</strong> 엣지를 <code>add_edge</code> 네 줄과 <code>add_conditional_edges</code> 한 줄로 흩어 적고 나면 전체 모양이 한눈에 안 들어와요. 그래서 <code>draw_mermaid()</code>로 되돌려 받아 보는 거예요. 출력의 아랫부분 일곱 줄이 그 결과인데, 실선과 점선만 봐도 어디가 항상 가는 길이고 어디가 갈림길인지 바로 보여요. <code>draw_mermaid()</code>가 돌려주는 건 <strong>Mermaid<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup></strong> 문법 글자예요. <code>--&gt;</code>는 실선(항상 가는 길), <code>-.-&gt;</code>는 점선(조건에 따라 고르는 길)이에요. 목적지를 리스트로 줘서 라벨이 노드 이름과 같으면 화살표 라벨이 생략되고, 딕셔너리로 다른 라벨을 주면 화살표 위에 라벨이 찍혀요. <code>draw_mermaid_png()</code>는 그림 파일로 바로 그려 주지만, 기본 설정은 외부 렌더링 서비스를 부르니 인터넷이 필요해요.</li>
     </ul>
     <p>반복에는 늘 따라오는 위험이 있어요. <strong>끝나지 않을 수 있다</strong>는 거예요. <code>judge</code>가 항상 <code>"add_salt"</code>만 돌려주게 바꾸고 <code>graph.invoke(입력, {"recursion_limit": 6})</code>으로 돌려 보니, 여섯 스텝에서 <code>GraphRecursionError</code>가 나며 멈췄어요. 그럼 상한을 안 주면 어디서 멈출까요? 예전 자료에는 기본 25스텝이라고 나오는데, 제가 설치한 langgraph 1.2.11의 소스 코드를 열어 보니 기본값이 <strong>10007</strong>이었어요. 버전별로 받아 보니 1.0.0은 25, 1.1.0은 10000, 1.2.0은 10007이었어요. 기본 상한이 알아서 일찍 끊어 줄 거라고 기대하면 안 된다는 뜻이에요(<a href="langgraph-branch-drills.html#drill-loop">3편의 무한 반복 실험</a>에서 직접 봐요). 게다가 상한에 걸려 멈추는 건 예외라서 그때까지 만든 중간 결과를 못 받아요. 그래서 위 코드처럼 <strong><code>tries</code>를 세다가 <code>call_chef</code>로 빠지는 정상 출구</strong>를 그래프 안에 두는 게 기본이고, <code>recursion_limit</code>은 그 설계가 실패했을 때를 대비한 두 번째 안전망이에요. 그 두 번째 안전망도 기본값에 맡기지 말고 직접 적어 두는 게 좋아요. <a href="my-harness-flow-and-state.html">끝날 때까지 따라가기 — 실행 흐름·상태·승인과 종료 조건</a>에서 "중단을 완료로 표시하지 말라"고 했던 것과 같은 이야기예요.</p>
 
@@ -379,7 +379,7 @@ serve --&gt; __end__;</code></pre>
       <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
       <tbody>
         <tr><td>이 시리즈의 코드가 도는 라이브러리 버전</td><td><code>langgraph</code> 1.2<br><code>langchain</code> 1.4<br><code>langchain-core</code> 1.6<br><code>langchain-openai</code> 1.6</td><td>제가 2026.09.11에 새로 설치한 최신판도 같은 줄기(1.2.11 · 1.4.0 · 1.6.2 · 1.6.2)였어요. 남의 예제가 <code>import</code>부터 실패하면 코드보다 버전을 먼저 의심하면 돼요 (<a href="langgraph-what-and-why.html#numbers">1편</a>에서 이어져요)</td></tr>
-        <tr><td>반복을 강제로 끊는 기본 상한<br><code>recursion_limit</code></td><td>10007스텝<br>(langgraph 1.2 기준)</td><td>여기서 <strong>1스텝은 노드 하나가 한 번 실행되는 것</strong>이고, 상한에 닿으면 <code>GraphRecursionError</code>로 멈춰요. 버전마다 값이 달라서 1.0.0은 25, 1.1.0은 10000이었어요. 말이 상한이지 만 번이라 <strong>안 멈추는 그래프를 대신 막아 주지 않아요</strong>. 되돌아가는 선을 그렸으면 <code>invoke()</code>의 두 번째 인자로 직접 낮추고, 끝나는 출구도 따로 그려 두는 게 맞아요 (<a href="#loop-choice">위의 나쁜 선택 vs 좋은 선택</a>)</td></tr>
+        <tr><td>반복을 강제로 끊는 기본 상한<br><code>recursion_limit</code></td><td>10007스텝<br>(langgraph 1.2 기준)</td><td>노드가 한 줄로 이어서 돌 때는 <strong>노드 한 번 실행이 1스텝</strong>이고(여러 노드가 한 스텝에 동시에 도는 경우는 <a href="langgraph-pattern-parallelization.html#parallel">8편 병렬화의 슈퍼스텝</a>에서 봐요), 상한에 닿으면 <code>GraphRecursionError</code>로 멈춰요. 버전마다 값이 달라서 1.0.0은 25, 1.1.0은 10000이었어요. 말이 상한이지 만 번이라 <strong>안 멈추는 그래프를 대신 막아 주지 않아요</strong>. 되돌아가는 선을 그렸으면 <code>invoke()</code>의 두 번째 인자로 직접 낮추고, 끝나는 출구도 따로 그려 두는 게 맞아요 (<a href="#loop-choice">위의 나쁜 선택 vs 좋은 선택</a>)</td></tr>
       </tbody>
     </table>
 

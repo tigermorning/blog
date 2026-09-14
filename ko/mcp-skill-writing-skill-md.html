@@ -232,7 +232,7 @@ description: 값
 ---              ← 여기서 앞머리 끝, 아래부터 본문</code></pre>
     <p>속성은 두 개예요.</p>
     <ul>
-      <li><strong><code>name</code></strong> — Skill의 <strong>이름</strong>이에요. 이따 살펴볼 <strong>폴더 이름과 함께 다루는 식별자</strong>라서, 폴더 이름과 맞춰 두는 편이 헷갈리지 않아요.</li>
+      <li><strong><code>name</code></strong> — Skill의 <strong>이름</strong>이에요. Agent Skills 명세는 이 값이 이따 살펴볼 <strong>폴더 이름과 같아야 한다</strong>고 정해 뒀고(소문자·숫자·하이픈만), OpenCode도 이 규칙을 따라요. Claude Code는 <code>/</code> 뒤에 치는 이름을 폴더 이름에서 가져오니, 두 값을 똑같이 맞춰 두세요.</li>
       <li><strong><code>description</code></strong> — <strong>무엇을 하는지</strong>와 <strong>언제 필요한지</strong>를 적어요. 위 예제를 다시 보면 "주간 업무 보고, 이번 주 진행 상황 정리, 팀 보고서 갱신 요청에 사용한다"로 <strong>쓸 상황</strong>을 나열하고, "단순 기록 조회나 일반 문장 요약에는 적용하지 않는다"로 <strong>쓰지 않을 상황</strong>까지 못 박았어요.</li>
     </ul>
     <p>여기서 초보자가 가장 하기 쉬운 실수가 <code>description</code>을 넓게 쓰는 거예요. <strong>"모든 일을 완벽히 처리한다"</strong>라고 적으면 어떤 요청에도 걸리는 것처럼 보이지만, 실제로는 <strong>선택 기준이 흐려져서</strong> 엉뚱한 요청에 꺼내지거나 정작 필요할 때 안 꺼내져요. 앞에서 걸러낸 "꼼꼼하고 완벽하게 작성한다"와 같은 종류의 실수예요.</p>
@@ -324,7 +324,7 @@ description: 값
         <tr><td>지금 열어 놓은 <strong>프로젝트 위치</strong></td><td>폴더는 A 프로젝트에 넣었는데 도구는 B 프로젝트를 열고 있어요</td></tr>
         <tr><td><strong>최종 파일 경로</strong></td><td><code>.claude/skills/</code> 아래가 아니라 자료 폴더에만 있어요</td></tr>
         <tr><td><strong>파일 이름</strong></td><td><code>skill.md</code>나 <code>SKILL.MD</code>처럼 <strong>정확히 <code>SKILL.md</code>가 아니에요</strong></td></tr>
-        <tr><td><strong>맨 위 앞머리</strong></td><td><code>---</code> 사이의 <code>name</code>·<code>description</code>이 빠졌거나 <code>---</code> 줄이 하나만 있어요</td></tr>
+        <tr><td><strong>맨 위 앞머리</strong></td><td><code>---</code> 사이의 <code>name</code>·<code>description</code>이 빠졌거나, <code>name</code>이 폴더 이름과 다르거나, <code>---</code> 줄이 하나만 있어요</td></tr>
         <tr><td><strong>도구 재시작 여부</strong></td><td>아래 설명 참고</td></tr>
       </tbody>
     </table>

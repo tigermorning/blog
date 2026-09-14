@@ -146,7 +146,7 @@
     <h3 id="why-reducer">리듀서라는 말은 왜 나오나 — 세 걸음</h3>
     <p>동시에 돌리면 시간만 줄고 끝이면 좋겠지만, 두 가지가 따라와요. 이 세 걸음이 병렬화의 전부예요.</p>
     <ol>
-      <li><strong>동시에 출발하니 순서가 꼬여요.</strong> 세 갈래가 같이 떠나면 누가 먼저 도착할지 정해지지 않아요. 코드에 적은 순서대로 결과가 쌓일 거라 믿으면 안 돼요.</li>
+      <li><strong>동시에 출발하니 순서가 꼬여요.</strong> 세 갈래가 같이 떠나면 누가 먼저 끝날지 정해지지 않고, 결과를 합치는 순서도 LangGraph가 따로 정해요. 코드에 적은 순서대로 결과가 쌓일 거라 믿으면 안 돼요.</li>
       <li><strong>합치는 자리에 답이 한꺼번에 들어오면 멈춰요.</strong> 세 결과가 State의 <strong>같은 칸</strong>으로 동시에 오면, LangGraph는 무엇을 남기고 무엇을 버릴지 정할 수 없어서 <code>InvalidUpdateError</code>를 내요.</li>
       <li><strong>그래서 State 선언에 "여러 개 오면 다 더해라"를 적어 둬요.</strong> 이 <strong>합치는 법</strong>이 바로 <strong>리듀서</strong>예요. <code>Annotated[list, operator.add]</code> 한 줄이 그 말이에요.</li>
     </ol>
@@ -272,7 +272,7 @@ LANGSMITH_PROJECT=langgraph-study</code></pre>
       <tbody>
         <tr>
           <td class="choice-bad"><strong>무엇을 했나:</strong> State에 <code>notes: list</code> 칸 하나를 두고, 세 검사 노드가 모두 <code>return {"notes": [내 소견]}</code>으로 그 칸에 돌려주게 했어요. 합치는 법은 따로 정하지 않았어요.<br><br><strong>무슨 일이 생기나:</strong> <code>InvalidUpdateError</code>가 나면서 그래프가 멈춰요. 같은 슈퍼스텝에 같은 칸으로 값이 셋 들어왔는데 LangGraph는 무엇을 남길지 모르거든요. 문제는 <strong>병렬로 돌려서</strong> 난 에러라고 오해하기 쉽다는 거예요. 그래서 병렬화를 포기하고 <code>for</code>문 순차 실행으로 되돌아가면, 에러는 사라지지만 시간은 세 배로 늘어요.</td>
-          <td class="choice-good"><strong>무엇을 했나:</strong> 칸 선언에 <strong>합치는 법</strong>을 같이 적었어요. <code>notes: Annotated[list, operator.add]</code>처럼요. "여러 값이 오면 이어 붙여라"라는 뜻이에요.<br><br><strong>무슨 일이 생기나:</strong> 세 소견이 모두 리스트에 쌓여요. 순서는 실행마다 달라질 수 있으니, 순서가 중요하면 소견에 누가 적었는지를 함께 넣어요. 에러의 원인이 병렬이 아니라 <strong>합치는 법을 안 정한 것</strong>이었다는 게 여기서 분명해져요.</td>
+          <td class="choice-good"><strong>무엇을 했나:</strong> 칸 선언에 <strong>합치는 법</strong>을 같이 적었어요. <code>notes: Annotated[list, operator.add]</code>처럼요. "여러 값이 오면 이어 붙여라"라는 뜻이에요.<br><br><strong>무슨 일이 생기나:</strong> 세 소견이 모두 리스트에 쌓여요. 순서는 코드에 적은 순서를 따른다는 보장이 없으니, 순서가 중요하면 소견에 누가 적었는지를 함께 넣어요. 에러의 원인이 병렬이 아니라 <strong>합치는 법을 안 정한 것</strong>이었다는 게 여기서 분명해져요.</td>
         </tr>
       </tbody>
     </table>
@@ -282,8 +282,8 @@ LANGSMITH_PROJECT=langgraph-study</code></pre>
     <table>
       <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
       <tbody>
-        <tr><td>리듀서 없이 같은 칸에 동시에 썼을 때</td><td><code>InvalidUpdateError</code>로 중단</td><td>병렬로 갈라진 노드 셋이 같은 슈퍼스텝에 같은 칸을 반환하면 LangGraph가 <strong>합치는 법을 모른다고 멈춰요</strong>. 에러 메시지만 보면 병렬이 문제 같지만 원인은 선언이에요 (<a href="#parallel-error-cause">에러의 진짜 원인</a>)</td></tr>
-        <tr><td>병렬 결과가 합쳐지는 순서</td><td>정해져 있지 않음</td><td>리듀서 <code>operator.add</code>를 붙이면 3건 모두 합쳐지지만 <strong>순서는 실행마다 달라질 수 있어요</strong>. 순서가 중요하면 합친 뒤에 정렬하거나 아예 병렬로 갈라지 않아야 해요</td></tr>
+        <tr><td>리듀서 없이 같은 칸에 동시에 썼을 때</td><td><code>InvalidUpdateError</code>로 중단</td><td>병렬로 갈라진 노드 셋이 같은 슈퍼스텝에 같은 칸을 반환하면 LangGraph가 <strong>합치는 법을 모른다고 멈춰요</strong>. 병렬로 바꾸자마자 나서 병렬이 문제 같지만 원인은 선언이에요 (<a href="#parallel-error-cause">에러의 진짜 원인</a>)</td></tr>
+        <tr><td>병렬 결과가 합쳐지는 순서</td><td>보장되지 않음</td><td>리듀서 <code>operator.add</code>를 붙이면 3건 모두 합쳐지지만 <strong>순서는 코드에 적은 순서도, 먼저 끝난 순서도 아니에요</strong>. langgraph 1.2에서는 노드 이름순이지만 공식 문서는 이 순서를 보장하지 않아요. 순서가 중요하면 합친 뒤에 정렬하거나 아예 병렬로 갈라지 않아야 해요</td></tr>
         <tr><td>LangSmith 개인 무료 요금제</td><td>월 5,000 트레이스</td><td>한 번 실행이 트레이스 하나예요. 켜 두고 실습하는 정도면 넉넉하지만, 반복 루프를 자동으로 돌리면 금세 닳아요. 요금제는 바뀔 수 있으니 켤 때 한 번 확인하면 돼요</td></tr>
       </tbody>
     </table>
@@ -305,7 +305,7 @@ LANGSMITH_PROJECT=langgraph-study</code></pre>
         seen_fixes.add(f.suggested_fix)
     flags.append(f)</code></pre>
       <p>같은 자리를 여러 검사가 <strong>같은 제안으로</strong> 잡는 일이 흔해요(행 끝 <code>나</code>를 조사 검사와 띄어쓰기 검사가 둘 다 <code>백 배나</code>로 제안해요). 그래서 이 리듀서는 이어 붙이지 않고 <strong>이미 나온 제안이면 버려요.</strong> <code>seen_fixes</code>가 지금까지 나온 제안을 담아 두는 자루고, 거기 있으면 <code>continue</code>로 건너뛰니 <strong>먼저 온 것만 남아요.</strong> 남는 쪽이 규칙 이름과 근거를 정확히 말해 주는 검사가 되도록, 목록 안의 순서까지 일부러 맞춰 뒀어요 — 도로명 검사를 합성어 검사보다 위에 적어 둔 게 그 때문이에요.</p>
-      <p><strong>이 코드를 이 편의 병렬 분기로 그대로 옮기면 깨져요.</strong> 지금은 목록을 위에서 아래로 도니까 "먼저"가 제 뜻대로예요. 갈래를 따로 그어 동시에 돌리면 <strong>어느 검사 결과가 먼저 도착할지가 보장되지 않아요.</strong> 그러면 같은 자막을 두 번 돌렸을 때 남는 제안의 <em>이유 문구</em>가 달라져요. 개수도 내용도 같은데 설명만 바뀌니 알아채기도 어려워요. 리듀서가 <code>operator.add</code>처럼 순서를 안 따지는 것이면 상관없지만, <strong>먼저 온 것을 이기게 하는 리듀서는 병렬화와 같이 못 써요.</strong></p>
+      <p><strong>이 코드를 이 편의 병렬 분기로 그대로 옮기면 깨져요.</strong> 지금은 목록을 위에서 아래로 도니까 "먼저"가 제 뜻대로예요. 갈래를 따로 그어 동시에 돌리면 <strong>어느 검사 결과가 먼저 합쳐질지를 목록 순서로 정할 수 없어요.</strong> 그러면 남는 제안의 <em>이유 문구</em>가 제가 맞춰 둔 목록 순서가 아니라 LangGraph가 합치는 순서(지금 버전은 노드 이름순)로 정해져요. 개수도 내용도 같은데 설명만 의도와 달라지니 알아채기도 어려워요. 리듀서가 <code>operator.add</code>처럼 순서를 안 따지는 것이면 상관없지만, <strong>먼저 온 것을 이기게 하는 리듀서는 병렬화와 같이 못 써요.</strong></p>
     </section>
 
     <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span></h2>

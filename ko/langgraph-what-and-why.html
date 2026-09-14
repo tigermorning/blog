@@ -38,7 +38,7 @@
       <p class="why-read-title">이 글을 읽기 전에</p>
       <dl>
         <dt>어디쯤인가</dt>
-        <dd><a href="posts.html#cat-agent-system">8단계</a> › <a href="posts.html#langgraph-team">에이전트 팀 꾸리기 — LangGraph</a> — 1번째 글 (전 7편)</dd>
+        <dd><a href="posts.html#cat-agent-system">8단계</a> › <a href="posts.html#langgraph-team">에이전트 팀 꾸리기 — LangGraph</a> — 1번째 글 (전 10편)</dd>
         <dt>이런 게 궁금했다면</dt>
         <dd>
           <ul>
@@ -60,7 +60,7 @@
           <ul>
             <li>겉모습으로 가르면 틀립니다 — LLM 호출 횟수도, 도구 사용 여부도, 모델 크기도, 무엇으로 만들었는지도 기준이 아니에요.</li>
             <li>자율성은 공짜가 아닙니다. LLM이 다음 함수를 고를수록 결과를 예측하기 어렵고, 반복이 몇 바퀴 돌지 몰라 요금 상한도 걸기 어려워요. <a class="suspect-jump" href="#suspect-order-flips">언제 의심하나 ↓</a></li>
-            <li>미리 만들어진 부품을 쓰면 편한 대신, 그 반복이 선으로 안 보이고 중간에 "사람이 검토" 같은 단계를 끼울 수도 없어요. <a class="suspect-jump" href="#suspect-action-without-check">언제 의심하나 ↓</a></li>
+            <li>미리 만들어진 부품을 쓰면 편한 대신, 그 반복이 선으로 안 보이고 중간에 내 단계를 마음대로 끼울 수도 없어요. 도구 앞의 사람 승인도 부품이 열어 둔 자리에 따로 붙여야 생겨요. <a class="suspect-jump" href="#suspect-action-without-check">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -78,10 +78,10 @@
 
     <p>제목부터 풀고 갈게요. <strong>프로그램은 함수를 하나씩 실행해요.</strong> 함수는 "이런 일을 해라"라고 묶어 둔 코드 덩어리에 이름을 붙여 둔 거예요(이 말이 낯설면 <a href="reading-python-code-basics.html">파이썬 코드 눈으로 읽기</a>를 먼저 보고 오세요). 주문을 받아 적는 함수 하나, 글자 수를 세는 함수 하나, 답을 쓰는 함수 하나 — 이런 식으로요.</p>
     <p>그런데 함수 하나가 끝나면 <strong>다음엔 어느 함수를 실행할까요?</strong> 그건 누군가 정해 줘야 해요. 보통은 개발자예요. <code>if</code>문과 <code>while</code>문으로 "이 조건이면 저 함수를 부른다"고 코드에 미리 적어 두거든요. 그런데 LLM을 쓰는 프로그램에서는 그 결정을 <strong>모델에게 넘길 수도</strong> 있어요. "이번엔 재고를 조회하는 함수를 부르는 게 좋겠다"를 모델이 고르게 하는 거예요.</p>
-    <p>이 한 가지 — <strong>다음에 실행될 함수를 누가 고르느냐</strong> — 가 이 시리즈 일곱 편을 관통하는 질문이에요. 워크플로와 에이전트를 가르는 것도 이것이고, n8n과 LangGraph가 갈라지는 것도, <a href="langgraph-state-node-edge.html#build-branch">2편에서 그을 <code>add_conditional_edges</code> 한 줄</a>이 하는 일도 전부 이 질문의 다른 얼굴이에요. 앞으로 글에서 "<strong>다음 걸음</strong>"이나 "<strong>길</strong>"이라고 쓰면 전부 이 뜻이니, 읽다가 헷갈리면 <strong>"다음에 실행될 함수"</strong>로 바꿔 읽으면 돼요.</p>
+    <p>이 한 가지 — <strong>다음에 실행될 함수를 누가 고르느냐</strong> — 가 이 시리즈 열 편을 관통하는 질문이에요. 워크플로와 에이전트를 가르는 것도 이것이고, n8n과 LangGraph가 갈라지는 것도, <a href="langgraph-state-node-edge.html#build-branch">2편에서 그을 <code>add_conditional_edges</code> 한 줄</a>이 하는 일도 전부 이 질문의 다른 얼굴이에요. 앞으로 글에서 "<strong>다음 걸음</strong>"이나 "<strong>길</strong>"이라고 쓰면 전부 이 뜻이니, 읽다가 헷갈리면 <strong>"다음에 실행될 함수"</strong>로 바꿔 읽으면 돼요.</p>
 
     <p>오늘부터 "에이전트 팀 꾸리기"라는 새 모듈이 시작됐어요. 첫 주제가 LangGraph였어요. "노드를 선으로 잇는다"는 설명만 들으면 이미지 생성할 때 쓰는 ComfyUI와 비슷해 보이는데, 다루는 대상도 잇는 방법도 달라요(<a href="#look-alikes">아래 표</a>). 제 기록을 뒤져 보니 LangGraph는 <a href="multi-agent-three-runs-abc.html">멀티 에이전트 실험</a> 때 후보로만 검토하고 쓰지 않았던 도구였어요.</p>
-    <p>이번 편은 <strong>코드를 짜기 전에 밑그림을 잡는 편</strong>이에요. LangGraph가 내 코드를 어떤 모양으로 바꾸는지, 워크플로와 에이전트는 무엇으로 갈리는지, 이 도구가 LangChain·LangSmith·n8n 사이 어디에 앉아 있는지까지요. 세 재료로 실제 그래프를 만들어 돌려 보는 건 <a href="langgraph-state-node-edge.html">다음 편</a>이고, 이 시리즈는 전 7편이에요(<a href="#series-list">맨 아래 목록</a>).</p>
+    <p>이번 편은 <strong>코드를 짜기 전에 밑그림을 잡는 편</strong>이에요. LangGraph가 내 코드를 어떤 모양으로 바꾸는지, 워크플로와 에이전트는 무엇으로 갈리는지, 이 도구가 LangChain·LangSmith·n8n 사이 어디에 앉아 있는지까지요. 세 재료로 실제 그래프를 만들어 돌려 보는 건 <a href="langgraph-state-node-edge.html">다음 편</a>이고, 이 시리즈는 전 10편이에요(<a href="#series-list">맨 아래 목록</a>).</p>
 
     <p>이번 편이 위 질문을 어떤 순서로 다루는지 미리 적어 둘게요. 읽다가 헤매면 "지금은 이 질문의 어느 면을 보고 있나"로 되돌아오면 돼요.</p>
     <table id="reading-map">
@@ -226,7 +226,7 @@ while True:
     <p>그럼 수많은 <strong>프레임워크<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup></strong>(CrewAI, AutoGen, Claude Agent SDK…) 중에 왜 LangGraph였을까요. 이유는 셋이에요.</p>
     <ul>
       <li><strong>모델 회사에 묶이지 않아요</strong> — OpenAI든 Anthropic이든 Google이든, 노드 안에서 부르는 모델만 바꾸면 나머지 그래프는 그대로예요.</li>
-      <li><strong>흐름을 감추지 않아요</strong> — 어느 단계 다음에 어디로 갈지를 프레임워크가 알아서 정해 주는 게 아니라, State·Node·Edge로 개발자가 한 줄씩 적어요. 손이 더 가는 대신 안 적은 길로는 절대 안 가요. 이 성질이 바로 아래에서 다시 나와요.</li>
+      <li><strong>흐름을 감추지 않아요</strong> — 어느 단계 다음에 어디로 갈지를 프레임워크가 알아서 정해 주는 게 아니라, State·Node·Edge로 개발자가 한 줄씩 적어요. 손이 더 가는 대신 코드에 안 적은 길로는 안 가요. 이 성질이 바로 아래에서 다시 나와요.</li>
       <li><strong>관측을 붙이기 쉬워요</strong> — 코드를 고치지 않고 환경 변수 몇 줄만 넣으면 실행 기록이 LangSmith에 남아요(<a href="langgraph-pattern-parallelization.html#langsmith">8편</a>에서 켜 봐요).</li>
     </ul>
 
@@ -240,7 +240,7 @@ while True:
       </tbody>
     </table>
     <p>선을 한 줄씩 전부 손으로 적어야 하니, 거꾸로 그 줄만 보면 누가 정하는지가 그대로 보여요. <strong>코드가 그 답을 적어 놓고 있는</strong> 셈이에요.</p>
-    <p>그럼 "누가 정하는지"가 안 보이는 경우는 언제일까요. <code>create_agent</code> 같은 <strong>미리 만들어진 부품</strong>을 쓸 때예요. 이 함수 한 줄을 부르면 "모델에게 묻는다 → 모델이 부탁한 도구를 실행한다 → 결과를 들고 다시 모델에게 묻는다"는 반복이 <strong>이미 배선된 채로</strong> 나와요. 몇 줄로 에이전트가 완성되니 편한데, 그 반복은 선으로 보이지 않고 중간에 "사람이 검토" 같은 제 노드를 끼워 넣을 수도 없어요. <a href="langgraph-branches-and-tool-loop.html#tool-loop">4편</a>에서 이 부품을 한 번 쓰고, 같은 걸 손으로 조립해서 나란히 비교해 봐요. <a href="#n8n-vs-langgraph">아래 n8n 비교표</a>의 'LLM 판단 범위' 줄에서 n8n의 AI Agent 노드를 두고 "칸 안의 반복은 봉인돼 있다"고 적은 것과 똑같은 상황이고요.</p>
+    <p>그럼 "누가 정하는지"가 안 보이는 경우는 언제일까요. <code>create_agent</code> 같은 <strong>미리 만들어진 부품</strong>을 쓸 때예요. 이 함수 한 줄을 부르면 "모델에게 묻는다 → 모델이 부탁한 도구를 실행한다 → 결과를 들고 다시 모델에게 묻는다"는 반복이 <strong>이미 배선된 채로</strong> 나와요. 몇 줄로 에이전트가 완성되니 편한데, 그 반복은 선으로 보이지 않고 반복 중간에 제 노드를 끼워 넣을 수도 없어요. 도구 실행 직전의 사람 승인 같은 단계는 부품이 미리 열어 둔 자리(미들웨어)에만 붙일 수 있어요. <a href="langgraph-branches-and-tool-loop.html#tool-loop">4편</a>에서 이 부품을 한 번 쓰고, 같은 걸 손으로 조립해서 나란히 비교해 봐요. <a href="#n8n-vs-langgraph">아래 n8n 비교표</a>의 'LLM 판단 범위' 줄에서 n8n의 AI Agent 노드를 두고 "칸 안의 반복은 봉인돼 있다"고 적은 것과 똑같은 상황이고요.</p>
     <p><strong>정리하면, 결정 주체가 보이느냐 아니냐는 프레임워크 이름이 아니라 그 안에서 선을 직접 그리느냐 완제품을 가져다 쓰느냐로 갈려요.</strong></p>
 
     <h3>헷갈리기 쉬운 이웃들</h3>
@@ -292,7 +292,7 @@ while True:
       </tbody>
     </table>
     <p><strong>핵심 한 줄:</strong> 부품(LangChain)을 어떤 동선(LangGraph)으로 잇느냐가 이 시리즈의 주제이고, 그 동선을 <strong>사장님이 미리 긋느냐 주방장이 그때그때 정하느냐</strong>가 워크플로와 에이전트를 가르는 전부예요.</p>
-    <p>다만 여기서 비유가 끊기는 점이 있어요. A 주방의 사람 직원은 동선표에 없어도 눈치껏 옆 조리대를 도와주지만, <strong>코드로 그린 그래프는 선이 없는 곳으로는 절대 가지 않아요</strong>. 그리고 A와 B는 둘 중 하나를 고르는 게 아니에요. 실제 시스템은 대부분 A 주방 한가운데에 B 주방을 한 칸 끼워 넣은 모양이고, 그 "한 칸"이 얼마나 큰지가 아래 눈금자의 이야기예요.</p>
+    <p>다만 여기서 비유가 끊기는 점이 있어요. A 주방의 사람 직원은 동선표에 없어도 눈치껏 옆 조리대를 도와주지만, <strong>코드로 그린 그래프는 그어 둔 선을 따라가요</strong>(노드 코드에서 행선지를 직접 지정하는 고급 방법도 따로 있지만, 그것도 코드에 적어야 가요). 그리고 A와 B는 둘 중 하나를 고르는 게 아니에요. 실제 시스템은 대부분 A 주방 한가운데에 B 주방을 한 칸 끼워 넣은 모양이고, 그 "한 칸"이 얼마나 큰지가 아래 눈금자의 이야기예요.</p>
 
     <h2 id="big-picture"><span class="hl">전체 흐름</span> — 자율성 눈금자 한 줄</h2>
     <p>워크플로와 에이전트는 두 개의 상자가 아니라 <strong>눈금자 위의 위치</strong>예요. 이 시리즈에서 만들 것들을 그 눈금자에 올려 두면 이렇게 돼요. <strong>읽는 법:</strong> 왼쪽으로 갈수록 길을 개발자가 못 박아 둔 쪽이고, 오른쪽으로 갈수록 LLM이 그때그때 고르는 쪽이에요. 상자 아래 괄호는 그걸 다루는 편이고, 맨 오른쪽 하나만 테두리가 점선인데 <strong>그 안의 반복이 코드에 선으로 안 보인다</strong>는 뜻이에요.</p>
@@ -374,7 +374,7 @@ while True:
     <section class="apply-box" id="apply-blog">
       <p class="apply-box-title">내 파이프라인에 대입하면 — 이 블로그 글 한 편은 어느 쪽인가</p>
       <p>지금 읽고 계신 이 블로그도 글 한 편이 만들어지는 순서가 저장소 안에 규칙 파일로 적혀 있어요. 원문 페이지를 읽어 오고 → 최근 글의 틀을 그대로 따라가고 → 본문을 쓰고 → <code>posts.html</code>의 알맞은 자리에 끼우고 → 앞뒤 글에 서로 링크를 걸고 → 브라우저로 열어 표와 그림이 안 깨졌는지 봐요. 이 순서를 정한 건 사람이에요. 그래서 <a href="#big-picture">위 눈금자</a>에서 왼쪽 끝, 워크플로예요.</p>
-      <p>자율성이 실제로 들어간 자리는 딱 하나예요. 원문 열두 단원을 받았을 때 <strong>글 몇 편으로 낼지는 규칙 파일에 안 적혀 있어요.</strong> "짧고 얕으면 합치고, 길고 빽빽하면 쪼갠다"까지만 적혀 있고, 그래서 몇 편이 되는지는 읽어 봐야 알아요. 이 시리즈가 일곱 편이 된 것도 그렇게 정해졌어요.</p>
+      <p>자율성이 실제로 들어간 자리는 딱 하나예요. 원문 열두 단원을 받았을 때 <strong>글 몇 편으로 낼지는 규칙 파일에 안 적혀 있어요.</strong> "짧고 얕으면 합치고, 길고 빽빽하면 쪼갠다"까지만 적혀 있고, 그래서 몇 편이 되는지는 읽어 봐야 알아요. 이 시리즈가 열 편이 된 것도 그렇게 정해졌어요.</p>
       <p>그 한 자리를 빼면 나머지는 전부 미리 그려 둔 길이에요. 중간에 모델을 여러 번 부르고 브라우저를 여는 도구까지 쓰지만, 그건 기준이 아니에요 — <strong>갈 수 있는 길을 사람이 미리 다 그려 뒀는가</strong>가 기준이니까요.</p>
     </section>
     <section class="apply-box apply-box--repo" id="apply-repo">

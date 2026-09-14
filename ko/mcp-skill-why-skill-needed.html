@@ -309,7 +309,7 @@ note          : "코드 작성은 끝났으며 다음 배포를 기다린다."</
     <p>CLI 경로가 실제로 어떻게 생겼는지만 한 줄 맛보고 갈게요.</p>
     <p class="run-tag">실행: 로컬 터미널 <span class="run-tag-why">— gws 설치와 Google 계정 인증이 끝난 뒤에만 동작해요</span></p>
     <pre><code>gws sheets spreadsheets values get --params '{"spreadsheetId": "SPREADSHEET_ID", "range": "Sheet1!A1:C10"}'</code></pre>
-    <p>돌아오는 응답에서 세 가지만 알면 돼요. <code>range</code>는 <strong>실제로 읽은 범위</strong>, <code>majorDimension</code>은 값이 <strong>행 방향으로 묶였는지 열 방향으로 묶였는지</strong>, <code>values</code>는 <strong>실제 셀 값들</strong>이에요. 표를 잘못 읽는 사고는 대개 두 번째 항목을 안 봐서 생겨요 — 행으로 묶인 값을 열로 착각하면 머리글과 데이터가 어긋나거든요.</p>
+    <p>돌아오는 응답에서 세 가지만 알면 돼요. <code>range</code>는 <strong>실제로 읽은 범위</strong>, <code>majorDimension</code>은 값이 <strong>행 방향으로 묶였는지 열 방향으로 묶였는지</strong>, <code>values</code>는 <strong>실제 셀 값들</strong>이에요. 요청에서 따로 정하지 않으면 행 방향(<code>ROWS</code>)으로 오지만, 두 번째 항목을 안 보고 열로 묶인 값을 행으로 착각하면 머리글과 데이터가 어긋나요. 끝쪽 빈 칸은 응답에서 빠지니 행마다 값 개수가 다를 수 있다는 것도 함께 기억해 두세요.</p>
     <p>이걸 Skill 지침으로 적으면 이런 모양이 돼요. <strong>교육용 예시</strong>이고, 실제 파일 전체를 쓰는 건 <strong>8편</strong>에서 제대로 해요.</p>
     <p class="run-tag">실행: SKILL.md 파일로 저장 <span class="run-tag-why">— 에이전트가 이 과업을 만났을 때 읽어요</span></p>
     <pre><code>### Google Sheets에 있는 기록을 보고서에 사용할 때

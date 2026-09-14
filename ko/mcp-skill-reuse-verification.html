@@ -95,11 +95,11 @@
       </tbody>
     </table>
     <p><strong>핵심 한 줄:</strong> 메모의 실력은 <strong>내가 옆에 없을 때</strong>만 측정할 수 있어요 — 그래서 이번 편의 첫 동작은 보고서를 쓰는 게 아니라 <strong>대화를 새로 여는 것</strong>이에요.</p>
-    <p>다만 여기서 비유가 끊기는 점이 하나 있어요. 사람 대타는 "규정집 봤어요"라고 말하면 대개 믿고 넘어가요. 그런데 우리는 그 말을 믿으면 안 돼요 — 8편에서도 이야기했듯 <strong>"스킬을 사용했습니다"는 결과지 근거가 아니거든요.</strong> 그래서 이번 편에서도 말이 아니라 <strong>호스트<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>에 남은 실행 기록</strong>을 봅니다.</p>
+    <p>다만 여기서 비유가 끊기는 점이 하나 있어요. 사람 대타는 "규정집 봤어요"라고 말하면 대개 믿고 넘어가요. 그런데 우리는 그 말을 믿으면 안 돼요 — 8편에서도 이야기했듯 <strong>"스킬을 사용했습니다"는 결과지 근거가 아니거든요.</strong> 그래서 이번 편에서도 말이 아니라 <strong>호스트<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>에 남은 실행 기록</strong>을 봅니다.</p>
 
     <h2><span class="hl">왜 새 대화</span>를 열어야 하나</h2>
     <p>지금까지 이어 온 대화 안에는 두 가지가 함께 들어 있어요. 제가 직접 설명한 <strong>팀 규칙</strong>, 그리고 완성된 <strong>첫 주 보고서</strong>요. 이 상태에서 "둘째 주 보고서를 만들어 줘"라고 하면 어떻게 될까요?</p>
-    <p>결과는 아마 괜찮게 나와요. 문제는 <strong>왜 괜찮게 나왔는지 알 수 없다</strong>는 거예요. <strong>Skill<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>을 아예 읽지 않고도</strong> 앞 대화에 떠 있는 문장만 긁어모아 그럴듯하게 쓸 수 있거든요. 그럼 우리는 Skill이 아니라 <strong>대화 기록을 검증한 셈</strong>이 돼요.</p>
+    <p>결과는 아마 괜찮게 나와요. 문제는 <strong>왜 괜찮게 나왔는지 알 수 없다</strong>는 거예요. <strong>Skill<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>을 아예 읽지 않고도</strong> 앞 대화에 떠 있는 문장만 긁어모아 그럴듯하게 쓸 수 있거든요. 그럼 우리는 Skill이 아니라 <strong>대화 기록을 검증한 셈</strong>이 돼요.</p>
     <p>그래서 <strong>새 대화</strong>를 엽니다. 앞의 설명도, 첫 주 보고서도 없는 자리에서 이렇게만 부탁해요.</p>
     <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— 반드시 새 대화를 연 다음에요</span></p>
     <pre><code>둘째 주 업무 기록을 우리 팀 주간 보고서로 정리해 줘.</code></pre>
@@ -230,7 +230,7 @@
       </tbody>
     </table>
     <p>첫 주에는 비어 있던 <strong>배포 날짜와 운영 확인 결과</strong>가 이번엔 채워졌어요. 팀 규칙대로 <strong>위험 → 완료 → 진행</strong> 순서를 그대로 밟아 볼게요. 차단 요인이 없고 운영 확인도 통과라 위험이 아니고, 보고 기준일(9-11) 이전에 배포됐고 운영 확인이 통과라 <strong>완료 조건 셋을 모두 채웠어요.</strong> 그래서 이번엔 완료입니다.</p>
-    <p>여기서 한 가지 함정을 짚고 갈게요. 기한이 <strong>9월 7일</strong>인데 보고 기준일은 <strong>9월 11일</strong>이라, 날짜만 보면 "기한이 지났으니 위험 아닌가?" 싶어요. 그런데 <strong>이미 완료 조건을 채운 업무에 지연 판단을 그대로 적용하지 않습니다.</strong> 규칙의 순서가 위험부터인 이유가 여기서도 살아나요 — 위험 기준에 걸리는 건 <strong>차단 요인이 남았거나 배포 후 운영 확인이 통과하지 못한 경우</strong>지, 기한이 지났다는 사실 하나가 아니거든요.</p>
+    <p>여기서 한 가지 함정을 짚고 갈게요. 기한이 <strong>9월 7일</strong>인데 보고 기준일은 <strong>9월 11일</strong>이라, 날짜만 보면 "기한이 지났으니 위험 아닌가?" 싶어요. 그런데 <strong>이미 완료 조건을 채운 업무에 지연 판단을 그대로 적용하지 않습니다.</strong> 위험 기준의 기한 초과는 <strong>완료 조건을 못 채운 채</strong> 기한을 넘긴 업무에만 해당하거든요 — TASK-102는 차단 요인도 없고 운영 확인도 통과했으니, 기한이 지났다는 사실 하나로는 위험이 되지 않아요.</p>
     <p>이제 두 보고서의 TASK-102를 나란히 읽어 보세요. 첫 주엔 진행, 둘째 주엔 완료. <strong>분류가 달라지는 게 일관성 부족일까요?</strong></p>
     <p>저는 정반대라고 봐요. <strong>새로운 근거에 같은 규칙을 적용했기 때문에 분류가 달라져야</strong> 맞아요. 만약 지난주 문장을 복사해 "여전히 진행"이라고 적었다면, 그건 일관성이 아니라 <strong>규칙을 안 돌린 것</strong>이에요. 이 편의 한 문장을 고르라면 이거예요 — <strong>재사용할 것은 지난주 답이 아니라 판단 기준이다.</strong> <a href="mcp-skill-why-skill-needed.html">6편</a>에서 "같은 기록, 다른 판정"이라고 했던 것의 거울상인 셈이에요. 이번엔 <strong>다른 기록, 같은 규칙</strong>이니까요.</p>
 
@@ -389,8 +389,8 @@
 
     <section class="footnotes">
       <ol>
-        <li id="fn1">Skill — 특정 종류의 일에 쓸 지침과 자료를 한 폴더에 묶어 두고 에이전트가 이름·설명으로 용도를 파악해 필요할 때 읽게 하는 형식으로, <a href="ai-skills-and-rules-files.html">스킬과 규칙 파일</a>에서 처음 다뤘어요. <a href="#fnref1">↩</a></li>
-        <li id="fn2">호스트 — 사용자와 대화하면서 어떤 도구나 Skill을 쓸지 정하고 실제 실행 기록을 남기는 프로그램으로, <a href="mcp-skill-protocol-roles.html">2편</a>에서 클라이언트·서버와 함께 처음 다뤘어요. <a href="#fnref2">↩</a></li>
+        <li id="fn1">호스트 — 사용자와 대화하면서 어떤 도구나 Skill을 쓸지 정하고 실제 실행 기록을 남기는 프로그램으로, <a href="mcp-skill-protocol-roles.html">2편</a>에서 클라이언트·서버와 함께 처음 다뤘어요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">Skill — 특정 종류의 일에 쓸 지침과 자료를 한 폴더에 묶어 두고 에이전트가 이름·설명으로 용도를 파악해 필요할 때 읽게 하는 형식으로, <a href="ai-skills-and-rules-files.html">스킬과 규칙 파일</a>에서 처음 다뤘어요. <a href="#fnref2">↩</a></li>
         <li id="fn3">MCP — 외부 자료나 기능을 도구 형태로 에이전트에 연결하는 공통 규약이며, <a href="mcp-skill-protocol-roles.html">2편</a>에서 연결 구조를, <a href="mcp-skill-host-connection.html">4편</a>에서 실제 연결을 다뤘어요. <a href="#fnref3">↩</a></li>
         <li id="fn4">near-miss(가까운 다른 요청) — 실제 사용 대상과 단어나 맥락이 비슷하지만 해야 할 작업은 다른 요청으로, Skill이 필요 없을 때 안 꺼내지는지 확인하는 데 씁니다. <a href="#fnref4">↩</a></li>
         <li id="fn5">기준선(baseline) — 나중에 무엇과 견줄지 정해 두려고 일부러 남겨 둔 이전 결과이며, 합격 여부를 가르는 점수선이 아니에요. <a href="#fnref5">↩</a></li>
