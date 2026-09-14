@@ -526,7 +526,7 @@ for line in run()["log"]:                       # 그래프는 그대로, 노드
         <tr><td>통일부 북한동향 API</td><td>① 공식 API</td><td>data.go.kr 활용신청, 승인 완료</td><td>호출 후 확인</td><td>tier1(1차 소스). 키 발급 직후라 활성화 1~2시간 대기 중이었어요</td></tr>
         <tr><td>연합뉴스 북한 섹션</td><td>② RSS</td><td>90건·7일치 아카이브형</td><td>G1·G2·G3 통과</td><td>tier2 속보. RSS 요약이 70~88자라 원문 추출이 필수예요</td></tr>
         <tr><td>Daily NK</td><td>② RSS</td><td>최신 10건만</td><td>G1·G2·G3 통과</td><td>tier2 전문. RSS 자체가 1,400자 넘는 본문이라 든든하지만, 10건 창이라 하루 2~3회 수집을 검토해요</td></tr>
-        <tr><td>38North</td><td>② RSS</td><td>8건·2주치</td><td>G1 3/3·G2 일간 탈락·G3 통과</td><td>주간枠. 영문 분석지라 일간 창 기여가 0인 게 정상이에요</td></tr>
+        <tr><td>38North</td><td>② RSS</td><td>8건·2주치</td><td>G1 3/3·G2 일간 탈락·G3 통과</td><td>주간지. 영문 분석지라 일간 창 기여가 0인 게 정상이에요</td></tr>
         <tr><td>RFA 한국어</td><td>② RSS</td><td>30건(종합 한국어면)</td><td>G2 24시간 창 기여 0</td><td>후보. 최신 글이 2.5일 전이라 72시간 창에서야 2건이 들어와요</td></tr>
       </tbody>
     </table>
@@ -544,7 +544,44 @@ for line in run()["log"]:                       # 그래프는 그대로, 노드
     </table>
     <p>창을 열두 배로 늘려도 건수는 여섯 배만 늘어요. 발행 리듬이 창보다 세요. 38North는 72시간에서도 0건이라 주간지로 확정했고, 6시간 7건이면 일간 최소치는 되니 "모자라는 날엔 적게 낸다"는 규칙으로 받아요.</p>
     <p>조용한 실패 실험도 했어요. RFA 주소를 일부러 틀리게(도메인에서 한 글자 빼기) 바꾸고 72시간으로 돌리니 39건에 <code>dead: ['RFA-KO']</code>가 찍혔어요. <code>dead.append</code> 줄을 지우고 다시 돌리니 역시 39건인데 단서가 하나도 없었어요. 두 건이 어디로 갔는지 알 방법이 없죠. 줄을 되살리니 41건으로 돌아왔어요. 이 편의 말을 숫자로 확인한 셈이에요. <strong>기록이 있을 때와 없을 때의 차이는 건수가 아니라 단서예요.</strong></p>
-    <p>소스를 더 늘리는 실험에서는 반대 교훈이 나왔어요. RFA를 넣기 전 12건, 넣은 후 13건이었는데, 늘어난 1건은 Daily NK의 새 글이었고 RFA 기여는 0이었어요. 피드는 정상(30건)인데 최신 글이 24시간 창 밖에 있었거든요. <strong>소스를 늘린다고 건수가 늘지 않아요.</strong> 그래서 중·일·영문 후보도 같은 잣대로 재 봤어요. NK News는 300건 아카이브에 당일 신선, 요약 346자라 유료벽 확인용 G1 검사가 남았고, Daily NK 영문판은 빈 피드라 탈락, 연합뉴스 일문판 북한면은 같은 회사 기사의 번역이라 새 신호가 없어 탈락, 중국신문망 국제면은 북한 특화가 아니라 '朝鮮' 키워드 필터 조건부로 남았어요.</p>
+    <p>소스를 더 늘리는 실험에서는 반대 교훈이 나왔어요. RFA를 넣기 전 12건, 넣은 후 13건이었는데, 늘어난 1건은 Daily NK의 새 글이었고 RFA 기여는 0이었어요. 피드는 정상(30건)인데 최신 글이 24시간 창 밖에 있었거든요. <strong>소스를 늘린다고 건수가 늘지 않아요.</strong></p>
+
+    <h3 id="foreign-sources">한국 밖 소스 열두 곳 재 보기</h3>
+    <p>여기까지의 소스는 전부 한국에서 한국어로 쓴 기사예요. 같은 발표 자료를 보고 쓰니 소스를 더해도 같은 이야기가 늘어요. 다른 나라 매체는 보는 자료가 달라요. 일본은 자국 정부의 대응을, 미국 연구소는 상업 위성사진을, 중국·러시아 국영 통신은 평양발 기사를 내요. 그래서 일본·중국·러시아·미국 후보 열두 곳에 같은 잣대를 댔어요.</p>
+    <p>먼저 잴 건 <strong>북한 기사 비율</strong>이에요. 국제면 피드는 북한 전용이 아니라서, 피드 전체 건수가 아니라 북한 기사만 세야 실제 기여가 보여요. 제목과 요약에 그 언어의 북한 키워드(<code>北朝鮮</code> · <code>朝鲜</code> · <code>КНДР</code> · <code>North Korea</code> 등)가 있는 항목만 셌어요.</p>
+    <table>
+      <thead><tr><th>소스</th><th>나라</th><th>피드 전체</th><th>북한 기사</th><th>북한 비율</th><th>24시간 창</th></tr></thead>
+      <tbody>
+        <tr><td>NHK 국제면</td><td>일본</td><td>137건</td><td>7건</td><td>5%</td><td>1건</td></tr>
+        <tr><td>중국신문망 국제면</td><td>중국</td><td>30건</td><td>1건</td><td>3%</td><td>1건</td></tr>
+        <tr><td>신화망 세계면</td><td>중국</td><td>300건</td><td>0건</td><td>0%</td><td>0건</td></tr>
+        <tr><td>TASS 영문판</td><td>러시아</td><td>62건</td><td>2건</td><td>3%</td><td>2건</td></tr>
+        <tr><td>TASS 러시아어판</td><td>러시아</td><td>100건</td><td>0건</td><td>0%</td><td>0건</td></tr>
+        <tr><td>인테르팍스</td><td>러시아</td><td>25건</td><td>0건</td><td>0%</td><td>0건</td></tr>
+        <tr><td>RIA 노보스티</td><td>러시아</td><td>20건</td><td>0건</td><td>0%</td><td>0건</td></tr>
+        <tr><td>VOA 영문판</td><td>미국</td><td>20건</td><td>0건</td><td>0%</td><td>0건</td></tr>
+        <tr><td>RFA 영문판</td><td>미국</td><td>30건</td><td>4건</td><td>13%</td><td>0건</td></tr>
+        <tr><td>NK News</td><td>미국</td><td>300건</td><td>294건</td><td>98%</td><td>2건</td></tr>
+        <tr><td>38North</td><td>미국</td><td>8건</td><td>8건</td><td>100%</td><td>0건</td></tr>
+        <tr><td>CSIS 비욘드 패럴렐</td><td>미국</td><td>10건</td><td>7건</td><td>70%</td><td>0건</td></tr>
+      </tbody>
+    </table>
+    <p>표에 없는 두 곳은 피드를 아예 못 받았어요. 일본의 북한 전문 매체인 조선신보는 연결이 시간 초과로 끊겼고, 아시아프레스는 응답 200에 항목 0건이었어요. <a href="#first-version">앞에서 본 조용한 실패</a>의 두 모양 그대로예요.</p>
+
+    <p>국제면 피드의 북한 비율은 0~5%고, 24시간 창 기여는 1~2건이에요. 그런데 진짜 문제는 그 한두 건의 내용이에요. TASS 두 건은 본문이 <code>the Korean Central News Agency quoted</code>로 시작하고, 중국신문망 한 건은 <code>据朝中社14日报道</code>(조선중앙통신 14일 보도에 따르면)로 시작해요. 둘 다 북한 관영 매체 기사를 그대로 옮긴 거예요. 원문이 이미 평양에서 나온 발표라, 한 단계 건너 받는다고 새 사실이 붙지 않아요.</p>
+    <p>새 신호는 두 갈래에서 나왔어요. 하나는 <strong>일본의 자국 각도</strong>예요. NHK의 7건에는 북한 선수단이 아시아경기대회에 나가려고 제재 예외로 입국한 기사와 그 심사를 두고 관방장관이 한 말이 있었어요. 한국 매체가 그날 쓰지 않은 사건이에요. 다른 하나는 <strong>미국 연구소·전문지</strong>예요. 38North와 CSIS 비욘드 패럴렐은 북한 비율이 70~100%인데 24시간 기여가 0이에요. 위성사진을 읽어 몇 주에 한 번 내는 분석지라서요. 대신 본문이 2,306~19,989자예요. NK News는 당일 새 글이 있고 비율도 98%인데, 추출한 1,188자 가운데 절반이 저자 소개와 저작권 문구예요. 유료벽 앞 일부만 나온 거라 전문 확인이 남았어요.</p>
+
+    <p>그리고 G1을 통과한 두 건은 사실 본문이 아니었어요.</p>
+    <table>
+      <thead><tr><th>소스</th><th>추출 길이</th><th>G1 판정</th><th>실제로 들어 있던 것</th></tr></thead>
+      <tbody>
+        <tr><td>NHK 기사</td><td>862자</td><td>통과</td><td>기사 본문은 앞의 101자뿐이고 RSS 요약과 같은 문장이에요. 나머지 761자는 옆에 붙은 다른 기사 제목 목록과 수신계약 안내예요</td></tr>
+        <tr><td>중국신문망 기사</td><td>896자</td><td>통과</td><td>전부 깨진 글자예요(<code>æé²äººæ°å</code>). 한 글자도 못 읽어요</td></tr>
+      </tbody>
+    </table>
+    <p>원인은 서로 달랐어요. NHK는 본문을 자바스크립트로 그려요. 424KB짜리 페이지를 받아도 정적 추출이 집는 건 껍데기라, 이 소스는 ② 칸으로는 본문을 못 얻어요. 중국신문망은 응답 헤더에 문자 인코딩(<code>charset</code>)이 없어요. 그러면 <code>requests</code>가 <code>r.text</code>를 만들 때 ISO-8859-1로 가정해서 글자가 깨지는데, 깨진 글자도 글자라서 길이는 896이 나와요. <code>r.text</code> 대신 <code>r.content</code>(받은 바이트 그대로)를 <code>extract()</code>에 넘기니 601자가 제대로 읽혔어요.</p>
+    <p><span class="key-point-badge">중요</span> <strong id="key-length-is-not-body">길이 관문은 "본문이 있다"가 아니라 "글자 수가 넘는다"만 확인해요.</strong> <a href="#key-empty-is-not-absent">38North의 0자</a>와 짝이에요. 0자가 "본문 없음"이 아니었듯, 600자 넘김도 "본문 있음"이 아니에요. G1 출력에 길이만 찍지 말고 본문 앞 100자를 같이 찍으면 두 함정이 한 번에 보여요.</p>
+    <p>그래서 열두 곳을 재고 목록에 실제로 더한 건 <strong>CSIS 비욘드 패럴렐 한 곳</strong>이에요. 38North와 같은 주간지로 받아요. NK News는 유료벽 확인이 남았고, NHK는 신호가 가장 새로운데 ② 칸으로 본문이 안 나와서 <a href="#ladder">사다리를 내려갈지</a> 결정이 남았어요. 나머지 아홉 곳은 북한 기사가 0건이거나 조선중앙통신 재인용이라 뺐어요. 재 보기 전에는 열두 곳이 다 그럴듯했어요. 그게 관문을 세워 두는 이유예요.</p>
 
     <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
     <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 다른 편의 같은 목록은 <a href="langgraph-what-and-why.html#key-recap">1편</a> · <a href="newsletter-agent-skeleton.html#key-recap">11편</a> · <a href="newsletter-agent-select.html#key-recap">13편</a> · <a href="newsletter-agent-summarize-verify.html#key-recap">14편</a> · <a href="newsletter-agent-publish-schedule.html#key-recap">15편</a> · <a href="newsletter-agent-metrics-config.html#key-recap">16편</a>에 있어요.</p>
@@ -555,6 +592,7 @@ for line in run()["log"]:                       # 그래프는 그대로, 노드
       <li><a href="#key-g1-first">본문 관문이 먼저 — 없으면 요약을 지어낸다</a></li>
       <li><a href="#key-log-skips">결과를 바꾸는 건너뜀만 기록하고, 404를 실패로 보이게</a></li>
       <li><a href="#key-empty-is-not-absent">추출 0자는 "본문 없음"이 아니라 "못 받음"일 수 있다</a></li>
+      <li><a href="#key-length-is-not-body">길이 관문 통과가 "본문 있음"은 아니다</a></li>
       <li><a href="#field-nk">같은 잣대를 내 분야에 — 북한 뉴스 적용기</a></li>
     </ul>
 
