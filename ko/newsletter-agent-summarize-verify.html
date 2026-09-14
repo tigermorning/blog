@@ -198,11 +198,25 @@ for e in feed.entries[:3]:
     print("원문:", e.title[:60], f"(본문 {len(body)}자)")
     print("  헤드라인:", out.headline)
     print("  요약    :", out.summary[:120], "…")</code></pre>
-    <p><code>response_format=Draft</code>가 "이 세 칸 모양으로 답하라"는 지시예요. 돌아온 답은 <code>out.headline</code>처럼 칸 이름으로 바로 꺼내요. 저는 API 키가 없어서 이 셀의 출력을 직접 받아 보지 못했어요. 이 셀에서 흔히 보이는 장면은 이래요. 내용은 대체로 본문을 제대로 읽은 요약인데, <strong>영어 기사의 요약이 한국어가 아니라 영어로 나온 것이 섞일 수 있어요.</strong></p>
+    <p><code>response_format=Draft</code>가 "이 세 칸 모양으로 답하라"는 지시예요. 돌아온 답은 <code>out.headline</code>처럼 칸 이름으로 바로 꺼내요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 제가 2026-09-14에 돌렸을 때 찍힌 출력이에요. 피드에 올라온 기사가 바뀌면 결과도 바뀌어요</span></p>
+    <pre><code>──────────────────────────────────────────────────────────────────
+원문: What’s behind the AI industry’s latest warnings of doom? (본문 9595자)
+  헤드라인: AI 연구자들의 퇴사와 경고 속 AI 기술의 인류 위협 논쟁 심화
+  요약    : Anthropic의 AI 연구자 Jacob Coxon이 AI가 인류를 위협할 수 있다는 우려로 퇴사 의사를 밝히면서 AI 업계 내에서 기술의 잠재적 위험성에 대한 논쟁이 격화되고 있다. Anthropic의 정렬 책임 …
+──────────────────────────────────────────────────────────────────
+원문: Obama urges Democrats to have a ‘clear plan’ for AI safeguar (본문 2736자)
+  헤드라인: 오바마 전 대통령, 민주당에 AI 정책 중심화와 명확한 대응 계획 촉구
+  요약    : 오바마 전 대통령은 민주당이 인공지능(AI)을 핵심 의제로 삼고 경제적 영향과 안전 문제에 대한 명확한 계획을 수립해야 한다고 강조했다. 그는 AI 기술이 빠르게 발전하는 만큼 공공 대화의 틀을 마련하고, AI 안전 …
+──────────────────────────────────────────────────────────────────
+원문: OpenAI’s Sam Altman says it would be ‘ill-advised’ to go pub (본문 1159자)
+  헤드라인: OpenAI CEO Sam Altman Confirms IPO Will Not Occur in 2026
+  요약    : OpenAI has filed confidentially for an IPO but CEO Sam Altman stated the company will not go public this year or in 2026 …</code></pre>
+    <p>내용은 본문을 제대로 읽은 요약이에요. 그런데 셋째 기사는 <strong>헤드라인도 요약도 영어</strong>로 나왔어요. 한국어로 나온 두 건도 "~합니다체"가 아니라 "~했다"로 끝나고, 헤드라인은 "20자 내외"를 훌쩍 넘겨요.</p>
 
     <h3 id="korean-in-code">한국어라고 두 번 적었는데 영어가 나올 때</h3>
     <p>한국어를 요구하지 않은 게 아니에요. 시스템 프롬프트에 "국내 개발팀을 위한 기자"라고 적었고, 칸 설명에도 "한국어 헤드라인", "~합니다체"라고 적었어요. 두 군데 적었는데도 안 지켜진 거예요.</p>
-    <p>원인은 <strong>입력이 영어라서</strong>예요. 모델은 읽은 본문의 언어를 따라 쓰는 경향이 강하고, 그 경향이 지시보다 셀 때가 있어요. 본문이 짧은 기사는 상대적으로 지시의 비중이 커져서 한국어로 나오기도 하는데, 그것도 우리가 통제해서 얻은 결과가 아니에요.</p>
+    <p>원인은 <strong>입력이 영어라서</strong>예요. 모델은 읽은 본문의 언어를 따라 쓰는 경향이 강하고, 그 경향이 지시보다 셀 때가 있어요. 본문 길이로 미리 가려낼 수도 없어요. TechCrunch 기사 10건을 같은 셀로 요약해 보니 영어로 나온 3건의 본문은 1159자·3048자·5696자로 흩어져 있었고, 셋 다 한 칸이 아니라 <strong>세 칸이 통째로</strong> 영어였어요.</p>
     <p>그럼 어떻게 할까요. 프롬프트에 "반드시 한국어로"를 더 세게 적어도 여전히 <strong>부탁</strong>이라, 본문 언어를 따라가는 경향을 이긴다는 보장이 없어요. 더 큰 모델로 바꿔도 확률이 조금 달라질 뿐 확인 수단이 되지는 못해요. 영어 기사를 소스에서 빼 버리는 건 문제를 푸는 게 아니라, OpenAI 블로그나 TechCrunch 같은 1차·주요 소스를 버려 뉴스레터 자체를 망치는 일이에요.</p>
     <p>답은 <strong>지켜졌는지를 코드로 검사</strong>하는 거예요. 언어는 출력만 보고 확인할 수 있는 규칙이에요. 한글이 한 글자라도 있는지 세면 되거든요.</p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK <span class="run-tag-why">— API 키 없이 돌아가요</span></p>
@@ -217,11 +231,58 @@ print(has_korean("그립포지가 새 투자 라운드를 협의하고 있습니
     <pre><code>False
 True</code></pre>
     <p><code>[가-힣]</code>는 "한글 완성 글자 하나"를 뜻하는 패턴이에요. 요약의 <code>headline</code>과 <code>summary</code>에 이 검사를 걸어 <code>False</code>면 다시 요청하거나 번역 단계로 보내요. 이것이 <a href="newsletter-agent-select.html">13편</a>과 같은 교훈이에요. 무엇을 코드로 옮길지는 <strong>"지켜졌는지 출력만 보고 확인할 수 있나"</strong>로 갈려요.</p>
+    <p>걸리면 한 번만 다시 부르게 붙여 봤어요. 다시 부를 때만 시스템 프롬프트 끝에 한 줄을 덧붙여요.</p>
+    <p class="run-tag">실행: Colab 같은 원격 주피터 또는 로컬 주피터 <span class="run-tag-why">— 위 셀까지 실행해 둔 노트북에서 이어 가요, OpenAI API 키 필요</span></p>
+    <pre><code>RETRY = "\n반드시 한국어로 다시 쓰세요."          # 다시 부를 때만 덧붙이는 한 줄
+
+def ask(body, sys):
+    return client.chat.completions.parse(
+        model="gpt-4.1-mini", temperature=0,
+        messages=[{"role": "system", "content": sys},
+                  {"role": "user", "content": body[:6000]}],
+        response_format=Draft).choices[0].message.parsed
+
+def english_fields(d):                           # 한글이 한 글자도 없는 칸
+    return [k for k in ("headline", "summary", "why") if not has_korean(getattr(d, k))]
+
+def draft_korean(body):                          # 걸리면 딱 한 번만 다시
+    d = ask(body, SYS)
+    if not english_fields(d):
+        return d, 0
+    return ask(body, SYS + RETRY), 1</code></pre>
+    <p>TechCrunch AI 피드에서 본문이 600자 이상인 기사 10건에 <code>draft_korean</code>을 돌리고, 첫 시도에 걸린 기사와 다시 부른 뒤의 결과를 셌어요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 제가 2026-09-14에 돌렸을 때 찍힌 출력이에요. 기사가 바뀌면 비율도 달라져요</span></p>
+    <pre><code>  1159자  재시도 후 통과   첫 시도 영어 칸 ['headline', 'summary', 'why']
+  5696자  재시도 후 통과   첫 시도 영어 칸 ['headline', 'summary', 'why']
+  3048자  재시도 후 통과   첫 시도 영어 칸 ['headline', 'summary', 'why']
+  …       나머지 7건은 첫 시도에 통과
+
+10건 중 첫 시도에 한글 없는 칸이 있던 기사 3건 · 재요청 1번으로 고쳐진 기사 3건</code></pre>
+    <p>셋 다 한 줄 덧붙인 재요청 한 번으로 한국어가 됐어요. 대신 호출은 10번이 아니라 13번이에요. 이 검사가 보는 건 "한글이 한 글자라도 있나"뿐이라, 한국어 한 문장 뒤에 영어 두 문장이 붙은 요약도 통과해요.</p>
     <div class="key-point" id="key-check-in-code">
       <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
       <p>프롬프트와 칸 설명에 "한국어"라고 적어도 그건 요청이지 보장이 아니에요. 영어 본문을 넣으면 모델이 입력 언어를 따라가 영어로 쓸 수 있고, 더 세게 강조하거나 더 큰 모델로 바꿔도 확률만 달라져요. 영어 소스를 빼는 건 뉴스레터를 망치는 길이고요. <strong>지켜졌는지 출력만 보고 확인할 수 있는 규칙</strong>(한글이 있나)은 코드로 검사하고, 어기면 다시 요청하거나 번역 단계로 보내요.</p>
     </div>
     <p>여기서 칸 나누기의 원칙 하나가 더 보여요. 스키마가 보장하는 건 <strong>칸이 채워진다</strong>는 것이지 <strong>내용이 지시를 지켰다</strong>는 게 아니에요. <code>headline</code> 설명에 "한국어"라고 적었는데 영어가 들어온 게 증거예요. <a href="langgraph-pattern-routing.html#key-literal">7편에서 <code>Literal</code>이 형식만 막아 준다</a>고 한 것과 같은 이야기예요. 형식은 스키마가, 내용은 검사가 맡아요. 그리고 쓰지도 검사하지도 않을 칸은 "있으면 좋을 것 같아서" 넣지 않아요. 출력 비용만 늘거든요.</p>
+
+    <h3 id="temperature">temperature 0이면 늘 같은 요약일까</h3>
+    <p>요약 셀은 <code>temperature=0</code>으로 불러요. 사실을 옮기는 일에 0을 쓰는 이유를 확인하려고, 같은 기사를 0과 0.7로 세 번씩 요약해 봤어요. 기사는 TechCrunch Disrupt 전시 테이블 안내 글이고, 옮겨야 할 사실은 마감 <code>September 18 at 11:59 p.m. PT</code>와 테이블 크기 <code>6′ × 30″</code>(6피트 × 30인치)예요. 아래는 제가 2026-09-14에 돌려서 센 결과예요.</p>
+    <table>
+      <thead><tr><th>같은 기사 3번 요약</th><th>temperature 0</th><th>temperature 0.7</th></tr></thead>
+      <tbody>
+        <tr><td>서로 다른 헤드라인</td><td>1가지</td><td>3가지</td></tr>
+        <tr><td>서로 다른 요약</td><td>3가지</td><td>3가지</td></tr>
+        <tr><td>요약 문장 수 ("세 문장" 지시)</td><td>3 · 3 · 2</td><td>2 · 2 · 3</td></tr>
+        <tr><td>원문과 달라진 사실</td><td>없음</td><td>1번 — 30인치를 <code>6'×30'</code>(30피트)로 씀</td></tr>
+        <tr><td>빠진 사실</td><td>PT 빠짐 1번 · "오후" 빠짐 1번</td><td>PT 빠짐 1번(헤드라인은 "자정까지") · "오후" 빠짐 1번</td></tr>
+      </tbody>
+    </table>
+    <p><strong>0이어도 요약은 세 번 다 달랐어요.</strong> 짧은 헤드라인은 고정됐지만 긴 요약은 표현이 조금씩 바뀌었어요. <a href="newsletter-agent-select.html#score-unstable">13편에서 같은 기사의 점수가 흔들린 것</a>과 같은 현상이에요. 0은 확률이 가장 높은 쪽으로 기울일 뿐 같은 답을 약속하지 않아요.</p>
+    <p><strong>사실이 바뀐 건 0.7에서였어요.</strong> ″(인치)가 ′(피트)가 되면서 테이블 길이가 열두 배가 됐는데, 부호 한 획 차이라 사람이 읽어도 지나치기 쉬워요. 그렇다고 0이 사실을 지켜 주지도 않아요. 0에서도 시간대 PT가 빠진 요약이 나왔고, 한국 독자에게 PT 없는 "11시 59분"은 16시간 어긋난 마감이에요. 기사 한 건에 세 번씩이라 비율로 읽을 수는 없어요. 다만 "0이면 사실은 안전하다"는 이 여섯 번만으로도 깨져요.</p>
+    <div class="key-point" id="key-temperature">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>원문의 사실을 옮기는 요약은 <code>temperature=0</code>으로 불러요. 올리면 단위 같은 사실이 바뀔 수 있어요. 다만 <strong>0도 같은 답을 약속하지 않고, 사실이 빠지는 것도 못 막아요.</strong> 결과가 매번 같다고 가정하거나 0을 검수 대신으로 믿지 말고, 사실 확인은 <a href="#verify">검수</a>에 맡겨요.</p>
+    </div>
 
     <h2 id="fanout"><span class="hl">기사 수만큼 펼치기</span> — Send로 취재 노드 채우기</h2>
     <p>앞의 두 노드는 같은 이름의 함수를 다시 정의하는 것으로 끝났어요. 취재는 조금 달라요. 기사마다 본문을 가져오고 LLM을 한 번씩 부르니, 한 건씩 차례로 하면 다섯 배 걸려요. 게다가 몇 건일지는 실행해 봐야 알아요. 선별이 세 건을 넘길 수도, 다섯 건을 넘길 수도 있어요.</p>
@@ -316,7 +377,7 @@ print("판정               :", "불합격 — 환각 의심" if missing else "�
 원문에 없는 숫자   : ['2', '4500']
 판정               : 불합격 — 환각 의심</code></pre>
     <p>검사는 시킨 대로 정확히 돌았어요. <code>2</code>와 <code>4500</code>은 정말로 원문 어디에도 없어요. 그런데 요약은 틀리지 않았어요. "two months"가 "2개월"이 된 건 영어는 낱말로, 한국어는 숫자로 적어서고, "$45 million"이 "4500만 달러"가 된 건 단위 체계를 바꿔 적어서예요. 번역과 단위 환산을 환각으로 잡은 <strong>오탐<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup></strong>이 두 건이에요. 영어 기사를 한국어로 요약하는 한 거의 매번 이렇게 떨어져요.</p>
-    <p>반대쪽 구멍도 있어요. <code>3</code>이 통과한 건 "3억"이 맞아서가 아니라 <code>$300</code>이라는 글자 안에 <code>3</code>이 들어 있어서예요. 궁금해서 요약의 "약 3억 달러"를 틀린 값인 "약 30억 달러"로 바꿔 다시 돌렸더니, <code>30</code>도 <code>300</code> 안에 들어 있어서 <strong>틀린 숫자가 그대로 통과</strong>했어요(원문에 없는 숫자 목록이 <code>['2', '4500']</code> 그대로였어요). 맞는 숫자는 떨어뜨리고 틀린 숫자는 통과시킨 거예요.</p>
+    <p>반대쪽 구멍도 있어요. <code>3</code>이 통과한 건 "3억"이 맞아서가 아니라 <code>$300</code>이라는 글자 안에 <code>3</code>이 들어 있어서예요. 궁금해서 요약의 "약 3억 달러"를 틀린 값인 "약 30억 달러"로 바꿔 다시 돌렸더니, <code>30</code>도 <code>300</code> 안에 들어 있어서 <strong>틀린 숫자가 그대로 통과</strong>했어요(원문에 없는 숫자 목록이 <code>['2', '4500']</code> 그대로였어요). 맞는 숫자는 떨어뜨리고 틀린 숫자는 통과시킨 거예요. <a href="#temperature">temperature 실험</a>의 실제 요약에서도 같은 구멍이 보여요. 30인치를 30피트로 바꾼 요약을 위 코드에 넣었더니 원문에 없는 숫자가 <code>[]</code>로 나와 <strong>합격</strong>이었어요. <code>6</code>과 <code>30</code>은 원문에도 있고, 바뀐 건 숫자가 아니라 단위 부호였으니까요.</p>
     <p>그렇다고 "숫자 검사는 쓸모없다"는 결론은 성급해요. 정규식에 버그가 있는 것도 아니고, 검사가 틀린 것도 아니에요. <strong>대조하는 방식</strong>이 틀렸어요. 문자열 <code>"4500"</code>과 <code>"45 million"</code>은 다르지만 값은 같아요. 글자를 비교하는 한 이건 안 풀려요. 한국어 요약을 포기하면 오탐은 사라지지만 뉴스레터의 목적을 버리는 거고, 숫자 칸을 검사에서 빼면 환각이 가장 잘 드러나는 자리를 버리는 거예요. 필요한 건 <strong>뜻을 비교하는 대조</strong>예요.</p>
     <div class="key-point" id="key-compare-meaning">
       <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
@@ -470,6 +531,8 @@ drafted 4 verified 3</code></pre>
         <tr><td>모델에 넣는 원문 길이</td><td>요약 6000자 · 검수 5000자</td><td>요약은 앞 6000자를 보고 쓰는데 검수는 앞 5000자만 봐요. 그 사이 1000자에서 온 문장은 검수가 근거를 못 찾아 떨어뜨릴 수 있으니, 두 값은 맞춰 두는 편이 안전해요</td></tr>
         <tr><td>기사 한 건의 호출 수</td><td>생성 1 + 검수 1 = 2번<br>다시 쓰게 하면 3번</td><td>다섯 건이면 10번이에요. 요약·왜 중요한지·분류를 따로 부르면 취재만 15번이 돼요. 재시도를 붙이면 <strong>상한부터</strong> 정해요</td></tr>
         <tr><td>이 코드가 쓰는 모델</td><td><code>gpt-4.1-mini</code>, <code>temperature=0</code></td><td>요약과 검수를 같은 모델로 부르지만, <strong>호출은 따로</strong>예요. 생성한 호출에게 검수를 맡기지 않아요</td></tr>
+        <tr><td>첫 시도에 한글이 없던 기사</td><td>10건 중 3건</td><td>2026-09-14 TechCrunch 기사로 센 값이에요. 한 줄 덧붙인 재요청 한 번으로 셋 다 고쳐졌고, 호출은 10번에서 13번으로 늘었어요 (<a href="#korean-in-code">한국어 검사</a>)</td></tr>
+        <tr><td>temperature 0으로 같은 기사 3번 요약</td><td>헤드라인 1가지 · 요약 3가지</td><td>0이어도 긴 출력은 흔들려요. 0.7에서는 3번 중 1번 단위가 바뀌었어요 (<a href="#temperature">temperature 실험</a>)</td></tr>
         <tr><td>요청 한도 초과 응답</td><td>HTTP <code>429</code></td><td>펼친 워커가 동시에 호출할수록 잘 나와요. 후보가 수십 건인 단계를 펼치기 전에 떠올려요</td></tr>
         <tr><td>가짜 함수로 그래프를 확인한 버전</td><td>langgraph 1.2.11</td><td><a href="#fake-run">네 가지 확인</a>이 이 버전에서 찍힌 결과예요</td></tr>
       </tbody>
@@ -519,6 +582,7 @@ drafted 4 verified 3</code></pre>
     <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 다른 편의 같은 목록은 <a href="langgraph-what-and-why.html#key-recap">1편</a> · <a href="newsletter-agent-skeleton.html#key-recap">11편</a> · <a href="newsletter-agent-collect.html#key-recap">12편</a> · <a href="newsletter-agent-select.html#key-recap">13편</a> · <a href="newsletter-agent-publish-schedule.html#key-recap">15편</a> · <a href="newsletter-agent-metrics-config.html#key-recap">16편</a>에 있어요.</p>
     <ul class="key-recap">
       <li><a href="#key-check-in-code">출력만 보고 확인할 수 있는 규칙은 코드로 검사</a></li>
+      <li><a href="#key-temperature">요약은 temperature 0, 그래도 사실 확인은 검수가</a></li>
       <li><a href="#key-fanout-boundary">다른 항목을 봐야 답하는 단계는 펼치지 않는다</a></li>
       <li><a href="#key-compare-meaning">숫자 대조의 오탐은 검사가 아니라 대조 방식의 문제</a></li>
       <li><a href="#key-why-risk">해석 칸은 정의를 바꿔 대조할 수 있게</a></li>
