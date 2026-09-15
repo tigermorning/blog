@@ -178,15 +178,29 @@ NameError: name 'math' is not defined. Did you forget to import 'math'?</code></
       <li>그래서 c = √(a² + b²)</li>
       <li>코드로 옮기기
         <ul>
-          <li><code>550 ** 2</code> — 550의 제곱(<code>**</code>는 거듭제곱) → 302500</li>
-          <li><code>+ 600 ** 2</code> — 두 제곱을 더하기 → 662500</li>
+          <li><code>550 ** 2</code> — 550을 2번 곱하기 → 302500</li>
+          <li><code>+ 600 ** 2</code> — 600을 2번 곱한 값을 더하기 → 662500</li>
           <li><code>math.sqrt(...)</code> — 제곱근 → 약 813.94</li>
         </ul>
       </li>
     </ol>
+    <p><strong><code>**</code>는 거듭제곱 기호예요.</strong> "제곱"만 하는 기호가 아니라, 뒤에 붙은 숫자만큼 곱해요.</p>
+    <table>
+      <thead><tr><th>코드</th><th>수학으로 쓰면</th><th>뜻</th><th>결과</th></tr></thead>
+      <tbody>
+        <tr><td><code>3 ** 2</code></td><td>3²</td><td>3을 2번 곱하기(제곱)</td><td><code>9</code></td></tr>
+        <tr><td><code>3 ** 3</code></td><td>3³</td><td>3을 3번 곱하기(세제곱)</td><td><code>27</code></td></tr>
+        <tr><td><code>2 ** 10</code></td><td>2¹⁰</td><td>2를 10번 곱하기</td><td><code>1024</code></td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li><code>**</code> 앞의 수는 곱할 수, 뒤의 수는 곱하는 횟수예요.</li>
+      <li><code>** 2</code>만 따로 쓰면 <code>SyntaxError</code>가 나요. 앞에 곱할 수가 꼭 있어야 해요.</li>
+      <li><code>-3 ** 2</code>는 <code>-9</code>예요. <code>**</code>가 빼기 부호보다 먼저 계산되니, 음수를 거듭제곱하려면 <code>(-3) ** 2</code>처럼 괄호로 감싸요.</li>
+    </ul>
     <p><strong>다른 방법</strong></p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— import math를 먼저 한 셸에서</span></p>
-<pre><code>&gt;&gt;&gt; math.sqrt(550 * 550 + 600 * 600)   # ** 대신 곱셈으로 제곱
+<pre><code>&gt;&gt;&gt; math.sqrt(550 * 550 + 600 * 600)   # ** 대신 같은 수를 직접 두 번 곱하기
 813.9410298049853
 &gt;&gt;&gt; math.hypot(550, 600)               # 빗변 길이를 바로 구하는 함수 (Q4)
 813.9410298049853</code></pre>
@@ -194,8 +208,8 @@ NameError: name 'math' is not defined. Did you forget to import 'math'?</code></
       <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
       <tbody>
         <tr>
-          <td class="choice-bad">다른 언어나 계산기 습관대로 제곱을 <code>550 ^ 2</code>로 쓴다 → 파이썬에서 <code>^</code>는 거듭제곱이 아니라 비트 연산(XOR)이라, 에러 없이 <code>548</code>이라는 엉뚱한 값이 나와요.</td>
-          <td class="choice-good">제곱은 <code>550 ** 2</code>로 쓴다 → 302500이 나오고, 직선 거리도 814m로 맞게 나와요.</td>
+          <td class="choice-bad">다른 언어나 계산기 습관대로 거듭제곱을 <code>550 ^ 2</code>로 쓴다 → 파이썬에서 <code>^</code>는 거듭제곱이 아니라 비트 연산(XOR)이라, 에러 없이 <code>548</code>이라는 엉뚱한 값이 나와요.</td>
+          <td class="choice-good">거듭제곱은 <code>550 ** 2</code>로 쓴다 → 302500이 나오고, 직선 거리도 814m로 맞게 나와요.</td>
         </tr>
       </tbody>
     </table>
@@ -576,9 +590,9 @@ AttributeError: 'list' object has no attribute 'upper'
           <td><code>//</code>를 <code>/</code>로 바꿔 다시 실행해요. 값이 맞게 나오면 소수점이 버려졌던 거예요 (<a href="#q1">Q1</a>)</td>
         </tr>
         <tr id="suspect-caret">
-          <td>제곱을 했는데 <strong>원래 수와 비슷한 엉뚱한 값</strong>이 나와요 (<code>550 ^ 2</code> → 548)</td>
+          <td>거듭제곱을 했는데 <strong>원래 수와 비슷한 엉뚱한 값</strong>이 나와요 (<code>550 ^ 2</code> → 548)</td>
           <td>식 안의 <code>^</code></td>
-          <td>제곱은 <code>**</code>예요. <code>550 ** 2</code>가 302500인지 확인해요 (<a href="#q3">Q3</a>)</td>
+          <td>거듭제곱은 <code>**</code>예요. <code>550 ** 2</code>가 302500인지 확인해요 (<a href="#q3">Q3</a>)</td>
         </tr>
         <tr id="suspect-slice-end">
           <td>슬라이싱 결과에서 <strong>마지막 원소 하나가 늘 빠져요</strong></td>
