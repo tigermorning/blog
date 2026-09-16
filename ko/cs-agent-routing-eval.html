@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>문의 한 줄을 다섯 갈래로 — 라우트는 회사 문서에서 가져온다 (17) - Tigermorning</title>
+  <meta name="description" content="쇼핑몰 고객 문의를 다섯 갈래로 나누는 분류기를 만듭니다. 갈래를 개발자 감으로 정하지 않고 상담원 업무 매뉴얼에서 가져오고, 만들기 전에 평가셋부터 확정하고, 규칙 기반 기준선을 잡은 뒤 LLM으로 갈아 끼워 같은 자로 비교합니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="문의 한 줄을 다섯 갈래로 — 라우트는 회사 문서에서 가져온다 (17)">
+  <meta property="og:description" content="정확도 92%라는 숫자 하나로는 무엇을 고쳐야 할지 알 수 없어요. 어디로 잘못 갔는지를 봐야 고칠 자리가 보입니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/cs-agent-routing-eval.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">문의 한 줄을 다섯 갈래로</span> — 라우트는 회사 문서에서 가져온다 (17)</h1>
+    <p class="post-date">2026. 9. 16.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="newsletter-agent-metrics-config.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">돌고 나서 재 본다 — 실행 기록과 설정 파일 (16)</span>
+    </a>
+
+    <p class="one-liner">고객 문의 한 줄을 읽고 다섯 갈래 중 하나로 보내는 분류기를 만드는데, 갈래의 목록도 판단 기준도 개발자가 정하지 않고 <strong>회사가 이미 쓰고 있는 상담원 업무 매뉴얼에서 그대로 가져온다.</strong></p>
+
+    <div class="why-read" id="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>어디쯤인가</dt>
+        <dd><a href="posts.html#cat-agent-system">8단계</a> › <a href="posts.html#langgraph-team">에이전트 팀 꾸리기 — LangGraph</a> — 17번째 글 (전 19편). 17~19편은 쇼핑몰 고객응대 에이전트 하나를 만들고 성능까지 올려 보는 연속 실습이에요. LangGraph로 흐름을 그리는 법 자체가 처음이면 <a href="langgraph-what-and-why.html">1편</a>부터, 라우팅이라는 모양만 짚고 싶으면 <a href="langgraph-pattern-routing.html">7편</a>부터 보셔도 돼요.</dd>
+        <dt>이런 게 궁금했다면</dt>
+        <dd>
+          <ul>
+            <li>고객 문의를 종류별로 나눈다는데, 그 종류 목록은 대체 누가 정하나요?</li>
+            <li>프롬프트를 고쳤는데 좋아진 건지 나빠진 건지 어떻게 알죠?</li>
+            <li>"정확도 92%"라고 하면 잘 만든 건가요?</li>
+          </ul>
+        </dd>
+        <dt>읽고 나면 할 수 있는 것</dt>
+        <dd>
+          <ul>
+            <li>분류 갈래를 감으로 만들지 않고, 이미 있는 회사 문서에서 도출해요.</li>
+            <li>모델을 만들기 전에 기준자부터 확정해서, 고친 뒤 좋아졌는지 나빠졌는지를 숫자로 말해요.</li>
+            <li>어느 갈래를 어느 갈래로 착각했는지 표에서 짚어, 고칠 자리를 특정해요.</li>
+            <li>모델이 애매해할 때 억지로 고르지 않고 사람에게 넘기는 안전장치를 붙여요.</li>
+          </ul>
+        </dd>
+        <dt>모르면 이런 일이 생겨요</dt>
+        <dd>
+          <ul>
+            <li>갈래를 감으로 18개쯤 만들어 두고, 정작 4건짜리 갈래는 잘 되는지 못 되는지 판단할 근거조차 없어요.</li>
+            <li>프롬프트를 고칠 때마다 질문 서너 개 던져 보고 "좋아진 것 같다"고 넘어가요. 예전에 맞히던 걸 새로 틀리게 됐는지 영영 모릅니다. <a class="suspect-jump" href="#suspect-no-ruler">언제 의심하나 ↓</a></li>
+            <li>답할 수 없는 문의에도 모델이 억지로 답을 만들어, 있지도 않은 매장 주소를 안내해요. <a class="suspect-jump" href="#suspect-forced">언제 의심하나 ↓</a></li>
+          </ul>
+        </dd>
+        <dt>어디에 쓰나</dt>
+        <dd>
+          <ul>
+            <li><strong>처리 종류가 하나 늘었을 때.</strong> 문의를 환불·교환으로만 받다가 "배송 지연"이 따로 생기는 일은 계속 생겨요. 그때 갈래를 어디서 가져올지가 이 글의 내용이에요.</li>
+            <li>들어온 글을 종류별로 다른 담당에게 보내는 일 — 문의든, 이력서든, 버그 리포트든 구조는 같아요.</li>
+            <li>모델이 헷갈릴 때 사람에게 넘기는 기준선 정하기.</li>
+          </ul>
+        </dd>
+      </dl>
+    </div>
+
+    <h2><span class="hl">상담은 한 가지 일이 아니에요</span></h2>
+    <p>쇼핑몰에 들어오는 문의는 겉보기엔 다 비슷한 한 줄짜리 질문이에요. "배송비 얼마예요?", "반품하고 싶어요", "이 세트에서 하나만 살 수 있나요?" 그런데 상담원이 실제로 하는 일은 문의마다 전혀 달라요.</p>
+    <p>배송비 문의라면 상품 카테고리를 확인하고 무료배송 기준을 관리자 화면에서 찾아야 해요. 반품 문의라면 주문번호로 진행 상태를 열어 봐야 하고요. 매장 위치를 묻는다면, 온라인 전용 쇼핑몰에는 답할 것이 아예 없어요.</p>
+    <p>그러니까 상담은 세 가지를 순서대로 하는 일이에요. <strong>무슨 문의인지 가려내고, 답에 필요한 값을 시스템에서 찾아오고, 회사가 정한 기준대로 안내하는 것.</strong> 성격이 완전히 다른 세 가지예요 — 첫째는 판단, 둘째는 조회, 셋째는 규정 준수죠.</p>
+    <p>이 글은 첫째, <strong>판단</strong>만 다뤄요. 조회와 규정 준수는 <a href="cs-agent-grounding.html">다음 편</a>이에요.</p>
+
+    <h2 id="analogy"><span class="hl">비유</span> — 주문서를 읽고, 애매하면 셰프를 부른다</h2>
+    <p><a href="langgraph-what-and-why.html#analogy">이 시리즈가 쭉 써 온 그 주방</a>이에요. 주문이 몰리면 매니저가 주문서를 읽고 한식·양식·디저트 담당 중 한 명에게 넘기죠. <a href="langgraph-pattern-routing.html#routing">7편에서 본 라우팅</a>이 딱 그 장면이었고요.</p>
+    <p>이번엔 두 가지가 더 붙어요. 첫째, 매니저가 담당 목록을 자기 마음대로 정하지 않아요 — 주방에 이미 붙어 있는 <strong>업무 분장표</strong>를 그대로 따릅니다. 둘째, 주문서가 애매하면(글씨가 뭉개졌거나 "그거 하나요"라고만 적혀 있으면) 아무 담당에게나 밀어 넣지 않고 <strong>셰프에게 들고 갑니다.</strong></p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>주방 벽에 붙은 업무 분장표</td><td>상담원 업무 매뉴얼 — 갈래 목록과 판단 기준의 출처</td></tr>
+        <tr><td>매니저가 주문서를 읽고 담당 한 명을 고르기</td><td>라우터가 문의를 읽고 라우트 하나를 고르기</td></tr>
+        <tr><td>매니저가 "이건 확실히 한식"이라고 적은 확신 정도</td><td>확신도(confidence) — 모델이 스스로 매기는 0~1 숫자</td></tr>
+        <tr><td>매니저가 셰프에게 주문서를 들고 가기</td><td>이관 — 확신도가 기준에 못 미치면 사람에게 넘기기</td></tr>
+        <tr><td>매니저가 "우리 주방에서 안 만드는 메뉴입니다"라고 손님에게 알리기</td><td><code>OTHER</code> — 응대 범위 밖이라는 판정</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 매니저가 하는 일은 요리가 아니라 <strong>분류와 판정</strong>이고, 둘은 성격이 다르기 때문에 따로 떼어 둡니다.</p>
+
+    <h2><span class="hl">전체 흐름</span></h2>
+    <svg viewBox="0 0 700 170" role="img" aria-label="문의 한 줄이 분류 노드로 들어가 라우트와 확신도를 받고, 판정 노드에서 세 갈래로 갈린다. 확신도가 기준 미만이면 이관, 라우트가 OTHER면 범위 밖 안내, 나머지는 처리로 넘어간다">
+      <defs>
+        <marker id="csr1" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+          <path d="M0,0 L9,4.5 L0,9 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <rect x="8" y="58" width="96" height="36" rx="18" fill="none" stroke="var(--border)"/>
+      <text x="56" y="81" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">문의 한 줄</text>
+      <rect x="132" y="58" width="104" height="36" rx="6" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="184" y="81" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">분류(LLM)</text>
+      <text x="184" y="112" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">라우트·확신도·근거</text>
+      <rect x="272" y="58" width="96" height="36" rx="6" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="320" y="81" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">판정(정책)</text>
+      <rect x="430" y="8" width="180" height="30" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="520" y="28" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">이관 — 확신도 0.5 미만</text>
+      <rect x="430" y="59" width="180" height="30" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="520" y="79" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">범위 밖 안내 — OTHER</text>
+      <rect x="430" y="110" width="180" height="30" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="520" y="130" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">처리 — 네 라우트 중 하나</text>
+      <line x1="104" y1="76" x2="128" y2="76" stroke="var(--muted)" stroke-width="2" marker-end="url(#csr1)"/>
+      <line x1="236" y1="76" x2="268" y2="76" stroke="var(--muted)" stroke-width="2" marker-end="url(#csr1)"/>
+      <line x1="368" y1="68" x2="426" y2="26" stroke="var(--muted)" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#csr1)"/>
+      <line x1="368" y1="76" x2="426" y2="76" stroke="var(--muted)" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#csr1)"/>
+      <line x1="368" y1="84" x2="426" y2="126" stroke="var(--muted)" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#csr1)"/>
+      <text x="320" y="158" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">점선 = 셋 중 하나만 — 분류는 모델이, 판정은 정책이 한다</text>
+    </svg>
+    <p><strong>읽는 법:</strong> 네모 둘로 나눠 둔 것이 핵심이에요. 왼쪽 <strong>분류</strong>는 모델이 하는 일이고, 오른쪽 <strong>판정</strong>은 회사 정책이 정하는 일이에요. 한 덩어리로 묶어 두면 나중에 모델만 바꾸고 싶을 때 정책까지 건드리게 되거든요.</p>
+
+    <h2 id="routes"><span class="hl">갈래는 몇 개여야 하나</span></h2>
+    <p>제가 받은 데이터는 실제 의류 쇼핑몰 상담 기록의 구조를 본뜬 문의 193건이었어요. 각 문의에는 <code>배송_비용_질문</code> 같은 <strong>인텐트</strong><sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup> 라벨이 붙어 있었고, 종류를 세어 보니 18가지였습니다.</p>
+    <p>그럼 갈래도 18개로 만들면 될까요? 안 됩니다. 이유가 둘이에요.</p>
+    <ul>
+      <li>갈래가 늘수록 갈래마다 정책·조회 도구·평가셋을 따로 관리해야 해요. 18개를 유지하는 비용은 감당하기 어려워요.</li>
+      <li>가장 많은 인텐트가 22건인데 가장 적은 것은 4건이었어요. <strong>4건짜리 갈래는 잘 되는지 못 되는지 판단할 근거 자체가 부족합니다.</strong></li>
+    </ul>
+    <p>그렇다고 개발자가 감으로 묶으면 안 돼요. 우리가 만드는 것은 회사의 상담 업무를 대신하는 시스템이니, 분류 체계도 <strong>회사가 이미 쓰는 체계</strong>를 따라야 하거든요. 그리고 그건 상담원 업무 매뉴얼에 이미 적혀 있었습니다.</p>
+    <table>
+      <thead><tr><th>매뉴얼의 유형</th><th>코드에서 쓸 이름</th></tr></thead>
+      <tbody>
+        <tr><td>주문·구매</td><td><code>ORDER_PLACE</code></td></tr>
+        <tr><td>상품 문의</td><td><code>PRODUCT_INFO</code></td></tr>
+        <tr><td>배송</td><td><code>SHIPPING</code></td></tr>
+        <tr><td>교환·반품·환불</td><td><code>RETURN_REFUND</code></td></tr>
+      </tbody>
+    </table>
+    <p>네 개로는 부족했어요. 문의 193건 가운데 매장·행사·웹사이트처럼 온라인 전용 쇼핑몰이 답할 수 없는 것이 33건, <strong>여섯 건에 한 건꼴</strong>이었거든요. 그래서 다섯 번째 갈래 <code>OTHER</code>를 뒀습니다.</p>
+    <p><code>OTHER</code>는 "분류 실패"를 담는 쓰레기통이 아니에요. <strong>"네 유형 중 어느 것도 아님이 확인된 상태"</strong>라는 분명한 판정입니다. 쓰레기통으로 쓰면 애매한 문의를 전부 거기 밀어 넣게 되고, 그러면 답할 수 있었던 문의까지 사람에게 넘어가요. 반대로 <code>OTHER</code>가 없으면 답할 수 없는 문의에 모델이 억지로 답을 만들어 냅니다.</p>
+
+    <h2 id="evalset"><span class="hl">모델보다 평가셋이 먼저예요</span></h2>
+    <p>많은 사람이 프롬프트부터 씁니다. 그리고 질문 몇 개 던져 보고 "잘 되는 것 같다"고 판단해요. 이 방식의 문제는 <strong>좋아졌는지 나빠졌는지 말할 수 없다</strong>는 거예요. 고친 뒤에 다시 몇 개 던져 보고 "이제 더 낫다"고 느끼지만, 그건 방금 던진 그 몇 개에 대한 이야기일 뿐이거든요.</p>
+    <p>그래서 만들기 전에 <strong>평가셋</strong><sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>을 확정합니다. 자를 먼저 만들고 물건을 만드는 것과 같아요. 제가 쓴 정답표 193건은 세 갈래로 나뉘어 있었어요.</p>
+    <table>
+      <thead><tr><th>구분</th><th>건수</th><th>쓰임</th></tr></thead>
+      <tbody>
+        <tr><td><code>eval</code></td><td>120</td><td>성능을 재는 데만 쓴다. 프롬프트에 절대 넣지 않는다</td></tr>
+        <tr><td><code>fewshot</code></td><td>40</td><td>"이런 문장은 이 갈래다"를 프롬프트에 예시로 보여줄 때만 쓴다</td></tr>
+        <tr><td><code>outscope</code></td><td>33</td><td>응대 범위 밖 문의. 정답이 전부 <code>OTHER</code></td></tr>
+      </tbody>
+    </table>
+    <p>왜 떼어 놓느냐면, <strong>모델에게 보여준 문제로 시험을 치르면 점수가 실제 실력보다 높게 나오기 때문</strong>이에요. 이걸 <strong>데이터 누수</strong><sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>라고 부릅니다. 부풀려진 숫자를 믿고 서비스에 내보내면 현장에서 무너지죠.</p>
+    <p><code>eval</code> 120건은 네 갈래가 각각 30건씩 되도록 일부러 균형을 맞춰 골랐어요. 실제 분포는 다섯 배씩 차이가 나는데도요. 치우친 평가셋으로 재면 건수가 많은 갈래의 성적이 전체 점수를 지배해서, 작은 갈래가 무너져도 숫자에 안 드러나거든요.</p>
+
+    <h2 id="metrics"><span class="hl">정확도 하나로는 부족해요</span></h2>
+    <p>가장 단순한 방법부터 만들어 기준선을 잡습니다. "환불"이 있으면 반품, "배송비"가 있으면 배송 — 이런 <strong>키워드 규칙</strong>이에요. 이걸 왜 만드느냐면, LLM 없이 얼마나 되는지를 알아야 <strong>LLM이 정말 필요한지 판단</strong>할 수 있기 때문이에요. 규칙만으로 95%가 나온다면 API 요금을 낼 이유가 없죠.</p>
+    <p>제 경우 규칙 기반은 macro F1 0.677이 나왔어요. 그런데 이 숫자 하나로는 무엇을 고쳐야 할지 알 수 없습니다. 그래서 세 가지를 나눠 봐요.</p>
+    <table>
+      <thead><tr><th>지표</th><th>뜻</th><th>낮으면</th></tr></thead>
+      <tbody>
+        <tr><td>정밀도(precision)</td><td>이 갈래라고 예측한 것 중 실제로 맞은 비율</td><td>그 갈래를 남발하고 있다 — 엉뚱한 담당에게 배정</td></tr>
+        <tr><td>재현율(recall)</td><td>실제 그 갈래인 것 중 맞힌 비율</td><td>그 갈래인 문의를 놓치고 있다</td></tr>
+        <tr><td>F1</td><td>둘의 조화평균</td><td>한쪽만 높은 상태를 좋은 점수로 쳐 주지 않는다</td></tr>
+      </tbody>
+    </table>
+    <p>갈래가 여럿일 때 종합하는 방식이 둘인데, <strong>macro 평균</strong>은 갈래마다 동등한 무게를 주고 <strong>weighted 평균</strong>은 건수가 많은 갈래가 점수를 지배해요. 작은 갈래의 실패도 그대로 보고 싶으니 macro F1을 주 지표로 씁니다.</p>
+    <p>그리고 <strong>혼동 행렬</strong><sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>을 봅니다. 행이 정답, 열이 예측인 표예요. 대각선을 벗어난 숫자가 틀린 것인데, 중요한 건 <strong>어디로 벗어났는지</strong>예요.</p>
+    <p>"정확도 60%"만으로는 무엇을 해야 할지 알 수 없지만, "주문·구매의 절반이 상품 문의로 흘러간다"를 알면 <strong>프롬프트에 그 둘의 구분 기준을 명시하면 된다</strong>는 결론이 바로 나옵니다.</p>
+
+    <h2 id="llm-router"><span class="hl">LLM으로 갈아 끼우고, 같은 자로 잰다</span></h2>
+    <p>규칙이 실패하는 지점이 문제의 본질을 드러냈어요. "낱개로도 구매 가능한가요?"와 "이 반지 남성용만 따로 구매 가능한지 알려주세요"는 어휘가 거의 같은데 정답 갈래가 다릅니다. <strong>키워드는 표면이고, 분류는 의도에 관한 판단</strong>이라 어휘 규칙으로는 원리적으로 못 가려요.</p>
+    <p>그래서 분류하는 부분만 LLM으로 바꿉니다. 이때 그냥 물어보면 이런 답이 와요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 직접 실행하는 코드 아니에요</span></p>
+    <pre><code>"이 문의는 배송에 관한 질문으로 보입니다. 따라서 SHIPPING 라우트가 적절하겠습니다."</code></pre>
+    <p>사람이 읽기엔 좋지만 프로그램이 쓰기엔 곤란해요. 갈래 이름을 뽑아내려면 문자열을 잘라 내야 하고, 다음번에 <em>"배송 문의네요!"</em>라고 답하면 그 코드가 깨집니다.</p>
+    <p>그래서 <strong>구조화된 출력</strong><sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>을 씁니다. 원하는 출력의 형태를 미리 정의해 넘기면 모델이 그 형태에 맞는 값만 내놓게 강제돼요. 세 칸을 받았습니다.</p>
+    <table>
+      <thead><tr><th>칸</th><th>무엇을 받나</th><th>왜 필요한가</th></tr></thead>
+      <tbody>
+        <tr><td><code>route</code></td><td>다섯 갈래 이름 중 하나</td><td>목록 밖의 값(<code>배송문의</code>, <code>Shipping</code>)이 아예 못 들어오게 막는다</td></tr>
+        <tr><td><code>confidence</code></td><td>0~1 사이 숫자</td><td>다음 단계에서 이관 판단의 근거가 된다</td></tr>
+        <tr><td><code>reason</code></td><td>판단 근거 한 문장</td><td>사람이 오류를 분석할 때 결정적으로 유용하다</td></tr>
+      </tbody>
+    </table>
+    <p>프롬프트에 넣을 판단 기준도 발명하지 않았어요. 매뉴얼에 <strong>"고객이 쓴 단어가 아니라, 고객이 원하는 결과로 판단한다"</strong>는 문장이 이미 있었고, 그걸 그대로 옮겼습니다. 정책이 바뀌면 매뉴얼이 개정되고, 우리는 프롬프트를 다시 조립하면 되니까요.</p>
+
+    <h2 id="threshold"><span class="hl">모르면 모른다고 말할 자리를 만든다</span></h2>
+    <p>지금까지의 라우터는 어떤 문의가 들어와도 다섯 중 하나를 <strong>반드시</strong> 골랐어요. 그런데 현실에는 어느 쪽인지 정말 알 수 없는 문의가 있습니다. "낱개로도 구매 가능한가요?"는 정보 요청일 수도, 구매 의사일 수도 있어요.</p>
+    <p>억지로 한쪽을 고르면 잘못 고른 갈래의 정책이 작동하면서 엉뚱한 근거로 답변이 만들어져요. 고객은 틀린 안내를 받고, 그 안내는 회사가 약속한 것이 되어 버립니다.</p>
+    <p>그래서 <strong>확신도가 기준값 미만이면 분류를 확정하지 않고 상담원에게 넘깁니다.</strong> 저는 0.5를 썼어요. 이때 교환 관계를 이해해야 합니다.</p>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">주방 매니저에게 "무조건 셋 중 하나로 넘겨라, 셰프를 부르지 마라"고 시킨다 → 뭉개진 주문서도 일단 한식으로 밀어 넣고, 손님은 시키지 않은 음식을 받는다. 주방은 빨리 돌지만 잘못 나간 접시가 쌓인다</td>
+          <td class="choice-good">"확실하지 않으면 셰프에게 들고 가라"고 시킨다 → 셰프의 손이 가는 만큼 처리 속도는 떨어지지만, 잘못 나가는 접시가 없다. 잘못된 환불 안내가 금전 분쟁으로 이어지는 도메인이라면 이쪽이 맞다</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>기준값을 올리면 이관이 늘어요. 오답은 줄지만 사람이 처리할 일이 늘어 자동화율이 떨어집니다. 내리면 반대고요. <strong>어느 쪽이 옳은지는 도메인이 정합니다.</strong></p>
+    <p>그래서 이때부터 숫자를 둘 봐야 해요. <strong>자동화율</strong>(이관 없이 처리된 비율)과 <strong>처리된 건의 정확도</strong>(이관하지 않고 처리한 건만 대상으로 한 정확도). 좋은 라우터는 둘이 동시에 높아요.</p>
+
+    <h2 id="overconfident"><span class="hl">헷갈려야 할 자리에서 안 헷갈리는 것</span></h2>
+    <p>일부러 어렵게 고른 문의 72건을 넣어 봤더니 결과가 세 덩어리로 갈렸어요.</p>
+    <ul>
+      <li><strong>모델이 제대로 물러선 곳.</strong> "그거 언제 와요?"처럼 앞 대화를 모르면 판단할 수 없는 문의는 확신도가 평균 0.3까지 떨어져 거의 전부 이관됐어요. 설계가 의도대로 작동한 자리예요.</li>
+      <li><strong>모델이 강했던 곳.</strong> 오타와 자음 축약이 심한 문장은 전부 확신도 0.9 이상으로 처리됐어요. 키워드 규칙이 가장 취약했던 바로 그 유형이고, 표면 문자열이 아니라 의미를 읽는다는 게 숫자로 확인된 자리죠.</li>
+      <li><strong>모델이 틀린 곳.</strong> 사람 상담사조차 판단이 갈렸던 경계 문의 15건은 거의 전부 확신도 0.8대로 <strong>자신 있게</strong> 처리됐어요. 정답은 "확신도를 낮춰 이관"인데요.</li>
+    </ul>
+    <p>세 번째가 제일 무서워요. 모델은 헷갈리지 않았습니다 — <strong>헷갈려야 할 자리에서 헷갈리지 않은 것</strong>이고, 그래서 더 위험해요. 확신도는 모델이 스스로 보고하는 값이라 <strong>틀린 확신</strong>도 있을 수 있다는 뜻이고, 확신도를 넣었다고 안전장치가 완성된 게 아니라 <strong>확신도 자체를 평가셋으로 검증해야 한다</strong>는 숙제가 새로 생긴 겁니다.</p>
+
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 분류기를 세울 때 정해야 하는 값들</h2>
+    <p>제가 이 실습에서 쓴 설정값과 데이터 규모예요. 비슷한 분류기를 만들 때 "이건 얼마로 잡지?"에서 참고할 수 있는 값만 모았습니다.</p>
+    <table>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
+      <tbody>
+        <tr><td>확신도 이관 기준값</td><td>0.5</td><td>올리면 오답↓·자동화율↓, 내리면 반대. 금전 분쟁이 걸린 도메인은 높게 잡는다</td></tr>
+        <tr><td>평가셋 크기 / 갈래당</td><td>120건 / 30건</td><td>갈래마다 같은 건수로 맞춰야 작은 갈래의 실패가 점수에 드러난다</td></tr>
+        <tr><td>예시용으로 떼어 둔 건수</td><td>40건</td><td>프롬프트에 넣을 예시는 여기서만 뽑는다. 평가셋에서 뽑으면 점수가 거짓말이 된다</td></tr>
+        <tr><td>갈래 수</td><td>5 (4 + <code>OTHER</code>)</td><td>원본 인텐트 18종을 그대로 쓰지 않는다. 갈래마다 정책·도구·평가셋 관리 비용이 붙는다</td></tr>
+        <tr><td>응대 범위 밖 비율</td><td>17.1% (33/193)</td><td>현실 데이터에는 서비스 범위와 어긋난 문의가 항상 섞인다. 받아 낼 갈래를 미리 만든다</td></tr>
+        <tr><td>주 지표</td><td>macro F1</td><td>weighted가 아니라 macro. 건수 많은 갈래가 점수를 대신 올려 주면 안 된다</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 분류기를 만들고 나서</h2>
+    <p>분류기는 에러 없이 잘 도는데 결과만 이상한 경우가 많아요. 아래 증상이 보이면 확인해 보세요.</p>
+    <p>증상이 아직 없어도, <strong>AI에게 이런 부탁을 한 직후</strong>라면 한 번 확인하고 넘어가요.</p>
+    <ul>
+      <li>"분류 프롬프트에 예시 몇 개 넣어서 정확도 올려 줘" — 그 예시를 어디서 뽑았는지</li>
+      <li>"갈래를 좀 더 세분화해 줘" — 새로 생긴 갈래에 평가 문항이 몇 건인지</li>
+    </ul>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-no-ruler">
+          <td>프롬프트를 고칠 때마다 "좋아진 것 같다"는 말밖에 못 하고, 숫자를 대라면 못 댄다</td>
+          <td>평가셋 파일이 있는지부터. 없으면 그게 원인이고, 있으면 고치기 전 점수를 기록해 둔 곳</td>
+          <td>고치기 전 점수를 먼저 재서 어딘가에 적어 둔다. 그 숫자 없이 고친 것은 전부 비교 불가예요 — <a href="#evalset">평가셋 절</a></td>
+        </tr>
+        <tr id="suspect-leak">
+          <td>평가 점수가 유난히 높은데 실제로 써 보면 엉뚱하게 분류한다</td>
+          <td>프롬프트에 넣은 예시 목록과 평가셋 파일. 둘에 같은 문항이 있는지</td>
+          <td>예시로 쓴 문장을 평가셋에서 검색해 본다. 하나라도 겹치면 그 점수는 부풀려진 값이에요 — <a href="#evalset">데이터 누수</a></td>
+        </tr>
+        <tr id="suspect-forced">
+          <td>서비스가 제공하지 않는 것(없는 매장 주소·없는 기능)을 그럴듯하게 안내한다</td>
+          <td>갈래 목록. "해당 없음"을 받아 낼 갈래가 있는지</td>
+          <td>범위 밖 문의를 일부러 넣어 본다. 네 갈래 중 하나가 나오면 받아 낼 갈래가 없는 것 — <a href="#routes">OTHER 절</a></td>
+        </tr>
+        <tr id="suspect-overconfident">
+          <td>사람도 헷갈릴 문의인데 모델이 확신도 0.9로 답한다</td>
+          <td>프롬프트의 확신도 지침 문단</td>
+          <td>"애매하면 0.5 미만으로 낮춰라"가 프롬프트에 명시돼 있는지 본다. 없으면 모델은 대개 0.9 이상을 남발해요 — <a href="#overconfident">헷갈려야 할 자리 절</a></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2><span class="hl">다음은</span></h2>
+    <p>여기까지 하면 문의 한 줄을 넣었을 때 <code>{route: 'SHIPPING', confidence: 0.97, action: 'HANDLE'}</code> 이 나와요. 그런데 <strong>고객이 받는 것은 갈래 이름이 아니에요.</strong> 고객은 "배송비가 얼마인지"를 물었고, 우리는 아직 그 숫자를 한 번도 꺼내 본 적이 없습니다. <a href="cs-agent-grounding.html">다음 편</a>에서 실제로 답하게 만들어요.</p>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">인텐트(intent) — 고객 발화가 무엇을 하려는 것인지를 미리 정해 둔 이름표로 분류한 값이에요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">평가셋(evaluation set) — 정답이 붙어 있는 입력들의 모음으로, 언제나 같은 방식으로 성능을 계산할 수 있게 해 주는 기준자예요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">데이터 누수(data leakage) — 학습이나 예시에 쓴 데이터가 평가에도 섞여 들어가 점수가 실제 실력보다 높게 나오는 현상이에요. <a href="#fnref3">↩</a></li>
+        <li id="fn4">혼동 행렬(confusion matrix) — 행에 정답, 열에 예측을 놓아 어느 갈래를 어느 갈래로 착각했는지 건수로 보여 주는 표예요. <a href="#fnref4">↩</a></li>
+        <li id="fn5">구조화된 출력(structured output) — 원하는 출력의 형태를 미리 정의해 모델이 그 형태에 맞는 값만 내놓도록 강제하는 기능이에요. <a href="#fnref5">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <h3 id="series-list">"에이전트 팀 꾸리기 — LangGraph" 시리즈</h3>
+    <a class="post-nav" href="langgraph-what-and-why.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">다음에 어느 코드가 실행될까 — LangGraph와 워크플로·에이전트</span>
+    </a>
+    <a class="post-nav" href="langgraph-state-node-edge.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">흐름을 그림으로 짠다 — LangGraph의 State·Node·Edge</span>
+    </a>
+    <a class="post-nav" href="langgraph-branch-drills.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">갈림길을 밀어붙인다 — 세 갈래·라벨·끝나지 않는 반복</span>
+    </a>
+    <a class="post-nav" href="langgraph-branches-and-tool-loop.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">모델이 다음 길을 고르게 한다 — 도구를 쥐여 주는 루프</span>
+    </a>
+    <a class="post-nav" href="langgraph-env-troubleshooting.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">.env가 안 읽혔던 네 겹의 이유 — 원격 주피터에서 API 키 넣기</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-chaining.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">① 프롬프트 체이닝 — 순서대로, 사이에 검사</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-routing.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">② 라우팅 — 먼저 분류하고, 한 갈래로</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-parallelization.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">③ 병렬화 — 동시에 돌리고, 합친다</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-orchestrator-worker.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">④ 오케스트레이터-워커 — 몇 갈래일지 LLM이 정한다</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-evaluator-optimizer.html">
+      <span class="post-nav-label">(10)</span>
+      <span class="post-nav-title">⑤ 평가자-최적화자 — 통과할 때까지 고쳐 쓰기</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-skeleton.html">
+      <span class="post-nav-label">(11)</span>
+      <span class="post-nav-title">뉴스레터 에이전트를 빈 노드 다섯 개로 먼저 세운다</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-collect.html">
+      <span class="post-nav-label">(12)</span>
+      <span class="post-nav-title">기사를 어디서 가져올까 — RSS·관문·수집 노드</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-select.html">
+      <span class="post-nav-label">(13)</span>
+      <span class="post-nav-title">100건에서 5건 고르기 — 점수 대신 비교, 예선과 본선</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-summarize-verify.html">
+      <span class="post-nav-label">(14)</span>
+      <span class="post-nav-title">요약을 세 칸으로 받고 원문과 대조한다</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-publish-schedule.html">
+      <span class="post-nav-label">(15)</span>
+      <span class="post-nav-title">디스코드로 매일 아침 받아 보기 — 웹훅과 GitHub Actions</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-metrics-config.html">
+      <span class="post-nav-label">(16)</span>
+      <span class="post-nav-title">돌고 나서 재 본다 — 실행 기록과 설정 파일</span>
+    </a>
+    <p class="post-date">(17) 문의 한 줄을 다섯 갈래로 — 라우트는 회사 문서에서 가져온다 (이 글)</p>
+    <a class="post-nav" href="cs-agent-grounding.html">
+      <span class="post-nav-label">(18)</span>
+      <span class="post-nav-title">값을 말하지 말고 조회하게 한다 — 매뉴얼 쪼개기·도구·가드레일</span>
+    </a>
+    <a class="post-nav" href="cs-agent-improve.html">
+      <span class="post-nav-label">(19)</span>
+      <span class="post-nav-title">59%에서 94%로 — 프롬프트만 고쳐 지표를 올린 기록</span>
+    </a>
+
+    <a class="post-nav" href="cs-agent-grounding.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">값을 말하지 말고 조회하게 한다 — 매뉴얼 쪼개기·도구·가드레일 (18)</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>59%에서 94%로 — 프롬프트만 고쳐 지표를 올린 기록 (19) - Tigermorning</title>
+  <meta name="description" content="고객응대 에이전트의 답변 통과율을 59.4%에서 93.8%까지 올린 28번의 실험 기록입니다. 한 번에 하나만 바꾸고 두 번씩 재면서, 가장 크게 오른 변경이 무엇이었는지와 점수로는 못 넘는 문항을 코드로 증명한 과정을 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="59%에서 94%로 — 프롬프트만 고쳐 지표를 올린 기록 (19)">
+  <meta property="og:description" content="제가 발명한 규칙은 대부분 실패했고, 회사 문서에 이미 있던 문장을 되돌려 놓은 변경이 가장 크게 올랐어요.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/cs-agent-improve.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">59%에서 94%로</span> — 프롬프트만 고쳐 지표를 올린 기록 (19)</h1>
+    <p class="post-date">2026. 9. 16.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="cs-agent-grounding.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">값을 말하지 말고 조회하게 한다 — 매뉴얼 쪼개기·도구·가드레일 (18)</span>
+    </a>
+
+    <p class="one-liner">완성된 에이전트의 점수를 올리는 일은 프롬프트를 잘 쓰는 재주가 아니라, <strong>실패한 건을 하나씩 열어 원인을 특정하고 한 번에 하나만 바꾸고 두 번씩 다시 재는</strong> 절차다.</p>
+
+    <div class="why-read" id="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>어디쯤인가</dt>
+        <dd><a href="posts.html#cat-agent-system">8단계</a> › <a href="posts.html#langgraph-team">에이전트 팀 꾸리기 — LangGraph</a> — 19번째 글 (전 19편, 마지막). <a href="cs-agent-routing-eval.html">17편</a>에서 분류기를, <a href="cs-agent-grounding.html">18편</a>에서 조회와 검사 층을 만들었고, 이 글은 그렇게 완성된 것의 점수를 올리는 이야기예요.</dd>
+        <dt>이런 게 궁금했다면</dt>
+        <dd>
+          <ul>
+            <li>프롬프트를 어떻게 고쳐야 성능이 오르나요? 잘 쓰는 요령이 따로 있나요?</li>
+            <li>고쳤더니 점수가 올랐는데, 그게 제 변경 덕분인지 그냥 운인지 어떻게 알죠?</li>
+            <li>평가 점수가 100%가 안 되면 아직 덜 만든 건가요?</li>
+          </ul>
+        </dd>
+        <dt>읽고 나면 할 수 있는 것</dt>
+        <dd>
+          <ul>
+            <li>점수가 제자리인 변경도 버리지 않고, 다음에 무엇을 칠지 알려 주는 단서로 써요.</li>
+            <li>실행마다 흔들리는 폭을 먼저 재서, 오른 것과 운이 좋았던 것을 구분해요.</li>
+            <li>더 올릴 수 없는 문항이 왜 그런지를 짐작이 아니라 코드로 증명해요.</li>
+            <li>점수는 오르지만 제품은 나빠지는 변경을 알아보고 거부해요.</li>
+          </ul>
+        </dd>
+        <dt>모르면 이런 일이 생겨요</dt>
+        <dd>
+          <ul>
+            <li>한 번 재고 "3%p 올랐다"고 기록해요. 다시 재 보면 원래 그 범위에서 흔들리던 값이라, 기여도 내역이 통째로 틀립니다. <a class="suspect-jump" href="#suspect-noise">언제 의심하나 ↓</a></li>
+            <li>고칠 때마다 한 건 잡히고 다른 한 건 깨져서, 몇 시간을 써도 제자리를 맴돌아요. <a class="suspect-jump" href="#suspect-tradeoff">언제 의심하나 ↓</a></li>
+            <li>점수를 올리려고 평가 문항의 정답 패턴을 프롬프트에 외우게 해요. 새 입력이 들어오면 그대로 무너집니다.</li>
+          </ul>
+        </dd>
+        <dt>어디에 쓰나</dt>
+        <dd>
+          <ul>
+            <li><strong>AI에게 시킨 일의 결과가 들쭉날쭉할 때.</strong> 어제는 잘 되던 게 오늘은 안 되는데 무엇을 고쳐야 할지 모르겠는 상황이요.</li>
+            <li>프롬프트를 여러 번 고쳐야 하는 모든 작업의 진행 기록 남기기.</li>
+            <li>평가 도구 자체가 틀렸는지 확인하기.</li>
+          </ul>
+        </dd>
+      </dl>
+    </div>
+
+    <h2><span class="hl">시작점</span></h2>
+    <p><a href="cs-agent-grounding.html">앞 편</a>까지 만든 것을 그대로 두고 먼저 점수를 쟀어요. 이 <strong>기준선</strong><sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>이 있어야 나중에 "좋아진 것 같다"가 아니라 "얼마나 올랐다"를 말할 수 있으니까요.</p>
+    <table>
+      <thead><tr><th>지표</th><th>기준선</th></tr></thead>
+      <tbody>
+        <tr><td>① 의도 분류 정확도</td><td>0.925 (macro F1 0.929)</td></tr>
+        <tr><td>② 1턴 답변 통과율</td><td>59.4% — 32건 중 19건</td></tr>
+      </tbody>
+    </table>
+    <p>그리고 실패한 13건이 <strong>왜</strong> 실패했는지를 유형별로 셌습니다. 점수 하나보다 이 표가 훨씬 중요해요.</p>
+    <table>
+      <thead><tr><th>실패 유형</th><th>건수</th><th>뜻</th></tr></thead>
+      <tbody>
+        <tr><td><code>must</code> 누락</td><td>8</td><td>답변에 꼭 있어야 할 값이 없다</td></tr>
+        <tr><td>행동 판정</td><td>6</td><td>되물어야 하는데 답해 버렸다 (또는 반대)</td></tr>
+        <tr><td><code>tools</code> 미호출</td><td>4</td><td>불러야 할 조회 함수를 안 불렀다</td></tr>
+        <tr><td><code>forbid</code> 위반</td><td><strong>0</strong></td><td>근거 없는 수치를 단정한 답변이 한 건도 없다</td></tr>
+      </tbody>
+    </table>
+    <p>마지막 줄을 눈여겨봐 주세요. <a href="cs-agent-grounding.html#scoring">앞 편에서 본 두 축</a>으로 보면, 실패가 전부 <strong>능력 축</strong>이고 <strong>안전 축</strong>은 처음부터 깨끗했어요. "답이 부실하다"이지 "틀린 금액을 안내했다"가 아니라는 뜻이고, 상용 서비스라면 이쪽이 훨씬 나은 실패 모양입니다.</p>
+
+    <h2 id="analogy"><span class="hl">비유</span> — 레시피 한 줄만 바꾸고 30접시를 다시 낸다</h2>
+    <p><a href="langgraph-what-and-why.html#analogy">그 주방</a>에서 요리 하나의 완성도를 올린다고 해 봅시다. 손님 반응이 시원치 않아요.</p>
+    <p>서툰 방법은 이겁니다 — 소금을 줄이고, 불을 세게 하고, 소스를 바꾼 다음 한 접시 내 보고 "나아진 것 같다"고 하는 것. 셋 중 무엇이 효과였는지 알 수 없고, 애초에 한 접시로는 원래 있던 편차인지도 모릅니다.</p>
+    <p>제대로 하려면 <strong>한 번에 한 줄만 바꾸고, 30접시를 내서 반응을 세고, 장부에 적습니다.</strong> 그리고 같은 조건으로 한 번 더 세요. 30접시 중 두어 접시는 원래 그날그날 다르거든요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>레시피에서 한 줄만 바꾸기</td><td>한 번에 프롬프트 한 군데만 수정</td></tr>
+        <tr><td>같은 30접시를 다시 내기</td><td>같은 평가셋으로 다시 채점</td></tr>
+        <tr><td>같은 레시피로 두 번 세기</td><td>실행마다 달라지는 폭을 확인하는 반복 측정</td></tr>
+        <tr><td>바꾼 줄과 그날 반응을 장부에 적기</td><td>변경 내용과 점수를 표로 기록</td></tr>
+        <tr><td>"반응이 나빠졌다" — 그 줄을 되돌리기</td><td>점수가 떨어진 변경은 롤백</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 요리 실력이 아니라 <strong>장부와 반복 측정</strong>이 완성도를 올립니다.</p>
+
+    <h2><span class="hl">전체 흐름</span></h2>
+    <svg viewBox="0 0 700 150" role="img" aria-label="실패 목록을 읽고 원인이 같은 덩어리를 고른 뒤 근거를 문서에서 찾아 한 군데만 고치고 두 번 측정한다. 오르면 유지하고 다음 실패로, 떨어지면 되돌리되 깨진 건이 다음 단서가 되는 순환">
+      <defs>
+        <marker id="csi1" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+          <path d="M0,0 L9,4.5 L0,9 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <rect x="8" y="48" width="112" height="36" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="64" y="64" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">실패 목록을</text>
+      <text x="64" y="77" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">유형별로 세기</text>
+      <rect x="150" y="48" width="112" height="36" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="206" y="64" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">근거를 회사</text>
+      <text x="206" y="77" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">문서에서 찾기</text>
+      <rect x="292" y="48" width="112" height="36" rx="6" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="348" y="64" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--accent)">한 군데만</text>
+      <text x="348" y="77" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--accent)">고치기</text>
+      <rect x="434" y="48" width="112" height="36" rx="6" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="490" y="70" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--accent)">두 번 측정</text>
+      <rect x="576" y="10" width="112" height="30" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="632" y="30" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">올랐다 — 유지</text>
+      <rect x="576" y="92" width="112" height="30" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="632" y="112" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">떨어졌다 — 되돌림</text>
+      <line x1="120" y1="66" x2="146" y2="66" stroke="var(--muted)" stroke-width="2" marker-end="url(#csi1)"/>
+      <line x1="262" y1="66" x2="288" y2="66" stroke="var(--muted)" stroke-width="2" marker-end="url(#csi1)"/>
+      <line x1="404" y1="66" x2="430" y2="66" stroke="var(--muted)" stroke-width="2" marker-end="url(#csi1)"/>
+      <line x1="546" y1="58" x2="572" y2="32" stroke="var(--muted)" stroke-width="2" marker-end="url(#csi1)"/>
+      <line x1="546" y1="74" x2="572" y2="100" stroke="var(--muted)" stroke-width="2" marker-end="url(#csi1)"/>
+      <path d="M632 122 q0 20 -284 20 q-284 0 -284 -52" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#csi1)"/>
+      <text x="348" y="140" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">되돌려도 그때 깨진 건이 다음에 칠 자리를 알려 준다</text>
+    </svg>
+    <p><strong>읽는 법:</strong> 아래쪽 점선이 이 글에서 제일 하고 싶은 말이에요. 점수가 떨어진 실험도 버리는 게 아니라 <strong>다음 실험의 단서</strong>가 됩니다.</p>
+
+    <h2 id="failed-first"><span class="hl">가장 많이 가르쳐 준 건 실패한 실험이었어요</span></h2>
+    <p>첫 실험은 되묻기 규칙을 강화하는 것이었어요. 실패 사례 중에 이런 게 있었거든요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 에이전트가 낸 답변과 채점 결과예요</span></p>
+    <pre><code>고객: "티셔츠 당일배송 되나요?"        정답: 되묻기(배송 지역을 물어야 함)
+우리: "당일배송은 배송 지역에 따라 제공 여부가 달라집니다.
+       배송받으실 지역을 알려주시면 확인해 드리겠습니다."   → 실패</code></pre>
+    <p>잘 되물었는데 실패로 찍혔어요. 규칙을 고쳐 더 적극적으로 되묻게 했더니 <strong>59.4% → 50.0%로 떨어졌습니다.</strong> 이런 변경은 고치기 전으로 되돌립니다 — <strong>롤백</strong><sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>이에요.</p>
+    <p>왜 떨어졌는지 보려고 채점 코드를 열었어요. 거기서 답이 나왔습니다. 채점기는 에이전트가 "나 지금 되묻는 중"이라고 말해 주지 않으니 <strong>결과를 보고 추론</strong>해야 하는데, 그 추론 규칙이 이랬어요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 채점기가 행동을 판정하는 부분이에요</span></p>
+    <pre><code>조회 도구를 하나도 안 불렀고 + 답변에 되묻는 표현이 있으면 → "되묻기"
+그 밖에는 전부 → "답변"</code></pre>
+    <p><strong>도구를 하나라도 부르면 되묻기로 인정되지 않아요.</strong> 우리 에이전트는 "티셔츠"가 어떤 상품인지 확인하려고 상품 검색을 한 번 불렀고, 그 순간 "답변"으로 찍힌 겁니다.</p>
+    <p>정답셋을 열어 확인했더니 그게 맞았어요. 되묻기가 정답인 8건 중 <strong>7건이 "도구를 하나도 부르지 않는다"</strong>로 되어 있었습니다. 되묻기를 강화할 때 <strong>도구 호출도 같이 막지 않으면 점수가 오히려 떨어진다</strong>는 걸, 실패한 실험 덕분에 알았어요.</p>
+
+    <h2 id="tradeoff"><span class="hl">되묻기와 답변은 반대로 움직여요</span></h2>
+    <p>알아낸 걸 반영해서 "조회할 값이 없으면 도구를 아예 부르지 말고 되묻고 끝내라"로 바꿨습니다. 결과는 이랬어요.</p>
+    <table>
+      <thead><tr><th></th><th>기준선</th><th>바꾼 뒤</th></tr></thead>
+      <tbody>
+        <tr><td>총점</td><td>59.4%</td><td>50.0%</td></tr>
+        <tr><td>되물어야 할 건 통과</td><td>4/8</td><td><strong>6/8</strong> ✅</td></tr>
+        <tr><td>답해야 할 건 통과</td><td>14/22</td><td><strong>9/22</strong> ❌</td></tr>
+      </tbody>
+    </table>
+    <p>되묻기는 올랐는데 답변이 무너졌어요. 실패 사례를 보니 원인이 하나였습니다 — <strong>상품명이 이미 문의에 있는데도</strong> "상품명을 알려주세요"라고 되묻고 있었어요. 제가 쓴 조건이 너무 넓어서 모델이 상품 검색 단계를 통째로 건너뛴 거죠.</p>
+    <p>조건을 "주문번호가 없을 때"와 "배송 지역이 없을 때" 둘로 좁히고, "상품 이름이 조금이라도 나왔으면 되묻지 말고 검색해라"를 명시했더니 되묻기 6/8을 지키면서 답변이 회복됐습니다.</p>
+    <p>이 줄다리기는 끝까지 계속됐어요. 나중에도 한 건을 잡을 때마다 다른 한 건이 깨졌고, <strong>그 깨진 건이 다음에 무엇을 칠지 알려 줬습니다.</strong></p>
+
+    <h2 id="verbatim"><span class="hl">가장 크게 오른 변경 — 표기를 바꾸지 말 것</span></h2>
+    <p>어느 시점에 실패가 <code>must</code> 누락 한 덩어리로 몰렸어요. 6건을 열어 읽었더니 패턴이 하나였습니다. <strong>값은 아는데 표기를 바꿔 쓴 것.</strong></p>
+    <table>
+      <thead><tr><th>정답이 요구한 것</th><th>우리 답변이 쓴 것</th></tr></thead>
+      <tbody>
+        <tr><td><code>50000</code></td><td>"<strong>5만원</strong> 이상이면 무료배송"</td></tr>
+        <tr><td><code>아이 크림</code></td><td>"<strong>아이크림</strong>은 포함되어 있지 않고"</td></tr>
+        <tr><td><code>품절</code></td><td>"현재 <strong>재고가 없습니다</strong>"</td></tr>
+      </tbody>
+    </table>
+    <p>처음엔 "이건 채점기가 문자열만 비교해서 생긴 문제 아닌가, 고치면 꼼수 아닌가" 싶었어요. 그런데 <a href="cs-agent-grounding.html#guardrail">앞 편에서 만든 검사기</a>를 다시 보니 <strong>실제 결함이 맞았습니다.</strong> 그 검사기는 쉼표만 정규화하거든요. "5만원"이라고 쓰면 50000을 못 찾아내서, <strong>제대로 조회해 온 값도 "출처 불명"으로 걸립니다.</strong></p>
+    <p>그래서 "조회 결과에서 가져온 값은 그 표기 그대로 쓴다"를 규칙으로 넣었고, 이것이 한 번에 가장 크게 오른 변경이었어요(+6%p).</p>
+    <p>다만 이 규칙은 나중에 다른 자리에서 부작용을 냈습니다. 재입고 예정일이 <code>2026-09-01</code>로 저장돼 있었는데 모델이 그 기계 표기를 그대로 고객에게 썼거든요. 같은 조회 결과 안에 <strong>"9월 1일 입고 예정입니다"라는 사람이 읽는 문장</strong>이 이미 들어 있었는데도요. 그래서 단서를 하나 더 달았어요 — <strong>금액은 기계 표기를, 날짜처럼 안내 문장이 따로 있는 값은 그 문장을 따른다.</strong></p>
+
+    <h2 id="restore"><span class="hl">제가 발명한 규칙은 대부분 실패했어요</span></h2>
+    <p>28번의 실험을 마치고 기록을 훑어보니 뚜렷한 패턴이 있었습니다. <strong>점수를 올린 변경은 거의 전부 "프롬프트가 회사 문서를 요약하면서 빠뜨린 것을 되돌려 놓은 것"이었어요.</strong></p>
+    <table>
+      <thead><tr><th>빠져 있던 것</th><th>되돌려 놓은 결과</th></tr></thead>
+      <tbody>
+        <tr><td>매뉴얼 1장의 <strong>판단 기준표</strong> 4행 (프롬프트엔 요약 문장만 있었다)</td><td>분류 정확도 +0.04. 헷갈리던 두 갈래가 각각 30/30 만점</td></tr>
+        <tr><td>"정확한 정보를 안내합니다" — 표기 오류 응대 절차</td><td>답변 +2건. 주문번호를 되묻던 것이 상품 조회로 바뀜</td></tr>
+        <tr><td>"'불가합니다'로 끝내지 말고 비용까지 함께 안내하십시오"</td><td>답변 +2건</td></tr>
+        <tr><td>매뉴얼 1장 우선순위 중 <strong>"이관 요건"</strong> 항목 (프롬프트엔 "범위 밖"만 있었다)</td><td>반복 항의 고객이 "범위 밖"이 아니라 상담원 연결로 감</td></tr>
+      </tbody>
+    </table>
+    <p>마지막 줄이 특히 그랬어요. 매뉴얼은 우선순위를 <strong>"범위 밖"과 "이관 요건"으로 나눠</strong> 뒀는데 프롬프트에는 앞의 것만 있었습니다. 그러니 모델이 "세 번째 문의드리는데 처리가 안 됩니다" 같은 항의를 <strong>"저희 소관이 아닙니다"</strong>로 처리하고 있었어요.</p>
+    <p>반대로 제가 새로 지어낸 규칙들(더 적극적으로 되묻게, 도구를 더 많이 부르게)은 대부분 점수를 떨어뜨렸고 되돌렸습니다.</p>
+
+    <h2 id="one-line"><span class="hl">프롬프트가 아니라 설정값 한 줄이었던 것</span></h2>
+    <p>한 실험에서 답변이 이렇게 나왔어요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 에이전트가 낸 답변이에요</span></p>
+    <pre><code>"정확한 확인을 위해 상담원에게 연결해 드리겠습니다."</code></pre>
+    <p>이건 모델이 쓴 문장이 아니라 <strong>코드에 박혀 있는 예외 처리 문구</strong>였습니다. 도구 호출 루프가 상한에 걸렸을 때 나오는 문장이었어요. 제가 "조회를 더 많이 하라"고 시켰더니 호출이 늘어 상한을 넘긴 거죠.</p>
+    <p>설정 파일에서 루프 상한을 3에서 5로 <strong>한 줄</strong> 고쳤더니 바로 한 건이 살아났고, 그 덕에 뒤이은 실험 둘이 더 가능해졌습니다. 프롬프트를 아무리 잘 써도 상한이 막고 있으면 소용이 없었어요.</p>
+
+    <h2 id="conflict"><span class="hl">규칙이 늘면 규칙끼리 부딪혀요</span></h2>
+    <p>후반부에 들어서니 새 문제가 생겼습니다. <strong>제가 넣은 규칙들끼리 서로를 덮기 시작했어요.</strong></p>
+    <table>
+      <thead><tr><th>충돌</th><th>어떻게 풀었나</th></tr></thead>
+      <tbody>
+        <tr><td>"조회는 넓게 하라" ↔ "답변은 짧게 쓰라"</td><td>조회 범위와 답변 범위를 분리 — 무엇을 조회할지는 짐작을 막으려고 넓게, 무엇을 답변에 담을지는 고객의 질문이 정한다</td></tr>
+        <tr><td>"답변은 짧게" ↔ "확정된 입고일은 반드시 쓰라"</td><td>입고일은 "묻지 않은 정보"가 아님을 명시 — 고객이 "지금 살 수 있나요"라고 물었으면 언제 들어오는지가 곧 그 질문의 답이다</td></tr>
+        <tr><td>"부담 주체를 말할 땐 금액도 함께" ↔ 회사 부담이라 낼 돈이 없는 건</td><td>고객이 부담하는 경우에만 금액을 쓰도록 한정 — 내지 않아도 될 금액을 안내하면 나중에 번복해야 한다</td></tr>
+      </tbody>
+    </table>
+    <p>프롬프트가 62줄에서 160줄 넘게 늘어난 대가예요. 그리고 이 충돌을 확인할 방법이 <strong>평가셋 32건을 돌려 보는 것뿐</strong>이라, 한 건 고칠 때마다 다른 건이 깨지는지 매번 확인해야 했습니다.</p>
+
+    <h2 id="noise"><span class="hl">한 번 재고 판단하면 안 돼요</span></h2>
+    <p>같은 프롬프트로 분류 지표를 열 번 재 봤어요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 같은 설정으로 열 번 측정한 값이에요</span></p>
+    <pre><code>0.958  0.958  0.967  0.967  0.967  0.975  0.975  0.975  0.975  0.983</code></pre>
+    <p><strong>아무것도 안 바꿨는데 0.958에서 0.983까지 흔들립니다.</strong> 120건 중 한 건만 뒤집혀도 0.008이 움직이니까요.</p>
+    <p>이걸 모르고 실험을 기록하면 어떻게 되는지 저도 겪었어요. 한 실험에서 "예시를 넣었더니 오분류가 하나 사라졌다"고 적었는데, 세 번 더 재 보니 <strong>그 오분류가 3/3으로 계속 나왔습니다.</strong> 그 회차의 운이었던 거죠.</p>
+    <p>더 아찔한 것도 있었어요. 단계별로 저장해 둔 프롬프트 <strong>스냅샷</strong><sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>을 서로 비교해 봤더니, 한 실험의 <strong>수정이 파일에 반영되지 않았는데도 점수가 3%p 올라 있었습니다.</strong> 스냅샷을 안 남겼다면 "이 변경이 3%p를 올렸다"고 영영 잘못 기록했을 거예요.</p>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">레시피를 고치고 30접시를 한 번 내서 반응이 좋으면 "이 줄이 효과였다"고 장부에 적는다 → 다음 주에 같은 레시피로 냈더니 반응이 원래대로다. 장부의 절반이 틀린 기록이 된다</td>
+          <td class="choice-good">고치기 전 레시피를 한 장 복사해 두고, 고친 뒤 두 번 내서 둘 다 좋으면 적는다 → 나중에 "정말 그 줄이 바뀌긴 했나"를 복사본과 대조해 확인할 수 있다</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="ceiling"><span class="hl">더 못 올리는 문항이 있어요</span></h2>
+    <p>93.8%에서 멈췄을 때 남은 실패가 2건이었습니다. 이게 제 실력의 한계인지 확인해야 했어요.</p>
+    <p>그래서 채점기가 인정하는 모든 경우를 <strong>전수로</strong> 넣어 봤습니다. 도구 조합 0~3개를 전부 만들고, 답변은 채점을 통과하는 이상적인 문장이라고 가정하고요. 한 건은 통과 조합이 <strong>하나도 없었어요.</strong></p>
+    <p>그 문항의 정답은 이렇게 되어 있었습니다.</p>
+    <table>
+      <thead><tr><th>정답이 요구하는 것</th><th>왜 타당한가</th></tr></thead>
+      <tbody>
+        <tr><td>반품 정책 조회 함수를 부를 것</td><td>"30일·미개봉"이라는 조건은 조회해야만 알 수 있으니까</td></tr>
+        <tr><td>행동은 "되묻기"일 것</td><td>개봉 여부는 조회로도 알 수 없고 고객만 아니까</td></tr>
+      </tbody>
+    </table>
+    <p><strong>둘 다 타당해요.</strong> "조회할 건 조회하고, 조회로도 알 수 없는 것만 되물어라" — 사람 상담원이라면 당연히 그렇게 하죠. 문제는 채점기가 이 조합을 표현하지 못한다는 것뿐입니다. 되묻기를 알아보는 단서가 "도구를 안 불렀다" 하나뿐이라, <strong>조회하면 무조건 "답변"으로 찍히거든요.</strong></p>
+    <p>확인 삼아 <strong>정답셋이 제공한 모범 답안을 그대로</strong> 채점기에 넣어 봤어요. 32건 중 2건을 제 행동으로 못 읽었습니다. <strong>모범 답안대로 답해도 떨어지는 문항</strong>이었던 거예요.</p>
+    <p>그래서 판정 규칙만 고친 대조용 채점기를 따로 만들어, 같은 답변을 두 채점기로 각각 채점했습니다.</p>
+    <table>
+      <thead><tr><th>채점기</th><th>통과</th><th>쓰임</th></tr></thead>
+      <tbody>
+        <tr><td>원본</td><td>30/32 = 93.8%</td><td><strong>공식 숫자</strong> — 다른 사람과 비교하려면 이걸 써야 한다</td></tr>
+        <tr><td>보정본</td><td>31/32 = 96.9%</td><td>대조용 — 보정본도 다른 문항에서 새로 틀려서 공식으로 못 쓴다</td></tr>
+      </tbody>
+    </table>
+    <p>여기서 중요한 건 96.9%라는 숫자가 아니라 <strong>"남은 2건은 에이전트의 실패가 아니다"를 근거를 대고 말할 수 있게 됐다</strong>는 점이에요.</p>
+
+    <h2 id="score-vs-quality"><span class="hl">점수와 제품이 갈리는 자리</span></h2>
+    <p>마지막으로 정직하게 짚어 둘 것이 있어요. <strong>점수를 올리는 것과 좋은 상담을 하는 것이 항상 같은 방향은 아니었습니다.</strong></p>
+    <ul>
+      <li>상품을 먼저 확인해 두고 되묻는 답변이, 아무것도 모른 채 되묻는 답변보다 <strong>낮은 점수</strong>를 받아요. 상담 품질로는 전자가 낫고요.</li>
+      <li>매뉴얼은 "'불가합니다'로 끝나는 답변은 재문의를 만든다"며 그 표현을 피하라고 하는데, 정답셋은 <code>불가</code>라는 낱말을 요구했어요. <strong>둘을 동시에 만족할 수 없어서</strong> 매뉴얼 쪽을 택하고 그 문항을 포기했습니다.</li>
+      <li>남은 한 문항은 <strong>무관한 주문번호를 지어내서 조회</strong>하면 통과할 수 있었어요. 문의와 아무 상관없는 주문을 하나 찍어 조회하면 "범위 밖"으로 판정되거든요. 점수 한 건을 위해 이 프로젝트가 하루 종일 막으려던 그 행동을 프롬프트에 지시하는 셈이라, 하지 않았습니다.</li>
+    </ul>
+    <p>평가셋에서 만점을 받는 것과 현실에서 잘 도는 것도 달라요. 실제 고객 문의를 그대로 흘려보냈더니 <strong>답변까지 도달한 건이 거의 없었습니다.</strong> 고객이 상품번호를 말해 주지 않아서요. 정답셋은 정답이 확정되는 대화만 골라 만든 것이라, 거기서 100점을 받아도 현실에는 다른 병목이 기다립니다.</p>
+
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 실험을 돌릴 때 잡아 둘 값들</h2>
+    <p>프롬프트를 여러 번 고쳐 가며 지표를 올릴 때 참고할 값들이에요.</p>
+    <table>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
+      <tbody>
+        <tr><td>같은 설정 반복 측정 시 흔들림 폭</td><td>0.958 ~ 0.983 (120건 기준)</td><td>이 폭보다 작은 변화는 "올랐다"고 말할 수 없다. 최소 두 번은 잰다</td></tr>
+        <tr><td>한 건이 점수에 미치는 영향</td><td>120건에서 0.008 / 32건에서 3.1%p</td><td>평가셋이 작을수록 한 건이 크게 움직인다. 작은 평가셋일수록 반복 측정이 더 필요하다</td></tr>
+        <tr><td>도구 호출 루프 상한</td><td>3 → 5</td><td>조회를 늘리는 프롬프트를 넣었다면 이 값도 같이 올려야 효과가 난다</td></tr>
+        <tr><td>한 번에 바꾸는 곳</td><td>1군데</td><td>둘을 동시에 바꾸면 올랐어도 무엇 때문인지 모른다</td></tr>
+        <tr><td>전체 측정 1회 소요</td><td>3~4분 · 호출 300건 안팎</td><td>반복 측정 비용을 미리 계산해 둔다. 일부만 재는 옵션이 있으면 그걸로 좁힌다</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 프롬프트를 고쳐 가며 점수를 올릴 때</h2>
+    <p>이 작업의 고장은 에러가 아니라 <strong>잘못된 기록</strong>으로 남아요. 나중에 무엇이 효과였는지 되짚을 수 없게 됩니다.</p>
+    <p>증상이 아직 없어도, <strong>AI에게 이런 부탁을 한 직후</strong>라면 한 번 확인하고 넘어가요.</p>
+    <ul>
+      <li>"프롬프트 고치고 다시 평가해 줘" — 고친 내용이 파일에 실제로 들어갔는지</li>
+      <li>"점수 올랐으니 이대로 가자" — 몇 번 재서 나온 숫자인지</li>
+    </ul>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-noise">
+          <td>같은 설정인데 돌릴 때마다 점수가 몇 %p씩 다르다</td>
+          <td>평가셋 크기. 그리고 기록해 둔 점수가 몇 번 측정한 값인지</td>
+          <td>아무것도 안 바꾸고 세 번 돌려 본다. 거기서 나온 폭보다 작은 변화는 전부 판단 불가예요 — <a href="#noise">반복 측정 절</a></td>
+        </tr>
+        <tr id="suspect-notapplied">
+          <td>고쳤다는데 결과가 똑같거나, 반대로 안 고칠 부분이 바뀐 것 같다</td>
+          <td>고치기 전 파일의 복사본. 없으면 이번부터 만든다</td>
+          <td>고치기 전·후 파일을 비교해 실제로 달라진 줄을 본다. 스크립트가 "완료"를 찍어도 파일엔 안 들어갔을 수 있어요 — <a href="#noise">스냅샷 이야기</a></td>
+        </tr>
+        <tr id="suspect-tradeoff">
+          <td>한 건 잡을 때마다 다른 한 건이 깨져서 총점이 제자리를 맴돈다</td>
+          <td>실패 목록 두 벌(고치기 전·후)을 나란히 놓고, 사라진 건과 새로 생긴 건</td>
+          <td>새로 깨진 건의 원인을 먼저 특정한다. 대개 방금 넣은 규칙이 너무 넓게 적용된 것이고, 조건을 좁히면 둘 다 잡혀요 — <a href="#tradeoff">줄다리기 절</a></td>
+        </tr>
+        <tr id="suspect-conflict">
+          <td>새 규칙을 넣었는데 엉뚱한 예전 항목이 깨진다</td>
+          <td>프롬프트에서 방금 넣은 규칙과 비슷한 주제를 다루는 다른 줄</td>
+          <td>두 줄을 나란히 읽어 어느 쪽이 우선인지 적혀 있는지 본다. 안 적혀 있으면 모델이 그때그때 다르게 고릅니다 — <a href="#conflict">충돌 절</a></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2><span class="hl">이 시리즈에서 남는 것</span></h2>
+    <p>세 편에 걸쳐 만든 것을 한 줄로 줄이면 이래요. <strong>회사 문서에서 갈래를 가져오고, 재는 자를 먼저 만들고, 값은 조회하게 하고, 출처 없는 숫자는 기계로 거른다.</strong></p>
+    <p>그리고 점수를 올리는 일은 프롬프트를 잘 쓰는 재주가 아니었어요. 실패한 건을 하나씩 열어 읽고, 근거를 회사 문서에서 찾고, 한 번에 하나만 바꾸고, 두 번씩 재는 <strong>절차</strong>였습니다. 제일 많이 가르쳐 준 것은 점수가 떨어진 실험들이었고요.</p>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">기준선(baseline) — 아무것도 고치기 전에 재 둔 점수로, 이후 모든 변경이 좋아졌는지 나빠졌는지를 판단하는 기준이에요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">롤백(rollback) — 점수가 떨어진 변경을 고치기 전 상태로 되돌리는 것이에요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">스냅샷(snapshot) — 고치기 전 파일을 그대로 복사해 남겨 둔 사본으로, 나중에 무엇이 실제로 바뀌었는지 대조할 때 써요. <a href="#fnref3">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <h3 id="series-list">"에이전트 팀 꾸리기 — LangGraph" 시리즈</h3>
+    <a class="post-nav" href="langgraph-what-and-why.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">다음에 어느 코드가 실행될까 — LangGraph와 워크플로·에이전트</span>
+    </a>
+    <a class="post-nav" href="langgraph-state-node-edge.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">흐름을 그림으로 짠다 — LangGraph의 State·Node·Edge</span>
+    </a>
+    <a class="post-nav" href="langgraph-branch-drills.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">갈림길을 밀어붙인다 — 세 갈래·라벨·끝나지 않는 반복</span>
+    </a>
+    <a class="post-nav" href="langgraph-branches-and-tool-loop.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">모델이 다음 길을 고르게 한다 — 도구를 쥐여 주는 루프</span>
+    </a>
+    <a class="post-nav" href="langgraph-env-troubleshooting.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">.env가 안 읽혔던 네 겹의 이유 — 원격 주피터에서 API 키 넣기</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-chaining.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">① 프롬프트 체이닝 — 순서대로, 사이에 검사</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-routing.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">② 라우팅 — 먼저 분류하고, 한 갈래로</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-parallelization.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">③ 병렬화 — 동시에 돌리고, 합친다</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-orchestrator-worker.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">④ 오케스트레이터-워커 — 몇 갈래일지 LLM이 정한다</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-evaluator-optimizer.html">
+      <span class="post-nav-label">(10)</span>
+      <span class="post-nav-title">⑤ 평가자-최적화자 — 통과할 때까지 고쳐 쓰기</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-skeleton.html">
+      <span class="post-nav-label">(11)</span>
+      <span class="post-nav-title">뉴스레터 에이전트를 빈 노드 다섯 개로 먼저 세운다</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-collect.html">
+      <span class="post-nav-label">(12)</span>
+      <span class="post-nav-title">기사를 어디서 가져올까 — RSS·관문·수집 노드</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-select.html">
+      <span class="post-nav-label">(13)</span>
+      <span class="post-nav-title">100건에서 5건 고르기 — 점수 대신 비교, 예선과 본선</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-summarize-verify.html">
+      <span class="post-nav-label">(14)</span>
+      <span class="post-nav-title">요약을 세 칸으로 받고 원문과 대조한다</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-publish-schedule.html">
+      <span class="post-nav-label">(15)</span>
+      <span class="post-nav-title">디스코드로 매일 아침 받아 보기 — 웹훅과 GitHub Actions</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-metrics-config.html">
+      <span class="post-nav-label">(16)</span>
+      <span class="post-nav-title">돌고 나서 재 본다 — 실행 기록과 설정 파일</span>
+    </a>
+    <a class="post-nav" href="cs-agent-routing-eval.html">
+      <span class="post-nav-label">(17)</span>
+      <span class="post-nav-title">문의 한 줄을 다섯 갈래로 — 라우트는 회사 문서에서 가져온다</span>
+    </a>
+    <a class="post-nav" href="cs-agent-grounding.html">
+      <span class="post-nav-label">(18)</span>
+      <span class="post-nav-title">값을 말하지 말고 조회하게 한다 — 매뉴얼 쪼개기·도구·가드레일</span>
+    </a>
+    <p class="post-date">(19) 59%에서 94%로 — 프롬프트만 고쳐 지표를 올린 기록 (이 글)</p>
+
+    <a class="post-nav" href="multi-agent-split-gains-and-losses.html">
+      <span class="post-nav-label">다음 시리즈 →</span>
+      <span class="post-nav-title">나누면 좋아질까 — 멀티 에이전트의 득실과 판정표 (1)</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>

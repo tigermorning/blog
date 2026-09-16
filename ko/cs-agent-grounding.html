@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>값을 말하지 말고 조회하게 한다 — 매뉴얼 쪼개기·도구·가드레일 (18) - Tigermorning</title>
+  <meta name="description" content="분류까지 끝난 고객응대 에이전트가 실제로 답하게 만듭니다. 매뉴얼을 장 단위로 쪼개 필요한 장만 넣고, 관리자 화면에 해당하는 조회 도구를 만들어 모델이 스스로 부르게 하고, 답변 속 숫자의 출처를 기계적으로 역추적해 지어낸 값을 걸러냅니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="값을 말하지 말고 조회하게 한다 — 매뉴얼 쪼개기·도구·가드레일 (18)">
+  <meta property="og:description" content="문장이 아무리 자연스러워도 출처 없는 숫자는 거짓입니다. 자연스러움으로는 이 오류를 절대 못 잡아요.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/cs-agent-grounding.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">값을 말하지 말고 조회하게 한다</span> — 매뉴얼 쪼개기·도구·가드레일 (18)</h1>
+    <p class="post-date">2026. 9. 16.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="cs-agent-routing-eval.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">문의 한 줄을 다섯 갈래로 — 라우트는 회사 문서에서 가져온다 (17)</span>
+    </a>
+
+    <p class="one-liner">모델이 건별로 달라지는 값을 스스로 지어내지 못하게, <strong>관련 있는 규정만 골라 넣고 · 값은 반드시 조회해서 가져오고 · 답변에 출처 없는 숫자가 섞였는지 기계로 검사하는</strong> 세 겹을 붙인다.</p>
+
+    <div class="why-read" id="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>어디쯤인가</dt>
+        <dd><a href="posts.html#cat-agent-system">8단계</a> › <a href="posts.html#langgraph-team">에이전트 팀 꾸리기 — LangGraph</a> — 18번째 글 (전 19편). <a href="cs-agent-routing-eval.html">17편</a>에서 만든 분류기가 이 글의 출발점이에요. 모델이 스스로 함수를 부르는 구조 자체가 처음이면 <a href="langgraph-branches-and-tool-loop.html">4편</a>을 먼저 보시면 편해요.</dd>
+        <dt>이런 게 궁금했다면</dt>
+        <dd>
+          <ul>
+            <li>회사 규정 문서를 통째로 프롬프트에 넣으면 안 되나요?</li>
+            <li>모델이 지어낸 숫자인지 진짜 조회한 숫자인지 어떻게 구분하죠?</li>
+            <li>"아직 결정 안 됨"인 값을 모델이 마음대로 단정해 버리는 건 어떻게 막나요?</li>
+          </ul>
+        </dd>
+        <dt>읽고 나면 할 수 있는 것</dt>
+        <dd>
+          <ul>
+            <li>긴 규정 문서에서 지금 필요한 부분만 골라 넣어, 엉뚱한 규정을 근거로 답하는 사고를 막아요.</li>
+            <li>어떤 함수를 만들어야 하는지를 감이 아니라 회사 문서에서 도출해요.</li>
+            <li>답변 속 숫자를 하나씩 역추적해서, 출처 없는 값이 섞였는지 기계적으로 잡아내요.</li>
+            <li>결과가 비어 있는 것과 아직 확정되지 않은 것을 구분해 다뤄요.</li>
+          </ul>
+        </dd>
+        <dt>모르면 이런 일이 생겨요</dt>
+        <dd>
+          <ul>
+            <li>모델이 "무료배송 기준은 40,000원입니다"라고 답해요. 완벽하게 자연스러운 문장인데 그 상품 기준은 100,000원이라 고객은 틀린 안내를 받고, 그 안내는 회사가 한 약속이 됩니다. <a class="suspect-jump" href="#suspect-invented">언제 의심하나 ↓</a></li>
+            <li>배송비를 묻는 고객에게 반품 배송비 5,000원을 안내해요. 프롬프트에 반품 규정이 같이 들어 있었기 때문이에요. <a class="suspect-jump" href="#suspect-wrong-policy">언제 의심하나 ↓</a></li>
+            <li>검품 전이라 아직 아무것도 정해지지 않았는데 "고객님이 부담하셔야 합니다"라고 단정해요. 나중에 하자로 밝혀지면 안내를 번복해야 합니다. <a class="suspect-jump" href="#suspect-null">언제 의심하나 ↓</a></li>
+          </ul>
+        </dd>
+        <dt>어디에 쓰나</dt>
+        <dd>
+          <ul>
+            <li><strong>규정이 자주 바뀌는 안내를 자동화할 때.</strong> 배송비·수수료·기간처럼 담당 부서가 언제든 고치는 값을 챗봇이 안내하게 되면, 어제 맞던 답이 오늘 틀립니다.</li>
+            <li>사내 위키·약관·업무 매뉴얼을 근거로 답하는 도우미 만들기.</li>
+            <li>모델 답변에 들어간 수치의 출처를 사후에 추적할 수 있게 만들기.</li>
+          </ul>
+        </dd>
+      </dl>
+    </div>
+
+    <h2><span class="hl">문장은 완벽한데 숫자가 틀린다</span></h2>
+    <p><a href="cs-agent-routing-eval.html">앞 편</a>에서 만든 것을 다시 보면, 문의 한 줄을 넣으면 <code>{route: 'SHIPPING', confidence: 0.97}</code> 이 나와요. 잘 동작하고 점수도 좋습니다. 그런데 고객이 받는 것은 갈래 이름이 아니에요.</p>
+    <p>그럼 모델에게 매뉴얼을 통째로 주고 "알아서 답해"라고 하면 될까요? 실제로 그렇게 하면 문장은 아주 잘 나옵니다. 문제는 그 문장에 들어 있는 숫자예요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 모델이 내놓은 답변 예시예요</span></p>
+    <pre><code>"무료배송 기준은 40,000원입니다. 현재 금액이 미달이라 배송비 2,500원이 부과됩니다."</code></pre>
+    <p>읽어 보면 흠잡을 데가 없어요. 그런데 고객이 물은 상품이 신발이라면 그 기준은 100,000원이고, 이 답변은 틀렸습니다. 40,000원은 의류 기준이고, 모델은 문서 어딘가에서 본 숫자를 그럴듯한 자리에 끼워 넣은 것뿐이에요.</p>
+    <p><strong>문장 품질로는 이 오류를 절대 못 잡습니다.</strong> 사람이 읽어도 이상하지 않으니까요. 그래서 세 겹을 붙입니다. 답변의 근거를 모델의 지식이 아니라 우리가 준 자료에만 묶어 두는 이 작업을 <strong>그라운딩</strong><sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>이라고 불러요.</p>
+
+    <h2 id="analogy"><span class="hl">비유</span> — 레시피 카드와 냉장고, 그리고 검수대</h2>
+    <p><a href="langgraph-what-and-why.html#analogy">그 주방</a>으로 돌아가요. 요리사가 손님에게 "이 메뉴에 새우가 들어가나요?"라는 질문을 받았다고 해 봅시다.</p>
+    <p>주방에는 두 종류의 정보가 있어요. <strong>레시피 카드에 인쇄된 것</strong>(모든 접시에 똑같이 적용되는 기본 소스 배합)과 <strong>매일 바뀌어서 직접 열어 봐야 아는 것</strong>(오늘 냉장고에 새우가 몇 마리 남았는지). 앞의 것은 외워서 답해도 되지만, 뒤의 것을 외워서 답하면 사고가 납니다.</p>
+    <p>그리고 접시가 나가기 전에 <strong>검수대</strong>가 있어요. 담당자가 접시를 보고 "이 요리에 없어야 할 재료가 올라갔나"를 확인하죠. 맛을 보는 게 아니라 <strong>재료가 어디서 왔는지</strong>를 따지는 자리예요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>오늘 쓰는 메뉴의 레시피 카드만 작업대에 올리기</td><td>라우트에 해당하는 매뉴얼 장만 프롬프트에 넣기</td></tr>
+        <tr><td>레시피 카드에 인쇄된 기본 배합</td><td>매뉴얼 본문에 적힌 고정값 — 그대로 답해도 되는 값</td></tr>
+        <tr><td>요리사가 냉장고를 직접 열어 오늘 재고를 확인하기</td><td>모델이 조회 도구를 호출해 건별 값을 가져오기</td></tr>
+        <tr><td>검수 담당이 접시 위 재료의 출처를 하나씩 확인하기</td><td>가드레일이 답변 속 숫자의 출처를 역추적하기</td></tr>
+        <tr><td>"아직 안 익었습니다" — 덜 된 것을 다 됐다고 안 하기</td><td>조회 결과가 <code>null</code>이면 "아직 확정되지 않았다"로 답하기</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 외워서 답해도 되는 값과 반드시 열어 봐야 하는 값을 <strong>가르는 일</strong>이 이 편의 전부예요.</p>
+
+    <h2><span class="hl">전체 흐름</span></h2>
+    <svg viewBox="0 0 700 210" role="img" aria-label="분류 결과를 받아 해당 장만 골라 컨텍스트를 만들고, 모델이 조회 도구를 부르는 루프를 돈 뒤 답변을 만들고, 가드레일이 숫자의 출처를 확인해 통과하면 발송 위반이면 재생성하거나 이관하는 흐름">
+      <defs>
+        <marker id="csg1" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+          <path d="M0,0 L9,4.5 L0,9 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <rect x="6" y="80" width="86" height="34" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="49" y="102" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">라우트</text>
+      <rect x="118" y="80" width="112" height="34" rx="6" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="174" y="96" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--accent)">① 해당 장만</text>
+      <text x="174" y="109" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--accent)">골라 넣기</text>
+      <rect x="256" y="80" width="112" height="34" rx="6" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="312" y="96" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--accent)">② 모델 ↔ 도구</text>
+      <text x="312" y="109" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--accent)">조회 루프</text>
+      <path d="M268 78 q44 -32 88 0" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#csg1)"/>
+      <text x="312" y="48" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">결과를 들고 되돌아온다</text>
+      <rect x="394" y="80" width="104" height="34" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="446" y="102" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">답변 생성</text>
+      <rect x="524" y="80" width="104" height="34" rx="6" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="576" y="96" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--accent)">③ 가드레일</text>
+      <text x="576" y="109" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--accent)">출처 역추적</text>
+      <rect x="524" y="150" width="104" height="30" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="576" y="170" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">재생성·이관</text>
+      <rect x="524" y="16" width="104" height="30" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="576" y="36" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">고객에게 발송</text>
+      <line x1="92" y1="97" x2="114" y2="97" stroke="var(--muted)" stroke-width="2" marker-end="url(#csg1)"/>
+      <line x1="230" y1="97" x2="252" y2="97" stroke="var(--muted)" stroke-width="2" marker-end="url(#csg1)"/>
+      <line x1="368" y1="97" x2="390" y2="97" stroke="var(--muted)" stroke-width="2" marker-end="url(#csg1)"/>
+      <line x1="498" y1="97" x2="520" y2="97" stroke="var(--muted)" stroke-width="2" marker-end="url(#csg1)"/>
+      <line x1="576" y1="80" x2="576" y2="50" stroke="var(--muted)" stroke-width="2" marker-end="url(#csg1)"/>
+      <line x1="576" y1="114" x2="576" y2="146" stroke="var(--muted)" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#csg1)"/>
+      <text x="654" y="70" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">통과</text>
+      <text x="654" y="136" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">위반</text>
+      <text x="312" y="200" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">①②③이 세 겹 — 하나가 뚫려도 다음 겹이 받는다</text>
+    </svg>
+    <p><strong>읽는 법:</strong> ②의 위로 휘어진 화살표가 <strong>루프</strong>예요. 모델이 도구를 부르면 그 결과를 들고 다시 모델에게 돌아가고, 모델은 결과를 보고 또 다른 도구를 부를 수도 있고 이제 답변을 낼 수도 있어요. ③에서 위반이 나오면 다시 만들어 보고, 그래도 안 되면 사람에게 넘깁니다.</p>
+
+    <h2 id="split"><span class="hl">① 필요한 규정만 골라 넣는다</span></h2>
+    <p>제가 받은 매뉴얼은 1만 3천 자가 넘었어요. 이걸 매 요청마다 통째로 넣으면 두 가지 대가를 치릅니다.</p>
+    <ul>
+      <li><strong>비용과 지연.</strong> 요금은 입력 길이에 비례하고, 입력이 길면 응답도 느려져요.</li>
+      <li><strong>엉뚱한 규정이 오답을 유도해요.</strong> 배송비를 묻는 고객의 프롬프트에 반품 규정이 함께 들어 있으면, 모델은 거기 있는 "반품 배송비 5,000원"을 끌어다 씁니다.</li>
+    </ul>
+    <p>두 번째가 더 중요해요. 사람도 마찬가지잖아요 — 관련 없는 정보가 눈앞에 많으면 판단이 흐려집니다.</p>
+    <p>그래서 매뉴얼을 장 단위로 쪼개고 라우트에 해당하는 장만 조립합니다. 어느 장이 필요한지는 목차가 이미 알려 줘요. 매뉴얼이 애초에 업무 유형별로 장을 나눠 뒀거든요. 여기에 <strong>모든 응대에 적용되는 장</strong>(기본 원칙, 문의 유형 분류, 응대 범위, 문장 태도)은 라우트와 무관하게 항상 넣습니다.</p>
+    <p>줄어든 폭은 전문의 3분의 1에서 절반 남짓이었어요. 극적이지 않죠. 하지만 <strong>줄여야 할 것은 총 길이가 아니라 "관련 없는 규정"</strong>이고, 그 목적은 달성됐습니다. 배송 문의용 컨텍스트에는 반품 배송비 5,000원이 아예 존재하지 않으니 모델이 그 숫자를 끌어다 쓸 방법 자체가 없어요.</p>
+    <p>이 구조의 또 다른 장점은 <strong>정책 개정에 자동으로 따라간다</strong>는 거예요. 담당 부서가 출고 마감 시각을 11시에서 10시로 바꾸면, 코드를 한 줄도 안 고쳐도 다음 요청부터 바뀐 값을 씁니다. 반대로 정책 값을 코드에 상수로 박아 두면 개정마다 코드를 고쳐야 하고, 고치는 걸 잊으면 에이전트는 옛 정책을 계속 안내해요. <strong>정책은 데이터이지 코드가 아닙니다.</strong></p>
+
+    <h2 id="tools"><span class="hl">② 어떤 함수를 만들지는 문서가 알려 준다</span></h2>
+    <p>에이전트를 만들 때 가장 흔한 실수가 개발자가 자기 판단으로 도구 목록을 정하는 거예요. "상품 정보 조회 도구가 필요하겠지" 하고 만들다 보면, 정작 조회해야 하는 값을 프롬프트에 상수로 박아 두는 실수를 저지릅니다.</p>
+    <p>그런데 더 나은 출발점이 이미 있었어요. 제가 받은 매뉴얼은 <strong>건마다 달라지는 값은 본문에 적지 않고 <code>[어드민 조회]</code> 표시와 함께 화면 경로만 안내</strong>하고 있었습니다. 사람 상담원에게 "이건 외우지 말고 화면에서 확인하라"는 뜻이죠.</p>
+    <p>참고로 제가 조회한 것은 실제 운영 데이터베이스가 아니라 그 구조를 본뜬 <strong>목 데이터</strong><sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>였어요. 실제 시스템에 연결하지 않고도 조회 함수를 만들고 시험할 수 있으니까요.</p>
+    <p>그 표시가 그대로 <strong>우리가 만들 도구의 명세</strong>가 됩니다. 정규식 한 줄로 전부 뽑아낼 수 있고요. 뽑아 보니 같은 화면이 반복해서 나왔어요 — 소재·실측·원산지·재고·보증서가 전부 「상품 상세」 화면입니다. 한 번 열면 그 값들이 다 보인다는 뜻이죠.</p>
+    <p>그래서 <strong>화면 하나가 함수 하나</strong>가 됩니다. 실무의 자연스러운 설계이기도 해요. 관리자 API는 보통 화면 단위로 나뉘어 있으니까요.</p>
+    <table>
+      <thead><tr><th>관리자 화면</th><th>함수</th><th>무엇을 받아 무엇을 주나</th></tr></thead>
+      <tbody>
+        <tr><td>주문 상세</td><td><code>get_order_status</code></td><td>주문번호 → 진행 단계·송장 출력 여부·금액</td></tr>
+        <tr><td>상품 상세</td><td><code>get_product_detail</code></td><td>상품 ID → 구성·소재·실측·재고·보증서</td></tr>
+        <tr><td>옵션·구성</td><td><code>get_product_options</code></td><td>상품 ID → 개별 구매 가능 여부·판매 옵션</td></tr>
+        <tr><td>배송정책</td><td><code>get_shipping_policy</code></td><td>상품 ID(+금액) → 무료배송 기준액·배송비·부족액</td></tr>
+        <tr><td>반품정책</td><td><code>get_return_policy</code></td><td>상품·주문 → 카테고리별 반품 기간·미개봉 조건</td></tr>
+        <tr><td>반품 상세</td><td><code>get_return_status</code></td><td>주문·반품번호 → 수거·입고·검품·환불 단계</td></tr>
+        <tr><td>재입고 예정</td><td><code>get_restock_info</code></td><td>상품 ID → 재입고 확정 여부·예정일</td></tr>
+      </tbody>
+    </table>
+    <p>반대로 매뉴얼 본문에 값이 그대로 적힌 항목은 조회하지 않아요. 기본 배송비 2,500원, 반품 배송비 5,000원, 출고 마감 11시 같은 것들이죠. 프롬프트에 이미 들어가 있으니 모델이 바로 답해도 됩니다.</p>
+    <p><strong>이 두 부류를 가르는 것이 이 편의 핵심 개념이에요.</strong> 뒤에서 검사기를 만들 때 "조회 결과에 있거나 매뉴얼 고정값이거나"가 정확히 통과 조건이 되거든요.</p>
+
+    <h3>계산도 도구가 맡는다</h3>
+    <p>배송비 조회 함수에는 하나를 더 넣었어요. 결제 금액을 함께 받으면 <strong>부족액까지 계산해서</strong> 돌려줍니다.</p>
+    <p>왜 계산까지 하느냐면, 모델에게 "기준 100,000원, 현재 59,000원"만 주고 부족액을 계산하게 하면 대개 맞히지만 틀리기도 하기 때문이에요. 언어 모델의 산술은 믿을 수 있는 기능이 아닙니다. 게다가 뒤에서 만들 검사기는 답변 속 숫자를 조회 결과에서 찾는데, <strong>모델이 머릿속으로 계산한 41,000원은 조회 결과에 없으니 출처 불명으로 걸려요.</strong> 계산이 필요하면 코드가 계산해서 응답에 담는 것이 정답입니다.</p>
+
+    <h3>같은 질문, 다른 답</h3>
+    <p>세 상품에 같은 질문("무료배송 되나요?")을 던졌더니 답이 전부 달랐어요.</p>
+    <table>
+      <thead><tr><th>상품</th><th>조회 결과</th></tr></thead>
+      <tbody>
+        <tr><td>신발</td><td>기준 100,000원 — 41,000원 부족</td></tr>
+        <tr><td>화장품</td><td>기준 자체가 없음 — 얼마를 사도 배송비 부과</td></tr>
+        <tr><td>가방</td><td>기준 충족 — 배송비 0원</td></tr>
+      </tbody>
+    </table>
+    <p>문의 문장만 보면 세 경우가 완전히 같아요. 다른 것은 상품이고요. <strong>그러므로 상품을 특정하지 않으면 답할 수 없고, 특정했다면 반드시 조회해야 합니다.</strong></p>
+    <p>여기서 따라오는 규칙이 하나 있어요. 고객이 상품을 말하지 않고 "배송비 얼마예요?"라고 물으면 에이전트는 되물어야 합니다. 이때 기본 배송비 2,500원은 전 상품 공통이니 먼저 안내해도 되고요. <strong>고정값은 답하고 변동값은 되묻는</strong> 이 조합이 이 도메인 응대의 기본형이에요.</p>
+
+    <h3><code>null</code>이 가장 중요한 값이에요</h3>
+    <p>반품 건을 조회했더니 검품 결과·귀책·배송비 부담 주체가 전부 <code>null</code>로 나왔어요. 이건 데이터가 없어서 비어 있는 게 아니라 <strong>아직 결정되지 않았다는 정보</strong>입니다. 검품이 안 끝났으니 누가 부담하는지 확정할 수 없는 상태죠.</p>
+    <p>이 구분이 실무에서 아주 중요해요. <code>null</code>을 "값 없음"으로 취급해 무시하면 에이전트는 다른 근거를 찾아 답을 만들려 하고, 결국 "고객님이 부담하셔야 합니다" 같은 단정을 하게 됩니다. 그런데 검품 결과가 하자로 나오면 그 안내는 틀린 것이 되고, 이미 한 안내를 번복해야 해요. 제가 본 매뉴얼이 이 지점을 <strong>"항의가 가장 많이 발생하는 지점"</strong>으로 명시한 이유입니다.</p>
+
+    <h2 id="toolcall"><span class="hl">모델이 스스로 부르게 한다</span></h2>
+    <p>여기까지는 사람이 조회 결과를 골라서 프롬프트에 넣어 줬어요. 그런데 실제 서비스에서는 고객이 "캔버스화"라고만 말할 뿐, 그게 상품번호 몇 번인지도 결제 금액이 얼마인지도 우리가 미리 알 수 없습니다.</p>
+    <p>그래서 모델이 스스로 판단해 함수를 호출하게 만들어요. <a href="langgraph-branches-and-tool-loop.html">4편에서 본 도구 호출</a>과 같은 구조입니다. 중요한 건 <strong>모델이 함수를 직접 실행하지 않는다</strong>는 점이에요. 모델은 "이 함수를 이 값으로 불러 달라"고 요청할 뿐이고, 실행은 우리 코드가 합니다. 그래서 어떤 호출을 허용할지 우리가 통제할 수 있어요.</p>
+    <p>함수를 도구로 등록하는 건 데코레이터 한 줄인데, 이때 <strong>타입 힌트가 입력 형식이 되고 설명문(docstring)이 도구 설명이 됩니다.</strong> 그래서 설명문을 성의 있게 쓰는 것이 성능에 직접 영향을 줘요. 모델은 그 설명을 읽고 언제 이 도구를 쓸지 판단하거든요.</p>
+
+    <h3>규칙으로 쓰면 안 지키고, 절차로 쓰면 지킨다</h3>
+    <p>제가 겪은 것 중에 이게 제일 인상적이었어요. 처음엔 조회 지침을 규칙 목록 안에 한 줄로 넣어 뒀습니다("상품을 이름으로 말했으면 먼저 검색한다"). 그랬더니 모델이 지킬 때도 있고 안 지킬 때도 있었어요.</p>
+    <table>
+      <thead><tr><th>같은 뜻의 문의</th><th>규칙 목록에 한 줄로 넣었을 때</th></tr></thead>
+      <tbody>
+        <tr><td>"캔버스화 배송비 얼마예요?"</td><td>검색함 ✅</td></tr>
+        <tr><td>"캔버스화 한 켤레요."</td><td>검색만 하고 멈춤 ⚠️</td></tr>
+        <tr><td>"혹시 배송비가 얼마인가요? 캔버스화 한 켤레요."</td><td>아무것도 안 부름 ❌</td></tr>
+      </tbody>
+    </table>
+    <p>같은 내용을 <strong>번호 붙은 절차로 앞에 세우자</strong> 셋 다 검색 → 조회 → 답변으로 바뀌었습니다. 규칙 목록은 "하지 말아야 할 것"을 적기에는 좋지만 "어떤 순서로 움직여라"를 적기에는 약해요. <strong>목록 중간에 묻힌 한 줄은 모델에게 선택지 중 하나로 보이고, 번호 붙은 단계는 따라야 할 절차로 보입니다.</strong></p>
+    <p>여기서 기억할 것은 문구 자체가 아니라 <strong>확인하는 습관</strong>이에요. 프롬프트에 무언가를 써 넣은 뒤에는 표현만 살짝 다른 입력 서너 개로 정말 지켜지는지 흔들어 봐야 합니다.</p>
+
+    <h2 id="guardrail"><span class="hl">③ 프롬프트를 믿을 수 없기 때문에 필요하다</span></h2>
+    <p>프롬프트에 "조회 결과에 없는 숫자를 쓰지 말라"고 명확히 적었어요. 그걸로 충분할까요? 아닙니다. <strong>프롬프트는 요청이고, 모델은 그 요청을 대체로 따르지만 항상 따르지는 않아요.</strong> 특히 조회가 실패했거나 결과가 비어 있을 때 빈칸을 채우려는 경향을 보입니다.</p>
+    <p>그래서 마지막에 기계적으로 검사하는 층, <strong>가드레일</strong><sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>을 둡니다. 완성된 답변에서 숫자를 모두 뽑아내고, 각 숫자가 어디서 왔는지 역추적해요. 허용되는 출처는 두 가지뿐입니다.</p>
+    <ul>
+      <li>조회 결과에 등장한 숫자 — 도구가 돌려준 값</li>
+      <li>매뉴얼 고정값 — 본문에 적혀 있어 그대로 답해도 되는 값</li>
+    </ul>
+    <p>두 곳에서 찾을 수 없는 숫자가 있으면 그것은 <strong>모델이 만들어낸 숫자</strong>이고, 그런 답변은 고객에게 보내지 않아요.</p>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">검수대에서 접시를 보고 "맛있어 보이나"를 확인한다 → 새우 알레르기 손님 접시에 새우가 올라가도 통과한다. 보기에 이상한 데가 없으니까</td>
+          <td class="choice-good">검수대에서 "이 접시의 재료가 오늘 주문서와 냉장고 기록에 있는 것뿐인가"를 확인한다 → 어디서 왔는지 못 대는 재료가 있으면 그 자리에서 돌려보낸다</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>구현에서 신경 쓸 점이 셋 있어요. 첫째, <strong>표기 정규화</strong> — 답변에는 "100,000원"인데 조회 결과에는 <code>100000</code>이라 쉼표를 지우고 비교해야 합니다. 둘째, <strong>작은 숫자 처리</strong> — "2~3영업일" 같은 작은 수까지 위반으로 잡으면 경고가 쏟아져 쓸 수 없으니, 금액대를 주 검사 대상으로 두고 작은 수는 고정값 목록으로 따로 허용해요. 셋째, <strong>계산으로 유도된 값</strong> — 도구가 부족액을 계산해 주도록 만들어 대부분 없앴지만, 안전을 위해 한 단계 산술로 나오는 값은 허용합니다.</p>
+    <p>한계도 정직하게 짚어 둘게요. <strong>숫자가 아닌 오류는 못 잡아요.</strong> "개별 구매 가능합니다"라고 잘못 답하면 숫자가 없으니 통과합니다. 그리고 정당한 계산을 위반으로 잡는 <strong>오탐</strong>도 생길 수 있어요. 그래서 가드레일은 즉시 차단보다 <strong>경고 후 재생성 또는 이관</strong>으로 쓰는 것이 안전합니다.</p>
+
+    <h2 id="scoring"><span class="hl">답변 품질은 어떻게 채점하나</span></h2>
+    <p>분류는 정답이 하나였으니 채점이 간단했어요. 답변은 다릅니다. 같은 뜻을 여러 문장으로 쓸 수 있으니 문자열 일치로는 못 재요. "기준은 100,000원입니다"와 "10만원 이상 구매 시 무료배송입니다"는 둘 다 맞는 답이죠.</p>
+    <p>그래서 정답셋은 답변 전문을 정답으로 두지 않고 <strong>반드시 만족해야 하는 조건</strong>을 정답으로 둡니다.</p>
+    <table>
+      <thead><tr><th>조건</th><th>무엇을 검사하나</th></tr></thead>
+      <tbody>
+        <tr><td><code>action</code></td><td>그 턴에 취해야 할 행동 — 답변할 것인가, 되물을 것인가, 범위 밖이라고 알릴 것인가</td></tr>
+        <tr><td><code>tools</code></td><td>반드시 호출했어야 하는 조회 함수 목록</td></tr>
+        <tr><td><code>must</code></td><td>답변에 반드시 들어가야 하는 사실</td></tr>
+        <tr><td><code>forbid</code></td><td>답변에 나타나면 실패하는 문자열</td></tr>
+      </tbody>
+    </table>
+    <p><code>tools</code>가 걸려 있는 이유가 중요해요. <strong>조회하지 않고 맞는 답을 냈다면 그것은 운이 좋았을 뿐 재현되지 않습니다.</strong> 그래서 결과만 보지 않고 과정도 채점해요.</p>
+    <p>그리고 <code>forbid</code>가 이 정답셋의 핵심입니다. <strong>하지 말아야 할 것을 하지 않았는지</strong>를 검사하는 조건이거든요. 조회 전에 단정한 수치나 금지된 확답이 여기 들어가요.</p>
+
+    <h3>서로 다른 두 축</h3>
+    <p>채점 결과를 읽으면서 알게 된 것이 있어요. 에이전트의 품질에는 <strong>같이 움직이지 않는 두 축</strong>이 있습니다.</p>
+    <table>
+      <thead><tr><th>축</th><th>무엇으로 재나</th><th>실패하면</th></tr></thead>
+      <tbody>
+        <tr><td><strong>능력</strong> — 필요한 사실을 담아 답하는가</td><td><code>tools</code>, <code>must</code></td><td>고객이 답을 못 받는다</td></tr>
+        <tr><td><strong>안전</strong> — 하지 말아야 할 것을 안 하는가</td><td><code>forbid</code>, 되묻기 판정</td><td>고객이 <strong>틀린 답</strong>을 받는다</td></tr>
+      </tbody>
+    </table>
+    <p>이 편에서 만든 세 겹은 전부 <strong>능력을 유지하면서 안전 축을 끌어올리기 위한 것</strong>이에요. 그리고 점수를 하나로 합치면 이 구분이 사라집니다. 되물어야 할 때 답해 버린 것과, 답할 수 있는데 되물은 것은 <strong>같은 오답이 아니에요.</strong> 뒤는 고객이 한 번 더 말해야 해서 불편하지만, 틀린 숫자를 받지는 않으니까요.</p>
+
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 그라운딩 층을 설계할 때 정하는 값들</h2>
+    <p>규정 문서 기반 에이전트를 만들 때 "이건 어떻게 잡지?"에서 참고할 값들이에요. 실행 기록이 아니라 설계 선택에 해당하는 것만 모았습니다.</p>
+    <table>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
+      <tbody>
+        <tr><td>규정 문서 전문 길이</td><td>약 13,000자</td><td>이 정도면 매 요청마다 통째로 넣는 것이 비용·오답 양쪽에서 손해다</td></tr>
+        <tr><td>라우트별로 줄어든 폭</td><td>전문의 1/3 ~ 1/2</td><td>줄어드는 폭 자체는 크지 않다. 목적은 길이가 아니라 "관련 없는 규정 제거"다</td></tr>
+        <tr><td>도구 개수</td><td>화면 단위로 7~9개</td><td>값 하나에 함수 하나가 아니라 화면 하나에 함수 하나. 관리자 API가 보통 그렇게 나뉜다</td></tr>
+        <tr><td>가드레일 주 검사 대상</td><td>1,000 이상의 수</td><td>작은 수까지 잡으면 경고가 쏟아져 못 쓴다. 작은 수는 고정값 목록으로 따로 허용한다</td></tr>
+        <tr><td>도구 호출 루프 상한</td><td>3~5회</td><td>무한 루프를 막는 안전장치. 너무 낮으면 조회를 다 못 마치고 이관으로 떨어진다</td></tr>
+        <tr><td>답변 길이 지시</td><td>1~3문장</td><td>모델은 기본적으로 길게 답한다. 실제 상담 답변 평균은 22자 남짓이었다</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 규정 기반으로 답하게 만든 뒤</h2>
+    <p>이 층의 고장은 에러로 안 나타나요. 답변이 멀쩡해 보이는데 값만 틀립니다.</p>
+    <p>증상이 아직 없어도, <strong>AI에게 이런 부탁을 한 직후</strong>라면 한 번 확인하고 넘어가요.</p>
+    <ul>
+      <li>"규정 문서를 프롬프트에 넣어서 답하게 해 줘" — 문서 전체가 들어갔는지, 관련 장만 들어갔는지</li>
+      <li>"이 값은 그냥 프롬프트에 적어 두자" — 그 값이 건마다 달라지는 값은 아닌지</li>
+    </ul>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-invented">
+          <td>답변은 자연스러운데 금액·기간이 실제와 다르다. 어떤 건은 맞고 어떤 건은 틀린다</td>
+          <td>그 값이 코드나 프롬프트에 상수로 적혀 있는지. 조회 함수가 있는지</td>
+          <td>같은 질문을 <strong>다른 상품 세 개</strong>로 던져 본다. 셋 다 같은 숫자가 나오면 조회가 아니라 외운 값이에요 — <a href="#tools">도구 절</a></td>
+        </tr>
+        <tr id="suspect-wrong-policy">
+          <td>배송을 물었는데 반품 규정 숫자가, A 상품을 물었는데 B 상품 조건이 답에 섞인다</td>
+          <td>그 요청에 넣은 컨텍스트. 문서 전체가 들어갔는지 해당 장만 들어갔는지</td>
+          <td>프롬프트에 실제로 들어간 글자에서 그 엉뚱한 숫자를 검색해 본다. 있으면 애초에 넣지 말아야 할 장이 들어간 거예요 — <a href="#split">쪼개기 절</a></td>
+        </tr>
+        <tr id="suspect-null">
+          <td>아직 심사·검수가 안 끝난 건인데 결과를 단정해서 안내하고, 나중에 번복하게 된다</td>
+          <td>조회 결과에서 그 항목의 값. <code>null</code>인지, 값이 있는지</td>
+          <td>조회 결과를 그대로 찍어 본다. <code>null</code>인데 답변이 단정하고 있으면 프롬프트에 "<code>null</code>은 미확정으로 답한다" 규칙이 없는 거예요 — <a href="#tools">null 절</a></td>
+        </tr>
+        <tr id="suspect-skip-tool">
+          <td>같은 뜻인데 말만 바꾸면 어떤 때는 조회하고 어떤 때는 안 한다</td>
+          <td>프롬프트에서 그 조회 지침이 <strong>어디에</strong> 적혀 있는지 — 규칙 목록 안인지, 번호 붙은 절차인지</td>
+          <td>표현만 다른 입력 서너 개를 넣어 호출된 도구 목록을 비교한다. 들쭉날쭉하면 지침을 절차로 올려요 — <a href="#toolcall">절차 절</a></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2><span class="hl">다음은</span></h2>
+    <p>세 겹을 다 붙이고 정답셋으로 채점했더니 첫 점수는 60% 안팎이었어요. <a href="cs-agent-improve.html">다음 편</a>에서는 이 숫자를 94%까지 올려 봅니다. 재미있는 건 <strong>제가 새로 발명한 규칙은 거의 다 실패했고, 매뉴얼에 이미 적혀 있던 걸 되돌려 놓은 변경이 가장 크게 올랐다</strong>는 거예요.</p>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">그라운딩(grounding) — 모델이 답변의 근거를 자기 지식이 아니라 우리가 제공한 문서와 조회 결과에만 두도록 묶어 두는 것이에요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">가드레일(guardrail) — 모델이 낸 결과를 내보내기 전에 정해진 조건으로 기계적으로 검사하는 층이에요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">목 데이터(mock data) — 실제 운영 데이터베이스 대신 쓰는 가짜 데이터로, 실제 시스템에 연결하지 않고도 조회 함수를 만들고 시험할 수 있게 해 줘요. <a href="#fnref3">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <h3 id="series-list">"에이전트 팀 꾸리기 — LangGraph" 시리즈</h3>
+    <a class="post-nav" href="langgraph-what-and-why.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">다음에 어느 코드가 실행될까 — LangGraph와 워크플로·에이전트</span>
+    </a>
+    <a class="post-nav" href="langgraph-state-node-edge.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">흐름을 그림으로 짠다 — LangGraph의 State·Node·Edge</span>
+    </a>
+    <a class="post-nav" href="langgraph-branch-drills.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">갈림길을 밀어붙인다 — 세 갈래·라벨·끝나지 않는 반복</span>
+    </a>
+    <a class="post-nav" href="langgraph-branches-and-tool-loop.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">모델이 다음 길을 고르게 한다 — 도구를 쥐여 주는 루프</span>
+    </a>
+    <a class="post-nav" href="langgraph-env-troubleshooting.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">.env가 안 읽혔던 네 겹의 이유 — 원격 주피터에서 API 키 넣기</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-chaining.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">① 프롬프트 체이닝 — 순서대로, 사이에 검사</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-routing.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">② 라우팅 — 먼저 분류하고, 한 갈래로</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-parallelization.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">③ 병렬화 — 동시에 돌리고, 합친다</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-orchestrator-worker.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">④ 오케스트레이터-워커 — 몇 갈래일지 LLM이 정한다</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-evaluator-optimizer.html">
+      <span class="post-nav-label">(10)</span>
+      <span class="post-nav-title">⑤ 평가자-최적화자 — 통과할 때까지 고쳐 쓰기</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-skeleton.html">
+      <span class="post-nav-label">(11)</span>
+      <span class="post-nav-title">뉴스레터 에이전트를 빈 노드 다섯 개로 먼저 세운다</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-collect.html">
+      <span class="post-nav-label">(12)</span>
+      <span class="post-nav-title">기사를 어디서 가져올까 — RSS·관문·수집 노드</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-select.html">
+      <span class="post-nav-label">(13)</span>
+      <span class="post-nav-title">100건에서 5건 고르기 — 점수 대신 비교, 예선과 본선</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-summarize-verify.html">
+      <span class="post-nav-label">(14)</span>
+      <span class="post-nav-title">요약을 세 칸으로 받고 원문과 대조한다</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-publish-schedule.html">
+      <span class="post-nav-label">(15)</span>
+      <span class="post-nav-title">디스코드로 매일 아침 받아 보기 — 웹훅과 GitHub Actions</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-metrics-config.html">
+      <span class="post-nav-label">(16)</span>
+      <span class="post-nav-title">돌고 나서 재 본다 — 실행 기록과 설정 파일</span>
+    </a>
+    <a class="post-nav" href="cs-agent-routing-eval.html">
+      <span class="post-nav-label">(17)</span>
+      <span class="post-nav-title">문의 한 줄을 다섯 갈래로 — 라우트는 회사 문서에서 가져온다</span>
+    </a>
+    <p class="post-date">(18) 값을 말하지 말고 조회하게 한다 — 매뉴얼 쪼개기·도구·가드레일 (이 글)</p>
+    <a class="post-nav" href="cs-agent-improve.html">
+      <span class="post-nav-label">(19)</span>
+      <span class="post-nav-title">59%에서 94%로 — 프롬프트만 고쳐 지표를 올린 기록</span>
+    </a>
+
+    <a class="post-nav" href="cs-agent-improve.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">59%에서 94%로 — 프롬프트만 고쳐 지표를 올린 기록 (19)</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
