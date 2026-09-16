@@ -1596,7 +1596,8 @@ details[open] > summary .tree-toggle-icon {
   display: block;
 }
 @media (max-width: 720px) {
+  /* --fig-min 은 fit-title.js 가 그림마다 계산해 넣는다 (가장 작은 글자가 10px로 보이는 폭) */
   .fig-scroll > svg {
-    min-width: 640px;
+    min-width: var(--fig-min, 640px);
   }
 }

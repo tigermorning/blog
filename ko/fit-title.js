@@ -26,8 +26,24 @@
 
 (function () {
   // 좁은 화면에서 인라인 다이어그램이 통째로 줄어들면 글자가 5px까지 작아져 못 읽는다.
-  // 그림을 가로 스크롤 상자에 담아, 화면이 좁을 때는 최소 폭을 지키고 옆으로 밀어 보게 한다.
-  var MIN_WIDTH = 640;   // 이 폭 아래로는 줄이지 않는다
+  // 그림을 가로 스크롤 상자에 담고, 가장 작은 글자가 최소 10px로 보이는 폭을 그림마다 계산해
+  // --fig-min 으로 넘긴다. 실제 적용은 style.css 의 좁은 화면 규칙이 한다.
+  var TARGET_PX = 10;   // 이 크기보다 작게는 안 줄인다
+  var MAX_WIDTH = 1100; // 너무 넓어져 한없이 밀지 않도록 상한
+
+  function needWidth(svg, viewBoxWidth) {
+    var texts = svg.querySelectorAll('text');
+    var smallest = Infinity;
+    for (var i = 0; i < texts.length; i++) {
+      var px = parseFloat(getComputedStyle(texts[i]).fontSize);
+      if (px > 0 && px < smallest) smallest = px;
+    }
+    if (!isFinite(smallest)) return 0;
+    // viewBox 안의 글자 크기가 smallest 이므로, 그림 폭이 W 일 때 화면에 보이는 크기는
+    // smallest * (W / viewBoxWidth) 다. 이것이 TARGET_PX 가 되는 W 를 구한다.
+    return Math.min(viewBoxWidth * (TARGET_PX / smallest), MAX_WIDTH);
+  }
+
   var svgs = document.querySelectorAll('main svg');
   for (var i = 0; i < svgs.length; i++) {
     var svg = svgs[i];
@@ -41,5 +57,7 @@
     box.setAttribute('tabindex', '0');                  // 키보드로도 밀어 볼 수 있게
     svg.parentNode.insertBefore(box, svg);
     box.appendChild(svg);
+    var need = needWidth(svg, w);
+    if (need > 0) box.style.setProperty('--fig-min', Math.round(need) + 'px');
   }
 })();
