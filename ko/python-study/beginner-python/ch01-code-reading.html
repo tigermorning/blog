@@ -706,6 +706,50 @@ print(total // 60, '시간', total % 60, '분')</code></pre>
               <li>괄호를 비우면 아무것도 안 뜬 채 기다려서 멈춘 것처럼 보임</li>
             </ul>
 
+            <p><b>질문 · 3을 굳이 텍스트로 바꿨다가 다시 정수로 바꾸는 이유는? 파이썬이 3을 이해 못 하나?</b></p>
+            <ul>
+              <li>파이썬은 3을 잘 이해함</li>
+              <li><b>텍스트로 바꾸는 단계는 없음</b> → 키보드로 들어오는 건 <b>처음부터 텍스트</b>, 우리가 하는 일은 텍스트를 정수로 바꾸는 한 번뿐</li>
+            </ul>
+            <div class="table-scroll">
+              <table>
+                <thead><tr><th>3이 들어온 곳</th><th>파이썬이 받는 것</th><th>종류</th></tr></thead>
+                <tbody>
+                  <tr><td>코드에 직접 <code>num = 3</code></td><td>숫자 3</td><td>정수</td></tr>
+                  <tr><td>실행 중 키보드로 <code>3</code> 입력</td><td>글자 "3"</td><td>텍스트</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <ul>
+              <li>코드에 쓴 <code>3</code>은 숫자로 알아봄 → <code>num = 3</code>에는 <code>int()</code> 불필요</li>
+              <li>키보드는 <b>글자를 치는 장치</b> → <code>3</code> 키를 누르면 "3"이라는 글자, <code>a</code> 키를 누르면 "a"라는 글자가 들어옴</li>
+              <li>실제 흐름: 키보드 "3"(처음부터 글자) → <code>input()</code>이 그대로 받아 옴 <code>'3'</code> → <code>int()</code>로 한 번 바꿈 <code>3</code></li>
+            </ul>
+
+            <p><b>그럼 <code>input()</code>이 알아서 숫자로 바꿔 주면 안 되나?</b></p>
+            <p><code>input()</code>은 사용자가 무엇을 칠지 모름. 같은 <code>input()</code>으로 이런 값도 받음.</p>
+            <div class="table-scroll">
+              <table>
+                <thead><tr><th>사용자가 친 것</th><th>숫자로 바꾸면 안 되는 이유</th></tr></thead>
+                <tbody>
+                  <tr><td><code>홍길동</code></td><td>이름이라 애초에 숫자가 아님</td></tr>
+                  <tr><td><code>010</code></td><td>전화번호 앞자리인데 정수로 바꾸면 <code>10</code>이 되어 0이 사라짐</td></tr>
+                  <tr><td><code>3.5</code></td><td>정수로 바꾸면 오류 → <code>float</code>가 필요 (Q3)</td></tr>
+                  <tr><td><code>3개</code></td><td>숫자와 글자가 섞여 있음</td></tr>
+                </tbody>
+              </table>
+            </div>
+<pre><code class="nohighlight">&gt;&gt;&gt; int('010')
+10</code></pre>
+            <ul>
+              <li>그래서 <code>input()</code>은 <b>받은 그대로(텍스트)</b> 넘겨 주고, 어떻게 읽을지는 코드를 쓰는 사람이 정함</li>
+              <li>정수로 쓸 거면 <code>int(input())</code></li>
+              <li>소수점 수로 쓸 거면 <code>float(input())</code></li>
+              <li>이름처럼 글자 그대로 쓸 거면 <code>input()</code></li>
+              <li>비유: 손님이 주문서에 "3"이라고 적어 냄 → 직원(<code>input()</code>)은 3인분인지, 3번 테이블인지, 메뉴 3번인지 모르니 글자 그대로 가져옴 → 주방장(코드를 쓴 사람)이 "수량이니 숫자로 읽자"고 정함(<code>int()</code>)</li>
+            </ul>
+            <p class="real"><b>핵심 한 줄</b> · 텍스트로 바꾸는 단계는 없음. 키보드 입력은 원래 텍스트이고, 숫자로 쓸지는 우리가 <code>int()</code>로 정함</p>
+
             <p><b>2단계 · 글자로는 왜 계산이 안 되나</b></p>
 <pre class="out"><code class="nohighlight">&gt;&gt;&gt; '135' // 60
 TypeError: unsupported operand type(s) for //: 'str' and 'int'</code></pre>
