@@ -732,6 +732,18 @@ body.list-page .site-header {
   color: var(--folder-accent, var(--accent));
 }
 
+/* 도구 이름처럼 짧은 영문 소문자는 색만 줘서는 눈에 안 띈다 — 글자 수가 적고
+   대문자도 없어서 덩어리가 안 생기기 때문이다. 본문 <code>와 같은 모양(고정폭
+   글꼴 + 둥근 배경)을 그 줄의 --folder-accent 색조로 입혀 한 덩어리로 보이게
+   한다. 배경은 인라인 요소라 세로 padding을 줘도 줄 높이를 밀지 않는다. */
+.title-list-title .name--chip {
+  font-family: 'Consolas', 'Menlo', monospace;
+  font-size: 0.86rem;
+  padding: 0.08em 0.42em;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--folder-accent, var(--accent)) 16%, transparent);
+}
+
 .title-list-date {
   flex: 0 0 auto;
   font-size: 0.78rem;
