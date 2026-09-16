@@ -1,34 +1,33 @@
 /**
  * 비공개 독서노트의 본문을 AES-GCM으로 암호화해 HTML에 넣는다.
  *
+ *   node scripts/lock-private-posts.mjs <파일...>
  *   node scripts/lock-private-posts.mjs <파일...> --password <비밀번호>
+ *
+ * 비밀번호는 --password, 환경변수 BOOK_PASSWORD, 저장소 루트의 .env 순으로 찾는다.
  *
  * <div class="page" id="pageContent"> 부터 </body> 직전까지를 통째로 암호화한다.
  * 본문에 딸린 <script>(사이드 목차·슬라이더·복사 버튼 등)도 함께 들어가므로,
  * 복호화 뒤 다시 실행해 준다.
  *
- * 비밀번호는 파일에 저장하지 않는다. 틀린 비밀번호는 AES-GCM 인증 태그가
+ * 비밀번호는 암호화 결과물에 저장하지 않는다. 틀린 비밀번호는 AES-GCM 인증 태그가
  * 검증에 실패하면서 걸러진다 — 별도 검증값을 둘 필요가 없다.
  */
 import fs from "node:fs";
 import { webcrypto as crypto } from "node:crypto";
+import { resolvePassword } from "./lib/book-password.mjs";
 
 const PBKDF2_ITERATIONS = 250000;
 const START_MARK = '<div class="page" id="pageContent"';
 const END_MARK = "</body>";
 
-const args = process.argv.slice(2);
-const passIndex = args.indexOf("--password");
-if (passIndex === -1 || !args[passIndex + 1]) {
-  console.error("사용법: node scripts/lock-private-posts.mjs <파일...> --password <비밀번호>");
-  process.exit(1);
-}
-const password = args[passIndex + 1];
-const files = args.slice(0, passIndex);
+const USAGE = "사용법: node scripts/lock-private-posts.mjs <파일...> [--password <비밀번호>]";
+const { password, rest: files, source } = resolvePassword(process.argv.slice(2), USAGE);
 if (!files.length) {
   console.error("암호화할 파일이 없습니다.");
   process.exit(1);
 }
+console.log(`비밀번호 출처: ${source}`);
 
 const b64 = (buf) => Buffer.from(buf).toString("base64");
 

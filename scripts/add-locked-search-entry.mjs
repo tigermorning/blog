@@ -1,31 +1,28 @@
 // 잠긴 글(본문이 암호화된 비공개 독서 노트)의 검색 항목을 만들어 search-data.js에 넣는다.
 //
-//   node scripts/add-locked-search-entry.mjs ko/generative-ai-design-patterns-ch3.html --password <비밀번호>
+//   node scripts/add-locked-search-entry.mjs ko/generative-ai-design-patterns-ch3.html
+//   node scripts/add-locked-search-entry.mjs <파일...> --password <비밀번호>
+//
+// 비밀번호는 --password, 환경변수 BOOK_PASSWORD, 저장소 루트의 .env 순으로 찾는다.
 //
 // 본문을 메모리에서만 풀어 <h1>~<h3> 제목만 뽑는다. 본문 문장은 저장하지 않는다
 // (ch1·ch2 항목과 같은 형식: 제목 · 소제목 · 소제목 …).
-// 비밀번호는 어디에도 기록하지 않는다.
+// 비밀번호는 만들어지는 검색 데이터에 남기지 않는다.
 import fs from "node:fs";
 import path from "node:path";
 import { webcrypto as crypto } from "node:crypto";
+import { resolvePassword } from "./lib/book-password.mjs";
 
 const PBKDF2_ITERATIONS = 250000;
 const OUT_FILE = path.join(path.resolve(import.meta.dirname, ".."), "search-data.js");
 
-const args = process.argv.slice(2);
-const passIndex = args.indexOf("--password");
-if (passIndex === -1 || !args[passIndex + 1]) {
-  console.error(
-    "사용법: node scripts/add-locked-search-entry.mjs <파일...> --password <비밀번호>"
-  );
-  process.exit(1);
-}
-const password = args[passIndex + 1];
-const files = args.slice(0, passIndex);
+const USAGE = "사용법: node scripts/add-locked-search-entry.mjs <파일...> [--password <비밀번호>]";
+const { password, rest: files, source } = resolvePassword(process.argv.slice(2), USAGE);
 if (!files.length) {
   console.error("대상 파일이 없습니다.");
   process.exit(1);
 }
+console.log(`비밀번호 출처: ${source}`);
 
 const bytes = (b64) => Buffer.from(b64, "base64");
 
