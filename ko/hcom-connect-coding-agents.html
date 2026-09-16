@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>hcom — 서로 다른 코딩 AI끼리 메시지를 주고받게 하기 - Tigermorning</title>
+  <meta name="description" content="hcom은 각자 다른 터미널 창에서 도는 코딩 AI들이 서로에게 메시지를 보내고, 서로의 상태를 보고, 서로를 띄울 수 있게 해 주는 명령어 도구입니다. 설치부터 첫 대화, 역할을 어떻게 나눠야 비용이 덜 드는지, 답장이 안 올 때 어디를 보는지까지 직접 돌려 보고 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="hcom — 서로 다른 코딩 AI끼리 메시지를 주고받게 하기">
+  <meta property="og:description" content="각자 다른 터미널에서 도는 코딩 AI들을 서로 이어 주는 도구 hcom을 직접 설치해 돌려 보고 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/hcom-connect-coding-agents.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">hcom</span> — 서로 다른 코딩 AI끼리 메시지를 주고받게 하기</h1>
+    <p class="post-date">2026. 9. 16.</p>
+    <p class="post-date">※ 이 글은 제가 <a href="https://github.com/aannoo/hcom" target="_blank" rel="noopener">hcom</a>을 제 윈도우 노트북에 직접 설치해 돌려 보고 정리한 것입니다. 본문에 나오는 실행 기록과 실패 사례는 모두 2026년 9월 16일에 제가 직접 잰 값이에요.</p>
+
+    <p class="one-liner">hcom은 각자 다른 터미널 창에서 돌고 있는 코딩 AI들이 서로에게 메시지를 보내고 서로의 상태를 볼 수 있게 해 주는 명령어 도구예요.</p>
+
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>어디쯤인가</dt>
+        <dd><a href="posts.html#coding-tools">보충수업 책장 › 바이브 코딩 도구</a> — 단독 글이에요. 앞뒤로 읽어야 하는 편이 없어요.</dd>
+        <dt>이런 게 궁금했다면</dt>
+        <dd>
+          <ul>
+            <li>창을 두 개 띄워 놓고 한쪽 AI의 답을 복사해서 다른 쪽에 붙여넣고 있는데, 이걸 자동으로 할 수는 없나?</li>
+            <li>AI한테 일을 시켜 놓고 다른 걸 하다 보면 끝났는지를 모르겠는데, 끝나면 알려 주게 할 수 없나?</li>
+            <li>AI 여러 개를 동시에 돌리면 빨라진다던데, 왜 요금만 더 나가고 결과는 비슷할까?</li>
+          </ul>
+        </dd>
+        <dt>읽고 나면 할 수 있는 것</dt>
+        <dd>
+          <ul>
+            <li>서로 다른 터미널 창에서 도는 AI 둘이 사람 손을 거치지 않고 주고받게 만들 수 있어요.</li>
+            <li>일을 맡긴 AI가 지금 작업 중인지, 끝났는지, 승인을 기다리며 멈춰 있는지 확인할 수 있어요.</li>
+            <li>여러 AI에게 일을 나눌 때 요금이 덜 나가는 방식으로 나눌 수 있어요.</li>
+          </ul>
+        </dd>
+        <dt>모르면 이런 일이 생겨요</dt>
+        <dd>
+          <ul>
+            <li>AI 둘을 이어 놓고 "서로 상의해 봐"라고만 시키면, 둘이 인사만 주고받다가 요금이 배로 나가요. <a class="suspect-jump" href="#suspect-chatter">언제 의심하나 ↓</a></li>
+            <li>답장을 보내라고 안 적어 두면, 상대 AI가 자기 화면에만 답을 쓰고 끝내요. 부른 쪽은 계속 기다려요. <a class="suspect-jump" href="#suspect-no-reply">언제 의심하나 ↓</a></li>
+            <li>설정 자리를 잘못 고르면 AI가 뜨자마자 3초 만에 꺼지는데, 화면에는 이유가 안 나와요. <a class="suspect-jump" href="#suspect-exit1">언제 의심하나 ↓</a></li>
+          </ul>
+        </dd>
+        <dt>어디에 쓰나</dt>
+        <dd>
+          <ul>
+            <li><strong>한쪽 AI가 만든 걸 다른 쪽 AI에게 검토시키고 싶을 때.</strong> 지금은 답을 통째로 복사해서 옮겨 붙이고 있을 거예요. 그 왕복이 없어져요.</li>
+            <li>시간이 오래 걸리는 작업을 맡겨 두고 다른 일을 하다가, 끝났을 때만 알림을 받고 싶을 때.</li>
+            <li>같은 프로젝트 폴더를 AI 둘이 동시에 건드릴 때, 같은 파일을 겹쳐 고치면 경고를 받고 싶을 때.</li>
+          </ul>
+        </dd>
+      </dl>
+    </div>
+
+    <h2><span class="hl">무엇을 해결하는 도구인가</span></h2>
+
+    <p>코딩을 AI에게 맡기다 보면 창이 여러 개가 돼요. 한쪽에는 Claude Code<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>를 띄워 놓고, 다른 쪽에는 OpenCode를 띄워 놓는 식이죠. 그런데 이 둘은 서로의 존재를 몰라요. 한쪽이 만든 코드를 다른 쪽에게 검토시키려면, 제가 답을 긁어서 옮겨 붙여야 해요.</p>
+
+    <p>hcom은 그 옮겨 붙이는 일을 없애 주는 도구예요. 정확히는 <strong>명령줄 도구</strong><sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>라서, 평소 쓰던 명령 앞에 <code>hcom</code>만 붙여 실행하면 그때부터 그 AI가 다른 AI와 말을 주고받을 수 있게 돼요.</p>
+
+    <h2><span class="hl">식당 주방에 창구를 내면</span> — 비유로 먼저</h2>
+
+    <p>작은 식당을 떠올려 볼게요. 홀에서 주문을 받는 사람, 주방에서 요리하는 사람, 디저트를 맡은 사람이 있어요. 셋은 서로 안 보이는 자리에서 일해요. 창구가 없으면 사장이 주문서를 들고 홀과 주방을 계속 왕복해야 해요. 사장이 자리를 비우면 그 순간 전달이 멈춰요.</p>
+
+    <p>주방 벽에 창구를 하나 내고 호출 벨을 달면 달라져요. 홀 직원이 주문서를 창구에 꽂고 벨을 누르면 주방이 바로 받아요. 주방장은 "3번 테이블 주문 받았습니다" 하고 복창해요. 사장은 이제 왕복하지 않고, 창구를 힐끗 보기만 하면 지금 어느 주문이 걸려 있는지 알아요.</p>
+
+    <table>
+      <thead><tr><th>식당에서</th><th>hcom에서</th></tr></thead>
+      <tbody>
+        <tr><td>홀 직원·주방장·디저트 담당 — 서로 안 보이는 자리에서 일함</td><td>각자 다른 터미널<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup> 창에서 도는 코딩 AI들</td></tr>
+        <tr><td>사장이 주문서를 들고 홀과 주방을 왕복</td><td>사람이 한쪽 답을 복사해 다른 쪽 창에 붙여넣기</td></tr>
+        <tr><td>주방 벽의 창구와 호출 벨</td><td>hcom — 메시지를 넣어 두면 상대 AI를 깨움</td></tr>
+        <tr><td>홀 직원이 "김 주임!" 하고 이름을 부름</td><td><code>@kira</code>처럼 AI에게 붙은 이름으로 지정해 보내기</td></tr>
+        <tr><td>주방장이 "주문 받았습니다" 하고 복창</td><td>받은 AI가 되보내는 답장</td></tr>
+        <tr><td>사장이 창구를 힐끗 보고 밀린 주문을 확인</td><td><code>hcom list</code>로 지금 누가 일하는 중인지 확인</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>핵심 한 줄:</strong> hcom은 AI에게 새로운 능력을 주는 게 아니라, 사람이 손으로 하던 전달을 없애 주는 창구예요.</p>
+
+    <p>다만 여기서 비유가 끊기는 점은, 복창을 안 하는 주방장이 실제로 있다는 거예요. 제가 처음 돌렸을 때 OpenCode 쪽은 답을 <strong>자기 화면에만</strong> 쓰고 끝냈어요. 창구에 도로 꽂지를 않은 거죠. 이 문제는 아래에서 다시 다뤄요.</p>
+
+    <h2><span class="hl">메시지가 실제로 지나가는 길</span></h2>
+
+    <p>hcom은 서버에 연결하지 않아요. 제 컴퓨터 안에 작은 저장소를 하나 만들어 두고, 거기에 메시지와 상태를 적었다 꺼내요. 이 저장소를 읽고 쓰는 일은 <strong>훅</strong><sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>이 맡아요.</p>
+
+    <svg viewBox="0 0 720 300" role="img" aria-label="터미널 1과 터미널 2가 가운데 hcom 저장소를 거쳐 메시지를 주고받는 흐름도">
+      <defs>
+        <marker id="hcom-arrow-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/>
+        </marker>
+        <marker id="hcom-arrow-l" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+
+      <rect x="12" y="98" width="168" height="70" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="96" y="126" text-anchor="middle" font-family="var(--font-heading)" font-size="15" fill="var(--ink)">터미널 1</text>
+      <text x="96" y="148" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--muted)">Claude Code</text>
+
+      <rect x="276" y="90" width="168" height="86" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="360" y="118" text-anchor="middle" font-family="var(--font-heading)" font-size="15" fill="var(--ink)">hcom 저장소</text>
+      <text x="360" y="139" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">내 컴퓨터 안 파일</text>
+      <text x="360" y="158" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">메시지 · 상태 기록</text>
+
+      <rect x="540" y="98" width="168" height="70" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="624" y="126" text-anchor="middle" font-family="var(--font-heading)" font-size="15" fill="var(--ink)">터미널 2</text>
+      <text x="624" y="148" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--muted)">OpenCode</text>
+
+      <line x1="184" y1="116" x2="268" y2="116" stroke="var(--accent)" stroke-width="2" marker-end="url(#hcom-arrow-r)"/>
+      <text x="226" y="106" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">① 보내기</text>
+
+      <line x1="452" y1="116" x2="536" y2="116" stroke="var(--accent)" stroke-width="2" marker-end="url(#hcom-arrow-r)"/>
+      <text x="494" y="106" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">② 깨우기</text>
+
+      <line x1="536" y1="150" x2="452" y2="150" stroke="var(--muted)" stroke-width="2" marker-end="url(#hcom-arrow-l)"/>
+      <text x="494" y="170" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">③ 답장</text>
+
+      <line x1="268" y1="150" x2="184" y2="150" stroke="var(--muted)" stroke-width="2" marker-end="url(#hcom-arrow-l)"/>
+      <text x="226" y="170" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">④ 배달</text>
+
+      <text x="360" y="232" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--muted)">양쪽 터미널은 서로를 직접 모른다 — 가운데 저장소만 안다</text>
+      <text x="360" y="254" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--muted)">그래서 도구 종류가 달라도 이어진다</text>
+    </svg>
+
+    <p><strong>읽는 법:</strong> 위쪽 진한 화살표(①②)가 부탁이 가는 방향, 아래쪽 흐린 화살표(③④)가 답이 오는 방향이에요. 두 터미널은 서로를 직접 부르지 않고 가운데 저장소에만 쓰고 읽어요. 그래서 한쪽이 Claude Code이고 다른 쪽이 OpenCode여도 이어져요 — 저장소 입장에서는 둘 다 그냥 기록 한 줄이거든요.</p>
+
+    <h2><span class="hl">설치</span></h2>
+
+    <p>여러 방법이 있는데 제 경우 파이썬 도구 설치기로 깔았어요. 맥이라면 <code>brew install aannoo/hcom/hcom</code> 한 줄로도 돼요.</p>
+
+    <p class="run-tag">실행: 로컬 터미널</p>
+<pre><code>uv tool install hcom</code></pre>
+
+    <p>설치가 끝나면 상태를 확인해요. 이 명령은 지금 컴퓨터에 어떤 코딩 도구가 깔려 있는지, hcom이 그것들과 이어졌는지를 보여 줘요.</p>
+
+    <p class="run-tag">실행: 로컬 터미널</p>
+<pre><code>hcom status</code></pre>
+
+    <p>여기서 <code>command not found</code>가 나오면 설치는 됐는데 <strong>PATH</strong><sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>에 등록이 안 된 거예요. 터미널을 껐다 켜면 대개 풀려요.</p>
+
+    <p>다음으로 훅을 붙여요. 이걸 해야 메시지가 자동으로 배달돼요. 쓰는 도구에 대해서만 하면 돼요.</p>
+
+    <p class="run-tag">실행: 로컬 터미널</p>
+<pre><code>hcom hooks add claude</code></pre>
+
+    <p>되돌리고 싶으면 <code>hcom hooks remove all</code>로 전부 떼어 낼 수 있어요. hcom을 안 쓰는 동안에는 이 훅이 아무 일도 하지 않아요.</p>
+
+    <h2><span class="hl">첫 대화 붙여 보기</span></h2>
+
+    <p>터미널 창을 두 개 열고, 각각 다음처럼 앞에 <code>hcom</code>을 붙여 실행해요.</p>
+
+    <p class="run-tag">실행: 로컬 터미널</p>
+<pre><code>hcom claude</code></pre>
+
+    <p class="run-tag">실행: 로컬 터미널</p>
+<pre><code>hcom opencode</code></pre>
+
+    <p>띄우면 각 AI에게 이름이 하나씩 자동으로 붙어요. 제 경우 <code>kira</code>와 <code>luna</code>였어요. 사람이 고르는 게 아니라 무작위로 배정되는 호출부호 같은 거예요. 지금 누가 떠 있는지는 이 명령으로 봐요.</p>
+
+    <p class="run-tag">실행: 로컬 터미널</p>
+<pre><code>hcom list</code></pre>
+
+    <p>이제 한쪽 창에 평소처럼 한국어로 부탁하면 돼요. "<code>@luna</code>한테 이 파일 검토를 맡기고 결과를 받아 와"처럼요. 제가 실제로 돌려 보니 Claude Code 쪽이 OpenCode 쪽에 질문을 보내고, 답을 받아서 저에게 돌려주기까지 <strong>23초</strong>가 걸렸어요. 그 사이에 제가 한 일은 없어요.</p>
+
+    <h2><span class="hl">첫 시도는 실패했어요</span></h2>
+
+    <p>사실 처음에는 안 됐어요. 부탁은 잘 전달됐는데 답이 안 왔어요. 기록을 열어 보니 이렇게 적혀 있었어요.</p>
+
+    <p class="run-tag run-tag--concept">개념 설명용 코드 — 직접 실행하는 코드 아니에요</p>
+<pre><code>silo went idle without responding to your request</code></pre>
+
+    <p>"요청에 답하지 않고 작업을 끝냈다"는 뜻이에요. 상대 AI의 화면을 열어 보니, 답은 제대로 써 놨더라고요. 다만 <strong>자기 화면에만</strong> 썼어요. 창구에 도로 꽂는 명령을 실행하지 않은 거예요.</p>
+
+    <p>이건 hcom의 고장이 아니라 예상해야 하는 기본 상태예요. AI 입장에서는 "물어봤으니 답을 썼다"로 할 일이 끝난 거니까요. 그래서 <strong>답장까지가 일이라고 미리 못 박아 둬야</strong> 해요. 아래 명령은 앞으로 띄우는 모든 AI에게 그 규칙을 한 번씩 알려 줘요.</p>
+
+    <p class="run-tag">실행: 로컬 터미널</p>
+<pre><code>hcom config notes "누가 물어보면 반드시 hcom send 로 답해라. 자기 화면에만 답하면 상대는 못 본다."</code></pre>
+
+    <p>이 한 줄을 넣고 다시 돌리니 답장이 돌아왔어요. 같은 구조인데 결과가 갈린 건 규칙을 적어 뒀느냐 아니냐 하나뿐이었어요.</p>
+
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">주방장에게 "재고 좀 봐 줘"라고만 말한다 → 주방장은 재고를 확인하고 자기 수첩에 적는다. 홀에서는 아무리 기다려도 대답이 없고, 사장은 결국 주방까지 걸어가 확인한다.</td>
+          <td class="choice-good">"확인해서 <strong>창구로 도로 알려 줘. 안 알려 주면 확인 안 한 걸로 친다</strong>"까지 말한다 → 주방장이 창구에 답을 꽂는다. 홀은 걸어가지 않고 받는다.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2><span class="hl">역할을 어떻게 나눠야 요금이 덜 나오나</span></h2>
+
+    <p>여기가 이 도구에서 가장 조심할 자리예요. hcom에서는 <strong>메시지 한 건이 상대 AI의 작업 한 번을 통째로 발동</strong>시켜요. 그러니까 "잘 부탁드립니다" 같은 인사도 요금으로는 일감 하나와 같아요. 둘이 예의 바르게 주고받기 시작하면 한 일은 없는데 요금만 올라가요.</p>
+
+    <p>제가 돌려 보면서 정리한 규칙은 넷이에요.</p>
+
+    <ul>
+      <li><strong>한 명만 지휘하게 해요.</strong> 지휘하는 AI 하나를 정하고 나머지는 그 하나에게만 보고하게 해요. 전원이 전원과 이야기하게 두면 주고받는 횟수가 인원수의 제곱으로 늘어요. 구조를 고르는 이야기는 <a href="multi-agent-four-structures.html">여럿이라는 말만으론 부족하다 — 네 가지 구조와 맞는 과업</a>에서 더 자세히 다뤘어요.</li>
+      <li><strong>담당 파일을 미리 갈라 놓아요.</strong> 누가 어느 폴더를 맡는지 먼저 정하면 같은 파일을 겹쳐 고치는 일이 안 생겨요. hcom은 두 AI가 30초 안에 같은 파일을 고치면 양쪽에 경고를 보내는데, 이 경고도 각자를 한 번씩 깨워요.</li>
+      <li><strong>보고는 끝났을 때 한 번만 하게 해요.</strong> "시작합니다", "절반 했습니다" 같은 중계를 금지하면 왕복이 확 줄어요.</li>
+      <li><strong>긴 내용을 메시지 본문에 붙여넣지 않게 해요.</strong> 코드나 로그를 통째로 붙이면 보낸 쪽과 받은 쪽 양쪽에 같은 내용이 두 번 쌓여요. 파일 경로만 알려 주고 상대가 직접 읽게 하는 편이 싸요.</li>
+    </ul>
+
+    <p>그리고 규칙 자체를 어디에 적느냐도 요금에 영향을 줘요. hcom에는 규칙을 적는 자리가 둘 있어요.</p>
+
+    <table>
+      <thead><tr><th>설정 이름</th><th>언제 전달되나</th><th>어디에 쓰나</th></tr></thead>
+      <tbody>
+        <tr><td><code>notes</code></td><td>AI를 띄울 때 <strong>한 번만</strong></td><td>"답장은 hcom으로" 같은 오래 가는 규칙</td></tr>
+        <tr><td><code>hints</code></td><td>메시지를 받을 <strong>때마다 매번</strong></td><td>짧은 한 줄. 길면 받을 때마다 요금이 붙어요</td></tr>
+      </tbody>
+    </table>
+
+    <h2><span class="hl">일이 끝났는지 알기</span></h2>
+
+    <p>메시지보다 오히려 더 쓸모 있었던 건 상태를 보는 쪽이었어요. <code>hcom list</code>는 각 AI가 지금 작업 중인지, 기다리는 중인지, <strong>승인 화면에서 멈춰 있는지</strong>를 보여 줘요.</p>
+
+    <p>마지막 항목이 특히 유용해요. AI에게 일을 맡겨 놓고 다른 걸 하다가 돌아와 보면, 실은 30분 내내 "이 명령 실행해도 될까요?" 화면에서 멈춰 있던 경우가 있잖아요. 제가 실험할 때도 띄운 AI가 승인 대기에 걸렸는데, hcom이 곧바로 <code>launch_blocked</code>라는 기록을 남겼어요.</p>
+
+    <p>끝났을 때만 알림을 받고 싶으면 이렇게 걸어 둬요.</p>
+
+    <p class="run-tag">실행: 로컬 터미널</p>
+<pre><code>hcom events sub --idle kira</code></pre>
+
+    <p>상대 AI의 화면을 그대로 들여다볼 수도 있어요. 창을 옮겨 다니지 않고 확인할 때 써요.</p>
+
+    <p class="run-tag">실행: 로컬 터미널</p>
+<pre><code>hcom term kira</code></pre>
+
+    <h2><span class="hl">보고를 믿지 말고 검증하게 만들기</span></h2>
+
+    <p>AI가 "다 했습니다"라고 보내 와도 그 말만으로는 확인이 안 돼요. 그래서 저는 보고할 때 <strong>커밋 번호를 같이 적게</strong> 했어요. 커밋은 코드를 저장한 시점마다 붙는 고유 번호예요.</p>
+
+    <p>이렇게 시키면 보고가 <code>완료: 803548b</code> 같은 모양으로 와요. 그러면 제가 그 번호를 직접 확인할 수 있어요 — 진짜 있는 번호인지, 어느 갈래에 들어갔는지, 파일을 몇 개나 건드렸는지요. AI의 말을 믿는 게 아니라 흔적을 보는 거죠.</p>
+
+    <p>제가 실제로 해 본 실험에서는 AI를 별도 작업 폴더에 띄워 놓고 파일 하나를 만들어 저장하게 시켰는데, 띄운 시점부터 완료 보고가 올 때까지 <strong>35초</strong>가 걸렸고 그동안 제가 손댄 건 화면을 한 번 들여다본 것뿐이었어요. 받은 번호를 확인해 보니 실제로 존재했고, 제 원래 작업 내용은 건드려지지 않았어요.</p>
+
+    <h2><span class="hl">덧붙임</span> — Claude 안에서 대화창끼리는 잘 안 통해요</h2>
+
+    <p>hcom을 쓰다 보면 자연스럽게 드는 생각이 있어요. "굳이 다른 도구끼리 이을 것 없이, 같은 Claude 안에서 대화창 여러 개를 띄우면 그건 서로 알지 않나?"</p>
+
+    <p>제가 확인해 보니 <strong>잘 안 통해요.</strong> 대화창마다 각자의 기억만 갖고 있어서, 옆 창이 무슨 작업을 했는지 기본적으로 몰라요. 지난 대화를 찾아보는 기능이 있긴 한데, 글자를 <strong>붙어 있는 그대로</strong> 찾는 방식이라 띄어쓴 표현으로는 잘 안 걸려요. 제가 같은 내용을 두고 <code>소스 선정</code>으로 찾으면 0건, 붙어 있는 낱말인 <code>소스당</code>으로 찾으면 3건이 나왔어요. 내용은 분명히 있는데 검색어 모양 때문에 못 찾는 거예요.</p>
+
+    <p>그래서 저는 대화창끼리 이어 붙이려고 애쓰는 대신, 작업 상태를 <strong>프로젝트 폴더 안의 파일 한 장</strong>에 적어 두는 쪽으로 정리했어요. 파일은 검색 방식에 영향을 안 받고, 새 대화를 시작해도 그냥 열어 보면 되니까요. 이 이야기는 나중에 따로 정리해 볼게요.</p>
+
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 설치하거나 설정할 때 다시 볼 값</h2>
+
+    <p>본문에서 나온 값 가운데 제 실습 기록이 아니라 <strong>다른 사람이 써도 그대로 통하는 값</strong>만 모았어요. 설치가 막히거나 설정을 손볼 때 이 표를 보면 돼요.</p>
+
+    <table>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
+      <tbody>
+        <tr><td>이 글이 다루는 hcom 버전</td><td>0.7.25</td><td>버전이 다르면 명령 이름이 바뀔 수 있어요. <code>hcom status</code> 첫 줄에 나와요</td></tr>
+        <tr><td>메시지 자동 배달을 지원하는 코딩 도구 수</td><td>11개</td><td>Claude Code·OpenCode·Codex·Gemini 등이에요. 목록에 없는 도구도 수동으로 이을 수는 있어요<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup></td></tr>
+        <tr><td>같은 파일 충돌로 보는 시간 폭</td><td>30초</td><td>두 AI가 이 시간 안에 같은 파일을 고치면 양쪽에 경고가 가요. 담당 폴더를 갈라 두면 안 생겨요</td></tr>
+        <tr><td>AI를 띄울 때 들어가는 사용법 안내 분량</td><td>약 700토큰<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup></td><td>AI 하나를 띄울 때마다 이만큼이 기본으로 붙어요. 쓸데없이 많이 띄우지 않을 이유예요</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — AI 둘을 이어 놓고 뭔가 안 돌 때</h2>
+
+    <p>아래 문제들은 에러 창이 뜨지 않고 조용히 지나가는 편이라, 뭐가 잘못됐는지 알아채기가 어려워요. 기다리는 시간이 길어지거나 요금이 예상보다 나오면 이 표부터 봐요.</p>
+
+    <p>증상이 아직 없어도, <strong>AI에게 이런 부탁을 한 직후</strong>라면 한 번 확인하고 넘어가요.</p>
+    <ul>
+      <li>"둘이 상의해서 결정해 줘" — 왕복 횟수에 제한을 뒀는지 확인해요.</li>
+      <li>"이 폴더 전체를 둘이 나눠서 고쳐 줘" — 누가 어느 파일을 맡는지 정해 줬는지 확인해요.</li>
+    </ul>
+
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-no-reply">
+          <td>부탁은 전달됐는데 <strong>답이 영영 안 와요</strong>. 부른 쪽 AI는 계속 기다린다고만 해요</td>
+          <td>상대 AI의 화면. 부른 쪽은 범인이 아니에요</td>
+          <td><code>hcom term &lt;이름&gt;</code>으로 상대 화면을 봐요. 답이 화면에만 적혀 있으면 답장 규칙을 안 넣은 거예요. <code>hcom config notes</code>로 넣어요</td>
+        </tr>
+        <tr id="suspect-chatter">
+          <td>한 일은 별로 없는데 <strong>요금이 평소의 몇 배</strong>로 나와요</td>
+          <td>주고받은 기록 — <code>hcom events --type message</code></td>
+          <td>"알겠습니다", "확인했습니다" 같은 내용 없는 왕복이 있는지 세어 봐요. 있으면 "답장이 필요 없는 알림은 답하지 마라"를 규칙에 넣어요</td>
+        </tr>
+        <tr id="suspect-exit1">
+          <td>AI를 띄웠는데 창이 <strong>3초 만에 꺼져요</strong>. 화면에는 이유가 안 남아요</td>
+          <td>도구별 기본 설정값 — <code>hcom config</code>에서 <code>_args</code>로 끝나는 항목</td>
+          <td>거기에 hcom 전용 설정을 넣었는지 봐요. 그 자리는 도구 자신이 아는 설정만 받아요. hcom 전용 설정은 띄울 때 직접 붙이거나 <code>notes</code>에 넣어요</td>
+        </tr>
+        <tr id="suspect-stuck">
+          <td>일을 맡겼는데 <strong>한참 지나도 아무 변화가 없어요</strong></td>
+          <td><code>hcom list</code>의 상태 칸</td>
+          <td>작업 중이 아니라 <strong>승인 대기</strong>로 멈춰 있는지 봐요. 그렇다면 그 창을 열어 승인해 줘야 이어져요</td>
+        </tr>
+        <tr id="suspect-notfound">
+          <td>설치했다는데 <code>command not found</code>가 떠요</td>
+          <td>PATH — 설치할 때 마지막 줄에 나온 경고</td>
+          <td>터미널을 껐다 켜 봐요. 그래도 안 되면 설치기가 알려 준 폴더를 PATH에 넣어요</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2><span class="hl">함께 보기</span></h2>
+    <ul>
+      <li><a href="multi-agent-four-structures.html">여럿이라는 말만으론 부족하다 — 네 가지 구조와 맞는 과업</a> — 여러 AI에게 일을 나눌 때 어떤 구조가 어떤 일에 맞는지 다뤄요. 이 글의 "한 명만 지휘하게 해요"의 배경이에요.</li>
+      <li><a href="multi-agent-ecosystem-tools.html">실험이 남긴 네 문제와 도구들 — Agent Teams·Workflows·oh-my-claudecode·herdr</a> — hcom과 같은 자리를 노리는 다른 도구들을 비교해요.</li>
+      <li><a href="opencode-sisyphus-orchestration.html">혼자 일하던 에이전트를 팀으로 — Sisyphus와 오케스트레이션 플러그인</a> — 이 글에서 상대편으로 쓴 OpenCode를 여럿으로 굴리는 이야기예요.</li>
+      <li><a href="choosing-ai-coding-tools.html">AI 코딩 도구 고르기 — 터미널이냐 편집기냐 클라우드냐</a> — 이을 도구를 아직 안 정했다면 여기부터 읽어요.</li>
+      <li><a href="https://github.com/aannoo/hcom" target="_blank" rel="noopener">hcom 공식 저장소 (GitHub)</a> — 설치 방법과 전체 명령 목록이 있어요.</li>
+    </ul>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">Claude Code — 터미널에서 실행해 프로젝트 폴더를 직접 고치게 시키는 코딩용 AI 도구예요. <a href="choosing-ai-coding-tools.html">AI 코딩 도구 고르기</a>에서 다른 도구들과 함께 다뤘어요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">명령줄 도구(CLI) — 아이콘을 누르는 대신 검은 화면에 글자로 명령을 쳐서 쓰는 프로그램이에요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">터미널 — 컴퓨터에 글자로 명령을 입력하는 그 검은 창이에요. <a href="#fnref3">↩</a></li>
+        <li id="fn4">훅(hook) — 어떤 일이 벌어질 때마다 자동으로 같이 실행되도록 미리 걸어 두는 장치예요. <a href="#fnref4">↩</a></li>
+        <li id="fn5">PATH — 컴퓨터가 명령어를 찾을 때 뒤져 보는 폴더 목록이고, 여기에 없으면 프로그램이 깔려 있어도 "없다"고 나와요. <a href="#fnref5">↩</a></li>
+        <li id="fn6">목록에 없는 도구도 그 도구 안에서 <code>hcom start</code>를 한 번 실행하면 이을 수 있어요. <a href="#fnref6">↩</a></li>
+        <li id="fn7">토큰 — AI가 글을 세는 단위이고, 요금과 기억 용량이 모두 이 단위로 계산돼요. <a href="#fnref7">↩</a></li>
+      </ol>
+    </section>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
