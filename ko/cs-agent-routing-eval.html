@@ -108,7 +108,7 @@
     </table>
     <p><strong>핵심 한 줄:</strong> 매니저가 하는 일은 요리가 아니라 <strong>분류와 판정</strong>이고, 둘은 성격이 다르기 때문에 따로 떼어 둡니다.</p>
 
-    <h2><span class="hl">전체 흐름</span></h2>
+    <h2 id="flow"><span class="hl">전체 흐름</span></h2>
     <svg viewBox="0 0 700 170" role="img" aria-label="문의 한 줄이 분류 노드로 들어가 라우트와 확신도를 받고, 판정 노드에서 세 갈래로 갈린다. 확신도가 기준 미만이면 이관, 라우트가 OTHER면 범위 밖 안내, 나머지는 처리로 넘어간다">
       <defs>
         <marker id="csr1" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
@@ -136,10 +136,10 @@
       <text x="320" y="158" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">점선 = 셋 중 하나만 — 분류는 모델이, 판정은 정책이 한다</text>
     </svg>
     <p><strong>읽는 법:</strong> 그림에서 <strong>LLM</strong><sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup>이라고 쓴 것은 ChatGPT 같은 것들의 알맹이예요. <a href="pretraining-and-scaling-laws.html">앞 문맥을 보고 다음에 올 법한 낱말을 이어 붙이도록 훈련된 프로그램</a>인데, 이 성질이 이 글과 <a href="cs-agent-grounding.html">다음 편</a> 내내 문제의 원인이 돼요 — 모르는 값도 그럴듯하게 이어 붙이거든요.</p>
-    <p>위 그림에서 <strong>테두리가 굵은 네모 둘</strong> — 왼쪽 <strong>분류</strong>와 오른쪽 <strong>판정</strong> — 로 나눠 둔 것이 핵심이에요. 분류는 모델이 하는 일이고, 판정은 회사 정책이 정하는 일이에요. 한 덩어리로 묶어 두면 나중에 모델만 바꾸고 싶을 때 정책까지 건드리게 되거든요.</p>
+    <p>위 그림에서 빨간 테두리를 두른 상자 둘 — <strong>분류(LLM)</strong>과 <strong>판정(정책)</strong> — 로 나눠 둔 것이 핵심이에요. 분류는 모델이 하는 일이고, 판정은 회사 정책이 정하는 일이에요. 한 덩어리로 묶어 두면 나중에 모델만 바꾸고 싶을 때 정책까지 건드리게 되거든요.</p>
 
     <h3>부품은 <a href="langgraph-state-node-edge.html">2편의 그래프</a>와 같아요</h3>
-    <p>그 굵은 네모 둘(분류·판정)이 <strong>노드</strong>이고, 둘을 잇는 화살표가 <strong>엣지</strong>예요. 2편 그림은 갈래가 더 많았지만 세우는 방법은 똑같습니다. 코드로 옮기면 이렇게 짧아요.</p>
+    <p>이 글의 <a href="#flow">전체 흐름 그림</a>에서 <code>분류(LLM)</code>·<code>판정(정책)</code>이라고 적힌 상자 둘이 <strong>노드</strong>이고, 둘을 잇는 화살표가 <strong>엣지</strong>예요. 2편 그림은 노드가 <code>taste</code>·<code>add_salt</code>·<code>serve</code>·<code>call_chef</code>로 더 많지만, 세우는 방법은 똑같습니다. 코드로 옮기면 이렇게 짧아요.</p>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 그래프를 세우는 부분만 떼어 왔어요</span></p>
     <pre><code>g = StateGraph(RouterState)
 g.add_node("classify", classify)     # 분류 — 모델이 하는 일
@@ -181,6 +181,12 @@ g.add_edge("gate", END)</code></pre>
     </table>
     <p>네 개로는 부족했어요. 문의 193건 가운데 매장·행사·웹사이트처럼 온라인 전용 쇼핑몰이 답할 수 없는 것이 33건, <strong>여섯 건에 한 건꼴</strong>이었거든요. 그래서 다섯 번째 갈래 <code>OTHER</code>를 뒀습니다.</p>
     <p><code>OTHER</code>는 "분류 실패"를 담는 쓰레기통이 아니에요. <strong>"네 유형 중 어느 것도 아님이 확인된 상태"</strong>라는 분명한 판정입니다. 쓰레기통으로 쓰면 애매한 문의를 전부 거기 밀어 넣게 되고, 그러면 답할 수 있었던 문의까지 사람에게 넘어가요. 반대로 <code>OTHER</code>가 없으면 답할 수 없는 문의에 모델이 억지로 답을 만들어 냅니다.</p>
+    <p>억지로 답한다는 게 실제로 어떤 모습인지 볼게요. "매장 가서 교환해도 되나요?"가 <code>RETURN_REFUND</code>로 들어가면, 프롬프트에는 교환·반품 규정만 들어 있으니 모델은 그 규정을 근거로 "교환 가능합니다"라고 답하기 쉬워요. 온라인 전용 쇼핑몰에는 갈 매장이 없는데요. "이번 주말 행사 있나요?"가 <code>ORDER_PLACE</code>로 들어가면 주문 규정을 들고 할인 조건을 지어내기 쉽고요. <strong>문장은 멀쩡한데, 회사가 한 적 없는 약속이 고객에게 나갑니다.</strong></p>
+    <p>제가 받은 매뉴얼은 맨 앞에 <strong>온라인 전용이고 오프라인 매장이 없다</strong>고 못 박아 뒀어요. 다른 오픈마켓에서 산 주문이나 제조사 A/S처럼 이 쇼핑몰에서 확인할 수 없는 문의는 <strong>추측하지 말고 해당 사이트·제조사 고객센터로 안내하라</strong>는 장도 따로 있고, 분류 우선순위에서도 <strong>범위 밖인지를 네 유형보다 먼저</strong> 보게 돼 있어요. <code>OTHER</code>는 이런 규정이 코드 안에 들어갈 자리예요.</p>
+    <div class="key-point" id="key-other-is-a-verdict">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p><code>OTHER</code>는 "모르겠다"가 아니라 <strong>"우리가 답할 수 없는 일이다"라는 판정</strong>이에요. 이 갈래가 없으면 범위 밖 문의가 네 갈래 중 한 곳의 규정을 빌려 답을 받고, 고객은 그 답을 회사의 약속으로 받아들입니다.</p>
+    </div>
 
     <h2 id="evalset"><span class="hl">모델보다 평가셋이 먼저예요</span></h2>
     <p>많은 사람이 프롬프트부터 씁니다. 그리고 질문 몇 개 던져 보고 "잘 되는 것 같다"고 판단해요. 이 방식의 문제는 <strong>좋아졌는지 나빠졌는지 말할 수 없다</strong>는 거예요. 고친 뒤에 다시 몇 개 던져 보고 "이제 더 낫다"고 느끼지만, 그건 방금 던진 그 몇 개에 대한 이야기일 뿐이거든요.</p>
@@ -199,6 +205,10 @@ g.add_edge("gate", END)</code></pre>
 {"id": "q019", "text": "낱개 구매 되나요?", "label": "PRODUCT_INFO", "split": "fewshot"}</code></pre>
     <p>칸은 넷이면 충분해요 — <strong>문장·정답 갈래·어디에 쓸지</strong>, 그리고 나중에 실패한 건을 다시 찾아갈 <strong>번호</strong>. 번호가 없으면 "3번이 또 틀렸다"를 말할 수 없어서 실패 분석이 안 돼요.</p>
     <p>왜 떼어 놓느냐면, <strong>모델에게 보여준 문제로 시험을 치르면 점수가 실제 실력보다 높게 나오기 때문</strong>이에요. 이걸 <strong>데이터 누수</strong><sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>라고 부릅니다. 부풀려진 숫자를 믿고 서비스에 내보내면 현장에서 무너지죠.</p>
+    <div class="key-point" id="key-no-leak">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>예시 40건과 평가 120건은 같은 기준으로 뽑은 문항이에요. 그런데도 나눠 두는 이유는 하나 — <strong>모델에게 답을 보여 준 문항으로는 실력을 잴 수 없기 때문</strong>이에요.</p>
+    </div>
     <p><code>eval</code> 120건은 네 갈래가 각각 30건씩 되도록 일부러 균형을 맞춰 골랐어요. 실제 분포는 다섯 배씩 차이가 나는데도요. 치우친 평가셋으로 재면 건수가 많은 갈래의 성적이 전체 점수를 지배해서, 작은 갈래가 무너져도 숫자에 안 드러나거든요.</p>
 
     <h2 id="metrics"><span class="hl">정확도 하나로는 부족해요</span></h2>
@@ -213,12 +223,30 @@ g.add_edge("gate", END)</code></pre>
         <tr><td>F1</td><td>둘의 조화평균</td><td>한쪽만 높은 상태를 좋은 점수로 쳐 주지 않는다</td></tr>
       </tbody>
     </table>
+    <p>숫자 한 쌍으로 읽는 연습을 해 볼게요. 어떤 라우터의 <code>SHIPPING</code>이 <strong>정밀도 0.95, 재현율 0.40</strong>이라면 이런 뜻이에요.</p>
+    <ul>
+      <li><strong>배송이라고 보낸 건은 거의 다 진짜 배송 문의예요.</strong> 정밀도 0.95.</li>
+      <li><strong>그런데 실제 배송 문의의 60%는 다른 갈래로 새고 있어요.</strong> 재현율 0.40. 새어 나간 문의는 엉뚱한 갈래의 규정으로 답을 받습니다.</li>
+      <li>F1은 두 값의 평균 0.675가 아니라 <strong>조화평균 0.56</strong>이에요. 조화평균은 낮은 쪽으로 끌려가서, 한쪽만 좋은 상태를 좋은 점수로 쳐 주지 않거든요.</li>
+    </ul>
+    <p>정밀도가 0.9를 넘었다고 손댈 필요가 없는 게 아니에요. 이 라우터는 <strong>조심스럽게 고르다가 많이 놓치는</strong> 모양이고, 고칠 곳은 놓친 60% 쪽입니다.</p>
     <p>갈래가 여럿일 때 <a href="output-format-and-metrics.html#macro">종합하는 방식이 둘</a>인데, <strong>macro 평균</strong>은 갈래마다 동등한 무게를 주고 <strong>weighted 평균</strong>은 건수가 많은 갈래가 점수를 지배해요. 작은 갈래의 실패도 그대로 보고 싶으니 macro F1을 주 지표로 씁니다.</p>
+    <div class="key-point" id="key-accuracy-imbalance">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p><strong>정확도</strong>(전체 중 맞힌 비율)는 건수가 한쪽으로 쏠려 있을 때 속여요. 가령 문의 100건 중 80건이 반품이라면, 무엇이 들어오든 전부 반품으로 보내는 라우터도 정확도 80%를 받습니다. 나머지 네 갈래는 한 건도 못 맞히는데요.</p>
+      <p>정확도가 틀리게 계산되는 게 아니라, <strong>많은 갈래의 성적이 점수를 대신 채워 줄 뿐</strong>이에요. 그래서 갈래마다 같은 무게를 주는 macro F1을 보고, 어느 갈래가 어느 갈래로 새는지는 아래 혼동 행렬로 따로 봅니다. 정확도가 높아도 그 정보는 혼동 행렬에만 있어요.</p>
+    </div>
     <p>그리고 <a href="confusion-matrix-and-metrics.html#matrix"><strong>혼동 행렬</strong></a><sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>을 봅니다. 행이 정답, 열이 예측인 표예요. 대각선을 벗어난 숫자가 틀린 것인데, 중요한 건 <strong>어디로 벗어났는지</strong>예요.</p>
     <p>"정확도 60%"만으로는 무엇을 해야 할지 알 수 없지만, "주문·구매의 절반이 상품 문의로 흘러간다"를 알면 <strong>프롬프트에 그 둘의 구분 기준을 명시하면 된다</strong>는 결론이 바로 나옵니다.</p>
 
     <h2 id="llm-router"><span class="hl">LLM으로 갈아 끼우고, 같은 자로 잰다</span></h2>
     <p>규칙이 실패하는 지점이 문제의 본질을 드러냈어요. "낱개로도 구매 가능한가요?"와 "이 반지 남성용만 따로 구매 가능한지 알려주세요"는 어휘가 거의 같은데 정답 갈래가 다릅니다. <strong>키워드는 표면이고, 분류는 의도에 관한 판단</strong>이라 어휘 규칙으로는 원리적으로 못 가려요.</p>
+    <p>키워드를 더 넣으면 되지 않을까요? 안 돼요. 제가 받은 매뉴얼이 든 한 쌍을 보면 분명해요. "이 목걸이에 달린 펜던트만 따로 살 순 없어요?"는 <strong>지금 사려는 것</strong>이라 주문이고, "이 스킨이랑 로션은 꼭 세트로만 살 수 있나요?"는 <strong>구성을 알고 싶은 것</strong>이라 상품 문의예요. 두 문장 모두 <code>살 수</code>를 품고 있어서, 이 낱말을 주문 쪽 규칙에 두면 뒤 문장이 틀리고 상품 문의 쪽으로 옮기면 앞 문장이 틀려요. <strong>두 갈래가 같은 낱말을 쓰는 한, 그 낱말을 어느 쪽에 두든 한쪽은 틀립니다.</strong> 갈리는 지점은 낱말이 아니라 <strong>지금 사려는 건지, 살지 말지 정하려고 묻는 건지</strong>예요.</p>
+    <p>규칙에는 순서 문제도 따라와요. 규칙은 위에서부터 검사하니 "반품 배송비 얼마예요?"는 반품 규칙이 위에 있으면 반품, 배송 규칙이 위에 있으면 배송이 됩니다. 어느 쪽이 맞는지는 <a href="#routes">위 매뉴얼 발췌</a>의 ※ 줄이 정해 뒀죠 — 교환·반품·환불이에요. <strong>규칙의 순서조차 회사 문서에 근거가 있어야 한다</strong>는 뜻이에요.</p>
+    <div class="key-point" id="key-keyword-surface">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>키워드 규칙이 주문과 상품 문의를 못 가르는 건 키워드가 모자라서가 아니에요. <strong>규칙은 글자를 보고, 두 갈래를 가르는 건 고객이 원하는 결과</strong>이기 때문이에요. 같은 낱말을 쓰는 두 갈래는 낱말을 더해서는 못 가릅니다.</p>
+    </div>
     <p>그래서 분류하는 부분만 LLM으로 바꿉니다. 이때 그냥 물어보면 이런 답이 와요.</p>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 직접 실행하는 코드 아니에요</span></p>
     <pre><code>"이 문의는 배송에 관한 질문으로 보입니다. 따라서 SHIPPING 라우트가 적절하겠습니다."</code></pre>
@@ -249,6 +277,12 @@ def classify(state):                       # 그래프의 첫 노드
     return {"route": out.route, "confidence": out.confidence,
             "reason": out.reason}</code></pre>
     <p><code>Literal</code>에 다섯 이름을 박아 두면 <code>배송문의</code>나 <code>Shipping</code> 같은 값이 <strong>애초에 들어올 수 없어요.</strong> 갈래를 하나 늘리는 일도 이 줄 하나를 고치는 일이 되고요.</p>
+    <p>나머지 두 칸은 실무에서 하는 일이 달라요.</p>
+    <ul>
+      <li><strong><code>confidence</code>는 <a href="#threshold">아래 판정 노드</a>가 읽는 입력이에요.</strong> 이 칸이 없으면 "애매하니 사람에게 넘긴다"는 갈림길을 만들 수 없어요. 갈래 이름만으로는 확실한 판단과 찍은 판단이 똑같아 보이니까요.</li>
+      <li><strong><code>reason</code>은 틀린 건을 열어 볼 때 쓰여요.</strong> <a href="#metrics">혼동 행렬</a>은 "주문이 상품 문의로 갔다"까지만 말해 줘요. 거기에 모델이 적은 근거가 붙어 있으면, 모델이 문장의 어느 부분을 보고 그렇게 읽었는지, 그러니 프롬프트에 어떤 구분 기준이 빠졌는지까지 보입니다.</li>
+      <li><strong><code>reason</code>은 사람에게 넘길 때도 쓰여요.</strong> 이관하는 건에 이 한 문장을 붙여 넘기면 상담원이 문의를 처음부터 다시 판단하지 않아도 돼요. 제가 받은 매뉴얼도 이관할 때 사유를 남기라고 적어 뒀어요.</li>
+    </ul>
     <p>프롬프트에 넣을 판단 기준도 발명하지 않았어요. 매뉴얼에 <strong>"고객이 쓴 단어가 아니라, 고객이 원하는 결과로 판단한다"</strong>는 문장이 이미 있었고, 그걸 그대로 옮겼습니다. 정책이 바뀌면 매뉴얼이 개정되고, 우리는 프롬프트를 다시 조립하면 되니까요.</p>
 
     <h2 id="threshold"><span class="hl">모르면 모른다고 말할 자리를 만든다</span></h2>
@@ -275,7 +309,18 @@ def gate(state):                           # 그래프의 둘째 노드
         return {"action": "OUT_OF_SCOPE"}  # 범위 밖이라고 알린다
     return {"action": "HANDLE"}            # 네 갈래 중 하나로 처리한다</code></pre>
     <p><code>if</code> 세 줄이지만 <strong>회사 정책이 사는 자리가 여기예요.</strong> 기준값을 0.5에서 0.7로 올리자는 논의는 전부 이 파일 안에서 끝나고, 모델 쪽 코드는 한 줄도 안 바뀝니다.</p>
-    <p>그래서 이때부터 숫자를 둘 봐야 해요. <strong>자동화율</strong>(이관 없이 처리된 비율)과 <strong>처리된 건의 정확도</strong>(이관하지 않고 처리한 건만 대상으로 한 정확도). 좋은 라우터는 둘이 동시에 높아요.</p>
+    <h3 id="why-half">왜 0.3이 아니라 0.5인가</h3>
+    <p>기준을 0.3으로 낮추면 자동화율은 오르겠죠. 그래도 이 쇼핑몰에서는 0.5 이상이 맞다고 봤어요. 이유가 둘이에요.</p>
+    <ul>
+      <li><strong>기준값은 프롬프트와 짝이 맞아야 해요.</strong> 분류 프롬프트에 "두 갈래 사이에서 결정하기 어려우면 확신도를 0.5 미만으로 낮춰라"라고 적어 뒀거든요. 기준이 0.3이면, 모델이 지시대로 0.4를 적어 "애매하다"고 밝힌 문의가 그대로 처리로 넘어가요. <strong>모델은 물러섰는데 코드가 다시 밀어 넣는 셈</strong>이에요.</li>
+      <li><strong>두 실수의 값이 달라요.</strong> 잘못 넘긴 문의는 상담원이 한 번 더 읽으면 끝나요. 잘못 처리한 문의는 틀린 환불·배송비 안내가 되고, 회사가 차액을 물거나 고객에게 정정 연락을 해야 합니다.</li>
+    </ul>
+    <p>제가 받은 매뉴얼도 같은 쪽이었어요. 근거가 없으면 만들어 내지 말고 넘기라고, 확실하지 않은 답이 "확인 후 연락드리겠습니다"보다 나은 경우는 없다고 적혀 있었죠. 이관 기준 장에는 <strong>"이관은 실패가 아니고, 늦게 이관된 건이 가장 크게 번진다"</strong>는 말도 있었고요.</p>
+    <div class="key-point" id="key-threshold-pair">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>이관 기준값은 <strong>프롬프트가 모델에게 "애매하면 이 아래로 적어라"고 알려 준 숫자와 같아야</strong> 해요. 둘이 어긋나면 모델이 애매하다고 밝힌 문의가 코드에서 다시 처리로 넘어갑니다. 그리고 틀린 안내가 금전 분쟁이 되는 곳이라면 기준은 높은 쪽으로 잡아요.</p>
+    </div>
+    <p>판정 노드를 붙이면 이때부터 숫자를 둘 봐야 해요. <strong>자동화율</strong>(이관 없이 처리된 비율)과 <strong>처리된 건의 정확도</strong>(이관하지 않고 처리한 건만 대상으로 한 정확도). 좋은 라우터는 둘이 동시에 높아요.</p>
 
     <h2 id="overconfident"><span class="hl">헷갈려야 할 자리에서 안 헷갈리는 것</span></h2>
     <p>일부러 어렵게 고른 문의 72건을 넣어 봤더니 결과가 세 덩어리로 갈렸어요.</p>
@@ -285,6 +330,20 @@ def gate(state):                           # 그래프의 둘째 노드
       <li><strong>모델이 틀린 곳.</strong> 사람 상담사조차 판단이 갈렸던 경계 문의 15건은 거의 전부 확신도 0.8대로 <strong>자신 있게</strong> 처리됐어요. 정답은 "확신도를 낮춰 이관"인데요.</li>
     </ul>
     <p>세 번째가 제일 무서워요. 모델은 헷갈리지 않았습니다 — <strong>헷갈려야 할 자리에서 헷갈리지 않은 것</strong>이고, 그래서 더 위험해요. 확신도는 모델이 스스로 보고하는 값이라 <strong>틀린 확신</strong>도 있을 수 있다는 뜻이고, 확신도를 넣었다고 안전장치가 완성된 게 아니라 <strong>확신도 자체를 평가셋으로 검증해야 한다</strong>는 숙제가 새로 생긴 겁니다.</p>
+    <h3 id="hard-types">챗봇이 "내 말을 잘못 알아들었다" 싶은 순간들</h3>
+    <p>어려운 문의 72건은 여섯 유형으로 나뉘어 있었어요. 쇼핑몰 챗봇이 엉뚱하게 알아들었다고 느꼈던 순간을 떠올려 보면 대개 이 중 하나고, <strong>유형마다 막는 장치가 달라요.</strong></p>
+    <table>
+      <thead><tr><th>유형 (건수)</th><th>예</th><th>막는 장치</th></tr></thead>
+      <tbody>
+        <tr><td>경계 모호 (15)</td><td>주문인지 상품 문의인지 사람 상담사도 판단이 갈리는 "낱개로도 구매 가능한가요?"</td><td>확신도 기준값 — 다만 위에서 본 것처럼 모델이 자신 있게 틀려서 <strong>아직 못 막아요</strong></td></tr>
+        <tr><td>한 문장에 두 요청 (12)</td><td>"반품하고 싶은데 배송비는 누가 내요?"</td><td>갈래를 하나만 고르는 이 라우터로는 <strong>못 막아요.</strong> 요청을 쪼개 각각 처리하는 단계가 따로 있어야 해요</td></tr>
+        <tr><td>범위 밖 (12)</td><td>매장 위치, 제조사 A/S</td><td><a href="#key-other-is-a-verdict"><code>OTHER</code></a></td></tr>
+        <tr><td>극단적 단답 (12)</td><td>"ㅇㅇ", "네"</td><td>문장만으로는 분류할 수 없어요. 되묻는 갈림길이 없는 이 라우터에서는 확신도를 낮춰 이관하는 게 최선이에요</td></tr>
+        <tr><td>텍스트 손상 (12)</td><td>오타·자음 축약·띄어쓰기 붕괴</td><td>LLM 분류 — 키워드 규칙이 가장 약했던 유형</td></tr>
+        <tr><td>앞 대화 의존 (9)</td><td>"그거 언제 와요?"</td><td>한 줄만 보는 라우터는 이관이 최선이에요. 앞 대화를 기억하게 하는 방법은 <a href="cs-agent-grounding.html#assemble">다음 편</a>에 있어요</td></tr>
+      </tbody>
+    </table>
+    <p>표를 거꾸로 읽으면 이래요. 챗봇이 내 말을 잘못 알아들었을 때, <strong>그게 갈래가 없어서인지(범위 밖), 문장에 정보가 없어서인지(단답·앞 대화), 모델이 틀린 확신을 해서인지(경계 모호)</strong>에 따라 고칠 곳이 전혀 달라요. 앞의 둘은 이 글의 장치로 막고, 마지막은 확신도를 따로 검증하는 평가셋이 더 있어야 막힙니다. 한 문장에 두 요청이 든 경우처럼 <strong>갈래 하나를 고르는 구조 자체가 못 받는 문의</strong>도 있다는 것까지 알아 두면, 챗봇이 엉뚱한 답을 할 때 어디를 고칠지 헷갈리지 않아요.</p>
 
     <div class="apply-box apply-box--try" id="try-it">
       <p class="apply-box-title">직접 해 보기 — 스무 줄로 줄인 판</p>
@@ -304,7 +363,7 @@ def gate(state):                           # 그래프의 둘째 노드
     <table>
       <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
       <tbody>
-        <tr><td>확신도 이관 기준값</td><td>0.5</td><td>올리면 오답↓·자동화율↓, 내리면 반대. 금전 분쟁이 걸린 도메인은 높게 잡는다</td></tr>
+        <tr><td>확신도 이관 기준값</td><td>0.5</td><td>올리면 오답↓·자동화율↓, 내리면 반대. 금전 분쟁이 걸린 도메인은 높게 잡는다. 프롬프트의 "애매하면 이 아래로" 숫자와 같게 맞춘다</td></tr>
         <tr><td>평가셋 크기 / 갈래당</td><td>120건 / 30건</td><td>갈래마다 같은 건수로 맞춰야 작은 갈래의 실패가 점수에 드러난다</td></tr>
         <tr><td>예시용으로 떼어 둔 건수</td><td>40건</td><td>프롬프트에 넣을 예시는 여기서만 뽑는다. 평가셋에서 뽑으면 점수가 거짓말이 된다</td></tr>
         <tr><td>갈래 수</td><td>5 (4 + <code>OTHER</code>)</td><td>원본 인텐트 18종을 그대로 쓰지 않는다. 갈래마다 정책·도구·평가셋 관리 비용이 붙는다</td></tr>
@@ -343,8 +402,23 @@ def gate(state):                           # 그래프의 둘째 노드
           <td>프롬프트의 확신도 지침 문단</td>
           <td>"애매하면 0.5 미만으로 낮춰라"가 프롬프트에 명시돼 있는지 본다. 없으면 모델은 대개 0.9 이상을 남발해요 — <a href="#overconfident">헷갈려야 할 자리 절</a></td>
         </tr>
+        <tr id="suspect-threshold-mismatch">
+          <td>분류 결과의 <code>reason</code>에는 "판단이 애매함"이라고 적혀 있는데, 그 문의가 이관되지 않고 처리됐다</td>
+          <td>판정 노드의 기준값 한 줄과, 분류 프롬프트의 확신도 지침 문단</td>
+          <td>두 숫자를 나란히 놓고 본다. 프롬프트는 "0.5 미만으로 낮춰라"인데 기준이 0.3이면, 0.3~0.5로 적힌 문의가 전부 새어 나가요 — <a href="#why-half">0.3이 아니라 0.5인 이유</a></td>
+        </tr>
       </tbody>
     </table>
+
+    <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
+    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 다른 편의 같은 목록은 <a href="langgraph-what-and-why.html#key-recap">1편</a> · <a href="cs-agent-grounding.html#key-recap">18편</a> · <a href="cs-agent-improve.html#key-recap">19편</a>에 있어요.</p>
+    <ul class="key-recap">
+      <li><a href="#key-other-is-a-verdict"><code>OTHER</code>는 "모르겠다"가 아니라 "답할 수 없는 일"이라는 판정</a></li>
+      <li><a href="#key-no-leak">예시로 보여 준 문항으로는 실력을 잴 수 없다</a></li>
+      <li><a href="#key-accuracy-imbalance">건수가 쏠리면 정확도는 많은 갈래가 채워 준다</a></li>
+      <li><a href="#key-keyword-surface">같은 낱말을 쓰는 두 갈래는 키워드를 더해도 못 가른다</a></li>
+      <li><a href="#key-threshold-pair">이관 기준값은 프롬프트의 확신도 지침과 짝을 맞춘다</a></li>
+    </ul>
 
     <h2><span class="hl">다음은</span></h2>
     <p>여기까지 하면 문의 한 줄을 넣었을 때 <code>{route: 'SHIPPING', confidence: 0.97, action: 'HANDLE'}</code> 이 나와요. 그런데 <strong>고객이 받는 것은 갈래 이름이 아니에요.</strong> 고객은 "배송비가 얼마인지"를 물었고, 우리는 아직 그 숫자를 한 번도 꺼내 본 적이 없습니다. <a href="cs-agent-grounding.html">다음 편</a>에서 실제로 답하게 만들어요.</p>

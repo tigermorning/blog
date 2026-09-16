@@ -110,7 +110,7 @@
     </table>
     <p><strong>핵심 한 줄:</strong> 외워서 답해도 되는 값과 반드시 열어 봐야 하는 값을 <strong>가르는 일</strong>이 이 편의 전부예요.</p>
 
-    <h2><span class="hl">전체 흐름</span></h2>
+    <h2 id="flow"><span class="hl">전체 흐름</span></h2>
     <svg viewBox="0 0 700 210" role="img" aria-label="분류 결과를 받아 해당 장만 골라 컨텍스트를 만들고, 모델 상자와 도구 상자 사이를 오가는 조회 루프를 돈 뒤 답변을 만들고, 가드레일이 숫자의 출처를 확인해 통과하면 발송 위반이면 재생성하거나 이관하는 흐름">
       <defs>
         <marker id="csg1" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
@@ -161,11 +161,16 @@
     <p>두 번째가 더 중요해요. 사람도 마찬가지잖아요 — 관련 없는 정보가 눈앞에 많으면 판단이 흐려집니다.</p>
     <p>그래서 매뉴얼을 장 단위로 쪼개고 라우트에 해당하는 장만 조립합니다. 어느 장이 필요한지는 목차가 이미 알려 줘요. 매뉴얼이 애초에 업무 유형별로 장을 나눠 뒀거든요. 여기에 <strong>모든 응대에 적용되는 장</strong>(기본 원칙, 문의 유형 분류, 응대 범위, 문장 태도)은 라우트와 무관하게 항상 넣습니다.</p>
     <p>줄어든 폭은 전문의 3분의 1에서 절반 남짓이었어요. 극적이지 않죠. 하지만 <strong>줄여야 할 것은 총 길이가 아니라 "관련 없는 규정"</strong>이고, 그 목적은 달성됐습니다. 배송 문의용 컨텍스트에는 반품 배송비 5,000원이 아예 존재하지 않으니 모델이 그 숫자를 끌어다 쓸 방법 자체가 없어요.</p>
+    <div class="key-point" id="key-remove-wrong-material">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>필요한 장만 넣는 설계의 핵심 효과는 요금 절감이 아니라 <strong>오답의 재료를 치워 두는 것</strong>이에요. 프롬프트에 없는 숫자는 모델이 끌어다 쓸 수 없으니까요. 요금이 주는 건 덤이에요.</p>
+    </div>
     <p>이 구조의 또 다른 장점은 <strong>정책 개정에 자동으로 따라간다</strong>는 거예요. 담당 부서가 출고 마감 시각을 11시에서 10시로 바꾸면, 코드를 한 줄도 안 고쳐도 다음 요청부터 바뀐 값을 씁니다. 반대로 정책 값을 코드에 상수로 박아 두면 개정마다 코드를 고쳐야 하고, 고치는 걸 잊으면 에이전트는 옛 정책을 계속 안내해요. <strong>정책은 데이터이지 코드가 아닙니다.</strong></p>
 
     <h2 id="tools"><span class="hl">② 어떤 함수를 만들지는 문서가 알려 준다</span></h2>
     <p>에이전트를 만들 때 가장 흔한 실수가 개발자가 자기 판단으로 도구 목록을 정하는 거예요. "상품 정보 조회 도구가 필요하겠지" 하고 만들다 보면, 정작 조회해야 하는 값을 프롬프트에 상수로 박아 두는 실수를 저지릅니다.</p>
     <p>그런데 더 나은 출발점이 이미 있었어요. 제가 받은 매뉴얼은 <strong>건마다 달라지는 값은 본문에 적지 않고 <code>[어드민 조회]</code> 표시와 함께 화면 경로만 안내</strong>하고 있었습니다. 사람 상담원에게 "이건 외우지 말고 화면에서 확인하라"는 뜻이죠.</p>
+    <p>사람을 위한 문서인데 왜 값을 안 적었을까요? <strong>적어 두면 틀리기 때문</strong>이에요. 카테고리별 기준액이나 재고는 프로모션·정책에 따라 수시로 바뀌는데, 매뉴얼 개정은 그 속도를 못 따라가요. 매뉴얼에 적힌 옛 금액을 상담원이 믿고 안내하면 틀린 안내가 나가죠. 그래서 매뉴얼은 <strong>"어제 맞았던 금액이 오늘 틀릴 수 있으니 화면에서 확인하라"</strong>고 못 박아 둔 거예요.</p>
     <p>참고로 제가 조회한 것은 실제 운영 데이터베이스가 아니라 그 구조를 본뜬 <strong>목 데이터</strong><sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>였어요. 실제 시스템에 연결하지 않고도 조회 함수를 만들고 시험할 수 있으니까요.</p>
     <p class="run-tag run-tag--concept">개념 설명용 <span class="run-tag-why">— 매뉴얼의 배송 장을 같은 구조로 줄여 본 것이에요</span></p>
     <pre><code>3장. 배송 안내
@@ -177,7 +182,7 @@
     [어드민 조회] 주문 상세 &gt; 배송 정보
 3.4 출고 마감은 11시이며, 이후 주문은 다음 영업일에 출고된다.</code></pre>
     <p>같은 장 안에서 두 부류가 갈려요. <strong>3.1·3.4는 값이 본문에 적혀 있고</strong>(모든 고객에게 같으니까), <strong>3.2·3.3은 값 대신 화면 경로만 적혀 있어요</strong>(건마다 다르니까). 앞의 것은 프롬프트에 그대로 들어가고, 뒤의 것은 함수가 됩니다.</p>
-    <p>그 표시가 그대로 <strong>우리가 만들 도구의 명세</strong>가 됩니다. 정규식 한 줄로 전부 뽑아낼 수 있고요. 뽑아 보니 같은 화면이 반복해서 나왔어요 — 소재·실측·원산지·재고·보증서가 전부 「상품 상세」 화면입니다. 한 번 열면 그 값들이 다 보인다는 뜻이죠.</p>
+    <p>그 <code>[어드민 조회]</code> 표시가 그대로 <strong>우리가 만들 도구의 명세</strong>가 됩니다. 정규식 한 줄로 전부 뽑아낼 수 있고요. 뽑아 보니 같은 화면이 반복해서 나왔어요 — 소재·실측·원산지·재고·보증서가 전부 「상품 상세」 화면입니다. 한 번 열면 그 값들이 다 보인다는 뜻이죠.</p>
     <p>그래서 <strong>화면 하나가 함수 하나</strong>가 됩니다. 실무의 자연스러운 설계이기도 해요. 관리자 API는 보통 화면 단위로 나뉘어 있으니까요.</p>
     <table>
       <thead><tr><th>관리자 화면</th><th>함수</th><th>무엇을 받아 무엇을 주나</th></tr></thead>
@@ -211,6 +216,14 @@ def get_shipping_policy(product_id: str, paid_amount: int = None) -> dict:
     <p>세 가지가 한꺼번에 들어 있어요. <strong>타입 힌트</strong>가 모델이 채울 입력 형식이 되고, <strong>설명문</strong>이 모델이 읽는 도구 설명이 되고, <code>short_of</code>는 <a href="#calc">뒤에 나올 계산 규칙</a>대로 코드가 미리 빼 둔 값이에요. 그리고 <code>free_over</code>가 <code>None</code>인 상품이 하나 섞여 있는 것도 일부러예요 — <a href="#null"><code>null</code> 절</a>에서 이 값이 다시 나옵니다.</p>
     <p>반대로 매뉴얼 본문에 값이 그대로 적힌 항목은 조회하지 않아요. 기본 배송비 2,500원, 반품 배송비 5,000원, 출고 마감 11시 같은 것들이죠. 프롬프트에 이미 들어가 있으니 모델이 바로 답해도 됩니다.</p>
     <p><strong>이 두 부류를 가르는 것이 이 편의 핵심 개념이에요.</strong> 뒤에서 검사기를 만들 때 "조회 결과에 있거나 매뉴얼 고정값이거나"가 정확히 통과 조건이 되거든요.</p>
+    <div class="key-point" id="key-admin-lookup-mark">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>매뉴얼의 <code>[어드민 조회]</code> 표시는 사람에게는 "외우지 말고 화면을 열어라"라는 뜻이에요. 에이전트를 만드는 쪽에는 두 가지를 공짜로 줍니다.</p>
+      <ul>
+        <li><strong>만들 도구 목록</strong> — 표시가 붙은 화면이 곧 함수예요. 상품 이름 검색처럼 거들어 주는 도구 몇 개를 빼면, 조회 도구 대부분을 지어낼 필요가 없어요.</li>
+        <li><strong>검사기의 통과 조건</strong> — 표시가 없는 값은 프롬프트에 넣어도 되는 고정값이고, 표시가 있는 값은 조회 결과(와 거기서 한 단계 계산한 값)에서만 와야 해요.</li>
+      </ul>
+    </div>
 
     <h3 id="calc">계산도 도구가 맡는다</h3>
     <p>배송비 조회 함수에는 하나를 더 넣었어요. 결제 금액을 함께 받으면 <strong>부족액까지 계산해서</strong> 돌려줍니다.</p>
@@ -232,11 +245,34 @@ def get_shipping_policy(product_id: str, paid_amount: int = None) -> dict:
     <h3 id="null"><code>null</code>이 가장 중요한 값이에요</h3>
     <p>반품 건을 조회했더니 검품 결과·귀책·배송비 부담 주체가 전부 <code>null</code>로 나왔어요. 이건 데이터가 없어서 비어 있는 게 아니라 <strong>아직 결정되지 않았다는 정보</strong>입니다. 검품이 안 끝났으니 누가 부담하는지 확정할 수 없는 상태죠.</p>
     <p>이 구분이 실무에서 아주 중요해요. <code>null</code>을 "값 없음"으로 취급해 무시하면 에이전트는 다른 근거를 찾아 답을 만들려 하고, 결국 "고객님이 부담하셔야 합니다" 같은 단정을 하게 됩니다. 그런데 검품 결과가 하자로 나오면 그 안내는 틀린 것이 되고, 이미 한 안내를 번복해야 해요. 제가 본 매뉴얼이 이 지점을 <strong>"항의가 가장 많이 발생하는 지점"</strong>으로 명시한 이유입니다.</p>
+    <p>구체적으로 볼게요. 고객이 "상세페이지에 적힌 소재 혼용률이 실물 택이랑 달라서 반품했는데, 배송비 제가 내나요?"라고 물었고, 반품 건을 조회하니 이렇게 나왔다고 해 봅시다.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 <span class="run-tag-why">— 반품 조회 결과를 같은 구조로 줄인 샘플이에요</span></p>
+    <pre><code>{"order_id": "O-1006", "stage": "검품중",
+ "reason_stated": "상세페이지 소재 혼용률과 실물 택 표기가 다름",
+ "inspection_result": null, "fault_party": null, "shipping_fee_bearer": null}</code></pre>
+    <p>매뉴얼에서 <strong>상세페이지 오표기</strong>는 회사가 배송비를 내는 사유예요. 다만 정말 오표기인지는 상품이 들어와 검품해야 확정되고, 아니라고 나오면 왕복 배송비가 고객 부담이에요. <code>null</code> 규칙이 없으면 모델은 이 빈칸을 다른 근거로 메워요. 메우는 방향은 두 가지고, 둘 다 사고예요.</p>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad"><strong>고객 말을 근거로</strong> "상세페이지 오표기라 반품 배송비는 무료입니다"라고 답한다 → 검품에서 오표기가 아니라고 나오면 왕복 배송비가 고객 부담이 되고, 이미 한 약속을 번복하거나 회사가 대신 물어야 한다<br><br><strong>규정의 기본값을 근거로</strong> "단순 변심 기준이라 고객 부담입니다"라고 답한다 → 고객은 "내 말을 못 믿는다"로 받아들이고, 오표기로 확인되면 이 안내도 틀린 것이 된다</td>
+          <td class="choice-good">"배송비 부담은 상품이 입고된 뒤 검품에서 확정돼요. 고객님을 의심해서가 아니라 모든 반품 건에 똑같이 적용되는 절차라, 지금은 배송비가 발생할 수 있다고 안내드려요. 검품에서 오표기로 확인되면 배송비는 차감되지 않습니다" → 지금 확정된 것(검품 중)과 아직 안 된 것(부담 주체)을 나눠 말하니 번복할 일이 없다</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="key-point" id="key-null-is-undecided">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>조회 결과의 <code>null</code>은 오류도 빈칸도 아니라 <strong>"아직 정해지지 않았다"는 값</strong>이에요. 고객 말로 채워도, 규정의 기본값으로 채워도, 다시 조회해 보고 임의로 판단해도 전부 단정이 됩니다. 할 일은 <strong>미확정이라고 밝히고, 그게 모든 건에 같은 절차라는 것을 함께 설명하는 것</strong>이에요.</p>
+    </div>
 
     <h2 id="toolcall"><span class="hl">모델이 스스로 부르게 한다</span></h2>
     <p>여기까지는 사람이 조회 결과를 골라서 프롬프트에 넣어 줬어요. 그런데 실제 서비스에서는 고객이 "캔버스화"라고만 말할 뿐, 그게 상품번호 몇 번인지도 결제 금액이 얼마인지도 우리가 미리 알 수 없습니다.</p>
     <p>그래서 모델이 스스로 판단해 함수를 호출하게 만들어요. <a href="langgraph-branches-and-tool-loop.html">4편에서 본 도구 호출</a>과 같은 구조입니다. 중요한 건 <strong>모델이 함수를 직접 실행하지 않는다</strong>는 점이에요. 모델은 "이 함수를 이 값으로 불러 달라"고 요청할 뿐이고, 실행은 우리 코드가 합니다. 그래서 어떤 호출을 허용할지 우리가 통제할 수 있어요.</p>
     <p>함수를 도구로 등록하는 건 데코레이터 한 줄인데, 이때 <strong>타입 힌트가 입력 형식이 되고 설명문(docstring)이 도구 설명이 됩니다.</strong> 그래서 설명문을 성의 있게 쓰는 것이 성능에 직접 영향을 줘요. 모델은 그 설명을 읽고 언제 이 도구를 쓸지 판단하거든요.</p>
+    <div class="key-point" id="key-docstring">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>모델이 <strong>어느 도구를 부를지 고를 때</strong> 보는 것은 함수 이름, 설명문, 타입 힌트로 만든 입력 형식뿐이에요. 함수 본문 코드는 전달되지 않고, 돌려주는 값은 부른 <strong>뒤에야</strong> 받아요. 본문에서 아무리 잘 처리해도 <strong>설명문에 "언제 부르는 도구인지"가 없으면 모델은 모릅니다.</strong></p>
+    </div>
 
     <h3>되돌아오는 화살표 하나가 루프예요</h3>
     <p>도구 호출은 한 번으로 안 끝나요. 모델이 도구를 부르고, 우리가 실행해 결과를 돌려주면, 모델은 그 결과를 보고 <strong>또 다른 도구를 부를 수도</strong> 있고 이제 답변을 낼 수도 있습니다. 상품 이름으로 상품번호를 찾고, 그 번호로 배송정책을 조회하는 식이죠.</p>
@@ -248,7 +284,7 @@ g.add_node("tools", ToolNode(도구목록))  # 모델이 요청한 호출을 실
 g.add_edge(START, "agent")
 g.add_conditional_edges("agent", tools_condition)
 g.add_edge("tools", "agent")            # 결과를 들고 모델에게 되돌아간다</code></pre>
-    <p>마지막 줄의 <strong>되돌아오는 화살표가 곧 루프</strong>예요. <code>tools_condition</code>은 모델의 마지막 메시지에 도구 호출 요청이 붙어 있으면 <code>tools</code>로, 없으면 끝으로 보내는 판정입니다.</p>
+    <p>위 코드의 마지막 줄 <code>g.add_edge("tools", "agent")</code>가 <a href="#flow">전체 흐름 그림</a>에서 ② 안을 되돌아오던 그 화살표예요. <code>tools_condition</code>은 모델의 마지막 메시지에 도구 호출 요청이 붙어 있으면 <code>tools</code>로, 없으면 끝으로 보내는 판정입니다.</p>
     <p>그리고 <strong>상한을 반드시 겁니다.</strong> 무한 루프를 막는 안전장치이고, 실제 서비스에서도 빠뜨리면 안 돼요. 상한에 걸리면 답변 대신 이관으로 끝납니다.</p>
     <p>이 상한 때문에 뒤에서 한 번 데였어요. 프롬프트로 "조회를 더 하라"고 아무리 써도 <strong>상한이 낮으면 조회를 다 마치기 전에 이관으로 떨어지거든요.</strong> 그 이야기는 <a href="cs-agent-improve.html#one-line">다음 편</a>에 있어요.</p>
 
@@ -327,6 +363,36 @@ def check(answer, tool_results):
     <p>구현에서 신경 쓸 점이 셋 있어요. 첫째, <strong>표기 정규화</strong> — 답변에는 "100,000원"인데 조회 결과에는 <code>100000</code>이라 쉼표를 지우고 비교해야 합니다. 둘째, <strong>작은 숫자 처리</strong> — "2~3영업일" 같은 작은 수까지 위반으로 잡으면 경고가 쏟아져 쓸 수 없으니, 금액대를 주 검사 대상으로 두고 작은 수는 고정값 목록으로 따로 허용해요. 셋째, <strong>계산으로 유도된 값</strong> — 도구가 부족액을 계산해 주도록 만들어 대부분 없앴지만, 안전을 위해 한 단계 산술로 나오는 값은 허용합니다.</p>
     <p>한계도 정직하게 짚어 둘게요. <strong>숫자가 아닌 오류는 못 잡아요.</strong> "개별 구매 가능합니다"라고 잘못 답하면 숫자가 없으니 통과합니다. 그리고 정당한 계산을 위반으로 잡는 <strong>오탐</strong>도 생길 수 있어요 — 멀쩡한 것을 걸러 낸 이 실수가 <a href="confusion-matrix-and-metrics.html#three">정밀도를 떨어뜨리는 바로 그 칸</a>이고, 반대로 지어낸 숫자를 놓치는 <strong>미탐</strong>은 재현율 쪽이에요. 그래서 가드레일은 즉시 차단보다 <strong>경고 후 재생성 또는 이관</strong>으로 쓰는 것이 안전합니다.</p>
 
+    <h3 id="date-slip">날짜는 이 검사기를 그냥 지나가요</h3>
+    <p>숫자가 들어 있는데도 못 잡는 오류가 있어요. 품절된 스니커즈의 재입고 정보를 조회했더니 <strong>확정되지 않음, 예정일 없음</strong>이 나왔는데, 모델이 "재입고 예정일은 9월 15일입니다"라고 답한 경우예요. 제 실습 저장소의 검사기에 그대로 넣어 봤어요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 제가 2026-09-16에 돌렸을 때 찍힌 출력이에요</span></p>
+    <pre><code>조회 결과: {'is_soldout': True, 'is_confirmed': False, 'expected_date': None, ...}
+
+"재입고 예정일은 9월 15일입니다."      → ok: True   답변 속 숫자 [9, 15]
+"재입고 예정일은 2026-09-15입니다."    → ok: False  출처 불명 [2026]</code></pre>
+    <p>첫 줄이 통과한 이유는 <a href="#guardrail">위에서 정한 작은 숫자 처리</a> 때문이에요. 1,000 이상만 검사하니 9와 15는 검사 대상이 아닙니다. 둘째 줄이 걸린 건 날짜를 알아봐서가 아니라 <code>2026</code>이 1,000을 넘어서예요 — <strong>우연히 걸린 거죠.</strong></p>
+    <p>그리고 이건 숫자의 출처 문제가 아니라 <strong>확정되지 않은 것을 확정처럼 말한</strong> 문제예요. 제가 받은 매뉴얼은 재입고 예정일을 확정 안내하지 말고, 관리자 화면에 확정 일자가 등록된 경우에만 그 날짜를 안내하라고 적어 뒀어요. 입고 일정은 수시로 밀리니까요. 그러니 이 규칙은 <strong>조회 결과의 확정 여부를 보는 검사</strong>로 따로 만들어야 합니다.</p>
+    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK <span class="run-tag-why">— 숫자 검사 옆에 붙이는 규칙 검사예요</span></p>
+    <pre><code>import re
+
+DATE = re.compile(r"\d{1,2}\s*월\s*\d{1,2}\s*일|\d{4}-\d{2}-\d{2}|다음\s*주|이번\s*주")
+
+def check_unconfirmed_date(answer, tool_results):
+    r = tool_results.get("get_restock_info") or {}
+    if r.get("is_confirmed") is False and DATE.search(answer):
+        return "미확정 재입고일 단정"
+    return None</code></pre>
+    <p>같은 날 네 문장으로 돌려 본 결과예요. 확정되지 않은 상품에 날짜를 말한 두 문장은 걸리고, 미확정이라고 답한 문장과 <strong>확정된 상품</strong>의 날짜 안내는 통과했어요. 다만 이 검사는 <strong>재입고 조회를 한 경우</strong>만 봐요. 조회 없이 날짜를 말하면 볼 결과가 없어 그냥 지나가니, 그 경우는 <a href="#scoring"><code>tools</code> 조건</a>처럼 "불렀어야 할 도구를 불렀나"로 따로 잡아야 해요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 제가 2026-09-16에 돌렸을 때 찍힌 출력이에요</span></p>
+    <pre><code>미확정 상품  "재입고 예정일은 9월 15일입니다."                   → 미확정 재입고일 단정
+미확정 상품  "다음 주쯤 들어올 것 같습니다."                      → 미확정 재입고일 단정
+미확정 상품  "재입고 일정이 아직 확정되지 않았습니다. 알림 …"      → None
+확정 상품    "블랙 XL은 9월 1일 입고 예정입니다."                 → None</code></pre>
+    <div class="key-point" id="key-rule-check">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>숫자 출처 검사는 <strong>"이 숫자가 어디서 왔나"</strong>만 봐요. "확정 안 된 날짜를 말하지 말라"처럼 <strong>조회 결과의 상태와 답변의 표현을 맞대어 봐야 하는 규칙</strong>은 그 규칙 하나마다 검사를 따로 만듭니다. 매뉴얼에서 "~하지 않는다"로 끝나는 문장이 그 후보예요.</p>
+    </div>
+
     <h2 id="scoring"><span class="hl">답변 품질은 어떻게 채점하나</span></h2>
     <p>분류는 정답이 하나였으니 채점이 간단했어요. 답변은 다릅니다. 같은 뜻을 여러 문장으로 쓸 수 있으니 문자열 일치로는 못 재요. "기준은 100,000원입니다"와 "10만원 이상 구매 시 무료배송입니다"는 둘 다 맞는 답이죠.</p>
     <p>그래서 정답셋은 답변 전문을 정답으로 두지 않고 <strong>반드시 만족해야 하는 조건</strong>을 정답으로 둡니다.</p>
@@ -351,6 +417,10 @@ def check(answer, tool_results):
     <p>답변 문장이 정답 자리에 없다는 점을 봐 주세요. 대신 <strong>불러야 할 함수·들어가야 할 값·나오면 안 되는 표현</strong>이 정답이에요. 그래서 "10만원 이상이면 무료배송"이라고 쓰든 "기준은 100,000원입니다"라고 쓰든 둘 다 통과합니다.</p>
     <p><code>tools</code>가 걸려 있는 이유가 중요해요. <strong>조회하지 않고 맞는 답을 냈다면 그것은 운이 좋았을 뿐 재현되지 않습니다.</strong> 그래서 결과만 보지 않고 과정도 채점해요.</p>
     <p>그리고 <code>forbid</code>가 이 정답셋의 핵심입니다. <strong>하지 말아야 할 것을 하지 않았는지</strong>를 검사하는 조건이거든요. 조회 전에 단정한 수치나 금지된 확답이 여기 들어가요.</p>
+    <div class="key-point" id="key-forbid">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p><code>forbid</code>가 특별한 이유는 <strong>자연스러운 문장도 실패로 판정할 수 있어서</strong>예요. "무료배송 기준은 40,000원입니다"는 문법도 말투도 완벽하지만, 조회 없이 단정한 숫자라면 실패입니다. 모델이 가장 어기기 쉬운 곳이라 따로 적는 거예요.</p>
+    </div>
 
     <h3>서로 다른 두 축</h3>
     <p>채점 결과를 읽으면서 알게 된 것이 있어요. 에이전트의 품질에는 <strong>같이 움직이지 않는 두 축</strong>이 있습니다.</p>
@@ -376,6 +446,10 @@ def check(answer, tool_results):
       </tbody>
     </table>
     <p>여기서 <strong>답변을 만들지 않고 끝나는 경로가 여럿</strong>이라는 점이 중요해요. 근거가 없거나 응대 범위를 벗어난 문의에 답변을 만들면 그 자체가 오답이니, <strong>말하지 않는 것이 올바른 처리</strong>입니다.</p>
+    <div class="key-point" id="key-silent-exits">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>답변 없이 끝나는 길(이관·되묻기·범위 밖 안내·검사 위반)은 임시 우회로가 아니에요. <strong>근거 없이 만든 답변은 그 자체로 오답</strong>이라, 말하지 않는 길이 정상 경로로 그래프에 들어가 있어야 합니다.</p>
+    </div>
     <p>그리고 고객은 원래 여러 번에 나눠 말해요. "캔버스화 배송비 얼마예요?" 다음에 "그럼 두 켤레 사면요?"가 옵니다. 이때 그래프에 <strong>체크포인터</strong><sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>를 붙이면 대화별로 상태가 저장되고 다음 호출에서 복원돼요. 대화 이력을 담는 코드를 따로 쓰지 않아도 되고, <strong>그래프 정의는 한 줄도 바뀌지 않습니다</strong> — 세울 때 체크포인터만 건네주면 돼요. 실제 서비스라면 메모리 대신 DB를 씁니다.</p>
 
     <div class="apply-box apply-box--try" id="try-it">
@@ -435,8 +509,25 @@ def check(answer, tool_results):
           <td>프롬프트에서 그 조회 지침이 <strong>어디에</strong> 적혀 있는지 — 규칙 목록 안인지, 번호 붙은 절차인지</td>
           <td>표현만 다른 입력 서너 개를 넣어 호출된 도구 목록을 비교한다. 들쭉날쭉하면 지침을 절차로 올려요 — <a href="#toolcall">절차 절</a></td>
         </tr>
+        <tr id="suspect-unconfirmed-date">
+          <td>검사기는 통과했는데 "9월 15일 입고 예정", "다음 주쯤 들어와요"처럼 <strong>아직 정해지지 않은 날짜</strong>를 고객에게 말했다</td>
+          <td>그 답변의 조회 결과에서 확정 여부 칸(<code>is_confirmed</code> 같은 것). 숫자 검사기의 최소 검사 크기 설정</td>
+          <td>확정 여부가 거짓인데 답변에 날짜 표현이 있는지 본다. 숫자 검사기는 1,000 미만을 안 보니 "9월 15일" 같은 표기는 못 잡아요 — 규칙 검사를 따로 붙여요, <a href="#date-slip">날짜 절</a></td>
+        </tr>
       </tbody>
     </table>
+
+    <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
+    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 다른 편의 같은 목록은 <a href="langgraph-what-and-why.html#key-recap">1편</a> · <a href="cs-agent-routing-eval.html#key-recap">17편</a> · <a href="cs-agent-improve.html#key-recap">19편</a>에 있어요.</p>
+    <ul class="key-recap">
+      <li><a href="#key-remove-wrong-material">필요한 장만 넣는 이유는 요금이 아니라 오답 재료 치우기</a></li>
+      <li><a href="#key-admin-lookup-mark"><code>[어드민 조회]</code> 표시는 도구 목록이자 검사기의 통과 조건</a></li>
+      <li><a href="#key-null-is-undecided"><code>null</code>은 "아직 안 정해짐" — 채우지 말고 절차를 설명한다</a></li>
+      <li><a href="#key-docstring">모델은 도구의 본문이 아니라 설명문과 입력 형식을 본다</a></li>
+      <li><a href="#key-rule-check">숫자 출처 검사가 못 보는 규칙은 규칙마다 검사를 따로</a></li>
+      <li><a href="#key-forbid"><code>forbid</code>는 자연스러운 문장도 실패로 판정한다</a></li>
+      <li><a href="#key-silent-exits">답변 없이 끝나는 길은 우회로가 아니라 정상 경로</a></li>
+    </ul>
 
     <h2><span class="hl">다음은</span></h2>
     <p>세 겹을 다 붙이고 정답셋으로 채점했더니 첫 점수는 60% 안팎이었어요. <a href="cs-agent-improve.html">다음 편</a>에서는 이 숫자를 94%까지 올려 봅니다. 재미있는 건 <strong>제가 새로 발명한 규칙은 거의 다 실패했고, 매뉴얼에 이미 적혀 있던 걸 되돌려 놓은 변경이 가장 크게 올랐다</strong>는 거예요.</p>
