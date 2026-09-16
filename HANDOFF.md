@@ -52,6 +52,7 @@ hcom status
    - 앞으로 도구 기록은 이 하위 카테고리에 쌓음
    - 양방향 링크 연결: `multi-agent-ecosystem-tools.html`, `opencode-sisyphus-orchestration.html`
    - `node scripts/build-search-data.mjs` 재실행 완료 (227개 항목)
+   - 목록 강조 규칙을 새로 만듦 — 아래 gotcha 참조
 
 ---
 
@@ -82,6 +83,10 @@ hcom status
 - **완료 보고에 커밋 해시를 넣게 할 것.** 메시지를 믿지 말고 `git branch --contains <해시>`로 검증
 - **새 셸에서 `hcom`을 못 찾으면 PATH를 넣을 것** — `export PATH="/c/Users/user/.local/bin:$PATH"`
 - **`.omc/skills/`는 지우지 말 것.** `.gitignore`가 `.omc/*`를 막지만 이 폴더만 예외로 커밋 대상
+- **`posts.html` 목록에서 이름을 강조할 때는 `<span class="name">`을 쓸 것.** 색은 그 `<li>`의 `--folder-accent`를 따라가므로 `<li style="--folder-accent:var(--folder-N);">`만 주면 됨. `<strong>`을 쓰면 `main strong`의 노란 형광펜이 걸려 다른 항목과 강조 방식이 어긋남
+- **짧은 영문 소문자 이름에는 `name--chip`을 같이 줄 것** (`class="name name--chip"`). 색만으로는 덩어리가 안 생겨 긴 한글 제목 사이에서 묻힘. 긴 한글 이름에는 칩을 붙이지 않음
+- **사이드바 하위 항목을 추가하면 `style.css`의 색 배정도 늘릴 것.** `.sidebar-tree > li:nth-of-type(2) .tree-subgroup:nth-child(N)`에 지정된 수만큼만 색이 붙고, 나머지는 대분류 탭 색을 그대로 물려받아 서로 구분이 안 됨
+- **사이드바에는 `main` 안의 강조 규칙이 안 닿음.** 형광펜이 필요하면 `.tree-leaf-list .leaf-mark`를 쓰고, 세로 padding은 주지 말 것 — 16px 글자 상자가 이미 24px 줄 높이를 채워서 위아래 항목을 침범함
 
 ---
 
