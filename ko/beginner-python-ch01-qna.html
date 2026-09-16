@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>왕초보를 위한 Python 1장 — 문제 풀이와 질문 해설 - Tigermorning</title>
-  <meta name="description" content="위키독스 『왕초보를 위한 Python』 1장 실습 문제를 풀면서 생긴 질문 13개를 정리했습니다. / 와 //, import, 직선 거리 계산과 math.hypot, 거듭제곱 **, 리스트 인덱싱·슬라이싱, append·extend·insert와 remove·pop·del, 메서드와 키워드의 차이까지 다룹니다.">
+  <meta name="description" content="위키독스 『왕초보를 위한 Python』 1장 실습 문제를 풀면서 생긴 질문 14개를 정리했습니다. / 와 //, import, 직선 거리 계산과 math.hypot, 거듭제곱 **, 리스트 인덱싱·슬라이싱, append·extend·insert와 remove·pop·del, 메서드와 키워드의 차이, 제곱 문제 풀이까지 다룹니다.">
   <meta property="og:type" content="article">
   <meta property="og:title" content="왕초보를 위한 Python 1장 — 문제 풀이와 질문 해설">
-  <meta property="og:description" content="위키독스 『왕초보를 위한 Python』 1장 실습 문제를 풀면서 생긴 질문 13개와 답을 정리했습니다.">
+  <meta property="og:description" content="위키독스 『왕초보를 위한 Python』 1장 실습 문제를 풀면서 생긴 질문 14개와 답을 정리했습니다.">
   <meta property="og:url" content="https://tigermorning.github.io/blog/ko/beginner-python-ch01-qna.html">
   <meta property="og:locale" content="ko_KR">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -24,16 +24,16 @@
 
   <main>
     <h1><span class="hl">왕초보를 위한 Python 1장</span> — 문제 풀이와 질문 해설</h1>
-    <p class="post-date">2026. 9. 15.</p>
+    <p class="post-date">2026. 9. 15. (9. 16. 1.6.1 제곱 문제 추가)</p>
     <p class="post-date">※ 이 글은 위키독스 <a href="https://wikidocs.net/book/2" target="_blank" rel="noopener">『왕초보를 위한 Python』</a> 1장의 실습 문제를 풀면서 제가 던진 질문과 답을 정리한 것입니다. 교재 본문은 옮기지 않았으니, 문제 원문은 각 절의 링크에서 확인해 주세요.</p>
 
-    <p class="one-liner">1장 실습을 풀다가 막힌 질문 13개를, 파이썬을 처음 보는 사람 기준으로 하나씩 풀어 쓴 해설이에요.</p>
+    <p class="one-liner">1장 실습을 풀다가 막힌 질문 14개를, 파이썬을 처음 보는 사람 기준으로 하나씩 풀어 쓴 해설이에요.</p>
 
     <div class="why-read">
       <p class="why-read-title">이 글을 읽기 전에</p>
       <dl>
         <dt>어디쯤인가</dt>
-        <dd><a href="posts.html#python-basics-books">보충수업 책장 › 파이썬 스터디</a> — 『왕초보를 위한 Python』 1장(1.1 ~ 1.3) 해설</dd>
+        <dd><a href="posts.html#python-basics-books">보충수업 책장 › 파이썬 스터디</a> — 『왕초보를 위한 Python』 1장(1.1 ~ 1.6) 해설</dd>
         <dt>이런 게 궁금했다면</dt>
         <dd>
           <ul>
@@ -55,6 +55,7 @@
           <ul>
             <li><code>7 // 2 * 4</code>처럼 나누어떨어지지 않는 식에 <code>//</code>를 쓰면, 에러 없이 틀린 값(<code>14.0</code> 대신 <code>12</code>)이 나와요. <a class="suspect-jump" href="#suspect-floor-division">언제 의심하나 ↓</a></li>
             <li>슬라이싱의 끝 번호가 빠진다는 걸 모르면, 원소 하나가 늘 모자란 결과를 받고도 이유를 못 찾아요. <a class="suspect-jump" href="#suspect-slice-end">언제 의심하나 ↓</a></li>
+            <li>입력받은 값을 <code>int()</code>로 바꾸지 않으면, 곱셈이 <code>333</code>처럼 글자를 이어 붙인 값으로 조용히 바뀌어요. <a class="suspect-jump" href="#suspect-str-multiply">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -84,6 +85,7 @@
         <tr><td><a href="#q11">Q11. <code>del</code>은 왜 괄호가 없나요?</a></td></tr>
         <tr><td><a href="#q12">Q12. "리스트에만 있는 기능"이 무슨 말인가요?</a></td></tr>
         <tr><td><a href="#q13">Q13. 메서드와 키워드는 언제 각각 쓰나요?</a></td></tr>
+        <tr><td>1.6.1 연습 문제: 제곱</td><td><a href="#q14">Q14. 제곱 문제의 답이 이해가 안 돼요</a></td></tr>
       </tbody>
     </table>
     <p>모든 코드는 Python 3.12에서 직접 실행해 결과를 확인했어요. 코드 블록의 <code>&gt;&gt;&gt;</code>는 파이썬 대화형 셸의 입력 표시라서 따라 치지 않아요. 1장 범위로 따로 만든 <a href="python-study/beginner-python/ch01-code-reading.html">1장 코드 읽기 실습 21문제</a>도 있어요.</p>
@@ -578,6 +580,91 @@ AttributeError: 'list' object has no attribute 'upper'
 [..., 'append', 'clear', 'copy', 'count', 'extend', 'index', 'insert', 'pop', 'remove', 'reverse', 'sort']
 &gt;&gt;&gt; help(f.pop)     # pop 사용법 설명</code></pre>
 
+    <!-- ============ 1.6.1 ============ -->
+    <hr>
+    <h2><span class="hl">1.6.1 연습 문제: 제곱</span></h2>
+    <p>문제 원문: <a href="https://wikidocs.net/101632" target="_blank" rel="noopener">wikidocs.net/101632</a></p>
+
+    <h3 id="q14">Q14. 제곱 문제의 답이 이해가 안 돼요</h3>
+    <p><strong>문제 요약:</strong> 사용자에게 정수를 입력받아, 그 수를 제곱해서 출력하는 스크립트를 만드는 문제예요. 3을 넣으면 9, 5를 넣으면 25가 나와야 해요.</p>
+    <p>교재 페이지에는 답이 코드로 적혀 있지 않고 <a href="https://github.com/ychoi-kr/wikidocs-chobo-python/blob/master/ch01/square.py" target="_blank" rel="noopener">깃허브 파일(<code>ch01/square.py</code>)</a> 링크만 걸려 있어요. 그 파일을 열면 답은 두 줄이에요.</p>
+    <p class="run-tag">실행: square.py로 저장 <span class="run-tag-why">— 아래 "직접 해 보기"에서 python 명령으로 실행해요</span></p>
+<pre><code>num = int(input())
+print(num * num)</code></pre>
+
+    <p><strong>첫째 줄 <code>num = int(input())</code> — 괄호는 안쪽부터</strong></p>
+    <ol>
+      <li><code>input()</code> — 사용자가 <code>3</code>을 치고 Enter를 누르면 <code>'3'</code>을 돌려줘요. 따옴표가 붙은 <strong>글자</strong>예요.</li>
+      <li><code>int('3')</code> — 글자를 정수 <code>3</code>으로 바꿔요.</li>
+      <li><code>num = 3</code> — <code>num</code>이라는 이름표에 담아요.</li>
+    </ol>
+    <ul>
+      <li><code>num</code>은 number에서 딴 이름일 뿐이라 <code>a</code>, <code>number</code>로 바꿔도 똑같이 동작해요(<a href="#q6">Q6</a>).</li>
+      <li><code>input()</code>과 <code>int()</code>가 처음이라면 <a href="python-study/beginner-python/ch01-code-reading.html#b6-qna">1장 코드 읽기 실습 기본 6의 "질문과 해설"</a>에서 한 줄씩 풀어 썼어요.</li>
+    </ul>
+
+    <p><strong>둘째 줄 <code>print(num * num)</code></strong></p>
+    <ul>
+      <li>괄호 안이 먼저 계산돼요. <code>num * num</code>은 <code>3 * 3</code>이라 <code>9</code>예요.</li>
+      <li><code>print()</code>는 계산이 끝난 값 하나를 화면에 보여 줘요.</li>
+    </ul>
+
+    <p><strong>입력이 3일 때 전체 흐름</strong></p>
+    <table>
+      <thead><tr><th>단계</th><th>값</th><th>종류</th></tr></thead>
+      <tbody>
+        <tr><td><code>input()</code></td><td><code>'3'</code></td><td>글자</td></tr>
+        <tr><td><code>int('3')</code></td><td><code>3</code></td><td>정수</td></tr>
+        <tr><td><code>num * num</code></td><td><code>9</code></td><td>정수</td></tr>
+        <tr><td><code>print(9)</code></td><td>화면에 <code>9</code></td><td>&#8212;</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>왜 <code>int</code>가 필요한가</strong></p>
+    <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
+<pre><code>&gt;&gt;&gt; '3' * '3'
+TypeError: can't multiply sequence by non-int of type 'str'
+&gt;&gt;&gt; '3' * 3
+'333'</code></pre>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad"><code>num = input()</code>으로 받아 <code>num * 3</code>처럼 쓴다 &#8594; 글자를 3번 이어 붙여 <code>'333'</code>이 나와요. 에러가 안 나고 숫자처럼 보여서 더 위험해요.</td>
+          <td class="choice-good"><code>num = int(input())</code>으로 받는다 &#8594; <code>num * num</code>이 <code>9</code>로 계산돼요.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p><strong>같은 답이 되는 다른 풀이</strong></p>
+    <p class="run-tag">실행: square.py로 저장 <span class="run-tag-why">— 둘 중 아무거나 골라 써도 정답이에요</span></p>
+<pre><code>num = int(input())
+print(num ** 2)        # 거듭제곱 기호로 쓰기 (Q3)
+
+num = int(input())
+result = num * num     # 중간 결과에 이름 붙이기
+print(result)</code></pre>
+    <ul>
+      <li>출력이 같으면 모두 정답이에요.</li>
+      <li><code>num ** 2</code>와 <code>num * num</code>은 결과가 같아요.</li>
+    </ul>
+
+    <p><strong>직접 해 보기</strong></p>
+    <ol>
+      <li>아래 두 줄을 <code>square.py</code>로 저장해요.</li>
+    </ol>
+    <p class="run-tag">실행: square.py로 저장 <span class="run-tag-why">— 다음 명령이 이 파일을 읽어요</span></p>
+<pre><code>num = int(input('정수를 입력하세요: '))
+print(num * num)</code></pre>
+    <ol start="2">
+      <li>그 파일이 있는 폴더에서 터미널을 열고 실행해요.</li>
+    </ol>
+    <p class="run-tag">실행: 로컬 터미널</p>
+<pre><code>python square.py</code></pre>
+    <ol start="3">
+      <li><code>3</code>을 넣으면 <code>9</code>, <code>5</code>를 넣으면 <code>25</code>가 나오면 성공이에요.</li>
+    </ol>
+
     <hr>
     <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 1장 문법으로 짠 코드의 결과가 이상할 때</h2>
     <p>아래 문제들은 에러 없이 조용히 틀린 값을 내는 경우가 많아요. 결과가 예상과 다르면 이 표부터 확인해요.</p>
@@ -598,6 +685,11 @@ AttributeError: 'list' object has no attribute 'upper'
           <td>슬라이싱 결과에서 <strong>마지막 원소 하나가 늘 빠져요</strong></td>
           <td>대괄호 안의 끝 번호</td>
           <td><code>len(결과)</code>가 <code>끝 - 시작</code>과 같은지 봐요. 끝 원소까지 넣으려면 끝 번호를 1 크게 써요 (<a href="#q8">Q8</a>)</td>
+        </tr>
+        <tr id="suspect-str-multiply">
+          <td>숫자를 곱했는데 <strong><code>333</code>처럼 같은 숫자가 이어 붙은 값</strong>이 나와요</td>
+          <td>값을 받는 줄의 <code>input()</code>. 곱하는 줄은 범인이 아니에요</td>
+          <td><code>input()</code>이 <code>int(...)</code>로 감싸져 있는지 봐요. 글자에 숫자를 곱하면 그만큼 이어 붙어요 (<a href="#q14">Q14</a>)</td>
         </tr>
         <tr id="suspect-nested-list">
           <td>리스트 출력에 <strong>대괄호가 겹쳐</strong> <code>[..., ['a', 'b']]</code>처럼 보이고, <code>len()</code>이 예상보다 작아요</td>
