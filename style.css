@@ -379,6 +379,66 @@ main h3 {
   color: var(--accent);
 }
 
+/* 질문·답 글: 질문 하나를 <details class="qna">로 접는다(펼침 동작은 qna-toggle.js). */
+main details.qna {
+  margin: 0.75rem 0;
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  padding: 0 1rem;
+}
+
+main details.qna[open] {
+  padding-bottom: 0.75rem;
+}
+
+main details.qna > summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.7rem 0;
+}
+
+main details.qna > summary::-webkit-details-marker {
+  display: none;
+}
+
+main details.qna > summary::before {
+  content: '▸';
+  flex: none;
+  color: var(--accent);
+  transition: transform 0.15s ease;
+}
+
+main details.qna[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+main details.qna > summary h3 {
+  margin: 0;
+}
+
+main details.qna > summary:hover h3 {
+  text-decoration: underline;
+}
+
+.qna-controls button {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--ink);
+  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  padding: 0.15rem 0.7rem;
+  cursor: pointer;
+}
+
+.qna-controls button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 main blockquote {
   margin: 1.25rem 0;
   padding: 0.9rem 1.25rem;
