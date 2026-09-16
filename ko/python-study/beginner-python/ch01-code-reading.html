@@ -278,6 +278,8 @@ pre.out::before {
 
 /* ---------- level sections ---------- */
 .level { display: grid; gap: 18px; }
+/* display:grid가 hidden 속성을 덮어쓰지 않게 — 난이도 필터가 이 속성으로 숨긴다 */
+[data-level][hidden] { display: none; }
 .level-head { display: grid; gap: 4px; padding-bottom: 4px; }
 .level-head .tag {
   justify-self: start;
@@ -1462,11 +1464,15 @@ print(hours, minutes, seconds)</code></pre>
     btn.addEventListener('click', function () {
       var f = btn.dataset.filter;
       buttons.forEach(function (b) { b.setAttribute('aria-pressed', String(b === btn)); });
+      var picked = null;
       sections.forEach(function (s) {
         var lv = s.dataset.level;
         s.hidden = !(f === 'all' || lv === f);
+        if (lv === f) picked = s;
       });
-      window.scrollTo({ top: 0 });
+      // 고른 난이도의 첫머리로 옮긴다. 전체면 맨 위로.
+      if (picked) picked.scrollIntoView({ block: 'start' });
+      else window.scrollTo({ top: 0 });
     });
   });
 
