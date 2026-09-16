@@ -1586,3 +1586,17 @@ details[open] > summary .tree-toggle-icon {
 .pattern-map > p:last-child {
   margin-bottom: 0;
 }
+
+/* 인라인 다이어그램 — 좁은 화면에서 통째로 줄지 않고 가로로 밀어 본다 (fit-title.js가 감싼다) */
+.fig-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.fig-scroll > svg {
+  display: block;
+}
+@media (max-width: 720px) {
+  .fig-scroll > svg {
+    min-width: 640px;
+  }
+}
