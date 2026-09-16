@@ -722,6 +722,16 @@ body.list-page .site-header {
   color: var(--ink);
 }
 
+/* 목록 제목 안에서 교재·도구 이름만 색으로 띄운다. 제목 전체는 뒤에 설명이
+   붙어 길어지는데, 정작 찾는 건 앞의 이름이라 거기만 굵게·색으로 준다.
+   색은 그 항목의 --folder-accent를 따르므로, li에 변수만 주면 바뀐다.
+   hover하면 제목 전체가 같은 색이 되니 그때는 색 대비가 사라지는데,
+   그 순간에는 어차피 그 줄 하나만 보고 있으므로 문제되지 않는다. */
+.title-list-title .name {
+  font-weight: 700;
+  color: var(--folder-accent, var(--accent));
+}
+
 .title-list-date {
   flex: 0 0 auto;
   font-size: 0.78rem;
