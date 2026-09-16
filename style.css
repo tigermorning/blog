@@ -982,8 +982,8 @@ body.list-page .site-header {
 }
 
 /* 사이드바 트리 순서: 바이브코딩(1) 안의 소분류 4개가 폴더 1~4,
-   두 번째 대분류(보충수업 책장) 탭은 폴더 5, 그 안의 소분류 2개는
-   폴더 3·4로 대분류와 다르게 색을 준다. */
+   두 번째 대분류(보충수업 책장) 탭은 폴더 5, 그 안의 소분류 4개는
+   폴더 3·4·1·7로 대분류와도 서로와도 다르게 색을 준다. */
 .sidebar-tree > li:nth-of-type(1) .tree-subgroup:nth-child(1) { --folder-accent: var(--folder-1); }
 .sidebar-tree > li:nth-of-type(1) .tree-subgroup:nth-child(2) { --folder-accent: var(--folder-2); }
 .sidebar-tree > li:nth-of-type(1) .tree-subgroup:nth-child(3) { --folder-accent: var(--folder-3); }
@@ -995,6 +995,21 @@ body.list-page .site-header {
 .sidebar-tree > li:nth-of-type(2) .tree-group { --folder-accent: var(--folder-5); }
 .sidebar-tree > li:nth-of-type(2) .tree-subgroup:nth-child(1) { --folder-accent: var(--folder-3); }
 .sidebar-tree > li:nth-of-type(2) .tree-subgroup:nth-child(2) { --folder-accent: var(--folder-4); }
+.sidebar-tree > li:nth-of-type(2) .tree-subgroup:nth-child(3) { --folder-accent: var(--folder-1); }
+.sidebar-tree > li:nth-of-type(2) .tree-subgroup:nth-child(4) { --folder-accent: var(--folder-7); }
+
+/* 사이드바 잎 항목 안에서 이름만 형광펜으로 긋는다. main 안의 <strong>과 같은
+   그림이지만 사이드바는 main 밖이라 그 규칙이 안 닿아서 따로 둔다. 글자가
+   작으므로 세로 여백은 아예 두지 않는다. 16px 글자의 인라인 상자가 이미
+   23.7px라서 줄 높이 24px를 거의 꽉 채우고, 세로 padding을 조금이라도 주면
+   띠가 위아래 항목을 침범한다. 가로 여백만 줘서 글자 양옆에 숨통을 튼다. */
+.tree-leaf-list .leaf-mark {
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  padding: 0 0.12em;
+  font-weight: 700;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='26' viewBox='0 0 220 26' preserveAspectRatio='none'%3E%3Cpath d='M2 8 L22 4 L42 9 L62 3 L82 8 L102 4 L122 9 L142 3 L162 8 L182 4 L202 9 L218 5 L218 15 L200 19 L182 14 L164 20 L146 15 L128 21 L110 16 L92 22 L74 17 L56 21 L38 16 L20 20 L2 17 Z' fill='%23ffd94a' opacity='0.85'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
+}
 
 .tree-group-title,
 .tree-subgroup-title {
