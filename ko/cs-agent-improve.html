@@ -75,6 +75,17 @@
       </dl>
     </div>
 
+    <div class="key-point" id="prep">
+      <p class="key-point-label"><span class="key-point-badge">준비물</span>이 편을 따라 하려면</p>
+      <ul>
+        <li><strong>돌아가는 에이전트 하나와 채점기</strong> — <a href="cs-agent-grounding.html">18편</a>까지 만든 것이요. <a href="cs-agent-routing-eval.html#try-it">17편</a>·<a href="cs-agent-grounding.html#try-it">18편의 축소판</a>만 해 뒀어도 이 편의 절차는 전부 돌아가요.</li>
+        <li><strong>정답셋</strong> — 저는 32건을 썼지만 열 건이면 시작할 수 있어요. 대신 작을수록 한 건이 점수를 크게 흔든다는 걸 <a href="#noise">아래</a>에서 확인하게 됩니다.</li>
+        <li><strong>기록할 표 하나</strong> — <a href="#ledger">장부</a>요. 스프레드시트든 마크다운 파일이든 상관없지만, 머릿속은 안 됩니다.</li>
+        <li><strong>스냅샷 폴더</strong> — 고치기 전 프롬프트를 복사해 둘 자리. <code>mkdir snapshots</code> 한 번이면 끝이에요.</li>
+      </ul>
+      <p>이 편에서 제일 중요한 준비물은 코드가 아니라 <strong>표와 폴더</strong>예요. 그 이유가 이 글 전체입니다.</p>
+    </div>
+
     <h2><span class="hl">시작점</span></h2>
     <p><a href="cs-agent-grounding.html">앞 편</a>까지 만든 것을 그대로 두고 먼저 점수를 쟀어요. 이 <strong>기준선</strong><sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>이 있어야 나중에 "좋아진 것 같다"가 아니라 "얼마나 올랐다"를 말할 수 있으니까요.</p>
     <table>
@@ -144,6 +155,29 @@
     </svg>
     <p><strong>읽는 법:</strong> 아래쪽 점선이 이 글에서 제일 하고 싶은 말이에요. 점수가 떨어진 실험도 버리는 게 아니라 <strong>다음 실험의 단서</strong>가 됩니다.</p>
 
+    <h3 id="ledger">장부는 이렇게 생겼어요</h3>
+    <p>칸은 일곱이면 충분해요. 이 글에 나오는 모든 이야기가 이 표의 한 줄씩입니다.</p>
+    <table>
+      <thead><tr><th>칸</th><th>무엇을 적나</th></tr></thead>
+      <tbody>
+        <tr><td>번호</td><td>실험 순번. 스냅샷 파일 이름과 같게 맞춘다</td></tr>
+        <tr><td>가설</td><td>"무엇을 고치면 어느 실패가 줄 것이다" 한 문장</td></tr>
+        <tr><td>바꾼 곳</td><td>파일과 줄. <strong>한 군데만</strong> 적힐 수 있어야 한다</td></tr>
+        <tr><td>1회차 · 2회차</td><td>같은 조건으로 잰 점수 둘</td></tr>
+        <tr><td>판정</td><td>유지 / 롤백 / 판단 불가(흔들림 폭 안)</td></tr>
+        <tr><td>깨진 건</td><td>이번에 새로 틀린 문항 번호. <strong>다음 실험의 출발점이 여기서 나온다</strong></td></tr>
+      </tbody>
+    </table>
+    <p class="run-tag run-tag--concept">개념 설명용 <span class="run-tag-why">— 바로 아래 나올 첫 실험을 그 표에 적으면 이렇게 돼요</span></p>
+    <pre><code>번호   01
+가설   되묻기를 더 적극적으로 시키면 행동 판정 실패 6건이 준다
+바꾼 곳 prompt.py 되묻기 규칙 1줄
+1회차  50.0%   (기준선 59.4%)
+2회차  —       (기준선보다 9%p 낮아 롤백 확정, 재측정 생략)
+판정   롤백
+깨진 건 답해야 할 건 14/22 → 9/22</code></pre>
+    <p>마지막 칸을 비워 두면 안 돼요. 이 글에서 점수를 올린 변경은 대부분 <strong>앞 실험의 "깨진 건" 칸을 읽고</strong> 나온 것이거든요.</p>
+
     <h2 id="failed-first"><span class="hl">가장 많이 가르쳐 준 건 실패한 실험이었어요</span></h2>
     <p>첫 실험은 되묻기 규칙을 강화하는 것이었어요. 실패 사례 중에 이런 게 있었거든요.</p>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 에이전트가 낸 답변과 채점 결과예요</span></p>
@@ -184,7 +218,20 @@
     </table>
     <p>처음엔 "이건 채점기가 문자열만 비교해서 생긴 문제 아닌가, 고치면 꼼수 아닌가" 싶었어요. 그런데 <a href="cs-agent-grounding.html#guardrail">앞 편에서 만든 검사기</a>를 다시 보니 <strong>실제 결함이 맞았습니다.</strong> 그 검사기는 쉼표만 정규화하거든요. "5만원"이라고 쓰면 50000을 못 찾아내서, <strong>제대로 조회해 온 값도 "출처 불명"으로 걸립니다.</strong></p>
     <p>그래서 "조회 결과에서 가져온 값은 그 표기 그대로 쓴다"를 규칙으로 넣었고, 이것이 한 번에 가장 크게 오른 변경이었어요(+6%p).</p>
+    <p class="run-tag run-tag--concept">개념 설명용 <span class="run-tag-why">— 프롬프트의 규칙 목록에서 바뀐 부분만 떼어 왔어요</span></p>
+    <pre><code>[전]
+- 조회 결과에 없는 숫자를 쓰지 않습니다.
+
+[후]
+- 조회 결과에 없는 숫자를 쓰지 않습니다.
+- 조회 결과에서 가져온 값은 표기를 바꾸지 말고 그대로 씁니다.
+  (50000을 "5만원"으로 바꿔 쓰지 않습니다.)</code></pre>
+    <p>한 줄을 더한 것이 전부예요. 이게 <strong>한 군데만 고친다</strong>의 실제 크기입니다.</p>
     <p>다만 이 규칙은 나중에 다른 자리에서 부작용을 냈습니다. 재입고 예정일이 <code>2026-09-01</code>로 저장돼 있었는데 모델이 그 기계 표기를 그대로 고객에게 썼거든요. 같은 조회 결과 안에 <strong>"9월 1일 입고 예정입니다"라는 사람이 읽는 문장</strong>이 이미 들어 있었는데도요. 그래서 단서를 하나 더 달았어요 — <strong>금액은 기계 표기를, 날짜처럼 안내 문장이 따로 있는 값은 그 문장을 따른다.</strong></p>
+    <p class="run-tag run-tag--concept">개념 설명용 <span class="run-tag-why">— 같은 줄에 단서를 붙인 뒤예요</span></p>
+    <pre><code>- 조회 결과에서 가져온 값은 표기를 바꾸지 말고 그대로 씁니다.
+  (50000을 "5만원"으로 바꿔 쓰지 않습니다. 단, 날짜처럼 조회 결과 안에
+   안내 문장이 따로 있으면 그 문장을 씁니다.)</code></pre>
 
     <h2 id="restore"><span class="hl">제가 발명한 규칙은 대부분 실패했어요</span></h2>
     <p>28번의 실험을 마치고 기록을 훑어보니 뚜렷한 패턴이 있었습니다. <strong>점수를 올린 변경은 거의 전부 "프롬프트가 회사 문서를 요약하면서 빠뜨린 것을 되돌려 놓은 것"이었어요.</strong></p>
@@ -224,8 +271,16 @@
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 같은 설정으로 열 번 측정한 값이에요</span></p>
     <pre><code>0.958  0.958  0.967  0.967  0.967  0.975  0.975  0.975  0.975  0.983</code></pre>
     <p><strong>아무것도 안 바꿨는데 0.958에서 0.983까지 흔들립니다.</strong> 120건 중 한 건만 뒤집혀도 0.008이 움직이니까요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 흔들림 폭을 먼저 재 두는 부분이에요</span></p>
+    <pre><code>scores = [evaluate(PROMPT) for _ in range(3)]   # 아무것도 안 바꾸고 세 번
+print(min(scores), max(scores))                 # 이 폭이 "판단 불가" 구간</code></pre>
+    <p>이 폭을 모르면 모든 기록이 추측이 돼요. 먼저 재 두고, <strong>그 폭보다 작은 변화는 장부에 "판단 불가"로 적습니다.</strong></p>
     <p>이걸 모르고 실험을 기록하면 어떻게 되는지 저도 겪었어요. 한 실험에서 "예시를 넣었더니 오분류가 하나 사라졌다"고 적었는데, 세 번 더 재 보니 <strong>그 오분류가 3/3으로 계속 나왔습니다.</strong> 그 회차의 운이었던 거죠.</p>
     <p>더 아찔한 것도 있었어요. 단계별로 저장해 둔 프롬프트 <strong>스냅샷</strong><sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>을 서로 비교해 봤더니, 한 실험의 <strong>수정이 파일에 반영되지 않았는데도 점수가 3%p 올라 있었습니다.</strong> 스냅샷을 안 남겼다면 "이 변경이 3%p를 올렸다"고 영영 잘못 기록했을 거예요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 <span class="run-tag-why">— 스냅샷은 명령 두 줄이면 돼요</span></p>
+    <pre><code>cp prompt.py snapshots/exp07_before.py     # 고치기 전에
+diff snapshots/exp07_before.py prompt.py   # 고친 뒤에 — 정말 바뀌었나</code></pre>
+    <p><code>diff</code>가 아무것도 안 뱉으면 <strong>그 실험은 아직 시작도 안 된 것</strong>이에요. 점수가 올랐어도 원인은 그 변경이 아닙니다.</p>
     <table class="choice-table">
       <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
       <tbody>
@@ -267,6 +322,19 @@
       <li>남은 한 문항은 <strong>무관한 주문번호를 지어내서 조회</strong>하면 통과할 수 있었어요. 문의와 아무 상관없는 주문을 하나 찍어 조회하면 "범위 밖"으로 판정되거든요. 점수 한 건을 위해 이 프로젝트가 하루 종일 막으려던 그 행동을 프롬프트에 지시하는 셈이라, 하지 않았습니다.</li>
     </ul>
     <p>평가셋에서 만점을 받는 것과 현실에서 잘 도는 것도 달라요. 실제 고객 문의를 그대로 흘려보냈더니 <strong>답변까지 도달한 건이 거의 없었습니다.</strong> 고객이 상품번호를 말해 주지 않아서요. 정답셋은 정답이 확정되는 대화만 골라 만든 것이라, 거기서 100점을 받아도 현실에는 다른 병목이 기다립니다.</p>
+
+    <div class="apply-box apply-box--try" id="try-it">
+      <p class="apply-box-title">직접 해 보기 — 실험 세 번과 장부 한 장</p>
+      <ol>
+        <li>아무것도 바꾸지 말고 <strong>세 번</strong> 재요. 최솟값과 최댓값을 장부 맨 위에 적어 두면, 이후 모든 판정이 이 폭과의 비교가 됩니다.</li>
+        <li>실패한 건을 <strong>유형별로 세요.</strong> 값이 빠졌는가, 행동을 잘못 골랐는가, 불러야 할 함수를 안 불렀는가, 하지 말아야 할 말을 했는가. 점수 하나보다 이 네 숫자가 중요해요.</li>
+        <li>가장 큰 덩어리 하나를 고르고, 고칠 근거를 <strong>업무 문서에서</strong> 찾아요. 문서에 없는 규칙을 지어내는 쪽은 대체로 실패했어요.</li>
+        <li><code>cp</code>로 스냅샷을 남기고 <strong>한 군데만</strong> 고쳐요. 고친 뒤 <code>diff</code>로 실제로 들어갔는지 확인하고요.</li>
+        <li>두 번 재서 1번의 폭과 견줘 판정해요 — 유지 / 롤백 / 판단 불가. 롤백해도 <strong>깨진 건 번호는 반드시 적습니다.</strong></li>
+        <li>세 번 돌린 뒤 장부를 읽어요. 점수를 올린 줄이 "문서에 있던 걸 되돌린 것"인지 "내가 지어낸 규칙"인지 세어 보면, <a href="#restore">이 글의 결론</a>이 내 기록에서도 나오는지 확인됩니다.</li>
+      </ol>
+      <p>한 바퀴에 필요한 건 모델 호출 몇십 번과 표 한 줄이에요. <strong>이 절차를 세 번만 돌려 보면 "프롬프트를 잘 쓰는 재주"라는 말이 왜 틀렸는지 알게 됩니다.</strong></p>
+    </div>
 
     <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 실험을 돌릴 때 잡아 둘 값들</h2>
     <p>프롬프트를 여러 번 고쳐 가며 지표를 올릴 때 참고할 값들이에요.</p>

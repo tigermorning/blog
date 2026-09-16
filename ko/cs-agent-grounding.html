@@ -75,6 +75,16 @@
       </dl>
     </div>
 
+    <div class="key-point" id="prep">
+      <p class="key-point-label"><span class="key-point-badge">준비물</span>이 편을 따라 하려면</p>
+      <ul>
+        <li><a href="cs-agent-routing-eval.html#prep">17편의 준비물</a> 그대로에, <strong>17편에서 만든 라우터</strong>가 있으면 좋아요. 없으면 라우트를 손으로 정해 놓고 시작해도 됩니다.</li>
+        <li><strong>장으로 나뉜 업무 문서</strong> — <a href="#tools">아래 발췌</a> 정도 길이면 충분해요. 회사 매뉴얼이 없으면 FAQ 항목 네댓 개를 장처럼 묶어 쓰면 됩니다.</li>
+        <li><strong>목 데이터</strong> — 실제 데이터베이스는 필요 없어요. <a href="#tools">파이썬 <code>dict</code> 하나</a>면 이 편의 모든 실험이 돌아갑니다.</li>
+      </ul>
+      <p>여기 나오는 매뉴얼 발췌·조회 결과·정답셋은 전부 <strong>구조만 같게 줄여 놓은 샘플</strong>이에요. 강의에서 받은 자료는 제3자 자료라 싣지 못해서요. 대신 <a href="#try-it">직접 해 보기</a>는 이 샘플만으로 끝까지 가게 짜 뒀어요.</p>
+    </div>
+
     <h2><span class="hl">문장은 완벽한데 숫자가 틀린다</span></h2>
     <p><a href="cs-agent-routing-eval.html">앞 편</a>에서 만든 것을 다시 보면, 문의 한 줄을 넣으면 <code>{route: 'SHIPPING', confidence: 0.97}</code> 이 나와요. 잘 동작하고 점수도 좋습니다. 그런데 고객이 받는 것은 갈래 이름이 아니에요.</p>
     <p>그럼 모델에게 매뉴얼을 통째로 주고 "알아서 답해"라고 하면 될까요? 실제로 그렇게 하면 문장은 아주 잘 나옵니다. 문제는 그 문장에 들어 있는 숫자예요.</p>
@@ -157,6 +167,16 @@
     <p>에이전트를 만들 때 가장 흔한 실수가 개발자가 자기 판단으로 도구 목록을 정하는 거예요. "상품 정보 조회 도구가 필요하겠지" 하고 만들다 보면, 정작 조회해야 하는 값을 프롬프트에 상수로 박아 두는 실수를 저지릅니다.</p>
     <p>그런데 더 나은 출발점이 이미 있었어요. 제가 받은 매뉴얼은 <strong>건마다 달라지는 값은 본문에 적지 않고 <code>[어드민 조회]</code> 표시와 함께 화면 경로만 안내</strong>하고 있었습니다. 사람 상담원에게 "이건 외우지 말고 화면에서 확인하라"는 뜻이죠.</p>
     <p>참고로 제가 조회한 것은 실제 운영 데이터베이스가 아니라 그 구조를 본뜬 <strong>목 데이터</strong><sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>였어요. 실제 시스템에 연결하지 않고도 조회 함수를 만들고 시험할 수 있으니까요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 <span class="run-tag-why">— 매뉴얼의 배송 장을 같은 구조로 줄여 본 것이에요</span></p>
+    <pre><code>3장. 배송 안내
+
+3.1 기본 배송비는 2,500원이다.
+3.2 무료배송 기준액은 상품 카테고리마다 다르다.
+    [어드민 조회] 상품 상세 &gt; 배송정책 탭
+3.3 당일배송은 지역에 따라 제공 여부가 다르다.
+    [어드민 조회] 주문 상세 &gt; 배송 정보
+3.4 출고 마감은 11시이며, 이후 주문은 다음 영업일에 출고된다.</code></pre>
+    <p>같은 장 안에서 두 부류가 갈려요. <strong>3.1·3.4는 값이 본문에 적혀 있고</strong>(모든 고객에게 같으니까), <strong>3.2·3.3은 값 대신 화면 경로만 적혀 있어요</strong>(건마다 다르니까). 앞의 것은 프롬프트에 그대로 들어가고, 뒤의 것은 함수가 됩니다.</p>
     <p>그 표시가 그대로 <strong>우리가 만들 도구의 명세</strong>가 됩니다. 정규식 한 줄로 전부 뽑아낼 수 있고요. 뽑아 보니 같은 화면이 반복해서 나왔어요 — 소재·실측·원산지·재고·보증서가 전부 「상품 상세」 화면입니다. 한 번 열면 그 값들이 다 보인다는 뜻이죠.</p>
     <p>그래서 <strong>화면 하나가 함수 하나</strong>가 됩니다. 실무의 자연스러운 설계이기도 해요. 관리자 API는 보통 화면 단위로 나뉘어 있으니까요.</p>
     <table>
@@ -171,10 +191,28 @@
         <tr><td>재입고 예정</td><td><code>get_restock_info</code></td><td>상품 ID → 재입고 확정 여부·예정일</td></tr>
       </tbody>
     </table>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 일곱 개 중 배송정책 하나만 떼어 왔어요</span></p>
+    <pre><code>from langchain_core.tools import tool
+
+PRODUCTS = {                                   # 운영 DB 대신 쓰는 목 데이터
+    "P1021": {"name": "캔버스화", "free_over": 100000, "fee": 2500},
+    "P2043": {"name": "핸드크림", "free_over": None,   "fee": 2500},
+}
+
+@tool
+def get_shipping_policy(product_id: str, paid_amount: int = None) -> dict:
+    """상품의 무료배송 기준액과 배송비를 조회한다.
+    결제 금액을 함께 주면 기준까지 얼마가 모자라는지도 계산해 돌려준다."""
+    p = PRODUCTS[product_id]
+    short = None
+    if p["free_over"] is not None and paid_amount is not None:
+        short = max(p["free_over"] - paid_amount, 0)
+    return {"free_over": p["free_over"], "fee": p["fee"], "short_of": short}</code></pre>
+    <p>세 가지가 한꺼번에 들어 있어요. <strong>타입 힌트</strong>가 모델이 채울 입력 형식이 되고, <strong>설명문</strong>이 모델이 읽는 도구 설명이 되고, <code>short_of</code>는 <a href="#calc">뒤에 나올 계산 규칙</a>대로 코드가 미리 빼 둔 값이에요. 그리고 <code>free_over</code>가 <code>None</code>인 상품이 하나 섞여 있는 것도 일부러예요 — <a href="#null"><code>null</code> 절</a>에서 이 값이 다시 나옵니다.</p>
     <p>반대로 매뉴얼 본문에 값이 그대로 적힌 항목은 조회하지 않아요. 기본 배송비 2,500원, 반품 배송비 5,000원, 출고 마감 11시 같은 것들이죠. 프롬프트에 이미 들어가 있으니 모델이 바로 답해도 됩니다.</p>
     <p><strong>이 두 부류를 가르는 것이 이 편의 핵심 개념이에요.</strong> 뒤에서 검사기를 만들 때 "조회 결과에 있거나 매뉴얼 고정값이거나"가 정확히 통과 조건이 되거든요.</p>
 
-    <h3>계산도 도구가 맡는다</h3>
+    <h3 id="calc">계산도 도구가 맡는다</h3>
     <p>배송비 조회 함수에는 하나를 더 넣었어요. 결제 금액을 함께 받으면 <strong>부족액까지 계산해서</strong> 돌려줍니다.</p>
     <p>왜 계산까지 하느냐면, 모델에게 "기준 100,000원, 현재 59,000원"만 주고 부족액을 계산하게 하면 대개 맞히지만 틀리기도 하기 때문이에요. 언어 모델의 산술은 믿을 수 있는 기능이 아닙니다. 게다가 뒤에서 만들 검사기는 답변 속 숫자를 조회 결과에서 찾는데, <strong>모델이 머릿속으로 계산한 41,000원은 조회 결과에 없으니 출처 불명으로 걸려요.</strong> 계산이 필요하면 코드가 계산해서 응답에 담는 것이 정답입니다.</p>
 
@@ -191,7 +229,7 @@
     <p>문의 문장만 보면 세 경우가 완전히 같아요. 다른 것은 상품이고요. <strong>그러므로 상품을 특정하지 않으면 답할 수 없고, 특정했다면 반드시 조회해야 합니다.</strong></p>
     <p>여기서 따라오는 규칙이 하나 있어요. 고객이 상품을 말하지 않고 "배송비 얼마예요?"라고 물으면 에이전트는 되물어야 합니다. 이때 기본 배송비 2,500원은 전 상품 공통이니 먼저 안내해도 되고요. <strong>고정값은 답하고 변동값은 되묻는</strong> 이 조합이 이 도메인 응대의 기본형이에요.</p>
 
-    <h3><code>null</code>이 가장 중요한 값이에요</h3>
+    <h3 id="null"><code>null</code>이 가장 중요한 값이에요</h3>
     <p>반품 건을 조회했더니 검품 결과·귀책·배송비 부담 주체가 전부 <code>null</code>로 나왔어요. 이건 데이터가 없어서 비어 있는 게 아니라 <strong>아직 결정되지 않았다는 정보</strong>입니다. 검품이 안 끝났으니 누가 부담하는지 확정할 수 없는 상태죠.</p>
     <p>이 구분이 실무에서 아주 중요해요. <code>null</code>을 "값 없음"으로 취급해 무시하면 에이전트는 다른 근거를 찾아 답을 만들려 하고, 결국 "고객님이 부담하셔야 합니다" 같은 단정을 하게 됩니다. 그런데 검품 결과가 하자로 나오면 그 안내는 틀린 것이 되고, 이미 한 안내를 번복해야 해요. 제가 본 매뉴얼이 이 지점을 <strong>"항의가 가장 많이 발생하는 지점"</strong>으로 명시한 이유입니다.</p>
 
@@ -274,6 +312,18 @@ g.add_edge("tools", "agent")            # 결과를 들고 모델에게 되돌�
         </tr>
       </tbody>
     </table>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 검사기의 뼈대예요. 실제 것은 여기에 예외 처리가 더 붙어요</span></p>
+    <pre><code>import re, json
+
+FIXED = {2500, 5000, 11}        # 매뉴얼 본문에 적힌 고정값
+
+def numbers_in(text):           # "100,000원" 과 100000 을 같은 값으로 본다
+    return {int(m.replace(",", "")) for m in re.findall(r"[\d,]+\d|\d", text)}
+
+def check(answer, tool_results):
+    allowed = FIXED | numbers_in(json.dumps(tool_results, ensure_ascii=False))
+    return {n for n in numbers_in(answer) if n &gt;= 1000 and n not in allowed}</code></pre>
+    <p>돌려주는 집합이 비어 있지 않으면 <strong>출처를 못 대는 숫자가 답변에 있다</strong>는 뜻이에요. 앞의 "무료배송 기준은 40,000원입니다"를 넣어 보면 <code>40000</code>이 나오고, 조회해서 답한 문장을 넣으면 빈 집합이 나옵니다. 다만 이 뼈대는 <code>2026-09-01</code> 같은 날짜의 <code>2026</code>도 숫자로 세요. 실제로 쓰려면 날짜 표기를 먼저 걷어 내야 합니다.</p>
     <p>구현에서 신경 쓸 점이 셋 있어요. 첫째, <strong>표기 정규화</strong> — 답변에는 "100,000원"인데 조회 결과에는 <code>100000</code>이라 쉼표를 지우고 비교해야 합니다. 둘째, <strong>작은 숫자 처리</strong> — "2~3영업일" 같은 작은 수까지 위반으로 잡으면 경고가 쏟아져 쓸 수 없으니, 금액대를 주 검사 대상으로 두고 작은 수는 고정값 목록으로 따로 허용해요. 셋째, <strong>계산으로 유도된 값</strong> — 도구가 부족액을 계산해 주도록 만들어 대부분 없앴지만, 안전을 위해 한 단계 산술로 나오는 값은 허용합니다.</p>
     <p>한계도 정직하게 짚어 둘게요. <strong>숫자가 아닌 오류는 못 잡아요.</strong> "개별 구매 가능합니다"라고 잘못 답하면 숫자가 없으니 통과합니다. 그리고 정당한 계산을 위반으로 잡는 <strong>오탐</strong>도 생길 수 있어요 — 멀쩡한 것을 걸러 낸 이 실수가 <a href="confusion-matrix-and-metrics.html#three">정밀도를 떨어뜨리는 바로 그 칸</a>이고, 반대로 지어낸 숫자를 놓치는 <strong>미탐</strong>은 재현율 쪽이에요. 그래서 가드레일은 즉시 차단보다 <strong>경고 후 재생성 또는 이관</strong>으로 쓰는 것이 안전합니다.</p>
 
@@ -289,6 +339,16 @@ g.add_edge("tools", "agent")            # 결과를 들고 모델에게 되돌�
         <tr><td><code>forbid</code></td><td>답변에 나타나면 실패하는 문자열</td></tr>
       </tbody>
     </table>
+    <p class="run-tag run-tag--concept">개념 설명용 <span class="run-tag-why">— 정답셋 한 건의 모양이에요</span></p>
+    <pre><code>{
+  "id": "a07",
+  "turn": "캔버스화 배송비 얼마예요? 5만 9천원어치 담았어요",
+  "action": "ANSWER",
+  "tools": ["search_product", "get_shipping_policy"],
+  "must":  ["100000", "41000"],
+  "forbid": ["40,000", "무료배송입니다"]
+}</code></pre>
+    <p>답변 문장이 정답 자리에 없다는 점을 봐 주세요. 대신 <strong>불러야 할 함수·들어가야 할 값·나오면 안 되는 표현</strong>이 정답이에요. 그래서 "10만원 이상이면 무료배송"이라고 쓰든 "기준은 100,000원입니다"라고 쓰든 둘 다 통과합니다.</p>
     <p><code>tools</code>가 걸려 있는 이유가 중요해요. <strong>조회하지 않고 맞는 답을 냈다면 그것은 운이 좋았을 뿐 재현되지 않습니다.</strong> 그래서 결과만 보지 않고 과정도 채점해요.</p>
     <p>그리고 <code>forbid</code>가 이 정답셋의 핵심입니다. <strong>하지 말아야 할 것을 하지 않았는지</strong>를 검사하는 조건이거든요. 조회 전에 단정한 수치나 금지된 확답이 여기 들어가요.</p>
 
@@ -317,6 +377,19 @@ g.add_edge("tools", "agent")            # 결과를 들고 모델에게 되돌�
     </table>
     <p>여기서 <strong>답변을 만들지 않고 끝나는 경로가 여럿</strong>이라는 점이 중요해요. 근거가 없거나 응대 범위를 벗어난 문의에 답변을 만들면 그 자체가 오답이니, <strong>말하지 않는 것이 올바른 처리</strong>입니다.</p>
     <p>그리고 고객은 원래 여러 번에 나눠 말해요. "캔버스화 배송비 얼마예요?" 다음에 "그럼 두 켤레 사면요?"가 옵니다. 이때 그래프에 <strong>체크포인터</strong><sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>를 붙이면 대화별로 상태가 저장되고 다음 호출에서 복원돼요. 대화 이력을 담는 코드를 따로 쓰지 않아도 되고, <strong>그래프 정의는 한 줄도 바뀌지 않습니다</strong> — 세울 때 체크포인터만 건네주면 돼요. 실제 서비스라면 메모리 대신 DB를 씁니다.</p>
+
+    <div class="apply-box apply-box--try" id="try-it">
+      <p class="apply-box-title">직접 해 보기 — 상품 세 개와 검사기 하나</p>
+      <ol>
+        <li>위 <code>PRODUCTS</code>에 상품을 하나 더해 <strong>세 종류</strong>를 만들어요 — 기준이 있는 상품, 기준 자체가 없는 상품, 이미 기준을 넘긴 상품.</li>
+        <li><code>get_shipping_policy</code>를 <a href="langgraph-branches-and-tool-loop.html">4편 모양의 그래프</a>에 붙이고 "무료배송 되나요?"를 <strong>세 상품으로</strong> 던져요. 답이 셋 다 다르면 조회가 실제로 일어난 거예요.</li>
+        <li>이번엔 도구를 빼고 같은 질문을 던져요. 모델이 <strong>그럴듯한 숫자를 지어내는</strong> 장면을 직접 보는 단계예요.</li>
+        <li>두 답변을 <code>check()</code>에 넣어요. 조회한 쪽은 빈 집합, 지어낸 쪽은 숫자가 나와야 맞습니다.</li>
+        <li><code>free_over</code>를 <code>None</code>으로 둔 상품으로 물어보고, 모델이 "무료배송 됩니다"로 단정하는지 봐요. 단정하면 프롬프트에 "<code>null</code>은 미확정으로 답한다" 한 줄을 넣고 다시 던져요.</li>
+        <li>마지막으로 답변에 "5만원"처럼 <strong>표기를 바꿔 쓰게</strong> 해 보세요. 제대로 조회한 값인데도 검사기가 걸어 냅니다 — <a href="cs-agent-improve.html#verbatim">19편에서 가장 크게 오른 변경</a>이 바로 이 지점이에요.</li>
+      </ol>
+      <p>여기까지 하면 이 편의 세 겹 중 ②와 ③을 손으로 만져 본 셈이에요. ①은 프롬프트에 넣는 장을 배송 장 하나로 줄였다 늘렸다 하며 답이 흔들리는지 보면 됩니다.</p>
+    </div>
 
     <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 그라운딩 층을 설계할 때 정하는 값들</h2>
     <p>규정 문서 기반 에이전트를 만들 때 "이건 어떻게 잡지?"에서 참고할 값들이에요. 실행 기록이 아니라 설계 선택에 해당하는 것만 모았습니다.</p>
