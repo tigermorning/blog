@@ -54,6 +54,7 @@
             <li>모델을 만들기 전에 기준자부터 확정해서, 고친 뒤 좋아졌는지 나빠졌는지를 숫자로 말해요.</li>
             <li>어느 갈래를 어느 갈래로 착각했는지 표에서 짚어, 고칠 자리를 특정해요.</li>
             <li>모델이 애매해할 때 억지로 고르지 않고 사람에게 넘기는 안전장치를 붙여요.</li>
+            <li>판단하는 부분과 정책이 정하는 부분을 따로 떼어, 한쪽만 바꿔 가며 비교해요.</li>
           </ul>
         </dd>
         <dt>모르면 이런 일이 생겨요</dt>
@@ -124,6 +125,19 @@
       <text x="320" y="158" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">점선 = 셋 중 하나만 — 분류는 모델이, 판정은 정책이 한다</text>
     </svg>
     <p><strong>읽는 법:</strong> 네모 둘로 나눠 둔 것이 핵심이에요. 왼쪽 <strong>분류</strong>는 모델이 하는 일이고, 오른쪽 <strong>판정</strong>은 회사 정책이 정하는 일이에요. 한 덩어리로 묶어 두면 나중에 모델만 바꾸고 싶을 때 정책까지 건드리게 되거든요.</p>
+
+    <h3>이게 <a href="langgraph-state-node-edge.html">2편에서 만든 그래프</a> 그대로예요</h3>
+    <p>그림의 네모 둘은 <strong>노드</strong>이고, 화살표는 <strong>엣지</strong>예요. 코드로 옮기면 이렇게 짧습니다.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 그래프를 세우는 부분만 떼어 왔어요</span></p>
+    <pre><code>g = StateGraph(RouterState)
+g.add_node("classify", classify)     # 분류 — 모델이 하는 일
+g.add_node("gate", gate)             # 판정 — 정책이 하는 일
+g.add_edge(START, "classify")
+g.add_edge("classify", "gate")
+g.add_edge("gate", END)</code></pre>
+    <p>둘로 나눠 둔 값이 이 글에서 바로 나와요. 저는 분류하는 부분을 <strong>규칙 → LLM</strong>으로 갈아 끼우는데, 그때 <strong>그래프를 다시 그리지 않습니다.</strong> 같은 이름의 함수를 다시 정의하고 그래프를 한 번 더 세우면 그 노드만 바뀌거든요.</p>
+    <p>이게 왜 중요하냐면, 바뀐 것이 노드 하나뿐이고 평가셋도 지표도 그대로이기 때문에 <strong>점수가 올랐을 때 그 원인이 무엇인지 헷갈릴 일이 없어요.</strong> 만약 분류와 판정이 함수 하나에 섞여 있었다면 "모델을 바꾼 효과인가, 이관 기준을 건드린 효과인가"를 가릴 수 없었을 거예요.</p>
+    <p>그리고 이관 기준값(0.5)만 바꿔 보고 싶을 때는 <code>gate</code>만 고치면 됩니다. <strong>모델을 다시 부를 필요가 없어요</strong> — 분류 결과는 이미 State에 들어 있으니까요.</p>
 
     <h2 id="routes"><span class="hl">갈래는 몇 개여야 하나</span></h2>
     <p>제가 받은 데이터는 실제 의류 쇼핑몰 상담 기록의 구조를 본뜬 문의 193건이었어요. 각 문의에는 <code>배송_비용_질문</code> 같은 <strong>인텐트</strong><sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup> 라벨이 붙어 있었고, 종류를 세어 보니 18가지였습니다.</p>
