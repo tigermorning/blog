@@ -136,10 +136,10 @@
       <text x="320" y="158" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">점선 = 셋 중 하나만 — 분류는 모델이, 판정은 정책이 한다</text>
     </svg>
     <p><strong>읽는 법:</strong> 그림에서 <strong>LLM</strong><sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup>이라고 쓴 것은 ChatGPT 같은 것들의 알맹이예요. <a href="pretraining-and-scaling-laws.html">앞 문맥을 보고 다음에 올 법한 낱말을 이어 붙이도록 훈련된 프로그램</a>인데, 이 성질이 이 글과 <a href="cs-agent-grounding.html">다음 편</a> 내내 문제의 원인이 돼요 — 모르는 값도 그럴듯하게 이어 붙이거든요.</p>
-    <p>네모 둘로 나눠 둔 것이 핵심이에요. 왼쪽 <strong>분류</strong>는 모델이 하는 일이고, 오른쪽 <strong>판정</strong>은 회사 정책이 정하는 일이에요. 한 덩어리로 묶어 두면 나중에 모델만 바꾸고 싶을 때 정책까지 건드리게 되거든요.</p>
+    <p>위 그림에서 <strong>테두리가 굵은 네모 둘</strong> — 왼쪽 <strong>분류</strong>와 오른쪽 <strong>판정</strong> — 로 나눠 둔 것이 핵심이에요. 분류는 모델이 하는 일이고, 판정은 회사 정책이 정하는 일이에요. 한 덩어리로 묶어 두면 나중에 모델만 바꾸고 싶을 때 정책까지 건드리게 되거든요.</p>
 
-    <h3>이게 <a href="langgraph-state-node-edge.html">2편에서 만든 그래프</a> 그대로예요</h3>
-    <p>그림의 네모 둘은 <strong>노드</strong>이고, 화살표는 <strong>엣지</strong>예요. 코드로 옮기면 이렇게 짧습니다.</p>
+    <h3>부품은 <a href="langgraph-state-node-edge.html">2편의 그래프</a>와 같아요</h3>
+    <p>그 굵은 네모 둘(분류·판정)이 <strong>노드</strong>이고, 둘을 잇는 화살표가 <strong>엣지</strong>예요. 2편 그림은 갈래가 더 많았지만 세우는 방법은 똑같습니다. 코드로 옮기면 이렇게 짧아요.</p>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 그래프를 세우는 부분만 떼어 왔어요</span></p>
     <pre><code>g = StateGraph(RouterState)
 g.add_node("classify", classify)     # 분류 — 모델이 하는 일
