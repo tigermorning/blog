@@ -1033,7 +1033,7 @@ print('합계:', a + b)</code></pre>
 <pre><code class="language-python">todo = ['장보기', '빨래', '청소', '숙제']
 todo.remove('빨래')
 print('세 번째 할 일:', todo[2])
-print('남은 일 수:', len(todo))</code></pre>
+print('남은 할 일 개수:', len(todo))</code></pre>
           <ul>
             <li>작성자는 <code>todo[2]</code>로 <code>'청소'</code>를 출력하려고 했음</li>
             <li>실제 출력을 예측하기</li>
@@ -1044,9 +1044,10 @@ print('남은 일 수:', len(todo))</code></pre>
         <details class="sol"><summary>해설 보기</summary>
           <div class="sol-body">
 <pre class="out"><code class="nohighlight">세 번째 할 일: 숙제
-남은 일 수: 3</code></pre>
+남은 할 일 개수: 3</code></pre>
             <ul>
               <li><code>remove('빨래')</code> 후 리스트: <code>['장보기', '청소', '숙제']</code></li>
+              <li><code>len(todo)</code>는 리스트에 남은 원소 개수 → 4개에서 1개 지워 <code>3</code></li>
               <li>뒤에 있던 원소들이 한 칸씩 앞으로 당겨짐 → <code>'청소'</code>는 이제 <code>1</code>번</li>
               <li>작성자는 <b>지우기 전</b> 번호를 기억하고 코드를 씀</li>
             </ul>
