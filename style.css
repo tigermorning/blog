@@ -918,6 +918,58 @@ body.list-page .site-header {
   margin-top: 1.8rem;
 }
 
+/* 서브카테고리 여러 개가 "같은 실습 시리즈"로 묶일 때 쓰는 한 단계 더
+   안쪽 그룹. 대분류(.post-group, 색이 꽉 찬 탭)와 소분류(.post-subcategory,
+   점 하나) 사이에 끼는 급이라 왼쪽 띠 + 옅은 배경으로 "이 안의 소분류들은
+   서로 이어진다"는 걸 보여준다. */
+.post-subgroup {
+  margin: 0;
+  padding: 0.9rem 1.1rem 0.2rem;
+  border-left: 3px solid var(--folder-accent, var(--accent));
+  border-radius: 0 10px 10px 0;
+  background: color-mix(in srgb, var(--folder-accent, var(--accent)) 5%, transparent);
+}
+
+.post-group > .post-subgroup:not([hidden]) ~ .post-subcategory:not([hidden]),
+.post-group > .post-subcategory:not([hidden]) ~ .post-subgroup:not([hidden]),
+.post-subgroup:not([hidden]) ~ .post-subgroup:not([hidden]) {
+  margin-top: 1.8rem;
+}
+
+.post-subgroup > .post-subcategory:first-of-type {
+  margin-top: 0;
+}
+
+.post-subgroup-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-subhead);
+  font-weight: var(--font-subhead-weight, 700);
+  font-size: 1.3rem;
+  color: var(--folder-accent, var(--accent));
+  margin: 0 0 1rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.post-subgroup-title::-webkit-details-marker {
+  display: none;
+}
+
+.post-subgroup-title::after {
+  content: '▸';
+  display: inline-block;
+  width: 1em;
+  font-size: 1.2rem;
+  line-height: 1;
+  transition: transform 0.15s ease;
+}
+
+.post-subgroup[open] > .post-subgroup-title::after {
+  transform: rotate(90deg);
+}
+
 .post-subcategory-title {
   display: flex;
   align-items: center;
@@ -1215,6 +1267,43 @@ details[open] > summary .tree-toggle-icon {
 
 .tree-leaf-list a:hover {
   color: var(--folder-accent, var(--accent));
+}
+
+/* 소분류 잎 여러 개가 "같은 실습 시리즈"일 때 한 단계 더 묶는 잎-그룹.
+   .post-subgroup과 짝을 이루는 사이드바 쪽 표현이라, 점 하나(소분류)보다
+   한 단계 더 들여써서 "이 잎들은 저 이름 아래 묶인다"는 걸 보여준다. */
+.tree-leaf-group-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  list-style: none;
+  padding-left: 1.15rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.tree-leaf-group-title::-webkit-details-marker {
+  display: none;
+}
+
+.tree-leaf-group-title::before {
+  content: '';
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--folder-accent, var(--muted));
+}
+
+.tree-leaf-group-title .tree-toggle-icon {
+  color: var(--folder-accent, var(--accent));
+}
+
+.tree-leaf-list.tree-leaf-sublist {
+  margin: 0.45rem 0 0;
+  padding-left: 1.15rem;
 }
 
 @media (max-width: 820px) {
