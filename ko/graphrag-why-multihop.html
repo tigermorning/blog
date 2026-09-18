@@ -433,6 +433,11 @@ K=50  HitRate 0.75  Recall 0.75  Precision 0.015  MRR 0.307  nDCG 0.401</code></
       <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
       <p>리랭킹은 <strong>이미 가져온 후보의 순위만 바꿔요.</strong> 후보에 들어오지 못한 문서는 순위를 어떻게 흔들어도 살아나지 않아요. 멀티홉 질문에서 막혔다면 검색기 교체가 아니라 <strong>검색을 여러 번 하거나, 연결을 미리 만들어 두는</strong> 쪽을 봐야 해요. 뒤쪽이 GraphRAG예요.</p>
     </div>
+    <p>재현율을 올리는 길은 그래서 둘로 갈려요. 검색을 <strong>한 번이 아니라 여러 번, 앞 결과를 다음 질의에 다시 써서</strong> 반복하거나(에이전틱 RAG), <strong>문서를 넣는 시점에 관계를 미리 뽑아 이어 두거나</strong>(GraphRAG)예요. 지금 이 시리즈가 가는 길은 뒤쪽이에요.</p>
+    <div class="key-point" id="key-graphrag-scope">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>GraphRAG는 검색 전체를 잘 만드는 기술이 아니라, <strong>멀티홉 질문의 재현율 0을 구제하는 데 좁게 겨눈</strong> 기술이에요. 갈래①(우연히 맞은 것)·갈래②(k를 늘리면 맞는 것)는 BM25만으로도 이미 어느 정도 됐어요 — 그래프가 필요한 자리는 갈래③뿐이에요. 그리고 GraphRAG도 만능은 아니에요. 색인 시점에 <strong>미처 추출하지 못한 관계</strong>는 그래프에도 없으니 재현율이 여전히 0이고, 문서마다 LLM을 불러 삼중항을 뽑는 <strong>추출 비용</strong>이 검색 시점에서 색인 시점으로 옮겨 갈 뿐이에요.</p>
+    </div>
     <div class="key-point" id="key-small-corpus">
       <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
       <p>작은 데이터에서의 성공은 큰 데이터에서의 성공을 보장하지 않아요. 추천-04가 1위로 나온 건 <strong>낱말이 우연히 겹친 덕</strong>이라, 문서가 100배로 늘면 "기생충"을 언급하는 다른 문서들에 밀려나요. 잘 된 문항도 <strong>왜 잘 됐는지</strong>를 봐야 해요.</p>
@@ -537,6 +542,7 @@ for K in (6, 20, 50):
       <li><a href="#key-median">문서 길이는 중앙값과 최댓값을 같이 본다</a></li>
       <li><a href="#key-retrieval-metrics">검색은 "데려왔나"와 "위에 뒀나"를 따로 잰다</a></li>
       <li><a href="#key-rerank">리랭킹은 후보에 없는 문서를 살리지 못한다</a></li>
+      <li><a href="#key-graphrag-scope">GraphRAG는 멀티홉 재현율 전용이지, 만능 재현율 도구가 아니다</a></li>
       <li><a href="#key-small-corpus">작은 데이터의 성공은 낱말이 겹친 행운일 수 있다</a></li>
     </ul>
 
