@@ -38,7 +38,7 @@
       <p class="why-read-title">이 글을 읽기 전에</p>
       <dl>
         <dt>어디쯤인가</dt>
-        <dd><a href="posts.html#cat-agent-system">8단계</a> › <a href="posts.html#langgraph-team">에이전트 팀 꾸리기 — LangGraph</a> — 1번째 글 (전 16편)</dd>
+        <dd><a href="posts.html#cat-agent-system">8단계</a> › <a href="posts.html#langgraph-team">에이전트 팀 꾸리기 — LangGraph</a> — 1번째 글 (전 23편)</dd>
         <dt>이런 게 궁금했다면</dt>
         <dd>
           <ul>
@@ -81,7 +81,7 @@
     <p>이 한 가지 — <strong>다음에 실행될 함수를 누가 고르느냐</strong> — 가 이 시리즈 열 편을 관통하는 질문이에요. 워크플로와 에이전트를 가르는 것도 이것이고, n8n과 LangGraph가 갈라지는 것도, <a href="langgraph-state-node-edge.html#build-branch">2편에서 그을 <code>add_conditional_edges</code> 한 줄</a>이 하는 일도 전부 이 질문의 다른 얼굴이에요. 앞으로 글에서 "<strong>다음 걸음</strong>"이나 "<strong>길</strong>"이라고 쓰면 전부 이 뜻이니, 읽다가 헷갈리면 <strong>"다음에 실행될 함수"</strong>로 바꿔 읽으면 돼요.</p>
 
     <p>오늘부터 "에이전트 팀 꾸리기"라는 새 모듈이 시작됐어요. 첫 주제가 LangGraph였어요. "노드를 선으로 잇는다"는 설명만 들으면 이미지 생성할 때 쓰는 ComfyUI와 비슷해 보이는데, 다루는 대상도 잇는 방법도 달라요(<a href="#look-alikes">아래 표</a>). 제 기록을 뒤져 보니 LangGraph는 <a href="multi-agent-three-runs-abc.html">멀티 에이전트 실험</a> 때 후보로만 검토하고 쓰지 않았던 도구였어요.</p>
-    <p>이번 편은 <strong>코드를 짜기 전에 밑그림을 잡는 편</strong>이에요. LangGraph가 내 코드를 어떤 모양으로 바꾸는지, 워크플로와 에이전트는 무엇으로 갈리는지, 이 도구가 LangChain·LangSmith·n8n 사이 어디에 앉아 있는지까지요. 세 재료로 실제 그래프를 만들어 돌려 보는 건 <a href="langgraph-state-node-edge.html">다음 편</a>이고, 이 시리즈는 전 16편이에요(<a href="#series-list">맨 아래 목록</a>).</p>
+    <p>이번 편은 <strong>코드를 짜기 전에 밑그림을 잡는 편</strong>이에요. LangGraph가 내 코드를 어떤 모양으로 바꾸는지, 워크플로와 에이전트는 무엇으로 갈리는지, 이 도구가 LangChain·LangSmith·n8n 사이 어디에 앉아 있는지까지요. 세 재료로 실제 그래프를 만들어 돌려 보는 건 <a href="langgraph-state-node-edge.html">다음 편</a>이고, 이 시리즈는 전 23편이에요(<a href="#series-list">맨 아래 목록</a>).</p>
 
     <p>이번 편이 위 질문을 어떤 순서로 다루는지 미리 적어 둘게요. 읽다가 헤매면 "지금은 이 질문의 어느 면을 보고 있나"로 되돌아오면 돼요.</p>
     <table id="reading-map">
@@ -252,7 +252,7 @@ while True:
         <tr><td>n8n</td><td>노코드 워크플로 자동화 도구 (<a href="n8n-agent-delegation-and-if-node.html">IF 노드로 갈림길 만들기</a>)</td><td>셋 중 생김새가 가장 닮았지만 카테고리가 달라요. <a href="#n8n-vs-langgraph">바로 아래</a>에서 따로 봐요</td></tr>
         <tr><td>Flowise</td><td>LangChain의 부품(모델·메모리·도구·벡터 저장소)을 화면에서 상자로 놓고 이어 돌리는 오픈소스 도구</td><td>"LangChain을 마우스로 조립하는 그림판"이에요. 개발자가 코드 대신 화면으로 그릴 때 써요. 최근 판(Agentflow)은 공유 State와 되돌림 선까지 지원해서 넷 중 LangGraph에 제일 가까워요</td></tr>
         <tr><td>Dify</td><td>지식베이스(문서 넣고 검색), 프롬프트 편집기, 워크플로 화면, 배포·로그·권한까지 한 덩어리로 묶은 LLM 앱 제작 플랫폼</td><td>LangChain을 안 쓰고 자체 엔진이에요. 노드가 "LLM 호출·문서 검색·HTTP 요청·반복"처럼 업무 단위라서 쓰는 느낌은 n8n에 가깝고, 챗봇을 웹 앱이나 API로 바로 내놓는 데 강해요. 저는 아직 안 써 봐서 문서를 읽고 정리한 거예요</td></tr>
-        <tr><td>GraphRAG</td><td>문서에서 뽑은 개체와 관계를 지식 그래프로 저장해 검색하는 기법</td><td>여기서 graph는 <strong>지식의 구조</strong>예요. LangGraph의 graph는 <strong>실행 순서</strong>고요. 이 모듈 뒤쪽에서 배워요</td></tr>
+        <tr><td>GraphRAG</td><td>문서에서 뽑은 개체와 관계를 지식 그래프로 저장해 검색하는 기법</td><td>여기서 graph는 <strong>지식의 구조</strong>예요. LangGraph의 graph는 <strong>실행 순서</strong>고요. <a href="graphrag-why-multihop.html">20편</a>부터 배워요</td></tr>
       </tbody>
     </table>
 
@@ -531,6 +531,22 @@ while True:
     <a class="post-nav" href="cs-agent-improve.html">
       <span class="post-nav-label">(19)</span>
       <span class="post-nav-title">59%에서 94%로 — 프롬프트만 고쳐 지표를 올린 기록</span>
+    </a>
+    <a class="post-nav" href="graphrag-why-multihop.html">
+      <span class="post-nav-label">(20)</span>
+      <span class="post-nav-title">검색으로는 못 찾는 답 — 멀티홉 질문과 지식 그래프</span>
+    </a>
+    <a class="post-nav" href="graphrag-build-knowledge-graph.html">
+      <span class="post-nav-label">(21)</span>
+      <span class="post-nav-title">스키마가 답할 질문을 정한다 — 추출·정규화·위키 분류</span>
+    </a>
+    <a class="post-nav" href="graphrag-agent-three-routes.html">
+      <span class="post-nav-label">(22)</span>
+      <span class="post-nav-title">세 갈래로 답하는 에이전트 — 커뮤니티 요약·라우터·탐색 예산</span>
+    </a>
+    <a class="post-nav" href="graphrag-goldenset-eval.html">
+      <span class="post-nav-label">(23)</span>
+      <span class="post-nav-title">같은 15문항으로 채점한다 — 세 층 평가와 심판의 한계</span>
     </a>
 
     <a class="post-nav" href="langgraph-state-node-edge.html">

@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>스키마가 답할 질문을 정한다 — 추출·정규화·위키 분류 (21) - Tigermorning</title>
+  <meta name="description" content="위키백과 영화 문서 80건에서 LLM으로 관계를 뽑아 지식 그래프를 만든 기록입니다. 질문에서 스키마를 역산하고, 비용을 먼저 세고, 흩어진 표기를 합치고, 위키 분류 태그를 규칙으로 옮겨 필요한 사실 39개를 전부 채우기까지를 실제 숫자로 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="스키마가 답할 질문을 정한다 — 추출·정규화·위키 분류 (21)">
+  <meta property="og:description" content="LLM 추출만으로는 필요한 사실의 85%, 위키 분류 규칙만으로는 67%. 둘을 합치니 100%가 됐어요. 서로 다른 구멍을 메웠거든요.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/graphrag-build-knowledge-graph.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">스키마가 답할 질문을 정한다</span> — 추출·정규화·위키 분류 (21)</h1>
+    <p class="post-date">2026. 9. 18.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="graphrag-why-multihop.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">검색으로는 못 찾는 답 — 멀티홉 질문과 지식 그래프 (20)</span>
+    </a>
+
+    <p class="one-liner">지식 그래프를 만드는 일은 LLM에게 문서를 읽혀 삼중항을 뽑은 뒤, <strong>같은 대상을 한 점으로 합치고 필요한 사실이 다 들어왔는지 세는 것</strong>까지예요.</p>
+
+    <div class="why-read" id="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>어디쯤인가</dt>
+        <dd><a href="posts.html#cat-agent-system">8단계</a> › <a href="posts.html#langgraph-team">에이전트 팀 꾸리기 — LangGraph</a> — 21번째 글 (전 23편). 첫 글은 <a href="langgraph-what-and-why.html">1편</a>이고, 영화 추천 에이전트 묶음은 <a href="graphrag-why-multihop.html">20편</a>부터예요.</dd>
+        <dt>이런 게 궁금했다면</dt>
+        <dd>
+          <ul>
+            <li>문서에서 관계를 뽑으라고 LLM에게 시키면 알아서 잘 뽑아 주나요?</li>
+            <li>문서 80건을 다 돌리면 돈이 얼마나 들어요? 돌리기 전에 알 수 있나요?</li>
+            <li>"기생충"과 "기생충 (영화)"가 따로 노는 건 어떻게 합치죠?</li>
+          </ul>
+        </dd>
+        <dt>읽고 나면 할 수 있는 것</dt>
+        <dd>
+          <ul>
+            <li>답하고 싶은 질문 목록에서 거꾸로 무엇을 뽑을지 정해요.</li>
+            <li>LLM을 수백 번 부르기 전에 비용과 시간을 먼저 어림해요.</li>
+            <li>만든 그래프에 필요한 사실이 몇 개나 들어왔는지 모델 호출 없이 세요.</li>
+          </ul>
+        </dd>
+        <dt>모르면 이런 일이 생겨요</dt>
+        <dd>
+          <ul>
+            <li>관계 이름만 정해 주고 뽑았더니 《기생충》이 "2019년"에 <strong>출연</strong>했다는 엣지가 생겨요. 허용된 이름이 넷뿐이라 모델이 거기에 억지로 욱여넣은 거예요. <a class="suspect-jump" href="#suspect-crammed">언제 의심하나 ↓</a></li>
+            <li>배역 목록이 엉뚱한 영화에 붙어요. 청크만 떼어 읽은 모델은 그 목록이 어느 작품 것인지 몰라요. <a class="suspect-jump" href="#suspect-wrongfilm">언제 의심하나 ↓</a></li>
+            <li>"칸 영화제"와 "제72회 칸 영화제"가 다른 점이 돼서, 같은 시상식 수상작을 묻는 질문이 끊겨요. <a class="suspect-jump" href="#suspect-split">언제 의심하나 ↓</a></li>
+          </ul>
+        </dd>
+        <dt>어디에 쓰나</dt>
+        <dd>
+          <ul>
+            <li><strong>회사 문서 더미에서 "누가 무엇을 맡았나" 표를 뽑아야 할 때.</strong> 회의록에서 담당자와 과제를, 계약서에서 거래처와 제품을 잇는 일이요.</li>
+            <li>LLM으로 대량 추출을 돌리기 전 비용 어림.</li>
+            <li>이미 사람이 달아 둔 태그·분류가 있는 자료에서 LLM 호출 줄이기.</li>
+          </ul>
+        </dd>
+      </dl>
+    </div>
+
+    <div class="key-point" id="prep">
+      <p class="key-point-label"><span class="key-point-badge">준비물</span>이 편을 따라 하려면</p>
+      <ul>
+        <li><strong>OpenAI API 키</strong> — 이 편부터 모델을 불러요. 제가 전체를 한 번 돌리는 데 든 비용은 <a href="#numbers">아래 표</a>에 있어요. 키를 넣는 법은 <a href="langgraph-env-troubleshooting.html">5편</a>에서 다뤘어요.</li>
+        <li><strong><a href="graphrag-why-multihop.html#try-it">20편</a>에서 받은 문서 80건과 골든셋</strong></li>
+        <li><strong>패키지</strong> — <code>pip install langchain-openai langchain-experimental networkx tiktoken</code></li>
+      </ul>
+    </div>
+
+    <h2 id="analogy"><span class="hl">비유</span> — 직원에게 카드를 읽혀 연결판을 만든다</h2>
+    <p><a href="graphrag-why-multihop.html#analogy">20편의 연결판</a>을 이제 실제로 만들어요. 레시피 카드가 수백 장이라 사람이 핀을 꽂을 수는 없으니, 새로 온 직원에게 맡깁니다. 직원은 카드를 한 장씩 읽고 "이 요리에 이 재료", "이 조리사가 이 요리" 같은 실을 이어요.</p>
+    <p>그냥 맡기면 세 가지 사고가 나요. "이 요리는 사장님 조카가 좋아한다" 같은, 아무도 물을 일 없는 실까지 이어요. 한 카드에 같이 적힌 두 요리를 괜히 이어 버려요. 같은 재료를 어떤 카드에선 "굴소스", 어떤 카드에선 "굴 소스"로 꽂아서 핀이 둘이 돼요.</p>
+    <p>그래서 먼저 <strong>실의 종류를 정해 주고</strong>, 끝나면 <strong>같은 재료 핀을 하나로 합치고</strong>, 냉장고 칸마다 붙어 있는 <strong>라벨</strong>("해산물 칸")처럼 이미 정리된 정보는 직원 대신 규칙으로 옮겨 적어요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>카드를 읽고 실을 잇는 새 직원</td><td>LLM 추출기 — <code>LLMGraphTransformer</code></td></tr>
+        <tr><td>"이을 수 있는 실은 이 여덟 종류뿐"이라는 지시</td><td>스키마 — 허용하는 노드 타입과 관계</td></tr>
+        <tr><td>"굴소스"·"굴 소스" 핀을 하나로 합치기</td><td>정규화 — 표기가 다른 같은 대상을 한 노드로</td></tr>
+        <tr><td>냉장고 칸마다 이미 붙은 라벨</td><td>위키 분류 줄 — 사람이 단 태그</td></tr>
+        <tr><td>라벨을 보고 실을 기계적으로 옮겨 적기</td><td>규칙 추출 — 정규식으로 분류에서 삼중항 만들기</td></tr>
+        <tr><td>"손님이 물을 질문 목록"에 필요한 실이 다 있나 세기</td><td>기준 삼중항 커버리지</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 직원은 넓게 읽지만 가끔 틀리고, 라벨은 좁지만 틀리지 않아요. 연결판은 <strong>둘을 합쳐야</strong> 완성돼요.</p>
+
+    <h2 id="flow"><span class="hl">전체 흐름</span></h2>
+    <svg viewBox="0 0 700 210" role="img" aria-label="문서 본문은 제목을 붙여 청크로 자른 뒤 LLM이 삼중항을 추출하고, 문서의 분류 줄은 정규식 규칙이 삼중항으로 옮긴다. 두 결과를 합쳐 한 번에 정규화하고 그래프를 만든 뒤, 골든셋의 기준 삼중항이 몇 개 들어왔는지 센다">
+      <defs>
+        <marker id="gb1" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+          <path d="M0,0 L9,4.5 L0,9 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <rect x="8" y="20" width="110" height="34" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="63" y="41" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">문서 본문</text>
+      <rect x="148" y="20" width="140" height="34" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="218" y="35" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">앞 6,000자 · 제목 붙여</text>
+      <text x="218" y="48" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">청크 168개로</text>
+      <rect x="318" y="20" width="130" height="34" rx="6" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="383" y="41" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--accent)">LLM 추출 (넓게)</text>
+      <rect x="8" y="120" width="110" height="34" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="63" y="141" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">분류: 줄</text>
+      <rect x="318" y="120" width="130" height="34" rx="6" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="383" y="141" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--accent)">정규식 규칙 (좁게)</text>
+      <rect x="478" y="70" width="100" height="34" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="528" y="85" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">합친 뒤</text>
+      <text x="528" y="98" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">한 번에 정규화</text>
+      <rect x="600" y="70" width="92" height="34" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="646" y="85" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">그래프 +</text>
+      <text x="646" y="98" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">커버리지 세기</text>
+      <line x1="118" y1="37" x2="144" y2="37" stroke="var(--muted)" stroke-width="2" marker-end="url(#gb1)"/>
+      <line x1="288" y1="37" x2="314" y2="37" stroke="var(--muted)" stroke-width="2" marker-end="url(#gb1)"/>
+      <line x1="118" y1="137" x2="314" y2="137" stroke="var(--muted)" stroke-width="2" marker-end="url(#gb1)"/>
+      <line x1="448" y1="42" x2="480" y2="72" stroke="var(--muted)" stroke-width="2" marker-end="url(#gb1)"/>
+      <line x1="448" y1="132" x2="480" y2="102" stroke="var(--muted)" stroke-width="2" marker-end="url(#gb1)"/>
+      <line x1="578" y1="87" x2="596" y2="87" stroke="var(--muted)" stroke-width="2" marker-end="url(#gb1)"/>
+      <text x="218" y="186" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">위: LLM 168번 호출 · 아래: LLM 0번</text>
+      <text x="585" y="186" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">따로 정규화하면 두 그래프가 겹치지 않는다</text>
+    </svg>
+    <p><strong>읽는 법:</strong> 위아래 두 길이 같은 문서에서 출발해 가운데서 만나요. 위쪽이 비용의 거의 전부를 쓰고, 아래쪽은 공짜예요. 합치는 자리에서 <strong>정규화를 딱 한 번</strong> 하는 게 중요한데, 이유는 <a href="#merge">병합 절</a>에서 봐요.</p>
+
+    <h2 id="free-extract"><span class="hl">먼저 아무 제약 없이 뽑아 본다</span></h2>
+    <p>LangChain의 <code>LLMGraphTransformer</code><sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>는 문단을 주면 노드와 관계를 뽑아 돌려주는 도구예요. 위키백과 《기생충》 문서 앞 5,000자를 넣고 아무 조건 없이 뽑아 봤어요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 제가 2026-09-18에 gpt-4.1-mini로 뽑았을 때 나온 관계 일부예요</span></p>
+    <pre><code>노드 40 · 관계 39 · 135초
+관계 종류: 수상상 5 · 후보상 3 · 구성원 3 · 과외학생 2 · 배우자 2 · 관련영화 2 · 감독작품 2 …
+
+(기생충) --[감독]--> (봉준호)
+(기생충) --[초청영화제]--> (제72회 칸 영화제)
+(기생충) --[비교영화]--> (가장 따뜻한 색, 블루)
+(기택) --[구성원]--> (기우)
+(기우) --[과외학생]--> (박 사장)
+(박 사장) --[딸]--> (다혜)</code></pre>
+    <p>한 문서에서도 관계가 수십 개 나와요. 그런데 대부분 쓸 데가 없어요. 문제가 세 가지로 보여요.</p>
+    <ul>
+      <li><strong>물을 일 없는 관계가 들어와요.</strong> "기우가 박 사장의 과외 선생"은 이 문서 안에서만 뜻이 있고 다른 영화와 절대 이어지지 않아요.</li>
+      <li><strong>틀린 관계가 섞여요.</strong> (기생충, 비교영화, 가장 따뜻한 색, 블루)는 두 영화가 칸 황금종려상 이야기를 하는 같은 문단에 나왔다는 이유로 생겼어요. 개수로는 몇 개 안 되지만 정확히 "같은 시상식 수상작"을 물을 때 엉뚱한 후보를 내놓아요.</li>
+      <li><strong>같은 것이 흩어져요.</strong> 관계 이름부터 "수상상"·"감독작품"·"감독"처럼 제멋대로라, 문서마다 다른 이름이 생겨요.</li>
+    </ul>
+
+    <h3 id="names-only">관계 이름만 정해 주면 더 나빠질 수도 있어요</h3>
+    <p>그럼 허용할 노드 종류(영화·사람·영화제·회사·장르)와 관계 이름(연출·출연·수상·제작) 넷만 정해 주면 어떨까요. 같은 5,000자로 다시 뽑았어요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 같은 날 같은 모델로, 관계 이름 넷만 허용했을 때예요</span></p>
+    <pre><code>노드 39 · 관계 39 · 15초
+관계 종류: 출연 21 · 연출 12 · 수상 4 · 제작 2
+
+(기생충) --[출연]--> (2019년)
+(기생충) --[출연]--> (대한민국)
+(기생충) --[제작]--> (봉준호)
+(기생충) --[출연]--> (제72회 칸 영화제)
+(기우) --[연출]--> (민혁)
+(박 사장) --[연출]--> (다혜)</code></pre>
+    <p>개수는 거의 그대로인데 <strong>관계가 뜻을 잃었어요.</strong> 뽑고 싶은 사실은 그대로인데 허용된 이름이 넷뿐이니, 모델이 "개봉 연도"를 <code>출연</code>에, "과외"를 <code>연출</code>에 욱여넣었어요. 방향도 제각각이라 봉준호는 기생충을 연출한 게 아니라 기생충이 봉준호를 "제작"했어요.</p>
+    <p>관계를 이름이 아니라 <strong>(출발 타입, 관계, 도착 타입)</strong> 삼중항으로 주면 이 문제가 막혀요. <code>("Person", "ACTED_IN", "Film")</code>이라고 주면 "출연"의 출발은 사람, 도착은 영화로 고정되니 (기생충, 출연, 2019년) 같은 조합이 들어설 자리가 없어져요.</p>
+    <div class="key-point" id="key-triple-schema">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p><code>allowed_relationships</code>에 이름만 주면 방향도, 양쪽 끝의 타입도 정해지지 않아요. <strong>삼중항으로 줘야 방향과 양끝 타입이 고정</strong>되고, 그래야 모델이 사실을 아무 이름에나 욱여넣지 못해요.</p>
+    </div>
+
+    <h2 id="schema"><span class="hl">스키마는 질문에서 거꾸로 정한다</span></h2>
+    <p>흔한 실수는 "일단 많이 뽑아 두자"예요. 그런데 그래프가 답할 수 있는 질문의 범위는 <strong>관계의 종류</strong>가 정해요. 노드를 아무리 늘려도 관계가 세 종류면 세 종류의 질문밖에 못 풀어요.</p>
+    <p>그래서 순서를 뒤집어요. <strong>답하고 싶은 질문 → 필요한 관계 → 스키마.</strong> <a href="graphrag-why-multihop.html#goldenset">골든셋</a> 15문항이 요구하는 관계를 세면 이래요.</p>
+    <table>
+      <thead><tr><th>관계</th><th>필요한 횟수</th><th>어떤 질문에 쓰나</th></tr></thead>
+      <tbody>
+        <tr><td><code>ACTED_IN</code></td><td>13</td><td>같은 배우의 다른 작품</td></tr>
+        <tr><td><code>DIRECTED</code></td><td>12</td><td>같은 감독의 다른 작품</td></tr>
+        <tr><td><code>WON_AWARD</code></td><td>5</td><td>같은 시상식 수상작</td></tr>
+        <tr><td><code>HAS_GENRE</code></td><td>4</td><td>비슷한 장르</td></tr>
+        <tr><td><code>SET_IN</code></td><td>3</td><td>같은 배경 (조선 등)</td></tr>
+        <tr><td><code>HAS_THEME</code> · <code>PRODUCED_OR_DISTRIBUTED_BY</code></td><td>각 1</td><td>같은 소재 · 배급사</td></tr>
+      </tbody>
+    </table>
+    <p>이걸 바탕으로 노드 타입 일곱(Film·Person·Genre·Theme·Award·Organization·Location)과 허용 삼중항 여덟을 정했어요. 수상은 영화도 사람도 받으니 <code>WON_AWARD</code>만 출발 타입이 둘이에요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 스키마 정의 부분만 떼어 왔어요. 전체는 아래 직접 해 보기에 있어요</span></p>
+    <pre><code>REL_TRIPLES = [
+    ("Person", "DIRECTED", "Film"),       # 같은 감독의 다른 작품
+    ("Person", "ACTED_IN", "Film"),       # 같은 배우의 다른 작품
+    ("Film",   "HAS_GENRE", "Genre"),     # 비슷한 장르
+    ("Film",   "HAS_THEME", "Theme"),     # 비슷한 소재
+    ("Film",   "SET_IN", "Location"),     # 같은 배경
+    ("Film",   "WON_AWARD", "Award"),     # 같은 시상식 수상작
+    ("Person", "WON_AWARD", "Award"),     # 수상 경력 있는 감독·배우
+    ("Film",   "PRODUCED_OR_DISTRIBUTED_BY", "Organization"),
+]</code></pre>
+    <p>여기서 정직하게 짚을 게 있어요. <strong>평가에 쓸 골든셋을 보고 스키마를 정하면 반칙 아닌가요?</strong> 방향 자체는 반칙이 아니에요. 답할 질문에서 필요한 관계를 거꾸로 정하는 건 요구사항을 정하는 정상적인 절차예요. 문제는 같은 15문항이 <strong>설계 입력이자 성적표</strong>를 겸한다는 데 있어요. 필요하다고 이미 아는 관계를 넣어 뒀으니 뒤에 나올 커버리지 숫자는 실제보다 후하게 나와요. 실무라면 질문을 설계용과 평가용으로 나누고, 평가용에는 <strong>스키마가 못 덮는 질문</strong>을 일부러 섞어요. 15문항은 나누기엔 너무 작아서 여기서는 나누지 않았어요.</p>
+
+    <h2 id="rules-text"><span class="hl">스키마로 안 전해지는 것</span> — 지침을 글로 적는다</h2>
+    <p>스키마는 "무엇을" 뽑을지는 말해 주지만 "어떻게" 뽑을지는 못 말해요. 그래서 추출 프롬프트에 지침을 아홉 줄 붙였어요. 이런 지침은 처음부터 완벽하게 쓰는 게 아니라, <strong>결과를 보고 틀린 것을 하나씩 막으면서</strong> 쌓여요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 지침 아홉 줄 중 사고를 가장 많이 막은 세 줄이에요</span></p>
+    <pre><code>4. Award 노드는 시상식/영화제 이름만 쓴다. (대종상, 청룡영화상, 칸 영화제)
+   부문 이름을 Award 노드로 만들지 마라. 부문은 category 속성에 넣는다.
+   '송강호가 기생충으로 대종상 남우주연상을 받았다'
+     -> 송강호 -WON_AWARD-> 대종상 { category: "남우주연상", work: "기생충" }
+6. ACTED_IN 에는 character(배역 이름)를 채운다.
+9. 글 맨 앞의 [문서 제목] 이 이 문서가 다루는 대상이다.
+   배역 목록처럼 작품 이름이 본문에 없는 부분에서는, 그 배역들이 [문서 제목] 의 작품에 속한다.</code></pre>
+    <div class="key-point" id="key-award-category">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>"대종상 남우주연상"을 "대종상"과 별개 노드로 만들면, 《기생충》이 받은 상과 다른 영화가 받은 상이 <strong>서로 다른 점</strong>에 붙어요. 그러면 "《기생충》이 상을 받은 시상식에서 수상한 다른 영화" 같은 질문의 길이 끊겨요. 부문은 점이 아니라 선에 붙은 속성으로 둬야 같은 시상식 노드로 모여요.</p>
+    </div>
+
+    <h3 id="title-header">제목을 본문 앞에 직접 써 넣는다</h3>
+    <p>문서를 2,400자 청크로 자르면, 배역 목록만 있는 청크가 생겨요. 그 청크만 본 모델은 이 목록이 어느 영화 것인지 몰라서 짐작해요. 그래서 청크마다 앞에 두 줄을 붙였어요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 모델이 실제로 받는 청크 앞부분이에요</span></p>
+    <pre><code>[문서 제목] 기생충 (영화)
+[문서 유형] Film
+
+(여기부터 본문 청크)</code></pre>
+    <div class="key-point" id="key-title-in-body">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>문서 제목을 <code>Document.metadata</code>에 넣어 두면 안심이 되지만, <code>LLMGraphTransformer</code>는 <strong>metadata를 프롬프트에 넣지 않아요.</strong> 모델이 봐야 하는 정보는 본문 글자로 넣어야 모델 눈에 들어가요.</p>
+    </div>
+
+    <h2 id="cost"><span class="hl">돌리기 전에 비용부터 센다</span></h2>
+    <p>문서 80건을 앞 6,000자까지만 쓰고(<a href="graphrag-why-multihop.html#key-median">20편에서 본 길이 분포</a> 때문이에요) 2,400자로 자르니 청크가 168개예요. LLM을 168번 부른다는 뜻이에요. 부르기 전에 <strong>tiktoken</strong><sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>으로 토큰을 세면 몇 초 만에 규모가 나와요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 제가 돌리기 전에 센 추정과, 돌린 뒤 실제로 청구된 토큰이에요</span></p>
+    <pre><code>추정: 본문 167,635토큰 + 청크당 프롬프트 850토큰 × 168 = 입력 약 310,000
+실제: 입력 471,883 · 출력 216,849 · 8개 동시 호출로 214초 · 실패 청크 0</code></pre>
+    <p>추정보다 입력이 16만 토큰 많았어요. 본문 말고도 <strong>스키마·허용 삼중항 목록·지침 아홉 줄이 청크마다 통째로 다시 붙기</strong> 때문인데, 실측으로 나눠 보면 그게 청크당 약 1,800토큰이었어요. 추정에 넣은 850의 두 배예요. 이 오버헤드는 청크 수에 그대로 곱해지니, 청크를 잘게 자를수록 비싸져요.</p>
+    <p>출력도 커요. 삼중항 2,383개를 JSON으로 받으니 21만 토큰이었고, 출력 단가가 입력보다 비싸서 금액은 출력 쪽이 더 컸어요. gpt-4.1-mini 요금으로 계산하면 추출 한 번에 약 0.54달러예요.</p>
+    <p>그래서 두 가지를 지켰어요. 처음엔 문서 5건만 넣고 돌려 지침이 먹는지 확인했어요(제가 실제로 한 건 《기생충》 청크 2개로 한 번). 그리고 결과를 <strong>파일로 캐시</strong>해서, 다시 돌리면 LLM을 부르지 않게 했어요. 뒤 단계를 수십 번 고쳐 돌려도 추출비는 한 번만 나가요.</p>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">새 직원에게 레시피 카드 수백 장을 한꺼번에 주고 "관계를 다 이어 줘"라고 한다 → 다음 날 아침 쓸 데 없는 실이 가득한 판과 야근 수당 청구서가 같이 온다. 판을 고치려면 처음부터 다시 시켜야 한다</td>
+          <td class="choice-good">손님이 물을 질문 목록에서 필요한 실 여덟 종류를 먼저 정하고, 카드 두 장으로 시험해 본 뒤 전부 맡긴다. 결과는 판 사진으로 남겨 둔다 → 뒤 작업을 몇 번이고 다시 해도 카드를 다시 읽힐 필요가 없다</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="extract-result"><span class="hl">뽑힌 것을 눈으로 본다</span></h2>
+    <p>관계별 개수만 보고 넘어가면 안 돼요. 《기생충》 문서에서 나온 것을 열어 보면 이래요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 실제 추출 결과 중 앞부분이에요</span></p>
+    <pre><code>(봉준호) --[DIRECTED]--> (기생충)
+(봉준호) --[ACTED_IN]--> (기생충)         ← 틀림
+(한진원) --[ACTED_IN]--> (기생충)         ← 틀림 (공동 각본가)
+(기생충) --[WON_AWARD]--> (골든 글로브상) {'category': '외국어영화상'}
+(송강호) --[ACTED_IN]--> (기생충) {'character': '김기택'}
+(최우식) --[ACTED_IN]--> (기생충) {'character': '김기우'}</code></pre>
+    <p>부문이 <code>category</code>로, 배역이 <code>character</code>로 들어간 걸 보면 지침이 먹었어요. 그런데 봉준호와 공동 각본가 한진원이 <strong>출연자</strong>로도 들어갔어요. 스키마에 "각본" 관계가 없으니 가장 가까운 칸에 넣은 거예요. 이런 오류는 통계로는 안 보이고 눈으로 열어야 보여요.</p>
+    <p>관계를 이름이 아니라 삼중항으로 줬고 <code>strict_mode=True</code><sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>로 스키마 밖 결과를 버리게 했는데도 <strong>방향</strong>은 가끔 뒤집혀 들어와요. 그래서 <a href="graphrag-agent-three-routes.html#lookup">다음 편</a>의 조회 함수는 선의 방향을 무시하고 양쪽을 다 봐요.</p>
+    <div class="key-point" id="key-direction">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>그래프는 방향을 저장하지만(<code>DiGraph</code>), 이웃을 찾을 때는 방향을 무시해요. LLM 추출은 같은 사실을 <strong>문서마다 반대 방향으로 저장하는 일이 잦아서</strong>, 한쪽 방향만 보면 멀쩡히 있는 사실을 못 찾아요.</p>
+    </div>
+
+    <h2 id="normalize"><span class="hl">정규화</span> — 같은 대상을 한 점으로</h2>
+    <p>추출이 끝났다고 그래프가 완성된 게 아니에요. 지금 상태로는 길이 자주 끊겨요. 문서 제목은 동음이의를 가르려고 "기생충 (영화)"처럼 괄호를 달지만, 본문과 LLM은 그냥 "기생충"이라고 부르거든요. 처리할 건 세 가지예요.</p>
+    <ul>
+      <li><strong>표기 흔들림 합치기</strong> — "베를린 국제 영화제"와 "베를린국제영화제"처럼 공백·중점만 다른 이름</li>
+      <li><strong>한정어 괄호 합치기</strong> — "기생충 (영화)"와 "기생충"</li>
+      <li><strong>개체가 아닌 것 버리기</strong> — "영화"·"배우" 같은 일반명사, 장소 칸에 들어온 연도</li>
+    </ul>
+    <p>여기에 함정이 있어요. <strong>괄호를 무조건 지우면 안 돼요.</strong> "괴물 (2006년 영화)"처럼 같은 제목의 다른 작품을 가르는 괄호도 있지만, "김윤석 (1968년)"처럼 동명이인을 가르는 괄호도 있어요. 뒤쪽까지 지우면 다른 두 사람이 한 점이 되고, 그 점을 지나는 모든 길이 오염돼요.</p>
+    <p>그래서 타입을 같이 봐요. 영화·사람·회사·시상식은 고유명사(개체), 장르·소재·장소는 보통명사(속성)로 묶고, <strong>이름이 같아도 이 두 계열은 절대 합치지 않아요.</strong> 실제로 이 데이터에는 영화 《괴물》과 장르 "괴물"이 둘 다 있었어요. 합치지 않은 결과 그래프에는 <code>괴물</code>과 <code>괴물 (Genre)</code>가 따로 남아요.</p>
+    <div class="key-point" id="key-family">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>영화 《괴물》과 장르 "괴물"을 한 점으로 합치면, 장르가 괴물인 <strong>모든 영화가 영화 《괴물》과 2홉으로 이어져요.</strong> "《괴물》과 비슷한 영화"를 물으면 괴수 영화가 전부 튀어나오는 엉뚱한 추천이 생겨요.</p>
+    </div>
+    <p>조사를 떼는 규칙도 조심해야 해요. 끝 글자만 보고 "은·는·이·가"를 떼면 《올드보이》가 "올드보"가, 《도리화가》가 "도리화"가 돼요. 그래서 이름 전체에는 조사를 떼지 않고, 《》 같은 닫는 기호 <strong>바로 뒤에 붙은 것</strong>만 조사로 보고 떼요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 정규화 함수가 무엇을 하는지 찍어 본 출력이에요</span></p>
+    <pre><code>《기생충》은        → clean=기생충            norm=기생충
+기생충 (영화)       → clean=기생충 (영화)     norm=기생충
+괴물 (2006년 영화)  → clean=괴물 (2006년 영화) norm=괴물
+황금 종려상         → clean=황금 종려상       norm=황금종려상</code></pre>
+    <p><code>clean</code>은 기호와 조사만 떼고 괄호는 남겨요. 비교할 때 쓰는 열쇠 <code>norm</code>에서만 괄호와 공백을 지워요. 같은 열쇠를 가진 표기들 중 <strong>가장 많이 나온 것</strong>을 대표 이름으로 고르고요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 실제로 한 점으로 합쳐진 표기들이에요 (모두 45건)</span></p>
+    <pre><code>'버닝'              ← ['버닝', '버닝 (2018년 영화)']
+'Cj엔터테인먼트'     ← ['Cj엔터테인먼트', 'Cj 엔터테인먼트', 'CJ 엔터테인먼트']
+'기생충'            ← ['기생충', '기생충 (영화)']
+'베를린 국제 영화제' ← ['베를린 국제 영화제', '베를린국제영화제']</code></pre>
+    <p>이 목록은 자동으로 처리하고 끝낼 게 아니라 <strong>사람이 한 번 훑어볼 목록</strong>이에요. 표기 흔들림이면 합치는 게 맞지만 동명이인이면 절대 합치면 안 되니까요. 실무에서는 이걸 표로 내보내 담당자가 "합칠 것·둘 것"을 표시해요. 자동으로 처리하되 위험한 자리만 사람에게 보여 주는 것, 이게 사람 확인 단계(HITL, Human-in-the-loop)의 가장 작은 모양이에요.</p>
+
+    <h2 id="rules"><span class="hl">위키 분류로 보강한다</span> — 규칙은 좁지만 정확하다</h2>
+    <p><a href="graphrag-why-multihop.html#data">20편</a>에서 본 "분류:" 줄을 여기서 써요. 위키 편집자가 손으로 단 태그라 형식이 고정돼 있어서, 정규식 몇 줄로 삼중항이 나와요.</p>
+    <table>
+      <thead><tr><th>위키 분류</th><th>만들어지는 삼중항</th></tr></thead>
+      <tbody>
+        <tr><td>나홍진 감독 영화</td><td>(나홍진, DIRECTED, 곡성)</td></tr>
+        <tr><td>대한민국의 미스터리 영화</td><td>(곡성, HAS_GENRE, 미스터리)</td></tr>
+        <tr><td>조선을 배경으로 한 영화</td><td>(명량, SET_IN, 조선)</td></tr>
+        <tr><td>가난을 소재로 한 영화</td><td>(기생충, HAS_THEME, 가난)</td></tr>
+        <tr><td>대종상 수상작</td><td>(기생충, WON_AWARD, 대종상)</td></tr>
+        <tr><td>대종상 남우주연상 수상자</td><td>(송강호, WON_AWARD, 대종상) {category: 남우주연상}</td></tr>
+      </tbody>
+    </table>
+    <p>시상식 이름만은 정규식으로 잘라 내지 않았어요. "대한민국 영화대상 수상자"를 패턴으로 자르면 "대한민국"을 시상식으로 뽑는 사고가 나거든요. 시상식처럼 <strong>목록이 정해진 것은 규칙이 아니라 사전</strong>으로 다루는 게 정확해요. 알려진 시상식 이름 목록을 두고, 분류 문자열 안에서 가장 긴 이름부터 찾아 맞췄어요.</p>
+    <p>이렇게 LLM을 한 번도 안 부르고 삼중항 331개가 나왔어요. 관계별로는 이래요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 규칙 추출 결과를 관계별로 센 것이에요</span></p>
+    <pre><code>WON_AWARD 147 · HAS_GENRE 67 · SET_IN 40 · HAS_THEME 29 · DIRECTED 27 · PRODUCED_OR_DISTRIBUTED_BY 21
+ACTED_IN 0</code></pre>
+    <div class="key-point" id="key-no-acted-in">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>규칙으로는 <code>ACTED_IN</code>을 한 건도 못 뽑아요. 영화 문서의 분류에도, 배우 문서의 분류에도 <strong>출연 관계는 적혀 있지 않고 본문 서술에만 있어요.</strong> 그래서 출연은 LLM의 몫이에요. 골든셋이 가장 많이 요구하는 관계가 바로 이것(13개)이었죠.</p>
+    </div>
+    <p>규칙 결과가 늘 상식과 맞지는 않아요. 《기생충》에는 "대한민국의 재난 영화" 분류가 실제로 달려 있어서 (기생충, HAS_GENRE, 재난)이 생겼어요. 규칙은 모델처럼 지어내지는 않지만, <strong>원본 태그를 그대로 믿는다</strong>는 한계는 있어요.</p>
+
+    <h2 id="merge"><span class="hl">합치고, 출처를 남긴다</span></h2>
+    <p>LLM 결과를 바탕으로 하고 규칙에만 있는 선을 더했어요. 같은 선이 양쪽에서 나오면 규칙 쪽을 더 믿어서 신뢰도를 1.0으로 올리고, 출처를 <code>rule+llm</code>으로 적었어요. 선마다 <code>origin</code>(llm·rule·rule+llm)을 남겨 두면 나중에 "이 답의 근거는 사람이 단 태그에서 왔나, 모델 추측에서 왔나"를 보여 줄 수 있고, 틀린 사실을 발견했을 때 어느 단계가 만들었는지 되짚을 수 있어요.</p>
+    <p>여기서 <strong>정규화는 두 결과를 합친 뒤에 한 번</strong> 해야 해요. 따로따로 하면 LLM이 뽑은 "기생충"과 문서 제목에서 온 "기생충 (영화)"가 각자의 대표 이름을 가져서, 두 그래프가 겹치지 않고 나란히 쌓이기만 해요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 합친 뒤의 그래프 규모예요</span></p>
+    <pre><code>LLM 그래프  — 노드 1,412 · 엣지 1,879
+규칙 그래프 — 노드   172 · 엣지   321
+병합 그래프 — 노드 1,476 · 엣지 2,044
+엣지 출처: llm 1,725 · rule 165 · rule+llm 154</code></pre>
+
+    <h2 id="coverage"><span class="hl">필요한 사실이 다 들어왔나 센다</span></h2>
+    <p>골든셋에는 문항마다 정답에 꼭 필요한 삼중항이 적혀 있으니, 그게 그래프 안에 몇 개 있는지 세면 돼요. 이 <strong>기준 삼중항 커버리지</strong>는 문자열 비교만으로 계산해서 비용이 0이에요. 비용이 안 드는 자를 먼저 만들어 두면 실험을 마음껏 돌릴 수 있어요.</p>
+    <table>
+      <thead><tr><th>그래프</th><th>기준 삼중항</th><th>DIRECTED</th><th>ACTED_IN</th><th>HAS_GENRE</th><th>SET_IN</th><th>WON_AWARD</th></tr></thead>
+      <tbody>
+        <tr><td>LLM 추출만</td><td>33/39 (85%)</td><td>12/12</td><td>13/13</td><td>3/4</td><td>1/3</td><td>3/5</td></tr>
+        <tr><td>위키 분류 규칙만</td><td>26/39 (67%)</td><td>12/12</td><td><strong>0/13</strong></td><td>4/4</td><td>3/3</td><td>5/5</td></tr>
+        <tr><td>병합</td><td><strong>39/39 (100%)</strong></td><td>12/12</td><td>13/13</td><td>4/4</td><td>3/3</td><td>5/5</td></tr>
+      </tbody>
+    </table>
+    <p>총점보다 관계별 칸이 중요해요. 규칙은 장르·배경·수상처럼 <strong>형식이 고정된 관계</strong>를 LLM 없이 다 잡았고, LLM은 규칙이 원리적으로 못 채우는 출연을 다 잡았어요. 서로 다른 구멍을 메웠기 때문에 합치니 100%가 됐어요. 다만 <a href="#schema">위에서 짚었듯</a> 스키마를 이 15문항에서 역산했으니, 이 100%는 "이 질문들에 대해서는"이라는 조건이 붙은 숫자예요.</p>
+    <p>여기서 가져갈 원칙은 이거예요. <strong>형식이 고정된 곳은 규칙으로 싸고 정확하게, 자유 서술만 LLM으로.</strong> 전부 LLM에 맡기는 것도, 전부 규칙으로 짜는 것도 최선이 아니에요.</p>
+
+    <h2 id="inspect"><span class="hl">쓰기 전에 네 가지를 점검한다</span></h2>
+    <p>문서 검색은 결과가 이상하면 원문을 읽어 바로 알아채지만, 그래프는 틀린 선 하나가 조용히 엉뚱한 경로를 만들어도 겉으로는 그럴듯해요. 그래서 그래프를 쓰기 전에 네 가지를 습관처럼 봐요. 넷 다 모델 호출 없이 몇 초면 끝나고, 이상이 보이면 대개 <strong>스키마나 추출 지침</strong>으로 돌아가 고칠 자리를 가리켜요.</p>
+    <table>
+      <thead><tr><th>점검</th><th>무엇을 보나</th><th>이상 신호</th></tr></thead>
+      <tbody>
+        <tr><td>① 관계·타입 분포</td><td>관계별·노드 타입별 개수</td><td>어떤 관계가 지나치게 많거나 적다 → 추출이 한쪽으로 치우쳤다</td></tr>
+        <tr><td>② 허브 노드</td><td>연결 수(차수)가 가장 많은 노드</td><td>비정상적으로 높다 → 잘못 만들어졌거나, 흔해서 정보가 없는 노드다</td></tr>
+        <tr><td>③ 연결 상태</td><td>그래프가 몇 덩어리로 나뉘나</td><td>덩어리가 많다 → 다른 덩어리 사이에는 아무리 해도 길이 없다</td></tr>
+        <tr><td>④ 눈으로 보기</td><td>한 대상 주변만 잘라 그린 그림</td><td>통계로는 안 보이는 이상한 선이 그림에서는 대번에 드러난다</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="check-distribution">① 관계·타입 분포</h3>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 제가 만든 그래프에서 센 값이에요. 저장소의 ko/LangGraph/graphrag_04_inspect.py</span></p>
+    <pre><code>LLM 추출만: ACTED_IN 814 · WON_AWARD 686 · DIRECTED 206 · PRODUCED_OR_DISTRIBUTED_BY 75 · SET_IN 58 · HAS_GENRE 29 · HAS_THEME 11
+규칙만    : WON_AWARD 137 · HAS_GENRE 67 · SET_IN 40 · HAS_THEME 29 · DIRECTED 27 · PRODUCED_OR_DISTRIBUTED_BY 21
+노드 타입 : Person 594 · Film 488 · Award 251 · Location 50 · Genre 40 · Theme 30 · Organization 23</code></pre>
+    <p>LLM 쪽의 장르(29)와 소재(11)가 눈에 띄게 적어요. 영화가 488편인데 장르 선이 29개면, 대부분의 영화에 장르가 없다는 뜻이에요. 위키 본문은 장르를 문장으로 잘 안 쓰거든요. 이런 치우침을 보면 "LLM에게 더 열심히 뽑으라고 하자"가 아니라 <strong>"이 관계는 다른 출처(분류 줄)에서 가져오자"</strong>로 이어져요. 실제로 규칙 쪽이 장르 67·소재 29를 채웠어요.</p>
+
+    <h3 id="check-hubs">② 허브 노드</h3>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 차수 상위 다섯과, 장르·소재·장소 중 상위예요</span></p>
+    <pre><code> 83 [Film  ] 극한직업   {'ACTED_IN': 73, 'HAS_GENRE': 3, 'SET_IN': 3}
+ 70 [Award ] 대종상     {'WON_AWARD': 70}
+ 63 [Person] 권해효     {'ACTED_IN': 62, 'WON_AWARD': 1}
+ 62 [Person] 박찬욱     {'WON_AWARD': 41, 'DIRECTED': 19, 'ACTED_IN': 2}
+ 58 [Person] 황정민     {'ACTED_IN': 46, 'WON_AWARD': 12}
+
+속성 노드 상위: 드라마(Genre) 13 · 서울특별시(Location) 10 · 스릴러 6 · 미스터리 6 · 조선 5</code></pre>
+    <p>연결 수를 <strong>차수</strong><sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>라고 해요. 차수가 높은 노드는 두 종류예요. 박찬욱처럼 <strong>진짜 중심</strong>인 대상이 있고, "드라마" 장르처럼 <strong>너무 흔해서 정보가 없는</strong> 노드가 있어요. 뒤쪽은 가짜 다리를 만들어요. 서로 상관없는 영화들이 "드라마"를 통해 2홉으로 이어져 버리니까요. 100편과 이어진 노드가 공통점이라는 건 사실상 아무것도 말해 주지 않아요. <a href="graphrag-agent-three-routes.html#recommend">다음 편</a>에서 흔한 매개를 감점하는 이유예요.</p>
+    <p>《극한직업》은 또 다른 경우예요. 연결 83개 중 73개가 출연이라, 이 노드를 지나는 탐색은 출연 관계에 파묻히기 쉬워요. <a href="graphrag-agent-three-routes.html#budget">다음 편</a>에서 관계별 할당량을 두는 이유예요.</p>
+
+    <h3 id="check-components">③ 연결 상태</h3>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 서로 이어지지 않은 덩어리들의 크기예요</span></p>
+    <pre><code>연결 요소 9개: 1422 · 18 · 14 · 9 · 5 · 2 · 2 · 2 · 2   (가장 큰 덩어리 96%)
+작은 덩어리 예: M. 나이트 샤말란 · 23 아이덴티티 · 글래스 · 더 비지트 …
+              미하엘 하네케 · 뤼크 다르덴 · 루벤 외스틀룬드 …
+연결이 1개뿐인 노드 1,133개 (77%)</code></pre>
+    <p>96%가 한 덩어리라 대부분의 질문은 이어져 있어요. 떨어져 나온 작은 덩어리를 열어 보면 샤말란 감독 작품, 칸 영화제 심사 이력의 유럽 감독들처럼 <strong>한국 영화와 상관없는 것들</strong>이에요. 문서를 모을 때 딸려 온 오염이 덩어리째로 드러난 거예요.</p>
+    <p>연결이 1개뿐인 노드가 77%인 것도 기록해 둬요. 이 노드들은 1홉 질문에는 쓰이지만 멀티홉의 다리는 못 돼요. 지금 숫자를 남겨 두면 추출을 고쳤을 때 얼마나 나아졌는지 비교할 수 있어요.</p>
+    <div class="key-point" id="key-components">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>그래프가 서로 이어지지 않은 덩어리 여러 개로 나뉘어 있으면, <strong>다른 덩어리에 있는 두 대상 사이에는 어떤 경로도 없어요.</strong> 탐색을 아무리 깊게 해도 못 건너가요. 덩어리가 많다면 탐색이 아니라 정규화(같은 대상이 두 점으로 갈렸나)나 스키마(잇는 관계가 빠졌나)를 먼저 봐요.</p>
+    </div>
+
+    <h3 id="check-visual">④ 눈으로 보기</h3>
+    <p>전체를 그리면 털뭉치가 되니, 한 대상 주변 1~2홉만 잘라(<code>nx.ego_graph</code>) 그려요. 관계마다 색을 다르게 칠하면 "왜 이 영화 옆에 이 사람이 붙어 있지?" 같은 선이 통계보다 먼저 눈에 띄어요. 《기생충》 주변을 그리면 공동 각본가 한진원이 <strong>출연 선</strong>으로 붙어 있는 게 바로 보여요. <a href="#extract-result">위에서 본 추출 오류</a>예요. 봉준호의 틀린 출연 선은 그림에 없는데, 같은 두 점 사이에는 선을 하나만 두도록 짜서 먼저 들어온 감독 선만 남았기 때문이에요. 고친 게 아니라 우연히 가려진 거라, 이런 규칙이 무엇을 조용히 버리는지도 알고 있어야 해요. 그래서 그래프 그림은 예쁘게 만드는 작업이 아니라 <strong>디버깅 도구</strong>예요.</p>
+    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK <span class="run-tag-why">— matplotlib 필요. 한글이 네모로 나오면 한글 폰트를 등록해요</span></p>
+    <pre><code>import networkx as nx
+import matplotlib.pyplot as plt
+
+ego = nx.ego_graph(G.to_undirected(), "기생충", radius=1)   # 기생충과 바로 이웃만
+sub = G.subgraph(ego.nodes)
+pos = nx.spring_layout(sub, seed=42)
+nx.draw(sub, pos, with_labels=True, node_size=600, font_size=8)
+nx.draw_networkx_edge_labels(sub, pos, edge_labels=nx.get_edge_attributes(sub, "relation"), font_size=6)
+plt.show()</code></pre>
+
+    <h2 id="schema-decides"><span class="hl">결국 스키마가 전부를 정한다</span></h2>
+    <p>이 편에서 만난 문제를 모아 보면 대부분 한 곳으로 돌아가요. <strong>무엇을 어떤 모양으로 뽑을지 정한 스키마</strong>예요. 제 실행에서 실제로 본 것만 적으면 이래요.</p>
+    <table>
+      <thead><tr><th>스키마 결정</th><th>실제로 벌어진 일</th></tr></thead>
+      <tbody>
+        <tr><td>관계를 이름 넷으로만 줌</td><td>《기생충》이 "2019년"에 <strong>출연</strong>했다는 선이 생겼다 — <a href="#names-only">이름만 준 스키마</a></td></tr>
+        <tr><td>"각본" 관계가 없음</td><td>공동 각본가 한진원과 봉준호가 <strong>출연자</strong>로 들어갔다 — <a href="#extract-result">추출 결과</a></td></tr>
+        <tr><td>수상 부문을 노드가 아니라 속성으로</td><td>시상식 노드가 하나로 모여 "같은 시상식 수상작" 질문의 길이 이어졌다 — <a href="#key-award-category">부문 지침</a></td></tr>
+        <tr><td>골든셋에서 관계를 역산</td><td>필요한 사실 39개를 전부 채웠다. 대신 스키마 밖의 질문은 이 점수에 안 잡힌다 — <a href="#coverage">커버리지</a></td></tr>
+        <tr><td>줄거리를 담는 관계가 없음</td><td>줄거리 질문에 그래프가 줄 게 없어서, 모델이 조각들로 줄거리를 지어냈다 — <a href="graphrag-agent-three-routes.html#guard">22편</a></td></tr>
+      </tbody>
+    </table>
+    <p>그리고 스키마는 <strong>나중에 바꾸기 비싸요.</strong> 관계 하나를 더하려면 문서 전부를 다시 읽혀야 해요. 이 실습 규모에서도 214초와 0.54달러였고, 문서가 10만 건이면 이야기가 완전히 달라져요. 문서가 갱신될 때마다 그 비용이 다시 들고요.</p>
+    <div class="key-point" id="key-schema">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p><strong>관계의 종류가 곧 그래프가 답할 수 있는 질문의 범위예요.</strong> 스키마에 없는 관계는 아무리 탐색을 잘해도 답이 안 나오고, 이름만 준 관계는 엉뚱한 사실로 채워져요. 그래서 스키마 설계는 데이터 작업이 아니라 <strong>이 제품이 무엇에 답할지 정하는 일</strong>이에요. 뽑기 전에 ① 답할 질문 목록에서 필요한 관계를 거꾸로 세고, ② 관계를 (출발, 관계, 도착)으로 고정하고, ③ 뽑은 뒤 위의 네 가지 점검으로 스키마가 의도대로 먹었는지 확인해요.</p>
+    </div>
+
+    <div class="apply-box apply-box--try" id="try-it">
+      <p class="apply-box-title">직접 해 보기 — 문서 5건으로 작게 한 바퀴</p>
+      <p>제가 쓴 전체 스크립트는 저장소의 <code>ko/LangGraph/graphrag_02_pipeline.py</code>예요. 처음엔 아래처럼 문서를 5건으로 줄여 추출 부분만 돌려 보세요. 비용은 몇 센트예요.</p>
+      <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK <span class="run-tag-why">— OPENAI_API_KEY 필요</span></p>
+      <pre><code>from langchain_openai import ChatOpenAI
+from langchain_core.documents import Document
+from langchain_experimental.graph_transformers import LLMGraphTransformer
+
+REL_TRIPLES = [("Person", "DIRECTED", "Film"), ("Person", "ACTED_IN", "Film"),
+               ("Film", "HAS_GENRE", "Genre"), ("Film", "WON_AWARD", "Award")]
+
+tf = LLMGraphTransformer(
+    llm=ChatOpenAI(model="gpt-4.1-mini", temperature=0, timeout=120, max_retries=3),
+    allowed_nodes=["Film", "Person", "Genre", "Award"],
+    allowed_relationships=REL_TRIPLES,          # 삼중항으로 — 방향이 고정된다
+    relationship_properties=["category", "character"],
+    strict_mode=True,
+    additional_instructions="개체 이름은 원문 표기 그대로. Award 노드는 시상식 이름만, 부문은 category 속성에.",
+)
+
+title = "기생충 (영화)"
+body = open("input/cinephile_kb_80/docs/기생충_(영화).md", encoding="utf-8").read()[:2400]
+doc = Document(page_content=f"[문서 제목] {title}\n[문서 유형] Film\n\n{body}")
+for r in tf.convert_to_graph_documents([doc])[0].relationships:
+    print(f"({r.source.id}) --[{r.type}]--> ({r.target.id})", r.properties or "")</code></pre>
+      <ol>
+        <li>출력에서 <code>WON_AWARD</code>의 도착 노드가 시상식 이름인지, 부문 이름인지 봐요.</li>
+        <li><code>[문서 제목]</code> 두 줄을 지우고 다시 돌려요. 배역이 여전히 《기생충》에 붙는지 비교해요.</li>
+        <li><code>allowed_relationships</code>를 <code>["DIRECTED", "ACTED_IN", "HAS_GENRE", "WON_AWARD"]</code> 이름 목록으로 바꿔 돌려요. 선이 엉뚱한 칸에 들어가는지 보세요.</li>
+      </ol>
+    </div>
+
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 추출을 돌리기 전에 볼 것</h2>
+    <p><a href="#cost">비용 절</a>과 <a href="#coverage">커버리지 절</a>에서 나온 값 중, 비슷한 추출을 계획할 때 다시 쓸 것만 모았어요. 비용은 모두 gpt-4.1-mini로 2026-09-18에 한 번 돌린 값이에요.</p>
+    <table>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
+      <tbody>
+        <tr><td>추출 입력 설정</td><td>문서당 앞 6,000자 · 청크 2,400자 · 겹침 200자</td><td>이 조건에서 문서 80건이 청크 168개가 된다. 청크 수가 곧 LLM 호출 수다</td></tr>
+        <tr><td>청크당 프롬프트 오버헤드</td><td>약 1,800토큰 (실측)</td><td>스키마·지침이 청크마다 다시 붙는 값. 850으로 어림했다가 입력을 16만 토큰 적게 잡았다</td></tr>
+        <tr><td>추출 1회 토큰</td><td>입력 471,883 · 출력 216,849</td><td>출력 단가가 비싸서 금액은 출력 쪽이 크다. 뽑는 속성을 늘리면 출력이 늘어난다</td></tr>
+        <tr><td>추출 1회 비용·시간</td><td>약 0.54달러 · 8개 동시 호출로 214초</td><td>한 번만 내도록 결과를 캐시한다. 동시 호출 수를 줄이면 시간이 비례해 는다</td></tr>
+        <tr><td>뽑힌 삼중항</td><td>LLM 2,383개 · 위키 분류 규칙 331개</td><td>규칙 쪽은 비용 0. 사람이 단 태그가 있는 자료면 먼저 규칙으로 뽑을 수 있는 만큼 뽑는다</td></tr>
+        <tr><td>기준 삼중항 커버리지</td><td>LLM 85% · 규칙 67% · 병합 100%</td><td>스키마를 같은 문항에서 역산했으므로 후하게 나온 값이다</td></tr>
+      </tbody>
+    </table>
+    <p>요금은 gpt-4.1-mini의 100만 토큰당 입력 0.40달러·출력 1.60달러로 계산했어요. 단가는 수시로 바뀌니 돌리기 전에 <a href="https://platform.openai.com/docs/pricing" target="_blank" rel="noopener">요금표</a>를 다시 보세요.</p>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — LLM으로 관계를 뽑은 뒤</h2>
+    <p>추출의 실패는 에러로 안 보여요. 추출은 "완료"를 찍고, 문제는 <strong>나중에 에이전트가 엉뚱한 답을 낼 때</strong> 처음 드러나요.</p>
+    <p>증상이 아직 없어도, <strong>AI에게 이런 부탁을 한 직후</strong>라면 한 번 확인하고 넘어가요.</p>
+    <ul>
+      <li>"문서에서 관계를 뽑아 그래프로 만들어 줘" — 관계를 이름 목록으로 줬는지, (출발, 관계, 도착)으로 줬는지</li>
+      <li>"문서 전체 돌려서 그래프 만들어 줘" — 돌리기 전에 청크 수와 토큰을 셌는지, 결과를 파일로 남기는지</li>
+    </ul>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-crammed">
+          <td>"영화가 연도에 출연했다", "영화가 감독을 제작했다" 같은 말이 안 되는 선이 보인다</td>
+          <td>추출기에 넘긴 <code>allowed_relationships</code> 값</td>
+          <td>이름 목록이면 (출발 타입, 관계, 도착 타입) 삼중항으로 바꾸고 <code>strict_mode</code>를 켠다. 선을 무작위로 스무 개 뽑아 눈으로 읽어 봐요 — <a href="#names-only">이름만 준 스키마</a></td>
+        </tr>
+        <tr id="suspect-wrongfilm">
+          <td>어떤 배우가 나오지도 않은 영화의 출연자로 답에 등장한다</td>
+          <td>그 선의 <code>source</code>(어느 문서에서 나왔나)와, 그 문서의 청크 앞부분</td>
+          <td>청크 맨 앞에 문서 제목이 글자로 들어가 있는지 본다. metadata에만 있으면 모델은 못 봐요 — <a href="#title-header">제목 헤더 절</a></td>
+        </tr>
+        <tr id="suspect-split">
+          <td>"같은 시상식 수상작"이나 "같은 감독의 다른 작품"을 물으면 한두 편만 나오거나 아무것도 안 나온다</td>
+          <td>그 시상식·감독 이름으로 그래프 노드를 검색한 결과. 비슷한 이름의 노드가 여럿인지</td>
+          <td>정규화 열쇠(공백·괄호를 지운 이름)가 같은 노드끼리 묶어 본다. 부문 이름이 시상식 노드로 들어갔는지도 본다 — <a href="#normalize">정규화 절</a></td>
+        </tr>
+        <tr id="suspect-bill">
+          <td>추출 한 번에 예상보다 몇 배 많은 요금이 나왔다</td>
+          <td>API 사용량 화면의 입력·출력 토큰, 그리고 청크 수</td>
+          <td>입력 토큰을 청크 수로 나눠 청크당 오버헤드를 본다. 지침이 길수록 청크마다 곱해져요. 다음부터는 5건으로 먼저 돌린다 — <a href="#cost">비용 절</a></td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등</p>
+    <pre><code>이 프로젝트에서 LLM으로 관계(삼중항)를 뽑는 코드를 찾아서, (1) 허용 관계를 어떤 형태로 넘기는지,
+(2) 청크에 문서 제목이 본문 글자로 들어가는지, (3) 추출 결과를 파일로 캐시하는지를 파일·줄 번호로 보여 줘.
+그리고 추출된 삼중항 중 무작위 20개를 출력하는 방법을 알려 줘. 아직 코드는 고치지 마.</code></pre>
+
+    <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
+    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 다른 편의 같은 목록은 <a href="langgraph-what-and-why.html#key-recap">1편</a> · <a href="graphrag-why-multihop.html#key-recap">20편</a>에 있어요.</p>
+    <ul class="key-recap">
+      <li><a href="#key-triple-schema">관계는 이름이 아니라 (출발, 관계, 도착)으로 준다</a></li>
+      <li><a href="#key-award-category">수상 부문은 노드가 아니라 선의 속성으로</a></li>
+      <li><a href="#key-title-in-body">모델이 볼 정보는 metadata가 아니라 본문 글자로</a></li>
+      <li><a href="#key-direction">LLM 추출은 방향이 뒤집히니 이웃은 양쪽을 본다</a></li>
+      <li><a href="#key-family">이름이 같아도 개체와 속성은 합치지 않는다</a></li>
+      <li><a href="#key-no-acted-in">분류 규칙으로는 출연을 못 뽑는다</a></li>
+      <li><a href="#key-components">다른 덩어리 사이에는 길이 없다</a></li>
+      <li><a href="#key-schema">관계의 종류가 곧 답할 수 있는 질문의 범위</a></li>
+    </ul>
+
+    <p><a href="graphrag-agent-three-routes.html">다음 편</a>에서는 이 그래프를 들고 LangGraph로 에이전트를 조립해요. 질문 종류에 따라 세 갈래로 나눠 답하게 할 거예요.</p>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">LLMGraphTransformer — LangChain의 실험 패키지(<code>langchain-experimental</code>)에 든 도구로, 문서를 주면 LLM을 불러 노드와 관계를 뽑아 줘요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">tiktoken — OpenAI 모델이 글을 몇 토큰으로 세는지 모델 호출 없이 계산해 주는 파이썬 라이브러리예요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">strict_mode — 허용한 노드 타입과 관계 밖의 결과를 추출기가 버리게 하는 설정이에요. <a href="#fnref3">↩</a></li>
+        <li id="fn4">차수(degree) — 한 노드에 붙은 선의 개수로, 들어오는 선과 나가는 선을 합쳐 세요. <a href="#fnref4">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <h3 id="series-list">"에이전트 팀 꾸리기 — LangGraph" 시리즈</h3>
+    <a class="post-nav" href="langgraph-what-and-why.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">다음에 어느 코드가 실행될까 — LangGraph와 워크플로·에이전트</span>
+    </a>
+    <a class="post-nav" href="langgraph-state-node-edge.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">흐름을 그림으로 짠다 — LangGraph의 State·Node·Edge</span>
+    </a>
+    <a class="post-nav" href="langgraph-branch-drills.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">갈림길을 밀어붙인다 — 세 갈래·라벨·끝나지 않는 반복</span>
+    </a>
+    <a class="post-nav" href="langgraph-branches-and-tool-loop.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">모델이 다음 길을 고르게 한다 — 도구를 쥐여 주는 루프</span>
+    </a>
+    <a class="post-nav" href="langgraph-env-troubleshooting.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">.env가 안 읽혔던 네 겹의 이유 — 원격 주피터에서 API 키 넣기</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-chaining.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">① 프롬프트 체이닝 — 순서대로, 사이에 검사</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-routing.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">② 라우팅 — 먼저 분류하고, 한 갈래로</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-parallelization.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">③ 병렬화 — 동시에 돌리고, 합친다</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-orchestrator-worker.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">④ 오케스트레이터-워커 — 몇 갈래일지 LLM이 정한다</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-evaluator-optimizer.html">
+      <span class="post-nav-label">(10)</span>
+      <span class="post-nav-title">⑤ 평가자-최적화자 — 통과할 때까지 고쳐 쓰기</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-skeleton.html">
+      <span class="post-nav-label">(11)</span>
+      <span class="post-nav-title">뉴스레터 에이전트를 빈 노드 다섯 개로 먼저 세운다</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-collect.html">
+      <span class="post-nav-label">(12)</span>
+      <span class="post-nav-title">기사를 어디서 가져올까 — RSS·관문·수집 노드</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-select.html">
+      <span class="post-nav-label">(13)</span>
+      <span class="post-nav-title">100건에서 5건 고르기 — 점수 대신 비교, 예선과 본선</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-summarize-verify.html">
+      <span class="post-nav-label">(14)</span>
+      <span class="post-nav-title">요약을 세 칸으로 받고 원문과 대조한다</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-publish-schedule.html">
+      <span class="post-nav-label">(15)</span>
+      <span class="post-nav-title">디스코드로 매일 아침 받아 보기 — 웹훅과 GitHub Actions</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-metrics-config.html">
+      <span class="post-nav-label">(16)</span>
+      <span class="post-nav-title">돌고 나서 재 본다 — 실행 기록과 설정 파일</span>
+    </a>
+    <a class="post-nav" href="cs-agent-routing-eval.html">
+      <span class="post-nav-label">(17)</span>
+      <span class="post-nav-title">문의 한 줄을 다섯 갈래로 — 라우트는 회사 문서에서 가져온다</span>
+    </a>
+    <a class="post-nav" href="cs-agent-grounding.html">
+      <span class="post-nav-label">(18)</span>
+      <span class="post-nav-title">값을 말하지 말고 조회하게 한다 — 매뉴얼 쪼개기·도구·가드레일</span>
+    </a>
+    <a class="post-nav" href="cs-agent-improve.html">
+      <span class="post-nav-label">(19)</span>
+      <span class="post-nav-title">59%에서 94%로 — 프롬프트만 고쳐 지표를 올린 기록</span>
+    </a>
+    <a class="post-nav" href="graphrag-why-multihop.html">
+      <span class="post-nav-label">(20)</span>
+      <span class="post-nav-title">검색으로는 못 찾는 답 — 멀티홉 질문과 지식 그래프</span>
+    </a>
+    <p class="post-date">(21) 스키마가 답할 질문을 정한다 — 추출·정규화·위키 분류 (이 글)</p>
+    <a class="post-nav" href="graphrag-agent-three-routes.html">
+      <span class="post-nav-label">(22)</span>
+      <span class="post-nav-title">세 갈래로 답하는 에이전트 — 커뮤니티 요약·라우터·탐색 예산</span>
+    </a>
+    <a class="post-nav" href="graphrag-goldenset-eval.html">
+      <span class="post-nav-label">(23)</span>
+      <span class="post-nav-title">같은 15문항으로 채점한다 — 세 층 평가와 심판의 한계</span>
+    </a>
+
+    <a class="post-nav" href="graphrag-agent-three-routes.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">세 갈래로 답하는 에이전트 — 커뮤니티 요약·라우터·탐색 예산 (22)</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>

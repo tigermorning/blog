@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>세 갈래로 답하는 에이전트 — 커뮤니티 요약·라우터·탐색 예산 (22) - Tigermorning</title>
+  <meta name="description" content="지식 그래프 위에서 질문 종류에 따라 지역·경로·전역 세 갈래로 답하는 LangGraph 에이전트를 조립한 기록입니다. 커뮤니티 요약을 미리 만들고, 규칙과 LLM을 섞은 2단 라우터를 두고, 관계별 할당량으로 근거 예산을 나누고, 근거가 없으면 모델을 부르지 않는 가드까지 실제 실행 경로로 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="세 갈래로 답하는 에이전트 — 커뮤니티 요약·라우터·탐색 예산 (22)">
+  <meta property="og:description" content="유명한 대상일수록 연결이 많아 '근거가 충분하다'고 착각하기 쉬워요. 《기생충》은 연결이 34개인데 감독 관계는 1개뿐이었어요.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/graphrag-agent-three-routes.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">세 갈래로 답하는 에이전트</span> — 커뮤니티 요약·라우터·탐색 예산 (22)</h1>
+    <p class="post-date">2026. 9. 18.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="graphrag-build-knowledge-graph.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">스키마가 답할 질문을 정한다 — 추출·정규화·위키 분류 (21)</span>
+    </a>
+
+    <p class="one-liner">GraphRAG 에이전트는 질문을 <strong>한 대상의 속성·대상 사이의 연결·자료 전체</strong> 셋 중 하나로 나눠, 각각 다른 근거를 모아 답하는 프로그램이에요.</p>
+
+    <div class="why-read" id="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>어디쯤인가</dt>
+        <dd><a href="posts.html#cat-agent-system">8단계</a> › <a href="posts.html#langgraph-team">에이전트 팀 꾸리기 — LangGraph</a> — 22번째 글 (전 23편). 첫 글은 <a href="langgraph-what-and-why.html">1편</a>이고, 영화 추천 에이전트 묶음은 <a href="graphrag-why-multihop.html">20편</a>부터예요.</dd>
+        <dt>이런 게 궁금했다면</dt>
+        <dd>
+          <ul>
+            <li>"이 자료 전체에 어떤 집단이 있나?" 같은 질문은 무엇을 근거로 답하죠?</li>
+            <li>그래프에서 이웃을 다 모으면 LLM에 넣을 분량이 넘치지 않나요?</li>
+            <li>근거가 모자랄 때 모델이 지어내지 않게 하려면 어떻게 하나요?</li>
+          </ul>
+        </dd>
+        <dt>읽고 나면 할 수 있는 것</dt>
+        <dd>
+          <ul>
+            <li>질문 종류마다 다른 근거를 모으는 흐름을 LangGraph 노드 여덟 개로 짜요.</li>
+            <li>근거가 충분한지를 개수가 아니라 "질문이 요구한 관계가 있나"로 판정해요.</li>
+            <li>답이 틀렸을 때 실행 경로를 찍어 어느 단계에서 틀렸는지 짚어요.</li>
+          </ul>
+        </dd>
+        <dt>모르면 이런 일이 생겨요</dt>
+        <dd>
+          <ul>
+            <li>유명한 대상을 물으면 근거가 늘 "충분"하다고 판정돼요. 《기생충》은 연결이 34개지만 감독 관계는 1개뿐이라, 개수로 재면 엉뚱한 질문도 통과해요. <a class="suspect-jump" href="#suspect-count">언제 의심하나 ↓</a></li>
+            <li>출연 관계가 근거 자리를 다 차지해서, 정작 답에 필요한 수상 관계 한 줄이 잘려요. <a class="suspect-jump" href="#suspect-budget">언제 의심하나 ↓</a></li>
+            <li>줄거리를 물었는데 그래프에 줄거리가 없어도 모델이 그럴듯한 줄거리를 지어내요. <a class="suspect-jump" href="#suspect-plot">언제 의심하나 ↓</a></li>
+          </ul>
+        </dd>
+        <dt>어디에 쓰나</dt>
+        <dd>
+          <ul>
+            <li><strong>챗봇이 질문 종류에 따라 잘하고 못하는 게 뚜렷할 때.</strong> 단답은 잘하는데 "전체적으로 어때?"나 "비슷한 거 추천해 줘"에서 무너지는 상황이요.</li>
+            <li>추천에 "왜 이걸 추천하는지" 경로를 붙이기.</li>
+            <li>모르는 걸 모른다고 말하게 만드는 가드 짜기.</li>
+          </ul>
+        </dd>
+      </dl>
+    </div>
+
+    <div class="key-point" id="prep">
+      <p class="key-point-label"><span class="key-point-badge">준비물</span>이 편을 따라 하려면</p>
+      <ul>
+        <li><strong><a href="graphrag-build-knowledge-graph.html">21편</a>에서 만든 그래프</strong> — 노드 1,476 · 엣지 2,044짜리 NetworkX 그래프요.</li>
+        <li><strong>LangGraph의 기본 세 재료</strong> — State·Node·Edge는 <a href="langgraph-state-node-edge.html">2편</a>, 조건부 갈림길은 <a href="langgraph-branch-drills.html">3편</a>, 라우팅 패턴은 <a href="langgraph-pattern-routing.html">7편</a>에서 다뤘어요.</li>
+        <li><strong>OpenAI API 키</strong> — 커뮤니티 요약·라우터·답변에 gpt-4.1-mini를 써요.</li>
+      </ul>
+    </div>
+
+    <h2 id="three-kinds"><span class="hl">질문은 세 종류다</span></h2>
+    <p><a href="graphrag-why-multihop.html#goldenset">골든셋</a>의 세 종류가 그대로 에이전트의 세 갈래가 돼요. 질문마다 맞는 근거가 다르거든요.</p>
+    <table>
+      <thead><tr><th>갈래</th><th>질문 예</th><th>근거</th></tr></thead>
+      <tbody>
+        <tr><td><code>local</code> 지역</td><td>영화 《기생충》의 감독은?</td><td>그 대상에 바로 붙은 선 (1홉)</td></tr>
+        <tr><td><code>path</code> 경로</td><td>《괴물》의 감독이 만든 다른 영화 추천</td><td>대상에서 출발해 선을 여러 번 건넌 경로</td></tr>
+        <tr><td><code>global</code> 전역</td><td>이 자료에 어떤 집단들이 있나?</td><td>미리 만들어 둔 무리별 요약</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="analogy"><span class="hl">비유</span> — 홀 매니저가 질문을 세 갈래로 보낸다</h2>
+    <p><a href="graphrag-build-knowledge-graph.html#analogy">연결판</a>이 완성된 주방에 홀 매니저가 서요. 손님 질문을 듣고 세 군데 중 한 곳으로 보내요. "이 요리 담당이 누구예요?"는 그 요리 핀에 붙은 실 한 가닥만 보면 되고, "이 조리사가 하는 다른 요리는요?"는 실을 따라 몇 번 건너가야 해요.</p>
+    <p>"이 주방 요리는 대체로 어떤 계열이에요?"는 달라요. 출발할 핀이 없어요. 그래서 영업 전에 연결판을 보고 <strong>"해산물 조리 팀", "한식 찜 팀"처럼 실이 촘촘하게 몰린 무리마다 요약서</strong>를 써 둬요. 이런 질문이 오면 요약서를 모아 답해요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>질문을 듣고 세 곳 중 하나로 보내는 홀 매니저</td><td>라우터 — <code>route</code> 노드</td></tr>
+        <tr><td>손님 말에서 연결판의 출발 핀 찾기</td><td>개체 연결 — 질문 속 이름을 그래프 노드와 잇기</td></tr>
+        <tr><td>실을 따라 핀에서 핀으로 건너가기</td><td>그래프 탐색 — <code>expand</code> 노드</td></tr>
+        <tr><td>"실 한 종류당 열 가닥까지만 적어 와"</td><td>관계별 할당량 — 근거 예산 나누기</td></tr>
+        <tr><td>영업 전에 무리마다 써 둔 요약서</td><td>커뮤니티 보고서</td></tr>
+        <tr><td>"그건 연결판에 없어서 모르겠습니다"</td><td>근거 부족 시 거부</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 좋은 홀 매니저는 모든 질문에 같은 방법을 쓰지 않고, <strong>질문 종류에 맞는 근거가 있는 곳으로</strong> 보내요.</p>
+
+    <h2 id="community"><span class="hl">전역 질문의 재료</span> — 커뮤니티를 찾아 미리 요약한다</h2>
+    <p>전역 질문이 올 때마다 그래프 전체를 훑으면 비싸요. 그래서 그래프에서 <strong>커뮤니티</strong><sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>를 먼저 찾아 두고, 무리마다 요약 보고서를 미리 써 둬요. GraphRAG를 처음 제안한 마이크로소프트 연구진의 논문 제목이 "From Local to Global"인 이유가 이 단계예요.</p>
+    <p>커뮤니티는 안쪽으로는 촘촘하고 바깥과는 성기게 이어진 노드 무리예요. 친구 관계망에서 친구 그룹을 찾는 것과 같은 일이고, 여기서는 <strong>Louvain</strong><sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup> 방법을 썼어요. 모델을 부르지 않는 계산이라 비용이 들지 않아요.</p>
+    <p>한 가지 손질이 필요했어요. 장르·소재·장소 노드는 수많은 영화와 이어져서 모든 영화를 한 덩어리로 묶어 버려요. 그래서 이런 속성 노드에 닿는 선의 무게를 0.3으로 낮췄어요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 제가 2026-09-18에 돌렸을 때 찍힌 출력이에요</span></p>
+    <pre><code>속성 선 무게 0.3 → 노드 4개 이상인 커뮤니티 28개 · 가장 큰 것 113노드
+속성 선 무게 1.0 → 노드 4개 이상인 커뮤니티 25개 · 가장 큰 것 181노드
+
+C1 113노드 · 인물 박찬욱·류승완·최민식·강제규 · 작품 쉬리·친절한 금자씨·복수는 나의 것
+C6  82노드 · 인물 김지운·송강호·봉준호·윤제균 · 작품 설국열차·도쿄!·조용한 가족
+C11 68노드 · 인물 홍상수·이병우·기주봉·김민희 · 작품 강원도의 힘·강변호텔
+C18 35노드 · 인물 크리스틴 벨·제니퍼 리 · 작품 겨울왕국 2·겨울왕국
+C24 18노드 · 인물 M. 나이트 샤말란 · 작품 애프터 어스·더 비지트·언브레이커블</code></pre>
+    <p>무게를 낮추지 않으면 가장 큰 무리가 181노드로 부풀어요. 장르 노드를 다리 삼아 관계없는 영화들이 한데 묶인 거예요.</p>
+    <p>무리를 읽어 보면 실제 협업 관계가 나타나요. 박찬욱·류승완·최민식이 한 무리고, 홍상수·김민희가 한 무리예요. 그리고 <strong>한국 영화와 상관없는 무리</strong>도 보여요. 《겨울왕국》 제작진(C18), 샤말란 감독 작품(C24) 같은 것들이요. <a href="graphrag-why-multihop.html#data">20편</a>에서 본, 문서를 모을 때 링크를 타고 딸려 들어온 문서들이 무리째로 드러난 거예요. 허브 목록만 봐서는 몰랐던 오염의 크기가 여기서 보여요.</p>
+    <p>그래서 커뮤니티 탐지는 전역 질문을 위한 장치이면서 <strong>데이터 품질 진단 도구</strong>이기도 해요. 낯선 문서 묶음을 받으면 먼저 해 볼 만한 일이에요.</p>
+    <h3 id="community-report">무리마다 보고서를 쓴다</h3>
+    <p>무리의 노드 이름 수백 개를 LLM에 그대로 던지면 좋은 요약이 안 나와요. 먼저 집계해서 <strong>프로필</strong>(핵심 인물 여섯, 대표 작품 여섯, 주요 장르·소재·배경·수상·배급사)을 만들고, 그 프로필만 줘요. 프롬프트에는 "주어진 집계 정보만 근거로 삼고 없는 사실은 지어내지 마라"를 넣고, 제목·요약·발견 세 칸의 JSON으로 받아요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 실제로 나온 보고서 두 개의 앞부분이에요</span></p>
+    <pre><code>[C6] 한국 범죄·스릴러 거장 집단 — 2000년대 이후 한국 영화계에서 범죄와 스릴러 장르를 중심으로
+     활약한 감독과 배우들의 밀접한 커뮤니티입니다. 김지운, 봉준호, 윤제균 등 …
+[C1] 한국 복수극 거장 집단 — 2000년대 이후 한국 영화계에서 복수와 액션 장르를 중심으로 …</code></pre>
+    <p>읽을 만하지만 조심할 곳이 있어요. 제 프로필에는 <strong>작품 시기를 넣지 않았는데</strong> 보고서에 "2000년대 이후"가 들어갔어요. 모델이 원래 아는 지식으로 채운 거예요. "지어내지 마라" 한 줄로는 다 막히지 않는다는 뜻이고, 보고서를 쓰기 전에 무엇이 들어갔는지 사람이 한 번 훑어봐야 해요.</p>
+    <div class="key-point" id="key-precompute">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>커뮤니티 요약을 질문마다 만들지 않고 미리 만드는 이유는, <strong>요약 내용이 질문과 상관없기</strong> 때문이에요. 한 번만 만들어 두면 되니, 그 비용을 질문이 올 때가 아니라 색인할 때로 옮길 수 있어요. <a href="graphrag-why-multihop.html#flow">20편 그림</a>의 "비용이 뒤에서 앞으로"와 같은 이야기예요.</p>
+    </div>
+
+    <h2 id="flow"><span class="hl">전체 흐름</span> — 노드 여덟 개</h2>
+    <svg viewBox="0 0 700 250" role="img" aria-label="START에서 route 노드로 간 뒤 global이면 global_map과 global_reduce를 거치고, 아니면 find_seeds와 expand로 간다. expand는 요구 관계가 비어 있으면 deepen을 거쳐 반경을 늘려 다시 expand로 돌아온다. find_seeds에서 개체를 못 찾으면 global_map으로 간다. 모든 길은 build_context와 synthesize를 거쳐 END로 끝난다">
+      <defs>
+        <marker id="ga1" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+          <path d="M0,0 L9,4.5 L0,9 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <rect x="8" y="98" width="60" height="30" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="38" y="117" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">START</text>
+      <rect x="92" y="98" width="72" height="30" rx="6" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="128" y="117" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--accent)">route</text>
+      <rect x="200" y="30" width="96" height="30" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="248" y="49" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">global_map</text>
+      <rect x="330" y="30" width="106" height="30" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="383" y="49" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">global_reduce</text>
+      <rect x="200" y="166" width="96" height="30" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="248" y="185" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">find_seeds</text>
+      <rect x="330" y="166" width="96" height="30" rx="6" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="378" y="185" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--accent)">expand</text>
+      <rect x="330" y="216" width="96" height="28" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="378" y="234" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">deepen</text>
+      <rect x="470" y="98" width="106" height="30" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="523" y="117" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">build_context</text>
+      <rect x="600" y="98" width="92" height="30" rx="6" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="646" y="117" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--accent)">synthesize</text>
+      <line x1="68" y1="113" x2="88" y2="113" stroke="var(--muted)" stroke-width="2" marker-end="url(#ga1)"/>
+      <line x1="164" y1="106" x2="198" y2="56" stroke="var(--muted)" stroke-width="2" marker-end="url(#ga1)"/>
+      <text x="150" y="72" font-family="var(--font-body)" font-size="10" fill="var(--muted)">global</text>
+      <line x1="164" y1="120" x2="198" y2="170" stroke="var(--muted)" stroke-width="2" marker-end="url(#ga1)"/>
+      <text x="140" y="162" font-family="var(--font-body)" font-size="10" fill="var(--muted)">local·path</text>
+      <line x1="296" y1="45" x2="326" y2="45" stroke="var(--muted)" stroke-width="2" marker-end="url(#ga1)"/>
+      <line x1="296" y1="181" x2="326" y2="181" stroke="var(--muted)" stroke-width="2" marker-end="url(#ga1)"/>
+      <line x1="248" y1="166" x2="248" y2="64" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#ga1)"/>
+      <text x="254" y="118" font-family="var(--font-body)" font-size="10" fill="var(--muted)">개체 없음</text>
+      <line x1="400" y1="196" x2="400" y2="214" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ga1)"/>
+      <line x1="356" y1="216" x2="356" y2="200" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ga1)"/>
+      <text x="436" y="210" font-family="var(--font-body)" font-size="10" fill="var(--muted)">요구 관계 비면 한 홉 더</text>
+      <line x1="436" y1="45" x2="500" y2="96" stroke="var(--muted)" stroke-width="2" marker-end="url(#ga1)"/>
+      <line x1="426" y1="176" x2="500" y2="130" stroke="var(--muted)" stroke-width="2" marker-end="url(#ga1)"/>
+      <line x1="576" y1="113" x2="596" y2="113" stroke="var(--muted)" stroke-width="2" marker-end="url(#ga1)"/>
+      <text x="646" y="150" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">요구 관계가 끝내</text>
+      <text x="646" y="163" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">비면 LLM 안 부름</text>
+    </svg>
+    <p><strong>읽는 법:</strong> <code>route</code>에서 위(전역)와 아래(지역·경로)로 갈려요. 아래쪽에서 <code>expand</code> ⇄ <code>deepen</code>이 도는 작은 고리가 "근거가 모자라면 한 홉 더"예요. 반경 3에서 멈춰요. 점선은 질문에서 출발할 대상을 못 찾았을 때 전역 갈래로 넘기는 폴백이에요.</p>
+    <p>if문과 while문으로도 짤 수 있지만, 그러면 단계마다 들고 다니는 값이 함수 인자에 흩어져요. LangGraph는 <a href="langgraph-state-node-edge.html">2편</a>에서 본 대로 State 하나를 노드들이 조금씩 채워 가는 구조라, 중간 상태를 그대로 찍어 볼 수 있어요. 이 에이전트의 State에는 답만이 아니라 <strong>모은 근거(<code>triples</code>)와 지나온 단계(<code>trace</code>)</strong>를 처음부터 넣었어요. 답만 돌려주면 <a href="graphrag-goldenset-eval.html">다음 편</a>에서 채점할 때 "못 찾은 건지, 찾았는데 못 읽은 건지"를 가를 수 없거든요.</p>
+
+    <h2 id="lookup"><span class="hl">조회 층</span> — 그래프를 고치지 않고 안전하게 읽는다</h2>
+    <p>그래프 원본을 고치는 대신 그 위에 조회 함수를 씌웠어요. 원본을 안 건드리니 규칙이 틀렸을 때 되돌리기 쉬워요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 이웃을 찾는 함수예요. 전체 코드는 저장소의 ko/LangGraph/graphrag_02_pipeline.py에 있어요</span></p>
+    <pre><code>def related(node, relation=None):
+    """방향을 무시하고 이웃 삼중항 (u, r, v, 속성)을 돌려준다."""
+    out = []
+    for _, v, d in G.out_edges(node, data=True):     # 나가는 선
+        if relation is None or d["relation"] == relation:
+            out.append((node, d["relation"], v, d))
+    for u, _, d in G.in_edges(node, data=True):      # 들어오는 선
+        if relation is None or d["relation"] == relation:
+            out.append((u, d["relation"], node, d))
+    return out</code></pre>
+    <p>나가는 선과 들어오는 선을 둘 다 보는 이유는 <a href="graphrag-build-knowledge-graph.html#key-direction">21편</a>에서 봤어요. LLM 추출이 방향을 자주 뒤집어서요.</p>
+    <p>질문 속 이름을 그래프 노드와 잇는 <strong>개체 연결</strong><sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>은 단순하게 했어요. 정규화한 질문 문자열 안에 정규화한 노드 이름이 들어 있으면 후보로 잡고, 긴 이름과 연결 많은 노드를 앞에 둬요. 여기서 길이를 <strong>정규화한 이름</strong>으로 재야 해요. 원래 이름으로 재면 "한(汗)" 같은 노드가 길이 5로 통과한 뒤 정규화 열쇠 "한"이 거의 모든 한국어 문장에 들어맞아, 모든 질문의 출발점으로 끼어들어요.</p>
+
+    <h2 id="router"><span class="hl">라우터</span> — 규칙이 먼저, 애매하면 LLM</h2>
+    <p>라우터를 만드는 방법은 둘이에요. 규칙으로 짜면 공짜고 빠르고 늘 같은 답을 내요. LLM에게 시키면 표현이 바뀌어도 잘 알아듣지만 돈이 들고 가끔 흔들려요. 그래서 둘을 섞었어요. <strong>규칙이 판단하면 그걸 쓰고, 판단 못 할 때만 LLM을 불러요.</strong></p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 2단 라우터의 뼈대예요</span></p>
+    <pre><code>GLOBAL_HINTS = ["전체", "전반", "자료에", "집단", "경향", "흐름", "반복적으로", "대체로"]
+PATH_HINTS   = ["추천", "비슷한", "다른 작품", "다른 영화", "함께", "같은", "감독이 만든"]
+
+def route_rule(q):
+    if any(h in q for h in GLOBAL_HINTS): return "global"   # 넓은 쪽부터 판정
+    if any(h in q for h in PATH_HINTS):   return "path"
+    return None            # "local"이 아니라 None — 판단 못 했다는 뜻
+
+def route(q):
+    return route_rule(q) or route_llm(q) or "local"</code></pre>
+    <p>규칙이 못 정하면 <code>"local"</code>이 아니라 <code>None</code>을 돌려주는 게 요점이에요. <code>"local"</code>을 기본값으로 돌려주면 "규칙이 local이라고 판단했다"와 "규칙이 판단을 못 했다"가 구분이 안 돼서 2단 구조 자체를 못 만들어요. 같은 이유로 LLM 라우터가 실패했을 때도 조용히 규칙 결과로 바꿔치지 않고 <code>None</code>을 돌려주며 몇 번 실패했는지 셌어요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 골든셋 15문항으로 세 라우터를 채점한 출력이에요</span></p>
+    <pre><code>X [추천-08] 기대 path | 규칙 None | LLM path | 2단 path   | 송강호가 출연한 영화 중 대종상을 받은 작품은?
+X [전역-15] 기대 global | 규칙 global | LLM path | 2단 global | 한국 영화계에서 반복적으로 함께 작업하는 …
+정확도 — 규칙 14/15 · LLM 14/15 · 2단 15/15
+2단 라우터의 LLM 호출 4회 / 15</code></pre>
+    <p>규칙과 LLM이 서로 다른 문항을 틀렸고, 2단이 둘을 다 맞혔어요. 그러면서 LLM은 15번이 아니라 4번만 불렀어요.</p>
+    <p>추천-08이 흥미로워요. "송강호가 출연한 영화 중 대종상을 받은 작품은?"은 겉보기엔 단순 조회처럼 생겨서 규칙의 힌트에 하나도 안 걸려요. 그런데 실제로는 송강호 →(출연)→ 영화 →(수상)→ 대종상을 건너는 2홉 질문이에요. <strong>질문의 겉모양과 필요한 탐색 깊이는 일치하지 않아요.</strong> 이게 규칙 라우터의 근본 한계예요.</p>
+    <p>규칙은 넓은 질문부터 판정하고 기본값을 <code>local</code>로 뒀어요. 애매하면 넓은 쪽으로 보내는 게 안전하거든요. <code>path</code>는 <code>local</code>이 모으는 근거를 포함하니 잘못 보내도 손해가 작지만, 넓은 질문을 <code>local</code>로 보내면 근거가 텅 비어요.</p>
+
+    <h2 id="required-relation"><span class="hl">근거가 충분한가</span> — 개수가 아니라 요구 관계로</h2>
+    <p>"근거가 모자라면 한 홉 더 간다"를 짜려면 <strong>모자라다</strong>를 정의해야 해요. 가장 먼저 떠오르는 건 모은 삼중항 개수예요. 그런데 이게 함정이에요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 제 그래프에서 센 노드별 연결 수예요</span></p>
+    <pre><code>기생충: 전체 차수 34 · DIRECTED 1 · ACTED_IN 13 · WON_AWARD 9 · HAS_GENRE 5 …
+송강호: 전체 차수 39 · ACTED_IN 23 · WON_AWARD 16 · DIRECTED 0</code></pre>
+    <p>개수를 정하는 건 질문이 아니라 출발 노드의 <a href="graphrag-build-knowledge-graph.html#inspect">차수</a>예요. 질문에 나오는 대상은 대개 유명해서 차수가 커요. 그래서 개수 기준은 유명한 대상을 물을 때마다 늘 "충분하다"고 답해요. 송강호는 연결이 39개나 있지만 "송강호 감독의 영화"에 답할 재료(DIRECTED)는 0개예요.</p>
+    <p>그래서 질문에서 <strong>요구 관계</strong>를 뽑았어요. "감독·연출·만든"이 있으면 <code>DIRECTED</code>, "출연·배우·나온"이 있으면 <code>ACTED_IN</code>, "수상·시상식"이면 <code>WON_AWARD</code>처럼요. 그리고 "모은 근거에 요구 관계가 한 줄도 없으면 한 홉 더"로 판정했어요.</p>
+    <div class="key-point" id="key-relation-gap">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>근거가 충분한지는 <strong>모은 개수가 아니라 질문이 요구한 관계가 채워졌는가</strong>로 판정해요. 유명한 대상일수록 연결이 많아서 개수 기준은 늘 통과하지만, 그 연결이 질문에 맞는 종류라는 보장은 없어요.</p>
+    </div>
+    <p>이 가드는 전역 갈래에는 적용하지 않았어요. 전역 질문의 근거는 삼중항이 아니라 보고서라, 삼중항이 비어 있는 게 정상이거든요. 이걸 빼먹으면 "감독과 배우 조합" 같은 말이 든 전역 질문이 전부 거부돼요.</p>
+
+    <h2 id="budget"><span class="hl">탐색 예산</span> — 관계별로 나눠 담는다</h2>
+    <p>LLM에 넣을 수 있는 분량은 정해져 있어서, 삼중항을 무한정 넣을 수 없어요. 저는 총 200개, 반경 2까지로 잡았어요. 그런데 그냥 이웃을 긁어 오면 문제가 생겨요. 이 그래프는 출연 관계가 압도적으로 많아서, 출연이 예산을 다 먹고 정작 필요한 수상 관계 한 줄이 잘려요. <a href="graphrag-build-knowledge-graph.html#inspect">21편</a>에서 본 《극한직업》은 연결 83개 중 73개가 출연이었죠.</p>
+    <p>그래서 <strong>한 노드에서 관계당 최대 10개</strong>까지만 담게 했어요. 출연이 아무리 많아도 다른 관계가 자리를 확보해요.</p>
+    <p>그러면 10개를 넘는 관계는 무엇을 남기고 무엇을 버릴까요. 신뢰도 높은 순으로 남기는데, 이 기준이 생각보다 약했어요. 대종상 노드의 수상 선 70개 중 신뢰도 1.0이 28개라, 할당량 10개는 <strong>동점인 28개 중 18개를 버려야</strong> 해요. 신뢰도가 못 가르니 사실상 선이 들어온 순서가 자르고 있었고, 그 바람에 추천-06의 정답 근거 (살인의 추억, WON_AWARD, 대종상)이 잘렸어요.</p>
+    <p>그래서 <strong>위키 분류 규칙이 확인해 준 선(<code>rule</code>·<code>rule+llm</code>)은 할당량에서 면제</strong>했어요. 규칙 선은 사람이 단 태그를 옮긴 것이라 모델이 지어낼 자리가 없어요. 세어 보니 규칙 계열은 전체 선의 16%인데, 골든셋 정답 경로에 쓰이는 선 39개 중에서는 26개(67%)를 차지했어요. 반대로 규칙은 출연을 원리적으로 못 만드니, 《극한직업》의 배역 선은 여전히 할당량에 잘려요. 면제해 주고 싶은 것과 잘라야 하는 것이 정확히 갈리는 거죠.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 면제를 켜고 끄고 정답 근거가 몇 개 들어오는지 센 출력이에요</span></p>
+    <pre><code>[추천-06] 면제 ON 놓침 [] | 면제 OFF 놓침 [('살인의 추억', 'WON_AWARD', '대종상')]
+면제 ON 37/39 · 면제 OFF 36/39</code></pre>
+    <p>달라진 건 딱 그 한 건이에요. 15문항짜리 평가에서 한 건은 작은 차이라, "면제가 성능을 올렸다"보다는 "면제가 그 사고를 막았다" 정도로만 읽어요.</p>
+
+    <h2 id="recommend"><span class="hl">추천</span> — 영화에 닿을 때까지 걷고, 지나온 길을 이유로 남긴다</h2>
+    <p>추천에 필요한 홉 수는 질문이 정해요. "《괴물》의 감독이 만든 다른 영화"는 2홉(괴물 → 봉준호 → 다른 영화)이면 되지만, "송강호와 같은 영화에 출연했던 배우들이 나온 다른 작품"은 3홉(송강호 → 기생충 → 최우식 → 부산행)이에요. 그래서 추천 함수는 <strong>목적지 타입(Film)에 닿을 때까지</strong> 최대 3홉을 걸으면서, 지나온 경로를 추천 이유로 적어 둬요.</p>
+    <p>걸을 때 흔한 매개 노드는 점수를 깎아요. 100편과 이어진 "드라마" 장르를 지나 닿은 영화는 공통점이 있다고 하기 어렵거든요. 매개 노드의 차수가 클수록 <code>1 / (1 + √차수)</code>만큼 곱해 줄여요. 검색에서 흔한 낱말의 무게를 낮추는 IDF<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>와 같은 발상이에요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— "《기생충》에 출연한 배우의 다른 작품" 질문에서 추천 함수가 낸 상위 후보예요</span></p>
+    <pre><code>살인의 추억  0.118 ← HAS_THEME:가난 → HAS_THEME:살인의 추억
+검은 사제들  0.114 ← HAS_GENRE:스릴러 드라마 → HAS_GENRE:검은 사제들
+괴물         0.110 ← WON_AWARD:칸 국제 영화제 → WON_AWARD:괴물
+택시운전사   0.099 ← SET_IN:서울 → SET_IN:택시운전사
+부산행       0.092 ← HAS_GENRE:재난 → HAS_GENRE:부산행</code></pre>
+    <p>이유가 한 줄씩 붙어 나오는 게 장점이에요. 협업 필터링처럼 "이 영화를 본 사람이 저 영화도 봤다"가 아니라, <strong>어떤 연결 때문에 추천했는지</strong>를 그대로 보여 줄 수 있어요. 그런데 이 출력은 한계도 같이 보여 줘요. 질문은 <strong>배우</strong>를 물었는데 상위 후보의 첫 이유가 소재·장르·시상식이에요. 추천 함수는 질문이 요구한 관계를 가리지 않고 모든 연결로 점수를 매기거든요. 여기서는 이 후보 목록을 근거와 함께 LLM에 넘기고, LLM이 질문에 맞는 걸 고르게 뒀어요. 실제 답변은 송강호의 《살인의 추억》, 박소담의 《검은 사제들》, 최우식의 《부산행》을 골랐어요.</p>
+
+    <h2 id="guard"><span class="hl">모르면 모른다고</span> — 두 겹의 가드</h2>
+    <p>마지막 <code>synthesize</code> 노드에서 지킬 원칙은 하나예요. <strong>근거로 확정할 수 없으면 모른다고 답한다.</strong> 막는 층을 두 겹 뒀어요.</p>
+    <ul>
+      <li><strong>코드 층</strong> — 근거가 비었거나, 반경을 다 쓰고도 요구 관계가 한 줄도 없으면 LLM을 아예 부르지 않고 "근거가 부족합니다"를 돌려줘요. 부르지 않으면 지어낼 기회도 없어요.</li>
+      <li><strong>프롬프트 층</strong> — "아래 근거만 써라, 근거에 없는 고유명사를 쓰지 마라, 확정할 수 없으면 '근거가 부족합니다'라고만 답하라."</li>
+    </ul>
+    <p>질문 일곱 개를 던져 실행 경로(<code>trace</code>)를 찍어 봤어요. 경로를 보면 어느 층이 무엇을 막았는지가 드러나요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 제가 2026-09-18에 돌렸을 때 찍힌 경로와 답이에요 (길어서 줄였어요)</span></p>
+    <pre><code>Q: 영화 《기생충》의 감독은 누구인가?
+  경로: route=local → seeds=['기생충'] · 요구관계 차수={'DIRECTED': 1} → expand(r=1)→삼중항 31 → synthesize
+  답변: 영화 《기생충》의 감독은 봉준호이다.
+
+Q: 송강호 감독의 영화를 알려줘.
+  경로: route=local → seeds=['송강호'] · 요구관계 차수={'DIRECTED': 0}
+        → expand(r=1)→삼중항 25 · 아직 없는 관계 ['DIRECTED'] → deepen→r=2 → expand(r=2)→삼중항 200 → synthesize
+  답변: 근거에 따르면 송강호는 배우로 출연했으며, 감독으로서의 정보는 없습니다. …
+
+Q: 2035년에 개봉할 봉준호 감독의 신작 제목은?
+  경로: route=local → seeds=['봉준호'] · 요구관계 차수={'DIRECTED': 10} → expand(r=1)→삼중항 18 → synthesize
+  답변: 근거가 부족합니다
+
+Q: 영화 《살인의 추억》의 줄거리를 요약해 줘.
+  경로: route=local → seeds=['살인의 추억'] · 요구관계 차수=— → expand(r=1)→삼중항 29 → synthesize
+  답변: … 가난한 지역에서 발생한 연쇄 살인 사건을 중심으로, 형사 박두만과 동료들이
+        사건을 해결하기 위해 고군분투하는 이야기를 다룹니다. …</code></pre>
+    <p>하나씩 읽으면 이래요.</p>
+    <ul>
+      <li><strong>송강호 감독</strong> — 반경 1에서 <code>DIRECTED</code>가 없어서 <code>deepen</code>이 찍혔어요. 반경 2로 넓히자 다른 사람들의 연출 선이 딸려 와 요구 관계가 채워졌고, 코드 층은 통과했어요. 막은 건 프롬프트 층이에요. 모델이 근거를 읽고 "송강호가 감독한 선은 없다"를 알아챘어요.</li>
+      <li><strong>2035년 신작</strong> — 봉준호의 연출작이 근거로 딸려 와서 요구 관계(<code>DIRECTED</code>)가 채워졌어요. 코드 층은 통과했고 역시 프롬프트 층이 막았어요. "2035년"처럼 자료 밖의 사실은 관계 종류로 표현되지 않아서 코드로는 못 잡고, 근거를 읽어야만 알 수 있어요.</li>
+      <li><strong>줄거리</strong> — 이건 <strong>둘 다 못 막았어요.</strong> 그래프에는 배경·장르·소재·감독·배우 삼중항 29개뿐이고 줄거리는 없어요. 그런데 모델이 그 조각들과 원래 아는 지식으로 그럴듯한 줄거리를 지었어요. "줄거리"는 어떤 관계에도 안 걸려서 코드 층의 게이트가 꺼져 있었고, 프롬프트의 "근거만 써라"도 이 정도 이어 붙이기는 막지 못했어요.</li>
+    </ul>
+    <div class="key-point" id="key-two-layers">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>코드 층이 판정할 수 있는 건 <strong>"질문이 요구한 종류의 관계가 근거에 있는가"</strong>까지예요. 자료 밖의 연도나, 그래프에 아예 없는 종류의 정보(줄거리·분위기)는 관계 종류로 표현되지 않아 코드로는 못 잡아요. 두 겹을 두는 이유가 이거고, 그래도 새는 질문 종류가 있다는 걸 알고 써야 해요.</p>
+    </div>
+    <p>경로가 찍혀 나오는 것 자체가 GraphRAG의 큰 장점이기도 해요. 벡터 검색의 근거는 "이 문단들을 참고했다"는 뭉텅이라 사람이 다시 읽어 봐야 하지만, 여기서는 <strong>어떤 사실을 어떤 순서로 이었는지, 그 사실이 어느 문서에서 왔고 규칙에서 왔는지 LLM에서 왔는지</strong>까지 줄마다 붙어 있어요. 답이 틀리면 어느 홉에서 틀렸는지 바로 짚을 수 있어요.</p>
+
+    <h2 id="assemble"><span class="hl">조립</span></h2>
+    <p>노드 함수들을 <a href="langgraph-state-node-edge.html">2편</a>에서 본 방식으로 이으면 끝이에요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 그래프를 잇는 부분만 떼어 왔어요. 노드 함수는 저장소 스크립트에 있어요</span></p>
+    <pre><code>builder = StateGraph(RAGState)
+for name, fn in [("route", n_route), ("find_seeds", n_find_seeds), ("expand", n_expand),
+                 ("deepen", n_deepen), ("global_map", n_global_map),
+                 ("global_reduce", n_global_reduce), ("build_context", n_build_context),
+                 ("synthesize", n_synthesize)]:
+    builder.add_node(name, fn)
+
+builder.add_edge(START, "route")
+builder.add_conditional_edges("route", lambda s: "global" if s["route"] == "global" else "seeds",
+                              {"global": "global_map", "seeds": "find_seeds"})
+builder.add_conditional_edges("find_seeds", after_seeds, {"global": "global_map", "expand": "expand"})
+builder.add_conditional_edges("expand", need_more, {"deepen": "deepen", "build": "build_context"})
+builder.add_edge("deepen", "expand")                 # 근거가 찰 때까지 반복 (반경 3에서 멈춤)
+builder.add_edge("global_map", "global_reduce")
+builder.add_edge("global_reduce", "build_context")
+builder.add_edge("build_context", "synthesize")
+builder.add_edge("synthesize", END)
+app = builder.compile()</code></pre>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">홀 매니저가 "적어 온 실이 스무 가닥 넘으면 충분"이라는 기준으로 손님 질문에 답한다 → 유명한 요리일수록 실이 많아 늘 통과하고, 조리사를 물었는데 재료 실만 스무 가닥 들고 와서 그럴듯하게 둘러댄다</td>
+          <td class="choice-good">"조리사를 물었으면 조리사 실이 한 가닥이라도 있어야 한다"로 판정하고, 없으면 한 칸 더 건너가 보고, 그래도 없으면 모른다고 한다 → 답할 수 있는 질문과 없는 질문이 갈린다</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 탐색을 설계할 때 잡을 값</h2>
+    <p><a href="#community">커뮤니티 절</a>·<a href="#router">라우터 절</a>·<a href="#budget">예산 절</a>에서 쓴 설정과 측정 중, 비슷한 에이전트를 만들 때 출발점으로 쓸 값이에요.</p>
+    <table>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
+      <tbody>
+        <tr><td>속성 노드 선 무게 (커뮤니티 탐지)</td><td>0.3</td><td>1.0이면 장르를 다리 삼아 가장 큰 무리가 113 → 181노드로 부푼다</td></tr>
+        <tr><td>요약할 커뮤니티 최소 크기</td><td>4노드</td><td>이 조건에서 28개 무리가 나왔다. 보고서 LLM 호출 수가 곧 이 개수다</td></tr>
+        <tr><td>탐색 예산</td><td>관계당 10 · 총 200 · 반경 2 (최대 3)</td><td>관계당 상한이 없으면 출연 관계가 예산을 다 먹는다. 값은 <a href="graphrag-goldenset-eval.html#grid">다음 편</a>에서 실측으로 정한다</td></tr>
+        <tr><td>2단 라우터</td><td>정확도 15/15 · LLM 호출 4/15</td><td>규칙만·LLM만은 각각 14/15. 폴백이 자주 찍히면 규칙 목록이 도메인을 못 덮는다는 신호다</td></tr>
+        <tr><td>흔한 매개 감점</td><td>1 / (1 + √차수)</td><td>차수 100인 노드를 지나면 점수가 약 11분의 1로 준다</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 그래프 에이전트가 답을 낼 때</h2>
+    <p>이 에이전트의 고장은 대부분 <strong>말이 되는 틀린 답</strong>으로 보여요. 그래서 답만 보지 말고 실행 경로를 같이 찍어 두는 습관이 중요해요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-count">
+          <td>"송강호 감독의 영화"처럼 전제가 틀린 질문에도 에이전트가 목록을 지어 답한다</td>
+          <td>근거가 충분한지 판정하는 함수 — 개수로 판정하는지</td>
+          <td>질문에서 뽑은 요구 관계와, 출발 노드의 그 관계 차수를 같이 찍는다. 전체 차수는 큰데 요구 관계 차수가 0이면 개수 기준이 속은 거예요 — <a href="#required-relation">요구 관계 절</a></td>
+        </tr>
+        <tr id="suspect-budget">
+          <td>"같은 시상식 수상작"을 물으면 가끔 뻔한 작품이 빠진다. 그래프에는 그 선이 있다</td>
+          <td>근거 수집 함수의 관계당 상한과, 잘린 선의 신뢰도 분포</td>
+          <td>그 노드의 해당 관계 선 수와 신뢰도가 같은 선 수를 센다. 동점이 많으면 상한이 순서대로 자르고 있어요. 규칙 계열 면제나 상한 조정을 본다 — <a href="#budget">예산 절</a></td>
+        </tr>
+        <tr id="suspect-plot">
+          <td>줄거리·분위기를 물었는데 그럴듯한 답이 나온다. 그래프에는 그런 정보가 없다</td>
+          <td>그 질문의 실행 경로에서 요구 관계 칸이 <code>—</code>인지, 그리고 LLM에 넘어간 근거 전문</td>
+          <td>근거에 줄거리 문장이 한 줄도 없으면 모델이 지어낸 거예요. 이런 질문은 원문 검색 갈래로 보내거나 "그래프로 못 답하는 질문"으로 라우터에서 걸러요 — <a href="#guard">가드 절</a></td>
+        </tr>
+        <tr id="suspect-contamination">
+          <td>전역 질문에 대한 답에 주제와 무관한 무리(외국 애니메이션 제작진 등)가 섞인다</td>
+          <td>커뮤니티 목록과 각 무리의 대표 노드</td>
+          <td>무리를 크기순으로 찍어 주제 밖 무리가 있는지 본다. 있으면 원본 문서 수집 단계의 오염이에요 — <a href="#community">커뮤니티 절</a></td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등</p>
+    <pre><code>이 프로젝트의 그래프 에이전트에서 (1) "근거가 충분한가"를 판정하는 함수, (2) 근거 삼중항을 모을 때
+관계별 상한을 두는 곳, (3) LLM을 부르기 전에 답변을 거부하는 조건을 찾아 파일·줄 번호로 보여 줘.
+그리고 질문 하나를 넣었을 때 실행 경로(trace)와 LLM에 넘어간 근거 전문을 출력하는 방법을 알려 줘. 아직 코드는 고치지 마.</code></pre>
+
+    <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
+    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 다른 편의 같은 목록은 <a href="langgraph-what-and-why.html#key-recap">1편</a> · <a href="graphrag-build-knowledge-graph.html#key-recap">21편</a>에 있어요.</p>
+    <ul class="key-recap">
+      <li><a href="#key-precompute">커뮤니티 요약은 질문과 무관하니 미리 만든다</a></li>
+      <li><a href="#key-relation-gap">근거 충분 여부는 개수가 아니라 요구 관계로</a></li>
+      <li><a href="#key-two-layers">코드 층이 못 잡는 질문이 있다 — 두 겹이 필요한 이유</a></li>
+    </ul>
+
+    <p><a href="graphrag-goldenset-eval.html">다음 편</a>에서는 이 에이전트와 <a href="graphrag-why-multihop.html#bm25-baseline">20편의 BM25 방식</a>을 같은 15문항으로 채점해요.</p>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">커뮤니티(community) — 그래프에서 안쪽으로는 촘촘하게, 바깥과는 성기게 이어진 노드 무리예요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">Louvain 방법 — 무리 안쪽 연결이 바깥 연결보다 얼마나 촘촘한지(모듈러리티)를 높이는 쪽으로 노드를 묶어 가는 커뮤니티 탐지 알고리즘이에요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">개체 연결(entity linking) — 문장 속 이름이 데이터의 어느 항목을 가리키는지 찾아 잇는 작업으로, <a href="cs-agent-improve.html#score-vs-quality">19편</a>에서 상품명을 상품 ID로 잇는 문제로 처음 만났어요. <a href="#fnref3">↩</a></li>
+        <li id="fn4">IDF(역문서 빈도) — 여러 문서에 흔하게 나오는 낱말일수록 무게를 낮추는 계산으로, BM25 점수의 한 부분이에요. <a href="#fnref4">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <h3 id="series-list">"에이전트 팀 꾸리기 — LangGraph" 시리즈</h3>
+    <a class="post-nav" href="langgraph-what-and-why.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">다음에 어느 코드가 실행될까 — LangGraph와 워크플로·에이전트</span>
+    </a>
+    <a class="post-nav" href="langgraph-state-node-edge.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">흐름을 그림으로 짠다 — LangGraph의 State·Node·Edge</span>
+    </a>
+    <a class="post-nav" href="langgraph-branch-drills.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">갈림길을 밀어붙인다 — 세 갈래·라벨·끝나지 않는 반복</span>
+    </a>
+    <a class="post-nav" href="langgraph-branches-and-tool-loop.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">모델이 다음 길을 고르게 한다 — 도구를 쥐여 주는 루프</span>
+    </a>
+    <a class="post-nav" href="langgraph-env-troubleshooting.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">.env가 안 읽혔던 네 겹의 이유 — 원격 주피터에서 API 키 넣기</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-chaining.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">① 프롬프트 체이닝 — 순서대로, 사이에 검사</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-routing.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">② 라우팅 — 먼저 분류하고, 한 갈래로</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-parallelization.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">③ 병렬화 — 동시에 돌리고, 합친다</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-orchestrator-worker.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">④ 오케스트레이터-워커 — 몇 갈래일지 LLM이 정한다</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-evaluator-optimizer.html">
+      <span class="post-nav-label">(10)</span>
+      <span class="post-nav-title">⑤ 평가자-최적화자 — 통과할 때까지 고쳐 쓰기</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-skeleton.html">
+      <span class="post-nav-label">(11)</span>
+      <span class="post-nav-title">뉴스레터 에이전트를 빈 노드 다섯 개로 먼저 세운다</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-collect.html">
+      <span class="post-nav-label">(12)</span>
+      <span class="post-nav-title">기사를 어디서 가져올까 — RSS·관문·수집 노드</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-select.html">
+      <span class="post-nav-label">(13)</span>
+      <span class="post-nav-title">100건에서 5건 고르기 — 점수 대신 비교, 예선과 본선</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-summarize-verify.html">
+      <span class="post-nav-label">(14)</span>
+      <span class="post-nav-title">요약을 세 칸으로 받고 원문과 대조한다</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-publish-schedule.html">
+      <span class="post-nav-label">(15)</span>
+      <span class="post-nav-title">디스코드로 매일 아침 받아 보기 — 웹훅과 GitHub Actions</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-metrics-config.html">
+      <span class="post-nav-label">(16)</span>
+      <span class="post-nav-title">돌고 나서 재 본다 — 실행 기록과 설정 파일</span>
+    </a>
+    <a class="post-nav" href="cs-agent-routing-eval.html">
+      <span class="post-nav-label">(17)</span>
+      <span class="post-nav-title">문의 한 줄을 다섯 갈래로 — 라우트는 회사 문서에서 가져온다</span>
+    </a>
+    <a class="post-nav" href="cs-agent-grounding.html">
+      <span class="post-nav-label">(18)</span>
+      <span class="post-nav-title">값을 말하지 말고 조회하게 한다 — 매뉴얼 쪼개기·도구·가드레일</span>
+    </a>
+    <a class="post-nav" href="cs-agent-improve.html">
+      <span class="post-nav-label">(19)</span>
+      <span class="post-nav-title">59%에서 94%로 — 프롬프트만 고쳐 지표를 올린 기록</span>
+    </a>
+    <a class="post-nav" href="graphrag-why-multihop.html">
+      <span class="post-nav-label">(20)</span>
+      <span class="post-nav-title">검색으로는 못 찾는 답 — 멀티홉 질문과 지식 그래프</span>
+    </a>
+    <a class="post-nav" href="graphrag-build-knowledge-graph.html">
+      <span class="post-nav-label">(21)</span>
+      <span class="post-nav-title">스키마가 답할 질문을 정한다 — 추출·정규화·위키 분류</span>
+    </a>
+    <p class="post-date">(22) 세 갈래로 답하는 에이전트 — 커뮤니티 요약·라우터·탐색 예산 (이 글)</p>
+    <a class="post-nav" href="graphrag-goldenset-eval.html">
+      <span class="post-nav-label">(23)</span>
+      <span class="post-nav-title">같은 15문항으로 채점한다 — 세 층 평가와 심판의 한계</span>
+    </a>
+
+    <a class="post-nav" href="graphrag-goldenset-eval.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">같은 15문항으로 채점한다 — 세 층 평가와 심판의 한계 (23)</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>

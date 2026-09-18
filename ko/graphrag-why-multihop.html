@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>검색으로는 못 찾는 답 — 멀티홉 질문과 지식 그래프 (20) - Tigermorning</title>
+  <meta name="description" content="《기생충》에 출연한 배우의 다른 작품처럼 문서 두 개를 이어야 답이 나오는 질문을 검색 기반 RAG가 왜 못 푸는지, 위키백과 영화 문서 80건과 골든셋 15문항으로 직접 재 보고, 그 대안인 지식 그래프와 GraphRAG의 기본을 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="검색으로는 못 찾는 답 — 멀티홉 질문과 지식 그래프 (20)">
+  <meta property="og:description" content="후보를 50개로 늘려도 정답 문서가 끝내 안 올라오는 질문이 있어요. 검색을 고칠 문제가 아니라 연결을 미리 만들어 둘 문제입니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/graphrag-why-multihop.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">검색으로는 못 찾는 답</span> — 멀티홉 질문과 지식 그래프 (20)</h1>
+    <p class="post-date">2026. 9. 18.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="cs-agent-improve.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">59%에서 94%로 — 프롬프트만 고쳐 지표를 올린 기록 (19)</span>
+    </a>
+
+    <p class="one-liner">GraphRAG는 문서를 넣을 때 사실들을 <strong>(주어, 관계, 목적어)로 미리 이어 두고</strong>, 질문이 오면 그 연결을 따라가 답하는 방식이에요.</p>
+
+    <div class="why-read" id="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>어디쯤인가</dt>
+        <dd><a href="posts.html#cat-agent-system">8단계</a> › <a href="posts.html#langgraph-team">에이전트 팀 꾸리기 — LangGraph</a> — 20번째 글 (전 23편). 첫 글은 <a href="langgraph-what-and-why.html">1편</a>이고, 20~23편은 한국 영화 문서로 추천 에이전트를 만드는 네 편짜리 묶음의 첫 편이에요.</dd>
+        <dt>이런 게 궁금했다면</dt>
+        <dd>
+          <ul>
+            <li>챗봇에 문서를 넣어 줬는데, 문서 두 개를 합쳐야 나오는 답은 왜 못 할까요?</li>
+            <li>검색 결과를 더 많이 가져오면 해결되는 거 아닌가요?</li>
+            <li>GraphRAG라는 말은 들어 봤는데, 그래프를 쓰면 뭐가 달라지나요?</li>
+          </ul>
+        </dd>
+        <dt>읽고 나면 할 수 있는 것</dt>
+        <dd>
+          <ul>
+            <li>내 챗봇이 못 푸는 질문이 검색을 튜닝하면 풀리는 질문인지, 구조를 바꿔야 풀리는 질문인지 가려요.</li>
+            <li>"그래프를 도입하자"는 말이 나오기 전에, 지금 방식이 얼마나 못 하는지를 숫자로 먼저 재요.</li>
+            <li>사실 하나를 (주어, 관계, 목적어)로 적고 점과 선으로 이어 봐요.</li>
+          </ul>
+        </dd>
+        <dt>모르면 이런 일이 생겨요</dt>
+        <dd>
+          <ul>
+            <li>검색 결과 개수를 6에서 50으로 늘리고 더 좋은 검색 모델로 바꾸는 데 며칠을 써요. 정답 문서가 애초에 후보에 없는 질문이라 아무것도 달라지지 않습니다. <a class="suspect-jump" href="#suspect-never">언제 의심하나 ↓</a></li>
+            <li>문서 80건에서 잘 되던 추천이 문서가 늘자 엉뚱해져요. 잘 되던 이유가 질문과 문서의 낱말이 우연히 겹쳤기 때문이었거든요. <a class="suspect-jump" href="#suspect-luck">언제 의심하나 ↓</a></li>
+            <li>채점 기준을 너무 엄격하게 잡아 모든 방식이 0점에 가깝게 나와요. 비교할 수가 없으니 무엇이 나은지 결론을 못 냅니다. <a class="suspect-jump" href="#suspect-zero">언제 의심하나 ↓</a></li>
+          </ul>
+        </dd>
+        <dt>어디에 쓰나</dt>
+        <dd>
+          <ul>
+            <li><strong>사내 문서 챗봇이 "누가 누구와" 류 질문에서 막힐 때.</strong> "이 정책을 승인한 사람이 이끄는 팀은?"처럼, 정책 문서에도 조직도에도 답이 반쪽씩만 있는 질문이요.</li>
+            <li>추천 기능에 "왜 이걸 추천하는지"를 붙이고 싶을 때.</li>
+            <li>새 검색 기법을 들이기 전에 지금 방식의 한계를 재 두기.</li>
+          </ul>
+        </dd>
+      </dl>
+    </div>
+
+    <div class="key-point" id="prep">
+      <p class="key-point-label"><span class="key-point-badge">준비물</span>이 편을 따라 하려면</p>
+      <ul>
+        <li><strong>파이썬 3.10 이상</strong> — 이 편의 실습은 전부 <strong>API 키 없이</strong> 돌아가요. 모델을 한 번도 부르지 않거든요.</li>
+        <li><strong>실습 데이터</strong> — 한국어 위키백과 한국 영화 문서 80건과 평가 문항 15개. <a href="https://github.com/88chacha/cinephile-agent-data" target="_blank" rel="noopener">공개 저장소</a>에 zip(324KB)으로 있고 라이선스는 위키백과와 같은 CC BY-SA예요.</li>
+        <li><strong>앞에서 본 검색 이야기</strong> — 문서를 잘게 자르는 청크와 BM25 검색은 7단계의 <a href="rag-chatbot-chunk-design.html">청크 설계</a>·<a href="rag-chatbot-hybrid-search.html">하이브리드 검색</a> 편에서 처음 다뤘어요. 몰라도 이 편에서 한 줄씩 다시 풀어요.</li>
+      </ul>
+    </div>
+
+    <h2 id="mission"><span class="hl">오늘 만들 것</span> — 한국 영화를 물으면 답하는 에이전트</h2>
+    <p>20편부터 23편까지 네 편에 걸쳐 영화 추천 에이전트를 만들어요. 한국 영화에 대해 물으면 위키백과 문서를 근거로 답하는 프로그램인데, 평범한 문서 챗봇과 다른 점이 하나 있어요. 아래 같은 질문에 답해야 합니다.</p>
+    <ul>
+      <li>"영화 《기생충》에 출연한 배우의 다른 작품을 추천해줘."</li>
+      <li>"영화 《기생충》이 상을 받은 시상식에서 수상한 다른 영화를 추천해줘."</li>
+    </ul>
+    <p>이 답은 어느 문서에도 한 번에 적혀 있지 않아요. 《기생충》 문서에는 "송강호가 출연했다"까지만 있고, 송강호가 나온 다른 영화는 <strong>송강호 문서</strong>에 있어요. 두 문서를 이어 붙여야 답이 나옵니다.</p>
+    <p>이렇게 사실을 여러 번 갈아타야 답에 닿는 질문을 <strong>멀티홉(multi-hop) 질문</strong><sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>이라고 해요. 홉(hop)은 한 번 건너뛰기예요. 《기생충》 → 송강호가 한 홉, 송강호 → 《택시운전사》가 또 한 홉이죠.</p>
+
+    <h2 id="analogy"><span class="hl">비유</span> — 레시피 카드 서랍과 벽에 붙인 연결판</h2>
+    <p><a href="langgraph-what-and-why.html#analogy">이 시리즈의 주방</a>에는 요리마다 레시피 카드가 한 장씩 있어요. 카드에는 들어가는 재료와 담당 조리사 이름이 적혀 있고, 조리사마다 "내가 맡은 요리" 카드도 따로 있어요. 카드는 서랍에 들어 있고, 서랍에서 낱말로 카드를 찾아 주는 직원이 있습니다.</p>
+    <p>손님이 묻습니다. "굴 소스 볶음을 만든 조리사가 하는 다른 요리는 뭐예요?" 직원은 "굴 소스"로 서랍을 뒤져 굴 소스 볶음 카드를 꺼내요. 그 카드에는 조리사 이름까지만 있어요. 그 조리사의 다른 요리 카드에는 "굴 소스"라는 낱말이 없으니, <strong>같은 방식으로는 아무리 뒤져도 나오지 않아요.</strong></p>
+    <p>다른 주방은 영업 전에 벽에 연결판을 붙여 둡니다. 요리·재료·조리사를 핀으로 꽂고, "이 조리사가 이 요리를 맡는다" 같은 사실마다 실을 한 가닥씩 이어 둔 판이에요. 손님이 같은 걸 물으면 굴 소스 볶음 핀에서 실을 따라 조리사 핀으로, 거기서 다시 실을 따라 다른 요리 핀으로 가면 끝이에요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>요리마다 한 장씩인 레시피 카드</td><td>위키백과 문서 한 건 (잘게 자르면 청크)</td></tr>
+        <tr><td>낱말로 카드를 찾아 주는 직원</td><td>검색기 — 질문과 낱말이 겹치는 문서를 찾는다</td></tr>
+        <tr><td>벽의 연결판에 꽂힌 핀</td><td>노드 — 영화·사람·시상식 같은 대상</td></tr>
+        <tr><td>핀과 핀을 잇는 실 한 가닥</td><td>엣지 — "출연했다" 같은 관계</td></tr>
+        <tr><td>영업 전에 판을 만드는 수고</td><td>문서를 넣을 때(색인 시점) 관계를 미리 뽑는 비용</td></tr>
+        <tr><td>실을 따라 핀에서 핀으로 옮겨 가기</td><td>그래프 탐색 — 멀티홉 질문에 답하는 방법</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 서랍 방식은 질문이 온 <strong>뒤에</strong> 연결을 찾으려다 실패하고, 연결판 방식은 질문이 오기 <strong>전에</strong> 연결을 만들어 둔 만큼 비용을 앞에서 치러요.</p>
+    <p>다만 여기서 비유가 끊기는 점이 있어요. 벽의 판은 사람이 정확하게 꽂지만, 실제 연결판은 LLM이 문서를 읽고 만들어서 <strong>틀린 실도 섞여요.</strong> 그걸 어떻게 거르는지가 <a href="graphrag-build-knowledge-graph.html">다음 편</a>의 주제예요.</p>
+
+    <h2 id="flow"><span class="hl">전체 흐름</span> — 연결을 언제 만드는가</h2>
+    <svg viewBox="0 0 700 250" role="img" aria-label="위쪽은 검색 기반 RAG: 질문이 오면 문서 조각을 검색해 상위 k개를 LLM에 넘긴다. 아래쪽은 GraphRAG: 질문이 오기 전에 문서에서 삼중항을 뽑아 지식 그래프를 만들어 두고, 질문이 오면 시작 노드를 찾아 선을 따라 이동한 경로를 LLM에 넘긴다">
+      <defs>
+        <marker id="gm1" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+          <path d="M0,0 L9,4.5 L0,9 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <text x="8" y="20" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">검색 기반 RAG</text>
+      <text x="8" y="36" font-family="var(--font-body)" font-size="10" fill="var(--muted)">연결은 질문이 온 뒤에 찾는다</text>
+      <rect x="170" y="14" width="110" height="34" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="225" y="35" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">질문</text>
+      <rect x="320" y="14" width="160" height="34" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="400" y="35" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">문서 조각 검색 (상위 k개)</text>
+      <rect x="520" y="14" width="110" height="34" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="575" y="35" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">LLM이 답 작성</text>
+      <line x1="280" y1="31" x2="316" y2="31" stroke="var(--muted)" stroke-width="2" marker-end="url(#gm1)"/>
+      <line x1="480" y1="31" x2="516" y2="31" stroke="var(--muted)" stroke-width="2" marker-end="url(#gm1)"/>
+
+      <line x1="8" y1="70" x2="692" y2="70" stroke="var(--border)" stroke-dasharray="3 3"/>
+
+      <text x="8" y="96" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">GraphRAG</text>
+      <text x="8" y="112" font-family="var(--font-body)" font-size="10" fill="var(--muted)">연결은 문서를 넣을 때 만든다</text>
+      <text x="170" y="96" font-family="var(--font-body)" font-size="10" fill="var(--muted)">① 질문이 오기 전 (색인 시점)</text>
+      <rect x="170" y="104" width="110" height="34" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="225" y="125" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">문서 80건</text>
+      <rect x="320" y="104" width="160" height="34" rx="6" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="400" y="125" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--accent)">LLM이 삼중항 추출</text>
+      <rect x="520" y="104" width="110" height="34" rx="6" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="575" y="125" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--accent)">지식 그래프</text>
+      <line x1="280" y1="121" x2="316" y2="121" stroke="var(--muted)" stroke-width="2" marker-end="url(#gm1)"/>
+      <line x1="480" y1="121" x2="516" y2="121" stroke="var(--muted)" stroke-width="2" marker-end="url(#gm1)"/>
+
+      <text x="170" y="170" font-family="var(--font-body)" font-size="10" fill="var(--muted)">② 질문이 온 뒤</text>
+      <rect x="170" y="178" width="90" height="34" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="215" y="199" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">질문</text>
+      <rect x="290" y="178" width="110" height="34" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="345" y="199" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">시작 노드 찾기</text>
+      <rect x="430" y="178" width="110" height="34" rx="6" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="485" y="199" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--accent)">선 따라 이동</text>
+      <rect x="570" y="178" width="110" height="34" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="625" y="199" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">LLM이 답 작성</text>
+      <line x1="260" y1="195" x2="286" y2="195" stroke="var(--muted)" stroke-width="2" marker-end="url(#gm1)"/>
+      <line x1="400" y1="195" x2="426" y2="195" stroke="var(--muted)" stroke-width="2" marker-end="url(#gm1)"/>
+      <line x1="540" y1="195" x2="566" y2="195" stroke="var(--muted)" stroke-width="2" marker-end="url(#gm1)"/>
+      <line x1="560" y1="138" x2="500" y2="174" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#gm1)"/>
+      <text x="350" y="236" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">LLM 비용이 사라진 게 아니라 ②에서 ①로 옮겨 갔다</text>
+    </svg>
+    <p><strong>읽는 법:</strong> 굵은 테두리가 두 방식이 갈리는 자리예요. 위쪽은 질문이 온 뒤에야 문서 조각을 찾고, 아래쪽은 ①에서 이미 만든 그래프(점선 화살표)를 ②에서 따라 걷기만 해요. 대신 ①에서 문서마다 LLM을 불러야 해서, 비용이 뒤에서 앞으로 옮겨 가요.</p>
+
+    <h2 id="knowledge-graph"><span class="hl">지식 그래프</span> — 점과 선과 삼중항</h2>
+    <p><strong>지식 그래프</strong><sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>는 대상들을 점으로, 대상 사이의 관계를 선으로 저장한 자료예요. 이름이 셋 나와요.</p>
+    <table>
+      <thead><tr><th>이름</th><th>뜻</th><th>예</th></tr></thead>
+      <tbody>
+        <tr><td>노드(node)</td><td>정보의 대상이 되는 명사</td><td>봉준호, 기생충, 송강호, 블랙 코미디</td></tr>
+        <tr><td>엣지(edge)</td><td>두 노드를 잇는 관계</td><td>연출했다(DIRECTED), 출연했다(ACTED_IN)</td></tr>
+        <tr><td>삼중항(triple)</td><td>노드 둘과 그 사이 엣지 하나를 묶은 사실 한 개</td><td>(봉준호, DIRECTED, 기생충)</td></tr>
+      </tbody>
+    </table>
+    <p>삼중항<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>의 힘은 <strong>이어 붙일 수 있다</strong>는 데 있어요. (봉준호, DIRECTED, 기생충)과 (송강호, ACTED_IN, 기생충)은 따로 보면 평범하지만, 가운데 "기생충"으로 이으면 "봉준호 영화에 나온 배우는?"의 답이 돼요. 문서 조각은 이렇게 이어지지 않아요.</p>
+    <p>파이썬에서는 <strong>NetworkX</strong><sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>라는 라이브러리로 그래프를 메모리에 바로 만들 수 있어요. 삼중항 둘로 그래프를 만들어 보면 이래요.</p>
+    <p class="run-tag">실행: 로컬 터미널</p>
+    <pre><code>pip install networkx</code></pre>
+    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
+    <pre><code>import networkx as nx
+
+# DiGraph = 방향이 있는 그래프. (봉준호 → 기생충)과 (기생충 → 봉준호)는 뜻이 다르다
+G = nx.DiGraph()
+G.add_node("봉준호", type="Person")
+G.add_node("송강호", type="Person")
+G.add_node("기생충", type="Film")
+
+G.add_edge("봉준호", "기생충", relation="DIRECTED")
+G.add_edge("송강호", "기생충", relation="ACTED_IN")
+
+for u, v, d in G.edges(data=True):
+    print(f"({u}) --[{d['relation']}]--> ({v})")</code></pre>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 위 코드를 돌리면 찍히는 출력이에요</span></p>
+    <pre><code>(봉준호) --[DIRECTED]--> (기생충)
+(송강호) --[ACTED_IN]--> (기생충)</code></pre>
+    <p>노드에 붙인 <code>type</code>(Person·Film)이 나중에 중요해져요. "《기생충》의 감독은?"에 송강호가 후보로 올라와도, 감독 자리에는 Person만 올 수 있고 관계가 DIRECTED여야 한다는 걸 타입과 관계 이름으로 걸러 낼 수 있거든요.</p>
+
+    <h3 id="digraph">DiGraph — 선에 방향이 있다</h3>
+    <p>위 코드의 <code>nx.DiGraph()</code>는 <strong>방향이 있는 그래프</strong>(directed graph)예요. 선마다 출발점과 도착점이 정해져 있어요. NetworkX에는 방향 없는 <code>nx.Graph()</code>도 있는데, 여기서 DiGraph를 쓰는 이유는 삼중항의 주어와 목적어를 바꾸면 뜻이 달라지기 때문이에요. (봉준호, DIRECTED, 기생충)은 "봉준호가 기생충을 연출했다"지만, 방향을 뒤집으면 "기생충이 봉준호를 연출했다"가 돼요.</p>
+    <p>방향이 있으면 한 노드의 선이 둘로 나뉘어요. 그 노드에서 <strong>나가는 선</strong>과 그 노드로 <strong>들어오는 선</strong>이요. 삼중항 셋으로 확인해 봤어요.</p>
+    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
+    <pre><code>import networkx as nx
+
+G = nx.DiGraph()
+G.add_edge("봉준호", "기생충", relation="DIRECTED")
+G.add_edge("송강호", "기생충", relation="ACTED_IN")
+G.add_edge("송강호", "택시운전사", relation="ACTED_IN")
+
+print("나가는 선 (송강호):", list(G.out_edges("송강호")))
+print("들어오는 선 (기생충):", list(G.in_edges("기생충")))
+print("successors(기생충):", list(G.successors("기생충")))
+
+U = G.to_undirected()          # 방향을 지운 사본
+print("봉준호→택시운전사 경로(방향 지킴):", nx.has_path(G, "봉준호", "택시운전사"))
+print("봉준호→택시운전사 경로(방향 무시):", nx.shortest_path(U, "봉준호", "택시운전사"))</code></pre>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 위 코드를 제가 돌렸을 때 찍힌 출력이에요</span></p>
+    <pre><code>나가는 선 (송강호): [('송강호', '기생충'), ('송강호', '택시운전사')]
+들어오는 선 (기생충): [('봉준호', '기생충'), ('송강호', '기생충')]
+successors(기생충): []
+봉준호→택시운전사 경로(방향 지킴): False
+봉준호→택시운전사 경로(방향 무시): ['봉준호', '기생충', '송강호', '택시운전사']</code></pre>
+    <p>마지막 두 줄이 중요해요. 화살표 방향대로만 걸으면 《기생충》에서 더 나갈 선이 없어서(<code>successors</code>가 빈 목록) 봉준호에서 《택시운전사》까지 <strong>길이 없어요.</strong> 그런데 "봉준호 영화에 나온 배우의 다른 작품"을 찾으려면 봉준호 → 기생충(화살표 방향) → 송강호(화살표 반대 방향) → 택시운전사(다시 화살표 방향)로 걸어야 해요. 멀티홉 추천은 <strong>화살표를 거슬러 가는 걸음</strong>이 섞여요.</p>
+    <p>그래서 이 에이전트는 두 가지를 같이 써요.</p>
+    <ul>
+      <li><strong>저장은 DiGraph로</strong> — "누가 누구를 연출했나"라는 뜻을 잃지 않으려고요.</li>
+      <li><strong>이웃을 찾을 때는 방향을 무시</strong> — 나가는 선과 들어오는 선을 둘 다 보거나(<a href="graphrag-agent-three-routes.html#lookup">22편의 조회 함수</a>), <code>to_undirected()</code>로 방향을 지운 사본을 만들어 걸어요.</li>
+    </ul>
+    <p>방향을 무시하는 이유가 하나 더 있어요. LLM이 문서에서 관계를 뽑을 때 같은 사실을 문서마다 반대 방향으로 저장하는 일이 잦거든요. 한쪽 방향만 믿으면 멀쩡히 있는 사실을 못 찾아요. <a href="graphrag-build-knowledge-graph.html#key-direction">다음 편</a>에서 실제로 봐요.</p>
+    <h3 id="why-graph">왜 표나 벡터가 아니라 그래프인가</h3>
+    <p>데이터를 담는 방법은 여럿이에요. 표로 담는 관계형 DB는 칸이 정해진 자료에 강하고, 문장을 숫자 좌표로 바꿔 담는 <a href="rag-chatbot-embedding-vectorstore.html">벡터 저장소</a>는 "뜻이 비슷한 것 찾기"에 강해요. 그래프가 잘하는 건 딱 두 가지인데, 이 에이전트에 필요한 게 정확히 그 둘이에요.</p>
+    <ul>
+      <li><strong>멀티홉 추적</strong> — 선을 타고 계속 옮겨 가기</li>
+      <li><strong>무리 나누기</strong> — 전체를 촘촘하게 이어진 무리로 나눠 한눈에 보기 (<a href="graphrag-agent-three-routes.html#community">22편</a>)</li>
+    </ul>
+    <p>노드가 수십만 개로 커지면 Neo4j 같은 그래프 전용 DB를 쓰지만, 이 실습처럼 노드 수천 개라면 NetworkX로 메모리에 올려 두는 걸로 충분해요.</p>
+
+    <h2 id="data"><span class="hl">데이터부터 열어 본다</span> — 문서 80건</h2>
+    <p>실습 데이터는 한국어 위키백과에서 한국 영화 주변 문서 80건을 모은 거예요. 영화 33 · 인물 28 · 회사 11 · 시상식 8건이고, 파일 하나가 문서 하나예요. 데이터를 받으면 <strong>규모·분포·빠진 값</strong>부터 봐요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 제가 2026-09-18에 글자 수를 세어 찍은 출력이에요</span></p>
+    <pre><code>문서 80개 · 유형 [('Film', 33), ('Person', 28), ('Organization', 11), ('Award', 8)]
+중앙값  3,099자
+평균    4,393자
+최댓값 55,384자   ← HBO 문서
+분류 없는 문서: 0</code></pre>
+    <p>세 가지가 눈에 들어와요.</p>
+    <ul>
+      <li><strong>길이가 한쪽으로 크게 쏠려 있어요.</strong> 가운데 문서는 3천 자 남짓인데 가장 긴 HBO 문서는 5만 5천 자예요. 이런 분포에서는 평균이 대표값이 못 돼요.</li>
+      <li><strong>모든 문서 맨 위에 "분류:" 줄이 있어요.</strong> 위키 편집자가 손으로 단 태그예요. 《곡성》 문서에 "나홍진 감독 영화"라는 분류가 달려 있다면, 그건 사람이 미리 적어 둔 (나홍진, DIRECTED, 곡성) 사실이에요. <a href="graphrag-build-knowledge-graph.html#rules">다음 편</a>에서 그대로 써먹어요.</li>
+      <li><strong>종류가 다른 문서가 섞여 있어요.</strong> 영화 문서만 80개였다면 "이 배우가 나온 다른 영화"를 물을 수조차 없어요. 종류가 섞인 문서 묶음에서는 멀티홉 질문이 반드시 생겨요.</li>
+    </ul>
+    <p>HBO·IMDb·<em>겨울왕국</em>처럼 한국 영화와 거리가 먼 문서도 몇 건 섞여 있어요. 모을 때 링크를 타고 딸려 들어온 거예요. 기억해 두면 <a href="graphrag-agent-three-routes.html#community">22편</a>에서 다시 만나요.</p>
+    <div class="key-point" id="key-median">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>문서 길이는 <strong>평균만 보면 안 되고 중앙값과 최댓값을 같이 봐요.</strong> 짧은 문서가 대부분이고 몇 건만 극단적으로 길면, 그 몇 건이 청크 수와 LLM 호출 비용을 좌우해요. 다음 편에서 문서를 앞 6,000자까지만 쓰기로 하는 근거가 이 숫자예요.</p>
+    </div>
+
+    <h2 id="wall"><span class="hl">벽을 먼저 잰다</span> — 검색 방식은 얼마나 못 푸나</h2>
+    <p>그래프를 만들기 전에 할 일이 있어요. <strong>지금 방식이 얼마나 못 하는지를 숫자로 재 두는 것</strong>이요. 이 숫자가 없으면 그래프를 다 만든 뒤에도 나아졌는지 확인할 방법이 없어요.</p>
+    <h3 id="goldenset">골든셋 15문항</h3>
+    <p>재는 자는 <strong>골든셋</strong><sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup> 15문항이에요. 위키 원문에서 정답과 근거를 확인해 만든 평가 문항이고, 세 종류로 나뉘어요.</p>
+    <table>
+      <thead><tr><th>종류</th><th>문항 수</th><th>예</th></tr></thead>
+      <tbody>
+        <tr><td>단순</td><td>3</td><td>영화 《기생충》의 감독은 누구인가?</td></tr>
+        <tr><td>추천</td><td>10</td><td>송강호와 같은 영화에 출연했던 배우들이 나온 다른 작품을 추천해줘.</td></tr>
+        <tr><td>전역</td><td>2</td><td>이 자료에 담긴 한국 영화계에는 어떤 집단들이 있고 각각 어떤 특징을 가지는가?</td></tr>
+      </tbody>
+    </table>
+    <p>문항마다 정답에 닿는 데 꼭 필요한 삼중항이 적혀 있어요. 단순·추천 13문항에 모두 39개예요. 예를 들어 위 추천 문항에는 (송강호, ACTED_IN, 기생충) → (최우식, ACTED_IN, 기생충) → (최우식, ACTED_IN, 부산행)처럼 건너가는 사실들이 붙어 있어요.</p>
+    <h3 id="bm25-baseline">BM25로 기준선을 잡는다</h3>
+    <p>비교 대상은 <strong>BM25</strong><sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup> 검색이에요. 질문과 겹치는 낱말이 많고 드문 낱말일수록 점수를 높게 주는 고전 검색법이에요. <a href="rag-chatbot-hybrid-search.html">하이브리드 검색 편</a>에서 벡터 검색과 섞어 썼던 그거예요. 여기서 BM25를 고른 이유는 API 키가 필요 없고 <strong>돌릴 때마다 결과가 똑같아서</strong> 기준선으로 쓰기 좋기 때문이에요.</p>
+    <p>문서 80건을 800자 청크<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup>로 자르니 700조각이 나왔어요. 한국어는 "영화를·영화가·영화는"을 공백 기준으로 다 다른 낱말로 보니, 정규식으로 한글·영문·숫자 덩어리만 뽑는 가벼운 토크나이저를 붙였어요.</p>
+    <p>잴 것은 두 가지예요. 둘 다 답을 만들기 전 단계, 즉 <strong>검색이 정답에 닿았는지</strong>만 봐요. 근거 안에 정답이 없으면 뒤에 어떤 LLM을 붙여도 정답을 못 만드니까, 이게 그 시스템의 상한선이에요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 제가 2026-09-18에 상위 6개 청크로 잰 결과예요</span></p>
+    <pre><code>① 정답 문자열이 상위 6개 청크 안에 통째로 있는가
+   단순 1/3 · 추천 0/10 · 전역 0/2
+
+② 정답에 필요한 사실(기준 삼중항)의 양 끝이 한 청크 안에 함께 있는가
+   단순 4/6 · 추천 12/33 · 전체 16/39</code></pre>
+    <p>①은 거의 0이에요. 그런데 이건 검색이 나빠서가 아니라 <strong>재는 방법이 나빠서</strong>예요. 추천 문항의 기대 정답은 "송강호의 살인의 추억·괴물·택시운전사·변호인, 최우식·박소담… 등" 같은 긴 목록이라, 그 문자열이 문서에 통째로 있을 리가 없거든요. 모든 방식이 0점이 나오는 자로는 아무것도 비교 못 해요.</p>
+    <p>그래서 ②처럼 <strong>사실 단위</strong>로 쪼개 재요. 단순 질문은 필요한 사실의 3분의 2를 찾지만, 추천 질문은 3분의 1밖에 못 찾아요. 놓친 사실을 보면 이유가 보여요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 추천-09 문항에서 놓친 사실들이에요</span></p>
+    <pre><code>[추천-09] ('송강호', 'ACTED_IN', '기생충')
+[추천-09] ('최우식', 'ACTED_IN', '부산행')
+[추천-09] ('송강호', 'ACTED_IN', '택시운전사')
+[추천-09] ('유해진', 'ACTED_IN', '1987')</code></pre>
+    <p>질문은 송강호를 물었는데 이 사실들은 부산행·1987 문서에 있어요. 그 문서를 데려오려면 먼저 "송강호와 같은 영화에 누가 나왔나"를 알아야 하는데, 그걸 알려면 검색 결과를 먼저 읽어야 해요. <strong>검색하려면 검색 결과가 필요한</strong> 순환이고, 이게 멀티홉의 정체예요.</p>
+
+    <h3 id="widen-k">후보를 늘리면 풀릴까</h3>
+    <p>가장 먼저 떠오르는 방법은 검색 결과를 더 많이 가져오는 거예요. 정답 근거가 든 문서가 후보 안에서 몇 등에 오는지, 후보 수 <code>k</code>를 6 → 20 → 50으로 늘려 가며 봤어요.</p>
+    <table>
+      <thead><tr><th>문항</th><th>정답 근거 문서</th><th>k=6</th><th>k=20</th><th>k=50</th></tr></thead>
+      <tbody>
+        <tr><td>추천-04 《기생충》 출연 배우의 다른 작품</td><td>송강호</td><td>1위</td><td>1위</td><td>1위</td></tr>
+        <tr><td>추천-06 《기생충》이 상 받은 시상식의 다른 수상작</td><td>살인의 추억</td><td>없음</td><td>7위</td><td>7위</td></tr>
+        <tr><td>추천-12 2010년대 한국 미스터리 영화</td><td>버닝</td><td>없음</td><td>12위</td><td>12위</td></tr>
+        <tr><td>추천-09 송강호와 같은 영화에 나온 배우들의 다른 작품</td><td>부산행</td><td>없음</td><td><strong>없음</strong></td><td><strong>없음</strong></td></tr>
+      </tbody>
+    </table>
+    <p>결과가 세 갈래로 나뉘어요. 유리하게 읽지 않도록 하나씩 볼게요.</p>
+    <ul>
+      <li><strong>처음부터 되는 경우 (추천-04).</strong> 송강호 문서가 1위예요. 검색이 질문을 이해해서가 아니라, 질문에 "기생충"이 있고 송강호 문서가 마침 "기생충"을 언급해서예요. 문서가 80건이 아니라 8,000건이면 "기생충"을 언급하는 문서가 수백 개일 테고, 이 행운은 사라져요.</li>
+      <li><strong>후보를 늘리면 구제되는 경우 (추천-06, 추천-12).</strong> 20개로 늘리면 7위·12위로 들어와요. 다만 공짜가 아니에요. 20조각 중 답에 필요한 건 한두 개고 나머지는 잡음이라, LLM이 읽을 분량과 토큰 비용이 같이 늘고 답의 질은 떨어져요.</li>
+      <li><strong>아무리 늘려도 안 되는 경우 (추천-09).</strong> 부산행 문서는 50개 안에도 없어요. 질문에 "부산행"도 "최우식"도 없으니까요. 송강호 → 기생충 → 최우식 → 부산행을 순서대로 알아내야 하는데, 그건 검색이 아니라 추적이에요.</li>
+    </ul>
+
+    <h3 id="retrieval-metrics">검색 품질을 재는 표준 자</h3>
+    <p>위 표의 "몇 위에 오나"를 숫자 하나로 줄이는 표준 지표들이 있어요. 검색 시스템을 비교할 때 거의 늘 이 다섯 개로 말해요. 뒤에 붙는 <code>@K</code>는 "상위 K개까지만 본다"는 뜻이에요.</p>
+    <table>
+      <thead><tr><th>지표</th><th>묻는 것</th><th>계산</th></tr></thead>
+      <tbody>
+        <tr><td>Hit Rate@K</td><td>정답 문서가 상위 K개 안에 <strong>하나라도</strong> 있나</td><td>있으면 1, 없으면 0을 문항마다 매겨 평균</td></tr>
+        <tr><td>Recall@K (재현율)</td><td>정답 문서 <strong>전체 중</strong> 몇 개를 상위 K개 안에 데려왔나</td><td>데려온 정답 수 ÷ 전체 정답 수</td></tr>
+        <tr><td>Precision@K (정밀도)</td><td>상위 K개 중 몇 개가 정답인가</td><td>그 안의 정답 수 ÷ K</td></tr>
+        <tr><td>MRR</td><td>첫 정답이 <strong>얼마나 위에</strong> 나오나</td><td>1 ÷ 첫 정답 순위를 문항마다 구해 평균 (1위면 1, 5위면 0.2)</td></tr>
+        <tr><td>nDCG@K</td><td>정답들이 위쪽에 몰려 있나</td><td>순위가 낮을수록 점수를 로그로 깎아 더한 뒤, 가장 이상적인 순서의 점수로 나눔</td></tr>
+      </tbody>
+    </table>
+    <p>위 네 문항에 그대로 적용해 봤어요. 문서 단위로 세면 순위가 조금 달라져요(같은 문서의 청크가 여러 개 올라오니까요). 아래는 청크 순위 기준이에요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 제가 2026-09-18에 BM25로 센 값이에요. 저장소의 ko/LangGraph/graphrag_05_retrieval_metrics.py</span></p>
+    <pre><code>정답 청크 순위: 추천-04 1위 · 추천-06 7위 · 추천-12 12위 · 추천-09 63위
+
+K= 6  HitRate 0.25  Recall 0.25  Precision 0.042  MRR 0.250  nDCG 0.250
+K=10  HitRate 0.50  Recall 0.50  Precision 0.050  MRR 0.286  nDCG 0.333
+K=20  HitRate 0.75  Recall 0.75  Precision 0.038  MRR 0.307  nDCG 0.401
+K=50  HitRate 0.75  Recall 0.75  Precision 0.015  MRR 0.307  nDCG 0.401</code></pre>
+    <p>읽을 거리가 셋이에요.</p>
+    <ul>
+      <li><strong>이 네 문항은 정답 문서가 한 건씩이라 Hit Rate와 Recall이 같아요.</strong> 정답이 여러 건인 질문에서는 갈라져요. 하나만 데려와도 Hit는 1이지만 Recall은 일부만 오르니까요.</li>
+      <li><strong>K를 20에서 50으로 늘려도 모든 지표가 그대로예요.</strong> 추천-09의 정답이 63위라 50 안에 못 들어와서요. 반대로 Precision은 0.038에서 0.015로 떨어져요. 가져온 것 대부분이 잡음이 됐다는 뜻이에요.</li>
+      <li><strong>MRR 0.307은 "첫 정답이 평균 3위쯤"이라는 뜻이 아니에요.</strong> 1위 한 문항이 혼자 0.25를 벌었고 나머지 셋이 조금씩 보탠 값이에요. 평균 하나로 줄이면 이런 쏠림이 가려지니, 문항별 순위를 같이 봐요.</li>
+    </ul>
+    <p>자주 쓰는 조합은 <strong>Recall@10</strong>(쓸 만한 범위 안에 데려왔나)·<strong>nDCG@100</strong>(넓게 봤을 때 위쪽에 몰렸나)·<strong>MRR</strong>(첫 정답이 얼마나 빨리 나오나)이에요. 하나만 보면 한쪽만 좋아지는 튜닝을 알아채지 못해요.</p>
+    <div class="key-point" id="key-retrieval-metrics">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>검색은 <strong>"데려왔나"(Recall·Hit Rate)와 "위에 뒀나"(MRR·nDCG)를 따로</strong> 재요. 리랭킹 같은 기법은 뒤쪽만 올리고, 앞쪽이 0인 문항은 못 건드려요. 그리고 벡터 검색에서 속도를 위해 근사 검색(ANN) 색인을 쓴다면, 모든 벡터를 빠짐없이 비교하는 <strong>Flat(전수 비교) 색인의 결과를 정답으로 삼아</strong> 근사 색인이 얼마나 놓치는지부터 재요. 여기서 쓴 BM25는 700조각 전부에 점수를 매기는 전수 방식이라 그 차이가 없어요.</p>
+    </div>
+
+    <h3 id="recall-ceiling">검색기를 더 좋은 걸로 바꾸면?</h3>
+    <p>"그럼 벡터 검색을 섞거나(하이브리드 검색), 후보를 더 정확한 모델로 다시 줄 세우면(리랭킹<sup class="fn-ref"><a href="#fn8" id="fnref8">8</a></sup>) 되지 않나요?" 둘 다 실무에서 표준으로 쓰는 강력한 방법이에요. 그런데 추천-09 앞에서는 둘 다 힘을 못 써요.</p>
+    <p><a href="#retrieval-metrics">바로 위의 두 쪽</a>으로 나누면 이유가 보여요. 하이브리드 검색과 리랭킹은 주로 <strong>순위</strong>를 고쳐 MRR·nDCG·정밀도를 올려요(재현율·정밀도는 <a href="confusion-matrix-and-metrics.html">혼동 행렬 편</a>에서 처음 다뤘어요). 추천-09는 정답 문서가 후보에 아예 없는, 재현율 0인 상황이에요.</p>
+    <div class="key-point" id="key-rerank">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>리랭킹은 <strong>이미 가져온 후보의 순위만 바꿔요.</strong> 후보에 들어오지 못한 문서는 순위를 어떻게 흔들어도 살아나지 않아요. 멀티홉 질문에서 막혔다면 검색기 교체가 아니라 <strong>검색을 여러 번 하거나, 연결을 미리 만들어 두는</strong> 쪽을 봐야 해요. 뒤쪽이 GraphRAG예요.</p>
+    </div>
+    <div class="key-point" id="key-small-corpus">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>작은 데이터에서의 성공은 큰 데이터에서의 성공을 보장하지 않아요. 추천-04가 1위로 나온 건 <strong>낱말이 우연히 겹친 덕</strong>이라, 문서가 100배로 늘면 "기생충"을 언급하는 다른 문서들에 밀려나요. 잘 된 문항도 <strong>왜 잘 됐는지</strong>를 봐야 해요.</p>
+    </div>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">손님 질문에 답이 안 나오자 서랍 담당 직원에게 "카드를 50장씩 꺼내 와"라고 한다 → 조리사 테이블이 카드로 뒤덮이고, 정작 필요한 카드는 여전히 서랍 안에 있다</td>
+          <td class="choice-good">어떤 질문이 몇 장째에 답을 찾는지 먼저 세어 본다 → "몇 장을 꺼내도 안 나오는 질문"이 따로 있다는 걸 확인하고, 영업 전에 연결판을 만들 가치가 있는지 숫자로 판단한다</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="apply-box apply-box--try" id="try-it">
+      <p class="apply-box-title">직접 해 보기 — 키 없이 벽 재기</p>
+      <p class="run-tag">실행: 로컬 터미널</p>
+      <pre><code>pip install langchain-community langchain-text-splitters rank_bm25</code></pre>
+      <p>데이터 zip을 받아 <code>input/</code> 폴더에 풀어 두고 아래를 돌려요.</p>
+      <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
+      <pre><code>import os, re, glob, json
+from langchain_core.documents import Document
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_community.retrievers import BM25Retriever
+
+DOC_DIR = "input/cinephile_kb_80/docs"
+DOCS = {os.path.basename(p)[:-3].replace("_", " "): open(p, encoding="utf-8").read()
+        for p in sorted(glob.glob(DOC_DIR + "/*.md"))}
+QUESTIONS = json.load(open("input/cinephile_goldenset.json", encoding="utf-8"))["items"]
+
+chunks = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=120).split_documents(
+    [Document(page_content=t, metadata={"title": k}) for k, t in DOCS.items()])
+
+def ko_tokens(text):                      # 한글·영문·숫자 덩어리만
+    return re.findall(r"[0-9A-Za-z가-힣]+", text)
+
+PROBE = {"추천-04": "송강호", "추천-06": "살인의 추억",
+         "추천-09": "부산행", "추천-12": "버닝 (2018년 영화)"}
+for K in (6, 20, 50):
+    bm25 = BM25Retriever.from_documents(chunks, preprocess_func=ko_tokens, k=K)
+    for qid, leaf in PROBE.items():
+        q = next(x for x in QUESTIONS if x["id"] == qid)["user_input"]
+        titles = [h.metadata["title"] for h in bm25.invoke(q)]
+        rank = titles.index(leaf) + 1 if leaf in titles else "없음"
+        print(f"k={K:2d} [{qid}] {leaf} → {rank}")</code></pre>
+      <ol>
+        <li>위 표와 같은 순위가 나오는지 확인해요. BM25는 모델을 부르지 않아서 누가 돌려도 같아야 해요.</li>
+        <li><code>chunk_size</code>를 400과 1600으로 바꿔 다시 돌려요. 청크가 커지면 두 대상이 한 조각에 같이 들어올 확률은 오르지만 잡음도 같이 커져요.</li>
+        <li>끝까지 "없음"으로 남는 문항을 적어 두세요. 그게 다음 편부터 그래프로 풀 대상이에요.</li>
+      </ol>
+    </div>
+
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 벽을 잴 때 기준이 되는 값</h2>
+    <p><a href="#data">데이터 절</a>과 <a href="#wall">벽 재기 절</a>에서 나온 값 중, 비슷한 실험을 직접 설계할 때 다시 쓰는 것만 모았어요.</p>
+    <table>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
+      <tbody>
+        <tr><td>실습 문서 규모</td><td>80건 (영화 33 · 인물 28 · 회사 11 · 시상식 8)</td><td>종류가 섞여 있어야 멀티홉 질문이 성립한다. 내 문서 묶음에 종류가 몇 가지인지부터 센다</td></tr>
+        <tr><td>문서 길이</td><td>중앙값 3,099자 · 최댓값 55,384자</td><td>최댓값이 중앙값의 18배다. 이런 분포면 긴 문서를 잘라 쓸지 먼저 정해야 추출 비용이 예측된다</td></tr>
+        <tr><td>검색용 청크</td><td>800자 · 겹침 120자 → 700조각</td><td>BM25 기준선의 조건. 크기를 바꾸면 기준선도 다시 잰다</td></tr>
+        <tr><td>골든셋</td><td>15문항 (단순 3 · 추천 10 · 전역 2) · 기준 삼중항 39개</td><td>한 문항이 약 7%p를 움직이는 작은 평가셋이다. 작은 차이를 개선으로 읽지 않는다</td></tr>
+        <tr><td>검색 품질 지표 조합</td><td>Recall@10 · nDCG@100 · MRR</td><td>"데려왔나"와 "위에 뒀나"를 함께 본다. 이 데이터의 BM25는 네 문항 기준 Recall@10 0.50 · MRR 0.307</td></tr>
+        <tr><td>BM25 사실 단위 확보율</td><td>k=6에서 16/39 · k=20에서 32/39 · k=50에서 35/39</td><td>k를 늘리면 오르지만 잡음도 같이 는다. 끝까지 안 오르는 문항이 구조 문제다</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 문서 챗봇이 연결 질문에서 막힐 때</h2>
+    <p>이 문제는 에러로 보이지 않아요. 챗봇이 멀쩡한 문장으로 <strong>질문 속 대상 이야기만 하거나 "근거가 부족합니다"로 끝나는</strong> 모습으로 먼저 보여요.</p>
+    <p>증상이 아직 없어도, <strong>AI에게 이런 부탁을 한 직후</strong>라면 한 번 확인하고 넘어가요.</p>
+    <ul>
+      <li>"검색 결과를 더 많이 가져오게 바꿔 줘" — 정답 문서가 후보에 들어오기라도 하는 질문인지</li>
+      <li>"리랭커 붙여서 검색 품질 올려 줘" — 막힌 질문이 순위 문제인지, 후보에 아예 없는 문제인지</li>
+    </ul>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-never">
+          <td>"A에 나온 사람의 다른 작품" 같은 질문에 A 이야기만 늘어놓거나 "근거가 부족합니다"로 끝난다</td>
+          <td>검색 단계가 돌려준 문서 제목 목록. 답변 문장이 아니라 그 앞 단계예요</td>
+          <td>정답 근거가 든 문서를 사람이 먼저 정해 두고, <code>k</code>를 20·50으로 늘려 그 문서가 몇 위에 오는지 본다. 끝까지 없으면 튜닝이 아니라 구조 문제예요 — <a href="#widen-k">후보 늘리기 절</a></td>
+        </tr>
+        <tr id="suspect-luck">
+          <td>시험용 문서 몇십 건에서는 잘 되던 추천이 문서를 늘리자 엉뚱해진다</td>
+          <td>잘 되던 문항의 질문 문장과, 그때 1위로 나온 문서 본문</td>
+          <td>질문의 고유명사가 1위 문서에 그대로 들어 있었는지 본다. 들어 있었다면 연결을 이해한 게 아니라 낱말이 우연히 겹친 거예요 — <a href="#key-small-corpus">작은 데이터의 성공</a></td>
+        </tr>
+        <tr id="suspect-zero">
+          <td>평가를 돌렸더니 어떤 방식을 넣어도 0점 근처라 비교가 안 된다</td>
+          <td>채점 코드에서 정답과 답을 비교하는 줄. 기대 정답이 목록형인지</td>
+          <td>기대 정답을 사실 하나하나로 쪼개 "몇 개를 찾았나"로 다시 센다. 모두가 0점인 자는 자가 잘못된 거예요 — <a href="#bm25-baseline">기준선 절</a></td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등</p>
+    <pre><code>이 프로젝트의 문서 검색 코드에서 (1) 문서를 청크로 자르는 곳, (2) 검색기가 상위 몇 개를 돌려주는지(k) 정하는 곳,
+(3) 검색 결과를 LLM 프롬프트에 붙이는 곳을 찾아서 파일·줄 번호로 보여 줘.
+그리고 질문 하나를 넣었을 때 검색 단계가 돌려준 문서 제목 목록을 출력하는 방법을 알려 줘. 아직 코드는 고치지 마.</code></pre>
+
+    <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
+    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 다른 편의 같은 목록은 <a href="langgraph-what-and-why.html#key-recap">1편</a> · <a href="cs-agent-improve.html#key-recap">19편</a>에 있어요.</p>
+    <ul class="key-recap">
+      <li><a href="#key-median">문서 길이는 중앙값과 최댓값을 같이 본다</a></li>
+      <li><a href="#key-retrieval-metrics">검색은 "데려왔나"와 "위에 뒀나"를 따로 잰다</a></li>
+      <li><a href="#key-rerank">리랭킹은 후보에 없는 문서를 살리지 못한다</a></li>
+      <li><a href="#key-small-corpus">작은 데이터의 성공은 낱말이 겹친 행운일 수 있다</a></li>
+    </ul>
+
+    <p><a href="graphrag-build-knowledge-graph.html">다음 편</a>에서는 문서 80건을 LLM에게 읽혀 삼중항을 뽑고, 흩어진 표기를 합쳐 연결판을 실제로 만들어요.</p>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">멀티홉(multi-hop) 질문 — 사실 하나에서 다른 사실로 여러 번 건너가야 답에 닿는 질문이에요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">지식 그래프(knowledge graph) — 대상을 점(노드)으로, 대상 사이의 관계를 선(엣지)으로 저장한 자료 구조예요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">삼중항(triple) — (주어, 관계, 목적어) 세 칸으로 적은 사실 하나로, 지식 그래프의 가장 작은 단위예요. <a href="#fnref3">↩</a></li>
+        <li id="fn4">NetworkX — 그래프를 만들고 탐색하는 파이썬 라이브러리로, 설치만 하면 별도 서버 없이 메모리에서 돌아가요. <a href="#fnref4">↩</a></li>
+        <li id="fn5">골든셋(golden set) — 사람이 정답과 근거를 확인해 둔 평가 문항 묶음으로, 시스템을 바꿀 때마다 같은 자로 재는 데 써요. <a href="#fnref5">↩</a></li>
+        <li id="fn6">BM25 — 질문 낱말이 문서에 얼마나 자주, 얼마나 드물게 나오는지로 점수를 매기는 키워드 검색법으로, <a href="rag-chatbot-hybrid-search.html">하이브리드 검색 편</a>에서 처음 다뤘어요. <a href="#fnref6">↩</a></li>
+        <li id="fn7">청크(chunk) — 긴 문서를 검색하기 좋게 일정 길이로 자른 조각으로, <a href="rag-chatbot-chunk-design.html">청크 설계 편</a>에서 처음 다뤘어요. <a href="#fnref7">↩</a></li>
+        <li id="fn8">리랭킹(re-ranking) — 검색기가 넉넉히 가져온 후보를 더 정확한 모델로 다시 줄 세우는 단계예요. <a href="#fnref8">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <h3 id="series-list">"에이전트 팀 꾸리기 — LangGraph" 시리즈</h3>
+    <a class="post-nav" href="langgraph-what-and-why.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">다음에 어느 코드가 실행될까 — LangGraph와 워크플로·에이전트</span>
+    </a>
+    <a class="post-nav" href="langgraph-state-node-edge.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">흐름을 그림으로 짠다 — LangGraph의 State·Node·Edge</span>
+    </a>
+    <a class="post-nav" href="langgraph-branch-drills.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">갈림길을 밀어붙인다 — 세 갈래·라벨·끝나지 않는 반복</span>
+    </a>
+    <a class="post-nav" href="langgraph-branches-and-tool-loop.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">모델이 다음 길을 고르게 한다 — 도구를 쥐여 주는 루프</span>
+    </a>
+    <a class="post-nav" href="langgraph-env-troubleshooting.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">.env가 안 읽혔던 네 겹의 이유 — 원격 주피터에서 API 키 넣기</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-chaining.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">① 프롬프트 체이닝 — 순서대로, 사이에 검사</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-routing.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">② 라우팅 — 먼저 분류하고, 한 갈래로</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-parallelization.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">③ 병렬화 — 동시에 돌리고, 합친다</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-orchestrator-worker.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">④ 오케스트레이터-워커 — 몇 갈래일지 LLM이 정한다</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-evaluator-optimizer.html">
+      <span class="post-nav-label">(10)</span>
+      <span class="post-nav-title">⑤ 평가자-최적화자 — 통과할 때까지 고쳐 쓰기</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-skeleton.html">
+      <span class="post-nav-label">(11)</span>
+      <span class="post-nav-title">뉴스레터 에이전트를 빈 노드 다섯 개로 먼저 세운다</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-collect.html">
+      <span class="post-nav-label">(12)</span>
+      <span class="post-nav-title">기사를 어디서 가져올까 — RSS·관문·수집 노드</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-select.html">
+      <span class="post-nav-label">(13)</span>
+      <span class="post-nav-title">100건에서 5건 고르기 — 점수 대신 비교, 예선과 본선</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-summarize-verify.html">
+      <span class="post-nav-label">(14)</span>
+      <span class="post-nav-title">요약을 세 칸으로 받고 원문과 대조한다</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-publish-schedule.html">
+      <span class="post-nav-label">(15)</span>
+      <span class="post-nav-title">디스코드로 매일 아침 받아 보기 — 웹훅과 GitHub Actions</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-metrics-config.html">
+      <span class="post-nav-label">(16)</span>
+      <span class="post-nav-title">돌고 나서 재 본다 — 실행 기록과 설정 파일</span>
+    </a>
+    <a class="post-nav" href="cs-agent-routing-eval.html">
+      <span class="post-nav-label">(17)</span>
+      <span class="post-nav-title">문의 한 줄을 다섯 갈래로 — 라우트는 회사 문서에서 가져온다</span>
+    </a>
+    <a class="post-nav" href="cs-agent-grounding.html">
+      <span class="post-nav-label">(18)</span>
+      <span class="post-nav-title">값을 말하지 말고 조회하게 한다 — 매뉴얼 쪼개기·도구·가드레일</span>
+    </a>
+    <a class="post-nav" href="cs-agent-improve.html">
+      <span class="post-nav-label">(19)</span>
+      <span class="post-nav-title">59%에서 94%로 — 프롬프트만 고쳐 지표를 올린 기록</span>
+    </a>
+    <p class="post-date">(20) 검색으로는 못 찾는 답 — 멀티홉 질문과 지식 그래프 (이 글)</p>
+    <a class="post-nav" href="graphrag-build-knowledge-graph.html">
+      <span class="post-nav-label">(21)</span>
+      <span class="post-nav-title">스키마가 답할 질문을 정한다 — 추출·정규화·위키 분류</span>
+    </a>
+    <a class="post-nav" href="graphrag-agent-three-routes.html">
+      <span class="post-nav-label">(22)</span>
+      <span class="post-nav-title">세 갈래로 답하는 에이전트 — 커뮤니티 요약·라우터·탐색 예산</span>
+    </a>
+    <a class="post-nav" href="graphrag-goldenset-eval.html">
+      <span class="post-nav-label">(23)</span>
+      <span class="post-nav-title">같은 15문항으로 채점한다 — 세 층 평가와 심판의 한계</span>
+    </a>
+
+    <a class="post-nav" href="graphrag-build-knowledge-graph.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">스키마가 답할 질문을 정한다 — 추출·정규화·위키 분류 (21)</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>

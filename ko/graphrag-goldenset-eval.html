@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>같은 15문항으로 채점한다 — 세 층 평가와 심판의 한계 (23) - Tigermorning</title>
+  <meta name="description" content="BM25 검색 방식과 GraphRAG 에이전트를 같은 골든셋 15문항으로 채점한 기록입니다. 색인·검색·생성 세 층으로 나눠 재고, 두 축을 격자로 훑어 탐색 예산을 정하고, LLM 심판의 판정이 틀린 사례까지 문항별로 열어 봤습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="같은 15문항으로 채점한다 — 세 층 평가와 심판의 한계 (23)">
+  <meta property="og:description" content="평균은 0.43 대 0.77. 그런데 단순 질문에서는 검색 방식이 이겼고, 심판은 봉준호의 실제 단편을 오답으로 쳤어요.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/graphrag-goldenset-eval.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">같은 15문항으로 채점한다</span> — 세 층 평가와 심판의 한계 (23)</h1>
+    <p class="post-date">2026. 9. 18.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <a class="post-nav" href="graphrag-agent-three-routes.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">세 갈래로 답하는 에이전트 — 커뮤니티 요약·라우터·탐색 예산 (22)</span>
+    </a>
+
+    <p class="one-liner">RAG 시스템 평가는 답이 틀렸을 때 <strong>사실이 그래프에 없었는지, 있는데 못 가져왔는지, 가져왔는데 못 읽었는지</strong>를 가르도록 층을 나눠 재는 일이에요.</p>
+
+    <div class="why-read" id="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>어디쯤인가</dt>
+        <dd><a href="posts.html#cat-agent-system">8단계</a> › <a href="posts.html#langgraph-team">에이전트 팀 꾸리기 — LangGraph</a> — 23번째 글 (전 23편, 마지막). 첫 글은 <a href="langgraph-what-and-why.html">1편</a>이고, 영화 추천 에이전트 묶음은 <a href="graphrag-why-multihop.html">20편</a>부터예요.</dd>
+        <dt>이런 게 궁금했다면</dt>
+        <dd>
+          <ul>
+            <li>그래서 GraphRAG가 일반 검색 방식보다 나은 건가요? 얼마나요?</li>
+            <li>답이 여러 개인 추천 질문은 정답 여부를 어떻게 채점하죠?</li>
+            <li>LLM에게 채점을 맡겨도 그 점수를 믿어도 되나요?</li>
+          </ul>
+        </dd>
+        <dt>읽고 나면 할 수 있는 것</dt>
+        <dd>
+          <ul>
+            <li>틀린 답마다 색인·검색·생성 중 어느 층을 고쳐야 할지 숫자로 지목해요.</li>
+            <li>설정값 두 개를 격자로 훑어, 한 축만 흔들 때 놓치는 병목을 찾아요.</li>
+            <li>평가 결과를 보고할 때 같이 말해야 할 한계를 적어요.</li>
+          </ul>
+        </dd>
+        <dt>모르면 이런 일이 생겨요</dt>
+        <dd>
+          <ul>
+            <li>탐색 설정 하나만 바꿔 보고 "효과 없음"이라 결론 내려요. 실은 다른 설정이 막고 있던 거라 그 축은 움직일 수가 없었어요. <a class="suspect-jump" href="#suspect-one-axis">언제 의심하나 ↓</a></li>
+            <li>심판 점수를 그대로 믿고 더 완전한 답을 낸 쪽을 "틀렸다"고 기록해요. 정답지가 불완전하면 심판도 같이 틀려요. <a class="suspect-jump" href="#suspect-judge">언제 의심하나 ↓</a></li>
+            <li>심판 호출이 깨진 문항을 0점으로 셈해서 평균이 조용히 내려가요. <a class="suspect-jump" href="#suspect-none">언제 의심하나 ↓</a></li>
+          </ul>
+        </dd>
+        <dt>어디에 쓰나</dt>
+        <dd>
+          <ul>
+            <li><strong>새 방식을 도입하자는 말이 나왔을 때.</strong> "그래프로 바꾸면 좋아진다더라"를 우리 질문, 우리 문서로 확인하는 자리요.</li>
+            <li>챗봇 답이 틀렸을 때 검색을 고칠지 프롬프트를 고칠지 정하기.</li>
+            <li>LLM 채점기를 들이기 전에 그 채점기부터 검사하기.</li>
+          </ul>
+        </dd>
+      </dl>
+    </div>
+
+    <div class="key-point" id="prep">
+      <p class="key-point-label"><span class="key-point-badge">준비물</span>이 편을 따라 하려면</p>
+      <ul>
+        <li><strong><a href="graphrag-agent-three-routes.html">22편</a>의 에이전트와 <a href="graphrag-why-multihop.html#bm25-baseline">20편</a>의 BM25 검색기</strong> — 둘을 같은 문항으로 비교해요.</li>
+        <li><strong>OpenAI API 키</strong> — 답변은 gpt-4.1-mini, 채점은 gpt-4.1이 해요. 제가 채점까지 전부 돌리는 데 든 비용은 <a href="#numbers">아래 표</a>에 있어요.</li>
+        <li><strong>LLM 심판 이야기</strong> — 답변을 다른 LLM이 채점하는 방식은 <a href="rag-chatbot-llm-judge.html">7단계의 LLM-as-a-Judge 편</a>에서 처음 다뤘어요.</li>
+      </ul>
+    </div>
+
+    <h2 id="analogy"><span class="hl">비유</span> — 시식 심사는 요리한 사람이 하지 않는다</h2>
+    <p><a href="graphrag-agent-three-routes.html#analogy">홀 매니저</a>가 세 갈래로 답하게 된 주방이 이제 성적을 매겨요. 손님 질문 15개를 정해 두고, 예전 방식(서랍에서 카드 찾기)과 새 방식(연결판 따라가기)으로 각각 답하게 한 뒤 심사위원이 채점해요.</p>
+    <p>두 가지를 조심해요. 요리한 조리사가 자기 요리를 심사하면 후해지니 <strong>심사위원은 다른 사람</strong>으로 둬요. 그리고 심사위원에게 <strong>정답 기준표</strong>를 쥐여 주는데, 기준표에 빠진 게 있으면 맞는 답도 감점돼요. 틀린 답이 나오면 "재료가 창고에 없었나, 창고엔 있는데 안 꺼내 왔나, 꺼내 왔는데 조리를 잘못했나"를 따로 봐요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>미리 정한 손님 질문 15개</td><td>골든셋 15문항</td></tr>
+        <tr><td>요리한 사람과 다른 심사위원</td><td>생성 모델(gpt-4.1-mini)과 다른 심판 모델(gpt-4.1)</td></tr>
+        <tr><td>심사위원이 쥔 정답 기준표</td><td>골든셋의 기대 정답과 원문 근거</td></tr>
+        <tr><td>재료가 창고에 없었다</td><td>① 색인 문제 — 그래프에 사실이 없음</td></tr>
+        <tr><td>창고엔 있는데 안 꺼내 왔다</td><td>② 검색 문제 — 사실은 있는데 근거로 안 들어옴</td></tr>
+        <tr><td>꺼내 왔는데 조리를 잘못했다</td><td>③ 생성 문제 — 근거는 있는데 답이 틀림</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 점수 하나가 아니라 <strong>어느 단계에서 틀렸는지</strong>를 알아야 다음에 무엇을 고칠지 정할 수 있어요.</p>
+
+    <h2 id="flow"><span class="hl">전체 흐름</span> — 세 층, 싼 것부터</h2>
+    <svg viewBox="0 0 700 170" role="img" aria-label="질문 하나가 색인층, 검색층, 생성층을 차례로 통과한다. 색인층은 기준 삼중항 커버리지, 검색층은 컨텍스트 재현율로 모델 호출 없이 재고, 생성층만 LLM 심판이 채점한다. 틀린 답은 가장 먼저 실패한 층으로 분류된다">
+      <defs>
+        <marker id="ge1" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+          <path d="M0,0 L9,4.5 L0,9 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <rect x="8" y="40" width="90" height="40" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="53" y="64" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">질문 15개</text>
+      <rect x="128" y="30" width="160" height="60" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="208" y="52" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">① 색인</text>
+      <text x="208" y="68" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">그래프에 사실이 있나</text>
+      <text x="208" y="82" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">비용 0</text>
+      <rect x="318" y="30" width="160" height="60" rx="6" fill="none" stroke="var(--border)"/>
+      <text x="398" y="52" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">② 검색</text>
+      <text x="398" y="68" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">근거에 들어왔나</text>
+      <text x="398" y="82" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">비용 0</text>
+      <rect x="508" y="30" width="180" height="60" rx="6" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="598" y="52" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--accent)">③ 생성</text>
+      <text x="598" y="68" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">답이 맞나 (LLM 심판)</text>
+      <text x="598" y="82" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">모델 호출 비용</text>
+      <line x1="98" y1="60" x2="124" y2="60" stroke="var(--muted)" stroke-width="2" marker-end="url(#ge1)"/>
+      <line x1="288" y1="60" x2="314" y2="60" stroke="var(--muted)" stroke-width="2" marker-end="url(#ge1)"/>
+      <line x1="478" y1="60" x2="504" y2="60" stroke="var(--muted)" stroke-width="2" marker-end="url(#ge1)"/>
+      <text x="208" y="118" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">없으면 → 추출·보강을 고친다</text>
+      <text x="398" y="118" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">없으면 → 탐색·예산을 고친다</text>
+      <text x="598" y="118" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">틀리면 → 프롬프트를 고친다</text>
+      <text x="350" y="152" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">틀린 답은 가장 먼저 실패한 층으로 분류한다</text>
+    </svg>
+    <p><strong>읽는 법:</strong> 왼쪽 두 층은 문자열 비교만으로 재서 공짜예요. 공짜인 자를 먼저 만들어 두면 설정을 수십 번 바꿔 가며 마음껏 잴 수 있고, 비싼 LLM 심판(굵은 테두리)은 마지막에 한 번만 붙여요. 아래 줄은 각 층에서 막혔을 때 손댈 곳이에요.</p>
+
+    <h2 id="layer-index"><span class="hl">① 색인층</span></h2>
+    <p><a href="graphrag-build-knowledge-graph.html#coverage">21편</a>에서 이미 쟀어요. 골든셋이 요구하는 기준 삼중항 39개가 병합 그래프에 전부(39/39) 들어 있었어요. 다만 스키마를 같은 문항에서 역산했으니 후하게 나온 숫자예요.</p>
+
+    <h2 id="layer-retrieval"><span class="hl">② 검색층</span> — 컨텍스트 재현율과 격자 탐색</h2>
+    <p>그래프에 사실이 있어도, 에이전트가 질문을 받고 모은 근거(최대 200개 삼중항)에 들어와야 쓸 수 있어요. 그래서 "모은 근거 안에 기준 삼중항이 몇 개 있나"를 세요. 이걸 <strong>컨텍스트 재현율</strong><sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>이라고 해요. <a href="graphrag-why-multihop.html#retrieval-metrics">20편에서 본 Recall@K</a>를 문서 대신 삼중항 단위로 센 거예요.</p>
+    <h3 id="grid">한 축만 흔들면 안 된다</h3>
+    <p><a href="graphrag-agent-three-routes.html#budget">22편</a>에서 정한 두 값, 관계당 상한(<code>per_relation</code>)과 총량(<code>max_triples</code>)이 정말 적당한지 재 봤어요. 여기서 흔한 함정이 있어요. 관계당 상한만 5 → 10 → 20으로 흔들어 보고 "별 차이 없네"로 끝내는 거예요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 제가 2026-09-18에 격자로 잰 컨텍스트 재현율이에요 (39개 기준, 모델 호출 0회)</span></p>
+    <pre><code>규칙 선 할당량 면제 ON        총량=60      총량=150     총량=300
+  관계당 상한=5              27 (69%)    33 (85%)    33 (85%)
+  관계당 상한=10             27 (69%)    34 (87%)    37 (95%)
+  관계당 상한=20             27 (69%)    30 (77%)    37 (95%)
+
+규칙 선 할당량 면제 OFF
+  관계당 상한=5              28 (72%)    31 (79%)    31 (79%)
+  관계당 상한=10             26 (67%)    35 (90%)    36 (92%)
+  관계당 상한=20             27 (69%)    34 (87%)    37 (95%)
+
+지금 설정 (상한 10, 총량 200, 면제 ON) → 37/39 (95%)</code></pre>
+    <p>첫 열(총량 60)을 보세요. 관계당 상한을 5로 하든 20으로 하든 <strong>69% 근처에 붙어 있어요.</strong> 이 열만 봤다면 "상한은 아무 효과가 없다"고 결론 냈을 거예요. 실제로는 총량 60이 먼저 막고 있어서, 상한을 아무리 흔들어도 들어올 자리가 없었던 거예요. 총량을 150·300으로 풀자 상한이 차이를 내기 시작해요.</p>
+    <div class="key-point" id="key-one-axis">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>한 축만 흔들어 "효과 없음"을 확인했다면, 그 축이 <strong>병목이 아니라는 뜻일 뿐</strong>이에요. 다른 축이 막고 있는 동안에는 어떤 축을 흔들어도 아무 일도 안 일어나요. 설정값이 둘 이상이면 격자로 같이 훑어요.</p>
+    </div>
+    <p>격자는 다른 것도 보여 줘요. <a href="graphrag-agent-three-routes.html#budget">22편</a>의 규칙 선 면제가 늘 좋은 건 아니었어요. 상한 20·총량 150에서는 면제를 켠 쪽(77%)이 끈 쪽(87%)보다 낮아요. 총량이 빠듯할 때 면제된 규칙 선이 자리를 먼저 차지해서 다른 필요한 선을 밀어낸 거예요. 지금 설정에서 면제가 막은 건 <a href="graphrag-agent-three-routes.html#budget">추천-06의 한 건</a>이었고요.</p>
+    <p>그리고 이 표의 한 칸 차이는 삼중항 한두 개예요. 39개짜리 자에서 한 개는 2.6%p라, 몇 %p의 오르내림을 의미 있는 차이로 읽지 않아요. 정밀하게 조정하려면 평가셋부터 키워야 해요.</p>
+
+    <h2 id="layer-generation"><span class="hl">③ 생성층</span> — LLM 심판</h2>
+    <p>골든셋의 정답은 대부분 목록이에요. "송강호의 살인의 추억·괴물·택시운전사·변호인, 최우식·박소담… 등 다른 출연자의 작품"이 기대 정답일 때, "괴물과 택시운전사를 추천합니다"는 맞은 걸까요? 문자열 포함 여부로는 못 가려요. 그래서 다른 LLM에게 채점을 맡겨요. <strong>LLM 심판</strong>(LLM-as-judge)이에요.</p>
+    <p>심판은 세 원칙으로 짰어요.</p>
+    <ul>
+      <li><strong>심판 모델을 답변 모델과 다르게</strong> — 답은 gpt-4.1-mini가 쓰고, 채점은 gpt-4.1이 해요.</li>
+      <li><strong>원문 근거를 같이 준다</strong> — 골든셋의 <code>evidence</code>(위키 원문 문장)를 넣고 "네 사전 지식이 아니라 기대 정답과 원문 근거만 기준으로 삼아라"라고 해요.</li>
+      <li><strong>심판이 실패하면 0점이 아니라 "점수 없음"</strong> — 호출이 깨졌을 때 0.0을 돌려주면 "심판이 죽었다"와 "진짜 오답"이 구분되지 않아 평균이 조용히 내려가요. 실패는 평균에서 빼고 건수를 따로 세요.</li>
+    </ul>
+    <div class="key-point" id="key-self-judge">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>답을 쓴 모델과 채점하는 모델이 같으면 <strong>자기가 쓴 문장을 후하게 평가하는 편향</strong>이 생겨요. 심판을 더 큰 모델로 둔 건 정확도 때문이기도 하지만, 가장 큰 이유는 <strong>다른 모델</strong>이어야 한다는 거예요.</p>
+    </div>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 채점 프롬프트의 기준 부분이에요</span></p>
+    <pre><code>- 1.0(정답): 기대 정답의 핵심을 맞혔다. 목록형 정답이면 핵심 항목을 하나 이상 정확히 포함하고
+           틀린 항목을 섞지 않았다. 표현이 달라도 의미가 같으면 정답이다.
+- 0.5(부분정답): 방향은 맞지만 핵심이 빠졌거나, 맞는 항목과 틀린 항목이 섞였다.
+- 0.0(오답): 틀렸거나, 답할 수 있는 질문인데 '근거가 부족합니다'라고 했다.
+네 사전 지식이 아니라 위의 기대 정답과 원문 근거만을 기준으로 삼아라.</code></pre>
+    <p>비교 대상인 BM25 방식에도 <strong>같은 답변 모델, 거의 같은 프롬프트</strong>를 붙였어요. 다른 건 근거를 어디서 가져오느냐뿐이에요. 한쪽은 BM25가 고른 문서 조각 6개, 다른 쪽은 그래프에서 모은 삼중항이요.</p>
+    <p>같은 답변을 세 번 채점해 심판이 얼마나 흔들리는지도 봤어요. 추천-04 한 문항에서 <code>[1.0, 1.0, 1.0]</code>이었어요. 온도 0에서도 완전히 결정적이진 않다고 알려져 있으니, 한 문항 세 번으로 "안 흔들린다"고 단정하진 않아요. 다만 이번 비교에서 흔들림이 결과를 뒤집을 정도는 아니었어요.</p>
+
+    <h2 id="results"><span class="hl">결과</span> — 평균보다 문항별로</h2>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 제가 2026-09-18에 돌린 결과예요 (답변 gpt-4.1-mini · 심판 gpt-4.1 · 심판 실패 0건)</span></p>
+    <pre><code>종류 (문항 수)    BM25 방식   GraphRAG
+단순 (3)           1.00        0.83
+추천 (10)          0.35        0.80
+전역 (2)           0.00        0.50
+전체 (15)          0.43        0.77     만점 문항 BM25 4 · GraphRAG 9</code></pre>
+    <table>
+      <thead><tr><th>문항</th><th>BM25</th><th>GraphRAG</th><th>무슨 일이 있었나</th></tr></thead>
+      <tbody>
+        <tr><td>단순-01 《기생충》 감독</td><td>1.0</td><td>1.0</td><td>둘 다 봉준호</td></tr>
+        <tr><td>단순-02 《기생충》 배급사</td><td>1.0</td><td>1.0</td><td>그래프는 북미 배급사 NEON까지 답했다</td></tr>
+        <tr><td>단순-03 봉준호 연출작</td><td>1.0</td><td><strong>0.5</strong></td><td><a href="#judge-wrong">아래</a> — 더 완전한 답이 감점됐다</td></tr>
+        <tr><td>추천-04 《기생충》 배우의 다른 작품</td><td>1.0</td><td>1.0</td><td>BM25는 <a href="graphrag-why-multihop.html#widen-k">낱말이 겹친 행운</a>으로 송강호 문서를 1위로 가져왔다</td></tr>
+        <tr><td>추천-05 《살인의 추억》과 비슷한 장르</td><td>0.5</td><td>1.0</td><td>BM25는 영화가 아닌 드라마 두 편을 골랐다</td></tr>
+        <tr><td>추천-06 같은 시상식 수상작</td><td>0.0</td><td>1.0</td><td>BM25는 "근거가 부족합니다"</td></tr>
+        <tr><td>추천-07 《괴물》 감독의 다른 영화</td><td>0.5</td><td>0.5</td><td>둘 다 《설국열차》를 넣어 감점 — <a href="#judge-wrong">아래</a></td></tr>
+        <tr><td>추천-08 송강호 출연작 중 대종상 수상작</td><td>0.0</td><td>0.5</td><td>그래프 답이 근거에 없는 사실을 지어냈다 — <a href="#causes">아래</a></td></tr>
+        <tr><td>추천-09 송강호의 공연 배우들이 나온 작품</td><td>0.0</td><td>0.0</td><td>둘 다 송강호 본인 출연작만 댔다</td></tr>
+        <tr><td>추천-10 《기생충》과 비슷한 영화와 이유</td><td>0.5</td><td>1.0</td><td>그래프는 가난·감독·수상 경로를 이유로 댔다</td></tr>
+        <tr><td>추천-11 봉준호·송강호가 함께 만든 영화</td><td>0.5</td><td>1.0</td><td>BM25는 한 편만 찾았다</td></tr>
+        <tr><td>추천-12 2010년대 한국 미스터리</td><td>0.5</td><td>1.0</td><td>BM25는 2009년작 《마더》를 섞었다</td></tr>
+        <tr><td>추천-13 조선 배경 영화</td><td>0.0</td><td>1.0</td><td>위키 분류 "조선을 배경으로 한 영화"가 그대로 답이 됐다</td></tr>
+        <tr><td>전역-14 어떤 집단들이 있나</td><td>0.0</td><td>0.5</td><td>그래프는 커뮤니티 보고서 5개로 답했지만 기대한 무리 일부가 빠졌다</td></tr>
+        <tr><td>전역-15 반복 협업 감독·배우 조합</td><td>0.0</td><td>0.5</td><td>박찬욱–최민식은 맞혔고 봉준호–송강호는 빠졌다</td></tr>
+      </tbody>
+    </table>
+    <p>유형마다 그림이 완전히 달라요. 총점만 보면 이걸 놓쳐요.</p>
+    <ul>
+      <li><strong>단순 질문은 BM25 방식이 이겼어요.</strong> 《기생충》의 감독은 기생충 문서 첫 문단에 그대로 있어요. 한 홉이면 닿는 질문에 그래프를 쓰면 비용만 더 들고, 삼중항으로 옮기며 원문의 곁가지 정보를 버린 만큼 답이 빈약해질 수도 있어요.</li>
+      <li><strong>추천·전역에서 격차가 벌어져요.</strong> 특히 전역은 BM25가 0점이에요. 상위 6개 조각으로는 "자료 전체에 어떤 무리가 있나"에 답할 재료가 아예 없어요.</li>
+      <li><strong>그래서 결론은 "GraphRAG가 낫다"가 아니에요.</strong> 질문 종류에 따라 맞는 도구가 다르다는 거고, <a href="graphrag-agent-three-routes.html#router">22편의 라우터</a>가 그 자리예요. 원문 검색 갈래를 하나 더 붙이면 단순·서술형 질문까지 덮을 수 있어요.</li>
+    </ul>
+
+    <h3 id="judge-wrong">심판도 틀린다</h3>
+    <p>심판의 판정 이유를 문항마다 열어 봤어요. 납득 안 되는 게 둘 있었어요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 단순-03의 두 답변과 심판의 판정 이유예요</span></p>
+    <pre><code>기대 정답: 플란다스의 개, 살인의 추억, 괴물, 마더, 설국열차, 옥자, 기생충
+
+GraphRAG(0.5): 살인의 추억 · 괴물 · 마더 · 설국열차 · 옥자 · 백색인 · 플란다스의 개 · 인플루엔자 · 도쿄! · 기생충
+  심판: 기대 정답의 핵심 영화들을 모두 포함했으나, '백색인', '인플루엔자', '도쿄!' 등
+        기대 정답과 원문 근거에 없는 영화들이 추가되어 있다.
+
+BM25(1.0): 《살인의 추억》 · 《괴물》
+  심판: 기대 정답에 포함된 봉준호 감독의 영화 중 두 편을 정확히 언급했고, 틀린 항목이 없다.</code></pre>
+    <p>《백색인》(1993)과 《인플루엔자》(2004)는 봉준호의 단편, 《도쿄!》(2008)는 봉준호가 한 편을 맡은 옴니버스 영화예요. 전부 실제 연출작이에요. 기대 정답이 장편만 적어 두었고, 심판은 "기대 정답과 원문 근거만 기준으로 삼으라"는 지시를 충실히 따라 <strong>더 완전한 답을 감점</strong>했어요. 두 편만 댄 쪽은 만점이고요. 추천-07도 같아요. 두 방식 모두 《설국열차》를 넣었다가 "기대 정답에 없다"며 감점됐는데, 《설국열차》는 봉준호 연출작이에요.</p>
+    <p>그러니까 단순 질문에서 BM25가 이긴 1.00 대 0.83의 상당 부분은 <strong>정답지가 불완전해서 생긴 차이</strong>예요. 평가셋이 불완전하면 심판도 함께 틀려요.</p>
+    <div class="key-point" id="key-judge-limits">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>이 골든셋으로 잰 숫자를 보고할 때는 한계를 같이 말해요. <strong>① 15문항은 작아서</strong> 한 문항(0.5점)이 평균을 0.03 넘게 움직이고, <strong>② 스키마를 같은 문항에서 역산</strong>해서 색인·검색층 숫자가 후하며, 줄거리 같은 서술형 질문이 하나도 없어요. 그리고 <strong>③ 심판은 정답지만큼만 정확해요.</strong> 실무에서는 열 문항쯤을 사람이 직접 채점해 심판과 얼마나 일치하는지부터 재고, 그다음에 심판 점수를 믿어요.</p>
+    </div>
+
+    <h2 id="causes"><span class="hl">실패 원인을 층으로 가른다</span></h2>
+    <p>만점이 아닌 문항마다, 가장 먼저 실패한 층을 자동으로 붙였어요. 라우팅이 기대와 달랐나 → 기준 삼중항이 그래프에 있나 → 모은 근거에 들어왔나 → 다 있는데 틀렸나 순서로요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 분류 결과예요</span></p>
+    <pre><code>[단순-03] 0.5 · ③ 생성
+[추천-07] 0.5 · ③ 생성
+[추천-08] 0.5 · ③ 생성
+[추천-09] 0.0 · ② 검색
+[전역-14] 0.5 · ③ 생성
+[전역-15] 0.5 · ③ 생성
+원인별: ③ 생성 5 · ② 검색 1</code></pre>
+    <p>숫자만 보면 "프롬프트를 고쳐라"예요. 그런데 문항을 열어 보면 ③ 다섯 개의 속이 달라요.</p>
+    <ul>
+      <li><strong>단순-03·추천-07은 에이전트 잘못이 아니에요.</strong> <a href="#judge-wrong">위</a>에서 본 대로 정답지와 심판 쪽 문제라, 고칠 곳은 프롬프트가 아니라 골든셋이에요.</li>
+      <li><strong>추천-08은 진짜 생성 실패예요.</strong> 답변 끝에 <code>(송강호, ACTED_IN, 국제시장)</code>을 근거라며 붙였는데, 그 삼중항은 LLM에 넘긴 근거 어디에도 없었어요. 《국제시장》이 대종상 수상작으로 근거에 들어 있자, 모델이 송강호 출연작으로 이어 붙인 거예요. 프롬프트의 "근거에 없는 고유명사를 쓰지 마라"는 <strong>고유명사가 근거에 있기만 하면</strong> 이런 조합을 못 막아요.</li>
+      <li><strong>전역 두 문항</strong>은 보고서 5개를 고르는 단계에서 기대한 무리(홍상수 무리 등)가 빠졌어요. 생성보다는 보고서를 고르는 방식을 볼 자리예요.</li>
+    </ul>
+    <p>추천-09(송강호와 같은 영화에 나온 배우들의 다른 작품)는 ② 검색이에요. 3홉이 필요한 질문인데 반경 2와 총량 200 안에 필요한 사실이 다 안 들어왔어요. 20편에서 BM25가 50개 후보로도 못 데려온 바로 그 문항이, 그래프에서도 가장 어려운 문항으로 남았어요.</p>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">심사표에 "조리 실수 5건"이 찍히자 조리사들에게 레시피 교육부터 다시 시킨다 → 두 건은 심사 기준표가 맞는 요리를 틀렸다고 한 것이라 교육이 헛돌고, 기준표는 그대로 남는다</td>
+          <td class="choice-good">"조리 실수"로 찍힌 접시를 하나씩 열어 본다 → 기준표를 고칠 것 두 건, 조리를 고칠 것 한 건, 재료 고르는 법을 고칠 것 두 건으로 나뉜다. 각자 맞는 곳을 고친다</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>여기서 가져갈 것은 자동 분류가 <strong>어디를 먼저 열어 볼지</strong>를 알려 주는 도구라는 점이에요. 분류가 심판 점수를 믿고 서 있으니, 심판이 틀리면 분류도 틀려요.</p>
+
+    <h2 id="ragas"><span class="hl">표준 도구로 잴 때</span> — 지표가 무엇을 비교하는지부터</h2>
+    <p>여기까지는 채점기를 직접 만들었어요. 다른 팀과 같은 잣대로 비교하려면 <strong>RAGAS</strong><sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup> 같은 표준 라이브러리를 써요. 이 골든셋은 필드 이름(<code>user_input</code>·<code>reference</code>·<code>reference_contexts</code>)부터 RAGAS 형식을 따라서 그대로 넣을 수 있어요.</p>
+    <p>RAGAS 지표는 두 종류예요. 문자열·집합 연산으로 계산하는 <strong>비LLM 지표</strong>(비용 0, 결과가 늘 같음)와, LLM이 채점하는 <strong>LLM 판정 지표</strong>(표현이 달라도 인정하지만 비용과 심판 편향이 섞임)요. 쓰기 전에 확인할 게 하나 있어요. 문자열 유사도로 "기준 근거 ↔ 가져온 근거"를 맞춰 보는 지표라면, 기준 근거가 <code>(봉준호, DIRECTED, 기생충)</code> 같은 삼중항 문자열이고 BM25가 가져온 게 위키 문단일 때 <strong>형태가 달라서 거의 맞지 않아요.</strong> 두 시스템이 서로 다른 모양의 근거를 낸다면, 근거를 같은 모양으로 바꾸거나 LLM 판정 지표를 써야 공정한 비교가 돼요. 이름이 같은 지표라도 구현에 따라 숫자가 달라지니, 지표를 가져다 쓸 땐 <strong>무엇을 어떻게 비교하는지</strong>부터 봐요.</p>
+
+    <h2 id="save"><span class="hl">부품으로 저장하고 기준선을 남긴다</span></h2>
+    <p>만든 것은 파일로 남겨요. 그래프는 <code>.graphml</code>(Gephi·Neo4j 같은 다른 도구에서도 열려요)과 파이썬 객체 파일로, 삼중항은 출처와 함께 JSON으로요. 그리고 오늘 숫자를 <strong>기준선</strong> 파일 하나로 묶어 둬요. 다음에 "개선했다"고 말할 때의 비교 대상이에요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 기준선 파일에 담을 항목이에요 (값은 이 글의 실측)</span></p>
+    <pre><code>{
+  "graph": {"nodes": 1476, "edges": 2044},
+  "coverage_reference_triples": [39, 39],
+  "context_recall": [37, 39],
+  "router_accuracy": {"rule": 14, "llm": 14, "two_stage": 15, "n": 15},
+  "judge_failures": 0,
+  "goldenset_judge": {"basic": 0.433, "graph": 0.767, "n": 15},
+  "params": {"chat_model": "gpt-4.1-mini", "judge_model": "gpt-4.1",
+             "per_relation": 10, "max_triples": 200, "radius": 2}
+}</code></pre>
+    <p>저장했으면 <strong>다시 읽어서</strong> 노드 수가 같은지 확인해요. 저장이 됐는지 확인하는 습관이 없으면, 다음 날 빈 파일을 발견하게 돼요. 그리고 쓰기 전에 필요한 값이 다 있는지 먼저 확인해요. 파일 셋을 먼저 쓰고 넷째에서 멈추면 캐시가 반쯤만 새것인 상태로 남거든요.</p>
+
+    <h2 id="wrap-up"><span class="hl">그래서 GraphRAG를 쓰면 되나</span></h2>
+    <table>
+      <thead><tr><th>따져 볼 것</th><th>이 실습에서 본 것</th></tr></thead>
+      <tbody>
+        <tr><td>좋은 점</td><td>추천·전역 질문에서 0.43 → 0.77. 그리고 답마다 <strong>어떤 연결을 따라왔는지</strong>가 줄 단위로 남아서, 사용자가 추천을 믿거나 거부할 근거가 생긴다</td></tr>
+        <tr><td>비용</td><td>문서 80건에 추출만 LLM 168번, 약 0.54달러와 214초. 문서가 10만 건이면 이야기가 달라지고, 문서가 바뀔 때마다 다시 든다</td></tr>
+        <tr><td>단순 질문</td><td>오히려 손해일 수 있다. 한 홉이면 닿는 답은 원문 검색으로 충분하다</td></tr>
+        <tr><td>스키마</td><td><strong>무엇을 뽑을지가 곧 무엇에 답할 수 있을지</strong>를 정한다. 바꾸려면 전부 다시 뽑아야 한다 — <a href="graphrag-build-knowledge-graph.html#schema-decides">21편</a></td></tr>
+        <tr><td>못 하는 질문</td><td>줄거리·분위기처럼 관계가 아니라 서술이 필요한 질문. 삼중항은 관계를 남기고 서술을 버린다</td></tr>
+      </tbody>
+    </table>
+    <p>그래서 실무의 답은 "그래프로 갈아탄다"가 아니라 <strong>질문 종류에 따라 갈라 쓴다</strong>예요. 네 편을 한 문장으로 줄이면 이래요. <strong>그래프를 만드는 것보다, 만든 그래프를 믿을 수 있게 만드는 게 어렵다.</strong> 스키마를 질문에서 거꾸로 정하고, 뽑은 뒤 네 가지를 점검하고, 층을 나눠 재고, 심판까지 의심하는 일이 그 "믿을 수 있게"의 내용이에요.</p>
+    <p>영화 말고 다른 자료에 옮겨도 같은 구조가 나와요. 사내 위키라면 "이 정책을 승인한 사람이 이끄는 조직은?"에서 조직도 문서는 정책 이름을 언급하지 않아요(멀티홉). 부서명·제품 코드처럼 목록이 정해진 건 규칙보다 사전이 정확하고(<a href="graphrag-build-knowledge-graph.html#rules">시상식 사전</a>), "같은 회의에 참석했다" 같은 흔한 관계는 정보량이 낮아 감점해야 하고(<a href="graphrag-agent-three-routes.html#recommend">흔한 매개 감점</a>), 커뮤니티 탐지로 부서·프로젝트 무리와 오염된 데이터를 같이 찾아요.</p>
+
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 평가를 설계할 때 볼 것</h2>
+    <p><a href="#grid">격자 절</a>·<a href="#layer-generation">심판 절</a>·<a href="#results">결과 절</a>에서 나온 값 중, 비슷한 비교를 설계할 때 다시 쓸 것이에요. 모두 2026-09-18에 한 번 돌린 값이에요.</p>
+    <table>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
+      <tbody>
+        <tr><td>답변 모델 · 심판 모델</td><td>gpt-4.1-mini · gpt-4.1</td><td>심판은 답변 모델과 다른 모델로 둔다</td></tr>
+        <tr><td>골든셋 평균 점수</td><td>BM25 0.43 · GraphRAG 0.77</td><td>유형별로 보면 단순은 BM25 1.00 대 0.83. 평균 하나로 결론 내지 않는다</td></tr>
+        <tr><td>한 문항이 평균을 움직이는 폭</td><td>0.5점 × 1/15 ≈ 0.033</td><td>15문항에서는 이보다 작은 차이를 개선이라 부르지 않는다</td></tr>
+        <tr><td>컨텍스트 재현율 격자</td><td>총량 60에선 상한과 무관하게 67~72% · 지금 설정 95%</td><td>총량이 막으면 다른 축은 움직이지 않는다. 둘 이상이면 격자로</td></tr>
+        <tr><td>추출 뒤 전 과정 토큰</td><td>mini 입력 143,918 · 출력 11,702 / gpt-4.1 입력 15,499 · 출력 1,866</td><td>보고서·라우터·답변·채점을 다 합쳐 약 0.12달러. 비용 대부분은 <a href="graphrag-build-knowledge-graph.html#cost">추출</a>에 있다</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — RAG 시스템을 채점할 때</h2>
+    <p>평가의 실패는 <strong>믿을 만해 보이는 틀린 숫자</strong>로 남아요. 그 숫자로 다음 작업의 방향을 정하니까 피해가 오래가요.</p>
+    <p>증상이 아직 없어도, <strong>AI에게 이런 부탁을 한 직후</strong>라면 한 번 확인하고 넘어가요.</p>
+    <ul>
+      <li>"LLM으로 채점하는 평가 스크립트 만들어 줘" — 심판 모델이 답변 모델과 같은지, 호출 실패를 몇 점으로 처리하는지</li>
+      <li>"파라미터 튜닝해서 제일 좋은 값 찾아 줘" — 한 번에 몇 개 축을 같이 바꿔 봤는지</li>
+    </ul>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-one-axis">
+          <td>설정값을 여러 번 바꿨는데 점수가 거의 안 움직여서 "이 값은 상관없다"는 결론이 났다</td>
+          <td>튜닝할 때 고정해 둔 다른 설정값들</td>
+          <td>다른 축 하나를 크게 풀어 놓고 같은 축을 다시 흔든다. 그때 움직이면 병목은 고정해 둔 쪽이에요 — <a href="#grid">격자 절</a></td>
+        </tr>
+        <tr id="suspect-judge">
+          <td>더 많이, 더 정확하게 답한 쪽이 더 낮은 점수를 받았다</td>
+          <td>그 문항의 기대 정답과 심판의 판정 이유 전문</td>
+          <td>감점 사유로 든 항목이 실제로 틀린지 원문이나 외부 자료로 확인한다. 맞는 항목이면 고칠 곳은 정답지예요 — <a href="#judge-wrong">심판도 틀린다</a></td>
+        </tr>
+        <tr id="suspect-none">
+          <td>같은 설정인데 어느 날 평균만 뚝 떨어졌고, 문항별로 보면 0점이 갑자기 늘었다</td>
+          <td>채점 함수의 예외 처리 줄 — 실패 시 무엇을 돌려주는지</td>
+          <td>0점 문항의 판정 이유가 비어 있거나 에러 문구면 심판 호출 실패예요. 실패는 점수 없음으로 두고 평균에서 빼요 — <a href="#layer-generation">심판 절</a></td>
+        </tr>
+        <tr id="suspect-invented">
+          <td>답 끝에 붙은 근거 삼중항이 그럴듯한데, 사실은 틀렸다</td>
+          <td>그 문항에서 LLM에 실제로 넘긴 근거 전문</td>
+          <td>답에 적힌 근거 줄을 넘긴 근거에서 문자열로 찾아본다. 없으면 모델이 조합해 지어낸 거예요 — <a href="#causes">원인 절의 추천-08</a></td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등</p>
+    <pre><code>이 프로젝트의 평가 스크립트에서 (1) 답변을 만드는 모델과 채점하는 모델을 정하는 곳, (2) 채점 호출이 실패했을 때
+점수를 무엇으로 처리하는지, (3) 문항별 점수와 판정 이유를 파일로 남기는지를 파일·줄 번호로 보여 줘.
+그리고 점수가 0.5 이하인 문항만 골라 기대 정답·답변·판정 이유를 나란히 출력하는 방법을 알려 줘. 아직 코드는 고치지 마.</code></pre>
+
+    <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
+    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 다른 편의 같은 목록은 <a href="langgraph-what-and-why.html#key-recap">1편</a> · <a href="graphrag-why-multihop.html#key-recap">20편</a> · <a href="graphrag-build-knowledge-graph.html#key-recap">21편</a> · <a href="graphrag-agent-three-routes.html#key-recap">22편</a>에 있어요.</p>
+    <ul class="key-recap">
+      <li><a href="#key-one-axis">한 축만 흔들어 효과가 없으면 그 축이 병목이 아닐 뿐</a></li>
+      <li><a href="#key-self-judge">심판은 답변 모델과 다른 모델로</a></li>
+      <li><a href="#key-judge-limits">보고할 때 같이 말할 한계 셋 — 작은 평가셋·역산한 스키마·불완전한 정답지</a></li>
+    </ul>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">컨텍스트 재현율(context recall) — 정답에 꼭 필요한 근거 중 시스템이 실제로 모아 온 근거의 비율로, 답변을 만들기 전 검색 단계만 따로 재는 지표예요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">RAGAS — RAG 시스템의 검색·생성 품질을 재는 지표들을 모아 둔 파이썬 라이브러리예요. <a href="#fnref2">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <h3 id="series-list">"에이전트 팀 꾸리기 — LangGraph" 시리즈</h3>
+    <a class="post-nav" href="langgraph-what-and-why.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">다음에 어느 코드가 실행될까 — LangGraph와 워크플로·에이전트</span>
+    </a>
+    <a class="post-nav" href="langgraph-state-node-edge.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">흐름을 그림으로 짠다 — LangGraph의 State·Node·Edge</span>
+    </a>
+    <a class="post-nav" href="langgraph-branch-drills.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">갈림길을 밀어붙인다 — 세 갈래·라벨·끝나지 않는 반복</span>
+    </a>
+    <a class="post-nav" href="langgraph-branches-and-tool-loop.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">모델이 다음 길을 고르게 한다 — 도구를 쥐여 주는 루프</span>
+    </a>
+    <a class="post-nav" href="langgraph-env-troubleshooting.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">.env가 안 읽혔던 네 겹의 이유 — 원격 주피터에서 API 키 넣기</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-chaining.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">① 프롬프트 체이닝 — 순서대로, 사이에 검사</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-routing.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">② 라우팅 — 먼저 분류하고, 한 갈래로</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-parallelization.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">③ 병렬화 — 동시에 돌리고, 합친다</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-orchestrator-worker.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">④ 오케스트레이터-워커 — 몇 갈래일지 LLM이 정한다</span>
+    </a>
+    <a class="post-nav" href="langgraph-pattern-evaluator-optimizer.html">
+      <span class="post-nav-label">(10)</span>
+      <span class="post-nav-title">⑤ 평가자-최적화자 — 통과할 때까지 고쳐 쓰기</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-skeleton.html">
+      <span class="post-nav-label">(11)</span>
+      <span class="post-nav-title">뉴스레터 에이전트를 빈 노드 다섯 개로 먼저 세운다</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-collect.html">
+      <span class="post-nav-label">(12)</span>
+      <span class="post-nav-title">기사를 어디서 가져올까 — RSS·관문·수집 노드</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-select.html">
+      <span class="post-nav-label">(13)</span>
+      <span class="post-nav-title">100건에서 5건 고르기 — 점수 대신 비교, 예선과 본선</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-summarize-verify.html">
+      <span class="post-nav-label">(14)</span>
+      <span class="post-nav-title">요약을 세 칸으로 받고 원문과 대조한다</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-publish-schedule.html">
+      <span class="post-nav-label">(15)</span>
+      <span class="post-nav-title">디스코드로 매일 아침 받아 보기 — 웹훅과 GitHub Actions</span>
+    </a>
+    <a class="post-nav" href="newsletter-agent-metrics-config.html">
+      <span class="post-nav-label">(16)</span>
+      <span class="post-nav-title">돌고 나서 재 본다 — 실행 기록과 설정 파일</span>
+    </a>
+    <a class="post-nav" href="cs-agent-routing-eval.html">
+      <span class="post-nav-label">(17)</span>
+      <span class="post-nav-title">문의 한 줄을 다섯 갈래로 — 라우트는 회사 문서에서 가져온다</span>
+    </a>
+    <a class="post-nav" href="cs-agent-grounding.html">
+      <span class="post-nav-label">(18)</span>
+      <span class="post-nav-title">값을 말하지 말고 조회하게 한다 — 매뉴얼 쪼개기·도구·가드레일</span>
+    </a>
+    <a class="post-nav" href="cs-agent-improve.html">
+      <span class="post-nav-label">(19)</span>
+      <span class="post-nav-title">59%에서 94%로 — 프롬프트만 고쳐 지표를 올린 기록</span>
+    </a>
+    <a class="post-nav" href="graphrag-why-multihop.html">
+      <span class="post-nav-label">(20)</span>
+      <span class="post-nav-title">검색으로는 못 찾는 답 — 멀티홉 질문과 지식 그래프</span>
+    </a>
+    <a class="post-nav" href="graphrag-build-knowledge-graph.html">
+      <span class="post-nav-label">(21)</span>
+      <span class="post-nav-title">스키마가 답할 질문을 정한다 — 추출·정규화·위키 분류</span>
+    </a>
+    <a class="post-nav" href="graphrag-agent-three-routes.html">
+      <span class="post-nav-label">(22)</span>
+      <span class="post-nav-title">세 갈래로 답하는 에이전트 — 커뮤니티 요약·라우터·탐색 예산</span>
+    </a>
+    <p class="post-date">(23) 같은 15문항으로 채점한다 — 세 층 평가와 심판의 한계 (이 글)</p>
+
+    <a class="post-nav" href="multi-agent-split-gains-and-losses.html">
+      <span class="post-nav-label">다음 시리즈 →</span>
+      <span class="post-nav-title">나누면 좋아질까 — 멀티 에이전트의 득실과 판정표 (1)</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>

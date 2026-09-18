@@ -1,0 +1,11 @@
+# 기본 규칙은 그대로 쓰고, 오탐 하나만 예외로 둔다.
+[extend]
+useDefault = true
+
+# learning-git-2.html이 "-----BEGIN OPENSSH PRIVATE KEY----- 로 시작하는 여러 줄이면 개인키예요"라고
+# 설명하는 문장이 본문과 검색 데이터(search-data.js)에 들어가 private-key 규칙에 걸린다. 실제 키가 아니다.
+[[allowlists]]
+description = "learning-git-2 개인키 형식 설명 문장"
+condition = "AND"
+paths = ['''^(search-data\.js|ko/learning-git-2\.html)$''']
+regexes = ['''BEGIN OPENSSH PRIVATE KEY-----\s*로 시작하는''']

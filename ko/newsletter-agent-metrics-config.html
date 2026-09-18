@@ -38,7 +38,7 @@
       <p class="why-read-title">이 글을 읽기 전에</p>
       <dl>
         <dt>어디쯤인가</dt>
-        <dd><a href="posts.html#cat-agent-system">8단계</a> › <a href="posts.html#langgraph-team">에이전트 팀 꾸리기 — LangGraph</a> — 16번째 글 (전 16편, 마지막). 11~16편은 뉴스레터 에이전트 하나를 처음부터 끝까지 만드는 연속 실습이라, 이 글부터 보셨다면 <a href="newsletter-agent-skeleton.html">11편</a>부터 보시는 게 편해요.</dd>
+        <dd><a href="posts.html#cat-agent-system">8단계</a> › <a href="posts.html#langgraph-team">에이전트 팀 꾸리기 — LangGraph</a> — 16번째 글 (전 23편). 11~16편은 뉴스레터 에이전트 하나를 처음부터 끝까지 만드는 연속 실습이라, 이 글부터 보셨다면 <a href="newsletter-agent-skeleton.html">11편</a>부터 보시는 게 편해요.</dd>
         <dt>이런 게 궁금했다면</dt>
         <dd>
           <ul>
@@ -597,7 +597,7 @@ print(CRITERIA)</code></pre>
     </ul>
 
     <h2><span class="hl">다음은</span></h2>
-    <p>이걸로 "에이전트 팀 꾸리기" 시리즈 열여섯 편이 끝나요. 여기서 더 나아갈 주제는 셋이에요. <a href="langgraph-pattern-routing.html">7편의 ② 라우팅</a>에 검색해 온 문서를 붙이는 RAG, 그 검색을 문서 사이 관계까지 넓히는 GraphRAG, 그리고 사람 승인과 상태 저장(HITL·상태 지속성)이에요. 이번 뉴스레터로 말하면, 발행 직전에 사람이 한 번 보고 승인하는 자리를 끼우는 게 HITL이고, 승인을 기다리는 동안 멈춘 그래프의 State를 저장해 뒀다가 승인 뒤 그 자리부터 이어 가는 게 상태 지속성이에요. <a href="langgraph-pattern-evaluator-optimizer.html">10편</a>의 되돌아가는 선 중간에 사람이 끼어드는 것과 같은 모양이에요.</p>
+    <p>이걸로 "에이전트 팀 꾸리기" 시리즈 열여섯 편이 끝나요. 여기서 더 나아갈 주제는 셋이에요. <a href="langgraph-pattern-routing.html">7편의 ② 라우팅</a>에 검색해 온 문서를 붙이는 RAG, 그 검색을 문서 사이 관계까지 넓히는 <a href="graphrag-why-multihop.html">GraphRAG(20~23편)</a>, 그리고 사람 승인과 상태 저장(HITL·상태 지속성)이에요. 이번 뉴스레터로 말하면, 발행 직전에 사람이 한 번 보고 승인하는 자리를 끼우는 게 HITL이고, 승인을 기다리는 동안 멈춘 그래프의 State를 저장해 뒀다가 승인 뒤 그 자리부터 이어 가는 게 상태 지속성이에요. <a href="langgraph-pattern-evaluator-optimizer.html">10편</a>의 되돌아가는 선 중간에 사람이 끼어드는 것과 같은 모양이에요.</p>
 
     <h2>함께 읽으면 좋은 글</h2>
     <ul>
@@ -695,6 +695,22 @@ print(CRITERIA)</code></pre>
     <a class="post-nav" href="cs-agent-improve.html">
       <span class="post-nav-label">(19)</span>
       <span class="post-nav-title">59%에서 94%로 — 프롬프트만 고쳐 지표를 올린 기록</span>
+    </a>
+    <a class="post-nav" href="graphrag-why-multihop.html">
+      <span class="post-nav-label">(20)</span>
+      <span class="post-nav-title">검색으로는 못 찾는 답 — 멀티홉 질문과 지식 그래프</span>
+    </a>
+    <a class="post-nav" href="graphrag-build-knowledge-graph.html">
+      <span class="post-nav-label">(21)</span>
+      <span class="post-nav-title">스키마가 답할 질문을 정한다 — 추출·정규화·위키 분류</span>
+    </a>
+    <a class="post-nav" href="graphrag-agent-three-routes.html">
+      <span class="post-nav-label">(22)</span>
+      <span class="post-nav-title">세 갈래로 답하는 에이전트 — 커뮤니티 요약·라우터·탐색 예산</span>
+    </a>
+    <a class="post-nav" href="graphrag-goldenset-eval.html">
+      <span class="post-nav-label">(23)</span>
+      <span class="post-nav-title">같은 15문항으로 채점한다 — 세 층 평가와 심판의 한계</span>
     </a>
 
     <a class="post-nav" href="cs-agent-routing-eval.html">
