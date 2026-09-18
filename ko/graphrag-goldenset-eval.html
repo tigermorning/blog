@@ -261,6 +261,7 @@ BM25(1.0): 《살인의 추억》 · 《괴물》
     <h2 id="ragas"><span class="hl">표준 도구로 잴 때</span> — 지표가 무엇을 비교하는지부터</h2>
     <p>여기까지는 채점기를 직접 만들었어요. 다른 팀과 같은 잣대로 비교하려면 <strong>RAGAS</strong><sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup> 같은 표준 라이브러리를 써요. 이 골든셋은 필드 이름(<code>user_input</code>·<code>reference</code>·<code>reference_contexts</code>)부터 RAGAS 형식을 따라서 그대로 넣을 수 있어요.</p>
     <p>RAGAS 지표는 두 종류예요. 문자열·집합 연산으로 계산하는 <strong>비LLM 지표</strong>(비용 0, 결과가 늘 같음)와, LLM이 채점하는 <strong>LLM 판정 지표</strong>(표현이 달라도 인정하지만 비용과 심판 편향이 섞임)요. 쓰기 전에 확인할 게 하나 있어요. 문자열 유사도로 "기준 근거 ↔ 가져온 근거"를 맞춰 보는 지표라면, 기준 근거가 <code>(봉준호, DIRECTED, 기생충)</code> 같은 삼중항 문자열이고 BM25가 가져온 게 위키 문단일 때 <strong>형태가 달라서 거의 맞지 않아요.</strong> 두 시스템이 서로 다른 모양의 근거를 낸다면, 근거를 같은 모양으로 바꾸거나 LLM 판정 지표를 써야 공정한 비교가 돼요. 이름이 같은 지표라도 구현에 따라 숫자가 달라지니, 지표를 가져다 쓸 땐 <strong>무엇을 어떻게 비교하는지</strong>부터 봐요.</p>
+    <p>로컬에서 <code>import ragas</code>가 <code>No module named 'langchain_community.chat_models.vertexai'</code>로 실패하면 버전이 안 맞는 거예요. <a href="graphrag-why-multihop.html#local-pip">20편의 로컬 준비</a>에 원인을 적어 뒀어요.</p>
 
     <h2 id="save"><span class="hl">부품으로 저장하고 기준선을 남긴다</span></h2>
     <p>만든 것은 파일로 남겨요. 그래프는 <code>.graphml</code>(Gephi·Neo4j 같은 다른 도구에서도 열려요)과 파이썬 객체 파일로, 삼중항은 출처와 함께 JSON으로요. 그리고 오늘 숫자를 <strong>기준선</strong> 파일 하나로 묶어 둬요. 다음에 "개선했다"고 말할 때의 비교 대상이에요.</p>

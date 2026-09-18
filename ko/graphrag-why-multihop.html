@@ -79,6 +79,7 @@
       <ul>
         <li><strong>파이썬 3.10 이상</strong> — 이 편의 실습은 전부 <strong>API 키 없이</strong> 돌아가요. 모델을 한 번도 부르지 않거든요.</li>
         <li><strong>실습 데이터</strong> — 한국어 위키백과 한국 영화 문서 80건과 평가 문항 15개. <a href="https://github.com/88chacha/cinephile-agent-data" target="_blank" rel="noopener">공개 저장소</a>에 zip(324KB)으로 있고 라이선스는 위키백과와 같은 CC BY-SA예요.</li>
+        <li><strong>실행 환경</strong> — 강의 노트북은 LMS·Colab 기준이에요. 내 컴퓨터의 VS Code에서 돌린다면 <a href="#local-setup">로컬 준비</a>부터 보세요. 커널이 안 잡히는 함정이 하나 있어요.</li>
         <li><strong>앞에서 본 검색 이야기</strong> — 문서를 잘게 자르는 청크와 BM25 검색은 7단계의 <a href="rag-chatbot-chunk-design.html">청크 설계</a>·<a href="rag-chatbot-hybrid-search.html">하이브리드 검색</a> 편에서 처음 다뤘어요. 몰라도 이 편에서 한 줄씩 다시 풀어요.</li>
       </ul>
     </div>
@@ -230,6 +231,64 @@ successors(기생충): []
       <li><strong>무리 나누기</strong> — 전체를 촘촘하게 이어진 무리로 나눠 한눈에 보기 (<a href="graphrag-agent-three-routes.html#community">22편</a>)</li>
     </ul>
     <p>노드가 수십만 개로 커지면 Neo4j 같은 그래프 전용 DB를 쓰지만, 이 실습처럼 노드 수천 개라면 NetworkX로 메모리에 올려 두는 걸로 충분해요.</p>
+
+    <h2 id="local-setup"><span class="hl">로컬 준비</span> — VS Code 노트북에서 강의 준비 셀 네 개 돌리기</h2>
+    <p>강의의 "준비" 단계는 셀 네 개예요. 패키지 설치 → 경로·키·모델 설정 → 데이터 내려받기 → 한글 폰트. 제 Windows PC(VS Code, 파이썬 3.12)에서 그대로 옮겨 돌렸고, 고친 곳은 세 군데예요.</p>
+    <table>
+      <thead><tr><th>셀</th><th>로컬에서 할 일</th></tr></thead>
+      <tbody>
+        <tr><td>① 패키지 설치</td><td><code>!pip</code>를 <code>%pip</code>로 바꾸고, 끝나면 커널 재시작</td></tr>
+        <tr><td>② 경로·키·모델</td><td><code>BASE</code> 한 줄을 내 작업 폴더로, 키 파일 경로 한 줄 추가</td></tr>
+        <tr><td>③ 데이터 내려받기</td><td>그대로 — 파이썬 기본 모듈(<code>urllib</code>·<code>zipfile</code>)만 써요</td></tr>
+        <tr><td>④ 한글 폰트</td><td>그대로 — 데이터 zip에 든 나눔고딕을 직접 등록해서 Windows에서도 같게 나와요</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="local-kernel">커널이 안 잡힐 때 — 방패 아이콘</h3>
+    <p>노트북을 열고 <strong>Select Kernel → Python Environments</strong>를 눌렀는데 파이썬 목록 대신 <strong>"Install Python"</strong>만 떠요. 파이썬이 깔려 있는데도요. 명령 팔레트에서 <code>Python: Select Interpreter</code>를 찾아도 안 나와요.</p>
+    <p>확장 탭(<code>Ctrl+Shift+X</code>)에서 Python 확장을 보면 이름 옆에 <strong>방패 아이콘</strong>이 있어요. 새로 만든 폴더라 VS Code가 아직 신뢰하지 않는 <strong>제한 모드(Restricted Mode)</strong>이고, 이 모드에서는 Python 확장이 켜지지 않아요. 그래서 Enable 버튼도 없어요. 설치는 돼 있으니까요.</p>
+    <ul>
+      <li><strong>해결</strong> — <code>Ctrl+Shift+P</code> → <strong>Workspaces: Manage Workspace Trust</strong> → <strong>Trust</strong>. 방패가 사라지면 커널 목록에 설치된 파이썬이 떠요.</li>
+      <li><strong>Existing Jupyter Server</strong>는 따로 띄운 주피터 서버에 붙는 메뉴라 고를 필요 없어요.</li>
+    </ul>
+
+    <h3 id="local-pip">① 패키지 — <code>%pip</code>와 재시작</h3>
+    <p class="run-tag">실행: 로컬 VS Code 노트북</p>
+    <pre><code>%pip install -q networkx pandas matplotlib tiktoken python-dotenv beautifulsoup4 requests
+%pip install -q rank_bm25 langchain-core langchain-text-splitters langchain-community
+%pip install -q langchain-openai langchain-experimental langgraph ragas rapidfuzz
+%pip install -q -U "brotli>=1.2.0"</code></pre>
+    <ul>
+      <li><strong><code>!pip</code>는 셸이 먼저 찾은 pip</strong>를 불러요. 컴퓨터에 파이썬이 여럿이면 커널과 다른 파이썬에 깔려서, 설치는 성공했는데 import가 실패해요. <code>%pip</code>는 지금 커널의 파이썬에 깔아요.</li>
+      <li><strong>끝나면 Restart.</strong> 이미 불러온 모듈은 커널을 다시 띄워야 새 버전으로 바뀌어요. <code>Note: you may need to restart the kernel</code>과 pip 새 버전 알림(<code>[notice]</code>)은 오류가 아니에요.</li>
+      <li><strong>RAGAS는 import가 실패할 수 있어요.</strong> 제 PC에선 <code>ragas 0.4.3</code>이 <code>langchain-community 0.4.2</code>에서 빠진 모듈을 찾아 <code>ModuleNotFoundError: No module named 'langchain_community.chat_models.vertexai'</code>가 났어요. 20~22편 코드는 RAGAS를 쓰지 않으니 이 단계에선 넘어가도 돼요.</li>
+    </ul>
+
+    <h3 id="local-path-key">② 경로와 키 — 바꿀 곳은 두 줄</h3>
+    <p class="run-tag">실행: 로컬 VS Code 노트북 <span class="run-tag-why">— 강의 셀에서 바뀐 부분만</span></p>
+    <pre><code># 작업 폴더. 데이터(input)와 결과(output)가 모두 이 아래에 생긴다
+BASE = os.path.expanduser("~/Documents/movie_agent")
+
+# 키 파일을 문서 폴더에 따로 둔 경우 — 찾는 순서의 맨 앞에 넣는다
+from dotenv import load_dotenv
+KEY_FILE = os.path.expanduser("~/Documents/openai_key.env")
+for _env in (KEY_FILE, os.path.join(BASE, ".env"), ".env"):
+    if os.path.exists(_env):
+        load_dotenv(_env)
+        print("키 파일:", _env)
+        break</code></pre>
+    <ul>
+      <li><strong><code>expanduser</code>를 빼면 안 돼요.</strong> <code>~</code>는 셸만 홈 폴더로 풀어 줘요. 파이썬은 <code>~</code>라는 이름의 폴더를 찾아서 <code>os.path.exists</code>가 늘 False가 되고, 조용히 키 입력창으로 넘어가요.</li>
+      <li><strong>키 파일은 <code>OPENAI_API_KEY=sk-...</code> 형식</strong>이어야 해요. 키만 한 줄 적어 두면 <code>load_dotenv</code>가 읽지 못해요.</li>
+      <li><strong><code>BASE</code>를 바꾸면 이 셀부터 다시 실행해요.</strong> 커널을 재시작한 뒤에도 이 셀을 건너뛰면 다음 셀에서 <code>NameError</code>가 나요. 재시작 전 변수가 남아 있으면 데이터가 옛 폴더로 조용히 내려가고요.</li>
+      <li>이 편은 키가 없어도 끝까지 돌아요. 키는 <a href="graphrag-build-knowledge-graph.html">다음 편</a>의 그래프 추출부터 필요해요.</li>
+    </ul>
+    <p>데이터 셀까지 돌리고 나면 두 줄을 확인해요. 작업 폴더가 내가 정한 곳인지, 문서가 80개인지요. 문서 수가 모자라도 오류는 나지 않고 뒤의 그래프와 점수만 조용히 나빠져요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 제 PC에서 찍힌 출력이에요 (사용자 폴더 이름만 가림)</span></p>
+    <pre><code>작업 폴더: C:\Users\&lt;나&gt;\Documents\movie_agent
+키 파일: C:\Users\&lt;나&gt;\Documents\openai_key.env
+OPENAI_API_KEY 설정됨: True
+문서 80개 · 골든셋 있음</code></pre>
 
     <h2 id="data"><span class="hl">데이터부터 열어 본다</span> — 문서 80건</h2>
     <p>실습 데이터는 한국어 위키백과에서 한국 영화 주변 문서 80건을 모은 거예요. 영화 33 · 인물 28 · 회사 11 · 시상식 8건이고, 파일 하나가 문서 하나예요. 데이터를 받으면 <strong>규모·분포·빠진 값</strong>부터 봐요.</p>
