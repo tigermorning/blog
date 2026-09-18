@@ -215,7 +215,7 @@
   }
 
   function viewWorld() {
-    root.innerHTML = crumbs([["전체 그림", "#/"]]) + levelTag(0, "1층 · 전체 그림") +
+    root.innerHTML = crumbs([["전체 그림", "#/"]]) + levelTag(0, "전체 보기") +
       '<h3 class="bm-h">' + esc(D.world.title) + "</h3>" +
       '<p class="bm-lead">' + esc(D.world.lead) + "</p>" +
       '<div class="bm-graph" id="bm-g"></div>' +
@@ -240,12 +240,12 @@
   function countRegion(r) { return r.subs.reduce((s, sid) => s + (D.subs[sid] ? D.subs[sid].posts.length : 0), 0); }
 
   function viewRegion(r) {
-    root.innerHTML = crumbs([["전체 그림", "#/"], [r.name, "#/" + r.id]]) + levelTag(1, "2층 · 지역") +
+    root.innerHTML = crumbs([["전체 그림", "#/"], [r.name, "#/" + r.id]]) + levelTag(1, "지역 확대 · 이 지역의 글 묶음") +
       '<h3 class="bm-h" style="--nc:' + r.color + '">' + esc(r.name) + "</h3>" +
       '<p class="bm-lead">' + esc(r.role) + "</p>" +
       '<div class="bm-scene" style="--nc:' + r.color + '"><p class="bm-scene-title">실전에서는</p><p>' + esc(r.scenario) + "</p></div>" +
       '<div class="bm-graph" id="bm-g"></div>' +
-      '<p class="bm-hint">상자를 누르면 그 구역이 어떻게 돌아가는지 한 층 더 들어가요.</p>';
+      '<p class="bm-hint">상자를 누르면 그 글 묶음이 어떤 순서로 돌아가는지 확대해 볼 수 있어요.</p>';
     const nodes = r.subs.filter((sid) => D.subs[sid]).map((sid) => {
       const s = D.subs[sid];
       return { id: sid, label: s.name, sub: s.role, color: r.color, kind: "sub",
@@ -258,7 +258,7 @@
   function viewSub(r, sid) {
     const s = D.subs[sid];
     root.innerHTML = crumbs([["전체 그림", "#/"], [r.name, "#/" + r.id], [s.name, "#/" + r.id + "/" + sid]]) +
-      levelTag(2, "3층 · 구역이 돌아가는 흐름") +
+      levelTag(2, "묶음 확대 · 돌아가는 순서") +
       '<h3 class="bm-h" style="--nc:' + r.color + '">' + esc(s.name) + "</h3>" +
       '<p class="bm-lead">' + esc(s.role) + "</p>" +
       '<div class="bm-scene" style="--nc:' + r.color + '"><p class="bm-scene-title">실전에서는</p><p>' + esc(s.scenario) + "</p></div>" +
@@ -299,7 +299,7 @@
     const nb = (list, lab) => list.filter(Boolean).length ? '<p class="bm-nb"><span>' + lab + "</span>" +
       list.filter(Boolean).map((x) => '<a href="' + base + x.id + '">' + esc(x.label) + "</a>").join("") + "</p>" : "";
     root.innerHTML = crumbs([["전체 그림", "#/"], [r.name, "#/" + r.id], [s.name, "#/" + r.id + "/" + sid], [n.label, base + nid]]) +
-      levelTag(3, "4층 · 개념과 글") +
+      levelTag(3, "글 확대 · 한 편씩") +
       '<h3 class="bm-h" style="--nc:' + r.color + '">' + esc(n.label) + "</h3>" +
       nb(ins, "앞 단계") + nb(outs, "다음 단계") +
       '<div class="bm-cards">' + n.posts.map((f) => postInfo[f]).filter(Boolean).map((p) => card(p, r.color)).join("") + "</div>";
