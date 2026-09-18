@@ -175,23 +175,27 @@
     <p class="run-tag">실행: 로컬 터미널</p>
     <pre><code>pip install networkx</code></pre>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-    <pre><code>import networkx as nx
+    <pre><code>import networkx as nx   # networkx를 nx라는 별명으로 부르기로 한다 (pandas를 pd로 줄이는 것과 같은 관례)
 
 # DiGraph = 방향이 있는 그래프. (봉준호 → 기생충)과 (기생충 → 봉준호)는 뜻이 다르다
-G = nx.DiGraph()
-G.add_node("봉준호", type="Person")
+G = nx.DiGraph()   # 아직 점도 선도 없는 빈 그래프 하나를 만든다
+
+G.add_node("봉준호", type="Person")   # 점(노드) 하나를 만든다. type은 나중에 걸러 낼 때 쓸 속성
 G.add_node("송강호", type="Person")
 G.add_node("기생충", type="Film")
 
+# add_edge(출발점, 도착점, relation=이름표) — 두 점 사이에 방향 있는 선을 긋는다
 G.add_edge("봉준호", "기생충", relation="DIRECTED")
 G.add_edge("송강호", "기생충", relation="ACTED_IN")
 
 for u, v, d in G.edges(data=True):
+    # G.edges(data=True)는 (출발점, 도착점, 속성딕셔너리)를 선마다 하나씩 돌려준다
+    # u=출발점, v=도착점, d={"relation": "..."} → d['relation']로 이름표 값만 꺼낸다
     print(f"({u}) --[{d['relation']}]--> ({v})")</code></pre>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 위 코드를 돌리면 찍히는 출력이에요</span></p>
     <pre><code>(봉준호) --[DIRECTED]--> (기생충)
 (송강호) --[ACTED_IN]--> (기생충)</code></pre>
-    <p>노드에 붙인 <code>type</code>(Person·Film)이 나중에 중요해져요. "《기생충》의 감독은?"에 송강호가 후보로 올라와도, 감독 자리에는 Person만 올 수 있고 관계가 DIRECTED여야 한다는 걸 타입과 관계 이름으로 걸러 낼 수 있거든요.</p>
+    <p>노드에 붙인 <code>type</code>(Person·Film)이 나중에 중요해져요. "《기생충》의 감독은?"에 송강호가 후보로 올라와도, 감독 자리에는 Person만 올 수 있고 관계가 DIRECTED여야 한다는 걸 타입과 관계 이름으로 걸러 낼 수 있거든요. (참고로 <code>add_edge</code>만 써도 없던 점은 자동으로 생겨요. 여기서는 <code>type</code>을 붙이고 싶어서 <code>add_node</code>로 미리 만들어 둔 거예요.)</p>
 
     <h3 id="digraph">DiGraph — 선에 방향이 있다</h3>
     <p>위 코드의 <code>nx.DiGraph()</code>는 <strong>방향이 있는 그래프</strong>(directed graph)예요. 선마다 출발점과 도착점이 정해져 있어요. NetworkX에는 방향 없는 <code>nx.Graph()</code>도 있는데, 여기서 DiGraph를 쓰는 이유는 삼중항의 주어와 목적어를 바꾸면 뜻이 달라지기 때문이에요. (봉준호, DIRECTED, 기생충)은 "봉준호가 기생충을 연출했다"지만, 방향을 뒤집으면 "기생충이 봉준호를 연출했다"가 돼요.</p>
@@ -225,11 +229,41 @@ successors(기생충): []
     </ul>
     <p>방향을 무시하는 이유가 하나 더 있어요. LLM이 문서에서 관계를 뽑을 때 같은 사실을 문서마다 반대 방향으로 저장하는 일이 잦거든요. 한쪽 방향만 믿으면 멀쩡히 있는 사실을 못 찾아요. <a href="graphrag-build-knowledge-graph.html#key-direction">다음 편</a>에서 실제로 봐요.</p>
     <h3 id="why-graph">왜 표나 벡터가 아니라 그래프인가</h3>
-    <p>데이터를 담는 방법은 여럿이에요. 표로 담는 관계형 DB는 칸이 정해진 자료에 강하고, 문장을 숫자 좌표로 바꿔 담는 <a href="rag-chatbot-embedding-vectorstore.html">벡터 저장소</a>는 "뜻이 비슷한 것 찾기"에 강해요. 그래프가 잘하는 건 딱 두 가지인데, 이 에이전트에 필요한 게 정확히 그 둘이에요.</p>
+    <p>데이터를 담는 방법은 여럿이에요. 표로 담는 <a href="database-history-sql-nosql.html">관계형 DB</a>는 칸이 정해진 자료에 강하고, 문장을 숫자 좌표로 바꿔 담는 <a href="rag-chatbot-embedding-vectorstore.html">벡터 저장소</a>는 "뜻이 비슷한 것 찾기"에 강해요. 그래프가 잘하는 건 딱 두 가지인데, 이 에이전트에 필요한 게 정확히 그 둘이에요.</p>
     <ul>
       <li><strong>멀티홉 추적</strong> — 선을 타고 계속 옮겨 가기</li>
       <li><strong>무리 나누기</strong> — 전체를 촘촘하게 이어진 무리로 나눠 한눈에 보기 (<a href="graphrag-agent-three-routes.html#community">22편</a>)</li>
     </ul>
+    <p>"칸이 정해진 자료에 강하다"는 게 무슨 뜻인지 표 두 개로 직접 보여줄게요.</p>
+    <table>
+      <thead><tr><th>영화</th><th>감독</th></tr></thead>
+      <tbody><tr><td>기생충</td><td>봉준호</td></tr></tbody>
+    </table>
+    <table>
+      <thead><tr><th>배우</th><th>영화</th></tr></thead>
+      <tbody>
+        <tr><td>송강호</td><td>기생충</td></tr>
+        <tr><td>송강호</td><td>택시운전사</td></tr>
+      </tbody>
+    </table>
+    <p>"《기생충》의 감독은?"은 <strong>영화 표 하나</strong>만 보면 끝나요. 그런데 "봉준호 영화에 나온 배우의 <strong>다른</strong> 작품은?"을 물으면, 영화 표에는 배우가 없고 배우 표에는 감독이 없어서 두 표를 이어 붙여야(<strong>JOIN</strong><sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>) 해요. 게다가 "다른 작품"까지 구하려면 배우 표를 <strong>한 번 더</strong> 이어야 하고요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— JOIN 개수가 곧 건너는 횟수예요</span></p>
+    <pre><code>-- 봉준호 영화에 나온 배우는? → JOIN 1개 (1홉)
+SELECT 출연.배우
+FROM 영화
+JOIN 출연 ON 영화.영화 = 출연.영화
+WHERE 영화.감독 = '봉준호';
+
+-- 그 배우가 나온 다른 작품은? → JOIN 2개 (2홉)
+SELECT 출연2.영화
+FROM 영화
+JOIN 출연 AS 출연1 ON 영화.영화 = 출연1.영화
+JOIN 출연 AS 출연2 ON 출연1.배우 = 출연2.배우
+WHERE 영화.감독 = '봉준호' AND 출연2.영화 != 영화.영화;</code></pre>
+    <div class="key-point" id="key-join">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p><strong>"몇 번 건너는가"는 곧 "JOIN을 몇 번 쓰는가"예요.</strong> 관계형 DB는 몇 홉짜리 질문인지를 <strong>코드를 짤 때 미리</strong> 정해서 JOIN을 그만큼 써넣어야 해요. 반면 그래프는 "선을 따라 계속 가라"는 같은 코드로 1홉이든 3홉이든 걸어가요. 홉 수가 코드가 아니라 질문마다 달라지는 게 멀티홉 질문의 정체고, 그래서 그래프가 유리해요.</p>
+    </div>
     <p>노드가 수십만 개로 커지면 Neo4j 같은 그래프 전용 DB를 쓰지만, 이 실습처럼 노드 수천 개라면 NetworkX로 메모리에 올려 두는 걸로 충분해요.</p>
 
     <h2 id="local-setup"><span class="hl">로컬 준비</span> — VS Code 노트북에서 강의 준비 셀 네 개 돌리기</h2>
@@ -313,7 +347,7 @@ OPENAI_API_KEY 설정됨: True
     <h2 id="wall"><span class="hl">벽을 먼저 잰다</span> — 검색 방식은 얼마나 못 푸나</h2>
     <p>그래프를 만들기 전에 할 일이 있어요. <strong>지금 방식이 얼마나 못 하는지를 숫자로 재 두는 것</strong>이요. 이 숫자가 없으면 그래프를 다 만든 뒤에도 나아졌는지 확인할 방법이 없어요.</p>
     <h3 id="goldenset">골든셋 15문항</h3>
-    <p>재는 자는 <strong>골든셋</strong><sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup> 15문항이에요. 위키 원문에서 정답과 근거를 확인해 만든 평가 문항이고, 세 종류로 나뉘어요.</p>
+    <p>재는 자는 <strong>골든셋</strong><sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup> 15문항이에요. 위키 원문에서 정답과 근거를 확인해 만든 평가 문항이고, 세 종류로 나뉘어요.</p>
     <table>
       <thead><tr><th>종류</th><th>문항 수</th><th>예</th></tr></thead>
       <tbody>
@@ -324,8 +358,8 @@ OPENAI_API_KEY 설정됨: True
     </table>
     <p>문항마다 정답에 닿는 데 꼭 필요한 삼중항이 적혀 있어요. 단순·추천 13문항에 모두 39개예요. 예를 들어 위 추천 문항에는 (송강호, ACTED_IN, 기생충) → (최우식, ACTED_IN, 기생충) → (최우식, ACTED_IN, 부산행)처럼 건너가는 사실들이 붙어 있어요.</p>
     <h3 id="bm25-baseline">BM25로 기준선을 잡는다</h3>
-    <p>비교 대상은 <strong>BM25</strong><sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup> 검색이에요. 질문과 겹치는 낱말이 많고 드문 낱말일수록 점수를 높게 주는 고전 검색법이에요. <a href="rag-chatbot-hybrid-search.html">하이브리드 검색 편</a>에서 벡터 검색과 섞어 썼던 그거예요. 여기서 BM25를 고른 이유는 API 키가 필요 없고 <strong>돌릴 때마다 결과가 똑같아서</strong> 기준선으로 쓰기 좋기 때문이에요.</p>
-    <p>문서 80건을 800자 청크<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup>로 자르니 700조각이 나왔어요. 한국어는 "영화를·영화가·영화는"을 공백 기준으로 다 다른 낱말로 보니, 정규식으로 한글·영문·숫자 덩어리만 뽑는 가벼운 토크나이저를 붙였어요.</p>
+    <p>비교 대상은 <strong>BM25</strong><sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup> 검색이에요. 질문과 겹치는 낱말이 많고 드문 낱말일수록 점수를 높게 주는 고전 검색법이에요. <a href="rag-chatbot-hybrid-search.html">하이브리드 검색 편</a>에서 벡터 검색과 섞어 썼던 그거예요. 여기서 BM25를 고른 이유는 API 키가 필요 없고 <strong>돌릴 때마다 결과가 똑같아서</strong> 기준선으로 쓰기 좋기 때문이에요.</p>
+    <p>문서 80건을 800자 청크<sup class="fn-ref"><a href="#fn8" id="fnref8">8</a></sup>로 자르니 700조각이 나왔어요. 한국어는 "영화를·영화가·영화는"을 공백 기준으로 다 다른 낱말로 보니, 정규식으로 한글·영문·숫자 덩어리만 뽑는 가벼운 토크나이저를 붙였어요.</p>
     <p>잴 것은 두 가지예요. 둘 다 답을 만들기 전 단계, 즉 <strong>검색이 정답에 닿았는지</strong>만 봐요. 근거 안에 정답이 없으면 뒤에 어떤 LLM을 붙여도 정답을 못 만드니까, 이게 그 시스템의 상한선이에요.</p>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 제가 2026-09-18에 상위 6개 청크로 잰 결과예요</span></p>
     <pre><code>① 정답 문자열이 상위 6개 청크 안에 통째로 있는가
@@ -393,7 +427,7 @@ K=50  HitRate 0.75  Recall 0.75  Precision 0.015  MRR 0.307  nDCG 0.401</code></
     </div>
 
     <h3 id="recall-ceiling">검색기를 더 좋은 걸로 바꾸면?</h3>
-    <p>"그럼 벡터 검색을 섞거나(하이브리드 검색), 후보를 더 정확한 모델로 다시 줄 세우면(리랭킹<sup class="fn-ref"><a href="#fn8" id="fnref8">8</a></sup>) 되지 않나요?" 둘 다 실무에서 표준으로 쓰는 강력한 방법이에요. 그런데 추천-09 앞에서는 둘 다 힘을 못 써요.</p>
+    <p>"그럼 벡터 검색을 섞거나(하이브리드 검색), 후보를 더 정확한 모델로 다시 줄 세우면(리랭킹<sup class="fn-ref"><a href="#fn9" id="fnref9">9</a></sup>) 되지 않나요?" 둘 다 실무에서 표준으로 쓰는 강력한 방법이에요. 그런데 추천-09 앞에서는 둘 다 힘을 못 써요.</p>
     <p><a href="#retrieval-metrics">바로 위의 두 쪽</a>으로 나누면 이유가 보여요. 하이브리드 검색과 리랭킹은 주로 <strong>순위</strong>를 고쳐 MRR·nDCG·정밀도를 올려요(재현율·정밀도는 <a href="confusion-matrix-and-metrics.html">혼동 행렬 편</a>에서 처음 다뤘어요). 추천-09는 정답 문서가 후보에 아예 없는, 재현율 0인 상황이에요.</p>
     <div class="key-point" id="key-rerank">
       <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
@@ -514,10 +548,11 @@ for K in (6, 20, 50):
         <li id="fn2">지식 그래프(knowledge graph) — 대상을 점(노드)으로, 대상 사이의 관계를 선(엣지)으로 저장한 자료 구조예요. <a href="#fnref2">↩</a></li>
         <li id="fn3">삼중항(triple) — (주어, 관계, 목적어) 세 칸으로 적은 사실 하나로, 지식 그래프의 가장 작은 단위예요. <a href="#fnref3">↩</a></li>
         <li id="fn4">NetworkX — 그래프를 만들고 탐색하는 파이썬 라이브러리로, 설치만 하면 별도 서버 없이 메모리에서 돌아가요. <a href="#fnref4">↩</a></li>
-        <li id="fn5">골든셋(golden set) — 사람이 정답과 근거를 확인해 둔 평가 문항 묶음으로, 시스템을 바꿀 때마다 같은 자로 재는 데 써요. <a href="#fnref5">↩</a></li>
-        <li id="fn6">BM25 — 질문 낱말이 문서에 얼마나 자주, 얼마나 드물게 나오는지로 점수를 매기는 키워드 검색법으로, <a href="rag-chatbot-hybrid-search.html">하이브리드 검색 편</a>에서 처음 다뤘어요. <a href="#fnref6">↩</a></li>
-        <li id="fn7">청크(chunk) — 긴 문서를 검색하기 좋게 일정 길이로 자른 조각으로, <a href="rag-chatbot-chunk-design.html">청크 설계 편</a>에서 처음 다뤘어요. <a href="#fnref7">↩</a></li>
-        <li id="fn8">리랭킹(re-ranking) — 검색기가 넉넉히 가져온 후보를 더 정확한 모델로 다시 줄 세우는 단계예요. <a href="#fnref8">↩</a></li>
+        <li id="fn5">JOIN — 관계형 DB에서 표 두 개를 공통 칸으로 이어 붙이는 연산으로, 몇 홉짜리 질문인지에 따라 몇 번 쓸지 코드에 미리 정해 둬야 해요. <a href="#fnref5">↩</a></li>
+        <li id="fn6">골든셋(golden set) — 사람이 정답과 근거를 확인해 둔 평가 문항 묶음으로, 시스템을 바꿀 때마다 같은 자로 재는 데 써요. <a href="#fnref6">↩</a></li>
+        <li id="fn7">BM25 — 질문 낱말이 문서에 얼마나 자주, 얼마나 드물게 나오는지로 점수를 매기는 키워드 검색법으로, <a href="rag-chatbot-hybrid-search.html">하이브리드 검색 편</a>에서 처음 다뤘어요. <a href="#fnref7">↩</a></li>
+        <li id="fn8">청크(chunk) — 긴 문서를 검색하기 좋게 일정 길이로 자른 조각으로, <a href="rag-chatbot-chunk-design.html">청크 설계 편</a>에서 처음 다뤘어요. <a href="#fnref8">↩</a></li>
+        <li id="fn9">리랭킹(re-ranking) — 검색기가 넉넉히 가져온 후보를 더 정확한 모델로 다시 줄 세우는 단계예요. <a href="#fnref9">↩</a></li>
       </ol>
     </section>
 
