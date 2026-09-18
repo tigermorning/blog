@@ -29,6 +29,20 @@
     .bm-scene .bm-scene-title { font-family: var(--font-subhead); color: var(--nc); margin-bottom: 0.2rem; }
 
     .bm-graph { position: relative; margin: 0.6rem 0 0.4rem; }
+    #bm-g { cursor: zoom-in; }
+    .bm-zoom-btn { display: block; margin: 0 0 0 auto; font: inherit; font-size: 0.82rem; color: var(--ink); background: var(--bg); border: 1px solid var(--border); border-radius: 999px; padding: 0.15rem 0.75rem; cursor: pointer; }
+    .bm-zoom-btn:hover { border-color: var(--ink); }
+    .bm-modal { width: min(1240px, 96vw); max-width: none; height: 92vh; max-height: none; padding: 0; border: none; border-radius: 16px; background: var(--bg); color: var(--ink); box-shadow: 0 10px 40px rgba(0,0,0,0.25); }
+    .bm-modal::backdrop { background: rgba(40, 34, 28, 0.55); }
+    .bm-modal[open] { display: flex; flex-direction: column; }
+    .bm-modal-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); }
+    .bm-modal-title { margin: 0; font-family: var(--font-subhead); font-size: 1.15rem; }
+    .bm-modal-close { font: inherit; font-size: 1.5rem; line-height: 1; width: 2.2rem; height: 2.2rem; border-radius: 50%; border: 1px solid var(--border); background: var(--bg); color: var(--ink); cursor: pointer; }
+    .bm-modal-scroll { flex: 1 1 auto; overflow: auto; padding: 1rem; }
+    .bm-modal-graph { margin: 0 auto; }
+    .bm-modal-graph .bm-node-title { font-size: 1.1rem; }
+    .bm-modal-graph .bm-node-sub { font-size: 0.88rem; }
+    .bm-modal-graph .bm-edge-label { font-size: 0.8rem; }
     .bm-edges { position: absolute; left: 0; top: 0; pointer-events: none; overflow: visible; }
     .bm-edge { fill: none; stroke: var(--muted); stroke-width: 1.6; opacity: 0.7; }
     .bm-arrowhead { fill: var(--muted); }

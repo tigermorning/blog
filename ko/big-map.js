@@ -201,7 +201,52 @@
   }
 
   // ---------- 화면 ----------
-  let redraw = null;
+  let redraw = null, current = null;
+
+  // ---------- 크게 보기 ----------
+  // 지도 그림을 화면 가득 다시 그린다. 폰에서는 720px 폭으로 그려 옆으로 밀어 보게 한다.
+  const modal = document.createElement("dialog");
+  modal.className = "bm-modal";
+  modal.setAttribute("aria-label", "지도 크게 보기");
+  modal.innerHTML = '<div class="bm-modal-bar"><p class="bm-modal-title"></p>' +
+    '<button type="button" class="bm-modal-close" aria-label="닫기">×</button></div>' +
+    '<div class="bm-modal-scroll"><div class="bm-graph bm-modal-graph"></div></div>';
+  document.body.appendChild(modal);
+  const modalGraph = modal.querySelector(".bm-modal-graph");
+  function drawModal() {
+    if (!current || !modal.open) return;
+    const avail = modal.querySelector(".bm-modal-scroll").clientWidth - 32;
+    modalGraph.style.width = Math.max(720, Math.min(1180, avail)) + "px";
+    const nodes = current.nodes.map((n) => Object.assign({}, n, n.onClick ? {
+      onClick: () => { modal.close(); n.onClick(); } } : {}));
+    drawGraph(modalGraph, nodes, current.edges, Object.assign({}, current.opts,
+      { maxW: Math.max(current.opts.maxW || 236, 260) }));
+  }
+  function openModal() {
+    if (!current) return;
+    const h = root.querySelector(".bm-h");
+    modal.querySelector(".bm-modal-title").textContent = h ? h.textContent : "";
+    if (typeof modal.showModal === "function") modal.showModal(); else modal.setAttribute("open", "");
+    drawModal();
+  }
+  modal.querySelector(".bm-modal-close").addEventListener("click", () => modal.close());
+  // 그림 바깥(어두운 배경)을 누르면 닫는다
+  modal.addEventListener("click", (e) => { if (e.target === modal) modal.close(); });
+
+  function show(nodes, edges, opts) {
+    const host = document.getElementById("bm-g");
+    current = { nodes: nodes, edges: edges, opts: opts };
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "bm-zoom-btn";
+    btn.textContent = "⤢ 크게 보기";
+    btn.addEventListener("click", openModal);
+    host.parentNode.insertBefore(btn, host);
+    // 상자가 아닌 빈 곳을 눌러도 크게 본다
+    host.addEventListener("click", (e) => { if (!e.target.closest(".bm-node")) openModal(); });
+    redraw = () => drawGraph(host, nodes, edges, opts);
+    redraw();
+  }
   function crumbs(list) {
     return '<nav class="bm-crumbs" aria-label="지도 위치">' + list.map((c, i) =>
       i === list.length - 1 ? '<span aria-current="page">' + esc(c[0]) + "</span>"
@@ -234,8 +279,7 @@
         onClick: r ? () => go("#/" + r.id) : null,
       };
     });
-    redraw = () => drawGraph(document.getElementById("bm-g"), nodes, D.world.edges, { vgap: 62, maxW: 280 });
-    redraw();
+    show(nodes, D.world.edges, { vgap: 62, maxW: 280 });
   }
   function countRegion(r) { return r.subs.reduce((s, sid) => s + (D.subs[sid] ? D.subs[sid].posts.length : 0), 0); }
 
@@ -251,8 +295,7 @@
       return { id: sid, label: s.name, sub: s.role, color: r.color, kind: "sub",
         count: s.posts.length + "편", onClick: () => go("#/" + r.id + "/" + sid) };
     });
-    redraw = () => drawGraph(document.getElementById("bm-g"), nodes, r.edges, {});
-    redraw();
+    show(nodes, r.edges, {});
   }
 
   function viewSub(r, sid) {
@@ -268,8 +311,7 @@
       id: n.id, label: n.label, color: r.color, kind: "concept",
       count: n.posts.length + "편", onClick: () => go("#/" + r.id + "/" + sid + "/" + n.id),
     }));
-    redraw = () => drawGraph(document.getElementById("bm-g"), nodes, s.flow.edges, { vgap: 54, maxW: 200 });
-    redraw();
+    show(nodes, s.flow.edges, { vgap: 54, maxW: 200 });
   }
 
   function card(p, color) {
@@ -303,7 +345,7 @@
       '<h3 class="bm-h" style="--nc:' + r.color + '">' + esc(n.label) + "</h3>" +
       nb(ins, "앞 단계") + nb(outs, "다음 단계") +
       '<div class="bm-cards">' + n.posts.map((f) => postInfo[f]).filter(Boolean).map((p) => card(p, r.color)).join("") + "</div>";
-    redraw = null;
+    redraw = null; current = null;
   }
 
   function viewThread(t) {
@@ -318,11 +360,11 @@
       return { id: f, label: postInfo[f].concept, sub: postInfo[f].one_line, count: r.name, step: String(i + 1),
         color: r.color, kind: "concept", onClick: () => go("#/" + h.r + "/" + h.s + "/" + h.n) };
     });
-    redraw = () => drawGraph(document.getElementById("bm-g"), nodes, [], { vgap: 22, maxW: 250 });
-    redraw();
+    show(nodes, [], { vgap: 22, maxW: 250 });
   }
 
   function route() {
+    if (modal.open) modal.close();
     const parts = location.hash.replace(/^#\/?/, "").split("/").filter(Boolean);
     if (parts[0] === "t") {
       const t = D.threads.find((x) => x.id === parts[1]);
@@ -340,7 +382,7 @@
 
   window.addEventListener("hashchange", route);
   let rt;
-  window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { if (redraw) redraw(); }, 120); });
+  window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { if (redraw) redraw(); drawModal(); }, 120); });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (redraw) redraw(); });
   route();
 })();
