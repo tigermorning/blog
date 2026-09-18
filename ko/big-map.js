@@ -76,6 +76,8 @@
         (n.step ? '<span class="bm-step">' + esc(n.step) + "</span>" : "") +
         '<span class="bm-node-title">' + esc(n.label) + "</span>" +
         (n.sub ? '<span class="bm-node-sub">' + esc(n.sub) + "</span>" : "") +
+        (n.share ? '<span class="bm-node-share"><b>이 질문에서</b>' + esc(n.share) + "</span>" : "") +
+        (n.chips && n.chips.length ? '<span class="bm-node-chips">' + n.chips.map((c) => "<i>" + esc(c) + "</i>").join("") + "</span>" : "") +
         (n.count ? '<span class="bm-node-count">' + esc(n.count) + "</span>" : "");
       if (n.onClick) el.addEventListener("click", n.onClick);
       host.appendChild(el);
@@ -164,11 +166,13 @@
         d = "M" + x1 + "," + y1 + " L" + x2 + "," + y1;
         lx = (x1 + x2) / 2; ly = y1 - 12;
       } else {
-        // 위로 되돌아가는 화살표: 오른쪽 바깥으로 돌린다
-        const x1 = a.x + a.w, y1 = a.y + a.h / 2, x2 = b.x + b.w + 2, y2 = b.y + b.h / 2;
-        const bulge = Math.min(W - 4, Math.max(x1, x2) + 34);
+        // 위로 되돌아가는 화살표: 출발 상자가 왼쪽에 있으면 왼쪽 바깥, 아니면 오른쪽 바깥으로 돌린다
+        const left = a.x + a.w / 2 < b.x + b.w / 2;
+        const x1 = left ? a.x : a.x + a.w, y1 = a.y + a.h / 2;
+        const x2 = left ? b.x - 2 : b.x + b.w + 2, y2 = b.y + b.h / 2;
+        const bulge = left ? Math.max(4, Math.min(x1, x2) - 34) : Math.min(W - 4, Math.max(x1, x2) + 34);
         d = "M" + x1 + "," + y1 + " C" + bulge + "," + y1 + " " + bulge + "," + y2 + " " + x2 + "," + y2;
-        lx = bulge - 14; ly = (y1 + y2) / 2;
+        lx = bulge + (left ? 14 : -14); ly = (y1 + y2) / 2;
       }
       const p = document.createElementNS(NS, "path");
       p.setAttribute("d", d);
@@ -271,15 +275,17 @@
         '<a class="bm-thread" href="#/t/' + t.id + '" style="--nc:' + t.color + '"><strong>' + esc(t.name) +
         "</strong><span>" + esc(t.question) + "</span></a>").join("") + "</div>";
     const nodes = D.world.nodes.map((n) => {
-      const r = regionById[n.id];
+      // 지역 상자는 그 지역으로, link가 있는 상자(답 검사)는 그 글 묶음으로 간다
+      const r = regionById[n.id] || regionById[n.region];
+      const target = regionById[n.id] ? "#/" + n.id : n.link || null;
       return {
-        id: n.id, label: n.label, sub: n.sub, step: n.step, kind: r ? "region" : "actor",
+        id: n.id, label: n.label, sub: n.sub, share: n.share, chips: n.chips, step: n.step, kind: r ? "region" : "actor",
         color: r ? r.color : "var(--muted)",
-        count: r ? countRegion(r) + "편" : "",
-        onClick: r ? () => go("#/" + r.id) : null,
+        count: regionById[n.id] ? countRegion(r) + "편" : "",
+        onClick: target ? () => go(target) : null,
       };
     });
-    show(nodes, D.world.edges, { vgap: 62, maxW: 280 });
+    show(nodes, D.world.edges, { vgap: 62, maxW: 330 });
   }
   function countRegion(r) { return r.subs.reduce((s, sid) => s + (D.subs[sid] ? D.subs[sid].posts.length : 0), 0); }
 
