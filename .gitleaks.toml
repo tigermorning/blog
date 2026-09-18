@@ -8,4 +8,4 @@ useDefault = true
 description = "learning-git-2 개인키 형식 설명 문장"
 condition = "AND"
 paths = ['''^(search-data\.js|ko/learning-git-2\.html)$''']
-regexes = ['''BEGIN OPENSSH PRIVATE KEY-----\s*로 시작하는''']
+regexes = ['''BEGIN OPENSSH PRIVATE KEY-----(\s|</code>)*로 시작하는''']
