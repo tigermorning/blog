@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>큰 그림 지도 - Tigermorning</title>
+  <meta name="description" content="이 블로그의 글 220여 편이 실제 AI 서비스 하나 안에서 어디에 쓰이는지, 전체 그림에서 시작해 지역·구역·개념까지 한 층씩 들어가며 보는 지도입니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="큰 그림 지도 - Tigermorning">
+  <meta property="og:description" content="이 블로그의 글들이 실제 AI 서비스 하나 안에서 어디에 쓰이는지, 한 층씩 들어가며 보는 지도입니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/big-map.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    #bm-root { margin-top: 1.2rem; }
+    .bm-crumbs { font-size: 0.86rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 0.2rem 0.4rem; align-items: center; margin: 0 0 0.6rem; }
+    .bm-crumbs a { color: var(--ink); }
+    .bm-crumbs [aria-current] { color: var(--ink); font-weight: 600; }
+    .bm-sep { color: var(--border); }
+    .bm-level { font-size: 0.8rem; color: var(--muted); margin: 0 0 0.3rem; display: flex; align-items: center; gap: 0.5rem; }
+    .bm-level-dots { display: inline-flex; gap: 3px; }
+    .bm-level-dots i { width: 18px; height: 6px; border-radius: 3px; background: var(--border); }
+    .bm-level-dots i.on { background: var(--ink); }
+    .bm-h { font-family: var(--font-subhead); font-weight: 400; font-size: 1.45rem; margin: 0.2rem 0 0.4rem; color: var(--nc, var(--ink)); }
+    .bm-lead { font-size: 0.97rem; line-height: 1.7; margin: 0 0 1rem; }
+    .bm-hint { font-size: 0.84rem; color: var(--muted); margin: 0.6rem 0 0; }
+    .bm-scene { border-left: 4px solid var(--nc); background: color-mix(in srgb, var(--nc) 7%, transparent); border-radius: 0 12px 12px 0; padding: 0.7rem 1rem; margin: 0 0 1.2rem; font-size: 0.93rem; line-height: 1.65; }
+    .bm-scene p { margin: 0; }
+    .bm-scene .bm-scene-title { font-family: var(--font-subhead); color: var(--nc); margin-bottom: 0.2rem; }
+
+    .bm-graph { position: relative; margin: 0.6rem 0 0.4rem; }
+    .bm-edges { position: absolute; left: 0; top: 0; pointer-events: none; overflow: visible; }
+    .bm-edge { fill: none; stroke: var(--muted); stroke-width: 1.6; opacity: 0.7; }
+    .bm-arrowhead { fill: var(--muted); }
+    .bm-edge-label { position: absolute; font-size: 0.74rem; line-height: 1.2; color: var(--muted); background: var(--bg); padding: 1px 6px; border-radius: 8px; white-space: nowrap; pointer-events: none; }
+    .bm-node {
+      position: absolute; box-sizing: border-box; text-align: left; font: inherit; color: var(--ink);
+      border: 2px solid var(--nc); border-radius: 14px; padding: 0.55rem 0.7rem 0.6rem;
+      background: color-mix(in srgb, var(--nc) 8%, var(--bg));
+      display: flex; flex-direction: column; gap: 0.2rem; cursor: pointer;
+      transition: background-color 0.15s, transform 0.15s;
+    }
+    button.bm-node:hover, button.bm-node:focus-visible { background: color-mix(in srgb, var(--nc) 20%, var(--bg)); transform: translateY(-1px); }
+    .bm-node.bm-static { cursor: default; border-style: dashed; background: var(--bg); }
+    .bm-node-title { font-family: var(--font-subhead); font-size: 1rem; line-height: 1.3; color: var(--nc); word-break: keep-all; }
+    .bm-static .bm-node-title { color: var(--ink); }
+    .bm-node-sub { font-size: 0.8rem; line-height: 1.45; color: var(--ink); word-break: keep-all; }
+    .bm-node-count { font-size: 0.72rem; color: var(--muted); }
+    .bm-step { position: absolute; top: -10px; left: -10px; width: 22px; height: 22px; border-radius: 50%; background: var(--nc); color: #fff; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; font-family: var(--font-subhead); }
+    .bm-region .bm-node-title { font-size: 1.08rem; }
+
+    .bm-steps { margin: 1rem 0 0; padding-left: 0; list-style: none; font-size: 0.92rem; line-height: 1.6; }
+    .bm-steps li { padding: 0.35rem 0; border-top: 1px dashed var(--border); }
+    .bm-threads-title { font-family: var(--font-subhead); margin: 1.4rem 0 0.5rem; }
+    .bm-threads { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 0.6rem; }
+    .bm-thread { display: block; text-decoration: none; color: var(--ink); border: 2px dashed var(--nc); border-radius: 12px; padding: 0.6rem 0.8rem; }
+    .bm-thread:hover { background: color-mix(in srgb, var(--nc) 8%, transparent); }
+    .bm-thread strong { display: block; font-family: var(--font-subhead); font-weight: 400; color: var(--nc); }
+    .bm-thread span { font-size: 0.84rem; color: var(--muted); }
+
+    .bm-nb { font-size: 0.86rem; margin: 0 0 0.4rem; display: flex; flex-wrap: wrap; gap: 0.3rem; align-items: center; }
+    .bm-nb span { color: var(--muted); margin-right: 0.2rem; }
+    .bm-nb a { border: 1px solid var(--border); border-radius: 999px; padding: 0.05rem 0.6rem; text-decoration: none; color: var(--ink); }
+    .bm-cards { display: grid; gap: 0.8rem; margin-top: 0.9rem; }
+    .bm-card { border: 2px solid var(--border); border-top: 5px solid var(--nc); border-radius: 12px; padding: 0.8rem 1rem 0.9rem; }
+    .bm-card p { margin: 0 0 0.45rem; }
+    .bm-card-concept { font-family: var(--font-subhead); font-size: 1.08rem; color: var(--nc); }
+    .bm-card-line { font-size: 0.97rem; line-height: 1.65; }
+    .bm-card-practice, .bm-card-analogy { font-size: 0.9rem; line-height: 1.6; }
+    .bm-card-practice span, .bm-card-analogy span { display: inline-block; font-size: 0.74rem; border-radius: 6px; padding: 0 0.4rem; margin-right: 0.45rem; }
+    .bm-card-practice span { background: var(--hit-bg); color: var(--hit-ink); }
+    .bm-card-analogy span { background: var(--border); color: var(--ink); }
+    .bm-card-keys { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+    .bm-card-keys span { font-size: 0.75rem; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 0 0.5rem; }
+    .bm-card-read { display: inline-block; font-size: 0.9rem; margin: 0.1rem 0 0.3rem; }
+    .bm-card-links { font-size: 0.8rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 0.3rem; align-items: center; margin: 0 !important; }
+    .bm-card-links a { color: var(--ink); border: 1px dashed var(--border); border-radius: 999px; padding: 0 0.5rem; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">큰 그림 지도</span></h1>
+    <p class="post-date">배운 것들이 실제 서비스 하나 안에서 어디에 쓰이는지 보는 페이지예요.</p>
+
+    <div class="why-read">
+      <p class="why-read-title">이 페이지를 읽기 전에</p>
+      <dl>
+        <dt>이런 게 궁금했다면</dt>
+        <dd>
+          <ul>
+            <li>글을 많이 읽었는데 머릿속에 따로따로 흩어져 있어요.</li>
+            <li>SQL, 임베딩, LangGraph 같은 것들이 실제로 한 서비스 안에서 어디에 붙는지 모르겠어요.</li>
+            <li>지금 읽는 글이 전체에서 어디쯤인지 알고 싶어요.</li>
+          </ul>
+        </dd>
+        <dt>보는 법</dt>
+        <dd>상자를 누르면 한 층 안으로 들어가요. 전체 그림 → 지역 → 구역이 돌아가는 흐름 → 개념과 글, 네 층이에요. 위쪽 경로 줄을 누르면 바깥으로 나와요.</dd>
+        <dt>주제 지도와 다른 점</dt>
+        <dd><a href="topic-map.html">주제 지도</a>는 무엇을 먼저 읽을지(순서)를 보여 주고, 이 지도는 배운 것이 어디에 쓰이는지(쓰임새)를 보여 줘요.</dd>
+      </dl>
+    </div>
+
+    <div id="bm-root" aria-live="polite">
+      <noscript><p>이 지도는 자바스크립트로 그려져요. <a href="posts.html">글 목록</a>에서 단계별로 볼 수 있어요.</p></noscript>
+    </div>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+  <script src="big-map-data.js"></script>
+  <script src="big-map.js"></script>
+</body>
+</html>
