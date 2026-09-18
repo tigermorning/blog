@@ -415,27 +415,51 @@
       <p class="post-group-blurb">가장 무거운 단계예요. LangGraph로 흐름을 직접 그려 보고, 에이전트를 여럿 굴려 보고, 그걸 돌리는 판(하네스)을 남의 것부터 읽은 뒤 직접 만듭니다.</p>
 
       <details class="post-subcategory" open>
-        <summary class="post-subcategory-title" id="langgraph-team">에이전트 팀 꾸리기 — LangGraph</summary>
+        <summary class="post-subcategory-title" id="langgraph-basics">LangGraph 기초 — State·Node·Edge</summary>
         <ul class="title-list">
           <li><a href="langgraph-what-and-why.html"><span class="title-list-title">다음에 어느 코드가 실행될까 — LangGraph와 워크플로·에이전트 (1)</span><span class="title-list-date">2026.09.11</span></a></li>
           <li><a href="langgraph-state-node-edge.html"><span class="title-list-title">흐름을 그림으로 짠다 — LangGraph의 State·Node·Edge (2)</span><span class="title-list-date">2026.09.11</span></a></li>
           <li><a href="langgraph-branch-drills.html"><span class="title-list-title">갈림길을 밀어붙인다 — 세 갈래·라벨·끝나지 않는 반복 (3)</span><span class="title-list-date">2026.09.11</span></a></li>
           <li><a href="langgraph-branches-and-tool-loop.html"><span class="title-list-title">모델이 다음 길을 고르게 한다 — 도구를 쥐여 주는 루프 (4)</span><span class="title-list-date">2026.09.11</span></a></li>
           <li><a href="langgraph-env-troubleshooting.html"><span class="title-list-title">.env가 안 읽혔던 네 겹의 이유 — 원격 주피터에서 API 키 넣기 (5)</span><span class="title-list-date">2026.09.11</span></a></li>
+        </ul>
+      </details>
+
+      <details class="post-subcategory" open>
+        <summary class="post-subcategory-title" id="langgraph-patterns">에이전트 워크플로 다섯 패턴</summary>
+        <ul class="title-list">
           <li><a href="langgraph-pattern-chaining.html"><span class="title-list-title">① 프롬프트 체이닝 — 순서대로, 사이에 검사 (6)</span><span class="title-list-date">2026.09.14</span></a></li>
           <li><a href="langgraph-pattern-routing.html"><span class="title-list-title">② 라우팅 — 먼저 분류하고, 한 갈래로 (7)</span><span class="title-list-date">2026.09.14</span></a></li>
           <li><a href="langgraph-pattern-parallelization.html"><span class="title-list-title">③ 병렬화 — 동시에 돌리고, 합친다 (8)</span><span class="title-list-date">2026.09.14</span></a></li>
           <li><a href="langgraph-pattern-orchestrator-worker.html"><span class="title-list-title">④ 오케스트레이터-워커 — 몇 갈래일지 LLM이 정한다 (9)</span><span class="title-list-date">2026.09.14</span></a></li>
           <li><a href="langgraph-pattern-evaluator-optimizer.html"><span class="title-list-title">⑤ 평가자-최적화자 — 통과할 때까지 고쳐 쓰기 (10)</span><span class="title-list-date">2026.09.14</span></a></li>
+        </ul>
+      </details>
+
+      <details class="post-subcategory" open>
+        <summary class="post-subcategory-title" id="newsletter-agent-project">뉴스레터 에이전트 만들기</summary>
+        <ul class="title-list">
           <li><a href="newsletter-agent-skeleton.html"><span class="title-list-title">뉴스레터 에이전트를 빈 노드 다섯 개로 먼저 세운다 (11)</span><span class="title-list-date">2026.09.14</span></a></li>
           <li><a href="newsletter-agent-collect.html"><span class="title-list-title">기사를 어디서 가져올까 — RSS·관문·수집 노드 (12)</span><span class="title-list-date">2026.09.14</span></a></li>
           <li><a href="newsletter-agent-select.html"><span class="title-list-title">100건에서 5건 고르기 — 점수 대신 비교, 예선과 본선 (13)</span><span class="title-list-date">2026.09.14</span></a></li>
           <li><a href="newsletter-agent-summarize-verify.html"><span class="title-list-title">요약을 세 칸으로 받고 원문과 대조한다 (14)</span><span class="title-list-date">2026.09.14</span></a></li>
           <li><a href="newsletter-agent-publish-schedule.html"><span class="title-list-title">디스코드로 매일 아침 받아 보기 — 웹훅과 GitHub Actions (15)</span><span class="title-list-date">2026.09.14</span></a></li>
           <li><a href="newsletter-agent-metrics-config.html"><span class="title-list-title">돌고 나서 재 본다 — 실행 기록과 설정 파일 (16)</span><span class="title-list-date">2026.09.14</span></a></li>
+        </ul>
+      </details>
+
+      <details class="post-subcategory" open>
+        <summary class="post-subcategory-title" id="cs-agent-project">CS 상담 에이전트 만들기</summary>
+        <ul class="title-list">
           <li><a href="cs-agent-routing-eval.html"><span class="title-list-title">문의 한 줄을 다섯 갈래로 — 라우트는 회사 문서에서 가져온다 (17)</span><span class="title-list-date">2026.09.16</span></a></li>
           <li><a href="cs-agent-grounding.html"><span class="title-list-title">값을 말하지 말고 조회하게 한다 — 매뉴얼 쪼개기·도구·가드레일 (18)</span><span class="title-list-date">2026.09.16</span></a></li>
           <li><a href="cs-agent-improve.html"><span class="title-list-title">59%에서 94%로 — 프롬프트만 고쳐 지표를 올린 기록 (19)</span><span class="title-list-date">2026.09.16</span></a></li>
+        </ul>
+      </details>
+
+      <details class="post-subcategory" open>
+        <summary class="post-subcategory-title" id="graphrag-project">GraphRAG로 지식 그래프 얹기</summary>
+        <ul class="title-list">
           <li><a href="graphrag-why-multihop.html"><span class="title-list-title">검색으로는 못 찾는 답 — 멀티홉 질문과 지식 그래프 (20)</span><span class="title-list-date">2026.09.18</span></a></li>
           <li><a href="graphrag-build-knowledge-graph.html"><span class="title-list-title">스키마가 답할 질문을 정한다 — 추출·정규화·위키 분류 (21)</span><span class="title-list-date">2026.09.18</span></a></li>
           <li><a href="graphrag-agent-three-routes.html"><span class="title-list-title">세 갈래로 답하는 에이전트 — 커뮤니티 요약·라우터·탐색 예산 (22)</span><span class="title-list-date">2026.09.18</span></a></li>
