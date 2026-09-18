@@ -27,6 +27,8 @@
     <p class="post-date">2026. 8. 26.</p>
     <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
 
+    <p class="one-liner">RAG는 <strong>LLM에게 정보를 주입하는 방법</strong>이다 — 모델을 다시 학습시키지 않고, 질문과 관련된 문서 조각을 찾아 질문과 함께 프롬프트에 넣어 준다.</p>
+
     <div class="why-read">
       <p class="why-read-title">이 글을 읽기 전에</p>
       <dl>
@@ -93,8 +95,66 @@
     <p>정책 문서가 몇 장 안 되면 전체 투입이 제일 간단하다. 하지만 문서가 수백 페이지가 되면, 트럭에 다 못 싣거나(창이 넘침), 다 실어도 <a href="lost-in-the-middle-and-context-rot.html">지난 편에서 본 것처럼</a> 중간에 낀 조항을 놓친다. 이럴 때 쓰는 방법이 RAG다.</p>
 
     <h2><span class="hl">RAG</span> — 창고지기가 필요한 상자만 찾아준다</h2>
-    <p>RAG는 retrieval-augmented generation(검색 증강 생성)의 줄임말이다. 문서 전체를 트럭에 싣는 대신, <strong>창고지기가 지금 필요한 상자만 몇 개 골라 트럭에 실어주는 방식</strong>이라고 보면 된다. 창고지기가 이 일을 하려면 준비가 필요하다. 먼저 문서를 작은 조각(청크)으로 잘라 상자에 담고, 상자마다 "반품", "배송비" 같은 라벨을 붙여둔다. 질문이 들어오면 <strong>검색기(retriever)</strong>가 그 라벨을 보고 관련 상자 두세 개만 찾아 트럭에 싣는다. 정책이 개정되면 해당 상자만 바꿔 끼우면 되니, AI를 처음부터 다시 가르칠 필요도 없다.</p>
+    <p>RAG는 retrieval-augmented generation(검색 증강 생성)의 줄임말로, 한마디로 <strong>LLM에게 정보를 주입하는 방법</strong>이다. 문서 전체를 트럭에 싣는 대신, <strong>창고지기가 지금 필요한 상자만 몇 개 골라 트럭에 실어주는 방식</strong>이라고 보면 된다. 창고지기가 이 일을 하려면 준비가 필요하다. 먼저 문서를 작은 조각(청크)으로 잘라 상자에 담고, 상자마다 "반품", "배송비" 같은 라벨을 붙여둔다. 질문이 들어오면 <strong>검색기(retriever)</strong>가 그 라벨을 보고 관련 상자 두세 개만 찾아 트럭에 싣는다. 정책이 개정되면 해당 상자만 바꿔 끼우면 되니, AI를 처음부터 다시 가르칠 필요도 없다.</p>
     <p>이 라벨을 붙이는 실제 방식이 궁금하다면 한 줄로 요약할 수 있다. AI가 문장의 뜻을 숫자로 바꿔서(이를 <strong>벡터</strong>라 부른다) 뜻이 비슷한 상자끼리 비슷한 라벨이 붙게 만든다. 그래서 "반품"이라는 글자가 없어도 뜻이 통하는 "환불 절차" 상자를 찾아낼 수 있다.</p>
+    <figure>
+      <svg viewBox="0 0 680 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="ragflowtitle">
+        <title id="ragflowtitle">사용자 질문을 숫자(벡터)로 바꿔 벡터 DB에서 뜻이 비슷한 조각을 찾고, 그 조각을 질문과 함께 프롬프트에 넣어 LLM이 답을 만든다</title>
+        <style>
+          .rg-box{stroke:var(--accent);stroke-width:2;fill:none;}
+          .rg-zone{stroke:var(--muted);stroke-width:1.5;fill:none;stroke-dasharray:5 4;}
+          .rg-t{font-family:var(--font-body);fill:var(--ink);font-size:13px;}
+          .rg-s{font-family:var(--font-body);fill:var(--muted);font-size:11px;}
+          .rg-h{font-family:var(--font-heading);font-weight:700;fill:var(--muted);font-size:13px;}
+          .rg-a{stroke:var(--accent);stroke-width:2;fill:none;}
+        </style>
+        <defs>
+          <marker id="rga" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+            <path d="M0,0 L9,4.5 L0,9 z" fill="var(--accent)"/>
+          </marker>
+        </defs>
+
+        <rect x="20" y="20" width="110" height="40" rx="8" class="rg-box"/>
+        <text x="75" y="45" text-anchor="middle" class="rg-t">사용자</text>
+        <rect x="170" y="20" width="130" height="40" rx="8" class="rg-box"/>
+        <text x="235" y="45" text-anchor="middle" class="rg-t">질문</text>
+        <path d="M130,40 L166,40" class="rg-a" marker-end="url(#rga)"/>
+
+        <rect x="20" y="90" width="430" height="215" rx="10" class="rg-zone"/>
+        <text x="200" y="112" class="rg-h">① 찾기 — 뜻이 비슷한 조각 검색</text>
+
+        <path d="M235,60 L235,76 L100,76 L100,118" class="rg-a" marker-end="url(#rga)"/>
+        <rect x="40" y="122" width="120" height="36" rx="6" class="rg-box"/>
+        <text x="100" y="145" text-anchor="middle" class="rg-t">임베딩 모델</text>
+        <path d="M100,158 L100,178" class="rg-a" marker-end="url(#rga)"/>
+        <rect x="40" y="182" width="120" height="36" rx="6" class="rg-box"/>
+        <text x="100" y="200" text-anchor="middle" class="rg-t">벡터</text>
+        <text x="100" y="213" text-anchor="middle" class="rg-s">(뜻을 담은 숫자 목록)</text>
+        <path d="M100,218 L100,238" class="rg-a" marker-end="url(#rga)"/>
+        <rect x="40" y="242" width="120" height="36" rx="6" class="rg-box"/>
+        <text x="100" y="265" text-anchor="middle" class="rg-t">유사도 검색</text>
+
+        <path d="M160,260 L180,260 L180,220 L196,220" class="rg-a" marker-end="url(#rga)"/>
+        <rect x="200" y="200" width="100" height="40" rx="6" class="rg-box"/>
+        <text x="250" y="225" text-anchor="middle" class="rg-t">벡터 DB</text>
+        <text x="250" y="256" text-anchor="middle" class="rg-s">미리 잘라 둔 문서 조각</text>
+        <path d="M300,220 L326,220" class="rg-a" marker-end="url(#rga)"/>
+        <rect x="330" y="200" width="100" height="40" rx="6" class="rg-box"/>
+        <text x="380" y="225" text-anchor="middle" class="rg-t">비슷한 조각</text>
+
+        <path d="M430,220 L470,220 L470,262 L496,262" class="rg-a" marker-end="url(#rga)"/>
+        <rect x="500" y="240" width="160" height="44" rx="8" class="rg-box"/>
+        <text x="580" y="260" text-anchor="middle" class="rg-t">프롬프트</text>
+        <text x="580" y="276" text-anchor="middle" class="rg-s">② 질문 + 찾은 조각</text>
+        <path d="M580,240 L580,204" class="rg-a" marker-end="url(#rga)"/>
+        <rect x="500" y="160" width="160" height="40" rx="8" class="rg-box"/>
+        <text x="580" y="185" text-anchor="middle" class="rg-t">LLM</text>
+        <path d="M580,160 L580,124" class="rg-a" marker-end="url(#rga)"/>
+        <rect x="500" y="80" width="160" height="40" rx="8" class="rg-box"/>
+        <text x="580" y="105" text-anchor="middle" class="rg-t">③ 답변</text>
+      </svg>
+      <figcaption>RAG의 세 글자가 곧 세 단계예요. ① 찾기(Retrieval) — 질문을 벡터로 바꿔 뜻이 비슷한 조각을 꺼내요. ② 덧붙이기(Augmented) — 꺼낸 조각을 질문과 함께 프롬프트에 넣어요. ③ 만들기(Generation) — LLM이 그 조각을 근거로 답해요. 모델 자체는 한 글자도 바뀌지 않고, 프롬프트에 들어간 정보만 달라져요.</figcaption>
+    </figure>
     <p>다만 창고지기가 엉뚱한 상자를 가져오면 소용없다. 한 비교 연구(Li 등, 2024)에서는 검색 결과 1위 상자만 쓰는 RAG가 문서 전체를 싣는 방식보다 특정 벤치마크에서 더 낮은 점수(20.24 대 45.53)를 냈다. <strong>검색 결과 한 번을 답의 전부로 믿지 말라</strong>는 뜻이다. 반품 정책의 한 조항만 찾았다면, 배송비나 예외 조항이 빠지지 않았는지 검사하고, 부족하면 다시 찾거나 문서 전체로 돌아가야 한다.</p>
 
     <h2><span class="hl">압축할 때 조심할 것</span> — 요약이 사실을 빠뜨릴 수 있다</h2>

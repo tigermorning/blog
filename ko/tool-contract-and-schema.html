@@ -27,6 +27,8 @@
     <p class="post-date">2026. 8. 27.</p>
     <p class="post-date">※ 이 글은 모두의연구소 AI AIFFEL 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
 
+    <p class="one-liner">도구 정의서는 이름·하는 일·쓸 때와 안 쓸 때·입력 규격·반환 형식·실패 처리의 <strong>여섯 칸</strong>으로 도구를 설명하는 문서다.</p>
+
     <div class="why-read">
       <p class="why-read-title">이 글을 읽기 전에</p>
       <dl>
@@ -226,7 +228,7 @@
 
     <h2>6. <span class="hl">남이 만든 도구 붙이기</span> — MCP와 RAG</h2>
     <p>여기서 한 단계 더 나아가, 자기가 만든 도구가 아니라 <strong>남이 만든 도구</strong>를 붙이는 실습도 했다. 문서 검색 서버인 Qdrant(문서 조각을 의미 기반으로 찾아 돌려주는 오픈소스 검색 엔진)를 1편에서 설명한 MCP 방식으로 등록하는 실습이다.</p>
-    <p>이 방식을 <strong>RAG(Retrieval-Augmented Generation, 검색 증강 생성)</strong>라 부르는데, 모델이 답을 순전히 기억에서 지어내는 대신 관련 문서를 먼저 찾아 그 내용을 근거로 답하게 만드는 구조다. RAG를 왜 쓰는지, 무엇을 근거로 넣을지 정하는 법은 <a href="context-strategy-and-rag.html">무엇을 넣을지 정하는 법 — RAG</a>에 따로 자세히 정리해 뒀으니 여기서는 이 실습에서 새로 나온 두 낱말만 짚는다.</p>
+    <p>이 방식을 <strong>RAG(Retrieval-Augmented Generation, 검색 증강 생성)</strong>라 부른다. 한마디로 LLM에게 정보를 주입하는 방법으로, 모델이 답을 순전히 기억에서 지어내는 대신 관련 문서를 먼저 찾아 그 내용을 근거로 답하게 만든다. RAG를 왜 쓰는지, 무엇을 근거로 넣을지 정하는 법은 <a href="context-strategy-and-rag.html">무엇을 넣을지 정하는 법 — RAG</a>에 따로 자세히 정리해 뒀으니 여기서는 이 실습에서 새로 나온 두 낱말만 짚는다.</p>
     <ul>
       <li><strong>임베딩(embedding)</strong> — 문장을 컴퓨터가 "의미가 비슷한지"를 계산할 수 있는 숫자 배열로 바꾸는 과정. "재고 확인 방법"과 "재고 조회하는 법"처럼 표현은 달라도 뜻이 비슷한 문장을 찾아낼 수 있게 해준다.</li>
       <li><strong>벡터 데이터베이스(vector database)</strong> — 이렇게 숫자로 바꾼 값들을 모아두고, 새 질문이 들어오면 의미가 가장 비슷한 것을 빠르게 찾아주는 저장소. Qdrant가 이 역할을 한다.</li>
