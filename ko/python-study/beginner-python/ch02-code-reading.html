@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>파이썬 2장 코드 읽기 실습</title>
+<meta name="description" content="왕초보를 위한 Python 1장~2장(2.2.6) 범위로 만든 while·if-elif-else 코드 읽기 실습 18문제와 해설">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=JetBrains+Mono:wght@400;600&family=Nanum+Gothic+Coding:wght@400;700&display=swap">
+<style>
+:root {
+  --ground: #F3F6F5;
+  --surface: #FFFFFF;
+  --sunken: #E8EEEC;
+  --ink: #18221F;
+  --ink-soft: #4B5A56;
+  --ink-faint: #7C8A86;
+  --line: #D3DCD9;
+  --accent: #2B5B84;
+  --accent-ink: #FFFFFF;
+  --memo: #FFF6D1;
+  --memo-line: #E3C75A;
+  --lv-basic: #2A7563;
+  --lv-basic-bg: #DDEFE9;
+  --lv-mid: #2B5B84;
+  --lv-mid-bg: #DCE8F3;
+  --lv-adv: #7A3E6E;
+  --lv-adv-bg: #F0E0EC;
+  --code-bg: #1C2724;
+  --code-ink: #DCE5E1;
+  --c-kw: #F2C94C;
+  --c-str: #9FD8A8;
+  --c-num: #F4A37A;
+  --c-com: #7F938D;
+  --c-fn: #8CC4F2;
+  --c-meta: #6F827C;
+  --font-display: "Hahmlet", "Noto Serif KR", "Batang", serif;
+  --font-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Nanum Gothic Coding", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #111816;
+    --surface: #18211F;
+    --sunken: #1F2A27;
+    --ink: #E2EAE7;
+    --ink-soft: #A7B5B0;
+    --ink-faint: #74847F;
+    --line: #2C3935;
+    --accent: #7FB2E0;
+    --accent-ink: #0E1A24;
+    --memo: #2A2717;
+    --memo-line: #8C7A33;
+    --lv-basic: #7ACCB5;
+    --lv-basic-bg: #1B322B;
+    --lv-mid: #8DBBE6;
+    --lv-mid-bg: #1C2B38;
+    --lv-adv: #D9A3CC;
+    --lv-adv-bg: #33222F;
+    --code-bg: #0B110F;
+    --code-ink: #D6E0DC;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #111816;
+  --surface: #18211F;
+  --sunken: #1F2A27;
+  --ink: #E2EAE7;
+  --ink-soft: #A7B5B0;
+  --ink-faint: #74847F;
+  --line: #2C3935;
+  --accent: #7FB2E0;
+  --accent-ink: #0E1A24;
+  --memo: #2A2717;
+  --memo-line: #8C7A33;
+  --lv-basic: #7ACCB5;
+  --lv-basic-bg: #1B322B;
+  --lv-mid: #8DBBE6;
+  --lv-mid-bg: #1C2B38;
+  --lv-adv: #D9A3CC;
+  --lv-adv-bg: #33222F;
+  --code-bg: #0B110F;
+  --code-ink: #D6E0DC;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15.5px;
+  line-height: 1.7;
+  padding-inline: 20px;
+  padding-block: 0 80px;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+.wrap {
+  max-width: 1100px;
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 48px;
+}
+
+/* ---------- header ---------- */
+.masthead {
+  grid-column: 1 / -1;
+  padding-block: 48px 8px;
+  display: grid;
+  gap: 14px;
+  max-width: 760px;
+}
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+}
+.eyebrow b { color: var(--ink-soft); font-weight: 600; }
+h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(30px, 5vw, 44px);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin: 0;
+  text-wrap: balance;
+}
+h1 .prompt { font-family: var(--font-mono); color: var(--accent); font-weight: 600; font-size: 0.7em; vertical-align: 0.12em; margin-right: 0.3em; }
+.lead { margin: 0; color: var(--ink-soft); max-width: 62ch; }
+.counts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.count {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}
+.count.basic { background: var(--lv-basic-bg); color: var(--lv-basic); }
+.count.mid { background: var(--lv-mid-bg); color: var(--lv-mid); }
+.count.adv { background: var(--lv-adv-bg); color: var(--lv-adv); }
+.count.all { background: var(--sunken); color: var(--ink-soft); }
+
+/* ---------- sidebar ---------- */
+.toc {
+  position: sticky;
+  top: 24px;
+  align-self: start;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  padding-block: 8px;
+  font-size: 13.5px;
+}
+.toc h2 {
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+  font-weight: 600;
+  margin: 18px 0 6px;
+}
+.toc h2:first-child { margin-top: 0; }
+.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; }
+.toc a {
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  gap: 6px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  padding: 3px 8px;
+  border-radius: 6px;
+  line-height: 1.45;
+}
+.toc a:hover { background: var(--sunken); color: var(--ink); }
+.toc a .n { font-family: var(--font-mono); font-size: 12px; color: var(--ink-faint); font-variant-numeric: tabular-nums; padding-top: 1px; }
+.toc .grp-basic h2 { color: var(--lv-basic); }
+.toc .grp-mid h2 { color: var(--lv-mid); }
+.toc .grp-adv h2 { color: var(--lv-adv); }
+
+main { min-width: 0; display: grid; gap: 56px; }
+
+/* ---------- toolbar ---------- */
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--ground);
+  padding-block: 12px;
+  margin-block: -12px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid var(--line);
+}
+.seg { display: flex; flex-wrap: wrap; gap: 4px; }
+.seg button, .ghost {
+  font: 500 13.5px/1 var(--font-body);
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid var(--line);
+  padding: 8px 13px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.seg button:hover, .ghost:hover { color: var(--ink); border-color: var(--ink-faint); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--ground); border-color: var(--ink); }
+
+/* ---------- intro blocks ---------- */
+.intro { display: grid; gap: 28px; }
+h2.sec {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 22px;
+  margin: 0 0 12px;
+  text-wrap: balance;
+}
+.howto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+.howto div {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: grid;
+  gap: 6px;
+  align-content: start;
+}
+.howto .k { font-family: var(--font-mono); font-size: 12.5px; font-weight: 600; color: var(--accent); }
+.howto ul, .p-body ul, .sol ul { margin: 0; padding-left: 1.1em; display: grid; gap: 3px; }
+.howto li { font-size: 14px; color: var(--ink-soft); }
+.note { font-size: 14px; color: var(--ink-soft); margin: 12px 0 0; }
+
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 8px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+th { font-size: 12px; letter-spacing: 0.05em; color: var(--ink-faint); font-weight: 600; background: var(--sunken); }
+td.src { color: var(--ink-faint); font-size: 13px; white-space: nowrap; }
+.table-scroll.fill td, .table-scroll.fill th { text-align: center; font-variant-numeric: tabular-nums; font-family: var(--font-mono); font-size: 13px; }
+.table-scroll.fill td:first-child, .table-scroll.fill th:first-child { text-align: left; }
+
+code { font-family: var(--font-mono); font-size: 0.88em; background: var(--sunken); padding: 1px 5px; border-radius: 4px; }
+pre { margin: 0; }
+pre code {
+  display: block;
+  background: var(--code-bg);
+  color: var(--code-ink);
+  padding: 14px 18px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  line-height: 1.65;
+  overflow-x: auto;
+  tab-size: 4;
+}
+pre.out code { background: var(--sunken); color: var(--ink); border: 1px dashed var(--line); }
+pre.out { position: relative; }
+pre.out::before {
+  content: "출력";
+  position: absolute; top: 6px; right: 10px;
+  font: 600 10.5px/1 var(--font-body); letter-spacing: 0.08em; color: var(--ink-faint);
+}
+.hljs-keyword, .hljs-literal { color: var(--c-kw); }
+.hljs-string { color: var(--c-str); }
+.hljs-number { color: var(--c-num); }
+.hljs-comment { color: var(--c-com); font-style: italic; }
+.hljs-built_in, .hljs-title { color: var(--c-fn); }
+.hljs-meta { color: var(--c-meta); }
+
+/* ---------- level sections ---------- */
+.level { display: grid; gap: 18px; }
+/* display:grid가 hidden 속성을 덮어쓰지 않게 — 난이도 필터가 이 속성으로 숨긴다 */
+[data-level][hidden] { display: none; }
+.level-head { display: grid; gap: 4px; padding-bottom: 4px; }
+.level-head .tag {
+  justify-self: start;
+  font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+  padding: 2px 10px; border-radius: 999px;
+}
+.level-head h2 { font-family: var(--font-display); font-weight: 700; font-size: 28px; margin: 0; text-wrap: balance; }
+.level-head p { margin: 0; color: var(--ink-soft); max-width: 62ch; }
+.level.basic { --lv: var(--lv-basic); --lv-bg: var(--lv-basic-bg); }
+.level.mid { --lv: var(--lv-mid); --lv-bg: var(--lv-mid-bg); }
+.level.adv { --lv: var(--lv-adv); --lv-bg: var(--lv-adv-bg); }
+.level-head .tag { background: var(--lv-bg); color: var(--lv); }
+
+/* ---------- problem ---------- */
+.problem {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 22px 24px;
+  display: grid;
+  gap: 14px;
+}
+.p-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px; }
+.p-id { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--lv); font-variant-numeric: tabular-nums; }
+.p-type {
+  font-size: 12px; font-weight: 600; letter-spacing: 0.02em;
+  color: var(--ink-soft); border: 1px solid var(--line); border-radius: 5px; padding: 0 7px;
+}
+.problem h3 { font-family: var(--font-display); font-weight: 500; font-size: 19px; margin: 0; flex-basis: 100%; line-height: 1.4; text-wrap: balance; }
+.p-body { display: grid; gap: 12px; max-width: 70ch; }
+.p-body p { margin: 0; }
+.p-body li, .sol li { padding-left: 2px; }
+.spec { font-size: 14px; color: var(--ink-soft); }
+
+.memo { display: grid; gap: 6px; }
+.memo label { font-size: 12.5px; font-weight: 600; color: var(--ink-soft); display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.memo label span { font-weight: 400; color: var(--ink-faint); }
+.memo textarea {
+  width: 100%;
+  min-height: 72px;
+  resize: vertical;
+  font: 13.5px/1.6 var(--font-mono);
+  color: var(--ink);
+  background: var(--memo);
+  border: 1px dashed var(--memo-line);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+details.sol { border-top: 1px solid var(--line); padding-top: 12px; }
+details.sol summary {
+  cursor: pointer;
+  list-style: none;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-weight: 600; font-size: 14px; color: var(--lv);
+  padding: 4px 0;
+}
+details.sol summary::-webkit-details-marker { display: none; }
+details.sol summary::before {
+  content: "";
+  width: 7px; height: 7px;
+  border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform .15s;
+}
+details.sol[open] summary::before { transform: rotate(45deg); }
+@media (prefers-reduced-motion: reduce) { details.sol summary::before { transition: none; } }
+.sol-body { display: grid; gap: 12px; padding-top: 10px; max-width: 70ch; }
+.sol-body p { margin: 0; }
+.sol-body h4 { margin: 4px 0 0; font-size: 13px; letter-spacing: 0.04em; color: var(--ink-faint); font-weight: 600; }
+.sol-body .real { background: var(--lv-bg); border-radius: 8px; padding: 10px 14px; font-size: 14.5px; }
+.sol-body .real b { color: var(--lv); }
+
+footer { grid-column: 1 / -1; color: var(--ink-faint); font-size: 13px; border-top: 1px solid var(--line); padding-top: 18px; }
+
+@media (max-width: 860px) {
+  .wrap { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .toc { display: none; }
+  .masthead { padding-top: 32px; }
+  .problem { padding: 18px 16px; }
+  pre code { font-size: 13px; padding: 12px 14px; }
+}
+body { margin: 0; }
+.backlink { font-family: var(--font-body); font-size: 13px; text-decoration: none; }
+.backlink:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="masthead">
+    <a class="backlink" href="../../posts.html#python-basics-books">← Tigermorning 블로그 · 파이썬 스터디 › 왕초보를 위한 Python</a>
+    <div class="eyebrow"><b>왕초보를 위한 Python</b> · 2장 제어 구조 · 2.1 while ~ 2.2.6 (1장 문법 포함)</div>
+    <h1><span class="prompt">&gt;&gt;&gt;</span>2장 코드 읽기 실습</h1>
+    <p class="lead">while과 if-elif-else를 1장의 변수·문자열·리스트와 섞어서, <b>실제 코드에서 마주치는 모양</b>으로 읽어 보는 문제집. 2.2.6까지 배운 문법만 씁니다(and/or, for, continue는 아직 안 나와요). 해설은 문제마다 접혀 있으니 다 푼 뒤에 여세요.</p>
+    <div class="counts">
+      <span class="count all">18문제</span>
+      <span class="count basic">기본 6</span>
+      <span class="count mid">중급 6</span>
+      <span class="count adv">상급 6</span>
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="문제 목록">
+    <div><h2>시작 전에</h2>
+      <ol>
+        <li><a href="#howto"><span class="n">·</span>진행 방법</a></li>
+        <li><a href="#tools"><span class="n">·</span>2장 도구 모음</a></li>
+      </ol>
+    </div>
+    <div class="grp-basic"><h2>기본</h2>
+      <ol>
+        <li><a href="#b1"><span class="n">1</span>다섯까지 세기</a></li>
+        <li><a href="#b2"><span class="n">2</span>카운트다운</a></li>
+        <li><a href="#b3"><span class="n">3</span>멈추지 않는 반복문</a></li>
+        <li><a href="#b4"><span class="n">4</span>부호 판별기</a></li>
+        <li><a href="#b5"><span class="n">5</span>while로 성적 합계 내기</a></li>
+        <li><a href="#b6"><span class="n">6</span>홀수만 골라 출력하기</a></li>
+      </ol>
+    </div>
+    <div class="grp-mid"><h2>중급</h2>
+      <ol>
+        <li><a href="#m1"><span class="n">1</span>"그만"이라고 할 때까지</a></li>
+        <li><a href="#m2"><span class="n">2</span>성적 등급이 이상하다</a></li>
+        <li><a href="#m3"><span class="n">3</span>바나나의 'a' 개수 세기</a></li>
+        <li><a href="#m4"><span class="n">4</span>음수만 있는 리스트의 최댓값</a></li>
+        <li><a href="#m5"><span class="n">5</span>짝수·홀수 동시에 세기</a></li>
+        <li><a href="#m6"><span class="n">6</span>원하는 단의 구구단</a></li>
+      </ol>
+    </div>
+    <div class="grp-adv"><h2>상급</h2>
+      <ol>
+        <li><a href="#a1"><span class="n">1</span>비밀번호 3번의 기회</a></li>
+        <li><a href="#a2"><span class="n">2</span>놀이공원 요금 판정</a></li>
+        <li><a href="#a3"><span class="n">3</span>1년 뒤 적금 잔액</a></li>
+        <li><a href="#a4"><span class="n">4</span>elif를 안 썼더니</a></li>
+        <li><a href="#a5"><span class="n">5</span>합격 점수 자동 판정기</a></li>
+        <li><a href="#a6"><span class="n">6</span>처음 보는 초기화 문법</a></li>
+      </ol>
+    </div>
+  </nav>
+
+  <main>
+    <div class="toolbar">
+      <div class="seg" role="group" aria-label="난이도 필터">
+        <button type="button" id="f-all" data-filter="all" aria-pressed="true">전체</button>
+        <button type="button" id="f-basic" data-filter="basic" aria-pressed="false">기본</button>
+        <button type="button" id="f-mid" data-filter="mid" aria-pressed="false">중급</button>
+        <button type="button" id="f-adv" data-filter="adv" aria-pressed="false">상급</button>
+      </div>
+      <button type="button" class="ghost" id="toggle-sol">해설 모두 펼치기</button>
+    </div>
+
+    <div class="intro" data-level="intro">
+      <section id="howto">
+        <h2 class="sec">진행 방법 (5명 기준)</h2>
+        <div class="howto">
+          <div>
+            <span class="k">[읽기] 문제</span>
+            <ul>
+              <li>실행 전에 각자 결과를 적기</li>
+              <li>다 같이 공개한 뒤 실행하기</li>
+              <li>발표자가 이유를 한 줄로 설명하기</li>
+            </ul>
+          </div>
+          <div>
+            <span class="k">[버그] 문제</span>
+            <ul>
+              <li>무엇이 잘못됐는지 말로 먼저 설명하기</li>
+              <li>그다음 고친 코드 쓰기</li>
+            </ul>
+          </div>
+          <div>
+            <span class="k">[작성] 문제</span>
+            <ul>
+              <li>각자 10분 동안 작성하기</li>
+              <li>코드를 바꿔 읽고 서로의 출력 예측하기</li>
+            </ul>
+          </div>
+        </div>
+        <p class="note">발표자는 문제마다 돌아가며 맡습니다. 틀린 예측이 가장 좋은 공부 거리이니, "처음에 이렇게 생각했다"를 꼭 공유하세요. 문제마다 있는 메모 칸은 지금 쓰는 브라우저에만 저장됩니다.</p>
+      </section>
+
+      <section id="tools">
+        <h2 class="sec">2장에서 배운 도구 모음 (1장 도구는 계속 씁니다)</h2>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>분류</th><th>도구</th><th>교재 위치</th></tr></thead>
+            <tbody>
+              <tr><td>반복</td><td><code>while 조건:</code> — 조건이 참인 동안 반복</td><td class="src">2.1</td></tr>
+              <tr><td>반복</td><td><code>while True:</code> + <code>break</code> — 멈출 신호가 올 때까지 반복</td><td class="src">2.2</td></tr>
+              <tr><td>조건</td><td><code>if</code> / <code>elif</code> / <code>else</code> — 위에서부터 검사해 처음 참인 것 하나만 실행</td><td class="src">2.2</td></tr>
+              <tr><td>비교</td><td><code>==</code> 같다, <code>!=</code> 다르다, <code>a &lt;= b &lt;= c</code> 연쇄 비교</td><td class="src">2.2, 2.2.6</td></tr>
+              <tr><td>자리표시</td><td><code>pass</code> — 아무 일도 하지 않음</td><td class="src">2.2.3</td></tr>
+              <tr><td>줄임</td><td><code>num += 1</code>, <code>num -= 1</code> (= <code>num = num ± 1</code>)</td><td class="src">2.1</td></tr>
+              <tr><td>초기화</td><td><code>i, total = 0, 0</code> — 여러 변수를 한 줄에</td><td class="src">2.2.6</td></tr>
+              <tr><td>1장 복습</td><td><code>len()</code>, <code>리스트[번호]</code>, <code>.append()</code>, <code>%</code>, <code>input()</code>/<code>int()</code>, <code>'a' * n</code></td><td class="src">1장</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- ================= 기본 ================= -->
+    <section class="level basic" data-level="basic">
+      <div class="level-head">
+        <span class="tag">기본</span>
+        <h2>while·if가 코드 안에서 어떻게 흐르는지 확인하기</h2>
+        <p>변수 값이 반복마다 어떻게 바뀌는지, 조건이 언제 참·거짓이 되는지 손으로 표까지 그리며 따라갑니다.</p>
+      </div>
+
+      <article class="problem" id="b1">
+        <div class="p-head"><span class="p-id">기본 1</span><span class="p-type">읽기</span><h3>다섯까지 세기</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">n = 1
+while n &lt;= 5:
+    print(n)
+    n += 1</code></pre>
+          <ul>
+            <li>출력을 예측하기</li>
+            <li>몇 번째 검사에서 반복이 끝나는지 설명하기</li>
+          </ul>
+        </div>
+        <div class="memo"><label for="memo-b1">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b1"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">1
+2
+3
+4
+5</code></pre>
+            <ul>
+              <li><code>n</code>이 <code>6</code>이 되는 순간 <code>n &lt;= 5</code>가 거짓이 되어 반복이 끝남</li>
+              <li>6은 화면에 찍히지 않음 — 조건 검사가 <code>print()</code>보다 먼저 일어나기 때문</li>
+            </ul>
+            <p class="real"><b>실제 코드에서</b> · "몇 번 반복했는지"와 "몇에서 멈췄는지"는 항상 한 칸 차이 날 수 있음을 기억하기</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="b2">
+        <div class="p-head"><span class="p-id">기본 2</span><span class="p-type">읽기</span><h3>카운트다운</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">count = 5
+while count &gt; 0:
+    print(count)
+    count -= 1
+print('발사!')</code></pre>
+          <ul>
+            <li>출력을 예측하기</li>
+            <li><code>'발사!'</code>가 while 몸통 안에 있지 않은 이유를 들여쓰기로 설명하기</li>
+          </ul>
+        </div>
+        <div class="memo"><label for="memo-b2">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b2"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">5
+4
+3
+2
+1
+발사!</code></pre>
+            <ul>
+              <li><code>count</code>가 <code>0</code>이 되면 <code>count &gt; 0</code>이 거짓 → 반복 끝</li>
+              <li><code>print('발사!')</code>는 while과 같은 들여쓰기 위치 → 몸통이 아니라 반복이 끝난 뒤 <b>딱 한 번</b> 실행</li>
+            </ul>
+            <p class="real"><b>실제 코드에서</b> · 반복이 끝난 뒤 마무리 인사·요약을 출력하는 자리는 항상 while과 같은 들여쓰기 위치</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="b3">
+        <div class="p-head"><span class="p-id">기본 3</span><span class="p-type">버그</span><h3>멈추지 않는 반복문</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">n = 1
+while n &lt;= 3:
+    print(n)</code></pre>
+          <ul>
+            <li>이 코드를 실행하면 어떻게 되는지 예측하기 (직접 실행하지는 말기)</li>
+            <li>원인을 한 줄로 설명하고, 고친 코드 쓰기</li>
+          </ul>
+        </div>
+        <div class="memo"><label for="memo-b3">원인과 고친 코드 <span>이 브라우저에만 저장</span></label><textarea id="memo-b3"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">1
+1
+1
+1
+1
+...(멈추지 않고 계속됨)</code></pre>
+            <ul>
+              <li>몸통 안에 <code>n</code>을 바꾸는 줄이 없음 → <code>n</code>이 영원히 <code>1</code></li>
+              <li><code>1 &lt;= 3</code>은 항상 참이라 조건이 절대 거짓이 되지 않음 → 무한 루프</li>
+            </ul>
+            <h4>고친 코드</h4>
+<pre><code class="language-python">n = 1
+while n &lt;= 3:
+    print(n)
+    n += 1</code></pre>
+            <p class="real"><b>실제 코드에서</b> · 프로그램이 응답 없음 상태가 되면 가장 먼저 가까운 while 몸통에 "조건을 바꾸는 줄"이 있는지부터 확인하기</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="b4">
+        <div class="p-head"><span class="p-id">기본 4</span><span class="p-type">읽기</span><h3>부호 판별기</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">num = int(input())
+if num &gt; 0:
+    print('양수')
+elif num &lt; 0:
+    print('음수')
+else:
+    print('0')</code></pre>
+          <p class="spec">입력값 <code>-5</code>, <code>0</code>, <code>7</code>일 때 각각의 출력을 예측하기</p>
+        </div>
+        <div class="memo"><label for="memo-b4">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b4"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+            <div class="table-scroll fill">
+              <table>
+                <thead><tr><th>num</th><th>-5</th><th>0</th><th>7</th></tr></thead>
+                <tbody><tr><td>출력</td><td>음수</td><td>0</td><td>양수</td></tr></tbody>
+              </table>
+            </div>
+            <ul>
+              <li><code>num == 0</code>일 때는 <code>num &gt; 0</code>도 <code>num &lt; 0</code>도 둘 다 거짓 → 결국 <code>else</code>가 실행됨</li>
+              <li>세 조건이 서로 겹치지 않아서(양수·음수·0), 순서를 바꿔도 결과는 같음 — 2.2.2·2.2.3의 elif 순서 문제와는 다른 경우</li>
+            </ul>
+            <p class="real"><b>실제 코드에서</b> · 조건들이 서로 완전히 겹치지 않을 때만 elif 순서를 자유롭게 바꿀 수 있음</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="b5">
+        <div class="p-head"><span class="p-id">기본 5</span><span class="p-type">읽기</span><h3>while로 성적 합계 내기</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">scores = [80, 90, 70]
+i = 0
+total = 0
+while i &lt; len(scores):
+    total += scores[i]
+    i += 1
+print(total)</code></pre>
+          <ul>
+            <li>출력을 예측하기</li>
+            <li><code>i</code>가 <code>len(scores)</code>와 같아지는 순간 무슨 일이 생기는지 설명하기</li>
+          </ul>
+        </div>
+        <div class="memo"><label for="memo-b5">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b5"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">240</code></pre>
+            <div class="table-scroll fill">
+              <table>
+                <thead><tr><th>i</th><th>scores[i]</th><th>total</th></tr></thead>
+                <tbody>
+                  <tr><td>0</td><td>80</td><td>80</td></tr>
+                  <tr><td>1</td><td>90</td><td>170</td></tr>
+                  <tr><td>2</td><td>70</td><td>240</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <ul>
+              <li><code>i</code>가 <code>3</code>이 되면 <code>len(scores)</code>(=3)와 같아져서 <code>i &lt; len(scores)</code>가 거짓 → 반복 끝</li>
+              <li>인덱스가 <code>0</code>부터 시작하므로 조건을 <code>&lt;</code>로 써야 딱 맞음 (1장 기본 5의 <code>len(members) - 1</code>과 같은 원리)</li>
+            </ul>
+            <p class="real"><b>실제 코드에서</b> · 리스트를 하나씩 훑는 이 모양은 2.3절에서 배울 <code>for x in scores:</code>로 훨씬 짧게 쓸 수 있음</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="b6">
+        <div class="p-head"><span class="p-id">기본 6</span><span class="p-type">작성</span><h3>홀수만 골라 출력하기</h3></div>
+        <div class="p-body">
+          <ul>
+            <li>파일 이름: <code>odds.py</code></li>
+            <li>정수를 입력받아, 1부터 그 수까지 중 홀수만 한 줄에 하나씩 출력하기</li>
+            <li>조건: <code>while</code>과 <code>%</code>를 사용하기</li>
+          </ul>
+<pre class="out"><code class="nohighlight">입력: 7
+출력:
+1
+3
+5
+7</code></pre>
+        </div>
+        <div class="memo"><label for="memo-b6">내 코드 <span>이 브라우저에만 저장</span></label><textarea id="memo-b6"></textarea></div>
+        <details class="sol"><summary>풀이 예시 보기</summary>
+          <div class="sol-body">
+<pre><code class="language-python">n = int(input())
+i = 1
+while i &lt;= n:
+    if i % 2 == 1:
+        print(i)
+    i += 1</code></pre>
+            <ul>
+              <li><code>i</code>는 1부터 n까지 전부 훑는 카운터, <code>i % 2 == 1</code>은 "홀수인가"를 검사하는 조건</li>
+              <li>반복(while)과 선택(if)이 함께 있는 가장 기본적인 모양</li>
+            </ul>
+          </div>
+        </details>
+      </article>
+    </section>
+
+    <!-- ================= 중급 ================= -->
+    <section class="level mid" data-level="mid">
+      <div class="level-head">
+        <span class="tag">중급</span>
+        <h2>실제 코드에 자주 나오는 패턴 해석하기</h2>
+        <p>입력을 계속 받기, 등급 매기기, 리스트 훑기처럼 진짜 프로그램에서 매일 보이는 모양입니다. 버그 찾기가 섞여 있습니다.</p>
+      </div>
+
+      <article class="problem" id="m1">
+        <div class="p-head"><span class="p-id">중급 1</span><span class="p-type">읽기</span><h3>"그만"이라고 할 때까지</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">names = []
+while True:
+    name = input()
+    if name == '그만':
+        break
+    names.append(name)
+print(names)</code></pre>
+          <p class="spec">입력이 순서대로 <code>지민</code>, <code>서준</code>, <code>그만</code>일 때 출력을 예측하기</p>
+        </div>
+        <div class="memo"><label for="memo-m1">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m1"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">['지민', '서준']</code></pre>
+            <div class="table-scroll fill">
+              <table>
+                <thead><tr><th>입력</th><th>name == '그만' ?</th><th>동작</th></tr></thead>
+                <tbody>
+                  <tr><td>지민</td><td>거짓</td><td>리스트에 추가</td></tr>
+                  <tr><td>서준</td><td>거짓</td><td>리스트에 추가</td></tr>
+                  <tr><td>그만</td><td>참</td><td>break로 반복 종료 (추가 안 함)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <ul>
+              <li><code>'그만'</code> 자체는 리스트에 들어가지 않음 — <code>break</code>가 <code>append()</code>보다 먼저 실행되기 때문</li>
+              <li>몇 명이 입력할지 미리 정해 두지 않아도 되는 모양 (2.2절 <code>ten.py</code>와 같은 <code>while True</code> + <code>break</code> 패턴)</li>
+            </ul>
+            <p class="real"><b>실제 코드에서</b> · 설문·채팅·장바구니처럼 "사용자가 그만할 때까지" 받는 입력에 이 모양이 그대로 쓰임</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="m2">
+        <div class="p-head"><span class="p-id">중급 2</span><span class="p-type">버그</span><h3>성적 등급이 이상하다</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">score = 95
+if score &gt;= 70:
+    grade = 'C'
+elif score &gt;= 80:
+    grade = 'B'
+elif score &gt;= 90:
+    grade = 'A'
+else:
+    grade = 'F'
+print(grade)</code></pre>
+          <ul>
+            <li>작성자는 95점이니 <code>'A'</code>가 나오길 기대했음</li>
+            <li>실제 출력을 예측하기</li>
+            <li>원인을 설명하고 고친 코드 쓰기</li>
+          </ul>
+        </div>
+        <div class="memo"><label for="memo-m2">원인과 고친 코드 <span>이 브라우저에만 저장</span></label><textarea id="memo-m2"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">C</code></pre>
+            <ul>
+              <li><code>score &gt;= 70</code>이 가장 먼저 검사되는데, 95도 70 이상이라 <b>이 조건이 바로 참</b>이 됨</li>
+              <li>elif 체인은 처음 참인 조건 하나만 쓰고 나머지는 검사하지 않으므로 <code>'C'</code>에서 멈춤</li>
+              <li><code>&gt;=</code> 조건은 큰 값부터 검사해야 함 (2장 해설 Q13과 같은 원인)</li>
+            </ul>
+            <h4>고친 코드</h4>
+<pre><code class="language-python">score = 95
+if score &gt;= 90:
+    grade = 'A'
+elif score &gt;= 80:
+    grade = 'B'
+elif score &gt;= 70:
+    grade = 'C'
+else:
+    grade = 'F'
+print(grade)</code></pre>
+            <p class="real"><b>실제 코드에서</b> · 등급·요금제·할인율처럼 구간을 나누는 elif는 순서 버그가 가장 흔함 — 에러 없이 조용히 틀림</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="m3">
+        <div class="p-head"><span class="p-id">중급 3</span><span class="p-type">읽기</span><h3>바나나의 'a' 개수 세기</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">word = 'banana'
+i = 0
+count = 0
+while i &lt; len(word):
+    if word[i] == 'a':
+        count += 1
+    i += 1
+print(count)</code></pre>
+          <ul>
+            <li>출력을 예측하기</li>
+            <li><code>word[i]</code>가 한 글자씩 무엇을 가리키는지 <code>i</code>값별로 나열하기</li>
+          </ul>
+        </div>
+        <div class="memo"><label for="memo-m3">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m3"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">3</code></pre>
+            <div class="table-scroll fill">
+              <table>
+                <thead><tr><th>i</th><th>word[i]</th><th>'a'인가?</th><th>count</th></tr></thead>
+                <tbody>
+                  <tr><td>0</td><td>b</td><td>아니오</td><td>0</td></tr>
+                  <tr><td>1</td><td>a</td><td>예</td><td>1</td></tr>
+                  <tr><td>2</td><td>n</td><td>아니오</td><td>1</td></tr>
+                  <tr><td>3</td><td>a</td><td>예</td><td>2</td></tr>
+                  <tr><td>4</td><td>n</td><td>아니오</td><td>2</td></tr>
+                  <tr><td>5</td><td>a</td><td>예</td><td>3</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <ul>
+              <li>문자열도 리스트처럼 <code>word[i]</code>로 한 글자씩 꺼낼 수 있음 (1장 인덱싱과 같은 문법)</li>
+              <li>while과 인덱스로 문자열을 한 글자씩 훑는 이 모양은 2.3절의 <code>for ch in word:</code>로 더 짧게 쓸 수 있음</li>
+            </ul>
+            <p class="real"><b>실제 코드에서</b> · 특정 글자·단어의 개수를 세는 이 모양은 검색·통계 코드에 자주 나옴</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="m4">
+        <div class="p-head"><span class="p-id">중급 4</span><span class="p-type">버그</span><h3>음수만 있는 리스트의 최댓값</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">nums = [-5, -2, -8]
+max_val = 0
+i = 0
+while i &lt; len(nums):
+    if nums[i] &gt; max_val:
+        max_val = nums[i]
+    i += 1
+print(max_val)</code></pre>
+          <ul>
+            <li>작성자는 <code>nums</code>에서 가장 큰 값인 <code>-2</code>가 나오길 기대했음</li>
+            <li>실제 출력을 예측하기</li>
+            <li>원인을 설명하고 고친 코드 쓰기</li>
+          </ul>
+        </div>
+        <div class="memo"><label for="memo-m4">원인과 고친 코드 <span>이 브라우저에만 저장</span></label><textarea id="memo-m4"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">0</code></pre>
+            <ul>
+              <li><code>max_val</code>의 시작값이 <code>0</code>인데, <code>nums</code>의 원소가 전부 <code>0</code>보다 작은 음수라서 <code>nums[i] &gt; max_val</code>이 단 한 번도 참이 안 됨</li>
+              <li>그래서 <code>max_val</code>은 끝까지 처음 값 <code>0</code> 그대로 출력됨 — 리스트 안에는 없는 값인데도 에러가 안 남</li>
+            </ul>
+            <h4>고친 코드</h4>
+<pre><code class="language-python">nums = [-5, -2, -8]
+max_val = nums[0]
+i = 1
+while i &lt; len(nums):
+    if nums[i] &gt; max_val:
+        max_val = nums[i]
+    i += 1
+print(max_val)</code></pre>
+            <ul>
+              <li>시작값을 "있을 법한 아무 값"이 아니라 <code>nums[0]</code>(리스트의 실제 원소)으로 잡음 → <code>i</code>도 이미 비교한 0번을 건너뛰고 <code>1</code>부터 시작</li>
+            </ul>
+            <p class="real"><b>실제 코드에서</b> · 최댓값·최솟값 초기값을 0으로 습관적으로 잡으면, 데이터가 전부 음수이거나 전부 클 때 조용히 틀림</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="m5">
+        <div class="p-head"><span class="p-id">중급 5</span><span class="p-type">읽기</span><h3>짝수·홀수 동시에 세기</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">n = 10
+i = 1
+even_count = 0
+odd_count = 0
+while i &lt;= n:
+    if i % 2 == 0:
+        even_count += 1
+    else:
+        odd_count += 1
+    i += 1
+print(even_count, odd_count)</code></pre>
+          <ul>
+            <li>출력을 예측하기</li>
+            <li><code>even_count</code>와 <code>odd_count</code>가 같은 반복 안에서 동시에 관리되는 이유 설명하기</li>
+          </ul>
+        </div>
+        <div class="memo"><label for="memo-m5">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m5"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">5 5</code></pre>
+            <ul>
+              <li>1부터 10까지 짝수(2,4,6,8,10) 5개, 홀수(1,3,5,7,9) 5개</li>
+              <li>매 반복마다 <code>if</code>·<code>else</code> 중 <b>딱 하나</b>만 실행돼서, 두 누적 변수 중 하나만 늘어남</li>
+              <li>누적 변수(카운터)를 여러 개 두면 한 번의 반복으로 여러 통계를 동시에 낼 수 있음</li>
+            </ul>
+            <p class="real"><b>실제 코드에서</b> · 로그 파일에서 성공·실패 건수를 한 번에 세는 코드가 이런 모양</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="m6">
+        <div class="p-head"><span class="p-id">중급 6</span><span class="p-type">작성</span><h3>원하는 단의 구구단</h3></div>
+        <div class="p-body">
+          <ul>
+            <li>파일 이름: <code>gugudan.py</code></li>
+            <li>정수(단)를 입력받아, 1단이 아니라 <b>그 단</b>의 구구단을 1×부터 9×까지 출력하기</li>
+            <li>조건: <code>while</code> 사용하기, 형식은 <code>3 x 1 = 3</code>처럼 쓰기</li>
+          </ul>
+<pre class="out"><code class="nohighlight">입력: 3
+출력:
+3 x 1 = 3
+3 x 2 = 6
+...
+3 x 9 = 27</code></pre>
+        </div>
+        <div class="memo"><label for="memo-m6">내 코드 <span>이 브라우저에만 저장</span></label><textarea id="memo-m6"></textarea></div>
+        <details class="sol"><summary>풀이 예시 보기</summary>
+          <div class="sol-body">
+<pre><code class="language-python">dan = int(input())
+i = 1
+while i &lt;= 9:
+    print(dan, 'x', i, '=', dan * i)
+    i += 1</code></pre>
+            <ul>
+              <li><code>dan</code>은 반복 내내 안 바뀌는 값, <code>i</code>는 1~9를 세는 카운터 — 기본 5·중급 3과 같은 역할 분리</li>
+              <li><code>print()</code>에 쉼표로 여러 값을 나열하면 사이에 공백이 자동으로 들어감(1장 기본 6)</li>
+            </ul>
+          </div>
+        </details>
+      </article>
+    </section>
+
+    <!-- ================= 상급 ================= -->
+    <section class="level adv" data-level="adv">
+      <div class="level-head">
+        <span class="tag">상급</span>
+        <h2>여러 개념이 겹치는 실전형 코드</h2>
+        <p>while True, 중첩 if, elif 순서, 부동소수점, 튜플 언패킹이 한 코드 안에 섞여 나옵니다. 결과를 보고 "왜"를 끝까지 설명하는 것이 목표입니다.</p>
+      </div>
+
+      <article class="problem" id="a1">
+        <div class="p-head"><span class="p-id">상급 1</span><span class="p-type">읽기</span><h3>비밀번호 3번의 기회</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">password = '1234'
+tries = 0
+success = False
+while tries &lt; 3:
+    guess = input()
+    if guess == password:
+        success = True
+        break
+    tries += 1
+if success:
+    print('성공')
+else:
+    print('실패')</code></pre>
+          <ul>
+            <li>입력이 순서대로 <code>0000</code>, <code>1111</code>, <code>2222</code>일 때 출력을 예측하기</li>
+            <li>입력이 <code>0000</code>, <code>1234</code>, <code>9999</code>일 때(둘째 시도에 성공) 출력과, <code>tries</code>가 최종적으로 몇인지 예측하기</li>
+          </ul>
+        </div>
+        <div class="memo"><label for="memo-a1">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a1"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">실패</code></pre>
+<pre class="out"><code class="nohighlight">성공</code></pre>
+            <div class="table-scroll fill">
+              <table>
+                <thead><tr><th>시나리오</th><th>guess</th><th>guess == password ?</th><th>동작</th></tr></thead>
+                <tbody>
+                  <tr><td rowspan="3">전부 실패</td><td>0000</td><td>거짓</td><td>tries → 1</td></tr>
+                  <tr><td>1111</td><td>거짓</td><td>tries → 2</td></tr>
+                  <tr><td>2222</td><td>거짓</td><td>tries → 3, while 조건 거짓으로 종료</td></tr>
+                  <tr><td rowspan="2">둘째에 성공</td><td>0000</td><td>거짓</td><td>tries → 1</td></tr>
+                  <tr><td>1234</td><td>참</td><td>success = True, break (tries는 1에서 멈춤, 9999는 입력받지 않음)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <ul>
+              <li><code>success</code>는 "맞혔는지"를 기억해 두는 <b>깃발(flag) 변수</b> — while이 끝난 뒤에도 그 결과를 알 수 있게 해 줌</li>
+              <li>정답을 맞히면 <code>break</code>가 즉시 반복을 끝내기 때문에 <code>tries</code>는 그 시점에서 멈추고, 남은 입력(<code>9999</code>)은 아예 받지 않음</li>
+              <li>3번 다 틀리면 <code>break</code> 없이 <code>tries == 3</code>이 되어 while 조건 자체가 거짓이 되며 자연스럽게 끝남</li>
+            </ul>
+            <p class="real"><b>실제 코드에서</b> · 로그인 시도 제한, 재시도 로직에 이 "깃발 변수 + break" 모양이 그대로 쓰임</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="a2">
+        <div class="p-head"><span class="p-id">상급 2</span><span class="p-type">읽기</span><h3>놀이공원 요금 판정</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">age = int(input())
+is_member = input() == 'Y'
+
+if age &lt; 13:
+    price = 5000
+else:
+    if is_member:
+        price = 8000
+    else:
+        price = 10000
+print(price)</code></pre>
+          <p class="spec">(나이, 회원 여부 입력) → 출력 예측: (12, N) / (13, Y) / (13, N)</p>
+        </div>
+        <div class="memo"><label for="memo-a2">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a2"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+            <div class="table-scroll fill">
+              <table>
+                <thead><tr><th>age</th><th>is_member 입력</th><th>price</th></tr></thead>
+                <tbody>
+                  <tr><td>12</td><td>N</td><td>5000</td></tr>
+                  <tr><td>13</td><td>Y</td><td>8000</td></tr>
+                  <tr><td>13</td><td>N</td><td>10000</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <ul>
+              <li><code>is_member = input() == 'Y'</code>는 "입력이 'Y'와 같은가"를 계산한 결과(<code>True</code>/<code>False</code>)를 바로 <code>is_member</code>에 저장함 — 대입과 비교가 한 줄에 있음</li>
+              <li><code>age = 13</code>은 <code>age &lt; 13</code>이 거짓이라 <b>바깥 else</b>로 감 → 13살은 어린이 요금이 아님(경계값이 어느 쪽에 붙는지 주의)</li>
+              <li>바깥 <code>if</code>가 나이를, 안쪽 <code>if</code>가 회원 여부를 담당 — 서로 다른 기준을 층으로 나눈 중첩 if</li>
+            </ul>
+            <p class="real"><b>실제 코드에서</b> · 나이·자격 조건이 여러 겹일 때는 조건 하나당 한 층씩 중첩하면 어떤 조건이 무엇을 가르는지 알아보기 쉬움</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="a3">
+        <div class="p-head"><span class="p-id">상급 3</span><span class="p-type">읽기</span><h3>1년 뒤 적금 잔액</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">balance = 1000000
+month = 1
+while month &lt;= 12:
+    balance = balance * 1.01
+    month += 1
+print(round(balance, 2))</code></pre>
+          <ul>
+            <li>매달 1%씩 이자가 붙는다고 할 때, 12개월 뒤 잔액을 어림잡아 예측하기</li>
+            <li>얌체공 문제(2.1.3)와 이 코드가 <b>구조가 같은</b> 이유 설명하기</li>
+          </ul>
+        </div>
+        <div class="memo"><label for="memo-a3">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a3"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">1126825.03</code></pre>
+            <ul>
+              <li>단순히 12% 더한 <code>1120000</code>이 아니라, <b>이자가 붙은 값에 또 이자가 붙는</b> 복리라서 <code>1000000 × 1.01<sup>12</sup></code> ≈ <code>1126825.03</code></li>
+              <li>매달 <code>balance</code>를 <code>1.01</code>배로 <b>다시 곱하고 그 결과를 다음 달 계산에 또 쓰는</b> 구조가 얌체공의 "튀어 오른 높이를 다음 회차에 또 곱하는" 구조와 완전히 같음</li>
+              <li><code>1.01</code>도 2진수로 딱 떨어지지 않는 소수라서, <code>round()</code> 없이 찍으면 얌체공처럼 지저분한 소수 자리가 나옴(2장 해설 Q6)</li>
+            </ul>
+            <p class="real"><b>실제 코드에서</b> · 이자·인구 증가·바이러스 확산처럼 "이전 결과에 비율을 계속 곱하는" 계산은 전부 이 while 모양</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="a4">
+        <div class="p-head"><span class="p-id">상급 4</span><span class="p-type">버그</span><h3>elif를 안 썼더니</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">score = 85
+if score &gt;= 80:
+    print('우수상 대상')
+if score &gt;= 60:
+    print('통과')</code></pre>
+          <ul>
+            <li>작성자는 "80점 이상이면 우수상 대상만" 안내하려고 했음</li>
+            <li>실제 출력을 예측하기</li>
+            <li>원인을 설명하고, <code>elif</code>를 사용해 고친 코드 쓰기</li>
+          </ul>
+        </div>
+        <div class="memo"><label for="memo-a4">원인과 고친 코드 <span>이 브라우저에만 저장</span></label><textarea id="memo-a4"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">우수상 대상
+통과</code></pre>
+            <ul>
+              <li>두 번째 <code>if</code>는 <b>완전히 새로운 if문</b>이지 elif가 아니라서, 첫 번째 if 결과와 상관없이 <b>독립적으로 다시</b> 검사됨</li>
+              <li><code>score = 85</code>는 <code>score &gt;= 80</code>도 참, <code>score &gt;= 60</code>도 참 → 둘 다 실행돼 두 줄이 찍힘</li>
+              <li>Q11(2장 해설)에서 본 것처럼, <code>elif</code>였다면 첫 조건이 참인 순간 두 번째는 검사조차 안 함</li>
+            </ul>
+            <h4>고친 코드</h4>
+<pre><code class="language-python">score = 85
+if score &gt;= 80:
+    print('우수상 대상')
+elif score &gt;= 60:
+    print('통과')</code></pre>
+            <p class="real"><b>실제 코드에서</b> · "이 중 하나만" 원할 땐 elif, "각각 따로 검사"가 맞으면 if를 여러 번 — 둘을 헷갈리면 메시지가 중복으로 나가는 버그가 생김</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="a5">
+        <div class="p-head"><span class="p-id">상급 5</span><span class="p-type">읽기</span><h3>합격 점수 자동 판정기</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">L = input().split()
+low = int(L[0])
+high = int(L[1])
+count = 0
+
+score = int(input())
+while score != -1:
+    if low &lt;= score &lt;= high:
+        print('합격', score)
+        count += 1
+        score = int(input())
+    else:
+        print('범위 이탈, 중단', score)
+        break
+
+print('합격자 수:', count)</code></pre>
+          <p class="spec">첫 줄 입력 <code>60 100</code>, 이어서 <code>75</code>, <code>88</code>, <code>50</code>, <code>-1</code> 순서로 입력했을 때 출력을 예측하기</p>
+        </div>
+        <div class="memo"><label for="memo-a5">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a5"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">합격 75
+합격 88
+범위 이탈, 중단 50
+합격자 수: 2</code></pre>
+            <div class="table-scroll fill">
+              <table>
+                <thead><tr><th>score</th><th>score != -1 ?</th><th>60 &lt;= score &lt;= 100 ?</th><th>동작</th></tr></thead>
+                <tbody>
+                  <tr><td>75</td><td>참</td><td>참</td><td>합격 출력, count → 1, 다음 입력</td></tr>
+                  <tr><td>88</td><td>참</td><td>참</td><td>합격 출력, count → 2, 다음 입력</td></tr>
+                  <tr><td>50</td><td>참</td><td>거짓</td><td>범위 이탈 출력, break (더 이상 입력 안 받음)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <ul>
+              <li>2.2.6 화학 실험실과 뼈대가 같음: <code>split()</code>으로 기준값 두 개 받기, <code>-1</code>(여기서는 <code>-999</code> 대신)을 종료 신호로 쓰기, 범위를 벗어나면 <code>break</code>로 즉시 중단</li>
+              <li><code>-1</code>이 아직 안 나왔어도 범위를 벗어나면 <code>break</code>가 먼저 반복을 끊음 — while의 조건과 별개로 동작</li>
+              <li>다음 입력을 받는 줄(<code>score = int(input())</code>)이 <code>if</code> 블록 안에만 있어서, 범위를 벗어난 뒤에는 입력을 더 받지 않음</li>
+            </ul>
+            <p class="real"><b>실제 코드에서</b> · 센서 값 감시, 자동 채점기처럼 "정상일 때만 계속, 이상하면 즉시 멈춤"이 필요한 코드가 이 모양</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="a6">
+        <div class="p-head"><span class="p-id">상급 6</span><span class="p-type">추론</span><h3>처음 보는 초기화 문법</h3></div>
+        <div class="p-body">
+          <p class="spec">2장에서 직접 배우지 않은 문법이 한 줄 섞여 있습니다. 남의 코드를 읽을 때 매일 겪는 상황을 연습합니다.</p>
+<pre><code class="language-python">i, total = 0, 0
+nums = [3, 6, 9]
+while i &lt; len(nums):
+    total = total + nums[i]
+    i = i + 1
+print(i, total)</code></pre>
+          <ul>
+            <li>실행하지 말고 출력을 예측하기</li>
+            <li><code>i, total = 0, 0</code>이 무슨 뜻인지 추측하기</li>
+            <li>2장 해설 Q17의 <code>min, max = map(int, ...)</code>과 이 문법이 왜 닮았는지 설명하기</li>
+          </ul>
+        </div>
+        <div class="memo"><label for="memo-a6">내 추측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a6"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">3 18</code></pre>
+            <ul>
+              <li><code>i, total = 0, 0</code>은 오른쪽 <code>0, 0</code>이라는 값 2개를 왼쪽 이름 2개에 순서대로 나눠 담는 것 → <code>i = 0</code>, <code>total = 0</code>과 완전히 같은 뜻</li>
+              <li>줄 두 개를 한 줄로 줄인 것뿐, 새로운 계산이 생기는 게 아님</li>
+              <li>2장 해설 Q17의 <code>min, max = map(int, input().split())</code>도 "왼쪽 이름 여러 개 = 오른쪽 값 여러 개"라는 같은 언패킹 문법 — 다만 그쪽은 오른쪽 값을 <code>input()</code>에서 만들고, 여기는 그냥 숫자를 직접 나열했다는 점만 다름</li>
+              <li><code>total = total + nums[i]</code>를 세 번(3, 6, 9) 거치며 <code>total</code>은 <code>3 → 9 → 18</code>로, <code>i</code>는 <code>0 → 1 → 2 → 3</code>으로 바뀌고 마지막에 <code>3 18</code>이 출력됨</li>
+            </ul>
+            <h4>처음 보는 문법을 만났을 때</h4>
+            <ul>
+              <li>줄여 쓴 것뿐인지, 새로운 동작이 있는지부터 의심하기</li>
+              <li>이미 아는 비슷한 문법(여기서는 Q17의 언패킹)을 떠올려 비교하기</li>
+              <li>작은 예제로 직접 실행해서 추측을 확인하기</li>
+            </ul>
+          </div>
+        </details>
+      </article>
+    </section>
+  </main>
+
+  <footer>교재: <a href="https://wikidocs.net/book/2">왕초보를 위한 Python: 쉽게 풀어 쓴 기초 문법과 실습</a> (위키독스) · 모든 결과는 Python 3.14에서 실행해 확인 · 교재 2장 문제를 풀다 막혔다면 <a href="../../beginner-python-ch02-qna.html">2장 문제 풀이와 질문 해설</a></footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>
+(function () {
+  if (window.hljs) {
+    hljs.configure({ ignoreUnescapedHTML: true });
+    document.querySelectorAll('pre code:not(.nohighlight)').forEach(function (el) {
+      if (!hljs.getLanguage('python-repl') && el.classList.contains('language-python-repl')) {
+        el.classList.replace('language-python-repl', 'language-python');
+      }
+      hljs.highlightElement(el);
+    });
+  }
+
+  // 메모: 이 브라우저에만 저장
+  var store = null;
+  try { store = window.localStorage; store.getItem('x'); } catch (e) { store = null; }
+  document.querySelectorAll('.memo textarea').forEach(function (ta) {
+    var key = 'py-ch02:' + ta.id;
+    try { var v = store && store.getItem(key); if (v) ta.value = v; } catch (e) {}
+    ta.addEventListener('input', function () {
+      try { store && store.setItem(key, ta.value); } catch (e) {}
+    });
+  });
+
+  // 난이도 필터
+  var buttons = document.querySelectorAll('.seg button');
+  var sections = document.querySelectorAll('[data-level]');
+  buttons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var f = btn.dataset.filter;
+      buttons.forEach(function (b) { b.setAttribute('aria-pressed', String(b === btn)); });
+      var picked = null;
+      sections.forEach(function (s) {
+        var lv = s.dataset.level;
+        s.hidden = !(f === 'all' || lv === f);
+        if (lv === f) picked = s;
+      });
+      // 고른 난이도의 첫머리로 옮긴다. 전체면 맨 위로.
+      if (picked) picked.scrollIntoView({ block: 'start' });
+      else window.scrollTo({ top: 0 });
+    });
+  });
+
+  // 목차 링크를 누르면 필터 해제
+  document.querySelectorAll('.toc a').forEach(function (a) {
+    a.addEventListener('click', function () {
+      var target = document.querySelector(a.getAttribute('href'));
+      var sec = target && target.closest('[data-level]');
+      if (sec && sec.hidden) document.getElementById('f-all').click();
+    });
+  });
+
+  // 해설 모두 펼치기 / 접기
+  var toggle = document.getElementById('toggle-sol');
+  toggle.addEventListener('click', function () {
+    var all = document.querySelectorAll('details.sol');
+    var open = toggle.dataset.open === '1';
+    all.forEach(function (d) { d.open = !open; });
+    toggle.dataset.open = open ? '0' : '1';
+    toggle.textContent = open ? '해설 모두 펼치기' : '해설 모두 접기';
+  });
+})();
+</script>
+</body>
+</html>

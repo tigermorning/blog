@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>왕초보를 위한 Python 2장 — 문제 풀이와 질문 해설 - Tigermorning</title>
+  <meta name="description" content="위키독스 『왕초보를 위한 Python』 2장(2.1~2.2.6) 실습 문제를 풀면서 생긴 질문 19개를 정리했습니다. while 무한 루프, 카운터 변수, round()와 부동소수점 오차, if-elif-else 순서, break로 반복 끝내기, pass, 중첩 if, split()과 연쇄 비교까지 다룹니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="왕초보를 위한 Python 2장 — 문제 풀이와 질문 해설">
+  <meta property="og:description" content="위키독스 『왕초보를 위한 Python』 2장(2.1~2.2.6) 실습 문제를 풀면서 생긴 질문 19개와 답을 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/beginner-python-ch02-qna.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">왕초보를 위한 Python 2장</span> — 문제 풀이와 질문 해설</h1>
+    <p class="post-date">2026. 9. 20.</p>
+    <p class="post-date">※ 이 글은 위키독스 <a href="https://wikidocs.net/book/2" target="_blank" rel="noopener">『왕초보를 위한 Python』</a> 2장의 실습 문제를 풀면서 제가 던진 질문과 답을 정리한 것입니다. 교재 본문은 옮기지 않았으니, 문제 원문은 각 절의 링크에서 확인해 주세요. 2장은 분량이 많아 <b>2.1 ~ 2.2.6</b>까지만 다루고, 2.2.7 and/or 연산자부터는 다음 글에서 이어 갑니다.</p>
+
+    <p class="one-liner">2장 실습을 풀다가 막힌 질문 19개를, while과 if를 처음 보는 사람 기준으로 하나씩 풀어 쓴 해설이에요.</p>
+
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>어디쯤인가</dt>
+        <dd><a href="posts.html#python-basics-books">보충수업 책장 › 파이썬 스터디</a> — 『왕초보를 위한 Python』 2장(2.1 ~ 2.2.6) 해설. 1장 해설은 <a href="beginner-python-ch01-qna.html">여기</a></dd>
+        <dt>이런 게 궁금했다면</dt>
+        <dd>
+          <ul>
+            <li>while 문은 대체 언제 멈추는 걸까?</li>
+            <li>elif가 여러 줄이면 어떤 순서로 검사할까?</li>
+            <li><code>while True:</code>처럼 무한히 도는 반복문인데 왜 프로그램이 끝나지?</li>
+          </ul>
+        </dd>
+        <dt>읽고 나면 할 수 있는 것</dt>
+        <dd>
+          <ul>
+            <li>while 문의 반복 흐름을 변수 값 표로 직접 따라갈 수 있어요.</li>
+            <li>if/elif/else 체인의 순서를 조건 부등호(<code>&lt;=</code>인지 <code>&gt;=</code>인지)에 맞게 스스로 정할 수 있어요.</li>
+            <li><code>while True:</code> + <code>break</code> 조합("멈출 신호가 올 때까지 반복")을 알아보고 쓸 수 있어요.</li>
+          </ul>
+        </dd>
+        <dt>모르면 이런 일이 생겨요</dt>
+        <dd>
+          <ul>
+            <li>while 몸통 안에서 카운터를 갱신하는 줄을 빠뜨리면, 에러도 없이 프로그램이 영원히 돌아요. <a class="suspect-jump" href="#suspect-infinite-loop">언제 의심하나 ↓</a></li>
+            <li>elif 체인의 순서를 조건 방향과 안 맞게 두면, 에러 없이 조용히 틀린 등급·단위가 나와요. <a class="suspect-jump" href="#suspect-elif-order">언제 의심하나 ↓</a></li>
+            <li><code>sum</code>, <code>min</code>, <code>max</code>처럼 파이썬 내장 함수와 같은 이름을 변수로 쓰면, 나중에 그 함수가 필요할 때 <code>TypeError</code>가 나요. <a class="suspect-jump" href="#suspect-builtin-shadow">언제 의심하나 ↓</a></li>
+          </ul>
+        </dd>
+        <dt>어디에 쓰나</dt>
+        <dd>
+          <ul>
+            <li><strong>교재 2장 문제를 풀다 막혔을 때.</strong> 같은 절의 질문을 찾아 읽으면 돼요.</li>
+            <li>AI가 짜 준 코드에서 <code>while True:</code>, <code>elif</code> 체인, 중첩 <code>if</code> 같은 모양을 읽어야 할 때.</li>
+          </ul>
+        </dd>
+      </dl>
+    </div>
+
+    <h2><span class="hl">질문 목록</span></h2>
+    <table>
+      <thead><tr><th>교재 절</th><th>질문</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="2">2.1 while을 사용하는 반복문</td><td><a href="#q1">Q1. while 문은 무엇을 언제까지 반복하나요?</a></td></tr>
+        <tr><td><a href="#q2">Q2. 카운터를 갱신하는 줄을 빠뜨리면 왜 무한 루프가 되나요?</a></td></tr>
+        <tr><td rowspan="2">2.1.1 연습 문제: 입력받은 숫자만큼 반복하기(while)</td><td><a href="#q3">Q3. 반복 횟수를 세는 <code>i</code>와 출력할 값 <code>num</code>은 왜 다른 변수인가요?</a></td></tr>
+        <tr><td><a href="#q4"><code>print('', num)</code>의 첫 번째 빈 문자열은 왜 있나요?</a></td></tr>
+        <tr><td>2.1.2 연습 문제: 제곱표(while)</td><td><a href="#q5">Q5. 카운터가 1부터 시작하고 조건이 <code>&lt;= num</code>인 이유는?</a></td></tr>
+        <tr><td>2.1.3 연습 문제: 얌체공</td><td><a href="#q6">Q6. 매번 곱하는 계산인데 왜 소수점 오차가 자꾸 나오나요?</a></td></tr>
+        <tr><td>2.1.5 퀴즈</td><td><a href="#q7">Q7. 카운터가 줄어드는 while도 되나요?</a></td></tr>
+        <tr><td rowspan="3">2.2 조건문(if-elif-else)</td><td><a href="#q8">Q8. if/elif/else는 정확히 무엇을 하나요?</a></td></tr>
+        <tr><td><a href="#q9">Q9. <code>==</code>와 <code>=</code>는 뭐가 다른가요?</a></td></tr>
+        <tr><td><a href="#q10">Q10. <code>while True:</code>인데 <code>break</code>로 어떻게 끝나나요?</a></td></tr>
+        <tr><td>2.2.1 연습 문제: 숫자 읽기(1~3)</td><td><a href="#q11">Q11. elif 체인은 조건을 다 검사하나요, 하나만 검사하나요?</a></td></tr>
+        <tr><td>2.2.2 연습 문제: 나이에 따른 세대 구분 (1)</td><td><a href="#q12">Q12. elif 조건을 작은 값부터 순서대로 쓴 이유는?</a></td></tr>
+        <tr><td rowspan="2">2.2.3 연습 문제: 단위 기호</td><td><a href="#q13">Q13. 여기는 왜 elif 순서가 큰 값부터인가요? 2.2.2랑 반대 아닌가요?</a></td></tr>
+        <tr><td><a href="#q14">Q14. <code>pass</code>는 무슨 뜻인가요?</a></td></tr>
+        <tr><td>2.2.4 연습 문제: 양수만 덧셈하기</td><td><a href="#q15">Q15. <code>while True:</code>로 시작하는데 왜 무한 루프가 아닌가요?</a></td></tr>
+        <tr><td>2.2.5 연습 문제: 윤년 판별하기</td><td><a href="#q16">Q16. if 안에 또 if를 쓰는 중첩 if는 뭔가요?</a></td></tr>
+        <tr><td rowspan="3">2.2.6 연습 문제: 화학 실험실</td><td><a href="#q17">Q17. <code>split()</code>으로 나눈 값을 어떻게 두 변수에 나눠 담나요?</a></td></tr>
+        <tr><td><a href="#q18">Q18. <code>min &lt;= temp &lt;= max</code>처럼 부등호를 연달아 써도 되나요?</a></td></tr>
+        <tr><td><a href="#q19">Q19. <code>-999</code> 같은 특별한 값으로 반복을 끝내는 이유는?</a></td></tr>
+      </tbody>
+    </table>
+    <p>모든 코드는 Python 3.14에서 직접 실행해 결과를 확인했어요. 코드 블록의 <code>&gt;&gt;&gt;</code>는 파이썬 대화형 셸의 입력 표시라서 따라 치지 않아요. 1장~2.2.6절 범위로 따로 만든 <a href="python-study/beginner-python/ch02-code-reading.html">2장 코드 읽기 실습</a>도 있어요.</p>
+    <p class="qna-controls">질문을 누르면 답이 펼쳐져요. <button type="button" data-qna="open">모두 펼치기</button> <button type="button" data-qna="close">모두 접기</button></p>
+
+    <!-- ============ 2.1 ============ -->
+    <hr>
+    <h2><span class="hl">2.1 while을 사용하는 반복문</span></h2>
+    <p>문제 원문: <a href="https://wikidocs.net/56" target="_blank" rel="noopener">wikidocs.net/56</a></p>
+
+    <details class="qna" id="q1">
+    <summary><h3>Q1. while 문은 정확히 무엇을 언제까지 반복하나요?</h3></summary>
+    <p>while은 <strong>조건이 참인 동안</strong> 그 아래 들여쓴 코드를 반복해서 실행해요. 매번 반복하기 전에 조건부터 다시 검사해요.</p>
+    <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
+<pre><code>&gt;&gt;&gt; num = 1
+&gt;&gt;&gt; while num &lt;= 3:
+...     print(num)
+...     num = num + 1
+...
+1
+2
+3</code></pre>
+    <p>이 코드가 실행되는 순서를 표로 그리면 이래요.</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>몇 번째 검사</th><th>이때 num</th><th>num &lt;= 3 ?</th><th>동작</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>1</td><td>참</td><td>1 출력, num을 2로</td></tr>
+          <tr><td>2</td><td>2</td><td>참</td><td>2 출력, num을 3으로</td></tr>
+          <tr><td>3</td><td>3</td><td>참</td><td>3 출력, num을 4로</td></tr>
+          <tr><td>4</td><td>4</td><td>거짓</td><td>반복 끝, 다음 줄로</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul>
+      <li><code>while 조건:</code> 뒤에는 콜론(<code>:</code>)이 꼭 있어야 해요. <code>if</code>도 마찬가지예요.</li>
+      <li>몸통은 공백 4칸(또는 Tab 1번)으로 들여써요. 들여쓴 줄들이 "조건이 참인 동안 반복할 부분"이에요.</li>
+      <li><code>num = num + 1</code>은 "num에 1을 더한 새 값을 다시 num에 넣어라"는 뜻이에요. <code>num += 1</code>로 줄여 써도 똑같이 동작해요.</li>
+      <li>조건이 처음부터 거짓이면(예: <code>num = 10</code>으로 시작) 몸통은 <strong>한 번도</strong> 실행되지 않아요.</li>
+    </ul>
+    <p><strong>while과 if는 뭐가 다른가요?</strong> 둘 다 조건을 검사한다는 점은 같아요. <code>if</code>는 조건이 참이면 <strong>딱 한 번</strong> 실행하고 끝나지만, <code>while</code>은 조건이 참인 동안 <strong>계속</strong> 되돌아가서 다시 실행해요.</p>
+    </details>
+
+    <details class="qna" id="q2">
+    <summary><h3>Q2. 카운터를 갱신하는 줄을 빠뜨리면 왜 무한 루프가 되나요?</h3></summary>
+    <p>while은 조건만 보고 반복 여부를 정해요. 조건에 쓰인 값이 반복 중에 <strong>한 번도 안 바뀌면</strong>, 조건은 영원히 똑같은 결과를 내서 반복이 끝나지 않아요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 절대 실행하지 마세요. num이 계속 1이라 조건이 늘 참이에요</span></p>
+<pre><code>num = 1
+while num &lt;= 3:
+    print(num)
+    # num = num + 1 을 빠뜨림</code></pre>
+    <ul>
+      <li>매번 검사할 때 <code>num</code>은 항상 <code>1</code> → <code>1 &lt;= 3</code>은 항상 참 → 1을 영원히 찍음</li>
+      <li>이런 코드를 실수로 실행했다면 터미널에서 <code>Ctrl</code> + <code>C</code>를 눌러 강제로 멈춰요</li>
+    </ul>
+    <p><strong>무한 루프를 피하는 원칙:</strong> while 몸통 안에는 조건에 쓰인 값을 <strong>바꾸는 줄이 최소 하나</strong> 있어야 하고, 그 값이 언젠가는 조건을 거짓으로 만들 수 있어야 해요. 카운터를 늘리다가 빼먹거나(<code>num = num + 1</code> 자리를 지워도, 들여쓰기를 잘못해서 while 밖으로 나가도) 같은 실수로 자주 생겨요.</p>
+    <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 들여쓰기가 잘못돼서 num이 while 밖에서만 바뀌는 예</span></p>
+<pre><code>num = 1
+while num &lt;= 3:
+    print(num)
+num = num + 1   # 들여쓰기가 한 칸 덜 됨 → while 몸통이 아님</code></pre>
+    <ul>
+      <li>마지막 줄이 <code>while</code>과 같은 위치까지 나와 있으면 몸통이 아니라 while이 끝난 뒤에 딱 한 번 실행되는 코드예요</li>
+      <li>그러면 몸통 안에는 <code>print(num)</code>만 남아서 num이 영원히 1 → 무한 루프</li>
+    </ul>
+    </details>
+
+    <!-- ============ 2.1.1 ============ -->
+    <hr>
+    <h2><span class="hl">2.1.1 연습 문제: 입력받은 숫자만큼 반복하기(while)</span></h2>
+    <p>문제 원문: <a href="https://wikidocs.net/101633" target="_blank" rel="noopener">wikidocs.net/101633</a></p>
+
+    <details class="qna" id="q3">
+    <summary><h3>Q3. 반복 횟수를 세는 <code>i</code>와 출력할 값 <code>num</code>은 왜 다른 변수인가요?</h3></summary>
+    <p><strong>공식 풀이</strong>는 이래요.</p>
+<pre><code>num = int(input())
+
+i = 0
+while i &lt; num:
+    print('', num)
+    i += 1</code></pre>
+    <p><code>i</code>와 <code>num</code>은 하는 일이 완전히 달라요.</p>
+    <table>
+      <thead><tr><th>변수</th><th>역할</th><th>반복 중 값이 바뀌나</th></tr></thead>
+      <tbody>
+        <tr><td><code>num</code></td><td>화면에 찍을 값 (입력받은 그 수 자체)</td><td>안 바뀜</td></tr>
+        <tr><td><code>i</code></td><td>몇 번 돌았는지 세는 <strong>카운터</strong></td><td>매번 1씩 늘어남</td></tr>
+      </tbody>
+    </table>
+    <p>입력이 <code>3</code>일 때 흐름을 표로 그리면 이래요.</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>검사</th><th>i</th><th>i &lt; num(3) ?</th><th>출력</th><th>다음 i</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>0</td><td>참</td><td> 3</td><td>1</td></tr>
+          <tr><td>2</td><td>1</td><td>참</td><td> 3</td><td>2</td></tr>
+          <tr><td>3</td><td>2</td><td>참</td><td> 3</td><td>3</td></tr>
+          <tr><td>4</td><td>3</td><td>거짓</td><td>(끝)</td><td>-</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul>
+      <li><code>num</code>을 <code>i &lt; num</code> 자리에도 쓰고 <code>print(num)</code> 자리에도 쓰지만, <strong>세는 것과 찍는 것은 목적이 다른 일</strong>이라서 이름도 역할도 분리해요.</li>
+      <li>만약 <code>i</code> 없이 <code>num</code> 하나로 세면서 동시에 출력하면, 출력할 값 자체가 줄어들어 버려서(예: 3, 2, 1) 원하는 결과가 안 나와요.</li>
+      <li><code>i</code>, <code>j</code>, <code>count</code>는 "세는 용도의 변수"에 흔히 쓰는 이름이에요.</li>
+    </ul>
+    </details>
+
+    <details class="qna" id="q4">
+    <summary><h3>Q4. <code>print('', num)</code>에서 첫 번째 빈 문자열 <code>''</code>은 왜 있나요?</h3></summary>
+    <p>문제의 요구 사항이 "출력 앞에 공백을 한 칸 주어서 입력과 출력이 구분되게" 하는 것이었죠. <code>print()</code>에 쉼표로 여러 값을 넣으면 <strong>사이에 공백이 하나씩</strong> 자동으로 들어간다는 점(1장 기본 6)을 이용한 거예요.</p>
+    <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
+<pre><code>&gt;&gt;&gt; print('', 3)
+ 3
+&gt;&gt;&gt; print(3)
+3</code></pre>
+    <ul>
+      <li><code>print('', 3)</code>은 빈 문자열 <code>''</code>과 <code>3</code>을 쉼표로 나열한 것 → 그 사이에 공백 1칸이 끼어서 <code>' 3'</code>처럼 보임</li>
+      <li>빈 문자열 자체는 아무 글자도 없어서 화면에 아무것도 안 남기고, 오직 "공백을 만들기 위한 자리"로만 쓰임</li>
+      <li><code>print(' ', 3)</code>처럼 써도 결과는 같아요. 다만 <code>' '</code>은 공백 1칸을 담은 문자열이고 <code>''</code>은 빈 문자열이라, 둘 다 그 자체로는 화면에 아무것도 안 보여준다는 점은 똑같아요.</li>
+    </ul>
+    <p><strong>비교:</strong> 앞에 붙이는 게 목적이면 문자열을 직접 이어 붙여 <code>print(' ' + str(num))</code>이라고 써도 같은 결과가 나와요. 다만 <code>str(num)</code>으로 숫자를 문자열로 바꿔야 <code>+</code>로 이어 붙일 수 있어요(1장 기본 4의 <code>'3' + '4'</code>처럼요).</p>
+    </details>
+
+    <!-- ============ 2.1.2 ============ -->
+    <hr>
+    <h2><span class="hl">2.1.2 연습 문제: 제곱표(while)</span></h2>
+    <p>문제 원문: <a href="https://wikidocs.net/86465" target="_blank" rel="noopener">wikidocs.net/86465</a></p>
+
+    <details class="qna" id="q5">
+    <summary><h3>Q5. 카운터가 1부터 시작하고 조건이 <code>&lt;= num</code>인 이유는?</h3></summary>
+    <p><strong>공식 풀이</strong>는 이래요.</p>
+<pre><code>num = int(input())
+i = 1
+while i &lt;= num:
+    print(i, i * i)
+    i = i + 1</code></pre>
+    <p>입력이 <code>3</code>일 때 <code>1 1</code>, <code>2 4</code>, <code>3 9</code>가 나와야 하죠. "1부터 num까지, num도 포함"이 목표라서 <code>i = 1</code>로 시작하고 조건도 <code>&lt;=</code>(이하)를 써요.</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>i</th><th>i &lt;= 3 ?</th><th>출력</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>참</td><td>1 1</td></tr>
+          <tr><td>2</td><td>참</td><td>2 4</td></tr>
+          <tr><td>3</td><td>참</td><td>3 9</td></tr>
+          <tr><td>4</td><td>거짓</td><td>(끝)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>2.1.1의 리스트 인덱스(1장 기본 5)는 <code>0</code>부터 세지만, 이 문제의 "1부터 num까지의 수"는 사람이 세는 방식 그대로 <code>1</code>부터 세요. <strong>0부터 세는 건 리스트 번호의 규칙이지, while의 규칙이 아니에요.</strong> 무엇을 세느냐에 따라 시작 값과 부등호를 맞추면 돼요.</p>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">1부터 num까지 다 돌리려고 <code>i = 1</code>로 시작하고 조건을 <code>i &lt; num</code>으로 쓴다 → num 줄이 통째로 빠져요(입력 3이면 1, 2만 나옴).</td>
+          <td class="choice-good"><code>&lt;=</code>를 쓴다 → num까지 포함돼서 3줄이 정확히 나와요.</td>
+        </tr>
+      </tbody>
+    </table>
+    </details>
+
+    <!-- ============ 2.1.3 ============ -->
+    <hr>
+    <h2><span class="hl">2.1.3 연습 문제: 얌체공</span></h2>
+    <p>문제 원문: <a href="https://wikidocs.net/85687" target="_blank" rel="noopener">wikidocs.net/85687</a></p>
+
+    <details class="qna" id="q6">
+    <summary><h3>Q6. 매번 곱하는 계산인데 왜 소수점 오차가 자꾸 나오고, <code>round()</code>는 그걸 완전히 없애 주나요?</h3></summary>
+    <p><strong>공식 풀이</strong>는 이래요.</p>
+<pre><code>height = 100
+bounce = 3 / 5
+
+i = 1
+while i &lt;= 10:
+    height = height * bounce
+    print(i, round(height, 4))
+    i = i + 1</code></pre>
+    <p><code>round()</code> 없이 그냥 찍으면 벌써 세 번째 줄부터 지저분한 값이 나와요.</p>
+    <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— round() 없이 그대로 찍은 결과</span></p>
+<pre><code>&gt;&gt;&gt; height = 100 * (3/5)
+&gt;&gt;&gt; height
+60.0
+&gt;&gt;&gt; height = height * (3/5)
+&gt;&gt;&gt; height
+36.0
+&gt;&gt;&gt; height = height * (3/5)
+&gt;&gt;&gt; height
+21.599999999999998</code></pre>
+    <ul>
+      <li>컴퓨터는 소수를 2진수로 저장하는데, <code>0.6</code>(<code>3/5</code>) 같은 수는 2진수로 딱 떨어지지 않아서 아주 작은 오차가 생겨요(1장 기본 6 <a href="python-study/beginner-python/ch01-code-reading.html#b6-q3">질문과 해설의 float 오차</a>와 같은 현상).</li>
+      <li>이 오차를 가진 값을 <strong>다시 곱하는 계산에 또 쓰기 때문에</strong>, 반복할수록 오차가 조금씩 쌓여요(누적 오차).</li>
+      <li><code>round(height, 4)</code>는 "이 값을 소수점 넷째 자리까지 반올림한 <strong>새로운 값</strong>을 화면에 보여 달라"는 뜻이에요. <code>height</code> 변수 자체를 깎아 내는 게 아니라 <code>print()</code>에 넘길 때만 반올림해요.</li>
+    </ul>
+    <p><strong>그래서 round()가 오차를 "없애는" 건 아니에요.</strong> 다음 계산에도 반올림 전의 <code>height</code>(오차 포함)가 그대로 쓰여요. round()는 "화면에 보여 줄 자릿수를 정리하는 것"이지 "저장된 값을 고치는 것"이 아니에요.</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>i</th><th>round(height, 4) 출력</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>60.0</td></tr>
+          <tr><td>2</td><td>36.0</td></tr>
+          <tr><td>3</td><td>21.6</td></tr>
+          <tr><td>9</td><td>1.0078</td></tr>
+          <tr><td>10</td><td>0.6047</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>참고로 <code>round(2.675, 2)</code>가 <code>2.68</code>이 아니라 <code>2.67</code>이 나오는 것도 버그가 아니라 같은 부동소수점 한계예요.</p>
+    </details>
+
+    <!-- ============ 2.1.5 ============ -->
+    <hr>
+    <h2><span class="hl">2.1.5 퀴즈</span></h2>
+    <p>문제 원문: <a href="https://wikidocs.net/292551" target="_blank" rel="noopener">wikidocs.net/292551</a></p>
+
+    <details class="qna" id="q7">
+    <summary><h3>Q7. 앞의 예제들은 카운터가 커지는데, 이 퀴즈처럼 카운터가 줄어드는 while도 되나요?</h3></summary>
+    <p>퀴즈 코드는 이래요.</p>
+<pre><code>count = 3
+while count &gt; 0:
+    print(count)
+    count = count - 1</code></pre>
+    <p>됩니다. while은 "조건이 참인 동안 반복"할 뿐, 값이 커지든 작아지든 상관하지 않아요. 흐름을 표로 그려요.</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>count</th><th>count &gt; 0 ?</th><th>출력</th><th>다음 count</th></tr></thead>
+        <tbody>
+          <tr><td>3</td><td>참</td><td>3</td><td>2</td></tr>
+          <tr><td>2</td><td>참</td><td>2</td><td>1</td></tr>
+          <tr><td>1</td><td>참</td><td>1</td><td>0</td></tr>
+          <tr><td>0</td><td>거짓</td><td>(끝)</td><td>-</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>정답은 "3 2 1이 각각 다른 줄에 출력"</strong>이에요. <code>print()</code>는 인자 하나만 넘기면 그 값을 찍고 줄바꿈까지 자동으로 해 주기 때문에, 세 번 호출하면 세 줄이 나와요. "한 줄에 출력"이 되려면 <code>print(count, end=' ')</code>처럼 줄바꿈 방식을 따로 바꿔야 하는데, 이건 2장 범위 밖이에요.</p>
+    </details>
+
+    <!-- ============ 2.2 ============ -->
+    <hr>
+    <h2><span class="hl">2.2 조건문(if-elif-else)</span></h2>
+    <p>문제 원문: <a href="https://wikidocs.net/57" target="_blank" rel="noopener">wikidocs.net/57</a></p>
+
+    <details class="qna" id="q8">
+    <summary><h3>Q8. if/elif/else는 정확히 무엇을 하나요?</h3></summary>
+    <p><code>if</code>는 "조건이 참이면 이 블록을, 아니면 건너뛰어라"예요. <code>else</code>를 붙이면 "참이 아닐 때 대신 실행할 것"을 정할 수 있고, <code>elif</code>를 끼워 넣으면 조건을 여러 개 검사할 수 있어요.</p>
+    <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
+<pre><code>&gt;&gt;&gt; a = 1234 * 4
+&gt;&gt;&gt; b = 13456 / 2
+&gt;&gt;&gt; if a &gt; b:
+...     print('a')
+... else:
+...     print('b')
+...
+b</code></pre>
+    <ul>
+      <li><code>a</code>는 <code>4936</code>, <code>b</code>는 <code>6728.0</code> → <code>a &gt; b</code>가 거짓 → <code>else</code> 블록이 실행돼 <code>b</code>가 찍혀요.</li>
+      <li>elif를 여러 번 쓰면 조건을 순서대로 늘어놓을 수 있어요.</li>
+    </ul>
+<pre><code>&gt;&gt;&gt; c = 15 * 5
+&gt;&gt;&gt; d = 15 + 15 + 15 + 15 + 15
+&gt;&gt;&gt; if c &gt; d:
+...     print('c is greater than d')
+... elif c == d:
+...     print('c is equal to d')
+... else:
+...     print('I don\'t know')
+...
+c is equal to d</code></pre>
+    <p><code>c</code>와 <code>d</code>는 둘 다 <code>75</code>라서 <code>c &gt; d</code>는 거짓, <code>c == d</code>는 참 → 두 번째 블록이 실행돼요.</p>
+    </details>
+
+    <details class="qna" id="q9">
+    <summary><h3>Q9. <code>==</code>와 <code>=</code>는 뭐가 다른가요?</h3></summary>
+    <p>등호 개수가 다르면 완전히 다른 뜻이에요.</p>
+    <table>
+      <thead><tr><th>기호</th><th>뜻</th><th>예</th></tr></thead>
+      <tbody>
+        <tr><td><code>=</code></td><td>오른쪽 값을 왼쪽 이름에 <strong>대입</strong>하기</td><td><code>watch = 1000000</code> → watch에 백만을 넣어라</td></tr>
+        <tr><td><code>==</code></td><td>양쪽 값이 <strong>같은지 비교</strong>하기 (참/거짓을 돌려줌)</td><td><code>c == d</code> → c와 d가 같은가?</td></tr>
+      </tbody>
+    </table>
+    <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
+<pre><code>&gt;&gt;&gt; c = 75
+&gt;&gt;&gt; d = 75
+&gt;&gt;&gt; c == d
+True
+&gt;&gt;&gt; c = d
+&gt;&gt;&gt; c
+75</code></pre>
+    <p><code>if c = d:</code>처럼 조건 자리에 <code>=</code>를 쓰면 파이썬은 <code>SyntaxError</code>를 내요. 비교가 필요한 자리(<code>if</code>, <code>while</code>의 조건)에는 반드시 <code>==</code>를 써야 해요.</p>
+    </details>
+
+    <details class="qna" id="q10">
+    <summary><h3>Q10. <code>while True:</code>인데 <code>break</code>로 어떻게 끝나나요?</h3></summary>
+    <p><code>True</code>는 그 자체로 "항상 참"이에요. 그래서 <code>while True:</code>는 조건 검사 없이 무조건 도는 반복문이 돼요. 이걸 멈추려면 몸통 안에서 <code>break</code>로 직접 빠져나와야 해요.</p>
+<pre><code># filename: ten.py
+max = 10
+
+while True:
+    num = int(input())
+    if num &gt; max:
+        print(num, 'is too big!')
+        break</code></pre>
+    <p>입력이 <code>3</code>, <code>6</code>, <code>9</code>, <code>12</code> 순서로 들어온다고 하면 흐름은 이래요.</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>입력받은 num</th><th>num &gt; 10 ?</th><th>동작</th></tr></thead>
+        <tbody>
+          <tr><td>3</td><td>거짓</td><td>아무 것도 안 하고 다시 while 맨 위로</td></tr>
+          <tr><td>6</td><td>거짓</td><td>다시 while 맨 위로</td></tr>
+          <tr><td>9</td><td>거짓</td><td>다시 while 맨 위로</td></tr>
+          <tr><td>12</td><td>참</td><td>"12 is too big!" 출력, break로 반복 종료</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul>
+      <li><code>break</code>를 만나면 그 자리에서 <strong>즉시</strong> 반복문을 빠져나가요. while의 조건은 더 이상 검사하지 않아요.</li>
+      <li>"몇 번 반복할지 미리 정해 둘 수 없고, 어떤 값이 나와야 멈춘다"는 상황에 <code>while True:</code> + <code>break</code> 조합을 자주 써요. 이 모양은 2.2.4, 2.2.6에서 또 나와요.</li>
+    </ul>
+    </details>
+
+    <!-- ============ 2.2.1 ============ -->
+    <hr>
+    <h2><span class="hl">2.2.1 연습 문제: 숫자 읽기(1~3)</span></h2>
+    <p>문제 원문: <a href="https://wikidocs.net/123990" target="_blank" rel="noopener">wikidocs.net/123990</a></p>
+
+    <details class="qna" id="q11">
+    <summary><h3>Q11. elif 체인은 조건을 다 검사하나요, 하나만 검사하나요?</h3></summary>
+    <p><strong>공식 풀이</strong>는 이래요.</p>
+<pre><code>num = int(input())
+
+if num == 1:
+    print('일')
+elif num == 2:
+    print('이')
+elif num == 3:
+    print('삼')</code></pre>
+    <p>파이썬은 <strong>위에서부터 순서대로</strong> 조건을 검사하다가, 처음으로 참인 조건 하나를 찾으면 그 블록만 실행하고 <strong>나머지 elif는 전부 건너뛰어요.</strong> 입력이 <code>2</code>라면 이렇게 진행돼요.</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>검사 순서</th><th>조건</th><th>결과</th><th>동작</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>num == 1</td><td>거짓</td><td>다음 elif로</td></tr>
+          <tr><td>2</td><td>num == 2</td><td>참</td><td>'이' 출력, 아래 elif는 검사 안 함</td></tr>
+          <tr><td>3</td><td>num == 3</td><td>-</td><td>(검사하지 않음)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>만약 이걸 elif 없이 <code>if</code>만 세 번 따로 쓰면, 앞의 <code>if</code>가 참이어도 그 아래 <code>if</code>들을 <strong>전부 다시</strong> 검사해요. 값이 하나뿐이라 지금은 결과가 같아 보이지만, 조건이 겹칠 수 있는 2.2.2·2.2.3에서는 이 차이가 결과를 완전히 바꿔요.</p>
+    </details>
+
+    <!-- ============ 2.2.2 ============ -->
+    <hr>
+    <h2><span class="hl">2.2.2 연습 문제: 나이에 따른 세대 구분 (1)</span></h2>
+    <p>문제 원문: <a href="https://wikidocs.net/190149" target="_blank" rel="noopener">wikidocs.net/190149</a></p>
+
+    <details class="qna" id="q12">
+    <summary><h3>Q12. elif 조건을 작은 값부터 큰 값 순서로 쓴 이유는? 순서를 바꾸면 어떻게 되나요?</h3></summary>
+    <p><strong>공식 풀이</strong>는 이래요.</p>
+<pre><code>y = int(input('What year were you born? '))
+
+gen = None
+
+if y &lt;= 1924:
+    gen = 'the Greatest Generation'
+elif y &lt;= 1945:
+    gen = 'the Silent Generation'
+elif y &lt;= 1964:
+    gen = 'a baby boomer'
+elif y &lt;= 1980:
+    gen = 'a Gen X'
+elif y &lt;= 1996:
+    gen = 'a millennial'
+else:
+    gen = 'a Gen Z'
+
+print(f"You're {gen}.")</code></pre>
+    <p>Q11에서 봤듯 elif 체인은 <strong>처음 참인 조건 하나만</strong> 골라요. 조건이 전부 <code>&lt;=</code>(이하)라서, 작은 경계부터 검사해야 "그 경계 바로 아래 구간"을 정확히 잡아낼 수 있어요. <code>y &lt;= 1945</code> 줄에 도착했다는 건 이미 위에서 <code>y &lt;= 1924</code>가 거짓으로 확인됐다는 뜻이라서, 굳이 <code>1925 &lt;= y &lt;= 1945</code>처럼 범위를 다 안 써도 돼요.</p>
+    <p>순서를 반대로(큰 경계부터) 쓰면 무슨 일이 생기는지 실행해서 확인했어요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 순서만 뒤집은 잘못된 예</span></p>
+<pre><code>if y &lt;= 1996:
+    gen = 'a millennial'
+elif y &lt;= 1980:
+    gen = 'a Gen X'
+elif y &lt;= 1964:
+    gen = 'a baby boomer'
+elif y &lt;= 1945:
+    gen = 'the Silent Generation'
+elif y &lt;= 1924:
+    gen = 'the Greatest Generation'
+else:
+    gen = 'a Gen Z'</code></pre>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">큰 경계(1996)부터 검사한다 → 1930년생도 <code>y &lt;= 1996</code>이 먼저 참이 되어 <b>'a millennial'</b>로 잘못 나와요. 1965년생도 마찬가지로 <b>'a millennial'</b>로 잘못 나와요.</td>
+          <td class="choice-good">작은 경계(1924)부터 검사한다 → 1930년생은 <b>'the Silent Generation'</b>, 1965년생은 <b>'a Gen X'</b>로 정확히 나와요.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 위 두 코드에 각각 1930, 1965를 넣어 직접 실행해 확인한 값이에요</span></p>
+<pre><code>1930 -&gt; the Silent Generation   # 올바른 순서
+1965 -&gt; a Gen X                # 올바른 순서
+
+1930 -&gt; a millennial   # 큰 경계부터 검사한 잘못된 순서
+1965 -&gt; a millennial   # 큰 경계부터 검사한 잘못된 순서</code></pre>
+    <p><strong>핵심 한 줄:</strong> 조건이 <code>&lt;=</code>(이하)면 작은 값부터, <code>&gt;=</code>(이상)면 큰 값부터 검사해야 첫 번째로 걸리는 조건이 원하는 구간과 일치해요. 다음 절(2.2.3)에서 반대 방향 예를 봐요.</p>
+    </details>
+
+    <!-- ============ 2.2.3 ============ -->
+    <hr>
+    <h2><span class="hl">2.2.3 연습 문제: 단위 기호</span></h2>
+    <p>문제 원문: <a href="https://wikidocs.net/163168" target="_blank" rel="noopener">wikidocs.net/163168</a></p>
+
+    <details class="qna" id="q13">
+    <summary><h3>Q13. 여기는 왜 elif 순서가 큰 값부터인가요? 2.2.2랑 반대 아닌가요?</h3></summary>
+    <p>백만·10억 단위까지 확장한 <strong>공식 풀이</strong>는 이래요.</p>
+<pre><code>num = int(input())
+result = str(num)
+
+if num &gt;= 1000000000000000000:
+    result = str(num // 1000000000000000000) + 'E'
+elif num &gt;= 1000000000000000:
+    result = str(num // 1000000000000000) + 'P'
+elif num &gt;= 1000000000000:
+    result = str(num // 1000000000000) + 'T'
+elif num &gt;= 1000000000:
+    result = str(num // 1000000000) + 'G'
+elif num &gt;= 1000000:
+    result = str(num // 1000000) + 'M'
+elif num &gt;= 1000:
+    result = str(num // 1000) + 'k'
+elif num &gt;= 0:
+    pass
+
+print(result)</code></pre>
+    <p>2.2.2와 반대로 보이지만 원칙은 똑같아요. <strong>elif 체인은 위에서부터 검사해 처음 참인 조건 하나만 쓴다</strong>는 규칙은 그대로고, 다만 이번엔 조건이 <code>&gt;=</code>(이상)예요. <code>&gt;=</code>는 "그 값과 그보다 큰 모든 값"을 잡기 때문에, 큰 경계부터 먼저 걸러내지 않으면 정말 큰 수도 제일 작은 조건(<code>&gt;= 1000</code>)에 걸려 버려요.</p>
+    <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 올바른 순서와, k부터 검사하는 잘못된 순서를 각각 실행해 확인</span></p>
+<pre><code>500 -&gt; 500
+1500 -&gt; 1k
+2500000 -&gt; 2M
+5000000000 -&gt; 5G          # 올바른 순서(큰 것부터)
+
+1500 -&gt; 1k
+5000000000 -&gt; 5000000k    # 잘못된 순서(작은 것부터, k를 맨 위에 둠)</code></pre>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad"><code>elif num &gt;= 1000:</code>을 맨 위에 둔다 → 50억(<code>5000000000</code>)도 <code>&gt;= 1000</code>에 먼저 걸려서 <b>5000000k</b>처럼 단위를 못 줄인 값이 나와요. 에러는 안 나요.</td>
+          <td class="choice-good">가장 큰 단위(E)부터 검사한다 → 50억은 <b>5G</b>로 정확히 줄어들어요.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄(2.2.2와 이어서):</strong> elif 체인의 올바른 순서는 부등호 방향으로 정해져요 — <code>&lt;=</code>는 작은 값부터, <code>&gt;=</code>는 큰 값부터. <a href="#suspect-elif-order">이 버그가 의심될 때 확인하는 법 ↓</a></p>
+    </details>
+
+    <details class="qna" id="q14">
+    <summary><h3>Q14. <code>pass</code>는 무슨 뜻인가요?</h3></summary>
+    <p><code>pass</code>는 <strong>"여기서는 아무 일도 하지 않는다"</strong>는 뜻의 키워드예요. <code>elif num &gt;= 0:</code> 조건이 참일 때(0 이상 1000 미만) 딱히 더 할 일이 없어요. 맨 위에서 이미 <code>result = str(num)</code>으로 기본값을 넣어 뒀기 때문이에요.</p>
+    <p>그런데 파이썬은 <code>if</code>, <code>elif</code>, <code>while</code> 같은 블록 뒤에 <strong>반드시 실행할 코드가 하나 이상</strong> 있어야 해요. 아무것도 안 쓰면 에러가 나요.</p>
+    <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— pass 없이 블록을 비워 두면 나는 에러</span></p>
+<pre><code>&gt;&gt;&gt; num = 5
+&gt;&gt;&gt; if num &gt;= 1000:
+...     result = 'big'
+... elif num &gt;= 0:
+...
+  File "&lt;stdin&gt;", line 4
+IndentationError: expected an indented block after 'elif' statement on line 3</code></pre>
+    <ul>
+      <li><code>pass</code>는 "할 일이 없다"는 걸 명시적으로 알려주는 자리 표시자(placeholder)예요.</li>
+      <li>나중에 이 자리에 코드를 채울 계획이라는 표시로도 자주 써요.</li>
+      <li><code>pass</code> 자체는 실행돼도 프로그램 상태를 전혀 바꾸지 않아요.</li>
+    </ul>
+    </details>
+
+    <!-- ============ 2.2.4 ============ -->
+    <hr>
+    <h2><span class="hl">2.2.4 연습 문제: 양수만 덧셈하기</span></h2>
+    <p>문제 원문: <a href="https://wikidocs.net/101634" target="_blank" rel="noopener">wikidocs.net/101634</a></p>
+
+    <details class="qna" id="q15">
+    <summary><h3>Q15. <code>while True:</code>로 시작하는데 왜 무한 루프가 아닌가요?</h3></summary>
+    <p><strong>공식 풀이</strong>는 이래요.</p>
+<pre><code>sum = 0
+while True:
+    num = int(input())
+    if num &lt; 0:
+        break
+    else:
+       sum += num
+
+print(sum)</code></pre>
+    <p>Q10에서 본 <code>while True:</code> + <code>break</code> 패턴이에요. "몇 개를 입력받을지 미리 모르고, 음수가 나오면 그만둔다"는 조건은 while의 조건 자리 하나로는 표현하기 어려워서, 무한 반복 + 조건부 탈출로 짜요.</p>
+    <p>입력이 <code>1, 2, 3, -1</code> 순서일 때 흐름이에요.</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>입력 num</th><th>num &lt; 0 ?</th><th>동작</th><th>sum</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>거짓</td><td>sum += 1</td><td>1</td></tr>
+          <tr><td>2</td><td>거짓</td><td>sum += 2</td><td>3</td></tr>
+          <tr><td>3</td><td>거짓</td><td>sum += 3</td><td>6</td></tr>
+          <tr><td>-1</td><td>참</td><td>break로 반복 종료</td><td>6 (그대로 출력)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>변수 이름 하나 더 짚기:</strong> 이 코드는 변수 이름으로 <code>sum</code>을 썼는데, <code>sum</code>은 사실 파이썬에 이미 있는 <strong>내장 함수</strong> 이름이에요(리스트를 더하는 <code>sum([1,2,3])</code>). 이 코드 안에서는 문제없이 동작하지만, <code>sum</code>이라는 이름을 변수로 써 버리면 그 아래에서는 진짜 <code>sum()</code> 함수를 더 이상 쓸 수 없어요.</p>
+    <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— sum을 변수로 먼저 쓴 뒤 원래 함수를 부르면 나는 에러</span></p>
+<pre><code>&gt;&gt;&gt; sum = 0
+&gt;&gt;&gt; sum += 5
+&gt;&gt;&gt; sum([1, 2, 3])
+Traceback (most recent call last):
+  ...
+TypeError: 'int' object is not callable</code></pre>
+    <p>1장 Q6에서 본 "변수 이름 규칙"(<code>list</code>, <code>len</code>처럼 파이썬이 이미 쓰는 이름은 피하기)이 여기도 그대로 적용돼요. 지금 문제처럼 짧은 스크립트에서는 괜찮지만, <code>total</code>처럼 겹치지 않는 이름을 쓰는 습관을 들이면 나중에 실수를 줄일 수 있어요. <a href="#suspect-builtin-shadow">이 버그가 의심될 때 확인하는 법 ↓</a></p>
+    </details>
+
+    <!-- ============ 2.2.5 ============ -->
+    <hr>
+    <h2><span class="hl">2.2.5 연습 문제: 윤년 판별하기</span></h2>
+    <p>문제 원문: <a href="https://wikidocs.net/88691" target="_blank" rel="noopener">wikidocs.net/88691</a></p>
+
+    <details class="qna" id="q16">
+    <summary><h3>Q16. if 안에 또 if를 쓰는 중첩 if는 뭔가요? 왜 이렇게 짜나요?</h3></summary>
+    <p><strong>공식 풀이</strong>는 이래요.</p>
+<pre><code>is_leap_year = None
+
+year = int(input())
+
+if year % 4 == 0:
+    if year % 100 == 0:
+        if year % 400 == 0:
+            is_leap_year = True
+        else:
+            is_leap_year = False
+    else:
+        is_leap_year = True
+else:
+    is_leap_year = False
+
+if is_leap_year:
+    print(f'{year} is a leap year')
+else:
+    print(f'{year} is not a leap year')</code></pre>
+    <p><strong>중첩 if</strong>는 <code>if</code> 블록 안에 또 다른 <code>if</code>를 넣는 거예요. "4로 나누어떨어지는 것들 중에서, 다시 100으로 나누어떨어지는 것들 중에서, 다시 400으로 나누어떨어지는지"처럼 <strong>조건이 조건 안에 겹겹이 들어있을 때</strong> 자연스럽게 나오는 모양이에요. 규칙 자체가 "4의 배수인가 → (맞다면) 그중 100의 배수인가 → (맞다면) 그중 400의 배수인가"로 층이 있어서, 코드도 층을 그대로 따라가요.</p>
+    <p>직접 실행해서 네 가지 경우를 다 확인했어요.</p>
+    <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 규칙의 네 갈래를 각각 대표하는 연도</span></p>
+<pre><code>2000 -&gt; 2000 is a leap year       # 4, 100, 400 모두로 나누어떨어짐
+1900 -&gt; 1900 is not a leap year   # 4, 100으로 나누어떨어지지만 400은 아님
+2024 -&gt; 2024 is a leap year       # 4로 나누어떨어지고 100으로는 안 나누어떨어짐
+2023 -&gt; 2023 is not a leap year   # 4로도 안 나누어떨어짐</code></pre>
+    <ul>
+      <li>바깥 <code>if year % 4 == 0:</code>이 거짓이면 안쪽 <code>if</code>들은 아예 검사조차 하지 않고 바로 <code>else</code>(평년)로 가요.</li>
+      <li><code>is_leap_year</code> 변수에 결과(<code>True</code>/<code>False</code>)만 담아 두고, 메시지 출력은 맨 아래에서 한 번만 하도록 나눠 놨어요. "판단"과 "출력"을 분리한 셈이에요.</li>
+      <li>같은 로직을 <code>and</code>로 한 줄에 풀어 쓰는 법은 바로 다음 절 2.2.7(and/or 연산자)에서 다뤄요.</li>
+    </ul>
+    </details>
+
+    <!-- ============ 2.2.6 ============ -->
+    <hr>
+    <h2><span class="hl">2.2.6 연습 문제: 화학 실험실</span></h2>
+    <p>문제 원문: <a href="https://wikidocs.net/99692" target="_blank" rel="noopener">wikidocs.net/99692</a></p>
+
+    <details class="qna" id="q17">
+    <summary><h3>Q17. <code>split()</code>으로 나눈 값을 어떻게 두 변수에 나눠 담나요?</h3></summary>
+    <p><strong>공식 풀이</strong>의 앞부분이에요.</p>
+<pre><code>L = input().split()
+min = int(L[0])
+max = int(L[1])
+# min, max = map(int, input().split())</code></pre>
+    <p><code>split()</code>은 문자열을 공백 기준으로 잘라 <strong>리스트</strong>로 돌려줘요.</p>
+    <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
+<pre><code>&gt;&gt;&gt; '10 20'.split()
+['10', '20']</code></pre>
+    <p>이 풀이는 리스트를 만든 뒤 <code>L[0]</code>, <code>L[1]</code>로 인덱싱해서(1장 Q5) 각각 정수로 바꿔요. 주석으로 남겨 둔 둘째 줄은 다른 방법이에요.</p>
+<pre><code>&gt;&gt;&gt; min, max = map(int, '10 20'.split())
+&gt;&gt;&gt; min
+10
+&gt;&gt;&gt; max
+20</code></pre>
+    <ul>
+      <li><code>map(int, 리스트)</code>는 리스트의 원소 하나하나에 <code>int()</code>를 적용해 줘요. <code>['10', '20']</code> → <code>10</code>, <code>20</code></li>
+      <li><code>min, max = ...</code>처럼 왼쪽에 이름을 여러 개 쓰면, 오른쪽 값의 개수와 순서를 맞춰 한 번에 나눠 담아요. 1장 상급 8에서 본 <code>divmod()</code> 언패킹과 같은 문법이에요.</li>
+      <li>원소 개수가 정확히 정해져 있을 때(여기서는 항상 2개)만 이렇게 바로 나눠 담을 수 있어요. 개수가 몇 개일지 모르면 <code>for</code> 문으로 하나씩 꺼내야 해요.</li>
+    </ul>
+    <p><strong>변수 이름 주의:</strong> 여기서 쓴 <code>min</code>, <code>max</code>도 <code>sum</code>처럼 파이썬 내장 함수 이름이에요. 자세한 이유는 <a href="#q15">Q15</a>를 참고하세요.</p>
+    </details>
+
+    <details class="qna" id="q18">
+    <summary><h3>Q18. <code>min &lt;= temp &lt;= max</code>처럼 부등호를 연달아 써도 되나요?</h3></summary>
+    <p>됩니다. 파이썬은 이런 <strong>연쇄 비교(chained comparison)</strong>를 지원해요. <code>min &lt;= temp &lt;= max</code>는 "temp가 min 이상이면서 동시에 max 이하"라는 뜻이에요.</p>
+    <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
+<pre><code>&gt;&gt;&gt; 10 &lt;= 15 &lt;= 20
+True
+&gt;&gt;&gt; 10 &lt;= 25 &lt;= 20
+False</code></pre>
+    <p>수학에서 <code>10 ≤ 15 ≤ 20</code>이라고 쓰는 것과 똑같은 모양이에요. 풀어 쓰면 <code>(min &lt;= temp) and (temp &lt;= max)</code>와 같은 뜻인데, <code>and</code>는 2.2.7에서 배우니 지금은 "부등호 두 개를 나란히 쓰면 범위를 한 번에 검사할 수 있다"는 것만 기억해도 충분해요.</p>
+    </details>
+
+    <details class="qna" id="q19">
+    <summary><h3>Q19. <code>-999</code> 같은 특별한 값으로 반복을 끝내는 이유는?</h3></summary>
+    <p><strong>공식 풀이</strong> 전체예요.</p>
+<pre><code>L = input().split()
+min = int(L[0])
+max = int(L[1])
+
+temp = int(input())
+
+while temp != -999:
+    if min &lt;= temp &lt;= max:
+        print('Nothing to report')
+        temp = int(input())
+    else:
+        print('Alert!')
+        break</code></pre>
+    <p><code>-999</code>는 온도로는 절대 나올 리 없는 값을 "그만 보내겠다"는 <strong>신호로 약속</strong>한 거예요. 이런 값을 <strong>센티널 값(sentinel value)</strong>이라고 불러요. 2.2.4의 "음수면 그만"과 비슷한 발상인데, 여기서는 정상적인 온도가 음수일 수도 있어서(영하 온도) 아예 있을 수 없는 <code>-999</code>를 약속 값으로 정한 거예요.</p>
+    <p>예 1(최소 10, 최대 20 / 온도 15, 10, 20, 0, 15, -999)을 표로 따라가요.</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>temp</th><th>temp != -999 ?</th><th>10 &lt;= temp &lt;= 20 ?</th><th>출력</th></tr></thead>
+        <tbody>
+          <tr><td>15</td><td>참</td><td>참</td><td>Nothing to report</td></tr>
+          <tr><td>10</td><td>참</td><td>참</td><td>Nothing to report</td></tr>
+          <tr><td>20</td><td>참</td><td>참</td><td>Nothing to report</td></tr>
+          <tr><td>0</td><td>참</td><td>거짓</td><td>Alert! (break로 종료)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul>
+      <li>while의 조건(<code>temp != -999</code>)은 "정상 종료 신호가 왔는가"만 검사해요.</li>
+      <li>범위를 벗어난 경우(<code>Alert!</code>)는 while 조건과 별개로 <code>break</code>가 직접 끊어요. 그래서 장치가 <code>-999</code>를 보내기 전이라도 위험하면 즉시 멈출 수 있어요.</li>
+      <li>온도를 계속 읽는 줄(<code>temp = int(input())</code>)이 <code>if</code> 블록 <strong>안에만</strong> 있다는 점도 중요해요 — 정상일 때만 다음 값을 읽고, 위험하면 더 안 읽고 바로 끝나요.</li>
+    </ul>
+    </details>
+
+    <hr>
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 2장 문법으로 짠 코드의 결과가 이상할 때</h2>
+    <p>아래 문제들은 에러 없이 조용히 틀리거나, 아예 멈추지 않는 경우가 많아요. 결과가 예상과 다르면 이 표부터 확인해요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-infinite-loop">
+          <td>프로그램이 안 끝나고 화면에 같은 내용이 계속 찍히거나, 아무 반응 없이 멈춘 것처럼 보여요</td>
+          <td>while 몸통 안에서 조건에 쓰인 변수를 바꾸는 줄</td>
+          <td>그 변수가 반복마다 실제로 값이 바뀌는지, 들여쓰기가 while 몸통 안에 제대로 들어가 있는지 봐요 (<a href="#q2">Q2</a>)</td>
+        </tr>
+        <tr id="suspect-elif-order">
+          <td>등급·단위 같은 결과가 조용히 틀리게 나와요 (큰 수인데 작은 단위로, 젊은 나이인데 늙은 세대로)</td>
+          <td>elif 체인의 조건 순서</td>
+          <td>조건이 <code>&lt;=</code>면 작은 값부터, <code>&gt;=</code>면 큰 값부터 쓰여 있는지 확인해요 (<a href="#q12">Q12</a>, <a href="#q13">Q13</a>)</td>
+        </tr>
+        <tr id="suspect-builtin-shadow">
+          <td><code>sum()</code>, <code>min()</code>, <code>max()</code> 같은 함수를 불렀는데 <code>TypeError: 'int' object is not callable</code>이 나요</td>
+          <td>같은 이름을 변수로 먼저 만든 적이 있는지</td>
+          <td>그 위에서 <code>sum = ...</code>, <code>min = ...</code> 같은 대입이 있었는지 찾아 <code>total</code>, <code>lo</code> 같은 이름으로 바꿔요 (<a href="#q15">Q15</a>)</td>
+        </tr>
+        <tr id="suspect-missing-pass">
+          <td><code>elif</code>나 <code>if</code> 아래에서 <code>IndentationError: expected an indented block</code>가 나요</td>
+          <td>조건은 맞는데 실행할 코드를 안 쓴 블록</td>
+          <td>그 자리에 할 일이 정말 없다면 <code>pass</code>를 넣어요 (<a href="#q14">Q14</a>)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2><span class="hl">함께 보기</span></h2>
+    <ul>
+      <li><a href="python-study/beginner-python/ch02-code-reading.html">2장 코드 읽기 실습</a> — 1장~2.2.6절 범위를 응용한 코드를 직접 해석하는 연습이에요.</li>
+      <li><a href="beginner-python-ch01-qna.html">1장 문제 풀이와 질문 해설</a> — / 와 //, 리스트 슬라이싱, append·pop·del 같은 1장 내용이에요.</li>
+      <li><a href="python-study/beginner-python/ch01-code-reading.html">1장 코드 읽기 실습 21문제</a></li>
+      <li><a href="https://wikidocs.net/book/2" target="_blank" rel="noopener">왕초보를 위한 Python (위키독스)</a> — 이 글이 다룬 문제의 원래 교재예요.</li>
+    </ul>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="qna-toggle.js"></script>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
