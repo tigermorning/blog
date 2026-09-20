@@ -399,6 +399,11 @@ window.BIGMAP = {
     "brain",
     "check",
     "답 초안"
+   ],
+   [
+    "check",
+    "web",
+    "통과한 답 → 화면으로"
    ]
   ],
   "steps": [

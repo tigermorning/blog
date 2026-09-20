@@ -267,6 +267,11 @@
     root.innerHTML = crumbs([["전체 그림", "#/"]]) + levelTag(0, "전체 보기") +
       '<h3 class="bm-h">' + esc(D.world.title) + "</h3>" +
       '<p class="bm-lead">' + esc(D.world.lead) + "</p>" +
+      '<div class="bm-scene" style="--nc:var(--folder-7)"><p class="bm-scene-title">이 질문이 실제로 지나간 길</p><p>' +
+      "사용자 → 웹 서비스 → 오케스트레이션 → 프롬프트·컨텍스트 엔지니어링 → 머신러닝·LLM → 답 검사, 이 순서로 지나갔어요. " +
+      "아래 그림의 번호 배지가 이 순서예요. 멀티모달과 RAG·MCP·자동화 상자엔 번호가 없어요 — 사진·음성이 있었거나 " +
+      "건별로 다른 값이 필요했다면 그 자리에서 대신 켜졌을, 이번엔 쉰 상자예요." +
+      "</p></div>" +
       '<div class="bm-graph" id="bm-g"></div>' +
       '<ol class="bm-steps">' + D.world.steps.map((s) =>
         '<li><strong>' + esc(s[0]) + "</strong> " + esc(s[1]) + "</li>").join("") + "</ol>" +
