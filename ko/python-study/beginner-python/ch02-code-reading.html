@@ -407,7 +407,7 @@ body { margin: 0; }
         <li><a href="#m3"><span class="n">3</span>제목에 느낌표 몇 개?</a></li>
         <li><a href="#m4"><span class="n">4</span>영하 기온 중 최고 기온</a></li>
         <li><a href="#m5"><span class="n">5</span>판매중·품절 개수 세기</a></li>
-        <li><a href="#m6"><span class="n">6</span>메뉴판 출력</a></li>
+        <li><a href="#m6"><span class="n">6</span>재생목록 총 재생시간</a></li>
       </ol>
     </div>
     <div class="grp-adv"><h2>상급</h2>
@@ -478,7 +478,24 @@ body { margin: 0; }
               <tr><td>초기화</td><td><code>i, total = 0, 0</code> — 여러 변수를 한 줄에</td><td class="src">2.2.6</td></tr>
               <tr><td>패턴</td><td>리스트를 하나씩 훑으며 원하는 값 찾기(탐색) + <code>break</code></td><td class="src">2.2, 1장 리스트</td></tr>
               <tr><td>패턴</td><td>"성공했는지"를 기억해 두는 깃발(flag) 변수(<code>found</code>, <code>success</code>)</td><td class="src">2.2</td></tr>
-              <tr><td>1장 복습</td><td><code>len()</code>, <code>리스트[번호]</code>, <code>.append()</code>, <code>input()</code>/<code>int()</code>, 문자열 인덱싱</td><td class="src">1장</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h2 class="sec" style="margin-top:8px;">1장 도구, 여기서 다시 씀 (누적 지도)</h2>
+        <p class="note" style="margin-top:0;">2장 새 문법(while, if)이 1장에서 배운 것과 어디서 다시 만나는지 미리 보여 줍니다. 문제를 풀며 "저번에 배운 그거다"를 확인해 보세요.</p>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>1장 도구</th><th>1장에서 배운 곳</th><th>2장 실습에서 다시 나오는 문제</th></tr></thead>
+            <tbody>
+              <tr><td><code>리스트[번호]</code>, <code>len()</code></td><td class="src">1.3 리스트</td><td>기본 1·4·5·6, 중급 3·4·5·6, 상급 6 — 거의 모든 문제</td></tr>
+              <tr><td><code>.append()</code></td><td class="src">1.3 리스트</td><td>중급 1, 상급 1</td></tr>
+              <tr><td>문자열 인덱싱 <code>s[i]</code></td><td class="src">1.3 리스트(문자열도 같은 방식)</td><td>중급 3</td></tr>
+              <tr><td>슬라이싱 <code>s[1:]</code></td><td class="src">ch01 실습 Q7</td><td>중급 4 (보너스 설명)</td></tr>
+              <tr><td><code>+=</code>, <code>-=</code></td><td class="src">1.2 변수</td><td>기본 3·4, 중급 5</td></tr>
+              <tr><td><code>print(a, b)</code> 쉼표 서식</td><td class="src">1.6 기본 6</td><td>기본 1·4, 중급 6</td></tr>
+              <tr><td><code>input()</code> / <code>int()</code></td><td class="src">1.6, 1.6.1</td><td>대부분의 문제</td></tr>
+              <tr><td><code>divmod()</code></td><td class="src">ch01 실습 상급 7</td><td>중급 6</td></tr>
+              <tr><td>선형 탐색(하나씩 찾기)</td><td class="src">1장 리스트 개념의 응용</td><td>기본 5·6, 상급 3에서 반복 등장</td></tr>
             </tbody>
           </table>
         </div>
@@ -830,6 +847,7 @@ while i &lt; len(temps):
 print(max_temp)</code></pre>
             <ul>
               <li>시작값을 "있을 법한 아무 값(0)"이 아니라 <code>temps[0]</code>(실제 데이터의 첫 값)으로 잡음 → <code>i</code>도 이미 비교한 0번을 건너뛰고 <code>1</code>부터 시작</li>
+              <li><b>1장 복습:</b> <code>i = 1</code>부터 도는 대신 1장의 슬라이싱으로 <code>temps[1:]</code>(0번을 뺀 나머지)을 만들어 두고 그 위를 훑어도 결과는 같음 — "0번을 건너뛴다"는 뜻을 슬라이싱으로 미리 표현한 것</li>
             </ul>
             <p class="real"><b>실제 코드에서</b> · 최고·최저 기온, 계좌 잔액 변동, 주가 등락처럼 음수가 정상적으로 나오는 데이터에서 초기값을 0으로 잡으면 조용히 틀림</p>
           </div>
@@ -869,32 +887,36 @@ print(available, soldout)</code></pre>
       </article>
 
       <article class="problem" id="m6">
-        <div class="p-head"><span class="p-id">중급 6</span><span class="p-type">작성</span><h3>메뉴판 출력</h3></div>
+        <div class="p-head"><span class="p-id">중급 6</span><span class="p-type">작성</span><h3>재생목록 총 재생시간</h3></div>
         <div class="p-body">
           <ul>
-            <li>파일 이름: <code>menu_board.py</code></li>
-            <li>메뉴 이름 리스트와 가격 리스트가 각각 주어짐</li>
-            <li><code>while</code>로 메뉴 이름과 가격을 한 줄씩 나란히 출력하기</li>
+            <li>파일 이름: <code>playlist_time.py</code></li>
+            <li>영상 길이(초)가 담긴 리스트가 주어짐</li>
+            <li><code>while</code>로 전부 더한 뒤, <code>시간 분 초</code> 형태로 출력하기</li>
+            <li>조건: <code>divmod()</code>를 사용하기 (1장 상급 7 "영상 길이 표시"에서 배운 도구)</li>
           </ul>
-<pre><code class="language-python">menu = ['아메리카노', '라떼', '에이드']
-prices = [4500, 5000, 5500]</code></pre>
-<pre class="out"><code class="nohighlight">아메리카노 4500
-라떼 5000
-에이드 5500</code></pre>
+<pre><code class="language-python">video = [385, 210, 640]</code></pre>
+<pre class="out"><code class="nohighlight">0 시간 20 분 35 초</code></pre>
         </div>
         <div class="memo"><label for="memo-m6">내 코드 <span>이 브라우저에만 저장</span></label><textarea id="memo-m6"></textarea></div>
         <details class="sol"><summary>풀이 예시 보기</summary>
           <div class="sol-body">
-<pre><code class="language-python">menu = ['아메리카노', '라떼', '에이드']
-prices = [4500, 5000, 5500]
+<pre><code class="language-python">video = [385, 210, 640]
 i = 0
-while i &lt; len(menu):
-    print(menu[i], prices[i])
-    i += 1</code></pre>
+total = 0
+while i &lt; len(video):
+    total += video[i]
+    i += 1
+
+h, remainder = divmod(total, 3600)
+m, s = divmod(remainder, 60)
+print(h, '시간', m, '분', s, '초')</code></pre>
             <ul>
-              <li>같은 인덱스 <code>i</code>로 <code>menu</code>와 <code>prices</code> 두 리스트를 <b>동시에</b> 훑음 — 두 리스트의 길이가 같다는 전제가 필요</li>
-              <li>이름과 가격을 아예 하나로 묶어 관리하는 방법(딕셔너리)은 4장에서 배움</li>
+              <li>앞부분(<code>while</code>로 리스트 합계 내기)은 기본 4 장바구니 총액과 완전히 같은 모양</li>
+              <li><b>1장 복습:</b> 초 단위 합계를 시·분·초로 바꾸는 <code>divmod()</code>는 1장 상급 7 "영상 길이 표시"에서 이미 써 본 도구 — 거기선 영상 1개, 여기선 여러 개를 <code>while</code>로 먼저 합친 뒤에 씀</li>
+              <li><code>divmod(1235, 3600)</code> → <code>(0, 1235)</code>, <code>divmod(1235, 60)</code> → <code>(20, 35)</code></li>
             </ul>
+            <p class="real"><b>실제 코드에서</b> · 재생목록 총 시간, 회의 누적 시간처럼 "여러 개를 합친 뒤 보기 좋은 단위로 바꾸는" 두 단계 계산이 흔함</p>
           </div>
         </details>
       </article>
@@ -914,8 +936,10 @@ while i &lt; len(menu):
 <pre><code class="language-python">password = '1234'
 tries = 0
 success = False
+attempts = []
 while tries &lt; 3:
     guess = input()
+    attempts.append(guess)
     if guess == password:
         success = True
         break
@@ -923,34 +947,38 @@ while tries &lt; 3:
 if success:
     print('성공')
 else:
-    print('실패')</code></pre>
+    print('실패')
+print(attempts)</code></pre>
           <ul>
-            <li>입력이 순서대로 <code>0000</code>, <code>1111</code>, <code>2222</code>일 때 출력을 예측하기</li>
-            <li>입력이 <code>0000</code>, <code>1234</code>, <code>9999</code>일 때(둘째 시도에 성공) 출력과, <code>tries</code>가 최종적으로 몇인지 예측하기</li>
+            <li>입력이 순서대로 <code>0000</code>, <code>1111</code>, <code>2222</code>일 때 출력(두 줄)을 예측하기</li>
+            <li>입력이 <code>0000</code>, <code>1234</code>, <code>9999</code>일 때(둘째 시도에 성공) 출력을 예측하기 — <code>attempts</code>에 <code>9999</code>가 들어가는지도 확인하기</li>
           </ul>
         </div>
         <div class="memo"><label for="memo-a1">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a1"></textarea></div>
         <details class="sol"><summary>해설 보기</summary>
           <div class="sol-body">
-<pre class="out"><code class="nohighlight">실패</code></pre>
-<pre class="out"><code class="nohighlight">성공</code></pre>
+<pre class="out"><code class="nohighlight">실패
+['0000', '1111', '2222']</code></pre>
+<pre class="out"><code class="nohighlight">성공
+['0000', '1234']</code></pre>
             <div class="table-scroll fill">
               <table>
                 <thead><tr><th>시나리오</th><th>guess</th><th>guess == password ?</th><th>동작</th></tr></thead>
                 <tbody>
-                  <tr><td rowspan="3">전부 실패</td><td>0000</td><td>거짓</td><td>tries → 1</td></tr>
-                  <tr><td>1111</td><td>거짓</td><td>tries → 2</td></tr>
-                  <tr><td>2222</td><td>거짓</td><td>tries → 3, while 조건 거짓으로 종료</td></tr>
-                  <tr><td rowspan="2">둘째에 성공</td><td>0000</td><td>거짓</td><td>tries → 1</td></tr>
-                  <tr><td>1234</td><td>참</td><td>success = True, break (tries는 1에서 멈춤, 9999는 입력받지 않음)</td></tr>
+                  <tr><td rowspan="3">전부 실패</td><td>0000</td><td>거짓</td><td>attempts에 추가, tries → 1</td></tr>
+                  <tr><td>1111</td><td>거짓</td><td>attempts에 추가, tries → 2</td></tr>
+                  <tr><td>2222</td><td>거짓</td><td>attempts에 추가, tries → 3, while 조건 거짓으로 종료</td></tr>
+                  <tr><td rowspan="2">둘째에 성공</td><td>0000</td><td>거짓</td><td>attempts에 추가, tries → 1</td></tr>
+                  <tr><td>1234</td><td>참</td><td>attempts에 추가, success = True, break (9999는 입력받지 않아 attempts에도 안 들어감)</td></tr>
                 </tbody>
               </table>
             </div>
             <ul>
               <li><code>success</code>는 기본 5의 <code>found</code>와 같은 <b>깃발(flag) 변수</b> — while이 끝난 뒤에도 결과를 알 수 있게 해 줌</li>
-              <li>정답을 맞히면 <code>break</code>가 즉시 반복을 끝내기 때문에 남은 입력(<code>9999</code>)은 아예 받지 않음</li>
+              <li><b>1장 복습:</b> <code>attempts.append(guess)</code>는 1장 리스트의 <code>.append()</code> — 성공·실패와 별개로 "무엇을 시도했는지" 기록을 남길 때 씀</li>
+              <li>정답을 맞히면 <code>break</code>가 즉시 반복을 끝내기 때문에 남은 입력(<code>9999</code>)은 아예 받지 않고, 당연히 <code>attempts</code>에도 안 남음</li>
             </ul>
-            <p class="real"><b>실제 코드에서</b> · 로그인 시도 제한, 재시도 로직에 이 "깃발 변수 + break" 모양이 그대로 쓰임</p>
+            <p class="real"><b>실제 코드에서</b> · 로그인 시도 제한 + 시도 기록 남기기(감사 로그)는 실제 인증 시스템에서 거의 항상 같이 감</p>
           </div>
         </details>
       </article>
@@ -997,34 +1025,44 @@ print(price)</code></pre>
       <article class="problem" id="a3">
         <div class="p-head"><span class="p-id">상급 3</span><span class="p-type">읽기</span><h3>회원가입 비밀번호 검사</h3></div>
         <div class="p-body">
-<pre><code class="language-python">pw = input()
+<pre><code class="language-python">banned = ['12345678', 'password1', 'qwertyui']
+pw = input()
+i = 0
+is_banned = False
+while i &lt; len(banned):
+    if pw == banned[i]:
+        is_banned = True
+        break
+    i += 1
+
 if len(pw) &lt; 8:
     print('비밀번호가 너무 짧습니다')
-elif pw == '12345678':
+elif is_banned:
     print('너무 흔한 비밀번호입니다')
 else:
     print('사용 가능한 비밀번호입니다')</code></pre>
-          <p class="spec">입력값 <code>abc123</code>, <code>12345678</code>, <code>myp@ssw0rd</code>일 때 각각의 출력을 예측하기</p>
+          <p class="spec">입력값 <code>abc123</code>, <code>password1</code>, <code>myp@ssw0rd</code>일 때 각각의 출력을 예측하기</p>
         </div>
         <div class="memo"><label for="memo-a3">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a3"></textarea></div>
         <details class="sol"><summary>해설 보기</summary>
           <div class="sol-body">
             <div class="table-scroll fill">
               <table>
-                <thead><tr><th>입력</th><th>길이</th><th>출력</th></tr></thead>
+                <thead><tr><th>입력</th><th>길이</th><th>banned에 있나?</th><th>출력</th></tr></thead>
                 <tbody>
-                  <tr><td>abc123</td><td>6</td><td>비밀번호가 너무 짧습니다</td></tr>
-                  <tr><td>12345678</td><td>8</td><td>너무 흔한 비밀번호입니다</td></tr>
-                  <tr><td>myp@ssw0rd</td><td>10</td><td>사용 가능한 비밀번호입니다</td></tr>
+                  <tr><td>abc123</td><td>6</td><td>-</td><td>비밀번호가 너무 짧습니다</td></tr>
+                  <tr><td>password1</td><td>9</td><td>있음</td><td>너무 흔한 비밀번호입니다</td></tr>
+                  <tr><td>myp@ssw0rd</td><td>10</td><td>없음</td><td>사용 가능한 비밀번호입니다</td></tr>
                 </tbody>
               </table>
             </div>
             <ul>
-              <li><code>len(pw) &lt; 8</code>이 먼저 걸러내고, 그다음 elif가 "너무 흔한 값 하나"만 따로 걸러냄</li>
-              <li><code>12345678</code>은 길이가 8이라 첫 조건은 통과하지만, 두 번째 elif에서 걸림</li>
-              <li>실제 서비스는 이 자리에 금지 목록이 훨씬 많고, 숫자·특수문자 포함 여부까지 검사함(그 검사법은 2장 범위 밖)</li>
+              <li><b>1장 복습:</b> <code>banned</code> 리스트에서 입력값을 찾는 부분은 기본 5·6의 <b>선형 탐색</b>(하나씩 대조하며 <code>break</code>)과 완전히 같은 모양 — 값 하나만 비교하던 걸 여러 개의 금지어 목록으로 늘린 것뿐</li>
+              <li><code>is_banned</code>도 <code>found</code>·<code>success</code>와 같은 <b>깃발 변수</b>: 탐색 결과(있다/없다)를 나중에 elif에서 다시 쓸 수 있게 기억해 둠</li>
+              <li>탐색이 다 끝난 <b>뒤에</b> <code>len(pw) &lt; 8</code>부터 순서대로 검사 — 길이 조건과 금지어 조건은 서로 다른 일이라 elif로 나눔</li>
+              <li>실제 서비스는 금지어 목록이 훨씬 크고, 숫자·특수문자 포함 여부까지 검사함(그 검사법은 2장 범위 밖)</li>
             </ul>
-            <p class="real"><b>실제 코드에서</b> · 회원가입·비밀번호 변경 폼의 유효성 검사가 전부 이런 elif 사슬로 시작함</p>
+            <p class="real"><b>실제 코드에서</b> · 아이디 중복 확인, 금지어 필터링, 스팸 키워드 차단이 전부 "리스트에서 하나씩 찾기" + 그 결과로 분기하기</p>
           </div>
         </details>
       </article>
