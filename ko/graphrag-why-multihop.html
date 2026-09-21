@@ -443,6 +443,18 @@ K=50  HitRate 0.75  Recall 0.75  Precision 0.015  MRR 0.307  nDCG 0.401</code></
       <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
       <p>작은 데이터에서의 성공은 큰 데이터에서의 성공을 보장하지 않아요. 추천-04가 1위로 나온 건 <strong>낱말이 우연히 겹친 덕</strong>이라, 문서가 100배로 늘면 "기생충"을 언급하는 다른 문서들에 밀려나요. 잘 된 문항도 <strong>왜 잘 됐는지</strong>를 봐야 해요.</p>
     </div>
+
+    <h3 id="global-limit">전역 질문 — 또 다른 종류의 벽</h3>
+    <p>위에서 잰 기준 삼중항 39개는 <a href="#goldenset">골든셋</a> 15문항 중 단순·추천 13문항 것이었어요. 전역 2문항은 애초에 그 셈에서 빠져 있었어요. "이 자료에 담긴 한국 영화계에는 어떤 집단들이 있고 각각 어떤 특징을 가지는가?" 같은 질문에는 (주어, 관계, 목적어) 몇 개를 이으면 끝나는 정답 경로가 없거든요. 자료 80건 전체를 훑어야 나오는 답이에요.</p>
+    <p>이건 멀티홉과 다른 종류의 벽이에요. 멀티홉 질문은 정답에 필요한 조각이 <strong>몇 개인지 정해져 있어서</strong>, 그 몇 개를 잇는 경로만 찾으면 돼요. 전역 질문은 정답에 필요한 조각이 <strong>얼마나 되는지부터 모호해요</strong> — 어쩌면 자료 대부분이 조금씩 관련 있을 수도 있고요. 벡터 검색은 "질문과 뜻이 비슷한 조각 상위 K개"를 가져오는 방식이라, K를 아무리 키워도 "자료 전체를 종합하라"는 요구 자체에는 안 맞아요. 이건 순위를 고치는 문제(리랭킹)도, 후보를 넓히는 문제(k 키우기)도 아니에요. 상위 K개만 본다는 검색의 틀 자체가 이런 질문엔 안 맞는 거예요.</p>
+    <p>마이크로소프트 연구팀의 GraphRAG 논문<sup class="fn-ref"><a href="#fn11" id="fnref11">11</a></sup>이 이 구분을 정확히 이렇게 불러요. 벡터 검색 기반 RAG는 근거 문서의 개별 "데이터포인트"를 정확히 찾아오는 데는 강하지만, 자료 전체에 흩어진 내용을 하나로 묶어 답해야 하는 질의(<strong>query-focused summarization</strong>, 질의에 맞춘 전체 요약)에는 그 방식 자체가 안 맞는다고요. "집단이 몇 개 있나"는 후자예요 — 정답이 문서 한두 건이 아니라 자료 전체에 걸친 <strong>패턴</strong>이니까요.</p>
+    <p>그래프는 이 벽을 멀티홉과는 다른 방법으로 넘어요. 노드와 엣지를 촘촘하게 이어진 <strong>무리(community)</strong>로 색인 시점에 미리 나누고, 무리마다 요약을 만들어 둬요. "집단이 몇 개인가"를 물으면 문서를 다시 검색하는 게 아니라 이 무리 요약들을 읽으면 돼요. 무리를 어떻게 나누고 요약하는지는 <a href="graphrag-agent-three-routes.html#community">22편</a>에서 직접 만들어요.</p>
+    <div class="key-point" id="key-global-limit">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>멀티홉과 전역은 <strong>서로 다른 벽</strong>이에요. 멀티홉은 "정답 조각 몇 개를 잇는" 문제라 그래프 <strong>탐색</strong>(선을 따라 걷기)으로 풀고, 전역은 "자료 전체를 미리 종합해 둬야" 하는 문제라 그래프 <strong>무리 나누기 + 요약</strong>(22편)으로 풀어요. 둘 다 "벡터 검색이 상위 K개만 본다"는 같은 원인에서 나오지만, 고치는 방법은 달라요.</p>
+    </div>
+    <p>다만 무리 요약이 그래프 기반 RAG의 <strong>필수 부품</strong>은 아니에요. 같은 그래프 기반 RAG인데도 무리 요약 단계를 아예 두지 않는 갈래가 있어요. <strong>LightRAG</strong><sup class="fn-ref"><a href="#fn12" id="fnref12">12</a></sup>는 문서에서 노드·엣지를 뽑아 그래프로 이어 두는 것까지는 GraphRAG와 같지만, 색인 시점에 무리를 나누고 요약을 미리 써 두는 단계가 없어요. 대신 질문이 올 때마다 관련 노드와 그 이웃을 그래프에서 즉시 훑어 답을 만들어요. 색인 비용은 낮아지지만, 그만큼 "무리 요약을 미리 읽기만 하면 되는" 전역 질문에는 GraphRAG보다 약해요. 이 시리즈가 22편에서 무리 요약을 만드는 이유는 골든셋에 전역 문항이 있기 때문이에요 — 멀티홉 질문만 푼다면 무리 요약 없이도 대부분 풀려요.</p>
+
     <table class="choice-table">
       <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
       <tbody>
@@ -545,6 +557,7 @@ for K in (6, 20, 50):
       <li><a href="#key-rerank">리랭킹은 후보에 없는 문서를 살리지 못한다</a></li>
       <li><a href="#key-graphrag-scope">GraphRAG는 멀티홉 재현율 전용이지, 만능 재현율 도구가 아니다</a></li>
       <li><a href="#key-small-corpus">작은 데이터의 성공은 낱말이 겹친 행운일 수 있다</a></li>
+      <li><a href="#key-global-limit">멀티홉은 탐색으로, 전역 질문은 무리 나누기+요약으로 푼다</a></li>
     </ul>
 
     <p><a href="graphrag-build-knowledge-graph.html">다음 편</a>에서는 문서 80건을 LLM에게 읽혀 삼중항을 뽑고, 흩어진 표기를 합쳐 연결판을 실제로 만들어요.</p>
@@ -561,6 +574,8 @@ for K in (6, 20, 50):
         <li id="fn8">청크(chunk) — 긴 문서를 검색하기 좋게 일정 길이로 자른 조각으로, <a href="rag-chatbot-chunk-design.html">청크 설계 편</a>에서 처음 다뤘어요. <a href="#fnref8">↩</a></li>
         <li id="fn9">리랭킹(re-ranking) — 검색기가 넉넉히 가져온 후보를 더 정확한 모델로 다시 줄 세우는 단계예요. <a href="#fnref9">↩</a></li>
         <li id="fn10">IDF(Inverse Document Frequency, 역문서빈도) — 어떤 낱말이 전체 문서 중 몇 건에 나오는지를 거꾸로 재서, 거의 모든 문서에 나오는 흔한 낱말일수록 점수를 깎는 값이에요. <a href="#fnref10">↩</a></li>
+        <li id="fn11">Edge, D. et al., 2024, "From Local to Global: A Graph RAG Approach to Query-Focused Summarization" (Microsoft Research) — 벡터 검색 기반 RAG의 지역적(local) 검색과 GraphRAG의 전역적(global) 요약을 구분하고, 후자를 무리(community) 요약으로 푸는 방법을 제안한 논문이에요. <a href="#fnref11">↩</a></li>
+        <li id="fn12">Guo, Z. et al., 2024, "LightRAG: Simple and Fast Retrieval-Augmented Generation" — 그래프를 만들되 무리 요약 단계는 두지 않고, 질문마다 관련 노드·이웃을 즉시 훑어 답하는 가벼운 그래프 기반 RAG예요. <a href="#fnref12">↩</a></li>
       </ol>
     </section>
 
