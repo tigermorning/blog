@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>왕초보를 위한 Python 2장 — 문제 풀이와 질문 해설 - Tigermorning</title>
-  <meta name="description" content="위키독스 『왕초보를 위한 Python』 2장(2.1~2.2.6) 실습 문제를 풀면서 생긴 질문 19개를 정리했습니다. while 무한 루프, 카운터 변수, round()와 부동소수점 오차, if-elif-else 순서, break로 반복 끝내기, pass, 중첩 if, split()과 연쇄 비교까지 다룹니다.">
+  <meta name="description" content="위키독스 『왕초보를 위한 Python』 2장(2.1~2.2.6) 실습 문제를 풀면서 생긴 질문 20개를 정리했습니다. while 무한 루프, 카운터 변수, round()와 부동소수점 오차, if-elif-else 순서, break로 반복 끝내기, pass, 중첩 if, split()과 연쇄 비교까지 다룹니다.">
   <meta property="og:type" content="article">
   <meta property="og:title" content="왕초보를 위한 Python 2장 — 문제 풀이와 질문 해설">
-  <meta property="og:description" content="위키독스 『왕초보를 위한 Python』 2장(2.1~2.2.6) 실습 문제를 풀면서 생긴 질문 19개와 답을 정리했습니다.">
+  <meta property="og:description" content="위키독스 『왕초보를 위한 Python』 2장(2.1~2.2.6) 실습 문제를 풀면서 생긴 질문 20개와 답을 정리했습니다.">
   <meta property="og:url" content="https://tigermorning.github.io/blog/ko/beginner-python-ch02-qna.html">
   <meta property="og:locale" content="ko_KR">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -27,7 +27,7 @@
     <p class="post-date">2026. 9. 20.</p>
     <p class="post-date">※ 이 글은 위키독스 <a href="https://wikidocs.net/book/2" target="_blank" rel="noopener">『왕초보를 위한 Python』</a> 2장의 실습 문제를 풀면서 제가 던진 질문과 답을 정리한 것입니다. 교재 본문은 옮기지 않았으니, 문제 원문은 각 절의 링크에서 확인해 주세요. 2장은 분량이 많아 <b>2.1 ~ 2.2.6</b>까지만 다루고, 2.2.7 and/or 연산자부터는 다음 글에서 이어 갑니다.</p>
 
-    <p class="one-liner">2장 실습을 풀다가 막힌 질문 19개를, while과 if를 처음 보는 사람 기준으로 하나씩 풀어 쓴 해설이에요.</p>
+    <p class="one-liner">2장 실습을 풀다가 막힌 질문 20개를, while과 if를 처음 보는 사람 기준으로 하나씩 풀어 쓴 해설이에요.</p>
 
     <div class="why-read">
       <p class="why-read-title">이 글을 읽기 전에</p>
@@ -87,7 +87,8 @@
         <tr><td rowspan="2">2.2.3 연습 문제: 단위 기호</td><td><a href="#q13">Q13. 여기는 왜 elif 순서가 큰 값부터인가요? 2.2.2랑 반대 아닌가요?</a></td></tr>
         <tr><td><a href="#q14">Q14. <code>pass</code>는 무슨 뜻인가요?</a></td></tr>
         <tr><td>2.2.4 연습 문제: 양수만 덧셈하기</td><td><a href="#q15">Q15. <code>while True:</code>로 시작하는데 왜 무한 루프가 아닌가요?</a></td></tr>
-        <tr><td>2.2.5 연습 문제: 윤년 판별하기</td><td><a href="#q16">Q16. if 안에 또 if를 쓰는 중첩 if는 뭔가요?</a></td></tr>
+        <tr><td rowspan="2">2.2.5 연습 문제: 윤년 판별하기</td><td><a href="#q16">Q16. if 안에 또 if를 쓰는 중첩 if는 뭔가요?</a></td></tr>
+        <tr><td><a href="#q16b">Q16-1. <code>print(f'{year} is a leap year')</code>의 <code>f</code>와 <code>{ }</code>는 뭔가요?</a></td></tr>
         <tr><td rowspan="3">2.2.6 연습 문제: 화학 실험실</td><td><a href="#q17">Q17. <code>split()</code>으로 나눈 값을 어떻게 두 변수에 나눠 담나요?</a></td></tr>
         <tr><td><a href="#q18">Q18. <code>min &lt;= temp &lt;= max</code>처럼 부등호를 연달아 써도 되나요?</a></td></tr>
         <tr><td><a href="#q19">Q19. <code>-999</code> 같은 특별한 값으로 반복을 끝내는 이유는?</a></td></tr>
@@ -683,6 +684,44 @@ else:
       <li><code>is_leap_year</code> 변수에 결과(<code>True</code>/<code>False</code>)만 담아 두고, 메시지 출력은 맨 아래에서 한 번만 하도록 나눠 놨어요. "판단"과 "출력"을 분리한 셈이에요.</li>
       <li>같은 로직을 <code>and</code>로 한 줄에 풀어 쓰는 법은 바로 다음 절 2.2.7(and/or 연산자)에서 다뤄요.</li>
     </ul>
+    </details>
+
+    <details class="qna" id="q16b">
+    <summary><h3>Q16-1. 맨 아래 <code>print(f'{year} is a leap year')</code>의 <code>f</code>와 <code>{ }</code>는 뭔가요?</h3></summary>
+    <p><code>f</code>는 문자열 앞에 붙이는 표시(접두사)예요. 이 표시가 있으면 문자열 안의 <code>{ }</code>에 넣은 변수가 <strong>그 값으로 바뀌어</strong> 들어가요. 이런 문자열을 <strong>f-string</strong>이라고 불러요.</p>
+    <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
+<pre><code>&gt;&gt;&gt; year = 2024
+&gt;&gt;&gt; print(f'{year} is a leap year')
+2024 is a leap year
+&gt;&gt;&gt; print('{year} is a leap year')
+{year} is a leap year</code></pre>
+    <ul>
+      <li><code>f</code>가 붙은 줄은 <code>{year}</code> 자리에 <code>year</code>의 값 <code>2024</code>를 넣어요.</li>
+      <li><code>f</code>가 없는 줄은 <code>{year}</code>를 글자 그대로 찍어요. <strong>따옴표로 감싼 문자열 바로 앞에 <code>f</code>가 붙어야만</strong> f-string이에요. <code>f</code> 혼자 쓰면 그냥 <code>f</code>라는 이름의 변수로 읽혀요.</li>
+    </ul>
+    <p><strong><code>str()</code>과 뭐가 다른가요?</strong> <code>str()</code>은 숫자 하나를 문자열로 바꿔 주는 <strong>변환 함수</strong>고, f-string은 그 변환과 <strong>다른 글자와 이어 붙이는 것</strong>까지 한 번에 해 줘요.</p>
+    <table>
+      <thead><tr><th></th><th><code>str()</code></th><th>f-string</th></tr></thead>
+      <tbody>
+        <tr><td>하는 일</td><td>숫자 → 문자열 변환만</td><td>변환 + 다른 글자와 조립까지</td></tr>
+        <tr><td><code>year = 2024</code>일 때</td><td><code>str(year)</code> → <code>'2024'</code></td><td><code>f'{year}년'</code> → <code>'2024년'</code></td></tr>
+      </tbody>
+    </table>
+    <p>f-string 없이 <code>str()</code>만으로 같은 결과를 만들려면 <code>+</code>로 직접 이어 붙여야 해요.</p>
+<pre><code>&gt;&gt;&gt; print(str(year) + ' is a leap year')
+2024 is a leap year</code></pre>
+    <p>즉 <code>f'{year} is a leap year'</code>는 <code>str(year) + ' is a leap year'</code>를 줄여 쓴 것과 같아요. <code>{ }</code> 안에 값을 넣으면 파이썬이 <code>str()</code>과 비슷한 변환을 자동으로 해 주기 때문에, <code>str()</code>과 <code>+</code>를 직접 안 써도 돼요.</p>
+    <p><strong>괄호 세 종류를 한 번에 정리하면</strong> 이래요. 지금까지 나온 소괄호 <code>()</code>, 대괄호 <code>[]</code>와 헷갈리기 쉬워요.</p>
+    <table>
+      <thead><tr><th>괄호</th><th>이 교재에서 쓰인 곳</th><th>예</th></tr></thead>
+      <tbody>
+        <tr><td>소괄호 <code>()</code></td><td>함수 호출, 식 순서 묶기</td><td><code>int(input())</code>, <code>(a + b) * c</code></td></tr>
+        <tr><td>대괄호 <code>[]</code></td><td>리스트, 인덱싱·슬라이싱</td><td><code>L[0]</code> (Q17)</td></tr>
+        <tr><td>중괄호 <code>{ }</code></td><td>f-string 안에서 값 넣는 자리</td><td><code>f'{year}년'</code></td></tr>
+      </tbody>
+    </table>
+    <p>참고로 중괄호는 <strong>딕셔너리</strong>(이름표와 값을 짝지어 담는 자료형, 예: <code>{'name': '김철수'}</code>)를 만들 때도 쓰는데, 딕셔너리는 이 교재 2장 범위 밖이라 여기서는 f-string 용법만 기억해 두면 충분해요.</p>
+    <p><strong>핵심 한 줄:</strong> <code>f</code>는 따옴표 문자열 앞에 붙어야 뜻이 있고, 그 안 <code>{ }</code>에 변수를 넣으면 값으로 바뀌어요. <code>str()</code>이 "숫자를 글자로 바꾸는 도구"라면, f-string은 "바꾸면서 동시에 다른 글자와 합치는 지름길"이에요.</p>
     </details>
 
     <!-- ============ 2.2.6 ============ -->
