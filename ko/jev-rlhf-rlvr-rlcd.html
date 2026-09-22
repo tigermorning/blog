@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Jev — 문장 대신 확률로 답하는 판정 전담 모델 - Tigermorning</title>
+  <meta name="description" content="TypeSafe AI가 내놓은 모델 Jev는 문장을 쓰지 않고 Choice·Score·Noul 세 가지 형식으로만 답합니다. RLHF·RLVR과는 다른 길을 갔다는 RLCD, 그리고 라우팅·분류 작업에 이 모델이 왜 어울리는지 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Jev — 문장 대신 확률로 답하는 판정 전담 모델">
+  <meta property="og:description" content="TypeSafe AI가 내놓은 모델 Jev는 문장을 쓰지 않고 Choice·Score·Noul 세 가지 형식으로만 답합니다. RLHF·RLVR과는 다른 길을 갔다는 RLCD까지 정리했습니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/jev-rlhf-rlvr-rlcd.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">Jev</span> — 문장 대신 확률로 답하는 판정 전담 모델</h1>
+    <p class="post-date">2026. 9. 22.</p>
+    <p class="post-date">※ 이 글은 TypeSafe AI가 공개한 모델 Jev를 소개하는 유튜브 영상 <a href="https://www.youtube.com/watch?v=vj7hysh0mOI" target="_blank" rel="noopener">"7분 만에 알아보는 Jev"</a>(Caleb Writes Code)와 그 댓글·커뮤니티 반응을 보고 제 나름의 언어로 정리한 것입니다.</p>
+
+    <p class="one-liner">Jev는 문장을 만드는 대신, 미리 정한 선택지·점수·확률 가운데 하나로만 답하도록 좁혀서 훈련한 판정 전담 모델이다.</p>
+
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>어디쯤인가</dt>
+        <dd><a href="posts.html#cat-book-shelf">보충수업 책장</a> › <a href="posts.html#ai-news">새로 나온 AI 모델</a> — 단독 글이에요. 앞뒤로 읽어야 하는 편이 없어요.</dd>
+        <dt>이런 게 궁금했다면</dt>
+        <dd>
+          <ul>
+            <li>RLHF는 얼추 들어봤는데, RLVR이랑 RLCD는 또 뭔가요?</li>
+            <li>AI 모델이라면서 문장을 안 쓰고 확률만 돌려준다는 게 무슨 말이에요?</li>
+            <li>고객 문의를 부서별로 나누는 것 같은 일에 왜 챗봇 대신 이런 모델을 쓴다는 거죠?</li>
+          </ul>
+        </dd>
+        <dt>읽고 나면 할 수 있는 것</dt>
+        <dd>
+          <ul>
+            <li>RLHF·RLVR·RLCD를 각각 "무엇을 기준으로 모델을 훈련시키는가"로 구분해서 말할 수 있어요.</li>
+            <li>Jev에게 던지는 세 가지 질문 형식 — Choice·Score·Noul — 이 각각 무엇을 답하는지 설명할 수 있어요.</li>
+            <li>이미 만들어 둔 분류·라우팅 기능이 왜 챗봇형 모델보다 이런 판정 전담 모델에 더 잘 맞는 자리인지 판단할 수 있어요.</li>
+          </ul>
+        </dd>
+        <dt>모르면 이런 일이 생겨요</dt>
+        <dd>
+          <ul>
+            <li>"AI 모델"이라면 다 챗봇처럼 문장을 쓴다고만 생각하게 돼서, Jev의 응답을 받고 "숫자만 오는데 이거 고장 아니야?"라고 착각해요. <a class="suspect-jump" href="#suspect-choice-only">언제 의심하나 ↓</a></li>
+            <li>RLHF·RLVR·RLCD를 뭉뚱그리면, Jev가 "지금까지의 정렬 방식과 다른 길을 간다"고 주장하는 지점을 못 알아들어요.</li>
+            <li>속도·비용 숫자만 보고 "LLM을 통째로 대체한다"로 읽으면, 원래 안 맞는 자리(글쓰기·대화)에 억지로 끼워 넣게 돼요. <a class="suspect-jump" href="#suspect-wrong-fit">언제 의심하나 ↓</a></li>
+          </ul>
+        </dd>
+        <dt>어디에 쓰나</dt>
+        <dd>
+          <ul>
+            <li>고객 문의를 부서별로 나누거나(<a href="cs-agent-routing-eval.html">다섯 갈래로 나누는 라우팅</a>처럼), 답변에 점수를 매기거나, 어떤 조건이 참인지 판정하는 기능을 만들 때.</li>
+            <li>이미 LLM으로 분류·라우팅을 만들어 뒀는데 속도나 비용이 걸릴 때, 대안이 있다는 걸 알아 둘 때.</li>
+            <li>모델 소개 글에 RLHF 다음으로 RLVR·RLCD 같은 낯선 줄임말이 나와도, 어느 축(무엇을 보상으로 삼는가) 이야기인지 감을 잡을 때.</li>
+          </ul>
+        </dd>
+      </dl>
+    </div>
+
+    <p>2026년 9월, TypeSafe AI라는 곳이 <strong>Jev</strong>라는 모델을 내놓으면서 며칠 만에 유튜브와 레딧이 이 이름으로 뒤덮였어요. 사람들이 신기해한 지점은 하나였어요. <strong>챗봇처럼 문장을 쓰지 않는다는 것.</strong> 질문을 던지면 "예/아니오일 확률 0.84" 같은 숫자나 "billing" 같은 정해진 이름표 하나만 돌아와요. 이 글에서는 이게 정확히 뭘 하는 모델인지, 그리고 소개 영상이 계속 언급하는 RLHF·RLVR·RLCD라는 줄임말이 각각 뭘 가리키는지 정리해 볼게요.</p>
+
+    <h2><span class="hl">채점기와 채점 선생님</span> — 비유로 먼저</h2>
+    <p>학교 시험을 떠올려 볼게요. 객관식 문제는 OMR 카드를 기계에 넣으면 몇 초 안에 채점이 끝나요. 기계는 정해진 보기 중 몇 번을 골랐는지만 읽어 내고, "왜 그렇게 생각했는지"는 절대 설명하지 않아요. 서술형 문제는 다르죠. 선생님이 한 줄 한 줄 읽고, 문장으로 첨삭까지 달아 돌려줘요. 대신 시간이 훨씬 오래 걸리고, 선생님 한 명이 동시에 볼 수 있는 답안지 수도 한정돼 있어요.</p>
+    <table>
+      <thead><tr><th>시험 채점에서</th><th>Jev와 LLM에서</th></tr></thead>
+      <tbody>
+        <tr><td>OMR 채점기 — 정해진 보기 중 하나만 빠르게 읽어냄, 설명 없음</td><td>Jev — Choice·Score·Noul 중 정해진 형식으로만 빠르게 답함</td></tr>
+        <tr><td>서술형 채점 선생님 — 문장으로 자유롭게 답하고 이유도 씀, 느림</td><td>일반 LLM(챗봇) — 문장을 새로 지어내며 답함, 상대적으로 느림</td></tr>
+        <tr><td>객관식 문제 100장을 전부 선생님에게 맡기면 시간이 오래 걸림</td><td>정해진 답만 필요한 작업(라우팅·채점)을 전부 챗봇에게 맡기면 느리고 비쌈</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 정해진 보기 중 하나만 고르면 되는 문제라면, 문장을 쓸 줄 아는 모델이 아니라 그 판정만 빠르게 하는 모델이 더 잘 맞아요.</p>
+    <p>다만 여기서 비유가 끊기는 점이 있어요. OMR 채점기는 이미 정해진 정답과 대조만 하지만, Jev에게는 정답표가 없어요. 스스로 학습한 확률 계산으로 답을 골라요. 그러니 채점기라기보다는 "빠르게 판단만 내리는 전담 심사관"에 더 가까워요.</p>
+
+    <h2><span class="hl">Jev가 실제로 주고받는 것</span></h2>
+    <p>일반 LLM에게는 문장을 프롬프트로 넣으면 문장이 토큰 하나씩 순서대로 이어지며 돌아와요. Jev는 구조 자체가 달라요. 입력으로 <strong>상태(state)</strong> — 처리하고 싶은 텍스트나 JSON 데이터 — 와 함께, <strong>타입이 정해진 질문</strong>을 하나 이상 넣어요. 그리고 질문의 타입은 셋뿐이에요.</p>
+    <ul>
+      <li><strong>Choice</strong> — 정해 둔 선택지(최대 255개) 중 하나를 고르는 질문. "이 문의는 어느 부서로 가야 하나?"</li>
+      <li><strong>Score</strong> — 정한 척도 위에 값을 매기는 질문. "이 고객은 얼마나 화가 났나?"</li>
+      <li><strong>Noul</strong> — 어떤 문장이 참일 확률을 묻는 질문. "이 메시지는 긴급한 내용을 담고 있나?"</li>
+    </ul>
+    <p>여러 질문을 한 번에 넣으면 전부 병렬로 처리돼서 한 번의 호출로 세 가지 답이 동시에 나와요. 답에는 값과 함께 확률(신뢰도)이 딸려 오고요.</p>
+
+    <svg viewBox="0 0 720 340" role="img" aria-label="일반 LLM은 문장을 넣으면 문장을 순서대로 만들어 돌려주고, Jev는 상태와 타입 질문 여러 개를 넣으면 Choice·Score·Noul 답을 병렬로 동시에 돌려주는 구조를 비교한 그림">
+      <text x="20" y="34" font-family="var(--font-heading)" font-size="16" fill="var(--ink)">일반 LLM</text>
+      <rect x="20" y="50" width="160" height="60" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="100" y="76" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--muted)">문장 프롬프트</text>
+      <text x="100" y="96" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">"이 문의 답장 써 줘"</text>
+
+      <line x1="184" y1="80" x2="248" y2="80" stroke="var(--muted)" stroke-width="2" marker-end="url(#jev-arrow-m)"/>
+
+      <rect x="252" y="50" width="150" height="60" rx="8" fill="none" stroke="var(--muted)" stroke-width="2"/>
+      <text x="327" y="76" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">LLM</text>
+      <text x="327" y="96" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">토큰을 한 개씩 순서대로</text>
+
+      <line x1="406" y1="80" x2="470" y2="80" stroke="var(--muted)" stroke-width="2" marker-end="url(#jev-arrow-m)"/>
+
+      <rect x="474" y="50" width="220" height="60" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="584" y="76" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--muted)">문장 출력</text>
+      <text x="584" y="96" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">"불편을 드려 죄송합니다..."</text>
+
+      <text x="20" y="164" font-family="var(--font-heading)" font-size="16" fill="var(--ink)">Jev</text>
+      <rect x="20" y="180" width="160" height="90" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="100" y="204" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">상태(텍스트/JSON)</text>
+      <text x="100" y="224" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">+ 타입 질문 여러 개</text>
+      <text x="100" y="244" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">(Choice/Score/Noul)</text>
+      <text x="100" y="260" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">한 번의 호출에 함께</text>
+
+      <line x1="184" y1="225" x2="248" y2="225" stroke="var(--accent)" stroke-width="2" marker-end="url(#jev-arrow-a)"/>
+
+      <rect x="252" y="195" width="150" height="60" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="327" y="221" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">Jev</text>
+      <text x="327" y="241" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">한 번에 계산, 병렬</text>
+
+      <line x1="406" y1="225" x2="470" y2="225" stroke="var(--accent)" stroke-width="2" marker-end="url(#jev-arrow-a)"/>
+
+      <rect x="474" y="180" width="220" height="90" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="584" y="202" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">Choice → billing (0.84)</text>
+      <text x="584" y="222" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">Score → 1.04 / 5</text>
+      <text x="584" y="242" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">Noul → 0.999</text>
+      <text x="584" y="260" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">세 답이 동시에 옴</text>
+
+      <text x="360" y="310" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--muted)">위: 문장이 필요할 때. 아래: 정해진 보기 중 하나만 필요할 때</text>
+
+      <defs>
+        <marker id="jev-arrow-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/>
+        </marker>
+        <marker id="jev-arrow-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/>
+        </marker>
+      </defs>
+    </svg>
+    <p><strong>읽는 법:</strong> 위쪽 회색 줄은 일반 LLM이 문장을 한 토큰씩 만들어 문장으로 돌려주는 흐름이에요. 아래쪽 강조된 줄은 Jev가 상태와 여러 질문을 한 번에 받아, 그 답 전부를 병렬로 동시에 돌려주는 흐름이고요. 오른쪽 상자의 숫자는 제가 만든 예시예요.</p>
+
+    <h2><span class="hl">왜 지금 이런 모델이 나왔나</span> — RLHF·RLVR·RLCD</h2>
+    <p>지금까지 널리 쓰인 모델 다듬기 방식은 크게 둘로 갈려요. 하나는 <a href="what-is-alignment-sft-rlhf-dpo.html">RLHF</a> — 사람이 여러 답 중 더 나은 쪽을 고르게 해서 그 선호를 학습시키는 방식이에요. 다른 하나는 <strong>RLVR</strong><sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>인데, 수학 풀이나 코드 실행 결과처럼 정답을 기계적으로 확인할 수 있는 문제에서는 사람 판단 대신 그 확인 결과를 보상으로 써요. 최근 나온 추론 특화 모델들이 이 방식을 많이 씁니다.</p>
+    <p>영상이 짚은 지점은, 이 두 축 모두 <strong>결정을 빠르게 내려야 하는 자동화 작업</strong>에는 잘 안 맞는다는 거였어요. 사람 선호로 다듬은 모델도, 검증 가능한 보상으로 다듬은 모델도 결국 대화나 추론처럼 "시간을 들여 문장으로 답하는" 쓰임에 최적화돼 있다는 이야기예요. TypeSafe AI는 Jev를 이 흐름의 반대편에 놓인 모델이라고 소개하면서, 업계가 그동안 "빠른 판정"이 필요한 자리(라우팅·분류·모니터링)를 상대적으로 소홀히 다뤄 왔다고 주장해요.</p>
+    <p>영상 자체는 TypeSafe가 Jev를 어떤 방법으로 훈련시켰는지 구체적으로 밝히지 않았어요. 대신 Jev를 그대로 흉내 내 만든 오픈소스 모델 <strong>Laya</strong>가 레딧 r/LocalLLaMA에 올라왔는데, 그 제작자는 자신이 쓴 방법에 <strong>RLCD</strong><sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>(비공식 명칭이라고 스스로 밝혔어요)라는 이름을 붙였어요. 핵심은 "맞는 확률을 낼수록 보상을 더 준다"는 채점 규칙으로 모델을 직접 밀어붙이는 방식이라, RLHF의 사람 비교나 RLVR의 정답 대조와는 결이 달라요.</p>
+
+    <h2><span class="hl">빠르다는 주장, 그리고 커뮤니티의 반응</span></h2>
+    <p>영상은 Jev의 응답 시간이 70~500밀리초라고 소개했고, 이게 LLM 대비 40~200배 빠르다는 TypeSafe 측 주장도 함께 전했어요. 다만 영상 스스로도 짚은 지점이 있었어요. <strong>기능만 놓고 보면 지금의 LLM도 Jev가 하는 일을 대부분 흉내 낼 수 있다</strong>는 거예요. 사람들이 소셜미디어에 올리는 활용 사례도 대부분 "새로운 걸 할 수 있다"보다는 "같은 걸 훨씬 빠르게 할 수 있다"는 쪽이었고요. 이메일 정리, RAG<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup> 개선, 모델 라우팅 같은 작업이 예로 나왔어요.</p>
+    <p>댓글 반응은 두 갈래로 갈렸어요. "결국 프런티어 모델의 판단을 잘 증류해 낸 분류기일 뿐, 아이디어 자체는 새롭지 않다"는 냉정한 평가가 있었던 한편, "그래도 도구 호출이나 브라우저 조작처럼 반복적인 판단이 필요한 자리에는 확실히 쓸모 있을 것"이라는 의견도 많은 공감을 받았어요. 전담 판정기를 LLM 앞단에 붙여, LLM은 정말 문장을 새로 지어야 할 때만 부르자는 제안도 있었고요.</p>
+
+    <h2><span class="hl">나쁜 선택 vs 좋은 선택</span></h2>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">객관식이나 다름없는 문제(문의 라우팅, 참/거짓 판정, 점수 매기기)까지 전부 챗봇에게 문장으로 답하게 시킨다 → 매번 문장을 새로 지어내느라 지연과 비용이 커지고, 트래픽이 몰리면 그 병목부터 걸린다.</td>
+          <td class="choice-good">보기 중 하나만 고르면 되는 작업은 Jev 같은 판정 전담 모델에게 맡기고, 정말 문장을 새로 써야 하는 작업(답장 작성, 설명)만 챗봇에게 넘긴다 → 여러 질문을 한 번에 병렬로 던져도 70~500밀리초 안에 답이 오고, 챗봇은 꼭 필요한 곳에만 불린다.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 다른 모델·서비스를 견줄 때 다시 볼 값</h2>
+    <p>영상과 댓글, 커뮤니티 게시글에서 공통으로 확인되거나 근거가 뚜렷한 값만 모았어요. 조건이 다른 값은 셋째 칸에 그대로 남겨 뒀어요.</p>
+    <table>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
+      <tbody>
+        <tr><td>Jev 응답 시간(질문을 병렬로 넣었을 때)</td><td>70~500ms</td><td>영상과 댓글이 공통으로 든 값이에요. "빠르다"를 판단하는 기준점으로 써요.</td></tr>
+        <tr><td>TypeSafe 측이 주장하는, LLM 대비 속도</td><td>40~200배</td><td>영상이 인용한 TypeSafe 쪽 주장이에요. 제가 직접 잰 값이 아니니 도입 전에 자기 작업으로 재보는 게 안전해요.</td></tr>
+        <tr><td>Choice에 넣을 수 있는 선택지 최대 개수</td><td>255개</td><td>라우팅처럼 "여러 갈래 중 하나" 문제를 설계할 때 상한선으로 참고해요.</td></tr>
+        <tr><td>입력 100만 <a href="what-is-ai-token.html">토큰</a>당 요금(공식 API 기준)</td><td>$0.042, 출력은 무료</td><td>LLM은 보통 입력·출력 모두 과금되는데, Jev는 출력이 짧고 정해진 형식이라 무료로 책정돼 있어요.</td></tr>
+        <tr><td>공식 API 처리 한도</td><td>초당 25만 토큰 · 분당 1,200회 요청 · 요청당 최대 6만4천 토큰 · 텍스트 전용</td><td>트래픽이 몰리는 서비스에 붙일 때 병목이 어디서 걸릴지 미리 가늠해요.</td></tr>
+        <tr><td>커뮤니티가 공개한 오픈소스 재현 모델(Laya)의 파라미터 수</td><td>4억 2,100만 개</td><td>Jev 공식 모델 자체의 크기가 아니라 레딧에 올라온 재현 모델 크기예요. "이 정도 판정 모델은 GPU 한 대로도 만들 수 있다"는 감으로만 참고해요.</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — Jev류 모델을 직접 써 보려 할 때</h2>
+    <p>아래 둘 다 "이런 모델도 있다"는 걸 몰랐을 때 자연스럽게 빠지는 오해예요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-choice-only">
+          <td>Jev류 API로 챗봇 답장까지 만들어 보려 하는데, 프롬프트를 아무리 바꿔도 <strong>문장이 아니라 라벨이나 숫자 하나만</strong> 돌아와요</td>
+          <td>보낸 질문의 타입 — Choice/Score/Noul 중 무엇을 요청했는지</td>
+          <td>이 모델은 애초에 자유 문장을 만들지 않아요. 문장이 필요하면 이 판정 결과를 다시 LLM에 넘겨 문장으로 바꾸는 단계를 따로 둬야 해요.</td>
+        </tr>
+        <tr id="suspect-wrong-fit">
+          <td>라우팅·분류에 붙였더니 확신이 낮은데도 결과를 그냥 써서 <strong>오답이 눈에 띄게 잦아요</strong></td>
+          <td>답에 함께 오는 확률(신뢰도) 값</td>
+          <td>확률이 낮은 답까지 그대로 쓰고 있는지 봐요. 이 글의 속도·정확도 숫자는 제가 직접 잰 값이 아니라 영상·커뮤니티가 전한 값이라, 실제 정확도는 자신의 데이터로 직접 재 봐야 해요.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2><span class="hl">함께 보기</span></h2>
+    <ul>
+      <li><a href="what-is-alignment-sft-rlhf-dpo.html">정렬이란 무엇인가 — SFT, RLHF, DPO</a> — Jev 소개 영상이 계속 비교 대상으로 삼는 RLHF가 정확히 뭘 하는 손질인지부터 보고 오면 이 글이 더 잘 읽혀요.</li>
+      <li><a href="what-is-routing.html">라우팅(Routing)이란 무엇인가</a> — Choice 질문이 하는 일이 결국 라우팅이라, 개념 자체가 궁금하면 여기부터 봐요.</li>
+      <li><a href="cs-agent-routing-eval.html">문의 한 줄을 다섯 갈래로 — 라우트는 회사 문서에서 가져온다 (17)</a> — LLM 프롬프트로 만든 라우팅 예시예요. Jev의 Choice가 노리는 자리가 정확히 이런 작업이에요.</li>
+    </ul>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">RLVR(검증 가능한 보상을 이용한 강화학습) — 수학 풀이나 코드 실행 결과처럼 정답을 기계적으로 확인할 수 있는 문제에서, 사람 판단 대신 그 확인 결과를 보상으로 쓰는 강화학습 방식이에요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">RLCD — 이 글에서는 Jev를 재현한 오픈소스 모델 Laya의 제작자가 스스로 붙인 이름으로 등장해요. 미리 정한 채점 규칙 기준으로, 모델이 내놓은 확률이 실제로 맞을 때만 보상이 최대가 되도록 학습시키는 정책 경사법 방식이에요. TypeSafe가 Jev에 공식적으로 어떤 방법을 썼는지는 이 영상에서 밝히지 않았어요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">RAG(검색 증강 생성) — 모델이 답하기 전에 관련 문서를 먼저 찾아서 그 내용을 근거로 답하게 하는 방식이에요. <a href="#fnref3">↩</a></li>
+      </ol>
+    </section>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>

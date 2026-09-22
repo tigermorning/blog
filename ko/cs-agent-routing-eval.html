@@ -276,7 +276,8 @@ def classify(state):                       # 그래프의 첫 노드
     out = router.invoke(PROMPT.format(text=state["text"]))
     return {"route": out.route, "confidence": out.confidence,
             "reason": out.reason}</code></pre>
-    <p><code>Literal</code>에 다섯 이름을 박아 두면 <code>배송문의</code>나 <code>Shipping</code> 같은 값이 <strong>애초에 들어올 수 없어요.</strong> 갈래를 하나 늘리는 일도 이 줄 하나를 고치는 일이 되고요.</p>
+    <p><code>Literal</code>에 다섯 이름을 박아 두면 <code>배송문의</code>나 <code>Shipping</code> 같은 값이 <strong>애초에 들어올 수 없어요.</strong> 갈래를 하나 늘리는 일도 이 줄 하나를 고치는 일이고요.</p>
+    <p>여기서 하는 일 — 문장을 넣고 다섯 갈래 중 하나와 확신도(<code>confidence</code>)를 받는 것 — 을 아예 전담으로 하도록 좁혀서 학습시킨 모델도 있어요. <a href="jev-rlhf-rlvr-rlcd.html">Jev</a>가 그 예인데, <code>Literal</code>과 프롬프트로 흉내 낸 구조화된 출력을 처음부터 타입으로 강제해요.</p>
     <p>나머지 두 칸은 실무에서 하는 일이 달라요.</p>
     <ul>
       <li><strong><code>confidence</code>는 <a href="#threshold">아래 판정 노드</a>가 읽는 입력이에요.</strong> 이 칸이 없으면 "애매하니 사람에게 넘긴다"는 갈림길을 만들 수 없어요. 갈래 이름만으로는 확실한 판단과 찍은 판단이 똑같아 보이니까요.</li>
