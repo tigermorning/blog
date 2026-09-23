@@ -44,6 +44,7 @@
           <ul>
             <li>섹션이 몇 개일지 돌려 봐야 아는 작업은 노드를 어떻게 그리죠?</li>
             <li>병렬화랑 오케스트레이터-워커는 그림이 거의 같아 보이는데 뭐가 다른가요?</li>
+            <li>딥리서치 구조도의 User·System·LeadResearcher·Subagent는 각각 무엇에 해당하죠?</li>
           </ul>
         </dd>
         <dt>읽고 나면 할 수 있는 것</dt>
@@ -249,6 +250,114 @@ except Exception as e:
     </div>
     <p>이 모양은 코딩(몇 개 파일을 어떻게 고칠지 요청마다 다름)이나 여러 출처 검색에 잘 맞아요. <a href="multi-agent-four-structures.html">멀티 에이전트 네 가지 구조</a>에서 본 오케스트레이터-워커가 에이전트 여럿의 이야기라면, 여기서는 한 그래프 안의 LLM 호출로 같은 모양을 만든 거예요.</p>
 
+    <h2 id="real-system"><span class="hl">실제 사례</span> — Anthropic 리서치 시스템 그림 읽기</h2>
+    <p>같은 모양을 실제 제품에서 보면 이래요. Anthropic이 자사 리서치 기능의 구조를 공개한 그림을 칸만 줄여 다시 그렸어요<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>. 세로줄 하나가 참여자 하나, 가로 화살표가 주고받는 메시지예요. 위에서 아래로 시간이 흘러요.</p>
+    <figure>
+    <svg viewBox="0 0 700 390" role="img" aria-label="User가 질문을 보내면 System이 LeadResearcher를 만들고, LeadResearcher가 계획을 Memory에 저장한 뒤 서브에이전트들에게 과제를 나눠 주고, 결과를 합쳐 더 조사할지 정하는 반복을 거친 다음, System이 CitationAgent로 인용을 넣어 User에게 돌려주는 순서도">
+      <defs>
+        <marker id="lgo2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+          <path d="M0,0 L8,4 L0,8 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <!-- 참여자 머리 -->
+      <g font-family="var(--font-body)" text-anchor="middle">
+        <rect x="14" y="8" width="72" height="30" rx="6" fill="none" stroke="var(--border)"/>
+        <text x="50" y="28" font-size="12" fill="var(--ink)">User</text>
+        <rect x="112" y="8" width="84" height="30" rx="6" fill="none" stroke="var(--border)"/>
+        <text x="154" y="28" font-size="12" fill="var(--ink)">System</text>
+        <text x="154" y="52" font-size="10" fill="var(--muted)">코드</text>
+        <rect x="222" y="8" width="112" height="30" rx="6" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        <text x="278" y="28" font-size="12" fill="var(--accent)">LeadResearcher</text>
+        <text x="278" y="52" font-size="10" fill="var(--muted)">오케스트레이터</text>
+        <rect x="360" y="8" width="96" height="30" rx="6" fill="none" stroke="var(--border)"/>
+        <text x="408" y="28" font-size="12" fill="var(--ink)">Subagent</text>
+        <text x="408" y="52" font-size="10" fill="var(--muted)">워커 × N</text>
+        <rect x="482" y="8" width="84" height="30" rx="6" fill="none" stroke="var(--border)"/>
+        <text x="524" y="28" font-size="12" fill="var(--ink)">Memory</text>
+        <text x="524" y="52" font-size="10" fill="var(--muted)">계획 보관</text>
+        <rect x="590" y="8" width="100" height="30" rx="6" fill="none" stroke="var(--border)"/>
+        <text x="640" y="28" font-size="12" fill="var(--ink)">CitationAgent</text>
+        <text x="640" y="52" font-size="10" fill="var(--muted)">인용 달기</text>
+      </g>
+      <!-- 세로줄 -->
+      <g stroke="var(--border)" stroke-dasharray="3 4">
+        <line x1="50" y1="58" x2="50" y2="382"/>
+        <line x1="154" y1="58" x2="154" y2="382"/>
+        <line x1="278" y1="58" x2="278" y2="382"/>
+        <line x1="408" y1="58" x2="408" y2="382"/>
+        <line x1="524" y1="58" x2="524" y2="382"/>
+        <line x1="640" y1="58" x2="640" y2="382"/>
+      </g>
+      <!-- 반복 구간 -->
+      <rect x="236" y="148" width="310" height="128" rx="8" fill="none" stroke="var(--accent)" stroke-dasharray="6 4"/>
+      <text x="542" y="164" text-anchor="end" font-family="var(--font-body)" font-size="10" fill="var(--accent)">반복 — 부족하면 다시 파견</text>
+      <!-- 메시지 -->
+      <g stroke="var(--muted)" stroke-width="1.6" fill="none" marker-end="url(#lgo2)">
+        <line x1="50" y1="80" x2="150" y2="80"/>
+        <line x1="154" y1="104" x2="274" y2="104"/>
+        <path d="M278 122 h22 v12 h-18"/>
+        <line x1="278" y1="140" x2="520" y2="140"/>
+        <line x1="278" y1="186" x2="404" y2="186" stroke-dasharray="5 4"/>
+        <path d="M408 202 h22 v12 h-18"/>
+        <line x1="408" y1="234" x2="282" y2="234"/>
+        <path d="M278 250 h22 v12 h-18"/>
+        <line x1="278" y1="300" x2="158" y2="300"/>
+        <line x1="154" y1="322" x2="636" y2="322"/>
+        <line x1="640" y1="344" x2="158" y2="344"/>
+        <line x1="154" y1="368" x2="54" y2="368"/>
+      </g>
+      <g font-family="var(--font-body)" font-size="10" fill="var(--ink)">
+        <text x="100" y="75" text-anchor="middle">질문</text>
+        <text x="214" y="99" text-anchor="middle">리드 만들기</text>
+        <text x="306" y="132">계획 세우기</text>
+        <text x="400" y="135" text-anchor="middle">계획 저장</text>
+        <text x="341" y="181" text-anchor="middle">과제 쪽지 × N</text>
+        <text x="436" y="212">검색 · 생각 반복</text>
+        <text x="345" y="229" text-anchor="middle">결과</text>
+        <text x="306" y="260">합치기 · 더 조사할까?</text>
+        <text x="216" y="295" text-anchor="middle">보고서</text>
+        <text x="395" y="317" text-anchor="middle">보고서 + 문서 → 인용 위치 찾기</text>
+        <text x="395" y="339" text-anchor="middle">인용 넣은 보고서</text>
+        <text x="102" y="363" text-anchor="middle">결과</text>
+      </g>
+    </svg>
+    <figcaption>Anthropic 공개 그림을 줄여 다시 그림. 원본에는 서브에이전트가 둘 그려져 있지만, 원문 설명대로 몇 명이든 될 수 있어요.</figcaption>
+    </figure>
+    <p>칸마다 이 글의 이름을 붙이면 이렇게 대응돼요.</p>
+    <table>
+      <thead><tr><th>그림 속 참여자</th><th>이 글에서의 이름</th><th>하는 일</th></tr></thead>
+      <tbody>
+        <tr><td>User</td><td>손님</td><td>질문 하나를 보내고 결과를 받아요</td></tr>
+        <tr><td>System</td><td>그래프를 돌리는 코드 (<code>StateGraph</code>)</td><td>리드를 만들고, 반복이 끝나면 인용 단계로 넘기고, 결과를 저장해 돌려줘요. <strong>LLM이 아니에요</strong></td></tr>
+        <tr><td>LeadResearcher</td><td>오케스트레이터 (<code>plan</code>)</td><td>계획을 세우고, 서브에이전트를 몇 명 부를지·무엇을 맡길지 정하고, 결과를 합친 뒤 한 바퀴 더 돌지 정해요</td></tr>
+        <tr><td>Subagent</td><td>워커 (<code>Send</code>로 불린 <code>cook</code>)</td><td>자기 과제 쪽지만 받아 검색하고, 결과를 생각해 보고, 찾은 것을 리드에게 돌려줘요</td></tr>
+        <tr><td>Memory</td><td>State의 계획 칸</td><td>계획을 따로 적어 둬요. 리드의 컨텍스트가 200,000토큰을 넘으면 앞부분이 잘리거든요 (<a href="multi-agent-split-gains-and-losses.html">나눠서 얻는 것과 잃는 것</a>)</td></tr>
+        <tr><td>CitationAgent</td><td>반복 뒤에 붙은 마지막 노드</td><td>보고서와 읽은 문서를 대조해 문장마다 인용 위치를 찾아 넣어요</td></tr>
+      </tbody>
+    </table>
+    <p><strong>System과 LeadResearcher 사이의 선</strong>이 이 글의 갈림점과 같은 선이에요. 순서(리드 → 반복 → 인용 → 저장)는 System, 곧 코드가 고정해요. 그 안에서 <strong>몇 명을 부를지, 한 바퀴 더 돌지</strong>는 LeadResearcher, 곧 LLM이 실행 중에 정해요. 위 요리 코드로 치면 <code>add_edge</code>로 박아 둔 줄이 System이고, <code>plan</code>과 <code>assign</code>이 돌려주는 값이 LeadResearcher의 몫이에요.</p>
+    <p>우리 요리 코드와 다른 점은 셋이에요.</p>
+    <table>
+      <thead><tr><th>차이</th><th>요리 코드</th><th>리서치 시스템</th></tr></thead>
+      <tbody>
+        <tr><td>되돌아가기</td><td>없음 — 한 번 펼치고 끝</td><td>합친 뒤 "더 조사할까?"를 묻고, 부족하면 서브에이전트를 더 불러요. <a href="langgraph-pattern-evaluator-optimizer.html">다음 편</a>의 반복이 ④ 위에 얹힌 모양이에요</td></tr>
+        <tr><td>워커 안쪽</td><td>LLM 호출 한 번</td><td>검색하고 생각하기를 스스로 여러 번 반복해요. 워커 하나하나가 에이전트라, 전체는 워크플로가 아니라 <a href="multi-agent-four-structures.html">멀티 에이전트</a>예요</td></tr>
+        <tr><td>기다리기</td><td><code>cook</code>이 전부 끝나야 <code>serve</code>가 돌아요</td><td>똑같아요. 리드는 한 무리의 서브에이전트가 전부 끝날 때까지 기다린 뒤 다음으로 가요. 가장 느린 서브에이전트 하나가 전체를 붙잡아요</td></tr>
+      </tbody>
+    </table>
+    <p>그리고 <a href="#send-note">쪽지</a> 이야기가 여기서 그대로 나와요. Anthropic은 서브에이전트에게 주는 과제 설명에 네 가지가 꼭 있어야 한다고 적었어요.</p>
+    <table>
+      <thead><tr><th>과제 설명에 넣을 것</th><th>요리 쪽지로 치면</th></tr></thead>
+      <tbody>
+        <tr><td>목표</td><td>무슨 요리를, 누구 상에 낼지</td></tr>
+        <tr><td>출력 형식</td><td>어떤 그릇에, 몇 인분으로 담을지</td></tr>
+        <tr><td>쓸 도구와 출처</td><td>어느 냉장고 재료를 쓸지</td></tr>
+        <tr><td>과제 경계</td><td>이 접시에서 <strong>안 만들 것</strong> — 옆 요리사 몫</td></tr>
+      </tbody>
+    </table>
+    <p>경계가 빠지면 생기는 일도 실제로 보고됐어요. 처음엔 리드가 "반도체 부족을 조사해"처럼 짧은 지시만 줬더니, 한 서브에이전트는 2021년 자동차용 칩 부족을 파고들었는데, 나머지 둘은 <strong>똑같이 2025년 공급망</strong>을 조사했어요. 위에서 본 <strong>중복</strong> 문제와 같은 증상이고, 처방도 같아요 — 쪽지에 "다루지 않을 것" 칸을 넣어요.</p>
+    <p>몇 명을 부를지도 리드 프롬프트에 규칙으로 적어 뒀어요. 단순한 사실 확인은 1명이 도구 호출 3~10번, 직접 비교는 2~4명이 각 10~15번, 복잡한 조사는 10명 넘게 역할을 뚜렷이 나눠서요. 위에서 "섹션은 3~5개"라고 범위를 준 것과 같은 장치예요. 개수를 LLM에게 맡겨도, <strong>얼마 안에서 고르라는 울타리</strong>는 사람이 쳐요.</p>
+
     <h2 id="orchestrator-choice"><span class="hl">나쁜 선택 vs 좋은 선택</span> — 신메뉴를 세 기준으로 검사할 때</h2>
     <p>주방에서 신메뉴를 낼 때마다 맛·온도·모양 세 가지로 검사하는 흐름을 만든다고 해 볼게요.</p>
     <table class="choice-table">
@@ -267,6 +376,7 @@ except Exception as e:
       <tbody>
         <tr><td>같은 그래프가 만드는 워커 수</td><td>입력에 따라 3개 또는 6개</td><td><code>Send</code>로 갈라지는 구조라 <strong>코드는 그대로인데 입력만 바꿔도 호출 수가 달라져요</strong>. 그래프만 보고 요금을 계산할 수 없다는 뜻이에요</td></tr>
         <tr><td>섹션 20개를 계획했을 때의 호출 수</td><td>21번</td><td>오케스트레이터 1 + 워커 20이에요. 프롬프트에 범위를 안 주면 <strong>몇 개를 고를지도 모델이 정해요</strong>. "3~5개"처럼 상한을 적어 두는 게 요금 통제의 전부예요</td></tr>
+        <tr><td>Anthropic 리드에게 준 인원 규칙</td><td>단순 확인 1명 · 비교 2~4명 · 복잡한 조사 10명 초과</td><td>업체가 자사 시스템에 적은 규칙이에요<sup class="fn-ref"><a href="#fn3">3</a></sup>. 숫자보다 <strong>질문 난도에 따라 인원 범위를 미리 정해 뒀다</strong>는 점이 요지예요</td></tr>
       </tbody>
     </table>
 
@@ -348,6 +458,7 @@ return out</code></pre>
       <ol>
         <li id="fn1">맵-리듀스(map-reduce) — 일을 여러 갈래로 펼쳐 각각 처리한 뒤 결과를 하나로 접는 데이터 처리 방식이에요. <a href="#fnref1">↩</a></li>
         <li id="fn2">단일 실패 지점(single point of failure) — 그 한 곳이 잘못되면 시스템 전체 결과가 망가지는 지점이에요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">Anthropic, <a href="https://www.anthropic.com/engineering/multi-agent-research-system" target="_blank" rel="noopener">"How we built our multi-agent research system"</a> (2025). 그림 속 순서, Memory에 계획을 저장하는 이유(200,000토큰), 과제 설명의 네 요소, 반도체 중복 사례, 인원 규칙, 동기 실행이 모두 이 글에 나와요. <a href="#fnref3">↩</a></li>
       </ol>
     </section>
 
