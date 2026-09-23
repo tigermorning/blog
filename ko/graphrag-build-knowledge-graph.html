@@ -91,7 +91,7 @@
       <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
       <tbody>
         <tr><td>카드를 읽고 실을 잇는 새 직원</td><td>LLM 추출기 — <code>LLMGraphTransformer</code></td></tr>
-        <tr><td>"이을 수 있는 실은 이 여덟 종류뿐"이라는 지시</td><td>스키마 — 허용하는 노드 타입과 관계</td></tr>
+        <tr><td>"이을 수 있는 실은 이 여덟 종류뿐"이라는 지시</td><td>스키마(온톨로지) — 허용하는 노드 타입과 관계</td></tr>
         <tr><td>"굴소스"·"굴 소스" 핀을 하나로 합치기</td><td>정규화 — 표기가 다른 같은 대상을 한 노드로</td></tr>
         <tr><td>냉장고 칸마다 이미 붙은 라벨</td><td>위키 분류 줄 — 사람이 단 태그</td></tr>
         <tr><td>라벨을 보고 실을 기계적으로 옮겨 적기</td><td>규칙 추출 — 정규식으로 분류에서 삼중항 만들기</td></tr>
@@ -365,6 +365,10 @@ ACTED_IN 0</code></pre>
 속성 노드 상위: 드라마(Genre) 13 · 서울특별시(Location) 10 · 스릴러 6 · 미스터리 6 · 조선 5</code></pre>
     <p>연결 수를 <strong>차수</strong><sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>라고 해요. 차수가 높은 노드는 두 종류예요. 박찬욱처럼 <strong>진짜 중심</strong>인 대상이 있고, "드라마" 장르처럼 <strong>너무 흔해서 정보가 없는</strong> 노드가 있어요. 뒤쪽은 가짜 다리를 만들어요. 서로 상관없는 영화들이 "드라마"를 통해 2홉으로 이어져 버리니까요. 100편과 이어진 노드가 공통점이라는 건 사실상 아무것도 말해 주지 않아요. <a href="graphrag-agent-three-routes.html#recommend">다음 편</a>에서 흔한 매개를 감점하는 이유예요.</p>
     <p>《극한직업》은 또 다른 경우예요. 연결 83개 중 73개가 출연이라, 이 노드를 지나는 탐색은 출연 관계에 파묻히기 쉬워요. <a href="graphrag-agent-three-routes.html#budget">다음 편</a>에서 관계별 할당량을 두는 이유예요.</p>
+    <div class="key-point" id="key-hub-degree">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
+      <p>차수가 아주 높은 노드는 <strong>거의 모든 것과 이어져 있다는 뜻이라, 그 노드를 지나 두 대상이 이어진다는 사실 자체가 정보를 거의 안 줘요.</strong> "드라마" 장르를 지나 이어진 두 영화는 "둘 다 드라마다"만큼 뻔한 공통점이라 추천 근거로 쓰기엔 약해요. 그래서 <a href="graphrag-agent-three-routes.html#recommend">22편</a>에서는 지나온 매개 노드의 차수가 클수록 추천 점수를 깎아요 — 차수가 크다는 것 자체가 "이 노드로는 아무것도 못 가른다"는 신호니까요.</p>
+    </div>
 
     <h3 id="check-components">③ 연결 상태</h3>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 서로 이어지지 않은 덩어리들의 크기예요</span></p>
@@ -503,6 +507,7 @@ for r in tf.convert_to_graph_documents([doc])[0].relationships:
       <li><a href="#key-direction">LLM 추출은 방향이 뒤집히니 이웃은 양쪽을 본다</a></li>
       <li><a href="#key-family">이름이 같아도 개체와 속성은 합치지 않는다</a></li>
       <li><a href="#key-no-acted-in">분류 규칙으로는 출연을 못 뽑는다</a></li>
+      <li><a href="#key-hub-degree">차수 높은 노드는 지나도 정보가 거의 없다</a></li>
       <li><a href="#key-components">다른 덩어리 사이에는 길이 없다</a></li>
       <li><a href="#key-schema">관계의 종류가 곧 답할 수 있는 질문의 범위</a></li>
     </ul>
