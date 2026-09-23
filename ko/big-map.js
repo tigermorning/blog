@@ -1,8 +1,10 @@
 // 큰 그림 지도: 상자를 누르면 한 단계 안으로 들어가는 지도.
 // 데이터는 big-map-data.js(window.BIGMAP)에 있고, 이 파일은 그리기만 한다.
-// 단계: 전체(#/) → 지역(#/r) → 구역(#/r/s) → 개념 카드(#/r/s/n), 가로지르는 실(#/t/id)
+// 단계: 기둥(#/) → 기둥 한 개(#/p/id)
+//       질문의 길(#/path) → 지역(#/r) → 구역(#/r/s) → 개념 카드(#/r/s/n), 가로지르는 실(#/t/id)
 (function () {
   const D = window.BIGMAP;
+  const P = window.BIGMAP_PILLAR;
   const root = document.getElementById("bm-root");
   if (!D || !root) return;
 
@@ -264,7 +266,7 @@
   }
 
   function viewWorld() {
-    root.innerHTML = crumbs([["전체 그림", "#/"]]) + levelTag(0, "전체 보기") +
+    root.innerHTML = crumbs([["전체 그림", "#/"], ["질문 하나가 지나가는 길", "#/path"]]) + levelTag(0, "전체 보기 · 쓰임새") +
       '<h3 class="bm-h">' + esc(D.world.title) + "</h3>" +
       '<p class="bm-lead">' + esc(D.world.lead) + "</p>" +
       '<div class="bm-scene" style="--nc:var(--folder-7)"><p class="bm-scene-title">이 질문이 실제로 지나간 길</p><p>' +
@@ -275,10 +277,7 @@
       '<div class="bm-graph" id="bm-g"></div>' +
       '<ol class="bm-steps">' + D.world.steps.map((s) =>
         '<li><strong>' + esc(s[0]) + "</strong> " + esc(s[1]) + "</li>").join("") + "</ol>" +
-      '<p class="bm-threads-title">어디에나 걸쳐 있는 세 가닥</p>' +
-      '<div class="bm-threads">' + D.threads.map((t) =>
-        '<a class="bm-thread" href="#/t/' + t.id + '" style="--nc:' + t.color + '"><strong>' + esc(t.name) +
-        "</strong><span>" + esc(t.question) + "</span></a>").join("") + "</div>";
+      '<a class="bm-alt" href="#/"><strong>← 에이전트 설계 다섯 기둥으로</strong><span>같은 글들을 에이전트를 만드는 다섯 영역으로 나눠 본 첫 화면</span></a>';
     const nodes = D.world.nodes.map((n) => {
       // 지역 상자는 그 지역으로, link가 있는 상자(답 검사)는 그 글 묶음으로 간다
       const r = regionById[n.id] || regionById[n.region];
@@ -295,7 +294,7 @@
   function countRegion(r) { return r.subs.reduce((s, sid) => s + (D.subs[sid] ? D.subs[sid].posts.length : 0), 0); }
 
   function viewRegion(r) {
-    root.innerHTML = crumbs([["전체 그림", "#/"], [r.name, "#/" + r.id]]) + levelTag(1, "지역 확대 · 이 지역의 글 묶음") +
+    root.innerHTML = crumbs([["전체 그림", "#/"], ["질문의 길", "#/path"], [r.name, "#/" + r.id]]) + levelTag(1, "지역 확대 · 이 지역의 글 묶음") +
       '<h3 class="bm-h" style="--nc:' + r.color + '">' + esc(r.name) + "</h3>" +
       '<p class="bm-lead">' + esc(r.role) + "</p>" +
       '<div class="bm-scene" style="--nc:' + r.color + '"><p class="bm-scene-title">실전에서는</p><p>' + esc(r.scenario) + "</p></div>" +
@@ -311,7 +310,7 @@
 
   function viewSub(r, sid) {
     const s = D.subs[sid];
-    root.innerHTML = crumbs([["전체 그림", "#/"], [r.name, "#/" + r.id], [s.name, "#/" + r.id + "/" + sid]]) +
+    root.innerHTML = crumbs([["전체 그림", "#/"], ["질문의 길", "#/path"], [r.name, "#/" + r.id], [s.name, "#/" + r.id + "/" + sid]]) +
       levelTag(2, "묶음 확대 · 돌아가는 순서") +
       '<h3 class="bm-h" style="--nc:' + r.color + '">' + esc(s.name) + "</h3>" +
       '<p class="bm-lead">' + esc(s.role) + "</p>" +
@@ -351,11 +350,79 @@
     const base = "#/" + r.id + "/" + sid + "/";
     const nb = (list, lab) => list.filter(Boolean).length ? '<p class="bm-nb"><span>' + lab + "</span>" +
       list.filter(Boolean).map((x) => '<a href="' + base + x.id + '">' + esc(x.label) + "</a>").join("") + "</p>" : "";
-    root.innerHTML = crumbs([["전체 그림", "#/"], [r.name, "#/" + r.id], [s.name, "#/" + r.id + "/" + sid], [n.label, base + nid]]) +
+    root.innerHTML = crumbs([["전체 그림", "#/"], ["질문의 길", "#/path"], [r.name, "#/" + r.id], [s.name, "#/" + r.id + "/" + sid], [n.label, base + nid]]) +
       levelTag(3, "글 확대 · 한 편씩") +
       '<h3 class="bm-h" style="--nc:' + r.color + '">' + esc(n.label) + "</h3>" +
       nb(ins, "앞 단계") + nb(outs, "다음 단계") +
       '<div class="bm-cards">' + n.posts.map((f) => postInfo[f]).filter(Boolean).map((p) => card(p, r.color)).join("") + "</div>";
+    redraw = null; current = null;
+  }
+
+
+  // ---------- 에이전트 설계 다섯 기둥 ----------
+  const pillarById = {};
+  if (P) P.pillars.forEach((p) => { pillarById[p.id] = p; });
+  const titleOf = (f) => D.titles[f] || (P && P.titles[f]) || f;
+  function pillarPosts(p) {
+    const seen = new Set();
+    p.items.forEach((it) => it.posts.forEach((f) => seen.add(f)));
+    return seen.size;
+  }
+
+  function viewPillars() {
+    root.innerHTML = crumbs([["전체 그림", "#/"]]) + levelTag(0, "전체 보기 · 에이전트 설계") +
+      '<h3 class="bm-h">' + esc(P.title) + "</h3>" +
+      '<p class="bm-lead">' + esc(P.lead) + "</p>" +
+      '<div class="bm-scene" style="--nc:var(--folder-7)"><p class="bm-scene-title">에이전트 하나를 뜯어 보면</p><p>' + esc(P.anatomy) + "</p></div>" +
+      '<div class="bm-graph" id="bm-g"></div>' +
+      '<p class="bm-hint">번호 배지는 시험의 영역 번호예요. 맨 위 두 상자는 기둥이 서는 바닥이라, 누르면 그 글 묶음으로 가요.</p>' +
+      '<p class="bm-threads-title">시험 시나리오 여섯 — 이 블로그에서 비슷한 걸 만든 곳</p>' +
+      '<p class="bm-hint" style="margin:0 0 0.5rem">시험 문제는 이 여섯 장면 가운데 무작위로 뽑힌 네 장면에 붙어 나와요.</p>' +
+      '<table class="bm-scn"><thead><tr><th>시험 장면</th><th>이 블로그에서</th><th>주로 걸리는 영역</th></tr></thead><tbody>' +
+      P.scenarios.map((sc) => "<tr><td>" + esc(sc.name) + "</td><td>" +
+        sc.posts.map((f) => '<a href="' + esc(f) + '">' + esc(titleOf(f)) + "</a>").join("<br>") +
+        '<span class="bm-scn-note">' + esc(sc.note) + "</span></td><td>" +
+        sc.pillars.map((id) => { const p = pillarById[id];
+          return '<a class="bm-pill" style="--nc:' + p.color + '" href="#/p/' + p.id + '" title="' + esc(p.name) + '">' + esc(p.num) + "</a>"; }).join("") +
+        "</td></tr>").join("") + "</tbody></table>" +
+      '<p class="bm-threads-title">어디에나 걸쳐 있는 세 가닥</p>' +
+      '<div class="bm-threads">' + D.threads.map((t) =>
+        '<a class="bm-thread" href="#/t/' + t.id + '" style="--nc:' + t.color + '"><strong>' + esc(t.name) +
+        "</strong><span>" + esc(t.question) + "</span></a>").join("") + "</div>" +
+      '<a class="bm-alt" href="#/path"><strong>다른 각도로 보기 — 질문 하나가 AI 서비스를 지나가는 길 →</strong>' +
+      '<span>같은 글들을 쇼핑몰 챗봇에 들어온 질문 하나가 지나가는 순서로 늘어놓은 지도예요. 사진·음성·3D처럼 시험 범위 밖의 글도 여기서 찾아요.</span></a>';
+    const nodes = P.nodes.map((n) => {
+      if (n.pillar) {
+        const p = pillarById[n.pillar];
+        return { id: n.id, label: p.name, sub: p.sub, chips: p.chips, step: p.num, kind: "region",
+          color: p.color, count: "시험 " + p.weight + " · 글 " + pillarPosts(p) + "편", onClick: () => go("#/p/" + p.id) };
+      }
+      const r = regionById[n.region];
+      return { id: n.id, label: n.label, sub: n.sub, chips: n.chips, kind: "sub",
+        color: r ? r.color : "var(--muted)", count: r ? countRegion(r) + "편" : "",
+        onClick: r ? () => go("#/" + r.id) : null };
+    });
+    show(nodes, P.edges, { vgap: 62, maxW: 300 });
+  }
+
+  function viewPillar(p) {
+    const others = P.pillars.filter((x) => x.id !== p.id);
+    root.innerHTML = crumbs([["전체 그림", "#/"], [p.num + ". " + p.name, "#/p/" + p.id]]) +
+      levelTag(1, "기둥 확대 · 이 영역이 묻는 것") +
+      '<h3 class="bm-h" style="--nc:' + p.color + '">' + esc(p.num + ". " + p.name) + "</h3>" +
+      '<p class="bm-nb"><span>시험 비중 ' + esc(p.weight) + " · 다른 기둥</span>" +
+      others.map((x) => '<a href="#/p/' + x.id + '">' + esc(x.num + ". " + x.name) + "</a>").join("") + "</p>" +
+      '<p class="bm-lead"><strong>이 영역의 질문:</strong> ' + esc(p.question) + "</p>" +
+      '<div class="bm-scene" style="--nc:' + p.color + '"><p class="bm-scene-title">이런 장면에서 물어요</p><p>' + esc(p.scene) + "</p></div>" +
+      '<p class="bm-hint" style="margin:0">위 카드부터 읽으면 앞 카드의 개념을 뒤 카드가 이어받아요. 카드 안의 글도 위에서부터 읽으면 돼요.</p>' +
+      '<div class="bm-cards">' + p.items.map((it, i) =>
+        '<article class="bm-card" style="--nc:' + p.color + '">' +
+        '<p class="bm-card-concept">' + (i + 1) + ". " + esc(it.ask) + "</p>" +
+        '<p class="bm-card-line">' + esc(it.plain) + "</p>" +
+        '<ul class="bm-card-posts">' + it.posts.map((f) =>
+          '<li><a href="' + esc(f) + '">' + esc(titleOf(f)) + " →</a></li>").join("") + "</ul>" +
+        (it.gap ? '<p class="bm-card-gap"><span>아직 글 없음</span>' + esc(it.gap) + "</p>" : "") +
+        "</article>").join("") + "</div>";
     redraw = null; current = null;
   }
 
@@ -377,10 +444,14 @@
   function route() {
     if (modal.open) modal.close();
     const parts = location.hash.replace(/^#\/?/, "").split("/").filter(Boolean);
-    if (parts[0] === "t") {
+    if (P && !parts.length) viewPillars();
+    else if (P && parts[0] === "p") {
+      if (pillarById[parts[1]]) viewPillar(pillarById[parts[1]]); else viewPillars();
+    } else if (parts[0] === "path") viewWorld();
+    else if (parts[0] === "t") {
       const t = D.threads.find((x) => x.id === parts[1]);
       if (t) viewThread(t); else viewWorld();
-    } else if (!parts.length || !regionById[parts[0]]) viewWorld();
+    } else if (!parts.length || !regionById[parts[0]]) { if (P) viewPillars(); else viewWorld(); }
     else {
       const r = regionById[parts[0]];
       if (parts[1] && D.subs[parts[1]] && r.subs.indexOf(parts[1]) >= 0) {

@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>큰 그림 지도 - Tigermorning</title>
-  <meta name="description" content="이 블로그의 글 220여 편이 실제 AI 서비스 하나 안에서 어디에 쓰이는지, 전체 그림에서 시작해 지역·글 묶음·글 한 편까지 확대해 들어가며 보는 지도입니다.">
+  <meta name="description" content="이 블로그의 글들을 AI 에이전트 설계 다섯 영역(Anthropic CCA 시험 기준)으로 나눠, 영역마다 묻는 것과 답하는 글을 확대해 들어가며 보는 지도입니다.">
   <meta property="og:type" content="article">
   <meta property="og:title" content="큰 그림 지도 - Tigermorning">
-  <meta property="og:description" content="이 블로그의 글들이 실제 AI 서비스 하나 안에서 어디에 쓰이는지, 확대해 들어가며 보는 지도입니다.">
+  <meta property="og:description" content="이 블로그의 글들을 AI 에이전트 설계 다섯 영역으로 나눠, 확대해 들어가며 보는 지도입니다.">
   <meta property="og:url" content="https://tigermorning.github.io/blog/ko/big-map.html">
   <meta property="og:locale" content="ko_KR">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -97,6 +97,16 @@
     .bm-card-read { display: inline-block; font-size: 0.9rem; margin: 0.1rem 0 0.3rem; }
     .bm-card-links { font-size: 0.8rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 0.3rem; align-items: center; margin: 0 !important; }
     .bm-card-links a { color: var(--ink); border: 1px dashed var(--border); border-radius: 999px; padding: 0 0.5rem; text-decoration: none; }
+    .bm-card-posts { margin: 0.2rem 0 0.4rem; padding-left: 1.1rem; font-size: 0.9rem; line-height: 1.7; }
+    .bm-card-gap { font-size: 0.86rem; line-height: 1.6; color: var(--muted); border-top: 1px dashed var(--border); padding-top: 0.45rem; margin: 0.3rem 0 0 !important; }
+    .bm-card-gap span { display: inline-block; font-size: 0.74rem; border-radius: 6px; padding: 0 0.4rem; margin-right: 0.45rem; border: 1px solid var(--border); color: var(--ink); }
+    .bm-scn { font-size: 0.9rem; margin-top: 0; }
+    .bm-scn-note { display: block; font-size: 0.8rem; color: var(--muted); margin-top: 0.15rem; }
+    .bm-pill { display: inline-flex; align-items: center; justify-content: center; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: var(--nc); color: #fff; font-family: var(--font-subhead); font-size: 0.8rem; text-decoration: none; margin: 0 0.25rem 0.2rem 0; }
+    .bm-alt { display: block; margin: 1.6rem 0 0; text-decoration: none; color: var(--ink); border: 2px solid var(--border); border-radius: 12px; padding: 0.7rem 1rem; }
+    .bm-alt:hover { border-color: var(--ink); }
+    .bm-alt strong { display: block; font-family: var(--font-subhead); font-weight: 400; }
+    .bm-alt span { font-size: 0.86rem; color: var(--muted); }
   </style>
 </head>
 <body>
@@ -111,7 +121,7 @@
 
   <main>
     <h1><span class="hl">큰 그림 지도</span></h1>
-    <p class="post-date">배운 것들이 실제 서비스 하나 안에서 어디에 쓰이는지 보는 페이지예요.</p>
+    <p class="post-date">이 블로그의 글들이 AI 에이전트를 만드는 일 전체에서 어디를 받치는지 보는 페이지예요.</p>
 
     <div class="why-read">
       <p class="why-read-title">이 페이지를 읽기 전에</p>
@@ -120,14 +130,30 @@
         <dd>
           <ul>
             <li>글을 많이 읽었는데 머릿속에 따로따로 흩어져 있어요.</li>
-            <li>SQL, 임베딩, LangGraph 같은 것들이 실제로 한 서비스 안에서 어디에 붙는지 모르겠어요.</li>
-            <li>지금 읽는 글이 전체에서 어디쯤인지 알고 싶어요.</li>
+            <li>프롬프트, 도구, LangGraph 같은 것들이 에이전트 하나를 만들 때 각각 어느 부분을 맡는지 모르겠어요.</li>
+            <li>Anthropic 인증 시험(CCA)이 묻는 것 가운데 내가 이미 읽은 것과 아직 비어 있는 것을 가려 보고 싶어요.</li>
+          </ul>
+        </dd>
+        <dt>이 블로그의 기둥</dt>
+        <dd>
+          <ul>
+            <li>첫 화면은 에이전트 설계를 다섯 영역으로 나눈 그림이에요. 영역과 비중은 Anthropic의 첫 공식 인증 시험 CCA의 구분을 그대로 따랐어요.</li>
+            <li>웹·서버(1단계)와 모델 원리(3단계) 글은 이 다섯 기둥이 서는 바닥이에요. 사진·음성·3D 글(4·5단계)은 시험 범위 밖이라 두 번째 지도에서 찾아요.</li>
           </ul>
         </dd>
         <dt>보는 법</dt>
-        <dd>지도를 확대하듯 상자를 누를수록 가까이 들어가요. 전체 보기 → 지역 → 글 묶음이 돌아가는 순서 → 글 한 편. 위쪽 경로 줄을 누르면 바깥으로 나와요.</dd>
+        <dd>
+          <ul>
+            <li>상자를 누르면 그 영역이 묻는 것이 카드로 나오고, 카드마다 답하는 글이 읽을 순서대로 붙어 있어요.</li>
+            <li>아래쪽 <strong>질문 하나가 AI 서비스를 지나가는 길</strong>은 같은 글들을 쓰임새로 늘어놓은 두 번째 지도예요. 위쪽 경로 줄을 누르면 바깥으로 나와요.</li>
+          </ul>
+        </dd>
         <dt>주제 지도와 다른 점</dt>
-        <dd><a href="topic-map.html">주제 지도</a>는 무엇을 먼저 읽을지(순서)를 보여 주고, 이 지도는 배운 것이 어디에 쓰이는지(쓰임새)를 보여 줘요.</dd>
+        <dd>
+          <ul>
+            <li><a href="topic-map.html">주제 지도</a>는 무엇을 먼저 읽을지(순서)를 보여 주고, 이 지도는 배운 것이 에이전트의 어디를 받치는지(자리)를 보여 줘요.</li>
+          </ul>
+        </dd>
       </dl>
     </div>
 
@@ -143,6 +169,7 @@
   <script src="fit-title.js"></script>
   <script src="sidebar-loader.js"></script>
   <script src="big-map-data.js"></script>
+  <script src="big-map-pillar.js"></script>
   <script src="big-map.js"></script>
 </body>
 </html>

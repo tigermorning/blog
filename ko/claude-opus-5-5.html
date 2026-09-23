@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Claude Opus 5.5 — Fable 5.1급 성능을 Opus 5보다 40% 싸게 - Tigermorning</title>
+  <meta name="description" content="Anthropic의 새 모델 Claude Opus 5.5 발표를 짧게 정리했습니다. 벤치마크, 토큰 가격, 과제당 비용이 40% 줄어든 이유, 에이전트를 오래 맡길 때 달라지는 점, 새 안전장치까지.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Claude Opus 5.5 — Fable 5.1급 성능을 Opus 5보다 40% 싸게">
+  <meta property="og:description" content="Claude Opus 5.5 발표 요약 — 벤치마크, 가격, 에이전트 관점에서 달라진 점, 안전장치.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/claude-opus-5-5.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">Claude Opus 5.5</span> — Fable 5.1급 성능을 Opus 5보다 40% 싸게</h1>
+    <p class="post-date">2026. 9. 23.</p>
+    <p class="post-date">※ 이 글은 Anthropic의 공식 발표 글 <a href="https://www.anthropic.com/claude-opus-5-5" target="_blank" rel="noopener">"Introducing Claude Opus 5.5"</a>를 읽고 제 나름의 언어로 짧게 요약한 것입니다. 숫자는 모두 발표 글에 적힌 값이고, 제가 직접 잰 값은 없어요.</p>
+
+    <p class="one-liner">Claude Opus 5.5는 Anthropic의 새 5.5 계열 첫 모델로, 대부분의 일에서 Fable 5.1 수준의 성능을 내면서 같은 일을 Opus 5보다 40% 적은 비용으로 끝내는 모델이다.</p>
+
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>어디쯤인가</dt>
+        <dd><a href="posts.html#cat-book-shelf">보충수업 책장</a> › <a href="posts.html#ai-news">새로 나온 AI 모델</a> — 단독 글이에요. 앞뒤로 읽어야 하는 편이 없어요.</dd>
+        <dt>이런 게 궁금했다면</dt>
+        <dd>
+          <ul>
+            <li>새 모델이 나왔다는데, 지금 쓰는 Opus 5에서 바꾸면 뭐가 달라지나요?</li>
+            <li>토큰 가격은 20% 내렸다는데 비용은 40% 준다는 건 어떻게 계산한 거죠?</li>
+            <li>벤치마크 표에 숫자가 잔뜩 있는데, 뭘 보고 뭘 걸러 들어야 하나요?</li>
+          </ul>
+        </dd>
+        <dt>읽고 나면 할 수 있는 것</dt>
+        <dd>
+          <ul>
+            <li>비용이 "토큰 한 개 값"과 "일 하나에 쓰는 토큰 수" 두 가지로 정해진다는 걸 알고, 새 모델의 가격 발표를 둘로 나눠 읽을 수 있어요.</li>
+            <li>벤치마크 숫자 옆에 붙은 조건(생각을 얼마나 깊게 시켰나, 안전장치가 끼어들었나)을 찾아 읽을 수 있어요.</li>
+            <li>에이전트에게 긴 일을 맡길 때 이 모델에서 달라지는 점과, 막혀 있는 작업을 구분할 수 있어요.</li>
+          </ul>
+        </dd>
+        <dt>모르면 이런 일이 생겨요</dt>
+        <dd>
+          <ul>
+            <li>표의 1등 점수만 보고 생각 깊이를 최고로 고정해 두면, 기본 설정으로도 될 일에 몇 배 비용을 써요.</li>
+            <li>보안 점검을 맡겼는데 답이 이전보다 약하게 느껴져도, 다른 모델로 넘어갔다는 걸 몰라 프롬프트만 고쳐요. <a class="suspect-jump" href="#suspect-reroute">언제 의심하나 ↓</a></li>
+            <li>API로 지난 대화 기록을 고쳐 보내던 코드가 새 계정에서 예전처럼 안 돌아도 원인을 못 찾아요. <a class="suspect-jump" href="#suspect-preserved">언제 의심하나 ↓</a></li>
+          </ul>
+        </dd>
+        <dt>어디에 쓰나</dt>
+        <dd>
+          <ul>
+            <li><strong>매달 AI 사용료 청구서가 부담될 때.</strong> 같은 일을 더 적은 토큰으로 끝내는 모델이면, 코드는 그대로 두고 모델 이름만 바꿔도 청구서가 줄 수 있어요.</li>
+            <li>밤새 혼자 도는 코딩 에이전트처럼, 사람이 지켜보지 않는 작업에 어느 모델을 넣을지 고를 때.</li>
+            <li>새 모델 발표 글을 읽을 때 무엇을 먼저 확인할지 순서를 잡을 때.</li>
+          </ul>
+        </dd>
+      </dl>
+    </div>
+
+    <p>Anthropic이 2026년 9월 <strong>Claude Opus 5.5</strong>를 내놓았어요. 새 5.5 계열의 첫 모델이고, Sonnet 5.5와 Haiku 5.5는 몇 주 안에 뒤따른다고 해요. 발표가 내세운 건 세 가지예요. <strong>더 잘하고, 더 싸고, 더 알아듣기 쉽게 쓴다.</strong> 그런데 제게 가장 눈에 띈 건 비용 쪽이었어요. 토큰<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup> 값을 내린 것보다, 같은 일을 <strong>더 적은 토큰으로 끝낸다</strong>는 쪽이요.</p>
+
+    <h2><span class="hl">택시 요금으로 먼저</span> — 비용이 40% 준 이유</h2>
+    <p>택시 요금은 두 가지로 정해져요. 1km당 얼마인지(미터 단가), 그리고 몇 km를 달렸는지. 새 기사님의 미터 단가가 조금 싸고, 길을 잘 알아서 덜 돌아간다면, 요금은 단가가 내린 것보다 훨씬 많이 줄어요. 급할 때는 웃돈을 내고 빠른 차를 부를 수도 있고요.</p>
+    <table>
+      <thead><tr><th>택시에서</th><th>Opus 5.5에서</th></tr></thead>
+      <tbody>
+        <tr><td>1km당 미터 단가</td><td>토큰 100만 개당 가격 — 입력·출력 모두 Opus 5보다 20% 내림</td></tr>
+        <tr><td>목적지까지 달린 거리</td><td>일 하나를 끝내는 데 쓴 토큰 수 — Opus 5보다 적음</td></tr>
+        <tr><td>승객이 내는 최종 요금</td><td>일 하나당 비용 — 두 효과가 겹쳐 보통의 작업에서 40% 줄어듦</td></tr>
+        <tr><td>웃돈 내고 부르는 빠른 차</td><td>빠른 모드 — 최대 2.5배 빠른 대신 토큰값이 두 배</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 모델 비용은 토큰 한 개 값보다 "일 하나에 토큰을 몇 개 쓰느냐"가 더 크게 좌우해요.</p>
+    <p>다만 여기서 비유가 끊기는 점이 있어요. 택시는 어느 기사가 몰든 도착지가 같지만, 모델은 결과물의 품질도 달라져요. 그래서 비용은 늘 "같은 품질을 냈을 때"로 비교해야 해요.</p>
+
+    <h2><span class="hl">무엇이 나아졌나</span> — 네 가지</h2>
+    <ul>
+      <li><strong>성능.</strong> 대부분의 일에서 Anthropic의 다른 최상급 모델인 Fable 5.1 수준이에요. 한 테스터는 68만 줄짜리 코드 이전 작업을 하루 안에 끝냈대요. 웹앱의 모든 페이지 로딩 시간을 줄여 보라는 과제에서는 40번 중 39번 성공했고, Opus 5는 더 작게 개선하면서 앱의 동작까지 바꿔 버렸어요.</li>
+      <li><strong>비용·속도.</strong> 토큰값은 20% 내렸고, 일 하나에 쓰는 토큰도 줄어 보통의 작업에서 비용이 40% 줄었어요. 글자를 내놓는 속도는 Opus 5보다 30% 넘게 빨라요.</li>
+      <li><strong>글쓰기.</strong> 중요한 내용을 맨 앞에 두고, 업계 은어를 덜 쓰고, 사용자가 준 글쓰기 규칙을 따른대요. Opus 5의 답이 길고 따라가기 어렵다는 피드백을 겨냥한 변화예요.</li>
+      <li><strong>안전.</strong> Anthropic이 돌리는 가장 넓은 정렬 시험(약 2,000개 상황을 흉내 낸 자동 행동 감사)에서 지금까지 시험한 모델 중 가장 좋은 점수를 냈어요. 되돌리기 어려운 행동이나 주어진 범위를 벗어나는 행동을 덜 한대요.</li>
+    </ul>
+
+    <h2><span class="hl">벤치마크 표</span> — 조건부터 읽기</h2>
+    <p>발표 글의 표에서 Claude 세 모델과 GPT-6 Astra만 옮겼어요(GPT-5.6 Sol 칸은 뺐어요). 벤치마크<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>는 같은 문제를 여러 모델에게 풀려 본 성적표예요.</p>
+    <table>
+      <thead><tr><th>무엇을 재나</th><th>Opus 5.5</th><th>Fable 5.1</th><th>Opus 5</th><th>GPT-6 Astra</th></tr></thead>
+      <tbody>
+        <tr><td>터미널 코딩 (Terminal-Bench 4.0)</td><td>66.4%</td><td>55.8%</td><td>52.3%</td><td>57.9%</td></tr>
+        <tr><td>코딩 (FrontierCode v1.1)</td><td>54.4%</td><td>50.3%</td><td>48.0%</td><td>53.3%</td></tr>
+        <tr><td>코딩 (CursorBench 4.0)</td><td>57.8%</td><td>51.8%</td><td>46.6%</td><td>—</td></tr>
+        <tr><td>44개 직업의 실무 (GDPval-AA v2.1, Elo)</td><td>1846</td><td>1735</td><td>1708</td><td>1542</td></tr>
+        <tr><td>업무 자동화 (AutomationBench)</td><td>40.0%</td><td>31.4%</td><td>26.9%</td><td>41.4%</td></tr>
+        <tr><td>여러 분야 추론 (Humanity's Last Exam, 도구 사용)</td><td>67.7%</td><td>65.6%</td><td>63.6%</td><td>57.2%</td></tr>
+        <tr><td>과학 연구 (Terminal-Bench-Science 0.1)</td><td>58.7%</td><td>52.6%</td><td>29.0%</td><td>64.6%</td></tr>
+        <tr><td>컴퓨터 조작 (OSWorld 2.0)</td><td>81.8%</td><td>80.7%</td><td>74.0%</td><td>—</td></tr>
+        <tr><td>차트 읽기 (Chartography, 도구 사용)</td><td>89.0%</td><td>88.4%</td><td>83.4%</td><td>—</td></tr>
+      </tbody>
+    </table>
+    <p>숫자보다 먼저 볼 조건이 셋 있어요.</p>
+    <ul>
+      <li><strong>생각 깊이를 최고로 올린 점수예요.</strong> Opus 5.5 점수는 대부분 생각 수준(effort<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>)을 max로 둔 값이고, Terminal-Bench 4.0만 xhigh예요. 기본값은 medium이에요.</li>
+      <li><strong>안전장치가 켜진 채로 쟀어요.</strong> 안전장치가 끼어든 문제는 사이버보안이면 Opus 4.8, 생물학 등이면 Opus 5가 대신 풀었어요. AutomationBench는 대신 풀어 주는 모델 없이 돌려서, 끼어든 문제를 전부 실패로 셌고요. 그래서 실제보다 낮게 나왔을 수 있다고 해요.</li>
+      <li><strong>Anthropic 스스로 차이를 믿지 말라고 해요.</strong> 이 수준에서는 점수 차가 실제 차이를 잘 못 보여 주고, 자기들이 써 보면 Fable 5.1과의 차이는 표보다 좁대요.</li>
+    </ul>
+    <p>대신 발표가 "분명하다"고 한 건 효율이에요. 기본 설정(medium)의 Opus 5.5가 Terminal-Bench 4.0에서 max 설정의 Opus 5를 약 5분의 1 비용으로 이겼고, GDPval-AA에서는 max 설정의 GPT-6 Astra를 과제당 약 5분의 1 비용으로 이겼어요.</p>
+
+    <h2><span class="hl">에이전트에게 오래 맡길 때</span> — 달라지는 점</h2>
+    <p>이 블로그의 <a href="big-map.html">에이전트 설계 다섯 기둥</a>으로 보면, 발표에서 눈여겨볼 대목은 모델이 똑똑해졌다는 것보다 <strong>사람이 안 볼 때 어떻게 구느냐</strong> 쪽이에요.</p>
+    <ul>
+      <li><strong>단계를 덜 밟아요.</strong> GitHub는 VS Code에서 Opus 5보다 더 많은 터미널 과제를 절반이 안 되는 단계로 풀었다고 했고, Kiro는 호출 수가 약 40% 적고 토큰은 절반이었다고 했어요. <a href="what-is-ai-agent.html">에이전트</a>의 호출 한 번 한 번이 곧 시간과 돈이라, 단계가 준다는 건 비용이 준다는 뜻이에요.</li>
+      <li><strong>일을 나눠 맡기기를 잘해요.</strong> 한 고객사는 서브에이전트<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>에게 일을 훨씬 잘 나눠 주고, 자기 결과를 스스로 확인하는 반복 구조도 짜기 쉬워졌다고 했어요(<a href="langgraph-pattern-orchestrator-worker.html">오케스트레이터-워커</a>가 바로 그 모양이에요).</li>
+      <li><strong>울타리를 덜 넘어요.</strong> 격리된 범위를 벗어나려는 경향을 보는 새 시험에서, 범위를 우회하려는 시도가 Opus 5나 Mythos 5.1보다 약 85% 적었어요. 시도한 것도 전부 가벼운 수준이었고, 스스로 밝혔대요.</li>
+      <li><strong>프롬프트 인젝션<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>에 더 버텨요.</strong> 코딩·도구 사용·컴퓨터 조작·웹 탐색 모두에서 Opus 5와 같거나 나았어요. 실행 전에 모든 행동을 검사하는 분류기도 함께 붙어 있어요.</li>
+    </ul>
+    <p>단서도 있어요. Anthropic은 Opus 5.5가 <strong>자기가 시험받고 있다고 의심하는 신호</strong>를 자주 보인다고 적었어요. 시험장에서 얌전한 모델이 실제 현장에서도 그럴지는 시험만으로 다 알 수 없다는 뜻이에요. 그래서 아래 안전장치를 함께 붙였대요.</p>
+
+    <h2 id="blocked"><span class="hl">막혀 있는 것과 바뀐 규칙</span></h2>
+    <ul>
+      <li><strong>사이버보안 작업 대부분은 Opus 4.8로 넘어가요.</strong> 내 코드의 버그를 찾아 고치는 평범한 개발 작업은 되지만, 그 밖의 보안 작업은 자동으로 다른 모델이 대신 답해요. 보안 전문가는 곧 확대될 인증 프로그램(Cyber Verification Program)에 신청해야 해요.</li>
+      <li><strong>생물학도 같은 식이에요.</strong> 연구 기관은 Life Sciences Verification Program에 신청해 제한을 풀 수 있어요.</li>
+      <li><strong>지난 대화 속 모델의 생각 부분을 고쳐 보낼 수 없어요.</strong> 증류<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup> 공격을 막는 "preserved thinking" 장치 때문이에요. 2026년 8월 31일 이후 만든 API 계정에 적용돼요.</li>
+      <li><strong>생각(thinking) 기능을 끌 수 없어요.</strong> 꺼 둔 채로 쓰는 선택지가 없어졌어요.</li>
+      <li>데이터를 남기지 않는 옵션(zero data retention)은 그대로 쓸 수 있고, EU AI Act에 맞춘 워터마크가 붙어요.</li>
+    </ul>
+
+    <h2><span class="hl">나쁜 선택 vs 좋은 선택</span> — 생각 깊이를 정할 때</h2>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">벤치마크 표의 점수가 max 설정 값이니, 내 서비스도 생각 깊이를 max로 고정한다 → 기본값으로도 충분한 일에 토큰을 몇 배 쓴다. 택시로 치면 가까운 길에 늘 웃돈 낸 빠른 차를 부르는 셈이다.</td>
+          <td class="choice-good">기본값(medium)으로 내 과제 몇 개를 먼저 돌려 품질을 보고, 모자란 과제에만 한 단계씩 올린다 → 발표에서 기본값의 Opus 5.5가 max의 Opus 5를 약 5분의 1 비용으로 이겼듯, 대부분은 기본값에서 끝나고 비용이 준다.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 모델을 바꿀지 따질 때 다시 볼 값</h2>
+    <p>발표 글의 가격표와 본문에서, 내 코드에 모델을 넣거나 비용을 계산할 때 다시 쓸 값만 모았어요.</p>
+    <table>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
+      <tbody>
+        <tr><td>API 모델 이름</td><td><code>claude-opus-5-5</code></td><td>코드의 모델 이름 칸에 이대로 넣어요. AWS·Google Cloud·Microsoft Azure에서도 쓸 수 있어요</td></tr>
+        <tr><td>입력 · 출력 토큰 100만 개당 가격</td><td>$4 · $20 (Opus 5는 $5 · $25)</td><td>20% 내린 값이에요. 월 사용량에 곱하면 대략의 청구액이 나와요</td></tr>
+        <tr><td>캐시 읽기 · 캐시 쓰기 100만 개당</td><td>$0.20 · $5 (Opus 5는 $0.50 · $6.25)</td><td>캐시 읽기는 60% 내렸어요. 에이전트·코딩 작업 비용의 대부분이 캐시 읽기라서, <a href="agents-md-and-cache-economics.html">캐싱</a>을 잘 쓰는 작업일수록 더 많이 줄어요</td></tr>
+        <tr><td>빠른 모드 속도 · 가격</td><td>최대 2.5배 · 입력 $8 · 출력 $40</td><td>일반 가격의 두 배예요. 기다리는 사람이 있는 작업에만 켜요</td></tr>
+        <tr><td>보통 작업의 비용 절감</td><td>Opus 5 대비 40%</td><td>기본 설정에서 Anthropic이 잰 값이에요. 내 작업에서는 직접 재 봐야 해요</td></tr>
+        <tr><td>출력 속도</td><td>Opus 5보다 30% 넘게 빠름</td><td>긴 답을 기다리는 화면이 있는 서비스라면 체감돼요</td></tr>
+        <tr><td>범위 우회 시도</td><td>Opus 5·Mythos 5.1보다 약 85% 적음</td><td>사람 없이 오래 돌리는 에이전트에 넣을지 판단할 때 참고해요. 시험 환경에서 잰 값이에요</td></tr>
+        <tr><td>preserved thinking 적용 계정</td><td>2026년 8월 31일 이후 만든 API 계정</td><td>그 전 계정이면 동작이 다를 수 있어요. 대화 기록을 가공하는 코드가 있으면 이 날짜부터 확인해요</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — Opus 5.5로 바꾼 뒤</h2>
+    <p>아래 둘은 모델이 고장 난 게 아니라, 새로 바뀐 규칙이 증상으로 보이는 경우예요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-reroute">
+          <td>보안 점검이나 취약점 분석을 시켰더니 <strong>답이 전보다 얕거나 결이 달라요</strong>. 평범한 코드 작업은 멀쩡해요</td>
+          <td>맡긴 작업의 종류. 프롬프트 문구는 범인이 아닐 때가 많아요</td>
+          <td>사이버보안·생물학 작업이면 다른 모델(Opus 4.8 등)이 대신 답했을 수 있어요. 업무상 꼭 필요하면 인증 프로그램을 신청해요(<a href="#blocked">막혀 있는 것과 바뀐 규칙</a> 절)</td>
+        </tr>
+        <tr id="suspect-preserved">
+          <td>예전 계정에서 잘 돌던 API 코드가 <strong>새로 만든 계정에서는 예전처럼 안 돌아요</strong>. 모델 이름만 바꿨을 뿐이에요</td>
+          <td>모델을 부르기 전에 지난 대화 기록(특히 모델의 생각 부분)을 고치거나 지우는 코드, 그리고 생각 기능을 끄는 설정</td>
+          <td>계정을 만든 날짜가 2026년 8월 31일 이후인지, 대화 기록을 가공하는지 봐요. 발표 글이 연결해 둔 preserved thinking 문서로 연동 코드를 고쳐요. 정확한 에러 문구는 이 글에서 확인하지 못했어요</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등</p>
+<pre><code>이 프로젝트에서 Claude API를 부르는 코드를 모두 찾아서,
+1) 모델 이름이 무엇으로 적혀 있는지,
+2) 보내기 전에 지난 대화 기록(assistant 메시지나 thinking 블록)을 고치거나 지우는 곳이 있는지,
+3) thinking을 끄는 설정이 있는지
+파일·줄 번호로 표로 보여 줘. 아직 코드는 고치지 마.</code></pre>
+
+    <h2><span class="hl">함께 보기</span></h2>
+    <ul>
+      <li><a href="big-map.html">큰 그림 지도 — 에이전트 설계 다섯 기둥</a> — 이 글의 "오래 맡길 때" 대목이 다섯 기둥의 어디에 걸리는지 볼 수 있어요.</li>
+      <li><a href="cca-exam-agent-anti-patterns.html">에이전트 안티패턴 다섯 가지</a> — 서브에이전트에게 무엇을 넘기고, 파이프라인에서 어떻게 부를지 같은 설계 쪽 이야기예요.</li>
+      <li><a href="tokens-and-context-window-cost.html">토큰과 컨텍스트 — 활용가가 보는 비용과 한계</a> — 토큰값 × 토큰 수로 비용을 계산하는 법을 처음부터 봐요.</li>
+      <li><a href="jev-rlhf-rlvr-rlcd.html">Jev — 문장 대신 확률로 답하는 판정 전담 모델</a> — 같은 책장의 다른 새 모델이에요. 큰 모델 하나로 다 하지 않는 쪽의 선택지예요.</li>
+    </ul>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">토큰 — 모델이 글을 읽고 쓰는 작은 조각 단위로, 요금이 이 개수로 매겨지며 <a href="what-is-ai-token.html">AI 토큰이란 무엇인가</a>에서 처음 다뤘어요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">벤치마크 — 여러 모델에게 같은 문제 묶음을 풀게 해서 성적을 비교하는 시험이에요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">effort(생각 수준) — 모델이 답하기 전에 얼마나 오래·깊게 생각할지 정하는 설정으로, 올릴수록 토큰을 더 쓰고 low·medium·high·xhigh·max 단계가 있어요. <a href="#fnref3">↩</a></li>
+        <li id="fn4">서브에이전트 — 메인 에이전트가 일의 한 조각을 맡기려고 따로 띄우는 하위 에이전트로, <a href="multi-agent-split-gains-and-losses.html">멀티 에이전트의 득실</a>에서 나눌지 말지를 따져 봤어요. <a href="#fnref4">↩</a></li>
+        <li id="fn5">프롬프트 인젝션 — 모델이 읽는 웹페이지·파일 속에 몰래 지시를 심어 모델이 사용자 대신 그 지시를 따르게 만드는 공격으로, <a href="context-experiment-and-injection-defense.html">같은 질문, 다른 맥락</a>에서 막는 법을 다뤘어요. <a href="#fnref5">↩</a></li>
+        <li id="fn6">증류(distillation) 공격 — 가짜 계정 수천 개로 모델에게 대량으로 질문해 그 답으로 비슷한 모델을 몰래 훈련시키는 일이에요. <a href="#fnref6">↩</a></li>
+      </ol>
+    </section>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
