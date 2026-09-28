@@ -45,23 +45,23 @@
         <dt>읽고 나면 할 수 있는 것</dt>
         <dd>
           <ul>
-            <li>and/or로 조건 두 개를 한 문장에 엮어 쓸 수 있어요.</li>
-            <li>for 문으로 리스트나 range()를 도는 코드를 읽고 쓸 수 있어요.</li>
+            <li>and/or로 조건 두 개를 엮은 코드를 보고, 어떤 경우에 통과하는지 바로 읽을 수 있어요.</li>
+            <li>for 문으로 리스트나 range()를 도는 코드를 보고, 반복마다 뭘 하는지 읽을 수 있어요.</li>
             <li>for-else/while-else가 있는 코드에서 else가 언제 실행되고 언제 건너뛰는지 구별할 수 있어요.</li>
           </ul>
         </dd>
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>and/or의 왼쪽·오른쪽이 뭘 뜻하는지 몰라, 조건 두 개를 반대로 묶어 버그가 생겨요.</li>
+            <li>and/or의 왼쪽·오른쪽이 뭘 뜻하는지 몰라, AI가 짜준 조건을 봐도 어떤 경우에 통과하는지 못 읽어요.</li>
             <li>for-else의 else가 왜 실행되다 말았는지 못 알아채요. <a class="suspect-jump" href="#suspect-else-skip">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
         <dd>
           <ul>
-            <li><strong>"리스트에 있는지 확인하고 없으면 메시지 출력" 같은 코드를 짤 때.</strong> found 같은 플래그 변수 없이 for-else로 더 짧게 쓸 수 있어요.</li>
-            <li>조건 두 개를 if를 겹쳐 쓰던 코드를, and/or로 한 줄로 줄일 때.</li>
+            <li><strong>AI가 짜준 코드에 found 같은 플래그 변수 없이 for-else만 있을 때.</strong> 이게 맞는 코드인지 읽고 판단할 수 있어요.</li>
+            <li>if를 겹쳐 쓴 코드와 and/or 한 줄짜리 코드를 봤을 때, 둘이 같은 뜻인지 읽어서 판단할 때.</li>
           </ul>
         </dd>
       </dl>

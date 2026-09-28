@@ -2,11 +2,11 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>실습 문제 3개 — and/or·for·for-else 섞어 풀기 - Tigermorning</title>
-  <meta name="description" content="왕초보를 위한 Python 1장(리스트·변수)과 2장 후반부(and/or, for, for-else)를 섞은 실습 문제 3개. VIP 확인, 장바구니 총액을 for로, 이름 찾기를 for-else로.">
+  <title>실습 문제 3개 — and/or·for·for-else 코드 읽고 결과 예측하기 - Tigermorning</title>
+  <meta name="description" content="왕초보를 위한 Python 1장(리스트·변수)과 2장 후반부(and/or, for, for-else)를 섞은 완성된 코드 3개를 읽고 실행 결과를 예측하는 문제. 코드를 직접 짜지 않고 읽기만 해요.">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="실습 문제 3개 — and/or·for·for-else 섞어 풀기">
-  <meta property="og:description" content="1장 리스트·변수와 2장 후반부 and/or·for·for-else를 섞은 실습 문제 3개입니다.">
+  <meta property="og:title" content="실습 문제 3개 — and/or·for·for-else 코드 읽고 결과 예측하기">
+  <meta property="og:description" content="1장 리스트·변수와 2장 후반부 and/or·for·for-else가 섞인 완성된 코드 3개를 읽고 결과를 예측하는 문제입니다.">
   <meta property="og:url" content="https://tigermorning.github.io/blog/ko/beginner-python-ch02-part2-practice.html">
   <meta property="og:locale" content="ko_KR">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -28,108 +28,124 @@
       <span class="post-nav-title">and/or·for·range()·for-else 정리</span>
     </a>
 
-    <h1><span class="hl">실습 문제 3개</span> — and/or·for·for-else 섞어 풀기 (2)</h1>
+    <h1><span class="hl">실습 문제 3개</span> — and/or·for·for-else 코드 읽고 결과 예측하기 (2)</h1>
     <p class="post-date">2026. 9. 28.</p>
-    <p class="post-date">※ 이 글은 위키독스 <a href="https://wikidocs.net/book/2" target="_blank" rel="noopener">『왕초보를 위한 Python』</a> 1장·2장 내용을 바탕으로 제가 직접 만든 실습 문제입니다. 교재의 공식 연습 문제가 아니에요. 풀이 없이 문제만 있고, 자세한 해설은 다음 글에 따로 있어요.</p>
+    <p class="post-date">※ 이 글은 위키독스 <a href="https://wikidocs.net/book/2" target="_blank" rel="noopener">『왕초보를 위한 Python』</a> 1장·2장 내용을 바탕으로 제가 직접 만든 문제입니다. 교재의 공식 연습 문제가 아니에요. 완성된 코드를 보여드리니 <strong>직접 짤 필요 없이</strong>, 코드를 읽고 실행 결과가 뭘지 먼저 예측해보세요. 자세한 정답과 이유는 다음 글에 따로 있어요.</p>
 
-    <p class="one-liner">1장에서 배운 리스트·변수와 2장 후반부에서 배운 and/or·for·for-else를 한 문제씩 섞어서 풀어보는 실습 3문제예요.</p>
+    <p class="one-liner">1장 리스트·변수와 2장 후반부 and/or·for·for-else가 섞인 완성된 코드 3개를 보고, 코드를 짜지 않고 실행 결과만 예측해보는 읽기 문제예요.</p>
 
     <div class="why-read">
       <p class="why-read-title">이 글을 읽기 전에</p>
       <dl>
         <dt>어디쯤인가</dt>
-        <dd>보충수업 책장 › 파이썬 스터디 — 『왕초보를 위한 Python』 2장 후반부 실습. 시리즈 (2)/3</dd>
+        <dd>보충수업 책장 › 파이썬 스터디 — 『왕초보를 위한 Python』 2장 후반부 읽기 문제. 시리즈 (2)/3</dd>
         <dt>이런 게 궁금했다면</dt>
         <dd>
           <ul>
-            <li>and/or를 배웠는데, 실제로 어떤 문제에 쓰는 건지 감이 잘 안 와요.</li>
-            <li>while로 짜던 걸 for로 다시 짜면 뭐가 달라지는지 직접 해보고 싶어요.</li>
-            <li>for-else를 배웠는데 while+flag 변수랑 뭐가 더 나은지 손으로 비교해 보고 싶어요.</li>
+            <li>and/or를 배웠는데, 실제 코드에서 어떤 모양으로 쓰이는지 보고 싶어요.</li>
+            <li>for + range(len())로 짠 코드를 보면, 각 줄이 정확히 뭘 하는지 헷갈려요.</li>
+            <li>for-else가 있는 코드를 남이 짜줬을 때, 그걸 읽고 결과를 바로 알 수 있을까요?</li>
           </ul>
         </dd>
         <dt>읽고 나면 할 수 있는 것</dt>
         <dd>
           <ul>
-            <li>리스트 소속 확인(in)과 and를 엮어서 "둘 다 만족해야" 조건을 짤 수 있어요.</li>
-            <li>while로 짜던 누적 계산을 for + range(len())로 옮겨 쓸 수 있어요.</li>
-            <li>플래그 변수 없이 for-else로 "찾았는지 아닌지" 판정을 짤 수 있어요.</li>
+            <li>in과 and가 같이 있는 조건문을 보고 어떤 경우에 통과하는지 바로 읽을 수 있어요.</li>
+            <li>for + range(len()) 코드를 보고 반복마다 값이 어떻게 바뀌는지 따라갈 수 있어요.</li>
+            <li>for-else 코드를 보고 break를 타는 경우와 안 타는 경우를 구별해 결과를 예측할 수 있어요.</li>
           </ul>
         </dd>
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>and/or, for-else를 눈으로만 읽고 넘어가면, 막상 코드를 짤 때 어디에 써야 할지 안 떠올라요.</li>
-            <li>while 방식만 계속 쓰면, 다른 사람이 짠 for/for-else 코드를 만났을 때 낯설어서 읽는 데 오래 걸려요.</li>
+            <li>and/or, for-else 문법을 눈으로만 읽고 넘어가면, 막상 남이 짠 코드에서 만났을 때 결과를 못 짐작해요.</li>
+            <li>AI가 짜준 코드에 이런 문법이 섞여 있으면, 맞게 짰는지 스스로 판단하지 못하고 그냥 믿게 돼요.</li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
         <dd>
           <ul>
-            <li><strong>AI에게 코드를 맡기기 전에, 내가 먼저 짜 보고 싶을 때.</strong> 세 문제 모두 AI 없이 직접 짜 볼 수 있는 분량이에요.</li>
-            <li>같은 문제를 while로도, for로도 짤 수 있다는 걸 손으로 확인하고 싶을 때.</li>
+            <li><strong>AI가 짜준 코드를 붙여넣기 전에, 이게 맞는 코드인지 먼저 읽고 확인하고 싶을 때.</strong> 세 문제 모두 코드를 안 짜고 읽기만 해서 판단하는 연습이에요.</li>
+            <li>while로 익힌 반복 패턴이 for/for-else로 바뀌면 어떻게 읽히는지 비교하고 싶을 때.</li>
           </ul>
         </dd>
       </dl>
     </div>
 
-    <p>세 문제 모두 <a href="beginner-python-ch02-part2-notes.html">지난 글</a>에서 정리한 문법만으로 풀 수 있어요. 1번은 지난 글의 "정문 출입" 비유, 3번은 "우편함" 비유를 그대로 코드로 옮긴 문제예요. 직접 짜 본 뒤에 <a href="beginner-python-ch02-part2-answers.html">문제 해설</a>과 맞춰 보세요.</p>
+    <p>세 문제 모두 <a href="beginner-python-ch02-part2-notes.html">지난 글</a>에서 정리한 문법만으로 읽을 수 있어요. 1번은 지난 글의 "정문 출입" 비유, 3번은 "우편함" 비유를 그대로 코드로 옮긴 문제예요. 코드를 눈으로 따라가며 입력마다 결과를 예측해본 뒤, <a href="beginner-python-ch02-part2-answers.html">문제 해설</a>과 맞춰 보세요.</p>
 
     <h2 id="q1"><span class="hl">문제 1</span> — 정회원 확인</h2>
-    <p>카페 정회원 명단과 적립 포인트가 있어요. <strong>명단에 있고(and) 포인트가 1000 이상</strong>이어야 VIP 회원으로 인정해요.</p>
-    <ul>
-      <li>정회원 명단: <code>members = ['서준', '하은', '도윤']</code></li>
-      <li>이름과 포인트를 각각 <code>input()</code>으로 한 줄씩 입력받기 (포인트는 <code>int()</code>로 변환)</li>
-      <li>조건을 만족하면 <code>VIP 회원입니다</code>, 아니면 <code>VIP 회원이 아닙니다</code> 출력하기</li>
-      <li>조건: <code>and</code>와 <code>in</code>을 한 문장에 같이 쓰기</li>
-    </ul>
-<pre class="out"><code class="nohighlight">입력: 하은
-      1200
-출력: VIP 회원입니다
+    <p>카페 정회원 명단과 적립 포인트를 보고 VIP 여부를 판정하는 코드예요.</p>
+<pre><code>members = ['서준', '하은', '도윤']
+name = input()
+points = int(input())
 
-입력: 수아
-      1200
-출력: VIP 회원이 아닙니다</code></pre>
+if name in members and points &gt;= 1000:
+    print('VIP 회원입니다')
+else:
+    print('VIP 회원이 아닙니다')</code></pre>
+    <p>다음 네 가지 입력에서 각각 무엇이 출력될지 예측해보세요.</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>name</th><th>points</th><th>출력?</th></tr></thead>
+        <tbody>
+          <tr><td>하은</td><td>1200</td><td>?</td></tr>
+          <tr><td>수아</td><td>1200</td><td>?</td></tr>
+          <tr><td>서준</td><td>500</td><td>?</td></tr>
+          <tr><td>도윤</td><td>1000</td><td>?</td></tr>
+        </tbody>
+      </table>
+    </div>
     <details>
       <summary>힌트 보기</summary>
-      <p><code>if 이름 in 리스트 and 포인트 &gt;= 1000:</code> 처럼 <code>in</code>으로 만든 참/거짓값과 <code>&gt;=</code>로 만든 참/거짓값을 <code>and</code>로 바로 이어 쓸 수 있어요. 괄호는 없어도 돼요.</p>
+      <p><code>and</code>로 이어진 두 조건은 <strong>둘 다 참이어야</strong> 전체가 참이 돼요. <code>name in members</code>부터 먼저 확인해보세요 — 여기가 거짓이면 뒤의 <code>points &gt;= 1000</code>은 볼 필요도 없어요.</p>
     </details>
 
     <h2 id="q2"><span class="hl">문제 2</span> — 장바구니 총액, 이번엔 for로</h2>
-    <p>while로 리스트 합계를 구하던 걸, 이번엔 <strong>for + range(len())</strong>로 다시 짜 보세요.</p>
-    <ul>
-      <li>장바구니: <code>cart = [12000, 8500, 3000]</code></li>
-      <li><code>for i in range(len(cart)):</code> 로 인덱스 <code>i</code>를 순서대로 돌면서 <code>cart[i]</code>를 누적 더하기</li>
-      <li>조건: <code>while</code>이 아니라 <code>for</code>와 <code>range()</code>를 쓰기</li>
-    </ul>
-<pre class="out"><code class="nohighlight">출력: 총액: 23500</code></pre>
+    <p>while이 아니라 <strong>for + range(len())</strong>로 리스트 합계를 구하는 코드예요.</p>
+<pre><code>cart = [12000, 8500, 3000]
+total = 0
+for i in range(len(cart)):
+    total += cart[i]
+print('총액:', total)</code></pre>
+    <p>이 코드를 실행하면 무엇이 출력될까요? <code>i</code>가 어떤 값들로 바뀌는지, 그때마다 <code>cart[i]</code>가 뭔지도 함께 짚어보세요.</p>
     <details>
       <summary>힌트 보기</summary>
-      <p><code>range(len(cart))</code>는 <code>cart</code>의 인덱스인 <code>0, 1, 2</code>를 순서대로 만들어 줘요. <code>total = 0</code>을 미리 만들어 두고, 반복마다 <code>total += cart[i]</code>로 더하세요.</p>
+      <p><code>range(len(cart))</code>는 <code>cart</code>의 인덱스인 <code>0, 1, 2</code>를 순서대로 만들어요. <code>i</code>가 0 → 1 → 2로 바뀌면서 <code>cart[i]</code>도 <code>cart[0]</code> → <code>cart[1]</code> → <code>cart[2]</code>로 바뀐다는 뜻이에요.</p>
     </details>
 
     <h2 id="q3"><span class="hl">문제 3</span> — 명단에서 이름 찾기, 이번엔 for-else로</h2>
-    <p>while + found 변수로 짜던 이름 찾기를, 이번엔 <strong>for-else</strong>로 다시 짜서 플래그 변수 없이 풀어보세요.</p>
-    <ul>
-      <li>명단: <code>members = ['지민', '서준', '하은']</code></li>
-      <li>이름을 <code>input()</code>으로 입력받기</li>
-      <li>명단에 있으면 <code>있음</code>, 끝까지 없으면 <code>없음</code> 출력하기</li>
-      <li>조건: <code>found</code> 같은 참/거짓 변수를 만들지 않고, <code>for ... else</code>와 <code>break</code>만으로 풀기</li>
-    </ul>
-<pre class="out"><code class="nohighlight">입력: 하은
-출력: 있음
-
-입력: 수아
-출력: 없음</code></pre>
+    <p>while + found 변수 대신 <strong>for-else</strong>로 이름을 찾는 코드예요.</p>
+<pre><code>members = ['지민', '서준', '하은']
+name = input()
+for m in members:
+    if m == name:
+        print('있음')
+        break
+else:
+    print('없음')</code></pre>
+    <p><code>name = '하은'</code>일 때와 <code>name = '수아'</code>일 때, 각각 무엇이 출력될까요?</p>
     <details>
       <summary>힌트 보기</summary>
-      <p>for로 명단을 돌다가 이름이 일치하면 그 자리에서 <code>있음</code>을 출력하고 <code>break</code> 하세요. for에 딸린 <code>else:</code> 블록에는 <code>없음</code> 출력을 넣으면, break로 멈추지 않고 끝까지 돈 경우에만 그 줄이 실행돼요.</p>
+      <p>for로 명단을 하나씩 확인하다 일치하면 <code>break</code>로 즉시 멈춰요. <code>else</code>는 if가 아니라 <strong>for에 딸린 것</strong>이라서, break를 한 번도 안 타고 끝까지 돌았을 때만 실행돼요.</p>
+    </details>
+    <p><strong>추가 질문 (버그 찾기):</strong> 아래는 위 코드에서 <code>break</code> 한 줄만 뺀 거예요. <code>name = '하은'</code>일 때 결과가 위 코드와 어떻게 달라질까요? 실행하지 말고 먼저 예측해보세요.</p>
+<pre><code>for m in members:
+    if m == name:
+        print('있음')
+        # break 없음
+else:
+    print('없음')</code></pre>
+    <details>
+      <summary>힌트 보기</summary>
+      <p><code>break</code>가 없으면 '있음'을 찍은 뒤에도 for는 멈추지 않고 남은 원소를 마저 확인해요. 그리고 <strong>break를 한 번도 안 탔으니</strong> 반복이 끝난 뒤 else도 실행돼요.</p>
     </details>
 
     <h2><span class="hl">함께 보기</span></h2>
     <ul>
-      <li><a href="beginner-python-ch02-part2-answers.html">문제 해설 — and/or·for·for-else를 자세히 뜯어본다</a> — 이 3문제의 풀이와 변수 추적이에요.</li>
+      <li><a href="beginner-python-ch02-part2-answers.html">문제 해설 — and/or·for·for-else를 자세히 뜯어본다</a> — 이 3문제의 정답과 한 줄씩 짚어보는 해설이에요.</li>
       <li><a href="beginner-python-ch02-part2-notes.html">and/or·for·range()·for-else 정리</a> — 이 문제들에 쓰인 문법 설명이에요.</li>
-      <li><a href="python-study/beginner-python/ch02-code-reading.html">2장 코드 읽기 실습(2.1~2.2.6, 18문제)</a> — while+if로 짠 비슷한 유형의 문제들이에요.</li>
+      <li><a href="python-study/beginner-python/ch02-code-reading.html">2장 코드 읽기 실습(2.1~2.2.6, 18문제)</a> — while+if로 짠 비슷한 유형의 읽기 문제들이에요.</li>
     </ul>
 
     <a class="post-nav" href="beginner-python-ch02-part2-answers.html">
@@ -142,7 +158,7 @@
       <span class="post-nav-label">(1)</span>
       <span class="post-nav-title">and/or·for·range()·for-else 정리</span>
     </a>
-    <p class="post-date">(2) 실습 문제 3개 — and/or·for·for-else 섞어 풀기 (이 글)</p>
+    <p class="post-date">(2) 실습 문제 3개 — and/or·for·for-else 코드 읽고 결과 예측하기 (이 글)</p>
     <a class="post-nav" href="beginner-python-ch02-part2-answers.html">
       <span class="post-nav-label">(3)</span>
       <span class="post-nav-title">문제 해설 — and/or·for·for-else를 자세히 뜯어본다</span>

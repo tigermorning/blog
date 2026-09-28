@@ -42,9 +42,9 @@
         <dt>이런 게 궁금했다면</dt>
         <dd>
           <ul>
-            <li>내가 짠 코드랑 정답이 다른데, 어디서부터 틀렸는지 한 줄씩 짚어보고 싶어요.</li>
-            <li>for-else에서 break를 깜빡하면 정확히 뭐가 잘못되는지 직접 보고 싶어요.</li>
-            <li>while로 짜던 이름 찾기랑 for-else로 짠 것 중 뭐가 더 나은 방식인가요?</li>
+            <li>내가 예측한 출력이랑 정답이 다른데, 어디서부터 잘못 읽었는지 한 줄씩 짚어보고 싶어요.</li>
+            <li>for-else에서 break를 빼면 정확히 뭐가 잘못되는지 직접 보고 싶어요.</li>
+            <li>while + found 방식이랑 for-else 방식 중 뭐가 더 나은 코드인가요?</li>
           </ul>
         </dd>
         <dt>읽고 나면 할 수 있는 것</dt>
@@ -65,7 +65,7 @@
         <dt>어디에 쓰나</dt>
         <dd>
           <ul>
-            <li><strong>내 풀이와 정답이 다를 때, 어느 줄부터 갈라지는지 찾을 때.</strong> 변수 추적표를 내 코드에도 그대로 그려보면 돼요.</li>
+            <li><strong>내 예측이 정답과 다를 때, 어느 줄부터 잘못 읽었는지 찾을 때.</strong> 변수 추적표를 코드 옆에 그대로 그려보면 돼요.</li>
             <li>AI가 짜 준 for-else 코드에 break가 제대로 들어갔는지 검토할 때.</li>
           </ul>
         </dd>
@@ -89,6 +89,12 @@ if name in members and points &gt;= 1000:
     print('VIP 회원입니다')
 else:
     print('VIP 회원이 아닙니다')</code></pre>
+    <p><strong>한 줄씩 짚어보기</strong></p>
+    <ul>
+      <li><code>name in members</code> — 이름이 리스트 안에 있으면 <code>True</code>, 없으면 <code>False</code>. 그 자체로 참/거짓 값 하나예요.</li>
+      <li><code>points &gt;= 1000</code> — 이것도 참/거짓 값 하나예요.</li>
+      <li><code>A and B</code>는 <strong>둘 다 True일 때만</strong> True예요. 하나라도 False면 전체가 False가 돼요.</li>
+    </ul>
     <p>and로 이은 두 조건 중 <strong>왼쪽 항인 <code>name in members</code>부터</strong> 검사해요. 네 가지 입력으로 어떻게 갈리는지 표로 볼게요.</p>
     <div class="table-scroll fill">
       <table>
@@ -102,6 +108,7 @@ else:
       </table>
     </div>
     <p><strong>'수아' 행</strong>이 중요해요. <code>name in members</code>가 이미 거짓이라 and 전체 결과가 거짓으로 확정되고, 파이썬은 오른쪽의 <code>points &gt;= 1000</code>은 아예 검사하지 않아요(<a href="beginner-python-ch02-part2-notes.html">지난 글</a>에서 본 단락 평가). 그래서 명단에 없는 사람의 포인트가 아무리 높아도 소용없어요.</p>
+    <p><strong>여기서 자주 막혀요:</strong> "포인트 1200인데 왜 수아는 VIP가 아니지?" → 명단에 없으면(<code>in</code>이 이미 False) 포인트는 아예 안 보고 넘어가요. and는 "둘 다" 만족해야 하니까요.</p>
     <table class="choice-table">
       <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
       <tbody>
@@ -129,6 +136,14 @@ total = 0
 for i in range(len(cart)):
     total += cart[i]
 print('총액:', total)</code></pre>
+    <p><strong>한 줄씩 짚어보기</strong></p>
+    <ul>
+      <li><code>len(cart)</code> — 리스트 개수. <code>cart</code>는 3개니까 <code>3</code>.</li>
+      <li><code>range(3)</code> — <code>0, 1, 2</code> 세 숫자를 순서대로 만들어요.</li>
+      <li><code>for i in range(3):</code> — i가 <code>0 → 1 → 2</code> 순서로 바뀌면서 몸통을 3번 반복해요.</li>
+      <li><code>cart[i]</code> — i번째 값. i=0이면 <code>cart[0]</code>(12000), i=1이면 <code>cart[1]</code>(8500), i=2면 <code>cart[2]</code>(3000).</li>
+      <li><code>total += cart[i]</code> — <code>total = total + cart[i]</code>의 줄임말. 반복마다 누적돼요.</li>
+    </ul>
     <div class="table-scroll fill">
       <table>
         <thead><tr><th>i</th><th>cart[i]</th><th>total</th></tr></thead>
@@ -140,6 +155,7 @@ print('총액:', total)</code></pre>
       </table>
     </div>
     <p><code>len(cart)</code>는 3이라서 <code>range(len(cart))</code>는 <code>0, 1, 2</code>를 순서대로 만들어요. while로 짤 때 <code>i = 0</code>을 미리 만들고 <code>i += 1</code>을 몸통 끝에 직접 써야 했던 것과 달리, for는 그 두 줄을 대신 해 줘요 — i를 0으로 시작해서 1씩 늘리며 range가 끝날 때까지 도는 일을 for가 통째로 맡는다는 뜻이에요.</p>
+    <p><strong>여기서 자주 막혀요:</strong> "i가 대체 뭔데?" → 그냥 순서 번호(0, 1, 2)예요. "왜 <code>cart[i]</code>지 <code>cart[0]</code>이 아니야?" → i가 반복마다 바뀌니까 <code>cart[i]</code>를 쓰면 자동으로 0, 1, 2번째 값이 차례로 들어와요. <code>cart[0]</code>으로 고정하면 매번 첫 번째 값(12000)만 더하게 돼요.</p>
     <p><strong>더 나아가기:</strong> 사실 인덱스 <code>i</code>가 굳이 필요 없다면, <code>for price in cart:</code>처럼 리스트 원소를 바로 꺼내 <code>total += price</code>로 써도 결과는 같아요. <code>range(len())</code>은 "몇 번째인지(i)"가 진짜 필요할 때만 쓰는 게 더 파이썬다워요.</p>
     <p><strong>흔한 실수:</strong> <code>range(cart)</code>처럼 리스트를 통째로 넣으면 <code>TypeError: 'list' object cannot be interpreted as an integer</code>가 나요. range()는 정수만 받으니 꼭 <code>range(len(cart))</code>로 길이를 넣어야 해요.</p>
     <p><strong>실제 코드에서</strong> · 장바구니·영수증·재생목록처럼 리스트 값을 다 더하는 코드는 while로도 for로도 짤 수 있는데, 실무 코드는 대부분 for 쪽이에요 — 반복 횟수를 세는 변수를 직접 관리하지 않아도 되기 때문이에요.</p>
@@ -159,6 +175,13 @@ for m in members:
         break
 else:
     print('없음')</code></pre>
+    <p><strong>한 줄씩 짚어보기</strong></p>
+    <ul>
+      <li><code>for m in members:</code> — m이 <code>'지민' → '서준' → '하은'</code> 순서로 리스트 원소를 하나씩 꺼내 와요.</li>
+      <li>매번 <code>if m == name:</code>으로 지금 꺼낸 값이 찾는 이름과 같은지 확인해요.</li>
+      <li>같으면 <code>있음</code>을 찍고 <code>break</code>로 <strong>반복을 그 자리에서 즉시 끝내요.</strong></li>
+      <li><code>else:</code>는 <strong>for에 딸린 것</strong>이에요(if의 else가 아니에요!). <strong>break를 한 번도 안 타고 반복이 끝까지 다 돌았을 때만</strong> 실행돼요.</li>
+    </ul>
     <p><code>name = '하은'</code>과 <code>name = '수아'</code>를 표로 따라가 볼게요.</p>
     <div class="table-scroll fill">
       <table>
@@ -181,6 +204,7 @@ else:
         </tbody>
       </table>
     </div>
+    <p><strong>여기서 자주 막혀요:</strong> 헷갈리는 지점은 <code>else</code>가 <strong>for와 같은 들여쓰기</strong>라는 거예요. "if를 못 만족하면 else"가 아니라 "반복 전체가 break 없이 끝나면 else"예요. break를 빼먹으면 '있음'을 찍고도 계속 돌다가 결국 else까지 실행돼서 '있음'과 '없음'이 같이 찍히는 버그가 나요 (바로 아래에서 실제로 확인해요).</p>
     <p>기존 while + <code>found</code> 플래그 방식과 비교하면 이래요.</p>
     <table class="choice-table">
       <thead><tr><th>나쁜 선택(과거 방식)</th><th>좋은 선택(for-else)</th></tr></thead>
