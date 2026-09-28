@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>문제 해설 — and/or·for·for-else를 자세히 뜯어본다 - Tigermorning</title>
+  <meta name="description" content="정회원 확인(and), 장바구니 총액(for+range), 이름 찾기(for-else) 3문제를 변수 추적표와 나쁜 선택·좋은 선택 비교로 자세히 해설합니다. break를 빠뜨리면 있음/없음이 같이 찍히는 흔한 버그도 다룹니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="문제 해설 — and/or·for·for-else를 자세히 뜯어본다">
+  <meta property="og:description" content="정회원 확인, 장바구니 총액, 이름 찾기 3문제를 변수 추적표까지 자세히 해설합니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/beginner-python-ch02-part2-answers.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <a class="post-nav" href="beginner-python-ch02-part2-practice.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">실습 문제 3개 — and/or·for·for-else 섞어 풀기</span>
+    </a>
+
+    <h1><span class="hl">문제 해설</span> — and/or·for·for-else를 자세히 뜯어본다 (3)</h1>
+    <p class="post-date">2026. 9. 28.</p>
+    <p class="post-date">※ 이 글은 <a href="beginner-python-ch02-part2-practice.html">앞 글의 실습 문제 3개</a>를 제가 직접 풀어보고, 변수 값이 어떻게 바뀌는지와 자주 하는 실수까지 정리한 해설입니다.</p>
+
+    <p class="one-liner">정회원 확인·장바구니 총액·이름 찾기 3문제를, 변수 값이 한 줄씩 바뀌는 표와 자주 하는 실수까지 곁들여 자세히 풀어 쓴 해설이에요.</p>
+
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>어디쯤인가</dt>
+        <dd>보충수업 책장 › 파이썬 스터디 — 『왕초보를 위한 Python』 2장 후반부 실습 해설. 시리즈 (3)/3</dd>
+        <dt>이런 게 궁금했다면</dt>
+        <dd>
+          <ul>
+            <li>내가 짠 코드랑 정답이 다른데, 어디서부터 틀렸는지 한 줄씩 짚어보고 싶어요.</li>
+            <li>for-else에서 break를 깜빡하면 정확히 뭐가 잘못되는지 직접 보고 싶어요.</li>
+            <li>while로 짜던 이름 찾기랑 for-else로 짠 것 중 뭐가 더 나은 방식인가요?</li>
+          </ul>
+        </dd>
+        <dt>읽고 나면 할 수 있는 것</dt>
+        <dd>
+          <ul>
+            <li>and 조건이 왼쪽부터 어떤 순서로 평가되는지 표로 따라갈 수 있어요.</li>
+            <li>for+range(len())로 짠 코드가 반복마다 어떤 값을 쌓아가는지 추적할 수 있어요.</li>
+            <li>for-else에서 break를 빠뜨리면 왜 있음/없음이 같이 찍히는지 설명할 수 있어요.</li>
+          </ul>
+        </dd>
+        <dt>모르면 이런 일이 생겨요</dt>
+        <dd>
+          <ul>
+            <li>for-else의 break를 빠뜨리고도 몰라서, "있음"과 "없음"이 같이 찍히는 코드를 그대로 둬요. <a class="suspect-jump" href="#suspect-both-print">언제 의심하나 ↓</a></li>
+            <li>and의 왼쪽·오른쪽 순서를 아무렇게나 둬서, 조건에 없는 값에도 뒤쪽 계산을 걸어 에러를 만들어요.</li>
+          </ul>
+        </dd>
+        <dt>어디에 쓰나</dt>
+        <dd>
+          <ul>
+            <li><strong>내 풀이와 정답이 다를 때, 어느 줄부터 갈라지는지 찾을 때.</strong> 변수 추적표를 내 코드에도 그대로 그려보면 돼요.</li>
+            <li>AI가 짜 준 for-else 코드에 break가 제대로 들어갔는지 검토할 때.</li>
+          </ul>
+        </dd>
+      </dl>
+    </div>
+
+    <p>모든 코드는 Python 3.12에서 직접 실행해 출력을 확인했어요. 문제 원문은 <a href="beginner-python-ch02-part2-practice.html">실습 문제 3개</a>에 있어요.</p>
+    <p class="qna-controls">문제를 누르면 해설이 펼쳐져요. <button type="button" data-qna="open">모두 펼치기</button> <button type="button" data-qna="close">모두 접기</button></p>
+
+    <hr>
+    <h2><span class="hl">문제 1</span> — 정회원 확인 (and)</h2>
+
+    <details class="qna" id="a1">
+    <summary><h3>정답과 해설</h3></summary>
+    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
+<pre><code>members = ['서준', '하은', '도윤']
+name = input()
+points = int(input())
+
+if name in members and points &gt;= 1000:
+    print('VIP 회원입니다')
+else:
+    print('VIP 회원이 아닙니다')</code></pre>
+    <p>and로 이은 두 조건 중 <strong>왼쪽 항인 <code>name in members</code>부터</strong> 검사해요. 네 가지 입력으로 어떻게 갈리는지 표로 볼게요.</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>name</th><th>points</th><th>name in members ?</th><th>points &gt;= 1000 ?</th><th>출력</th></tr></thead>
+        <tbody>
+          <tr><td>하은</td><td>1200</td><td>참</td><td>참</td><td>VIP 회원입니다</td></tr>
+          <tr><td>수아</td><td>1200</td><td>거짓</td><td>(평가 안 함)</td><td>VIP 회원이 아닙니다</td></tr>
+          <tr><td>서준</td><td>500</td><td>참</td><td>거짓</td><td>VIP 회원이 아닙니다</td></tr>
+          <tr><td>도윤</td><td>1000</td><td>참</td><td>참</td><td>VIP 회원입니다</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>'수아' 행</strong>이 중요해요. <code>name in members</code>가 이미 거짓이라 and 전체 결과가 거짓으로 확정되고, 파이썬은 오른쪽의 <code>points &gt;= 1000</code>은 아예 검사하지 않아요(<a href="beginner-python-ch02-part2-notes.html">지난 글</a>에서 본 단락 평가). 그래서 명단에 없는 사람의 포인트가 아무리 높아도 소용없어요.</p>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">
+            <code>if name in members:</code>과 <code>if points &gt;= 1000:</code>을 <strong>따로따로</strong> 쓰고, 두 번째 if의 결과로 앞의 판정을 덮어씀 → 명단에 없어도 포인트만 높으면 VIP로 잘못 판정
+          </td>
+          <td class="choice-good">
+            <code>if name in members and points &gt;= 1000:</code>처럼 <strong>한 문장</strong>으로 묶음 → 두 조건이 동시에 참일 때만 통과
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p><strong>실제 코드에서</strong> · 쿠폰 발급, 등급 산정처럼 "자격 + 실적"을 같이 봐야 하는 판정 로직은 거의 다 이 모양이에요.</p>
+    </details>
+
+    <hr>
+    <h2><span class="hl">문제 2</span> — 장바구니 총액, 이번엔 for로</h2>
+
+    <details class="qna" id="a2">
+    <summary><h3>정답과 해설</h3></summary>
+    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
+<pre><code>cart = [12000, 8500, 3000]
+total = 0
+for i in range(len(cart)):
+    total += cart[i]
+print('총액:', total)</code></pre>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>i</th><th>cart[i]</th><th>total</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>12000</td><td>12000</td></tr>
+          <tr><td>1</td><td>8500</td><td>20500</td></tr>
+          <tr><td>2</td><td>3000</td><td>23500</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><code>len(cart)</code>는 3이라서 <code>range(len(cart))</code>는 <code>0, 1, 2</code>를 순서대로 만들어요. while로 짤 때 <code>i = 0</code>을 미리 만들고 <code>i += 1</code>을 몸통 끝에 직접 써야 했던 것과 달리, for는 그 두 줄을 대신 해 줘요 — i를 0으로 시작해서 1씩 늘리며 range가 끝날 때까지 도는 일을 for가 통째로 맡는다는 뜻이에요.</p>
+    <p><strong>더 나아가기:</strong> 사실 인덱스 <code>i</code>가 굳이 필요 없다면, <code>for price in cart:</code>처럼 리스트 원소를 바로 꺼내 <code>total += price</code>로 써도 결과는 같아요. <code>range(len())</code>은 "몇 번째인지(i)"가 진짜 필요할 때만 쓰는 게 더 파이썬다워요.</p>
+    <p><strong>흔한 실수:</strong> <code>range(cart)</code>처럼 리스트를 통째로 넣으면 <code>TypeError: 'list' object cannot be interpreted as an integer</code>가 나요. range()는 정수만 받으니 꼭 <code>range(len(cart))</code>로 길이를 넣어야 해요.</p>
+    <p><strong>실제 코드에서</strong> · 장바구니·영수증·재생목록처럼 리스트 값을 다 더하는 코드는 while로도 for로도 짤 수 있는데, 실무 코드는 대부분 for 쪽이에요 — 반복 횟수를 세는 변수를 직접 관리하지 않아도 되기 때문이에요.</p>
+    </details>
+
+    <hr>
+    <h2><span class="hl">문제 3</span> — 명단에서 이름 찾기, 이번엔 for-else로</h2>
+
+    <details class="qna" id="a3">
+    <summary><h3>정답과 해설</h3></summary>
+    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
+<pre><code>members = ['지민', '서준', '하은']
+name = input()
+for m in members:
+    if m == name:
+        print('있음')
+        break
+else:
+    print('없음')</code></pre>
+    <p><code>name = '하은'</code>과 <code>name = '수아'</code>를 표로 따라가 볼게요.</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>m</th><th>m == '하은' ?</th><th>동작</th></tr></thead>
+        <tbody>
+          <tr><td>지민</td><td>거짓</td><td>다음 원소로</td></tr>
+          <tr><td>서준</td><td>거짓</td><td>다음 원소로</td></tr>
+          <tr><td>하은</td><td>참</td><td>'있음' 출력, break로 반복 즉시 종료 → else 건너뜀</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>m</th><th>m == '수아' ?</th><th>동작</th></tr></thead>
+        <tbody>
+          <tr><td>지민</td><td>거짓</td><td>다음 원소로</td></tr>
+          <tr><td>서준</td><td>거짓</td><td>다음 원소로</td></tr>
+          <tr><td>하은</td><td>거짓</td><td>다음 원소로 (원소 끝)</td></tr>
+          <tr><td>(반복 끝)</td><td>—</td><td>break 없이 끝까지 돎 → else 실행, '없음' 출력</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>기존 while + <code>found</code> 플래그 방식과 비교하면 이래요.</p>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택(과거 방식)</th><th>좋은 선택(for-else)</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">
+            <code>found = False</code>를 미리 만들고, 찾으면 <code>found = True</code>로 바꾼 뒤, 반복이 끝나고 나서 <code>if found:</code>로 따로 검사 → 코드가 한 줄 더 길고, <code>found = True</code>로 바꾸는 줄을 깜빡하면 찾았는데도 "없음"이 나오는 조용한 버그가 생김
+          </td>
+          <td class="choice-good">
+            <code>for ... else:</code>를 쓰면 break를 못 타고 끝까지 돈 경우를 파이썬이 알아서 판단해 줌 → <code>found</code> 변수 자체가 필요 없고, 깜빡할 지점도 하나 줄어듦
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p><strong>흔한 실수 — break를 빠뜨리면?</strong> 아래처럼 <code>break</code> 없이 짜면, '하은'을 찾아 <code>있음</code>을 출력하고도 반복이 계속 돌다가 끝까지 다 돌았으니(멈춘 적이 없으니) else도 함께 실행돼요.</p>
+<pre><code>for m in members:
+    if m == name:
+        print('있음')
+        # break 없음
+else:
+    print('없음')</code></pre>
+<pre class="out"><code class="nohighlight">있음
+없음</code></pre>
+    <p>이게 바로 <a href="beginner-python-ch02-part2-notes.html#suspect-else-skip">지난 글 "이럴 때 의심하세요"</a>에서 말한 증상이에요 — <code>break</code>가 없으면 for는 찾은 뒤에도 멈추지 않고 끝까지 돌고, else는 "break로 안 멈췄다"는 사실만 보고 무조건 실행되니 두 줄이 같이 찍혀요.</p>
+    <p><strong>실제 코드에서</strong> · 아이디 중복 확인, 재고에 있는지 검사처럼 "리스트 안에 있는지"를 찾고 없을 때만 안내가 필요한 코드에 이 모양이 그대로 쓰여요.</p>
+    </details>
+
+    <hr>
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 이 3문제를 짜다가 결과가 이상할 때</h2>
+    <p>세 문제 모두 에러 없이 조용히 틀리는 경우가 많아요. 결과가 예상과 다르면 이 표부터 확인해요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-both-print">
+          <td>이름을 찾았는데도 "있음"과 "없음"이 같이 찍혀요</td>
+          <td>for-else 블록의 <code>break</code> 위치</td>
+          <td>일치를 찾은 <code>if</code> 안에 <code>break</code>가 실제로 있는지 확인해요 (<a href="#a3">문제 3</a>)</td>
+        </tr>
+        <tr>
+          <td>명단에 없는 이름인데도 VIP로 판정돼요</td>
+          <td>if 조건에서 and 대신 or를 쓰지 않았는지</td>
+          <td><code>and</code>인지 <code>or</code>인지 다시 읽어봐요 — or는 "하나만 참이어도" 통과예요 (<a href="#a1">문제 1</a>)</td>
+        </tr>
+        <tr>
+          <td><code>TypeError: 'list' object cannot be interpreted as an integer</code>가 나요</td>
+          <td><code>range()</code> 괄호 안에 넣은 값</td>
+          <td>리스트를 통째로 넣지 않았는지, <code>range(len(리스트))</code>처럼 길이(정수)를 넣었는지 확인해요 (<a href="#a2">문제 2</a>)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2><span class="hl">함께 보기</span></h2>
+    <ul>
+      <li><a href="beginner-python-ch02-part2-notes.html">and/or·for·range()·for-else 정리</a> — 이 문제들에 쓰인 문법 설명이에요.</li>
+      <li><a href="beginner-python-ch02-part2-practice.html">실습 문제 3개</a> — 이 해설이 푸는 문제 원문이에요.</li>
+      <li><a href="beginner-python-ch02-qna.html">2장 문제 풀이와 질문 해설(2.1~2.2.6)</a> — while + found 플래그 방식이 처음 나온 글이에요.</li>
+      <li><a href="python-study/beginner-python/ch02-code-reading.html">2장 코드 읽기 실습(2.1~2.2.6, 18문제)</a></li>
+    </ul>
+
+    <h3 id="series-list">"왕초보 Python 2장 후반부" 시리즈</h3>
+    <a class="post-nav" href="beginner-python-ch02-part2-notes.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">and/or·for·range()·for-else 정리</span>
+    </a>
+    <a class="post-nav" href="beginner-python-ch02-part2-practice.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">실습 문제 3개 — and/or·for·for-else 섞어 풀기</span>
+    </a>
+    <p class="post-date">(3) 문제 해설 — and/or·for·for-else를 자세히 뜯어본다 (이 글)</p>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="qna-toggle.js"></script>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
