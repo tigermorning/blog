@@ -2,272 +2,101 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>화면에 박힌 자막을 다시 뽑는다 — 세는 일과 읽는 일을 나누고, 정답을 재서 고친다 - Tigermorning</title>
-  <meta name="description" content="자막이 화면에 박혀 있는 방송 영상에서 자막이 뜨고 지는 시각과 글자를 다시 뽑아내는 도구를 에이전트와 함께 고친 기록이에요. 모든 프레임을 세는 일은 스크립트에, 글자를 읽는 일은 AI의 눈에 나눠 71분 영상 처리가 7~8시간에서 약 14분이 됐고, 에이전트의 설명 대신 정답을 재서 인점 오차를 68ms에서 38ms로 줄였어요.">
-  <meta property="og:type" content="article">
-  <meta property="og:title" content="화면에 박힌 자막을 다시 뽑는다 — 세는 일과 읽는 일을 나누고, 정답을 재서 고친다">
-  <meta property="og:description" content="AI가 영상을 볼 수 있다고 해서 모든 프레임을 보게 할 필요는 없어요. 기계적으로 셀 수 있는 일과 눈으로 판단할 일을 나누면 됩니다.">
-  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/hardsub-subtitle-agent-split-and-measure.html">
-  <meta property="og:locale" content="ko_KR">
+  <title>하드섭 자막 TC·텍스트 추출 개선 기록 — 성능이 어디서, 무엇으로 좋아졌나 - Tigermorning</title>
+  <meta name="description" content="현장 적용 기록(비공개). 하드섭 영상에서 자막 TC와 텍스트를 뽑는 자체 도구의 성능이 어느 지점에서, 어떤 시도로 좋아졌는지 측정값 기준으로 정리했습니다.">
+  <meta name="robots" content="noindex">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="../style.css">
 </head>
 <body>
-  <header class="site-header">
-    <div class="container">
-      <a class="site-title" href="/blog/">Tigermorning</a>
+  <div id="lockGate" style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#f2f5f7;font-family:'IBM Plex Sans KR','Noto Sans KR',-apple-system,sans-serif;">
+    <div style="max-width:360px;width:100%;margin:0 20px;padding:28px 24px;background:#fff;border:1px solid #e1e6ea;border-radius:12px;text-align:center;box-shadow:0 4px 18px rgba(0,0,0,0.06);">
+      <div style="font-size:32px;margin-bottom:10px;">🔒</div>
+      <h2 style="margin:0 0 8px;font-size:17px;color:#1b2330;">현장 적용 기록</h2>
+      <p style="margin:0 0 18px;font-size:13px;line-height:1.6;color:#57626f;">실제 업무 도구에 대한 개선 기록입니다. 열람 권한을 받은 분만 볼 수 있습니다. 같은 카테고리의 다른 글에서 이미 입력했다면 자동으로 열립니다.</p>
+      <input id="lockInput" type="password" placeholder="비밀번호" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #d7dee4;border-radius:8px;font-size:14px;margin-bottom:10px;">
+      <button id="lockBtn" style="width:100%;padding:10px 12px;border:none;border-radius:8px;background:#a86a1c;color:#fff;font-size:14px;font-weight:600;cursor:pointer;">열기</button>
+      <p id="lockError" style="display:none;color:#b23b3b;font-size:12px;margin:10px 0 0;">비밀번호가 틀렸습니다.</p>
     </div>
-  </header>
-
-  <div class="page-layout">
-  <div id="sidebar-mount"></div>
-
-  <main>
-    <h1><span class="hl">화면에 박힌 자막을 다시 뽑는다</span> — 세는 일과 읽는 일을 나누고, 정답을 재서 고친다</h1>
-    <p class="post-date">2026. 9. 29.</p>
-    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 자막 제작 도구에 적용해 본 기록입니다.</p>
-
-    <p class="one-liner">하드섭 자막 추출<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>이란 자막이 이미 화면에 박혀 있는 영상에서, 그 자막이 뜨고 지는 시각(TC)<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>과 글자를 다시 자막 파일로 뽑아내는 일이다.</p>
-
-    <div class="why-read" id="why-read">
-      <p class="why-read-title">이 글을 읽기 전에</p>
-      <dl>
-        <dt>어디쯤인가</dt>
-        <dd><a href="posts.html#cat-field-work">현장 적용 기록</a> › <a href="posts.html#field-subtitle-tool">자막 TC·SDH 제작 도구</a> — 첫 번째 글. 여기 쓴 개념은 <a href="posts.html#cat-agent-system">8단계</a>의 <a href="langgraph-pattern-orchestrator-worker.html">오케스트레이터-워커 글</a>과 <a href="multi-agent-split-gains-and-losses.html">멀티 에이전트 실험</a>에서 먼저 볼 수 있어요.</dd>
-        <dt>이런 게 궁금했다면</dt>
-        <dd>
-          <ul>
-            <li>AI가 영상을 보고 내용을 읽을 수 있다면, 긴 영상도 처음부터 끝까지 다 보게 하면 되지 않나요?</li>
-            <li>AI가 "원인은 이거예요"라고 설명하면, 그 말을 믿고 고쳐도 되나요?</li>
-            <li>AI 대화창(세션)을 두 개 띄워 같은 일을 나눠 시키면 뭐가 문제일까요?</li>
-          </ul>
-        </dd>
-        <dt>읽고 나면 할 수 있는 것</dt>
-        <dd>
-          <ul>
-            <li>영상·사진이 많은 일을 맡길 때, 어느 부분을 프로그램에 맡기고 어느 부분만 AI에게 보여 줄지 가를 수 있어요.</li>
-            <li>AI가 낸 결론이 맞는지, 사람이 가진 정답과 대 보고 숫자로 판단할 수 있어요.</li>
-          </ul>
-        </dd>
-        <dt>모르면 이런 일이 생겨요</dt>
-        <dd>
-          <ul>
-            <li>71분 영상을 AI에게 한 장씩 다 보게 하면 12만 장이 넘는 그림을 보내야 해요. 시간과 비용이 감당이 안 돼요.</li>
-            <li>AI의 그럴듯한 설명을 믿고 고치면, 고칠수록 결과가 정답에서 멀어지는데도 알아채지 못해요. <a class="suspect-jump" href="#suspect-drift-away">언제 의심하나 ↓</a></li>
-          </ul>
-        </dd>
-        <dt>어디에 쓰나</dt>
-        <dd>
-          <ul>
-            <li><strong>화면에 글자가 박힌 영상에서 자막 파일이 필요할 때.</strong> 방송사가 자막을 영상에 입혀서만 준 경우, 그 자막을 다시 편집하거나 번역하려면 자막 파일이 있어야 해요.</li>
-            <li>영수증 사진 수천 장, 녹화 화면 몇 시간처럼 그림이 아주 많은 자료를 AI에게 맡길 때.</li>
-            <li>AI와 몇 번씩 주고받으며 결과를 다듬고 있는데 "좋아지고 있는지" 확신이 없을 때.</li>
-          </ul>
-        </dd>
-      </dl>
-    </div>
-
-    <h2><span class="hl">시작은 질문 하나</span></h2>
-    <p>저는 방송·OTT 자막을 만드는 도구를 직접 만들어 쓰고 있어요. 그중 제일 골치 아픈 일이 <strong>하드섭</strong>이에요. 자막이 파일로 따로 오지 않고 영상 화면에 이미 박혀서 오는 경우라, 자막이 몇 초에 뜨고 몇 초에 지는지(인점·아웃점)를 사람이 한 줄씩 다시 찍어야 해요.</p>
-    <p>그러다 유튜브 영상 분석을 AI에게 맡겼는데, AI가 영상을 받아 10초마다 한 장씩 그림을 뽑고, 그림 아홉 장을 한 장에 모아 <strong>직접 읽고 있었어요.</strong> 그래서 물었어요. "그렇게 볼 수 있으면, 내 도구에서도 자막이 뜨는 시점을 보고 인점·아웃점을 잡고 글자까지 읽어 적을 수 있지 않아?"</p>
-    <p>답은 "된다. 다만 <strong>일을 나눠야 한다</strong>"였어요. 1초짜리 영상은 그림(프레임)<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup> 약 30장이에요. 71분이면 12만 7천 장이 넘어요. 자막이 <strong>언제</strong> 바뀌는지 알려면 이걸 전부 봐야 하지만, 자막에 <strong>뭐라고</strong> 쓰였는지는 자막 한 줄당 한 장만 보면 돼요. 두 일은 필요한 눈의 양이 천 배 넘게 달라요.</p>
-
-    <h2 id="analogy"><span class="hl">비유</span> — 마트 계산대</h2>
-    <p>마트 계산대에서 물건 수백 개를 계산한다고 해 볼게요. 바코드가 붙은 물건은 스캐너가 삑삑 읽어 가고, 직원은 바코드가 없는 채소나 할인 스티커가 붙은 물건만 직접 눈으로 보고 입력해요. 마지막에 점장이 영수증 합계를 장부와 대 보고 틀린 곳이 있으면 다시 확인하게 해요. 직원이 모든 물건을 눈으로 하나씩 보며 입력하면 계산은 끝나지 않아요.</p>
-    <table>
-      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
-      <tbody>
-        <tr><td>스캐너가 바코드를 하나도 빼지 않고 빠르게 읽어 감</td><td>프로그램이 모든 프레임에서 자막 자리의 흰 글자 점 개수를 세어 "자막이 바뀐 순간"을 찾음</td></tr>
-        <tr><td>직원이 바코드 없는 물건만 눈으로 보고 입력함</td><td>AI가 자막 한 줄마다 그림 한 장만 보고 글자를 읽어 적음</td></tr>
-        <tr><td>점장이 합계를 장부와 대 봄</td><td>사람이 자막 편집 프로그램에서 확인한 정답 위치와, 프로그램이 낸 시각의 차이를 잼</td></tr>
-      </tbody>
-    </table>
-    <p><strong>핵심 한 줄:</strong> 빠짐없이 세야 하는 일은 기계에게, 눈으로 판단해야 하는 일만 AI에게 맡기고, 맞았는지는 정답과 대 봐서 정한다.</p>
-    <p>다만 여기서 비유가 끊기는 점이 있어요. 계산대 스캐너는 틀리지 않지만, 자막 위치를 세는 프로그램은 흰 접시나 키보드 자판처럼 밝은 물체를 자막으로 잘못 세기도 해요. 그래서 AI가 글자를 읽을 때 "여기는 자막이 아니다"도 함께 골라내요.</p>
-
-    <h2 id="big-picture"><span class="hl">전체 흐름</span></h2>
-    <p>제 도구가 영상 하나를 자막 파일로 바꾸는 순서예요. 왼쪽 세 칸은 프로그램(스크립트), 가운데 한 칸은 AI의 눈, 오른쪽은 사람이에요. 오른쪽에서 돌아오는 화살표가 이 글의 두 번째 주제예요.</p>
-    <svg viewBox="0 0 740 270" role="img" aria-label="영상이 모든 프레임을 세는 단계로 들어가 자막 구간을 만들고, 음성 보정과 규칙 적용을 거치는 동안 AI가 구간마다 한 장씩 글자를 읽으며, 마지막에 사람이 정답 위치와의 차이를 재어 설정을 고치는 흐름도">
-      <defs>
-        <marker id="hsa1" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
-          <path d="M0,0 L9,4.5 L0,9 z" fill="var(--muted)"/>
-        </marker>
-      </defs>
-      <rect x="8" y="40" width="90" height="56" rx="8" fill="none" stroke="var(--border)"/>
-      <text x="53" y="64" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">영상</text>
-      <text x="53" y="81" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">71분, 약 12.8만 장</text>
-
-      <rect x="120" y="30" width="140" height="76" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
-      <text x="190" y="56" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">① 모든 프레임 세기</text>
-      <text x="190" y="74" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">자막 자리 흰 글자 점</text>
-      <text x="190" y="90" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">→ 자막 구간과 시각</text>
-
-      <rect x="282" y="30" width="130" height="76" rx="8" fill="none" stroke="var(--border)"/>
-      <text x="347" y="56" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">② 음성으로 보정</text>
-      <text x="347" y="74" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">글자 앞 85ms~뒤 110ms</text>
-      <text x="347" y="90" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">안의 말소리 시작</text>
-
-      <rect x="434" y="30" width="130" height="76" rx="8" fill="none" stroke="var(--border)"/>
-      <text x="499" y="56" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">③ 규칙 적용</text>
-      <text x="499" y="74" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">자막 간격·</text>
-      <text x="499" y="90" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">장면전환 규정</text>
-
-      <rect x="586" y="30" width="146" height="76" rx="8" fill="none" stroke="var(--border)"/>
-      <text x="659" y="56" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">⑤ 사람이 확인</text>
-      <text x="659" y="74" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">정답 위치를 재서</text>
-      <text x="659" y="90" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">오차 표로 비교</text>
-
-      <line x1="98" y1="68" x2="118" y2="68" stroke="var(--muted)" marker-end="url(#hsa1)"/>
-      <line x1="260" y1="68" x2="280" y2="68" stroke="var(--muted)" marker-end="url(#hsa1)"/>
-      <line x1="412" y1="68" x2="432" y2="68" stroke="var(--muted)" marker-end="url(#hsa1)"/>
-      <line x1="564" y1="68" x2="584" y2="68" stroke="var(--muted)" marker-end="url(#hsa1)"/>
-
-      <rect x="440" y="150" width="260" height="64" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
-      <text x="570" y="175" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">④ AI가 글자 읽기</text>
-      <text x="570" y="194" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">구간마다 1장, 8장씩 묶어서 · 약 1,050장</text>
-
-      <path d="M190,106 L190,182 L438,182" fill="none" stroke="var(--muted)" marker-end="url(#hsa1)"/>
-      <text x="196" y="140" font-family="var(--font-body)" font-size="10" fill="var(--muted)">구간 목록</text>
-      <path d="M499,150 L499,108" fill="none" stroke="var(--muted)" marker-end="url(#hsa1)"/>
-      <text x="505" y="133" font-family="var(--font-body)" font-size="10" fill="var(--muted)">글자</text>
-
-      <path d="M720,106 L720,245 L347,245 L347,110" fill="none" stroke="var(--muted)" stroke-dasharray="5 4" marker-end="url(#hsa1)"/>
-      <text x="503" y="238" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">오차가 줄어드는 설정만 남김</text>
-    </svg>
-    <p>읽는 법: 실선은 한 번 흘러가는 순서예요. 12만 장이 넘는 그림은 ①에서만 쓰이고, AI에게는 ④에서 약 1,050장만 가요. 점선은 사람이 잰 오차를 보고 ②의 설정을 고치는 되돌이예요.</p>
-
-    <h2><span class="hl">누가 무엇을 맡았나</span></h2>
-    <p>여기서 "워커"는 일의 한 조각을 맡는 일꾼이에요. 셋은 사람이 미리 짜 둔 프로그램이고, 하나만 AI예요.</p>
-    <table>
-      <thead><tr><th>일꾼</th><th>맡은 일</th><th>71분 영상 기준 걸린 시간</th></tr></thead>
-      <tbody>
-        <tr><td>프레임 세는 프로그램</td><td>자막이 바뀌는 순간을 모든 프레임에서 찾아 시각을 적음</td><td>약 4분</td></tr>
-        <tr><td>음성 보정 프로그램</td><td>인점 가까이에 말소리가 시작되면 그 자리로 옮김</td><td>약 1분</td></tr>
-        <tr><td>규칙 프로그램</td><td>넷플릭스 자막 규정(자막 사이 간격, 장면전환<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup> 근처 처리)을 적용</td><td>몇 초</td></tr>
-        <tr><td>AI의 눈</td><td>자막 한 줄마다 그림 한 장을 보고 글자를 적음. 자막이 아닌 것(제작진 이름, 광고 띠, 밝은 물체)은 골라냄</td><td>그림 8장을 한 장으로 묶어 약 130장</td></tr>
-        <tr><td>사람(저)</td><td>자막 편집 프로그램에서 정답 위치를 확인하고, 캡처를 넘김</td><td>—</td></tr>
-      </tbody>
-    </table>
-    <p>엄밀히 말하면 <a href="langgraph-pattern-orchestrator-worker.html">오케스트레이터-워커</a>와는 다른 점이 있어요. 그 패턴은 가운데 AI가 실행 중에 일을 몇 갈래로 나눌지 정하지만, 여기서는 나누는 방식을 사람과 AI가 미리 정해 고정했어요. 가져온 것은 "<strong>일의 성격에 따라 일꾼을 고른다</strong>"는 생각이에요.</p>
-    <p>원래 쓰던 방식은 1초에 12장씩 뽑아 모든 장에 글자 인식 프로그램(OCR)<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>을 돌렸어요. 71분 영상에 7~8시간이 걸렸고, 사람 눈에는 또렷한 가는 흰 한글 글씨를 자주 틀리게 읽었어요. 게다가 그림마다 시각을 계산할 때 83.33ms를 83ms로 잘라 쓰는 바람에, 영상 뒤로 갈수록 오차가 쌓여 65분 지점에서는 자막 시각이 15.6초나 앞당겨져 있었어요. 새 방식은 모든 프레임을 끊지 않고 이어서 세기 때문에 이런 오차가 쌓이지 않아요.</p>
-
-    <h2><span class="hl">AI의 설명은 재야 믿을 수 있다</span></h2>
-    <p>이 작업에서 제일 크게 배운 건 코드가 아니었어요. 작업하는 동안 AI가 그럴듯한 결론을 세 번 냈는데, 셋 다 맞지 않았어요.</p>
-    <table>
-      <thead><tr><th>AI가 낸 결론</th><th>실제</th></tr></thead>
-      <tbody>
-        <tr><td>"자막 편집 프로그램 미리보기가 시각을 반올림해서 어긋나 보이는 거예요"</td><td>원인이 아니었어요</td></tr>
-        <tr><td>"정답은 말소리가 처음 올라오는 지점이에요"</td><td>일부 자막에서만 맞았어요</td></tr>
-        <tr><td>"간격·장면전환 규칙을 빼면 정답에 더 가까워요"</td><td>잰 적이 없는 주장이었어요. 끝나는 시각(아웃점)은 정답이 없어서 잴 수도 없었어요</td></tr>
-      </tbody>
-    </table>
-    <p>두 번째 결론을 따라 고칠수록 결과가 오히려 나빠졌어요. 그래서 방식을 바꿨어요. 제가 자막 편집 프로그램(SE)<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup> 화면을 캡처해 넘기면, 그 캡처에 보이는 소리 모양(파형)을 영상의 실제 소리와 겹쳐 맞춰서, 제가 정답으로 찍은 파란 선이 <strong>몇 초 몇 밀리초인지</strong> 재게 했어요. 그다음부터는 방법마다 정답과의 차이를 표로 비교해 이긴 쪽만 남겼어요.</p>
-
-    <h2 id="choice"><span class="hl">나쁜 선택 vs 좋은 선택</span> — "자막이 파형과 안 맞아요"라는 지적을 받았을 때</h2>
-    <p>제가 "이 자막 시작이 조금씩 어긋나 있다"고 캡처를 보냈을 때를 두고 두 가지 대응을 나란히 놓아 볼게요.</p>
-    <table class="choice-table">
-      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
-      <tbody>
-        <tr>
-          <td class="choice-bad"><strong>무엇을 했나:</strong> AI가 캡처를 눈으로 보고 "말소리가 시작되는 곳이 정답인 것 같다"고 판단한 뒤, 모든 자막의 시작을 말소리 쪽으로 옮겼어요.<br><br><strong>무슨 일이 생기나:</strong> 캡처로 보낸 두 줄은 맞아 보였지만 다른 자막들은 오히려 멀어졌어요. 정답에서 평균 135ms 떨어져, 처음 방식(68ms)보다 나빠졌어요.</td>
-          <td class="choice-good"><strong>무엇을 했나:</strong> 캡처 속 파란 선의 시각을 재서 정답 10개를 만들고, 방법마다 정답과의 차이를 표로 비교했어요.<br><br><strong>무슨 일이 생기나:</strong> "글자가 뜬 순간 앞 85ms~뒤 110ms 안에 말소리가 시작되면 그쪽, 아니면 글자가 뜬 순간"이 평균 38ms로 가장 가까웠어요. 고칠 때마다 숫자로 확인하니 멀어지는 쪽으로 가지 않아요.</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <h2><span class="hl">AI 둘이 같은 폴더에서 일할 때</span></h2>
-    <p>이 작업은 AI 대화창(세션) 두 개가 같은 프로젝트 폴더에서 동시에 진행했어요. 한쪽은 정답을 재는 일을, 다른 쪽은 규칙과 인수인계 정리를 맡았어요. 에이전트 둘로 된 작은 팀이었던 셈이에요.</p>
-    <ul>
-      <li><strong>잘된 점:</strong> 두 세션이 인수인계 문서(핸드오프)<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup>를 함께 읽고 고쳐서, 한쪽이 알아낸 사실을 다른 쪽이 이어받았어요. 작업 순서는 스킬<sup class="fn-ref"><a href="#fn8" id="fnref8">8</a></sup>로 남겨 다음 세션도 같은 순서로 일하게 했어요.</li>
-      <li><strong>부딪힌 점:</strong> 두 세션이 같은 결과 폴더에 동시에 파일을 썼어요. 또 "자막 사이 간격 메우기"를 두고 한쪽은 빼라는 지시를, 다른 쪽은 "규칙을 무시하면 안 된다"는 지시를 받아 결과가 두 벌이 됐어요.</li>
-      <li><strong>정한 규칙:</strong> 결과 폴더는 비어 있는지 확인하고 쓴다. 두 세션의 결론이 갈리면 AI가 임의로 고르지 않고 두 결과를 모두 남긴 채 사람에게 묻는다. 절차는 스킬에, 숫자와 현황은 인수인계 문서에 나눠 적는다.</li>
-    </ul>
-    <p>여럿으로 나누면 조율 비용이 생긴다는 건 <a href="multi-agent-split-gains-and-losses.html">나누면 좋아질까</a>에서 다룬 이야기인데, 제 도메인에서 그대로 겪었어요.</p>
-
-    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 영상 자막 작업을 AI에게 맡길 때 볼 것</h2>
-    <p>본문의 "누가 무엇을 맡았나"와 "AI의 설명은 재야 믿을 수 있다" 절에서 나온 값 가운데, 다른 영상 작업에도 그대로 쓸 수 있는 것만 모았어요. 측정은 모두 한 작품의 1화(71분, 720p, 초당 29.97장)로 했어요.</p>
-    <table>
-      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
-      <tbody>
-        <tr><td>한 프레임의 길이 (초당 29.97장 영상)</td><td>약 33.4ms</td><td>자막 시각을 "한 프레임" 단위로 맞춘다는 말이 몇 밀리초인지 가늠할 때 써요. 1000을 30으로 나눈 33ms로 잘라 쓰면 긴 영상에서 오차가 쌓여요</td></tr>
-        <tr><td>71분 영상의 전체 프레임 수</td><td>127,756장</td><td>AI에게 모든 장을 보여 주는 게 왜 비현실적인지 보여 주는 숫자예요. 자막 줄 수(약 1,050)와 비교하면 백 배가 넘어요</td></tr>
-        <tr><td>처리 시간 (같은 영상)</td><td>7~8시간 → 약 14분</td><td>모든 장을 글자 인식할 때와, 세는 일·읽는 일을 나눴을 때의 차이예요. 이 14분에는 AI가 글자를 읽는 시간은 들어 있지 않아요</td></tr>
-        <tr><td>자막 시작 시각의 정답과 평균 차이</td><td>글자가 뜬 순간만 쓰면 68ms, 말소리 시작만 쓰면 135ms, 둘을 섞으면 38ms</td><td>정답 10개로 잰 값이라 창 폭(앞 85ms~뒤 110ms)이 이 10개에 맞춰졌을 수 있어요. 다른 작품에서는 다시 재야 해요</td></tr>
-        <tr><td>넷플릭스 자막 사이 최소 간격</td><td>2프레임</td><td>이 도구는 반올림 뒤에도 규정을 넘도록 70ms로 둬요</td></tr>
-        <tr><td>장면전환 근처로 보는 범위</td><td>앞뒤 0.5초</td><td>자막 시작·끝이 장면이 바뀌는 순간과 0.5초 안에 어정쩡하게 걸치면 장면전환에 맞춰요</td></tr>
-      </tbody>
-    </table>
-
-    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 영상에서 자동으로 뽑은 자막이 이상할 때</h2>
-    <p>이 작업의 문제들은 에러 메시지로 나오지 않았어요. 전부 "결과가 조금씩 이상하다"는 모습으로 먼저 보였어요.</p>
-    <p>증상이 아직 없어도, <strong>AI에게 "영상에서 자막 시각을 뽑는 코드 만들어 줘"라고 부탁한 직후</strong>라면 한 번 확인하고 넘어가요.</p>
-    <table class="suspect-table">
-      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
-      <tbody>
-        <tr id="suspect-late-drift">
-          <td>영상 앞부분 자막은 잘 맞는데 <strong>뒤로 갈수록 점점 더 일찍</strong> 떠요. 한 시간쯤 지나면 몇 초씩 어긋나요</td>
-          <td>그림마다 시각을 계산하는 줄이에요. <code>번호 × int(1000 / 초당장수)</code>처럼 나눗셈 결과를 정수로 잘라 쓰는 곳을 찾아요</td>
-          <td>영상 맨 끝 자막 하나의 시각을 실제 영상과 대 봐요. 앞보다 끝이 훨씬 많이 어긋나면 이 문제예요. 정수로 자르지 말고 <code>번호 × 1000 / 초당장수</code>로 계산해요 (<a href="#numbers">한 프레임의 길이</a>)</td>
-        </tr>
-        <tr id="suspect-drift-away">
-          <td>AI와 몇 번 주고받으며 고쳤는데, <strong>고칠수록 전보다 더 틀린 것 같다</strong>는 느낌이 들어요</td>
-          <td>고치는 코드가 아니라 <strong>"맞았는지 판단한 근거"</strong>예요. AI의 설명이나 눈대중이 범인이에요</td>
-          <td>정답을 몇 개라도 숫자로 만들고, 버전마다 정답과의 차이를 표로 비교해요. 이전 버전보다 차이가 커졌으면 되돌려요 (<a href="#choice">나쁜 선택 vs 좋은 선택</a>)</td>
-        </tr>
-        <tr id="suspect-mixed-results">
-          <td>분명 고친 결과를 받았는데 <strong>어제 결과와 섞여 있거나</strong>, 같은 파일이 저절로 바뀌어 있어요</td>
-          <td>같은 프로젝트 폴더에서 동시에 돌고 있는 다른 AI 세션이에요. 결과를 쓰는 폴더 이름을 확인해요</td>
-          <td>세션마다 결과 폴더를 따로 쓰는지 봐요. 같은 폴더를 쓰고 있으면 폴더를 나누고, 누가 어느 폴더에 썼는지 인수인계 문서에 적어요</td>
-        </tr>
-      </tbody>
-    </table>
-    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— 영상 처리 코드가 있는 프로젝트 폴더에서</span></p>
-    <pre><code>이 프로젝트에서 영상 프레임 번호를 시각(초·밀리초)으로 바꾸는 곳을 모두 찾아 파일 이름과 줄 번호로 보여 줘. 아직 코드는 고치지 마.
-1. 나눗셈 결과를 int()나 //로 잘라서 쓰는 곳이 있는지
-2. 영상의 초당 장수를 30처럼 고정값으로 쓰는지, 영상에서 읽어 오는지
-3. 71분 영상의 마지막 프레임 시각을 이 코드로 계산하면 실제와 몇 초 차이 나는지</code></pre>
-
-    <h2><span class="hl">아직 남은 것</span></h2>
-    <ul>
-      <li>"자막 사이 간격 메우기"를 넣은 결과와 뺀 결과 가운데 무엇을 최종본으로 할지 아직 정하지 않았어요.</li>
-      <li>자막이 끝나는 시각(아웃점)은 정답을 아직 재지 못했어요.</li>
-      <li>다른 해상도나 색이 있는 자막에서는 거의 검증하지 않았어요.</li>
-    </ul>
-
-    <h2><span class="hl">정리</span></h2>
-    <ul>
-      <li>AI가 영상을 볼 수 있다고 해서 모든 프레임을 보게 할 필요는 없어요. 빠짐없이 셀 일은 프로그램에, 판단이 필요한 일만 AI의 눈에 맡겼어요.</li>
-      <li>AI의 결론은 설명이 아니라 정답과의 차이로 판단해요. 이번에 가장 큰 개선은 코드가 아니라 "정답을 재는 방법"에서 나왔어요.</li>
-      <li>AI를 여럿 쓰면 함께 보는 기록과 "결론이 갈리면 사람에게 묻는다"는 규칙이 필요해요.</li>
-    </ul>
-
-    <h2>함께 읽으면 좋은 글</h2>
-    <ul>
-      <li><a href="langgraph-pattern-orchestrator-worker.html">④ 오케스트레이터-워커 — 몇 갈래일지 LLM이 정한다 (9)</a> — 일을 나눠 일꾼에게 맡기는 구조를 처음 설명한 글이에요. 이 글은 그 생각을 고정된 역할 분담으로 가져와 쓴 사례예요.</li>
-      <li><a href="multi-agent-split-gains-and-losses.html">나누면 좋아질까 — 멀티 에이전트의 득실과 판정표 (1)</a> — 여럿으로 나눴을 때 생기는 조율 비용을 다룬 글로, 이 글의 "AI 둘이 같은 폴더에서 일할 때"와 이어져요.</li>
-      <li><a href="harness-experience-and-reflection.html">성공은 자산으로, 실패는 설명으로 — 경험·스킬 축적과 반성 (3)</a> — 한 번 알아낸 작업 순서를 스킬로 남겨 다음에 재사용하는 이야기예요.</li>
-    </ul>
-
-    <section class="footnotes">
-      <ol>
-        <li id="fn1">하드섭(hard sub) — 자막이 별도 파일이 아니라 영상 화면에 그림으로 박혀 있어서 켜고 끌 수 없는 자막이에요. <a href="#fnref1">↩</a></li>
-        <li id="fn2">TC(타임코드)와 인점·아웃점 — 자막 한 줄이 화면에 나타나는 시각(인점)과 사라지는 시각(아웃점)을 말해요. <a href="#fnref2">↩</a></li>
-        <li id="fn3">프레임(frame) — 영상을 이루는 정지 그림 한 장으로, 이 글의 영상은 1초에 약 30장이 이어져 움직임을 만들어요. <a href="#fnref3">↩</a></li>
-        <li id="fn4">장면전환 — 영상의 화면이 다른 장면으로 확 바뀌는 순간으로, 자막이 이 순간에 어정쩡하게 걸치면 보기 불편해서 규정으로 다뤄요. <a href="#fnref4">↩</a></li>
-        <li id="fn5">OCR(광학 문자 인식) — 그림 속 글자를 찾아 텍스트로 바꾸는 프로그램이에요. <a href="#fnref5">↩</a></li>
-        <li id="fn6">SE(Subtitle Edit) — 영상과 소리 모양(파형)을 보면서 자막 시각과 글자를 고치는 무료 자막 편집 프로그램이에요. <a href="#fnref6">↩</a></li>
-        <li id="fn7">핸드오프(인수인계 문서) — 다음 작업자나 다음 AI 세션이 같은 조사를 다시 하지 않도록 현재 상태·수치·버린 방법을 적어 두는 문서예요. <a href="#fnref7">↩</a></li>
-        <li id="fn8">스킬 — AI 코딩 도구가 특정 작업을 할 때 매번 같은 순서와 주의 사항을 따르도록 적어 둔 절차 문서예요. <a href="#fnref8">↩</a></li>
-      </ol>
-    </section>
-
-  </main>
   </div>
 
-  <footer class="site-footer">
-    &copy; 2026 Tigermorning
-  </footer>
-  <script src="fit-title.js"></script>
-  <script src="sidebar-loader.js"></script>
+
+  <script id="lockedPayload" type="application/json">{"salt":"8qqIHzFzNdLH1sdIJidLLg==","iv":"5e90HtZxmQlTZsk2","data":"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"}</script>
+  <script>
+  (function(){
+    var KEY = "unlocked-field-work"; // 같은 잠금 범위의 글끼리 공유 — 글마다 다시 안 물어봄
+    var ITER = 250000;
+    var payload = JSON.parse(document.getElementById("lockedPayload").textContent);
+    var opened = false;
+
+    function bytes(b64){
+      var bin = atob(b64), out = new Uint8Array(bin.length);
+      for (var i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+      return out;
+    }
+
+    function decrypt(pass){
+      var enc = new TextEncoder();
+      return crypto.subtle.importKey("raw", enc.encode(pass), "PBKDF2", false, ["deriveKey"])
+        .then(function(base){
+          return crypto.subtle.deriveKey(
+            { name: "PBKDF2", salt: bytes(payload.salt), iterations: ITER, hash: "SHA-256" },
+            base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+        })
+        .then(function(key){
+          return crypto.subtle.decrypt(
+            { name: "AES-GCM", iv: bytes(payload.iv) }, key, bytes(payload.data));
+        })
+        .then(function(buf){ return new TextDecoder().decode(buf); });
+    }
+
+    // innerHTML로 넣은 <script>는 실행되지 않으므로 다시 만들어 붙인다.
+    function runScripts(root){
+      var list = Array.prototype.slice.call(root.querySelectorAll("script"));
+      list.forEach(function(old){
+        var s = document.createElement("script");
+        if (old.src) { s.src = old.src; } else { s.textContent = old.textContent; }
+        old.parentNode.replaceChild(s, old);
+      });
+    }
+
+    function reveal(html){
+      if (opened) return;
+      opened = true;
+      var holder = document.createElement("div");
+      holder.innerHTML = html;
+      var page = holder.querySelector("#pageContent");
+      if (page) page.style.display = "";
+      while (holder.firstChild) document.body.appendChild(holder.firstChild);
+      runScripts(document.body);
+      var gate = document.getElementById("lockGate");
+      if (gate) gate.parentNode.removeChild(gate);
+    }
+
+    function tryPass(pass, onFail){
+      decrypt(pass).then(function(html){
+        try { sessionStorage.setItem(KEY, pass); } catch(e){}
+        reveal(html);
+      }).catch(function(){ if (onFail) onFail(); });
+    }
+
+    document.addEventListener("DOMContentLoaded", function(){
+      var saved = null;
+      try { saved = sessionStorage.getItem(KEY); } catch(e){}
+      if (saved) tryPass(saved);
+
+      function submit(){
+        var v = document.getElementById("lockInput").value;
+        tryPass(v, function(){
+          document.getElementById("lockError").style.display = "block";
+        });
+      }
+      document.getElementById("lockBtn").addEventListener("click", submit);
+      document.getElementById("lockInput").addEventListener("keydown", function(ev){
+        if (ev.key === "Enter") submit();
+      });
+    });
+  })();
+  </script>
 </body>
 </html>

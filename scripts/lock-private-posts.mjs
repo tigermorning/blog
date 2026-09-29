@@ -3,8 +3,10 @@
  *
  *   node scripts/lock-private-posts.mjs <파일...>
  *   node scripts/lock-private-posts.mjs <파일...> --password <비밀번호>
+ *   node scripts/lock-private-posts.mjs <파일...> --scope field
  *
- * 비밀번호는 --password, 환경변수 BOOK_PASSWORD, 저장소 루트의 .env 순으로 찾는다.
+ * --scope는 잠금 범위(scripts/lib/book-password.mjs의 SCOPES). 기본 book.
+ * 비밀번호는 --password, 환경변수(범위별 키: BOOK_PASSWORD·FIELD_PASSWORD), 저장소 루트의 .env 순으로 찾는다.
  *
  * <div class="page" id="pageContent"> 부터 </body> 직전까지를 통째로 암호화한다.
  * 본문에 딸린 <script>(사이드 목차·슬라이더·복사 버튼 등)도 함께 들어가므로,
@@ -15,19 +17,20 @@
  */
 import fs from "node:fs";
 import { webcrypto as crypto } from "node:crypto";
-import { resolvePassword } from "./lib/book-password.mjs";
+import { resolvePassword, takeScope } from "./lib/book-password.mjs";
 
 const PBKDF2_ITERATIONS = 250000;
 const START_MARK = '<div class="page" id="pageContent"';
 const END_MARK = "</body>";
 
-const USAGE = "사용법: node scripts/lock-private-posts.mjs <파일...> [--password <비밀번호>]";
-const { password, rest: files, source } = resolvePassword(process.argv.slice(2), USAGE);
+const USAGE = "사용법: node scripts/lock-private-posts.mjs <파일...> [--scope book|field] [--password <비밀번호>]";
+const { scope, name: scopeName, rest: argv } = takeScope(process.argv.slice(2), USAGE);
+const { password, rest: files, source } = resolvePassword(argv, USAGE, scope.env);
 if (!files.length) {
   console.error("암호화할 파일이 없습니다.");
   process.exit(1);
 }
-console.log(`비밀번호 출처: ${source}`);
+console.log(`잠금 범위: ${scopeName} | 비밀번호 출처: ${source}`);
 
 const b64 = (buf) => Buffer.from(buf).toString("base64");
 
@@ -61,7 +64,7 @@ function unlockScript(payload) {
   <script id="lockedPayload" type="application/json">${JSON.stringify(payload)}</script>
   <script>
   (function(){
-    var KEY = "unlocked-book-agent-era-ai-system-design"; // 이 책 전체가 공유하는 키 — 장마다 다시 안 물어봄
+    var KEY = ${JSON.stringify(scope.unlock)}; // 같은 잠금 범위의 글끼리 공유 — 글마다 다시 안 물어봄
     var ITER = ${PBKDF2_ITERATIONS};
     var payload = JSON.parse(document.getElementById("lockedPayload").textContent);
     var opened = false;
@@ -164,8 +167,8 @@ for (const file of files) {
     /\n?\s*<script>\s*\(function\(\)\{\s*var PASS = [\s\S]*?<\/script>\n?/,
     "\n"
   );
-  if (cleanedHead === head) {
-    console.error(`실패: ${file} — 기존 잠금 스크립트를 찾지 못했습니다.`);
+  if (!cleanedHead.includes('id="lockGate"')) {
+    console.error(`실패: ${file} — 잠금 창(#lockGate)이 없습니다. 본문 앞에 잠금 창 마크업을 먼저 넣으세요.`);
     failed = true;
     continue;
   }

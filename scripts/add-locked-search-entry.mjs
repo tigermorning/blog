@@ -3,7 +3,9 @@
 //   node scripts/add-locked-search-entry.mjs ko/generative-ai-design-patterns-ch3.html
 //   node scripts/add-locked-search-entry.mjs <파일...> --password <비밀번호>
 //
-// 비밀번호는 --password, 환경변수 BOOK_PASSWORD, 저장소 루트의 .env 순으로 찾는다.
+//   node scripts/add-locked-search-entry.mjs <파일...> --scope field
+//
+// 비밀번호는 --password, 환경변수(범위별 키: BOOK_PASSWORD·FIELD_PASSWORD), 저장소 루트의 .env 순으로 찾는다.
 //
 // 본문을 메모리에서만 풀어 <h1>~<h3> 제목만 뽑는다. 본문 문장은 저장하지 않는다
 // (ch1·ch2 항목과 같은 형식: 제목 · 소제목 · 소제목 …).
@@ -11,13 +13,14 @@
 import fs from "node:fs";
 import path from "node:path";
 import { webcrypto as crypto } from "node:crypto";
-import { resolvePassword } from "./lib/book-password.mjs";
+import { resolvePassword, takeScope } from "./lib/book-password.mjs";
 
 const PBKDF2_ITERATIONS = 250000;
 const OUT_FILE = path.join(path.resolve(import.meta.dirname, ".."), "search-data.js");
 
-const USAGE = "사용법: node scripts/add-locked-search-entry.mjs <파일...> [--password <비밀번호>]";
-const { password, rest: files, source } = resolvePassword(process.argv.slice(2), USAGE);
+const USAGE = "사용법: node scripts/add-locked-search-entry.mjs <파일...> [--scope book|field] [--password <비밀번호>]";
+const { scope, rest: argv } = takeScope(process.argv.slice(2), USAGE);
+const { password, rest: files, source } = resolvePassword(argv, USAGE, scope.env);
 if (!files.length) {
   console.error("대상 파일이 없습니다.");
   process.exit(1);
