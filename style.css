@@ -1169,9 +1169,11 @@ body.list-page .site-header {
   transform: rotate(-0.8deg);
 }
 
-/* 탭마다 기울기를 달리해 손으로 하나씩 붙인 것처럼 삐뚤빼뚤하게 둔다 */
-.sidebar-tree > li:nth-of-type(even) .tree-group-title { transform: rotate(0.9deg); }
-.sidebar-tree > li:nth-of-type(3n) .tree-group-title { transform: rotate(-1.4deg); }
+/* 탭마다 기울기 방향과 크기를 다르게 줘서 손으로 하나씩 붙인 것처럼 삐뚤빼뚤하게 둔다 */
+.tree-group-title:has(a[href="posts.html#cat-field-work"]) { transform: rotate(-1.8deg); }
+.tree-group-title:has(a[href="posts.html#vibe-coding"]) { transform: rotate(1.3deg); }
+.tree-group-title:has(a[href="posts.html#cat-book-shelf"]) { transform: rotate(-0.5deg); }
+.tree-group-title:has(a[href="posts.html#cat-future-talks"]) { transform: rotate(2.1deg); }
 
 .tree-group-title .tree-toggle-icon {
   color: rgba(255, 255, 255, 0.85);
