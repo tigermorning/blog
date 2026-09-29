@@ -554,14 +554,6 @@
       </details>
 
       <details class="post-subcategory" open>
-        <summary class="post-subcategory-title" id="society-talks">AI와 사회를 보는 시선</summary>
-        <ul class="title-list">
-          <li><a href="yuval-harari-ai-agent-interview.html"><span class="title-list-title">유발 하라리 인터뷰 — AI는 도구가 아니라 행위자(agent)다. 관료제 접수·법인격·진실 대 거짓까지</span><span class="title-list-date">2026.09.28</span></a></li>
-          <li><a href="hapseok16-ai-talk-fact-check.html"><span class="title-list-title">팩트체크 — 김대식·유현준·송길영 AI 대담(합석 16편)의 주장 80개를 확인해 보니. 교정문·댓글·세 사람이 반복하는 이야기까지</span><span class="title-list-date">2026.09.29</span></a></li>
-        </ul>
-      </details>
-
-      <details class="post-subcategory" open>
         <summary class="post-subcategory-title" id="coding-tools">바이브 코딩 도구</summary>
         <ul class="title-list">
           <li style="--folder-accent:var(--folder-5);"><a href="hcom-connect-coding-agents.html"><span class="title-list-title"><span class="name name--chip">hcom</span> — 서로 다른 코딩 AI끼리 메시지를 주고받게 하기</span><span class="title-list-date">2026.09.16</span></a></li>
@@ -602,6 +594,29 @@
         </ul>
       </details>
     </div>
+
+    <div class="post-group">
+      <h3 class="post-group-title" id="cat-future-talks">AI 시대 스크랩</h3>
+      <p class="post-group-blurb">영상·대담·기사·논문 등 형태를 가리지 않고, 보다가 신기했거나 기억해 두고 싶은 것을 정리해 둬요. 글마다 무엇을 정리한 것인지 처음에 밝히고, 전망은 틀릴 수 있다는 전제로 읽으며, 사실과 다른 곳은 각주로 바로잡아요.</p>
+
+      <ul class="title-list">
+        <li><a href="yuval-harari-ai-agent-interview.html"><span class="title-list-title">유발 하라리 인터뷰 — AI는 도구가 아니라 행위자(agent)다. 관료제 접수·법인격·진실 대 거짓까지</span><span class="title-list-date">2026.09.28</span></a></li>
+        <li><a href="hapseok10-ai-economy-talk.html"><span class="title-list-title">AI 대담에서 배운 것 — 합석 10편: 전략무기가 된 AI, 토큰 화폐, 성장×물가 네 칸, 뇌에 심는 칩</span><span class="title-list-date">2026.09.29</span></a></li>
+        <li><a href="hapseok16-ai-talk-flow.html"><span class="title-list-title">AI 대담에서 배운 것 — 합석 16편: 일·관계·도시·신인류, 네 가지 질문과 이야기하는 법</span><span class="title-list-date">2026.09.29</span></a></li>
+      </ul>
+    </div>
+
+    <div class="post-group">
+      <h3 class="post-group-title" id="cat-field-work">🔒 현장 적용 기록</h3>
+      <p class="post-group-blurb">실제 업무 도구에 적용한 개선 기록. 막힌 곳, 시도, 측정 결과, 남은 문제. 열람 권한이 있는 분만 볼 수 있습니다.</p>
+
+      <details class="post-subcategory" open>
+        <summary class="post-subcategory-title" id="field-subtitle-tool">자막 TC·SDH 제작 도구</summary>
+        <ul class="title-list">
+          <li><a href="hardsub-subtitle-agent-split-and-measure.html"><span class="title-list-title">하드섭 자막 TC·텍스트 추출 개선 기록 — 인점 오차 717ms→38ms, 처리 7~8시간→14분</span><span class="title-list-date">2026.09.29</span></a></li>
+        </ul>
+      </details>
+    </div>
     </div>
 
     <ul class="title-list flat-list" id="flat-list" hidden></ul>
@@ -638,8 +653,8 @@
       var meta = items.map(function (li, i) {
         var dateEl = li.querySelector('.title-list-date');
         var m = (dateEl ? dateEl.textContent.trim() : '').match(/^(\d{4})\.(\d{2})\.(\d{2})$/);
-        var sub = li.closest('.post-subcategory');
-        var subTitle = sub ? sub.querySelector('.post-subcategory-title') : null;
+        var sub = li.closest('.post-subcategory') || li.closest('.post-group');
+        var subTitle = sub ? sub.querySelector('.post-subcategory-title, .post-group-title') : null;
         return {
           li: li,
           order: i,
@@ -870,7 +885,7 @@
         });
 
         groups.forEach(function (group) {
-          group.hidden = group.querySelectorAll('.post-subcategory:not([hidden])').length === 0;
+          group.hidden = group.querySelectorAll('.title-list li:not([hidden])').length === 0;
         });
       }
 
