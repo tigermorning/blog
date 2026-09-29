@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>화면에 박힌 자막을 다시 뽑는다 — 세는 일과 읽는 일을 나누고, 정답을 재서 고친다 - Tigermorning</title>
+  <meta name="description" content="자막이 화면에 박혀 있는 방송 영상에서 자막이 뜨고 지는 시각과 글자를 다시 뽑아내는 도구를 에이전트와 함께 고친 기록이에요. 모든 프레임을 세는 일은 스크립트에, 글자를 읽는 일은 AI의 눈에 나눠 71분 영상 처리가 7~8시간에서 약 14분이 됐고, 에이전트의 설명 대신 정답을 재서 인점 오차를 68ms에서 38ms로 줄였어요.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="화면에 박힌 자막을 다시 뽑는다 — 세는 일과 읽는 일을 나누고, 정답을 재서 고친다">
+  <meta property="og:description" content="AI가 영상을 볼 수 있다고 해서 모든 프레임을 보게 할 필요는 없어요. 기계적으로 셀 수 있는 일과 눈으로 판단할 일을 나누면 됩니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/hardsub-subtitle-agent-split-and-measure.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">화면에 박힌 자막을 다시 뽑는다</span> — 세는 일과 읽는 일을 나누고, 정답을 재서 고친다</h1>
+    <p class="post-date">2026. 9. 29.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 자막 제작 도구에 적용해 본 기록입니다.</p>
+
+    <p class="one-liner">하드섭 자막 추출<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>이란 자막이 이미 화면에 박혀 있는 영상에서, 그 자막이 뜨고 지는 시각(TC)<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>과 글자를 다시 자막 파일로 뽑아내는 일이다.</p>
+
+    <div class="why-read" id="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>어디쯤인가</dt>
+        <dd><a href="posts.html#cat-field-work">현장 적용 기록</a> › <a href="posts.html#field-subtitle-tool">자막 TC·SDH 제작 도구</a> — 첫 번째 글. 여기 쓴 개념은 <a href="posts.html#cat-agent-system">8단계</a>의 <a href="langgraph-pattern-orchestrator-worker.html">오케스트레이터-워커 글</a>과 <a href="multi-agent-split-gains-and-losses.html">멀티 에이전트 실험</a>에서 먼저 볼 수 있어요.</dd>
+        <dt>이런 게 궁금했다면</dt>
+        <dd>
+          <ul>
+            <li>AI가 영상을 보고 내용을 읽을 수 있다면, 긴 영상도 처음부터 끝까지 다 보게 하면 되지 않나요?</li>
+            <li>AI가 "원인은 이거예요"라고 설명하면, 그 말을 믿고 고쳐도 되나요?</li>
+            <li>AI 대화창(세션)을 두 개 띄워 같은 일을 나눠 시키면 뭐가 문제일까요?</li>
+          </ul>
+        </dd>
+        <dt>읽고 나면 할 수 있는 것</dt>
+        <dd>
+          <ul>
+            <li>영상·사진이 많은 일을 맡길 때, 어느 부분을 프로그램에 맡기고 어느 부분만 AI에게 보여 줄지 가를 수 있어요.</li>
+            <li>AI가 낸 결론이 맞는지, 사람이 가진 정답과 대 보고 숫자로 판단할 수 있어요.</li>
+          </ul>
+        </dd>
+        <dt>모르면 이런 일이 생겨요</dt>
+        <dd>
+          <ul>
+            <li>71분 영상을 AI에게 한 장씩 다 보게 하면 12만 장이 넘는 그림을 보내야 해요. 시간과 비용이 감당이 안 돼요.</li>
+            <li>AI의 그럴듯한 설명을 믿고 고치면, 고칠수록 결과가 정답에서 멀어지는데도 알아채지 못해요. <a class="suspect-jump" href="#suspect-drift-away">언제 의심하나 ↓</a></li>
+          </ul>
+        </dd>
+        <dt>어디에 쓰나</dt>
+        <dd>
+          <ul>
+            <li><strong>화면에 글자가 박힌 영상에서 자막 파일이 필요할 때.</strong> 방송사가 자막을 영상에 입혀서만 준 경우, 그 자막을 다시 편집하거나 번역하려면 자막 파일이 있어야 해요.</li>
+            <li>영수증 사진 수천 장, 녹화 화면 몇 시간처럼 그림이 아주 많은 자료를 AI에게 맡길 때.</li>
+            <li>AI와 몇 번씩 주고받으며 결과를 다듬고 있는데 "좋아지고 있는지" 확신이 없을 때.</li>
+          </ul>
+        </dd>
+      </dl>
+    </div>
+
+    <h2><span class="hl">시작은 질문 하나</span></h2>
+    <p>저는 방송·OTT 자막을 만드는 도구를 직접 만들어 쓰고 있어요. 그중 제일 골치 아픈 일이 <strong>하드섭</strong>이에요. 자막이 파일로 따로 오지 않고 영상 화면에 이미 박혀서 오는 경우라, 자막이 몇 초에 뜨고 몇 초에 지는지(인점·아웃점)를 사람이 한 줄씩 다시 찍어야 해요.</p>
+    <p>그러다 유튜브 영상 분석을 AI에게 맡겼는데, AI가 영상을 받아 10초마다 한 장씩 그림을 뽑고, 그림 아홉 장을 한 장에 모아 <strong>직접 읽고 있었어요.</strong> 그래서 물었어요. "그렇게 볼 수 있으면, 내 도구에서도 자막이 뜨는 시점을 보고 인점·아웃점을 잡고 글자까지 읽어 적을 수 있지 않아?"</p>
+    <p>답은 "된다. 다만 <strong>일을 나눠야 한다</strong>"였어요. 1초짜리 영상은 그림(프레임)<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup> 약 30장이에요. 71분이면 12만 7천 장이 넘어요. 자막이 <strong>언제</strong> 바뀌는지 알려면 이걸 전부 봐야 하지만, 자막에 <strong>뭐라고</strong> 쓰였는지는 자막 한 줄당 한 장만 보면 돼요. 두 일은 필요한 눈의 양이 천 배 넘게 달라요.</p>
+
+    <h2 id="analogy"><span class="hl">비유</span> — 마트 계산대</h2>
+    <p>마트 계산대에서 물건 수백 개를 계산한다고 해 볼게요. 바코드가 붙은 물건은 스캐너가 삑삑 읽어 가고, 직원은 바코드가 없는 채소나 할인 스티커가 붙은 물건만 직접 눈으로 보고 입력해요. 마지막에 점장이 영수증 합계를 장부와 대 보고 틀린 곳이 있으면 다시 확인하게 해요. 직원이 모든 물건을 눈으로 하나씩 보며 입력하면 계산은 끝나지 않아요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>스캐너가 바코드를 하나도 빼지 않고 빠르게 읽어 감</td><td>프로그램이 모든 프레임에서 자막 자리의 흰 글자 점 개수를 세어 "자막이 바뀐 순간"을 찾음</td></tr>
+        <tr><td>직원이 바코드 없는 물건만 눈으로 보고 입력함</td><td>AI가 자막 한 줄마다 그림 한 장만 보고 글자를 읽어 적음</td></tr>
+        <tr><td>점장이 합계를 장부와 대 봄</td><td>사람이 자막 편집 프로그램에서 확인한 정답 위치와, 프로그램이 낸 시각의 차이를 잼</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 빠짐없이 세야 하는 일은 기계에게, 눈으로 판단해야 하는 일만 AI에게 맡기고, 맞았는지는 정답과 대 봐서 정한다.</p>
+    <p>다만 여기서 비유가 끊기는 점이 있어요. 계산대 스캐너는 틀리지 않지만, 자막 위치를 세는 프로그램은 흰 접시나 키보드 자판처럼 밝은 물체를 자막으로 잘못 세기도 해요. 그래서 AI가 글자를 읽을 때 "여기는 자막이 아니다"도 함께 골라내요.</p>
+
+    <h2 id="big-picture"><span class="hl">전체 흐름</span></h2>
+    <p>제 도구가 영상 하나를 자막 파일로 바꾸는 순서예요. 왼쪽 세 칸은 프로그램(스크립트), 가운데 한 칸은 AI의 눈, 오른쪽은 사람이에요. 오른쪽에서 돌아오는 화살표가 이 글의 두 번째 주제예요.</p>
+    <svg viewBox="0 0 740 270" role="img" aria-label="영상이 모든 프레임을 세는 단계로 들어가 자막 구간을 만들고, 음성 보정과 규칙 적용을 거치는 동안 AI가 구간마다 한 장씩 글자를 읽으며, 마지막에 사람이 정답 위치와의 차이를 재어 설정을 고치는 흐름도">
+      <defs>
+        <marker id="hsa1" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+          <path d="M0,0 L9,4.5 L0,9 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <rect x="8" y="40" width="90" height="56" rx="8" fill="none" stroke="var(--border)"/>
+      <text x="53" y="64" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">영상</text>
+      <text x="53" y="81" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">71분, 약 12.8만 장</text>
+
+      <rect x="120" y="30" width="140" height="76" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="190" y="56" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">① 모든 프레임 세기</text>
+      <text x="190" y="74" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">자막 자리 흰 글자 점</text>
+      <text x="190" y="90" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">→ 자막 구간과 시각</text>
+
+      <rect x="282" y="30" width="130" height="76" rx="8" fill="none" stroke="var(--border)"/>
+      <text x="347" y="56" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">② 음성으로 보정</text>
+      <text x="347" y="74" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">글자 앞 85ms~뒤 110ms</text>
+      <text x="347" y="90" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">안의 말소리 시작</text>
+
+      <rect x="434" y="30" width="130" height="76" rx="8" fill="none" stroke="var(--border)"/>
+      <text x="499" y="56" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">③ 규칙 적용</text>
+      <text x="499" y="74" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">자막 간격·</text>
+      <text x="499" y="90" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">장면전환 규정</text>
+
+      <rect x="586" y="30" width="146" height="76" rx="8" fill="none" stroke="var(--border)"/>
+      <text x="659" y="56" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">⑤ 사람이 확인</text>
+      <text x="659" y="74" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">정답 위치를 재서</text>
+      <text x="659" y="90" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">오차 표로 비교</text>
+
+      <line x1="98" y1="68" x2="118" y2="68" stroke="var(--muted)" marker-end="url(#hsa1)"/>
+      <line x1="260" y1="68" x2="280" y2="68" stroke="var(--muted)" marker-end="url(#hsa1)"/>
+      <line x1="412" y1="68" x2="432" y2="68" stroke="var(--muted)" marker-end="url(#hsa1)"/>
+      <line x1="564" y1="68" x2="584" y2="68" stroke="var(--muted)" marker-end="url(#hsa1)"/>
+
+      <rect x="440" y="150" width="260" height="64" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="570" y="175" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">④ AI가 글자 읽기</text>
+      <text x="570" y="194" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">구간마다 1장, 8장씩 묶어서 · 약 1,050장</text>
+
+      <path d="M190,106 L190,182 L438,182" fill="none" stroke="var(--muted)" marker-end="url(#hsa1)"/>
+      <text x="196" y="140" font-family="var(--font-body)" font-size="10" fill="var(--muted)">구간 목록</text>
+      <path d="M499,150 L499,108" fill="none" stroke="var(--muted)" marker-end="url(#hsa1)"/>
+      <text x="505" y="133" font-family="var(--font-body)" font-size="10" fill="var(--muted)">글자</text>
+
+      <path d="M720,106 L720,245 L347,245 L347,110" fill="none" stroke="var(--muted)" stroke-dasharray="5 4" marker-end="url(#hsa1)"/>
+      <text x="503" y="238" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">오차가 줄어드는 설정만 남김</text>
+    </svg>
+    <p>읽는 법: 실선은 한 번 흘러가는 순서예요. 12만 장이 넘는 그림은 ①에서만 쓰이고, AI에게는 ④에서 약 1,050장만 가요. 점선은 사람이 잰 오차를 보고 ②의 설정을 고치는 되돌이예요.</p>
+
+    <h2><span class="hl">누가 무엇을 맡았나</span></h2>
+    <p>여기서 "워커"는 일의 한 조각을 맡는 일꾼이에요. 셋은 사람이 미리 짜 둔 프로그램이고, 하나만 AI예요.</p>
+    <table>
+      <thead><tr><th>일꾼</th><th>맡은 일</th><th>71분 영상 기준 걸린 시간</th></tr></thead>
+      <tbody>
+        <tr><td>프레임 세는 프로그램</td><td>자막이 바뀌는 순간을 모든 프레임에서 찾아 시각을 적음</td><td>약 4분</td></tr>
+        <tr><td>음성 보정 프로그램</td><td>인점 가까이에 말소리가 시작되면 그 자리로 옮김</td><td>약 1분</td></tr>
+        <tr><td>규칙 프로그램</td><td>넷플릭스 자막 규정(자막 사이 간격, 장면전환<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup> 근처 처리)을 적용</td><td>몇 초</td></tr>
+        <tr><td>AI의 눈</td><td>자막 한 줄마다 그림 한 장을 보고 글자를 적음. 자막이 아닌 것(제작진 이름, 광고 띠, 밝은 물체)은 골라냄</td><td>그림 8장을 한 장으로 묶어 약 130장</td></tr>
+        <tr><td>사람(저)</td><td>자막 편집 프로그램에서 정답 위치를 확인하고, 캡처를 넘김</td><td>—</td></tr>
+      </tbody>
+    </table>
+    <p>엄밀히 말하면 <a href="langgraph-pattern-orchestrator-worker.html">오케스트레이터-워커</a>와는 다른 점이 있어요. 그 패턴은 가운데 AI가 실행 중에 일을 몇 갈래로 나눌지 정하지만, 여기서는 나누는 방식을 사람과 AI가 미리 정해 고정했어요. 가져온 것은 "<strong>일의 성격에 따라 일꾼을 고른다</strong>"는 생각이에요.</p>
+    <p>원래 쓰던 방식은 1초에 12장씩 뽑아 모든 장에 글자 인식 프로그램(OCR)<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>을 돌렸어요. 71분 영상에 7~8시간이 걸렸고, 사람 눈에는 또렷한 가는 흰 한글 글씨를 자주 틀리게 읽었어요. 게다가 그림마다 시각을 계산할 때 83.33ms를 83ms로 잘라 쓰는 바람에, 영상 뒤로 갈수록 오차가 쌓여 65분 지점에서는 자막 시각이 15.6초나 앞당겨져 있었어요. 새 방식은 모든 프레임을 끊지 않고 이어서 세기 때문에 이런 오차가 쌓이지 않아요.</p>
+
+    <h2><span class="hl">AI의 설명은 재야 믿을 수 있다</span></h2>
+    <p>이 작업에서 제일 크게 배운 건 코드가 아니었어요. 작업하는 동안 AI가 그럴듯한 결론을 세 번 냈는데, 셋 다 맞지 않았어요.</p>
+    <table>
+      <thead><tr><th>AI가 낸 결론</th><th>실제</th></tr></thead>
+      <tbody>
+        <tr><td>"자막 편집 프로그램 미리보기가 시각을 반올림해서 어긋나 보이는 거예요"</td><td>원인이 아니었어요</td></tr>
+        <tr><td>"정답은 말소리가 처음 올라오는 지점이에요"</td><td>일부 자막에서만 맞았어요</td></tr>
+        <tr><td>"간격·장면전환 규칙을 빼면 정답에 더 가까워요"</td><td>잰 적이 없는 주장이었어요. 끝나는 시각(아웃점)은 정답이 없어서 잴 수도 없었어요</td></tr>
+      </tbody>
+    </table>
+    <p>두 번째 결론을 따라 고칠수록 결과가 오히려 나빠졌어요. 그래서 방식을 바꿨어요. 제가 자막 편집 프로그램(SE)<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup> 화면을 캡처해 넘기면, 그 캡처에 보이는 소리 모양(파형)을 영상의 실제 소리와 겹쳐 맞춰서, 제가 정답으로 찍은 파란 선이 <strong>몇 초 몇 밀리초인지</strong> 재게 했어요. 그다음부터는 방법마다 정답과의 차이를 표로 비교해 이긴 쪽만 남겼어요.</p>
+
+    <h2 id="choice"><span class="hl">나쁜 선택 vs 좋은 선택</span> — "자막이 파형과 안 맞아요"라는 지적을 받았을 때</h2>
+    <p>제가 "이 자막 시작이 조금씩 어긋나 있다"고 캡처를 보냈을 때를 두고 두 가지 대응을 나란히 놓아 볼게요.</p>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad"><strong>무엇을 했나:</strong> AI가 캡처를 눈으로 보고 "말소리가 시작되는 곳이 정답인 것 같다"고 판단한 뒤, 모든 자막의 시작을 말소리 쪽으로 옮겼어요.<br><br><strong>무슨 일이 생기나:</strong> 캡처로 보낸 두 줄은 맞아 보였지만 다른 자막들은 오히려 멀어졌어요. 정답에서 평균 135ms 떨어져, 처음 방식(68ms)보다 나빠졌어요.</td>
+          <td class="choice-good"><strong>무엇을 했나:</strong> 캡처 속 파란 선의 시각을 재서 정답 10개를 만들고, 방법마다 정답과의 차이를 표로 비교했어요.<br><br><strong>무슨 일이 생기나:</strong> "글자가 뜬 순간 앞 85ms~뒤 110ms 안에 말소리가 시작되면 그쪽, 아니면 글자가 뜬 순간"이 평균 38ms로 가장 가까웠어요. 고칠 때마다 숫자로 확인하니 멀어지는 쪽으로 가지 않아요.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2><span class="hl">AI 둘이 같은 폴더에서 일할 때</span></h2>
+    <p>이 작업은 AI 대화창(세션) 두 개가 같은 프로젝트 폴더에서 동시에 진행했어요. 한쪽은 정답을 재는 일을, 다른 쪽은 규칙과 인수인계 정리를 맡았어요. 에이전트 둘로 된 작은 팀이었던 셈이에요.</p>
+    <ul>
+      <li><strong>잘된 점:</strong> 두 세션이 인수인계 문서(핸드오프)<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup>를 함께 읽고 고쳐서, 한쪽이 알아낸 사실을 다른 쪽이 이어받았어요. 작업 순서는 스킬<sup class="fn-ref"><a href="#fn8" id="fnref8">8</a></sup>로 남겨 다음 세션도 같은 순서로 일하게 했어요.</li>
+      <li><strong>부딪힌 점:</strong> 두 세션이 같은 결과 폴더에 동시에 파일을 썼어요. 또 "자막 사이 간격 메우기"를 두고 한쪽은 빼라는 지시를, 다른 쪽은 "규칙을 무시하면 안 된다"는 지시를 받아 결과가 두 벌이 됐어요.</li>
+      <li><strong>정한 규칙:</strong> 결과 폴더는 비어 있는지 확인하고 쓴다. 두 세션의 결론이 갈리면 AI가 임의로 고르지 않고 두 결과를 모두 남긴 채 사람에게 묻는다. 절차는 스킬에, 숫자와 현황은 인수인계 문서에 나눠 적는다.</li>
+    </ul>
+    <p>여럿으로 나누면 조율 비용이 생긴다는 건 <a href="multi-agent-split-gains-and-losses.html">나누면 좋아질까</a>에서 다룬 이야기인데, 제 도메인에서 그대로 겪었어요.</p>
+
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 영상 자막 작업을 AI에게 맡길 때 볼 것</h2>
+    <p>본문의 "누가 무엇을 맡았나"와 "AI의 설명은 재야 믿을 수 있다" 절에서 나온 값 가운데, 다른 영상 작업에도 그대로 쓸 수 있는 것만 모았어요. 측정은 모두 한 작품의 1화(71분, 720p, 초당 29.97장)로 했어요.</p>
+    <table>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
+      <tbody>
+        <tr><td>한 프레임의 길이 (초당 29.97장 영상)</td><td>약 33.4ms</td><td>자막 시각을 "한 프레임" 단위로 맞춘다는 말이 몇 밀리초인지 가늠할 때 써요. 1000을 30으로 나눈 33ms로 잘라 쓰면 긴 영상에서 오차가 쌓여요</td></tr>
+        <tr><td>71분 영상의 전체 프레임 수</td><td>127,756장</td><td>AI에게 모든 장을 보여 주는 게 왜 비현실적인지 보여 주는 숫자예요. 자막 줄 수(약 1,050)와 비교하면 백 배가 넘어요</td></tr>
+        <tr><td>처리 시간 (같은 영상)</td><td>7~8시간 → 약 14분</td><td>모든 장을 글자 인식할 때와, 세는 일·읽는 일을 나눴을 때의 차이예요. 이 14분에는 AI가 글자를 읽는 시간은 들어 있지 않아요</td></tr>
+        <tr><td>자막 시작 시각의 정답과 평균 차이</td><td>글자가 뜬 순간만 쓰면 68ms, 말소리 시작만 쓰면 135ms, 둘을 섞으면 38ms</td><td>정답 10개로 잰 값이라 창 폭(앞 85ms~뒤 110ms)이 이 10개에 맞춰졌을 수 있어요. 다른 작품에서는 다시 재야 해요</td></tr>
+        <tr><td>넷플릭스 자막 사이 최소 간격</td><td>2프레임</td><td>이 도구는 반올림 뒤에도 규정을 넘도록 70ms로 둬요</td></tr>
+        <tr><td>장면전환 근처로 보는 범위</td><td>앞뒤 0.5초</td><td>자막 시작·끝이 장면이 바뀌는 순간과 0.5초 안에 어정쩡하게 걸치면 장면전환에 맞춰요</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 영상에서 자동으로 뽑은 자막이 이상할 때</h2>
+    <p>이 작업의 문제들은 에러 메시지로 나오지 않았어요. 전부 "결과가 조금씩 이상하다"는 모습으로 먼저 보였어요.</p>
+    <p>증상이 아직 없어도, <strong>AI에게 "영상에서 자막 시각을 뽑는 코드 만들어 줘"라고 부탁한 직후</strong>라면 한 번 확인하고 넘어가요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-late-drift">
+          <td>영상 앞부분 자막은 잘 맞는데 <strong>뒤로 갈수록 점점 더 일찍</strong> 떠요. 한 시간쯤 지나면 몇 초씩 어긋나요</td>
+          <td>그림마다 시각을 계산하는 줄이에요. <code>번호 × int(1000 / 초당장수)</code>처럼 나눗셈 결과를 정수로 잘라 쓰는 곳을 찾아요</td>
+          <td>영상 맨 끝 자막 하나의 시각을 실제 영상과 대 봐요. 앞보다 끝이 훨씬 많이 어긋나면 이 문제예요. 정수로 자르지 말고 <code>번호 × 1000 / 초당장수</code>로 계산해요 (<a href="#numbers">한 프레임의 길이</a>)</td>
+        </tr>
+        <tr id="suspect-drift-away">
+          <td>AI와 몇 번 주고받으며 고쳤는데, <strong>고칠수록 전보다 더 틀린 것 같다</strong>는 느낌이 들어요</td>
+          <td>고치는 코드가 아니라 <strong>"맞았는지 판단한 근거"</strong>예요. AI의 설명이나 눈대중이 범인이에요</td>
+          <td>정답을 몇 개라도 숫자로 만들고, 버전마다 정답과의 차이를 표로 비교해요. 이전 버전보다 차이가 커졌으면 되돌려요 (<a href="#choice">나쁜 선택 vs 좋은 선택</a>)</td>
+        </tr>
+        <tr id="suspect-mixed-results">
+          <td>분명 고친 결과를 받았는데 <strong>어제 결과와 섞여 있거나</strong>, 같은 파일이 저절로 바뀌어 있어요</td>
+          <td>같은 프로젝트 폴더에서 동시에 돌고 있는 다른 AI 세션이에요. 결과를 쓰는 폴더 이름을 확인해요</td>
+          <td>세션마다 결과 폴더를 따로 쓰는지 봐요. 같은 폴더를 쓰고 있으면 폴더를 나누고, 누가 어느 폴더에 썼는지 인수인계 문서에 적어요</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— 영상 처리 코드가 있는 프로젝트 폴더에서</span></p>
+    <pre><code>이 프로젝트에서 영상 프레임 번호를 시각(초·밀리초)으로 바꾸는 곳을 모두 찾아 파일 이름과 줄 번호로 보여 줘. 아직 코드는 고치지 마.
+1. 나눗셈 결과를 int()나 //로 잘라서 쓰는 곳이 있는지
+2. 영상의 초당 장수를 30처럼 고정값으로 쓰는지, 영상에서 읽어 오는지
+3. 71분 영상의 마지막 프레임 시각을 이 코드로 계산하면 실제와 몇 초 차이 나는지</code></pre>
+
+    <h2><span class="hl">아직 남은 것</span></h2>
+    <ul>
+      <li>"자막 사이 간격 메우기"를 넣은 결과와 뺀 결과 가운데 무엇을 최종본으로 할지 아직 정하지 않았어요.</li>
+      <li>자막이 끝나는 시각(아웃점)은 정답을 아직 재지 못했어요.</li>
+      <li>다른 해상도나 색이 있는 자막에서는 거의 검증하지 않았어요.</li>
+    </ul>
+
+    <h2><span class="hl">정리</span></h2>
+    <ul>
+      <li>AI가 영상을 볼 수 있다고 해서 모든 프레임을 보게 할 필요는 없어요. 빠짐없이 셀 일은 프로그램에, 판단이 필요한 일만 AI의 눈에 맡겼어요.</li>
+      <li>AI의 결론은 설명이 아니라 정답과의 차이로 판단해요. 이번에 가장 큰 개선은 코드가 아니라 "정답을 재는 방법"에서 나왔어요.</li>
+      <li>AI를 여럿 쓰면 함께 보는 기록과 "결론이 갈리면 사람에게 묻는다"는 규칙이 필요해요.</li>
+    </ul>
+
+    <h2>함께 읽으면 좋은 글</h2>
+    <ul>
+      <li><a href="langgraph-pattern-orchestrator-worker.html">④ 오케스트레이터-워커 — 몇 갈래일지 LLM이 정한다 (9)</a> — 일을 나눠 일꾼에게 맡기는 구조를 처음 설명한 글이에요. 이 글은 그 생각을 고정된 역할 분담으로 가져와 쓴 사례예요.</li>
+      <li><a href="multi-agent-split-gains-and-losses.html">나누면 좋아질까 — 멀티 에이전트의 득실과 판정표 (1)</a> — 여럿으로 나눴을 때 생기는 조율 비용을 다룬 글로, 이 글의 "AI 둘이 같은 폴더에서 일할 때"와 이어져요.</li>
+      <li><a href="harness-experience-and-reflection.html">성공은 자산으로, 실패는 설명으로 — 경험·스킬 축적과 반성 (3)</a> — 한 번 알아낸 작업 순서를 스킬로 남겨 다음에 재사용하는 이야기예요.</li>
+    </ul>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">하드섭(hard sub) — 자막이 별도 파일이 아니라 영상 화면에 그림으로 박혀 있어서 켜고 끌 수 없는 자막이에요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">TC(타임코드)와 인점·아웃점 — 자막 한 줄이 화면에 나타나는 시각(인점)과 사라지는 시각(아웃점)을 말해요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">프레임(frame) — 영상을 이루는 정지 그림 한 장으로, 이 글의 영상은 1초에 약 30장이 이어져 움직임을 만들어요. <a href="#fnref3">↩</a></li>
+        <li id="fn4">장면전환 — 영상의 화면이 다른 장면으로 확 바뀌는 순간으로, 자막이 이 순간에 어정쩡하게 걸치면 보기 불편해서 규정으로 다뤄요. <a href="#fnref4">↩</a></li>
+        <li id="fn5">OCR(광학 문자 인식) — 그림 속 글자를 찾아 텍스트로 바꾸는 프로그램이에요. <a href="#fnref5">↩</a></li>
+        <li id="fn6">SE(Subtitle Edit) — 영상과 소리 모양(파형)을 보면서 자막 시각과 글자를 고치는 무료 자막 편집 프로그램이에요. <a href="#fnref6">↩</a></li>
+        <li id="fn7">핸드오프(인수인계 문서) — 다음 작업자나 다음 AI 세션이 같은 조사를 다시 하지 않도록 현재 상태·수치·버린 방법을 적어 두는 문서예요. <a href="#fnref7">↩</a></li>
+        <li id="fn8">스킬 — AI 코딩 도구가 특정 작업을 할 때 매번 같은 순서와 주의 사항을 따르도록 적어 둔 절차 문서예요. <a href="#fnref8">↩</a></li>
+      </ol>
+    </section>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
