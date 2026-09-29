@@ -1105,22 +1105,27 @@ body.list-page .site-header {
   gap: 1rem;
 }
 
-/* 사이드바 트리 순서: 바이브코딩(1) 안의 소분류 4개가 폴더 1~4,
-   두 번째 대분류(보충수업 책장) 탭은 폴더 5, 그 안의 소분류 4개는
-   폴더 3·4·1·7로 대분류와도 서로와도 다르게 색을 준다. */
-.sidebar-tree > li:nth-of-type(1) .tree-subgroup:nth-child(1) { --folder-accent: var(--folder-1); }
-.sidebar-tree > li:nth-of-type(1) .tree-subgroup:nth-child(2) { --folder-accent: var(--folder-2); }
-.sidebar-tree > li:nth-of-type(1) .tree-subgroup:nth-child(3) { --folder-accent: var(--folder-3); }
-.sidebar-tree > li:nth-of-type(1) .tree-subgroup:nth-child(4) { --folder-accent: var(--folder-4); }
-.sidebar-tree > li:nth-of-type(1) .tree-subgroup:nth-child(5) { --folder-accent: var(--folder-5); }
-.sidebar-tree > li:nth-of-type(1) .tree-subgroup:nth-child(6) { --folder-accent: var(--folder-6); }
-.sidebar-tree > li:nth-of-type(1) .tree-subgroup:nth-child(7) { --folder-accent: var(--folder-7); }
-.sidebar-tree > li:nth-of-type(1) .tree-subgroup:nth-child(8) { --folder-accent: var(--folder-8); }
-.sidebar-tree > li:nth-of-type(2) .tree-group { --folder-accent: var(--folder-5); }
-.sidebar-tree > li:nth-of-type(2) .tree-subgroup:nth-child(1) { --folder-accent: var(--folder-3); }
-.sidebar-tree > li:nth-of-type(2) .tree-subgroup:nth-child(2) { --folder-accent: var(--folder-4); }
-.sidebar-tree > li:nth-of-type(2) .tree-subgroup:nth-child(3) { --folder-accent: var(--folder-1); }
-.sidebar-tree > li:nth-of-type(2) .tree-subgroup:nth-child(4) { --folder-accent: var(--folder-7); }
+/* 사이드바 트리 색. 위에 대분류가 끼어들어도 색이 밀리지 않게, 순서가 아니라
+   제목 링크 주소로 대분류를 집는다. 바이브코딩 소분류 8개는 폴더 1~8을 한 색씩 받는다. */
+.tree-group:has(> summary a[href="posts.html#vibe-coding"]) .tree-subgroup:nth-child(1) { --folder-accent: var(--folder-1); }
+.tree-group:has(> summary a[href="posts.html#vibe-coding"]) .tree-subgroup:nth-child(2) { --folder-accent: var(--folder-2); }
+.tree-group:has(> summary a[href="posts.html#vibe-coding"]) .tree-subgroup:nth-child(3) { --folder-accent: var(--folder-3); }
+.tree-group:has(> summary a[href="posts.html#vibe-coding"]) .tree-subgroup:nth-child(4) { --folder-accent: var(--folder-4); }
+.tree-group:has(> summary a[href="posts.html#vibe-coding"]) .tree-subgroup:nth-child(5) { --folder-accent: var(--folder-5); }
+.tree-group:has(> summary a[href="posts.html#vibe-coding"]) .tree-subgroup:nth-child(6) { --folder-accent: var(--folder-6); }
+.tree-group:has(> summary a[href="posts.html#vibe-coding"]) .tree-subgroup:nth-child(7) { --folder-accent: var(--folder-7); }
+.tree-group:has(> summary a[href="posts.html#vibe-coding"]) .tree-subgroup:nth-child(8) { --folder-accent: var(--folder-8); }
+/* 대분류 탭끼리는 색상환에서 멀리 떨어진 색을 줘서(초록·파랑·주황·보라) 붉은 계열로 뭉치지 않게 한다 */
+.tree-group:has(> summary a[href="posts.html#cat-field-work"]) { --folder-accent: var(--folder-2); }
+.tree-group:has(> summary a[href="posts.html#vibe-coding"]) { --folder-accent: var(--folder-1); }
+.tree-group:has(> summary a[href="posts.html#cat-book-shelf"]) { --folder-accent: var(--folder-4); }
+.tree-group:has(> summary a[href="posts.html#cat-book-shelf"]) .tree-subgroup:nth-child(1) { --folder-accent: var(--folder-3); }
+.tree-group:has(> summary a[href="posts.html#cat-book-shelf"]) .tree-subgroup:nth-child(2) { --folder-accent: var(--folder-5); }
+.tree-group:has(> summary a[href="posts.html#cat-book-shelf"]) .tree-subgroup:nth-child(3) { --folder-accent: var(--folder-1); }
+.tree-group:has(> summary a[href="posts.html#cat-book-shelf"]) .tree-subgroup:nth-child(4) { --folder-accent: var(--folder-7); }
+/* AI 시대 스크랩 탭은 보라. 소분류 없이 글이 탭 바로 아래에 붙는다 */
+.tree-group:has(> summary a[href="posts.html#cat-future-talks"]) { --folder-accent: var(--folder-3); }
+.tree-children > .tree-leaf-list { margin-top: 0; }
 
 /* 사이드바 잎 항목 안에서 이름만 형광펜으로 긋는다. main 안의 <strong>과 같은
    그림이지만 사이드바는 main 밖이라 그 규칙이 안 닿아서 따로 둔다. 글자가
@@ -1158,9 +1163,15 @@ body.list-page .site-header {
   line-height: 1.15;
   color: #fff;
   background-color: var(--folder-accent, var(--accent));
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.22);
   clip-path: var(--crayon-edge);
   padding: 0.55rem 1.15rem;
+  transform: rotate(-0.8deg);
 }
+
+/* 탭마다 기울기를 달리해 손으로 하나씩 붙인 것처럼 삐뚤빼뚤하게 둔다 */
+.sidebar-tree > li:nth-of-type(even) .tree-group-title { transform: rotate(0.9deg); }
+.sidebar-tree > li:nth-of-type(3n) .tree-group-title { transform: rotate(-1.4deg); }
 
 .tree-group-title .tree-toggle-icon {
   color: rgba(255, 255, 255, 0.85);
