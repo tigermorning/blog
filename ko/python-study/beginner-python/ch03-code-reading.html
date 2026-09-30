@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>파이썬 3장 코드 읽기 실습</title>
+<meta name="description" content="왕초보를 위한 Python 3장 함수(3.1~3.2.5)를 1·2장 내용과 섞은 초급·중급·고급 코드 읽기 실습 18문제와 해설">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=JetBrains+Mono:wght@400;600&family=Nanum+Gothic+Coding:wght@400;700&display=swap">
+<style>
+:root {
+  --ground: #F3F6F5;
+  --surface: #FFFFFF;
+  --sunken: #E8EEEC;
+  --ink: #18221F;
+  --ink-soft: #4B5A56;
+  --ink-faint: #7C8A86;
+  --line: #D3DCD9;
+  --accent: #2B5B84;
+  --accent-ink: #FFFFFF;
+  --memo: #FFF6D1;
+  --memo-line: #E3C75A;
+  --lv-basic: #2A7563;
+  --lv-basic-bg: #DDEFE9;
+  --lv-mid: #2B5B84;
+  --lv-mid-bg: #DCE8F3;
+  --lv-adv: #7A3E6E;
+  --lv-adv-bg: #F0E0EC;
+  --code-bg: #1C2724;
+  --code-ink: #DCE5E1;
+  --c-kw: #F2C94C;
+  --c-str: #9FD8A8;
+  --c-num: #F4A37A;
+  --c-com: #7F938D;
+  --c-fn: #8CC4F2;
+  --c-meta: #6F827C;
+  --font-display: "Hahmlet", "Noto Serif KR", "Batang", serif;
+  --font-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Nanum Gothic Coding", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #111816;
+    --surface: #18211F;
+    --sunken: #1F2A27;
+    --ink: #E2EAE7;
+    --ink-soft: #A7B5B0;
+    --ink-faint: #74847F;
+    --line: #2C3935;
+    --accent: #7FB2E0;
+    --accent-ink: #0E1A24;
+    --memo: #2A2717;
+    --memo-line: #8C7A33;
+    --lv-basic: #7ACCB5;
+    --lv-basic-bg: #1B322B;
+    --lv-mid: #8DBBE6;
+    --lv-mid-bg: #1C2B38;
+    --lv-adv: #D9A3CC;
+    --lv-adv-bg: #33222F;
+    --code-bg: #0B110F;
+    --code-ink: #D6E0DC;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #111816;
+  --surface: #18211F;
+  --sunken: #1F2A27;
+  --ink: #E2EAE7;
+  --ink-soft: #A7B5B0;
+  --ink-faint: #74847F;
+  --line: #2C3935;
+  --accent: #7FB2E0;
+  --accent-ink: #0E1A24;
+  --memo: #2A2717;
+  --memo-line: #8C7A33;
+  --lv-basic: #7ACCB5;
+  --lv-basic-bg: #1B322B;
+  --lv-mid: #8DBBE6;
+  --lv-mid-bg: #1C2B38;
+  --lv-adv: #D9A3CC;
+  --lv-adv-bg: #33222F;
+  --code-bg: #0B110F;
+  --code-ink: #D6E0DC;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15.5px;
+  line-height: 1.7;
+  padding-inline: 20px;
+  padding-block: 0 80px;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+.wrap {
+  max-width: 1100px;
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 48px;
+}
+
+/* ---------- header ---------- */
+.masthead {
+  grid-column: 1 / -1;
+  padding-block: 48px 8px;
+  display: grid;
+  gap: 14px;
+  max-width: 760px;
+}
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+}
+.eyebrow b { color: var(--ink-soft); font-weight: 600; }
+h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(30px, 5vw, 44px);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin: 0;
+  text-wrap: balance;
+}
+h1 .prompt { font-family: var(--font-mono); color: var(--accent); font-weight: 600; font-size: 0.7em; vertical-align: 0.12em; margin-right: 0.3em; }
+.lead { margin: 0; color: var(--ink-soft); max-width: 62ch; }
+.counts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.count {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}
+.count.basic { background: var(--lv-basic-bg); color: var(--lv-basic); }
+.count.mid { background: var(--lv-mid-bg); color: var(--lv-mid); }
+.count.adv { background: var(--lv-adv-bg); color: var(--lv-adv); }
+.count.all { background: var(--sunken); color: var(--ink-soft); }
+
+/* ---------- sidebar ---------- */
+.toc {
+  position: sticky;
+  top: 24px;
+  align-self: start;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  padding-block: 8px;
+  font-size: 13.5px;
+}
+.toc h2 {
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+  font-weight: 600;
+  margin: 18px 0 6px;
+}
+.toc h2:first-child { margin-top: 0; }
+.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; }
+.toc a {
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  gap: 6px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  padding: 3px 8px;
+  border-radius: 6px;
+  line-height: 1.45;
+}
+.toc a:hover { background: var(--sunken); color: var(--ink); }
+.toc a .n { font-family: var(--font-mono); font-size: 12px; color: var(--ink-faint); font-variant-numeric: tabular-nums; padding-top: 1px; }
+.toc .grp-basic h2 { color: var(--lv-basic); }
+.toc .grp-mid h2 { color: var(--lv-mid); }
+.toc .grp-adv h2 { color: var(--lv-adv); }
+
+main { min-width: 0; display: grid; gap: 56px; }
+
+/* ---------- toolbar ---------- */
+.toolbar {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 5;
+  background: var(--ground);
+  padding-block: 12px;
+  margin-block: -12px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid var(--line);
+}
+.seg { display: flex; flex-wrap: wrap; gap: 4px; }
+.seg button, .ghost {
+  font: 500 13.5px/1 var(--font-body);
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid var(--line);
+  padding: 8px 13px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.seg button:hover, .ghost:hover { color: var(--ink); border-color: var(--ink-faint); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--ground); border-color: var(--ink); }
+
+/* ---------- intro blocks ---------- */
+.intro { display: grid; gap: 28px; }
+h2.sec {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 22px;
+  margin: 0 0 12px;
+  text-wrap: balance;
+}
+.howto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+.howto div {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: grid;
+  gap: 6px;
+  align-content: start;
+}
+.howto .k { font-family: var(--font-mono); font-size: 12.5px; font-weight: 600; color: var(--accent); }
+.howto ul, .p-body ul, .sol ul { margin: 0; padding-left: 1.1em; display: grid; gap: 3px; }
+.howto li { font-size: 14px; color: var(--ink-soft); }
+.note { font-size: 14px; color: var(--ink-soft); margin: 12px 0 0; }
+
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 8px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+th { font-size: 12px; letter-spacing: 0.05em; color: var(--ink-faint); font-weight: 600; background: var(--sunken); }
+td.src { color: var(--ink-faint); font-size: 13px; white-space: nowrap; }
+.table-scroll.fill td, .table-scroll.fill th { text-align: center; font-variant-numeric: tabular-nums; font-family: var(--font-mono); font-size: 13px; }
+.table-scroll.fill td:first-child, .table-scroll.fill th:first-child { text-align: left; }
+
+code { font-family: var(--font-mono); font-size: 0.88em; background: var(--sunken); padding: 1px 5px; border-radius: 4px; }
+pre { margin: 0; }
+pre code {
+  display: block;
+  background: var(--code-bg);
+  color: var(--code-ink);
+  padding: 14px 18px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  line-height: 1.65;
+  overflow-x: auto;
+  tab-size: 4;
+}
+pre.out code { background: var(--sunken); color: var(--ink); border: 1px dashed var(--line); }
+pre.out { position: relative; }
+pre.out::before {
+  content: "출력";
+  position: absolute; top: 6px; right: 10px;
+  font: 600 10.5px/1 var(--font-body); letter-spacing: 0.08em; color: var(--ink-faint);
+}
+.hljs-keyword, .hljs-literal { color: var(--c-kw); }
+.hljs-string { color: var(--c-str); }
+.hljs-number { color: var(--c-num); }
+.hljs-comment { color: var(--c-com); font-style: italic; }
+.hljs-built_in, .hljs-title { color: var(--c-fn); }
+.hljs-meta { color: var(--c-meta); }
+
+/* ---------- level sections ---------- */
+.level { display: grid; gap: 18px; }
+.level-head { display: grid; gap: 4px; padding-bottom: 4px; }
+.level-head .tag {
+  justify-self: start;
+  font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+  padding: 2px 10px; border-radius: 999px;
+}
+.level-head h2 { font-family: var(--font-display); font-weight: 700; font-size: 28px; margin: 0; text-wrap: balance; }
+.level-head p { margin: 0; color: var(--ink-soft); max-width: 62ch; }
+.level.basic { --lv: var(--lv-basic); --lv-bg: var(--lv-basic-bg); }
+.level.mid { --lv: var(--lv-mid); --lv-bg: var(--lv-mid-bg); }
+.level.adv { --lv: var(--lv-adv); --lv-bg: var(--lv-adv-bg); }
+.level-head .tag { background: var(--lv-bg); color: var(--lv); }
+
+/* ---------- problem ---------- */
+.problem {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 22px 24px;
+  display: grid;
+  gap: 14px;
+}
+.p-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px; }
+.p-id { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--lv); font-variant-numeric: tabular-nums; }
+.p-type {
+  font-size: 12px; font-weight: 600; letter-spacing: 0.02em;
+  color: var(--ink-soft); border: 1px solid var(--line); border-radius: 5px; padding: 0 7px;
+}
+.problem h3 { font-family: var(--font-display); font-weight: 500; font-size: 19px; margin: 0; flex-basis: 100%; line-height: 1.4; text-wrap: balance; }
+.p-body { display: grid; gap: 12px; max-width: 70ch; }
+.p-body p { margin: 0; }
+.p-body li, .sol li { padding-left: 2px; }
+.spec { font-size: 14px; color: var(--ink-soft); }
+
+.memo { display: grid; gap: 6px; }
+.memo label { font-size: 12.5px; font-weight: 600; color: var(--ink-soft); display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.memo label span { font-weight: 400; color: var(--ink-faint); }
+.memo textarea {
+  width: 100%;
+  min-height: 72px;
+  resize: vertical;
+  font: 13.5px/1.6 var(--font-mono);
+  color: var(--ink);
+  background: var(--memo);
+  border: 1px dashed var(--memo-line);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+details.sol { border-top: 1px solid var(--line); padding-top: 12px; }
+details.sol summary {
+  cursor: pointer;
+  list-style: none;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-weight: 600; font-size: 14px; color: var(--lv);
+  padding: 4px 0;
+}
+details.sol summary::-webkit-details-marker { display: none; }
+details.sol summary::before {
+  content: "";
+  width: 7px; height: 7px;
+  border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform .15s;
+}
+details.sol[open] summary::before { transform: rotate(45deg); }
+@media (prefers-reduced-motion: reduce) { details.sol summary::before { transition: none; } }
+.sol-body { display: grid; gap: 12px; padding-top: 10px; max-width: 70ch; }
+.sol-body p { margin: 0; }
+.sol-body h4 { margin: 4px 0 0; font-size: 13px; letter-spacing: 0.04em; color: var(--ink-faint); font-weight: 600; }
+.sol-body .real { background: var(--lv-bg); border-radius: 8px; padding: 10px 14px; font-size: 14.5px; }
+.sol-body .real b { color: var(--lv); }
+
+footer { grid-column: 1 / -1; color: var(--ink-faint); font-size: 13px; border-top: 1px solid var(--line); padding-top: 18px; }
+
+@media (max-width: 860px) {
+  .wrap { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .toc { display: none; }
+  .masthead { padding-top: 32px; }
+  .problem { padding: 18px 16px; }
+  pre code { font-size: 13px; padding: 12px 14px; }
+}
+/* 격자 안의 표·코드가 폭을 밀어 올리지 않게 (좁은 화면 가로 넘침 방지) */
+.intro > *, .intro section > *, .level > *, .problem > *, .p-body > *, .sol-body > *, .memo > * { min-width: 0; }
+.backlink { font-family: var(--font-body); font-size: 13px; text-decoration: none; }
+.backlink:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <a class="backlink" href="../../posts.html#python-basics-books">← Tigermorning 블로그 · 파이썬 스터디 › 왕초보를 위한 Python</a>
+    <div class="eyebrow"><b>왕초보를 위한 Python</b> · 3장 함수 · 3.1 함수 ~ 3.2.5 퀴즈 (1·2장 문법 포함)</div>
+    <h1><span class="prompt">&gt;&gt;&gt;</span>3장 코드 읽기 실습</h1>
+    <p class="lead">함수·매개변수·<code>return</code>을 1장(연산·변수·리스트)과 2장(반복문·조건문)에 섞어서 <b>이미 짜여 있는 코드를 읽고 해석하는</b> 문제집입니다. 코드를 새로 짜는 문제는 없습니다. 해설은 문제마다 접혀 있으니 다 푼 뒤에 여세요.</p>
+    <div class="counts">
+      <span class="count all">18문제</span>
+      <span class="count basic">초급 5</span>
+      <span class="count mid">중급 6</span>
+      <span class="count adv">고급 7</span>
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="문제 목록">
+    <div><h2>시작 전에</h2>
+      <ol>
+        <li><a href="#howto"><span class="n">·</span>진행 방법</a></li>
+        <li><a href="#tools"><span class="n">·</span>3장 도구 모음</a></li>
+      </ol>
+    </div>
+    <div class="grp-basic"><h2>초급</h2>
+      <ol>
+        <li><a href="#b1"><span class="n">1</span>정의와 호출의 순서</a></li>
+        <li><a href="#b2"><span class="n">2</span>넓이 계산기</a></li>
+        <li><a href="#b3"><span class="n">3</span>print와 return 한 줄 차이</a></li>
+        <li><a href="#b4"><span class="n">4</span>글자 수 세기</a></li>
+        <li><a href="#b5"><span class="n">5</span>짝수 세기</a></li>
+      </ol>
+    </div>
+    <div class="grp-mid"><h2>중급</h2>
+      <ol>
+        <li><a href="#m1"><span class="n">1</span>성적 등급</a></li>
+        <li><a href="#m2"><span class="n">2</span>숫자 읽기 함수의 빈틈</a></li>
+        <li><a href="#m3"><span class="n">3</span>타이머 표시</a></li>
+        <li><a href="#m4"><span class="n">4</span>함수를 부르는 반복문</a></li>
+        <li><a href="#m5"><span class="n">5</span>첫 번째 배수 찾기</a></li>
+        <li><a href="#m6"><span class="n">6</span>0으로 나누기를 막는 순서</a></li>
+      </ol>
+    </div>
+    <div class="grp-adv"><h2>고급</h2>
+      <ol>
+        <li><a href="#a1"><span class="n">1</span>보너스 합계가 안 된다</a></li>
+        <li><a href="#a2"><span class="n">2</span>명단에서 첫 사람 빼기</a></li>
+        <li><a href="#a3"><span class="n">3</span>단리와 복리</a></li>
+        <li><a href="#a4"><span class="n">4</span>자릿수 함수 두 개</a></li>
+        <li><a href="#a5"><span class="n">5</span>소수 판별기의 구멍</a></li>
+        <li><a href="#a6"><span class="n">6</span>무엇이든 세 배</a></li>
+        <li><a href="#a7"><span class="n">7</span>처음 보는 문법 읽어 내기</a></li>
+      </ol>
+    </div>
+  </nav>
+
+  <main>
+    <div class="toolbar">
+      <div class="seg" role="group" aria-label="난이도 필터">
+        <button type="button" id="f-all" data-filter="all" aria-pressed="true">전체</button>
+        <button type="button" id="f-basic" data-filter="basic" aria-pressed="false">초급</button>
+        <button type="button" id="f-mid" data-filter="mid" aria-pressed="false">중급</button>
+        <button type="button" id="f-adv" data-filter="adv" aria-pressed="false">고급</button>
+      </div>
+      <button type="button" class="ghost" id="toggle-sol">해설 모두 펼치기</button>
+    </div>
+
+    <div class="intro" data-level="intro">
+      <section id="howto">
+        <h2 class="sec">진행 방법 (5명 기준)</h2>
+        <div class="howto">
+          <div>
+            <span class="k">[읽기] 문제</span>
+            <ul>
+              <li>실행 전에 각자 출력을 적기</li>
+              <li>다 같이 공개한 뒤 실행하기</li>
+              <li>발표자가 이유를 한 줄로 설명하기</li>
+            </ul>
+          </div>
+          <div>
+            <span class="k">[버그] 문제</span>
+            <ul>
+              <li>어느 줄에서 무엇이 잘못되는지 찾기</li>
+              <li>작성자가 원래 하려던 것을 말로 설명하기</li>
+            </ul>
+          </div>
+          <div>
+            <span class="k">[추론] 문제</span>
+            <ul>
+              <li>아직 안 배운 문법의 뜻을 결과로 추측하기</li>
+              <li>추측의 근거를 말하기</li>
+            </ul>
+          </div>
+        </div>
+        <p class="note">발표자는 문제마다 돌아가며 맡습니다. 함수 문제는 <b>"정의할 때"</b>와 <b>"부를 때"</b>를 나눠서 따라가면 헷갈리지 않습니다. 문제마다 있는 메모 칸은 지금 쓰는 브라우저에만 저장됩니다.</p>
+      </section>
+
+      <section id="tools">
+        <h2 class="sec">3장에서 배운 도구 모음 (1·2장 도구는 계속 씁니다)</h2>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>분류</th><th>도구</th><th>교재 위치</th></tr></thead>
+            <tbody>
+              <tr><td>함수 만들기</td><td><code>def 이름(매개변수):</code> — 만들기만 하고 실행은 안 함</td><td class="src">3.1</td></tr>
+              <tr><td>함수 부르기</td><td><code>이름(인수)</code> — 인수가 매개변수에 <b>순서대로</b> 들어감</td><td class="src">3.1</td></tr>
+              <tr><td>돌려주기</td><td><code>return 값</code> — 값을 부른 쪽에 넘기고 함수를 <b>즉시</b> 끝냄</td><td class="src">3.2</td></tr>
+              <tr><td>값 없음</td><td><code>None</code> — <code>return</code>을 못 만나고 끝난 함수가 돌려주는 값</td><td class="src">3.2</td></tr>
+              <tr><td>참·거짓</td><td><code>return a == b</code> — 식의 결과 <code>True</code>/<code>False</code>를 돌려줌</td><td class="src">3.2</td></tr>
+              <tr><td>출력 서식</td><td><code>f'{x:2d}'</code> — 2칸 맞춤 정수</td><td class="src">3.1.2</td></tr>
+              <tr><td>패턴</td><td>반복문 안에서 함수 부르기 (<code>for i in ...: multi(i)</code>)</td><td class="src">3.1.2</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h2 class="sec" style="margin-top:8px;">1·2장 도구, 여기서 다시 씀 (누적 지도)</h2>
+        <p class="note" style="margin-top:0;">3장 새 문법(함수, return)이 앞에서 배운 것과 어디서 다시 만나는지 미리 보여 줍니다. 문제를 풀며 "저번에 배운 그거다"를 확인해 보세요.</p>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>앞 장 도구</th><th>배운 곳</th><th>3장 실습에서 다시 나오는 문제</th></tr></thead>
+            <tbody>
+              <tr><td><code>//</code>, <code>%</code></td><td class="src">1.1</td><td>초급 5, 중급 3·5, 고급 4·5·7</td></tr>
+              <tr><td><code>str()</code>, <code>int()</code>, <code>len()</code></td><td class="src">1.3, 1.6</td><td>초급 4, 고급 4·6</td></tr>
+              <tr><td>문자열·리스트 반복 <code>'ab' * 3</code></td><td class="src">1.6 예제 코드</td><td>초급 2, 고급 6</td></tr>
+              <tr><td><code>.remove()</code>, <code>리스트[번호]</code></td><td class="src">1.3</td><td>고급 2</td></tr>
+              <tr><td>실수 오차 (<code>0.1 + 0.2</code>)</td><td class="src">ch01 실습 상급 4</td><td>고급 6</td></tr>
+              <tr><td><code>divmod()</code>와 값 나눠 담기</td><td class="src">ch01 실습 상급 8</td><td>고급 7</td></tr>
+              <tr><td><code>while</code>, <code>+=</code></td><td class="src">2.1</td><td>고급 3·4</td></tr>
+              <tr><td><code>if</code> / <code>elif</code> 체인</td><td class="src">2.2</td><td>중급 1·2</td></tr>
+              <tr><td><code>and</code>의 계산 순서</td><td class="src">2.2.7</td><td>중급 6</td></tr>
+              <tr><td><code>for</code>, <code>range()</code></td><td class="src">2.3</td><td>초급 5, 중급 4·5, 고급 1·5</td></tr>
+              <tr><td><code>for</code>-<code>else</code>, <code>break</code></td><td class="src">2.5</td><td>고급 5</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- ================= 초급 ================= -->
+    <section class="level basic" data-level="basic">
+      <div class="level-head">
+        <span class="tag">초급</span>
+        <h2>함수가 언제 실행되고 무엇을 돌려주나</h2>
+        <p>정의와 호출, 매개변수에 값이 들어가는 순서, <code>print</code>와 <code>return</code>의 차이를 짧은 코드로 확인합니다.</p>
+      </div>
+
+      <article class="problem" id="b1">
+        <div class="p-head"><span class="p-id">초급 1</span><span class="p-type">읽기</span><h3>정의와 호출의 순서</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">def hello():
+    print('안녕')
+
+print('시작')
+hello()
+print('끝')
+hello()
+print(hello)</code></pre>
+          <ul>
+            <li>출력을 모두 예측하기 (몇 줄인지부터)</li>
+            <li>1~2번째 줄(<code>def</code>)을 실행할 때 화면에 아무것도 안 나오는 이유 설명하기</li>
+            <li>마지막 줄 <code>print(hello)</code>의 결과 예측하기</li>
+          </ul>
+        </div>
+        <div class="memo"><label for="memo-b1">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b1"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">시작
+안녕
+끝
+안녕
+&lt;function hello at 0x0000023EA55AACA0&gt;</code></pre>
+            <ul>
+              <li><code>def</code>는 "<code>hello</code>라는 이름으로 이 줄을 저장해 둔다"만 함. 실행은 안 함</li>
+              <li>실제 실행 순서: <code>print('시작')</code> → <code>hello()</code> 안으로 들어가 <code>print('안녕')</code> → 돌아와서 <code>print('끝')</code> → 또 <code>hello()</code></li>
+              <li>함수는 부를 때마다 처음부터 다시 실행됨</li>
+              <li><code>hello</code>에 괄호가 없으면 <b>함수 자체</b>를 가리킬 뿐 실행하지 않음. <code>0x...</code> 숫자는 컴퓨터마다, 실행할 때마다 다름</li>
+            </ul>
+            <p class="real"><b>실제 코드에서</b> · 파일 위쪽에 <code>def</code>가 잔뜩 있어도 그 줄들은 "준비"일 뿐. 실행 흐름은 <b>호출하는 줄</b>을 따라가며 읽기</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="b2">
+        <div class="p-head"><span class="p-id">초급 2</span><span class="p-type">읽기</span><h3>넓이 계산기</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">def area(w, h):
+    return w * h
+
+print(area(3, 4))
+print(area(4, 3))
+a = area(2, 5)
+print(a + 1)
+print(area('ab', 2))</code></pre>
+          <ul>
+            <li>출력 네 줄을 예측하기</li>
+            <li><code>area(2, 5)</code>를 부를 때 <code>w</code>와 <code>h</code>에 각각 무엇이 들어가는지 말하기</li>
+            <li>마지막 줄에서 에러가 나지 않는 이유 설명하기</li>
+          </ul>
+        </div>
+        <div class="memo"><label for="memo-b2">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b2"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">12
+12
+11
+abab</code></pre>
+            <ul>
+              <li>인수는 <b>순서대로</b> 들어감: <code>area(2, 5)</code> → <code>w = 2</code>, <code>h = 5</code></li>
+              <li><code>area(3, 4)</code>와 <code>area(4, 3)</code>은 곱셈이라 순서가 바뀌어도 같은 답</li>
+              <li><code>return</code>으로 돌려받았기 때문에 <code>a = 10</code>이 되고 <code>a + 1</code> 계산이 가능</li>
+              <li><code>'ab' * 2</code>는 문자열 반복 → <code>'abab'</code> (1장). 함수는 들어온 값이 무엇이든 <code>w * h</code>를 그대로 실행함</li>
+            </ul>
+            <p class="real"><b>실제 코드에서</b> · 매개변수 이름(<code>w</code>, <code>h</code>)은 "무엇을 넣어야 하는지"에 대한 힌트일 뿐 강제는 아님. 엉뚱한 값을 넣어도 에러 없이 돌아갈 수 있음</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="b3">
+        <div class="p-head"><span class="p-id">초급 3</span><span class="p-type">읽기</span><h3>print와 return 한 줄 차이</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">def add_print(a, b):
+    print(a + b)
+
+def add_return(a, b):
+    return a + b
+
+x = add_print(2, 3)
+y = add_return(2, 3)
+print(x, y)</code></pre>
+          <ul>
+            <li>출력이 몇 줄인지, 각 줄에 무엇이 나오는지 예측하기</li>
+            <li>첫 번째 줄의 출력은 코드의 몇 번째 줄이 찍은 것인지 찾기</li>
+          </ul>
+        </div>
+        <div class="memo"><label for="memo-b3">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b3"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">5
+None 5</code></pre>
+            <ul>
+              <li>첫 줄 <code>5</code>: <code>x = add_print(2, 3)</code>을 실행할 때 함수 안의 <code>print(a + b)</code>가 찍은 것</li>
+              <li><code>add_print</code>는 돌려주는 값이 없음 → <code>x = None</code></li>
+              <li><code>add_return</code>은 화면에 아무것도 안 찍고 <code>5</code>를 돌려줌 → <code>y = 5</code></li>
+              <li>마지막 줄은 <code>print(None, 5)</code> → <code>None 5</code></li>
+            </ul>
+            <div class="table-scroll fill">
+              <table>
+                <thead><tr><th></th><th>화면 출력</th><th>돌려주는 값</th></tr></thead>
+                <tbody>
+                  <tr><td><code>add_print(2, 3)</code></td><td>5</td><td>None</td></tr>
+                  <tr><td><code>add_return(2, 3)</code></td><td>없음</td><td>5</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="real"><b>실제 코드에서</b> · 변수에 <code>None</code>이 들어 있다면 "값을 받아온 함수가 <code>return</code> 대신 <code>print</code>를 쓰지 않았나?"부터 의심하기</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="b4">
+        <div class="p-head"><span class="p-id">초급 4</span><span class="p-type">읽기</span><h3>글자 수 세기</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">def show_len(word):
+    n = len(word)
+    print(f'{word}: {n}글자')
+
+show_len('python')
+show_len('파이썬')
+show_len('hello world')
+show_len(str(2 ** 10))</code></pre>
+          <ul>
+            <li>출력 네 줄을 예측하기</li>
+            <li>마지막 줄은 괄호 안쪽부터 순서대로 값이 어떻게 바뀌는지 적기</li>
+            <li><code>str()</code>을 빼고 <code>show_len(2 ** 10)</code>으로 부르면 어떻게 될지 예측하기</li>
+          </ul>
+        </div>
+        <div class="memo"><label for="memo-b4">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b4"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">python: 6글자
+파이썬: 3글자
+hello world: 11글자
+1024: 4글자</code></pre>
+            <ul>
+              <li>한글도 한 글자에 1씩 셈 → <code>'파이썬'</code>은 3</li>
+              <li>공백도 한 글자 → <code>'hello world'</code>는 5 + 1 + 5 = 11</li>
+              <li>마지막 줄: <code>2 ** 10</code> → <code>1024</code> → <code>str()</code> → <code>'1024'</code> → <code>len()</code> → <code>4</code></li>
+              <li><code>str()</code>을 빼면 <code>len(1024)</code> → <code>TypeError: object of type 'int' has no len()</code></li>
+            </ul>
+            <p class="real"><b>실제 코드에서</b> · 3.1.1 자릿수 문제의 <code>len(str(num))</code>과 같은 원리. 괄호가 여러 겹이면 <b>안쪽부터</b> 읽기</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="b5">
+        <div class="p-head"><span class="p-id">초급 5</span><span class="p-type">읽기</span><h3>짝수 세기</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">def count_even(nums):
+    count = 0
+    for x in nums:
+        if x % 2 == 0:
+            count = count + 1
+    return count
+
+print(count_even([1, 2, 3, 4, 6]))
+print(count_even([1, 3, 5]))
+print(count_even([]))
+print(count_even(list(range(1, 11))))</code></pre>
+          <ul>
+            <li>출력 네 줄을 예측하기</li>
+            <li>첫 번째 호출에서 <code>x</code>와 <code>count</code>가 어떻게 변하는지 표로 적기</li>
+            <li><code>return count</code>의 들여쓰기가 <code>for</code>와 같은 이유 말하기</li>
+          </ul>
+        </div>
+        <div class="memo"><label for="memo-b5">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b5"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">3
+0
+0
+5</code></pre>
+            <div class="table-scroll fill">
+              <table>
+                <thead><tr><th>x</th><th>x % 2</th><th>짝수?</th><th>count</th></tr></thead>
+                <tbody>
+                  <tr><td>1</td><td>1</td><td>아니오</td><td>0</td></tr>
+                  <tr><td>2</td><td>0</td><td>예</td><td>1</td></tr>
+                  <tr><td>3</td><td>1</td><td>아니오</td><td>1</td></tr>
+                  <tr><td>4</td><td>0</td><td>예</td><td>2</td></tr>
+                  <tr><td>6</td><td>0</td><td>예</td><td>3</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <ul>
+              <li>빈 리스트 <code>[]</code>는 <code>for</code>가 한 번도 안 돎 → 처음 값 <code>0</code>이 그대로 반환</li>
+              <li><code>list(range(1, 11))</code> = 1~10 → 짝수 2, 4, 6, 8, 10 → <code>5</code></li>
+              <li><code>return</code>이 <code>for</code>와 같은 들여쓰기 → 반복이 <b>다 끝난 뒤</b> 한 번 실행</li>
+              <li>만약 <code>return</code>을 <code>for</code> 안으로 들여쓰면 첫 원소만 보고 끝나 버림 (중급 5에서 이어짐)</li>
+            </ul>
+            <p class="real"><b>실제 코드에서</b> · "0으로 시작 → 반복하며 조건 맞으면 1씩 더하기 → 끝나고 반환"은 개수 세기의 기본 모양. 이 모양을 보면 "무엇을 세는 함수인가?"만 찾으면 됨</p>
+          </div>
+        </details>
+      </article>
+    </section>
+
+    <!-- ================= 중급 ================= -->
+    <section class="level mid" data-level="mid">
+      <div class="level-head">
+        <span class="tag">중급</span>
+        <h2>return과 조건·반복이 섞일 때</h2>
+        <p><code>return</code>이 함수를 끝내는 시점, 조건에 없는 값이 들어왔을 때, 반복문 안의 함수 호출을 따라갑니다.</p>
+      </div>
+
+      <article class="problem" id="m1">
+        <div class="p-head"><span class="p-id">중급 1</span><span class="p-type">읽기</span><h3>성적 등급</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">def grade(score):
+    if score &gt;= 90:
+        return 'A'
+    if score &gt;= 80:
+        return 'B'
+    return 'C'
+    print('여기는 실행될까?')
+
+print(grade(95), grade(85), grade(80), grade(50))</code></pre>
+          <ul>
+            <li>출력을 예측하기</li>
+            <li><code>'여기는 실행될까?'</code>가 출력되는 경우가 있는지 말하기</li>
+            <li><code>elif</code>를 안 썼는데도 <code>95</code>가 <code>'B'</code>가 되지 않는 이유 설명하기</li>
+          </ul>
+        </div>
+        <div class="memo"><label for="memo-m1">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m1"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">A B B C</code></pre>
+            <ul>
+              <li><code>return</code>을 만나면 함수는 <b>즉시 끝남</b></li>
+              <li><code>95</code>: 첫 <code>if</code>가 참 → <code>'A'</code> 반환하고 끝. 두 번째 <code>if</code>는 검사조차 안 함</li>
+              <li><code>80</code>: <code>&gt;=</code>라서 80도 포함 → <code>'B'</code></li>
+              <li><code>50</code>: 두 조건 모두 거짓 → 마지막 <code>return 'C'</code></li>
+              <li><code>print('여기는 실행될까?')</code>는 바로 위 <code>return 'C'</code> 때문에 <b>절대</b> 실행 안 됨 (죽은 코드)</li>
+            </ul>
+            <p class="real"><b>실제 코드에서</b> · <code>return</code> 바로 아래 같은 들여쓰기에 코드가 있으면 거의 항상 실수. 지우거나 위로 옮겨야 함</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="m2">
+        <div class="p-head"><span class="p-id">중급 2</span><span class="p-type">읽기 + 버그</span><h3>숫자 읽기 함수의 빈틈</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">def korean_number(num):
+    if num == 1:
+        return '일'
+    elif num == 2:
+        return '이'
+    elif num == 3:
+        return '삼'
+
+print(korean_number(2))
+print(korean_number(4))
+print(korean_number(1) + korean_number(3))
+print(korean_number(1) + korean_number(4))</code></pre>
+          <ul>
+            <li>출력을 예측하기. 에러가 난다면 몇 번째 <code>print</code>에서 나는지 찾기</li>
+            <li><code>korean_number(4)</code>가 에러를 내지 않는 이유 설명하기</li>
+            <li>3.2.1 연습 문제가 "1 이상 10 이하라고 가정"이라고 쓴 이유 말하기</li>
+          </ul>
+        </div>
+        <div class="memo"><label for="memo-m2">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m2"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">이
+None
+일삼
+TypeError: can only concatenate str (not "NoneType") to str</code></pre>
+            <ul>
+              <li><code>4</code>는 어떤 조건에도 안 맞음 → <code>return</code>을 한 번도 안 만나고 함수 끝 → 자동으로 <code>None</code></li>
+              <li><code>None</code>을 출력만 하는 것은 에러가 아님. 그래서 둘째 줄은 조용히 <code>None</code></li>
+              <li>셋째 줄: <code>'일' + '삼'</code> → 문자열 이어 붙이기 → <code>일삼</code></li>
+              <li>넷째 줄: <code>'일' + None</code> → 문자열과 <code>None</code>은 못 붙임 → 에러</li>
+              <li>문제의 원인은 둘째 줄에서 이미 생겼지만, 에러는 <b>그 값을 쓰는 순간</b>에야 드러남</li>
+            </ul>
+            <p class="real"><b>실제 코드에서</b> · 에러 메시지에 <code>NoneType</code>이 보이면, 그 값을 만든 함수에 <b><code>return</code>이 없는 길</b>이 있는지 찾기</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="m3">
+        <div class="p-head"><span class="p-id">중급 3</span><span class="p-type">읽기</span><h3>타이머 표시</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">def to_clock(total):
+    minutes = total // 60
+    seconds = total % 60
+    return f'{minutes:2d}:{seconds:2d}'
+
+print(to_clock(125))
+print(to_clock(3599))
+print(to_clock(3600))
+print(to_clock(59))</code></pre>
+          <ul>
+            <li>출력 네 줄을 예측하기 (공백 위치까지)</li>
+            <li>실제 타이머 화면으로 보면 어색한 줄을 모두 찾고 이유 말하기</li>
+          </ul>
+        </div>
+        <div class="memo"><label for="memo-m3">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m3"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+<div class="sol-body">
+<pre class="out"><code class="nohighlight"> 2: 5
+59:59
+60: 0
+ 0:59</code></pre>
+            <ul>
+              <li><code>125 // 60 = 2</code>, <code>125 % 60 = 5</code> (1장의 몫과 나머지)</li>
+              <li><code>:2d</code>는 2칸을 맞추되 <b>빈칸을 공백으로</b> 채움 → <code> 2: 5</code></li>
+              <li>어색한 점 1: 타이머는 보통 <code>02:05</code>처럼 <b>0으로</b> 채움 → 고급 7에서 이어짐</li>
+              <li>어색한 점 2: <code>3600</code>초는 1시간인데 <code>60: 0</code>으로 나옴. 시간 단위를 다루지 않는 함수</li>
+              <li>함수가 문자열을 <b>반환</b>하므로 <code>print</code>로 감싸야 보임</li>
+            </ul>
+            <p class="real"><b>실제 코드에서</b> · 서식 결과는 눈으로 확인하기 전까지 모름. 0, 59, 60, 3600처럼 <b>경계 값</b>을 넣어 보는 습관</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="m4">
+        <div class="p-head"><span class="p-id">중급 4</span><span class="p-type">읽기</span><h3>함수를 부르는 반복문</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">def multi(m):
+    for n in range(1, 4):
+        print(f'{m} * {n} = {m*n:2d}')
+
+for i in range(2, 4):
+    multi(i)
+    print('---')</code></pre>
+          <ul>
+            <li>출력을 모두 예측하기</li>
+            <li><code>multi(i)</code>를 부를 때 <code>i</code>의 값이 함수 안의 어떤 이름으로 들어가는지 말하기</li>
+            <li>두 <code>range</code>를 3.1.2 구구단처럼 <code>range(1, 10)</code>과 <code>range(2, 10)</code>으로 바꾸면 출력이 몇 줄이 될지 계산하기</li>
+          </ul>
+        </div>
+        <div class="memo"><label for="memo-m4">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m4"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">2 * 1 =  2
+2 * 2 =  4
+2 * 3 =  6
+---
+3 * 1 =  3
+3 * 2 =  6
+3 * 3 =  9
+---</code></pre>
+            <ul>
+              <li>바깥 반복 <code>i</code>: 2, 3 (<code>range(2, 4)</code>는 4를 포함하지 않음)</li>
+              <li><code>multi(i)</code> → <code>i</code>가 매개변수 <code>m</code>으로 들어감</li>
+              <li>안쪽 반복 <code>n</code>: 1, 2, 3 → 한 번 부를 때 3줄</li>
+              <li><code>print('---')</code>은 바깥 <code>for</code> 안 → 단마다 한 번</li>
+              <li>구구단 범위로 바꾸면: 9줄 × 8단 + <code>---</code> 8줄 = <b>80줄</b></li>
+            </ul>
+            <p class="real"><b>실제 코드에서</b> · 반복문 안에서 함수를 부르면 사실상 "반복문 안의 반복문". 출력 줄 수 = 바깥 횟수 × 안쪽 횟수로 먼저 어림하기</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="m5">
+        <div class="p-head"><span class="p-id">중급 5</span><span class="p-type">읽기</span><h3>첫 번째 배수 찾기</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">def find_first(nums, k):
+    for x in nums:
+        if x % k == 0:
+            return x
+    return -1
+
+print(find_first([5, 7, 9, 12], 3))
+print(find_first([5, 7, 11], 3))
+print(find_first([10, 20], 5))
+print(find_first([], 5))</code></pre>
+          <ul>
+            <li>출력 네 줄을 예측하기</li>
+            <li>첫 줄이 <code>12</code>가 아닌 이유 설명하기</li>
+            <li>누군가 마지막 <code>return -1</code>을 한 칸 더 들여써서 <code>if</code>와 같은 줄에 맞췄다면, 첫 줄의 결과가 어떻게 바뀔지 예측하기</li>
+          </ul>
+        </div>
+        <div class="memo"><label for="memo-m5">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m5"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">9
+-1
+10
+-1</code></pre>
+            <ul>
+              <li><code>9 % 3 == 0</code> → <code>return 9</code>로 함수가 끝남. <code>12</code>까지 가지 않음</li>
+              <li>반복이 끝날 때까지 <code>return</code>을 못 만나면 → 마지막 <code>return -1</code></li>
+              <li><code>-1</code>은 "못 찾았다"는 신호로 약속한 값. 리스트 번호나 개수로는 나올 수 없는 값이라 구분이 쉬움</li>
+            </ul>
+            <h4>return -1을 for 안으로 들여쓰면</h4>
+<pre><code class="language-python">    for x in nums:
+        if x % k == 0:
+            return x
+        return -1</code></pre>
+            <ul>
+              <li>첫 원소 <code>5</code>를 보고 조건이 거짓 → 바로 <code>return -1</code>로 끝남 → 결과 <code>-1</code></li>
+              <li>첫 원소만 검사하는 함수가 되어 버림. <code>[9, 5]</code>처럼 첫 원소가 맞을 때만 정상으로 보여서 버그를 늦게 발견함</li>
+              <li>빈 리스트는 반복이 한 번도 안 돌아 <code>return</code>을 못 만남 → <code>None</code></li>
+            </ul>
+            <p class="real"><b>실제 코드에서</b> · "찾으면 즉시 반환, 끝까지 없으면 기본값 반환"은 검색 함수의 표준 모양. <code>return</code> 두 개의 <b>들여쓰기 차이</b>가 핵심</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="m6">
+        <div class="p-head"><span class="p-id">중급 6</span><span class="p-type">읽기</span><h3>0으로 나누기를 막는 순서</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">def safe_ratio(a, b):
+    return b != 0 and a / b &gt; 1
+
+def unsafe_ratio(a, b):
+    return a / b &gt; 1 and b != 0
+
+print(safe_ratio(6, 3), safe_ratio(6, 0), safe_ratio(2, 3))
+print(unsafe_ratio(6, 0))</code></pre>
+          <ul>
+            <li>첫 <code>print</code>의 출력을 예측하기</li>
+            <li>둘째 <code>print</code>에서 무슨 일이 생기는지 예측하기</li>
+            <li>두 함수는 <code>and</code> 양쪽의 순서만 다름. 결과가 달라지는 이유를 2.2.7 내용으로 설명하기</li>
+          </ul>
+        </div>
+        <div class="memo"><label for="memo-m6">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m6"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">True False False
+ZeroDivisionError: division by zero</code></pre>
+            <ul>
+              <li><code>return</code> 뒤의 <b>식 전체</b>가 계산되어 <code>True</code> / <code>False</code>로 돌아감</li>
+              <li><code>and</code>는 <b>왼쪽이 거짓이면 오른쪽을 계산하지 않음</b></li>
+              <li><code>safe_ratio(6, 0)</code>: <code>0 != 0</code>이 거짓 → 나눗셈을 아예 안 함 → <code>False</code></li>
+              <li><code>unsafe_ratio(6, 0)</code>: 왼쪽 <code>6 / 0</code>부터 계산 → 그 자리에서 에러</li>
+              <li><code>safe_ratio(2, 3)</code>: <code>2 / 3 = 0.66...</code>은 1보다 작음 → <code>False</code></li>
+            </ul>
+            <p class="real"><b>실제 코드에서</b> · <code>and</code> 왼쪽에 "안전 검사", 오른쪽에 "위험한 계산"을 두는 모양이 자주 나옴. 순서를 바꾸면 안 되는 이유가 이것</p>
+          </div>
+        </details>
+      </article>
+    </section>
+
+    <!-- ================= 고급 ================= -->
+    <section class="level adv" data-level="adv">
+      <div class="level-head">
+        <span class="tag">고급</span>
+        <h2>실제 코드에서 헷갈리는 지점</h2>
+        <p><code>None</code>이 퍼지는 버그, 함수 안에서 바뀌는 리스트와 안 바뀌는 숫자, 경계 값에서 틀리는 함수를 읽어 냅니다.</p>
+      </div>
+
+      <article class="problem" id="a1">
+        <div class="p-head"><span class="p-id">고급 1</span><span class="p-type">버그</span><h3>보너스 합계가 안 된다</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">def add_bonus(scores):
+    for s in scores:
+        print(s + 5)
+
+total = 0
+result = add_bonus([80, 90])
+print(result)
+total = total + result
+print(total)</code></pre>
+          <ul>
+            <li>작성자는 "보너스 5점을 더한 점수의 합계"를 <code>total</code>에 담으려고 했음</li>
+            <li>실제 출력을 예측하고, 에러가 나는 줄을 찾기</li>
+            <li>화면에 <code>85</code>, <code>95</code>가 보이니까 작성자는 함수가 잘 된다고 착각했음. 무엇을 착각했는지 설명하기</li>
+          </ul>
+        </div>
+        <div class="memo"><label for="memo-a1">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a1"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">85
+95
+None
+TypeError: unsupported operand type(s) for +: 'int' and 'NoneType'</code></pre>
+            <ul>
+              <li><code>85</code>, <code>95</code>는 함수 안의 <code>print</code>가 찍은 것. <b>보이기만</b> 하고 돌려주지는 않음</li>
+              <li><code>add_bonus</code>에는 <code>return</code>이 없음 → <code>result = None</code></li>
+              <li><code>total = 0 + None</code>에서 에러 → 마지막 <code>print(total)</code>까지 가지 못함</li>
+              <li>착각: "화면에 보였다 = 값을 얻었다"</li>
+            </ul>
+            <h4>작성자의 의도대로 읽히는 코드</h4>
+<pre><code class="language-python">def add_bonus(scores):
+    total = 0
+    for s in scores:
+        total = total + s + 5
+    return total
+
+print(add_bonus([80, 90]))   # 180</code></pre>
+            <ul>
+              <li>반복하며 합계를 모으고, 끝난 뒤 <code>return</code></li>
+              <li>화면 출력은 함수 밖에서 필요할 때만</li>
+            </ul>
+            <p class="real"><b>실제 코드에서</b> · 계산하는 함수는 <code>return</code>, 보여 주는 일은 부르는 쪽에서. 이렇게 나눠 두면 결과를 저장·재사용할 수 있음</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="a2">
+        <div class="p-head"><span class="p-id">고급 2</span><span class="p-type">읽기</span><h3>명단에서 첫 사람 빼기</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">def drop_first(names):
+    names.remove(names[0])
+    return len(names)
+
+members = ['지민', '서준', '하은']
+n = drop_first(members)
+print(n, members)
+n = drop_first(members)
+print(n, members)</code></pre>
+          <ul>
+            <li>출력 두 줄을 예측하기</li>
+            <li>함수 안에서는 <code>names</code>만 건드렸는데 밖의 <code>members</code>도 바뀌는지 판단하기</li>
+            <li>1장 "변수는 이름표" 비유로 설명하기</li>
+          </ul>
+        </div>
+        <div class="memo"><label for="memo-a2">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a2"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">2 ['서준', '하은']
+1 ['하은']</code></pre>
+            <ul>
+              <li>호출하는 순간 <code>names = members</code> → 같은 리스트에 <b>이름표가 하나 더</b> 붙은 것</li>
+              <li><code>names.remove(...)</code>는 그 리스트 <b>자체</b>를 고침 → <code>members</code>로 봐도 바뀌어 있음</li>
+              <li><code>names[0]</code>은 호출할 때마다 그 순간의 첫 원소 → 처음엔 <code>'지민'</code>, 다음엔 <code>'서준'</code></li>
+              <li>함수가 돌려준 값(<code>n</code>)은 개수뿐이지만, 리스트는 <b>돌려주지 않아도</b> 바뀜</li>
+            </ul>
+            <p class="real"><b>실제 코드에서</b> · 리스트를 받는 함수는 "원본을 고치는가?"를 먼저 확인하기. 고친다면 호출 전후로 원본 값이 달라짐 (고급 3과 비교)</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="a3">
+        <div class="p-head"><span class="p-id">고급 3</span><span class="p-type">읽기</span><h3>단리와 복리</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">def simple_amount(p, r, t):
+    return p * (1 + r * t)
+
+def compound_amount(p, r, years):
+    y = 0
+    while y &lt; years:
+        p = p * (1 + r)
+        y += 1
+    return p
+
+principal = 1000000
+for year in range(1, 4):
+    s = simple_amount(principal, 0.05, year)
+    c = compound_amount(principal, 0.05, year)
+    print(year, s, c, int(c) - int(s))
+print(principal)</code></pre>
+          <ul>
+            <li>출력 네 줄을 예측하기</li>
+            <li><code>compound_amount</code> 안에서 <code>p</code>를 계속 다시 대입하는데, 마지막 <code>print(principal)</code>은 무엇이 나오는지 판단하기</li>
+            <li>고급 2의 리스트와 결과가 다른 이유 설명하기</li>
+          </ul>
+        </div>
+        <div class="memo"><label for="memo-a3">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a3"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">1 1050000.0 1050000.0 0
+2 1100000.0 1102500.0 2500
+3 1150000.0 1157625.0 7625
+1000000</code></pre>
+            <ul>
+              <li>단리(3.2.3 공식): 해마다 원금의 5%인 50000씩 늘어남</li>
+              <li>복리(<code>while</code>): 해마다 <b>늘어난 금액</b>에 1.05를 곱함 → 이자에 이자가 붙음</li>
+              <li><code>int()</code>로 소수점을 버리고 차이를 구함 → 2년 2500, 3년 7625</li>
+            </ul>
+            <div class="table-scroll fill">
+              <table>
+                <thead><tr><th>year = 3일 때</th><th>y</th><th>p</th></tr></thead>
+                <tbody>
+                  <tr><td>시작</td><td>0</td><td>1000000</td></tr>
+                  <tr><td>1회</td><td>1</td><td>1050000.0</td></tr>
+                  <tr><td>2회</td><td>2</td><td>1102500.0</td></tr>
+                  <tr><td>3회</td><td>3</td><td>1157625.0</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <ul>
+              <li><code>principal</code>은 끝까지 <code>1000000</code></li>
+              <li><code>p = p * (1 + r)</code>는 <code>p</code> 이름표를 <b>새 숫자로 옮겨 붙일</b> 뿐. 원래 숫자나 <code>principal</code>은 그대로</li>
+              <li>고급 2의 <code>.remove()</code>는 리스트 <b>자체를 고친</b> 것이라 밖에서도 보임</li>
+            </ul>
+            <p class="real"><b>실제 코드에서</b> · 매개변수에 <code>=</code>로 다시 대입하는 것은 밖에 영향 없음. <code>.remove()</code>처럼 <b>점(.)으로 고치는</b> 동작은 밖의 리스트까지 바꿈</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="a4">
+        <div class="p-head"><span class="p-id">고급 4</span><span class="p-type">읽기</span><h3>자릿수 함수 두 개</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">def num_of_digits(num):
+    return len(str(num))
+
+def num_of_digits2(num):
+    count = 0
+    while num &gt; 0:
+        num = num // 10
+        count += 1
+    return count</code></pre>
+          <ul>
+            <li>두 함수 모두 3.1.1 자릿수 문제의 풀이. 아래 표를 채우기</li>
+          </ul>
+          <div class="table-scroll fill">
+            <table>
+              <thead><tr><th>입력</th><th>12345</th><th>0</th><th>-120</th><th>3.14</th><th>2 ** 32</th></tr></thead>
+              <tbody>
+                <tr><td><code>num_of_digits</code></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td><code>num_of_digits2</code></td><td></td><td></td><td></td><td></td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <ul>
+            <li><code>num_of_digits2(12345)</code>에서 <code>num</code>과 <code>count</code>가 어떻게 변하는지 추적하기</li>
+            <li>두 함수가 "틀리는 입력"을 각각 찾고, 어느 쪽이 더 믿을 만한지 이야기하기</li>
+          </ul>
+        </div>
+        <div class="memo"><label for="memo-a4">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a4"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+            <div class="table-scroll fill">
+              <table>
+                <thead><tr><th>입력</th><th>12345</th><th>0</th><th>-120</th><th>3.14</th><th>2 ** 32</th></tr></thead>
+                <tbody>
+                  <tr><td><code>num_of_digits</code></td><td>5</td><td>1</td><td>4</td><td>4</td><td>10</td></tr>
+                  <tr><td><code>num_of_digits2</code></td><td>5</td><td>0</td><td>0</td><td>1</td><td>10</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="table-scroll fill">
+              <table>
+                <thead><tr><th>반복</th><th>num</th><th>count</th></tr></thead>
+                <tbody>
+                  <tr><td>시작</td><td>12345</td><td>0</td></tr>
+                  <tr><td>1</td><td>1234</td><td>1</td></tr>
+                  <tr><td>2</td><td>123</td><td>2</td></tr>
+                  <tr><td>3</td><td>12</td><td>3</td></tr>
+                  <tr><td>4</td><td>1</td><td>4</td></tr>
+                  <tr><td>5</td><td>0</td><td>5</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <ul>
+              <li><code>num_of_digits2</code>: 10으로 나눈 몫을 반복해서 구하며 끝자리를 하나씩 떼어 냄</li>
+              <li><code>0</code>: <code>while 0 &gt; 0</code>이 처음부터 거짓 → 한 번도 안 돎 → <code>0</code>자리 (틀림)</li>
+              <li><code>-120</code>: 음수라 역시 한 번도 안 돎 → <code>0</code> (틀림). <code>num_of_digits</code>는 <code>-</code>까지 세서 <code>4</code> (역시 틀림)</li>
+              <li><code>3.14</code>: 문자열 버전은 <code>.</code>까지 세서 <code>4</code>, 나눗셈 버전은 <code>3.14 // 10 = 0.0</code>이 되어 <code>1</code></li>
+              <li>결론: 둘 다 <b>양의 정수</b>에서만 맞음. 틀리는 방식이 서로 다를 뿐</li>
+            </ul>
+            <p class="real"><b>실제 코드에서</b> · 같은 일을 하는 함수 두 개를 비교할 때는 0, 음수, 소수 같은 <b>경계 입력</b>을 표로 돌려 보기. 정상 입력에서는 차이가 안 보임</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="a5">
+        <div class="p-head"><span class="p-id">고급 5</span><span class="p-type">읽기 + 버그</span><h3>소수 판별기의 구멍</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">def check(n):
+    for d in range(2, n):
+        if n % d == 0:
+            print(f'{n} = {d} * {n // d}')
+            break
+    else:
+        print(f'{n}은 소수')
+
+check(15)
+check(13)
+check(49)
+check(2)
+check(1)</code></pre>
+          <ul>
+            <li>출력 다섯 줄을 예측하기</li>
+            <li><code>else</code>가 <code>if</code>가 아니라 <code>for</code>와 같은 들여쓰기인 것에 주의. 언제 실행되는지 2.5 내용으로 설명하기</li>
+            <li>수학적으로 틀린 출력을 찾고, 왜 그렇게 나오는지 <code>range</code>로 설명하기</li>
+          </ul>
+        </div>
+        <div class="memo"><label for="memo-a5">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a5"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">15 = 3 * 5
+13은 소수
+49 = 7 * 7
+2은 소수
+1은 소수</code></pre>
+            <ul>
+              <li><code>for</code>-<code>else</code>: 반복이 <code>break</code> 없이 <b>끝까지</b> 돌았을 때만 <code>else</code> 실행</li>
+              <li><code>15</code>: <code>d = 2</code>는 안 나눠짐, <code>d = 3</code>에서 나눠짐 → 출력 후 <code>break</code> → <code>else</code> 건너뜀</li>
+              <li><code>13</code>: 2~12 어느 것으로도 안 나눠짐 → <code>else</code> 실행</li>
+              <li><code>2</code>: <code>range(2, 2)</code>는 비어 있음 → 반복 0번 → <code>break</code>가 없었으니 <code>else</code> → "소수" (맞음)</li>
+              <li><code>1</code>: <code>range(2, 1)</code>도 비어 있음 → 같은 이유로 "소수" → <b>틀림</b>. 1은 소수가 아님</li>
+              <li>한 번도 안 돈 반복도 "끝까지 돈 것"으로 친다는 점이 구멍</li>
+            </ul>
+            <p class="real"><b>실제 코드에서</b> · <code>range</code>의 시작이 끝보다 크거나 같으면 반복이 0번. 이런 입력은 <code>for</code> 전에 <code>if n &lt; 2:</code> 같은 검사로 따로 처리하는 경우가 많음</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="a6">
+        <div class="p-head"><span class="p-id">고급 6</span><span class="p-type">읽기</span><h3>무엇이든 세 배</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">def triple(x):
+    return x * 3
+
+print(triple(2), triple('ab'), triple([1, 2]))
+print(triple('3') + '0')
+print(triple(int('3')) + 0)
+print(triple(0.1))
+print(triple(0.1) == 0.3)</code></pre>
+          <ul>
+            <li>출력 다섯 줄을 예측하기</li>
+            <li>둘째 줄과 셋째 줄이 다른 이유를 따옴표 기준으로 설명하기</li>
+            <li>마지막 줄이 <code>True</code>가 아니라면 그 이유 말하기</li>
+          </ul>
+        </div>
+        <div class="memo"><label for="memo-a6">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a6"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">6 ababab [1, 2, 1, 2, 1, 2]
+3330
+9
+0.30000000000000004
+False</code></pre>
+            <ul>
+              <li><code>*</code>는 값의 종류에 따라 다르게 동작: 숫자는 곱셈, 문자열·리스트는 반복 (3.2.2 문제 1)</li>
+              <li><code>triple('3')</code> → <code>'333'</code> → <code>+ '0'</code>은 이어 붙이기 → <code>'3330'</code></li>
+              <li><code>int('3')</code> → 숫자 <code>3</code> → <code>9</code> → <code>+ 0</code>은 덧셈 → <code>9</code></li>
+              <li><code>0.1 * 3</code>은 컴퓨터 실수 오차로 <code>0.30000000000000004</code> (1장 <code>0.1 + 0.2</code>와 같은 원인)</li>
+              <li>그래서 <code>== 0.3</code>은 <code>False</code></li>
+            </ul>
+            <p class="real"><b>실제 코드에서</b> · 같은 함수라도 <b>무엇을 넣었느냐</b>에 따라 결과의 종류가 달라짐. <code>input()</code>으로 받은 값은 문자열이라 <code>int()</code>를 빼먹으면 곱셈 대신 반복이 일어남</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="a7">
+        <div class="p-head"><span class="p-id">고급 7</span><span class="p-type">추론</span><h3>처음 보는 문법 읽어 내기</h3></div>
+        <div class="p-body">
+          <p>아직 배우지 않은 문법이 두 가지 섞여 있습니다. 결과를 보고 뜻을 추측해 보세요.</p>
+<pre><code class="language-python">def split_time(total):
+    return total // 60, total % 60
+
+result = split_time(125)
+print(result)
+
+m, s = split_time(125)
+print(f'{m:02d}:{s:02d}')
+print(f'{m:2d}:{s:2d}')</code></pre>
+          <ul>
+            <li>실행하지 말고 출력 세 줄을 예측하기</li>
+            <li><code>return</code> 뒤에 쉼표로 값 두 개를 쓰면 무엇이 돌아오는지 추측하기 (힌트: 1장 <code>divmod()</code>의 결과 모양)</li>
+            <li><code>:02d</code>의 <code>0</code>이 하는 일을 <code>:2d</code>와 비교해 추측하기</li>
+            <li>중급 3의 어색했던 타이머를 이 문법으로 어떻게 고칠 수 있을지 말로 설명하기</li>
+          </ul>
+        </div>
+        <div class="memo"><label for="memo-a7">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a7"></textarea></div>
+        <details class="sol"><summary>해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">(2, 5)
+02:05
+ 2: 5</code></pre>
+            <ul>
+              <li><code>return 몫, 나머지</code> → 값 두 개가 괄호로 묶여 <b>하나의 묶음</b>으로 돌아옴. <code>divmod(125, 60)</code>과 같은 모양 <code>(2, 5)</code></li>
+              <li><code>m, s = ...</code> → 묶음을 풀어서 앞의 값은 <code>m</code>, 뒤의 값은 <code>s</code>에 순서대로 넣음</li>
+              <li><code>:02d</code> → 2칸을 맞추되 빈칸을 <b>0으로</b> 채움. <code>:2d</code>는 공백으로 채움</li>
+              <li>중급 3의 <code>to_clock</code>에서 <code>:2d</code>를 <code>:02d</code>로 바꾸면 <code>02:05</code>처럼 타이머다운 모양이 됨</li>
+              <li>이 묶음의 정식 이름은 <b>튜플</b>. 4.3에서 배움</li>
+            </ul>
+            <h4>처음 보는 문법을 만났을 때</h4>
+            <ul>
+              <li>먼저 출력을 보고 모양을 추측하기</li>
+              <li>이미 아는 것(<code>divmod()</code>, <code>:2d</code>)과 비교하기</li>
+              <li>값을 하나씩 바꿔 실행하며 추측이 맞는지 확인하기</li>
+            </ul>
+            <p class="real"><b>실제 코드에서</b> · 남의 코드는 늘 "아직 안 배운 문법"이 섞여 있음. 결과로 추측하고 확인하는 습관이 문법을 다 외우는 것보다 빠름</p>
+          </div>
+        </details>
+      </article>
+    </section>
+  </main>
+
+  <footer>교재: <a href="https://wikidocs.net/book/2">왕초보를 위한 Python: 쉽게 풀어 쓴 기초 문법과 실습</a> (위키독스) · 모든 결과는 Python 3.12에서 실행해 확인 · 교재 3장 문제를 풀다 막혔다면 <a href="../../beginner-python-ch03-qna.html">3장 문제 풀이와 질문 해설</a> · 앞 장 실습은 <a href="ch01-code-reading.html">1장</a>, <a href="ch02-code-reading.html">2장</a></footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>
+(function () {
+  if (window.hljs) {
+    hljs.configure({ ignoreUnescapedHTML: true });
+    document.querySelectorAll('pre code:not(.nohighlight)').forEach(function (el) {
+      if (!hljs.getLanguage('python-repl') && el.classList.contains('language-python-repl')) {
+        el.classList.replace('language-python-repl', 'language-python');
+      }
+      hljs.highlightElement(el);
+    });
+  }
+
+  // 메모: 이 브라우저에만 저장
+  var store = null;
+  try { store = window.localStorage; store.getItem('x'); } catch (e) { store = null; }
+  document.querySelectorAll('.memo textarea').forEach(function (ta) {
+    var key = 'py-ch03:' + ta.id;
+    try { var v = store && store.getItem(key); if (v) ta.value = v; } catch (e) {}
+    ta.addEventListener('input', function () {
+      try { store && store.setItem(key, ta.value); } catch (e) {}
+    });
+  });
+
+  // 난이도 필터
+  var buttons = document.querySelectorAll('.seg button');
+  var sections = document.querySelectorAll('[data-level]');
+  buttons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var f = btn.dataset.filter;
+      buttons.forEach(function (b) { b.setAttribute('aria-pressed', String(b === btn)); });
+      sections.forEach(function (s) {
+        var lv = s.dataset.level;
+        s.hidden = !(f === 'all' || lv === f);
+      });
+      window.scrollTo({ top: 0 });
+    });
+  });
+
+  // 목차 링크를 누르면 필터 해제
+  document.querySelectorAll('.toc a').forEach(function (a) {
+    a.addEventListener('click', function () {
+      var target = document.querySelector(a.getAttribute('href'));
+      var sec = target && target.closest('[data-level]');
+      if (sec && sec.hidden) document.getElementById('f-all').click();
+    });
+  });
+
+  // 해설 모두 펼치기 / 접기
+  var toggle = document.getElementById('toggle-sol');
+  toggle.addEventListener('click', function () {
+    var all = document.querySelectorAll('details.sol');
+    var open = toggle.dataset.open === '1';
+    all.forEach(function (d) { d.open = !open; });
+    toggle.dataset.open = open ? '0' : '1';
+    toggle.textContent = open ? '해설 모두 펼치기' : '해설 모두 접기';
+  });
+})();
+</script>
+</body>
+</html>
