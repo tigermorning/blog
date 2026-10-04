@@ -53,6 +53,11 @@ hcom status
    - 양방향 링크 연결: `multi-agent-ecosystem-tools.html`, `opencode-sisyphus-orchestration.html`
    - `node scripts/build-search-data.mjs` 재실행 완료 (227개 항목)
    - 목록 강조 규칙을 새로 만듦 — 아래 gotcha 참조
+8. **블로그 글 발행 (2026-10-04)** — `ko/pr-bottleneck-review-layers.html` 「PR 병목 고치기 — 에이전트 PR을 사람이 다 읽지 않아도 되는 조건」(커밋 9dcc1b2, push 함)
+   - 원재료: Matt Pocock "Fixing the PR Bottleneck"(AI Engineer Paris 2026, youtube `LlgiOCmFG_w`) + AgentOS 한국어 해설(`wi3tZ-c48YU`). 한국어 영상은 원본 클립 1:37~22:10을 그대로 담은 해설판 — 원본에만 있는 것은 도입 1분 반(병목은 AI 이전부터)·설명란의 AX 주장·마무리. 한국어 영상에만 있는 비유는 글에서 출처를 나눔
+   - 배치: `posts.html` 보충수업 책장 › 에이전트 설계 발표 노트(`#agent-talks`), `cca-exam-agent-anti-patterns.html` 함께 보기에서 링크, `node scripts/build-search-data.mjs` 재실행(251개)
+   - 확인: Pages 빌드 `built`, 글 주소 HTTP 200, 목록에 링크 1개 · 로컬 미리보기(8851)에서 SVG 글자 겹침 0·넘침 0, 375px 가로 스크롤 없음
+   - 슬라이드 화면은 못 봄(브라우저에서 영상이 검게 나옴) — 글에 화면 묘사 없음, 출처 줄에 밝힘
 
 ---
 
@@ -65,6 +70,8 @@ hcom status
 3. **사이드바 그룹 미정리** — 세션 약 100개 중 그룹 붙은 것 1개. 그 하나도 오분류(`english-lesson` 폴더 세션이 `Chinese-Lesson` 그룹에 들어감)
    - 우선순위 낮음. 검색 문제를 풀지 못함
 4. **"작업 단위마다 커밋" 규칙 미적용** — 자식 세션이 커밋을 안 하면 부모가 git으로도 진행 상황을 못 봄
+5. **PR 병목 글 남은 등록** — 양방향 링크 두 곳(`multi-agent-judging-records.html`·`agents-md-and-cache-economics.html`)은 "함께 보기" 절이 없어 안 넣음 · `ko/big-map-pillar.js` 관련 항목 추가 여부 미정 · `sitemap.xml` 은 손 관리로 보이고 2026-09-19 이후 갱신 없음(cca·하라리 글도 빠짐)
+   - 착수: 두 글에 "함께 보기" 절을 새로 둘지 사용자에게 물은 뒤, 새 글 링크 한 줄씩 → `node scripts/build-search-data.mjs`
 
 ---
 
