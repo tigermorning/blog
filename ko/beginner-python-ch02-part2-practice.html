@@ -34,43 +34,17 @@
 
     <p class="one-liner">1장 리스트·변수와 2장 후반부 and/or·for·for-else가 섞인 완성된 코드 3개를 보고, 코드를 짜지 않고 실행 결과만 예측해보는 읽기 문제예요.</p>
 
-    <div class="why-read">
-      <p class="why-read-title">이 글을 읽기 전에</p>
-      <dl>
-        <dt>어디쯤인가</dt>
-        <dd>보충수업 책장 › 파이썬 스터디 — 『왕초보를 위한 Python』 2장 후반부 읽기 문제. 시리즈 (2)/3</dd>
-        <dt>이런 게 궁금했다면</dt>
-        <dd>
-          <ul>
-            <li>and/or를 배웠는데, 실제 코드에서 어떤 모양으로 쓰이는지 보고 싶어요.</li>
-            <li>for + range(len())로 짠 코드를 보면, 각 줄이 정확히 뭘 하는지 헷갈려요.</li>
-            <li>for-else가 있는 코드를 남이 짜줬을 때, 그걸 읽고 결과를 바로 알 수 있을까요?</li>
-          </ul>
-        </dd>
-        <dt>읽고 나면 할 수 있는 것</dt>
-        <dd>
-          <ul>
-            <li>in과 and가 같이 있는 조건문을 보고 어떤 경우에 통과하는지 바로 읽을 수 있어요.</li>
-            <li>for + range(len()) 코드를 보고 반복마다 값이 어떻게 바뀌는지 따라갈 수 있어요.</li>
-            <li>for-else 코드를 보고 break를 타는 경우와 안 타는 경우를 구별해 결과를 예측할 수 있어요.</li>
-          </ul>
-        </dd>
-        <dt>모르면 이런 일이 생겨요</dt>
-        <dd>
-          <ul>
-            <li>and/or, for-else 문법을 눈으로만 읽고 넘어가면, 막상 남이 짠 코드에서 만났을 때 결과를 못 짐작해요.</li>
-            <li>AI가 짜준 코드에 이런 문법이 섞여 있으면, 맞게 짰는지 스스로 판단하지 못하고 그냥 믿게 돼요.</li>
-          </ul>
-        </dd>
-        <dt>어디에 쓰나</dt>
-        <dd>
-          <ul>
-            <li><strong>AI가 짜준 코드를 붙여넣기 전에, 이게 맞는 코드인지 먼저 읽고 확인하고 싶을 때.</strong> 세 문제 모두 코드를 안 짜고 읽기만 해서 판단하는 연습이에요.</li>
-            <li>while로 익힌 반복 패턴이 for/for-else로 바뀌면 어떻게 읽히는지 비교하고 싶을 때.</li>
-          </ul>
-        </dd>
-      </dl>
-    </div>
+    <h2><span class="hl">핵심 정리</span></h2>
+    <table>
+      <thead><tr><th>개념</th><th>한 줄 정리</th></tr></thead>
+      <tbody>
+        <tr><td><code>A and B</code></td><td>둘 다 참이어야 참이고, 왼쪽이 거짓이면 오른쪽은 보지 않는다.</td></tr>
+        <tr><td><code>x in 리스트</code></td><td>리스트 안에 x가 있으면 참이다.</td></tr>
+        <tr><td><code>for x in 리스트:</code></td><td>원소를 하나씩 꺼내 x에 담고 몸통을 되풀이한다.</td></tr>
+        <tr><td><code>range(len(cart))</code></td><td>인덱스 0부터 개수-1까지 만든다(개수는 빠짐).</td></tr>
+        <tr><td><code>for-else</code></td><td>else는 break 없이 끝까지 돌았을 때만 실행된다.</td></tr>
+      </tbody>
+    </table>
 
     <p>세 문제 모두 <a href="beginner-python-ch02-part2-notes.html">지난 글</a>에서 정리한 문법만으로 읽을 수 있어요. 1번은 지난 글의 "정문 출입" 비유, 3번은 "우편함" 비유를 그대로 코드로 옮긴 문제예요. 코드를 눈으로 따라가며 입력마다 결과를 예측해본 뒤, <a href="beginner-python-ch02-part2-answers.html">문제 해설</a>과 맞춰 보세요.</p>
 

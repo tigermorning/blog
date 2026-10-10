@@ -2,11 +2,11 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>왕초보를 위한 Python 3장 — 문제 풀이와 질문 해설 - Tigermorning</title>
-  <meta name="description" content="위키독스 『왕초보를 위한 Python』 3장(3.1~3.2.5) 함수와 return을 공부하며 생긴 질문 23개를 정리했습니다. def와 호출, 매개변수와 인수, print와 return의 차이, None, f-string과 :2d 서식, 구구단 함수, 숫자 읽기·자릿수·단리 이자 연습 문제 풀이 코드를 한 줄씩 해석합니다.">
+  <title>왕초보를 위한 Python 3장 전반부 — 문제 풀이와 해설 - Tigermorning</title>
+  <meta name="description" content="위키독스 『왕초보를 위한 Python』 3장(3.1~3.2.5) 함수와 return을 공부하며 막힌 곳을 핵심 정리와 해설로 풀었습니다. def와 호출, 매개변수와 인수, print와 return의 차이, None, f-string과 :2d 서식, 구구단 함수, 숫자 읽기·자릿수·단리 이자 연습 문제 풀이 코드를 한 줄씩 해석합니다.">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="왕초보를 위한 Python 3장 — 문제 풀이와 질문 해설">
-  <meta property="og:description" content="위키독스 『왕초보를 위한 Python』 3장(3.1~3.2.5) 함수와 return을 공부하며 생긴 질문 23개와 답을 정리했습니다.">
+  <meta property="og:title" content="왕초보를 위한 Python 3장 전반부 — 문제 풀이와 해설">
+  <meta property="og:description" content="위키독스 『왕초보를 위한 Python』 3장(3.1~3.2.5) 함수와 return을 공부하며 막힌 곳을 핵심 정리와 해설로 풀었습니다.">
   <meta property="og:url" content="https://tigermorning.github.io/blog/ko/beginner-python-ch03-qna.html">
   <meta property="og:locale" content="ko_KR">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -23,90 +23,50 @@
   <div id="sidebar-mount"></div>
 
   <main>
-    <h1><span class="hl">왕초보를 위한 Python 3장</span> — 문제 풀이와 질문 해설</h1>
+    <h1><span class="hl">왕초보를 위한 Python 3장 전반부</span> — 문제 풀이와 해설</h1>
     <p class="post-date">2026. 9. 30.</p>
     <p class="post-date">※ 이 글은 위키독스 <a href="https://wikidocs.net/book/2" target="_blank" rel="noopener">『왕초보를 위한 Python』</a> 3장의 본문과 연습 문제를 공부하면서 제가 던진 질문과 답을 정리한 것입니다. 교재 본문은 옮기지 않았으니, 문제 원문은 각 절의 링크에서 확인해 주세요. 3장 중 <b>3.1 함수 ~ 3.2.5 퀴즈</b>까지 다루고, 연습 문제는 교재 저자가 공개한 풀이 코드를 한 줄씩 해석하는 데 집중했어요.</p>
 
-    <p class="one-liner">3장에서 함수를 만들고 부르고 값을 돌려받다가 막힌 질문 23개를, 함수를 처음 보는 사람 기준으로 하나씩 풀어 쓴 해설이에요.</p>
+    <p class="one-liner">3장의 함수와 return을 한 줄 핵심 정리로 먼저 잡고, 막혔던 곳을 함수를 처음 보는 사람 기준으로 풀어 쓴 해설이에요.</p>
 
-    <div class="why-read">
-      <p class="why-read-title">이 글을 읽기 전에</p>
-      <dl>
-        <dt>어디쯤인가</dt>
-        <dd><a href="posts.html#python-basics-books">보충수업 책장 › 파이썬 스터디</a> — 『왕초보를 위한 Python』 3장(3.1 ~ 3.2.5) 해설. 2장 해설은 <a href="beginner-python-ch02-qna.html">여기</a>와 <a href="beginner-python-ch02-part2-notes.html">후반부 정리</a></dd>
-        <dt>이런 게 궁금했다면</dt>
-        <dd>
-          <ul>
-            <li>함수 안의 <code>a</code>, <code>b</code>는 어디서도 값을 정해 준 적이 없는데 어떻게 계산이 되지?</li>
-            <li><code>return y</code>랑 <code>print(y)</code>는 둘 다 35가 찍히던데, 뭐가 다른 거지?</li>
-            <li>남이 짠 풀이 코드 <code>print(len(str(num)))</code>는 어디서부터 읽어야 하지?</li>
-          </ul>
-        </dd>
-        <dt>읽고 나면 할 수 있는 것</dt>
-        <dd>
-          <ul>
-            <li>함수를 "만드는 줄"과 "실행하는 줄"을 구분해서, 코드가 실제로 어떤 순서로 도는지 따라갈 수 있어요.</li>
-            <li>함수를 부를 때 넣은 값이 함수 안의 어느 이름으로 들어가는지 짚을 수 있어요.</li>
-            <li>함수가 결과를 돌려주는지, 화면에 찍기만 하는지 코드만 보고 가려낼 수 있어요.</li>
-          </ul>
-        </dd>
-        <dt>모르면 이런 일이 생겨요</dt>
-        <dd>
-          <ul>
-            <li>화면에 결과가 찍혔으니 값을 받았다고 착각하고 그 값으로 계산을 이어 가다가, <code>NoneType</code>이 들어간 <code>TypeError</code>를 만나요. <a class="suspect-jump" href="#suspect-none">언제 의심하나 ↓</a></li>
-            <li><code>def</code>로 함수를 만들어 놓고 부르는 줄을 안 써서, 아무 일도 안 일어나는 이유를 한참 찾아요. <a class="suspect-jump" href="#suspect-no-call">언제 의심하나 ↓</a></li>
-            <li>인수 순서를 바꿔 넣어도 에러가 안 나서, 틀린 이자·넓이를 맞는 답인 줄 알고 넘어가요. <a class="suspect-jump" href="#suspect-arg-order">언제 의심하나 ↓</a></li>
-          </ul>
-        </dd>
-        <dt>어디에 쓰나</dt>
-        <dd>
-          <ul>
-            <li><strong>교재 3장 문제를 풀다 막혔을 때.</strong> 같은 절의 질문을 찾아 읽으면 돼요.</li>
-            <li>AI가 짜 준 코드에 <code>def</code>가 잔뜩 있어서 어디부터 읽어야 할지 모를 때.</li>
-          </ul>
-        </dd>
-      </dl>
-    </div>
-
-    <h2><span class="hl">질문 목록</span></h2>
+    <h2><span class="hl">핵심 정리</span></h2>
     <table>
-      <thead><tr><th>교재 절</th><th>질문</th></tr></thead>
+      <thead><tr><th>개념</th><th>한 줄 정리</th></tr></thead>
       <tbody>
-        <tr><td rowspan="7">3.1 함수</td><td><a href="#q1">Q1. 함수가 뭐예요? <code>len()</code>도 함수라는데요?</a></td></tr>
-        <tr><td><a href="#q2">Q2. <code>def</code>는 뭐예요?</a></td></tr>
-        <tr><td><a href="#q3">Q3. <code>boy()</code>를 치면 어떻게 두 줄이 나오나요?</a></td></tr>
-        <tr><td><a href="#q4">Q4. 매개변수가 뭐예요?</a></td></tr>
-        <tr><td><a href="#q5">Q5. <code>a_list</code>를 만들었는데 왜 <code>print a_list</code>가 아니라 <code>print list</code>예요?</a></td></tr>
-        <tr><td><a href="#q6">Q6. 이 절은 매개변수가 있는 함수와 없는 함수를 비교하는 내용인가요?</a></td></tr>
-        <tr><td><a href="#q7">Q7. 두 수 비교 과제의 답은요? <code>a</code>와 <code>b</code>를 정의 안 했잖아요?</a></td></tr>
-        <tr><td rowspan="3">3.1.1 연습 문제: 자릿수를 구하는 함수 만들기</td><td><a href="#q8">Q8. <code>print(len(str(num)))</code>는 어디서부터 읽나요?</a></td></tr>
-        <tr><td><a href="#q9">Q9. 도입부의 <code>_</code>, <code>8000_000_000</code>, <code>e+28</code>은 뭐예요?</a></td></tr>
-        <tr><td><a href="#q10">Q10. 이 풀이는 어떤 입력에서 틀리나요?</a></td></tr>
-        <tr><td rowspan="3">3.1.2 연습 문제: 구구단</td><td><a href="#q11">Q11. <code>f'...'</code>가 뭐였죠?</a></td></tr>
-        <tr><td><a href="#q12">Q12. <code>{m*n:2d}</code>에서 <code>:2d</code>는 무슨 뜻이에요?</a></td></tr>
-        <tr><td><a href="#q13">Q13. <code>multi(m)</code> 함수는 어떻게 읽나요?</a></td></tr>
-        <tr><td rowspan="3">3.2 반환(return) 문</td><td><a href="#q14">Q14. <code>return y</code>와 <code>print(y)</code>는 어떻게 달라요?</a></td></tr>
-        <tr><td><a href="#q15">Q15. 셸에서는 둘 다 35가 보이던데요?</a></td></tr>
-        <tr><td><a href="#q16">Q16. <code>return</code> 뒤에 <code>1 + 2 == int(ans)</code> 같은 식을 써도 되나요?</a></td></tr>
-        <tr><td rowspan="2">3.2.1 연습 문제: 숫자 읽기 함수(1~10)</td><td><a href="#q17">Q17. <code>return</code>이 열 개인데 어떻게 동작해요? 11을 넣으면요?</a></td></tr>
-        <tr><td><a href="#q18">Q18. 리스트로 한 줄에 줄인 버전은 왜 0에서 이상한 답을 내나요?</a></td></tr>
-        <tr><td rowspan="2">3.2.2 연습 문제: 함수 정의하기</td><td><a href="#q19">Q19. <code>triple()</code> 한 줄로 숫자와 문자열을 둘 다 처리하는 이유는?</a></td></tr>
-        <tr><td><a href="#q20">Q20. <code>korean_age()</code>는 어떻게 읽나요?</a></td></tr>
-        <tr><td rowspan="2">3.2.3 연습 문제: 이자(단리) 계산</td><td><a href="#q21">Q21. 공식을 함수로 옮기면 인수는 어떻게 들어가나요?</a></td></tr>
-        <tr><td><a href="#q22">Q22. 원리금의 끝자리가 왜 계산할 때마다 달라요?</a></td></tr>
-        <tr><td>3.2.5 퀴즈</td><td><a href="#q23">Q23. 퀴즈 두 문제의 정답과 함정은?</a></td></tr>
+        <tr><td>함수</td><td>함수는 자주 하는 일에 붙인 이름이다. <code>len()</code></td></tr>
+        <tr><td><code>def</code></td><td><code>def</code>는 함수를 만드는 낱말이다. <code>def boy():</code></td></tr>
+        <tr><td>부르기</td><td>함수는 <code>이름()</code>으로 불러야 실행된다. <code>boy()</code></td></tr>
+        <tr><td>매개변수</td><td>매개변수는 값이 들어올 자리다. <code>def greet(name)</code></td></tr>
+        <tr><td>인수</td><td>인수는 그 자리에 넣는 실제 값이다. <code>greet('철수')</code></td></tr>
+        <tr><td>인수 순서</td><td>인수는 적은 순서대로 매개변수에 들어간다. <code>compare(5, 3)</code></td></tr>
+        <tr><td>밑줄 이름</td><td><code>print_list</code>는 밑줄로 이은 함수 이름 한 단어다.</td></tr>
+        <tr><td>자릿수</td><td>자릿수는 숫자를 글자로 바꾼 길이다. <code>len(str(num))</code></td></tr>
+        <tr><td><code>_</code>, <code>e+28</code></td><td>셸의 <code>_</code>는 바로 앞 결과이고, <code>e+28</code>은 ×10²⁸이다.</td></tr>
+        <tr><td>숫자 속 <code>_</code></td><td>숫자 속 밑줄은 읽기용 구분자다. <code>8000_000_000</code></td></tr>
+        <tr><td>f-string</td><td>f-string은 문자열 속 <code>{ }</code>를 값으로 바꾼다. <code>f'{m} * {n}'</code></td></tr>
+        <tr><td><code>:2d</code></td><td><code>:2d</code>는 정수를 2칸에 맞춰 오른쪽에 붙인다. <code>{m*n:2d}</code></td></tr>
+        <tr><td><code>return</code></td><td><code>return</code>은 함수를 끝내고 값을 호출한 자리로 돌려준다. <code>return y</code></td></tr>
+        <tr><td><code>print</code></td><td><code>print</code>는 화면에 보여 줄 뿐 값을 돌려주지 않는다. <code>print(y)</code></td></tr>
+        <tr><td><code>None</code></td><td><code>return</code>이 없으면 함수는 <code>None</code>을 돌려준다.</td></tr>
+        <tr><td>셸 자동 출력</td><td>셸은 돌려받은 값을 자동으로 보여 주지만 <code>.py</code> 파일은 안 보여 준다.</td></tr>
+        <tr><td><code>return</code> 뒤의 식</td><td><code>return</code> 뒤의 식은 계산한 결과가 돌아간다. <code>return 1 + 2 == 3</code></td></tr>
+        <tr><td>리스트 번호</td><td>리스트 번호 <code>[-1]</code>은 뒤에서 첫째이고, 범위를 넘으면 <code>IndexError</code>다.</td></tr>
+        <tr><td><code>x * 3</code></td><td><code>*</code>는 숫자면 곱하고 문자열·리스트면 반복한다. <code>'x' * 3</code></td></tr>
+        <tr><td>한국 나이</td><td>세는 나이는 올해에서 태어난 해를 빼고 1을 더한다. <code>year - birth + 1</code></td></tr>
+        <tr><td>단리</td><td>단리 이자는 원금 × 이율 × 기간이다. <code>p * r * t</code></td></tr>
+        <tr><td>소수 오차</td><td>소수 계산은 순서가 바뀌면 끝자리가 달라질 수 있다.</td></tr>
+        <tr><td>함수 재사용</td><td>함수 안에서 다른 함수를 부르려면 그 함수가 <code>return</code>해야 한다.</td></tr>
+        <tr><td>퀴즈</td><td><code>print_sum</code>의 결과는 <code>None</code>이고 <code>return_sum</code>의 결과는 <code>8</code>이다.</td></tr>
       </tbody>
     </table>
     <p>모든 코드는 Python 3.12에서 직접 실행해 결과를 확인했어요. 코드 블록의 <code>&gt;&gt;&gt;</code>와 <code>...</code>는 파이썬 대화형 셸의 입력 표시라서 따라 치지 않아요. 1장~3장 범위를 섞어 따로 만든 <a href="python-study/beginner-python/ch03-code-reading.html">3장 코드 읽기 실습</a>도 있어요.</p>
-    <p class="qna-controls">질문을 누르면 답이 펼쳐져요. <button type="button" data-qna="open">모두 펼치기</button> <button type="button" data-qna="close">모두 접기</button></p>
 
     <!-- ============ 3.1 ============ -->
     <hr>
     <h2><span class="hl">3.1 함수</span></h2>
     <p>원문: <a href="https://wikidocs.net/60" target="_blank" rel="noopener">wikidocs.net/60</a></p>
 
-    <details class="qna" id="q1">
-    <summary><h3>Q1. 함수가 뭐예요? <code>len()</code>도 함수라는데요?</h3></summary>
+    <h3 id="q1">함수가 뭐예요? <code>len()</code>도 함수라는데요?</h3>
     <p>함수는 <strong>자주 하는 일을 이름 하나로 묶어 둔 것</strong>이에요. 1장에서 리스트 원소 개수를 셀 때 쓴 <code>len()</code>이 바로 함수예요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
 <pre><code>&gt;&gt;&gt; a_list = [3, 4, 62, 27, 83, 956, 26, 58, 3, 78, 168, 64, 78]
@@ -124,10 +84,8 @@
         <tr><td>남이 만든 것을 가져오는 것</td><td><code>import math</code> 후 <code>math.sqrt()</code></td><td>1.1.2에서 맛보기, 5장에서 본격적으로</td></tr>
       </tbody>
     </table>
-    </details>
 
-    <details class="qna" id="q2">
-    <summary><h3>Q2. <code>def</code>는 뭐예요?</h3></summary>
+    <h3 id="q2"><code>def</code>는 뭐예요?</h3>
     <p><code>def</code>는 <strong>define(정의하다)</strong>의 줄임말이에요. "지금부터 함수를 하나 만들겠다"고 파이썬에 알려 주는 낱말이에요.</p>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 각 부분의 이름을 보여 주려는 예시예요</span></p>
 <pre><code>def boy():
@@ -147,10 +105,8 @@
       <li>끝의 콜론(<code>:</code>)이 빠지면 <code>SyntaxError</code>가 나요. <a href="beginner-python-ch02-qna.html#q1">2장의 while·if</a>와 같은 규칙이에요.</li>
       <li><code>def</code>는 파이썬이 쓰려고 정해 둔 낱말(예약어)이라 변수 이름으로 쓸 수 없어요. <code>if</code>, <code>for</code>, <code>while</code>도 마찬가지예요.</li>
     </ul>
-    </details>
 
-    <details class="qna" id="q3">
-    <summary><h3>Q3. <code>boy()</code>를 치면 어떻게 두 줄이 나오나요?</h3></summary>
+    <h3 id="q3"><code>boy()</code>를 치면 어떻게 두 줄이 나오나요?</h3>
     <p>함수는 <strong>만드는 순간</strong>과 <strong>실행하는 순간</strong>이 따로 있기 때문이에요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
 <pre><code>&gt;&gt;&gt; def boy():
@@ -173,10 +129,8 @@ You are a girl.</code></pre>
       <li>괄호 없이 <code>boy</code>만 입력하면 <code>&lt;function boy at 0x...&gt;</code>처럼 나와요. "이런 함수가 있다"는 정보일 뿐 <strong>실행은 안 돼요</strong>. 실행하려면 반드시 <code>()</code>를 붙여요. <a href="#suspect-no-call">이 증상이 보일 때 ↓</a></li>
     </ul>
     <p><strong>핵심 한 줄:</strong> <code>def</code>는 요리법을 적어 두는 일이고, <code>이름()</code>이 그 요리법대로 요리를 시작하는 일이에요.</p>
-    </details>
 
-    <details class="qna" id="q4">
-    <summary><h3>Q4. 매개변수가 뭐예요?</h3></summary>
+    <h3 id="q4">매개변수가 뭐예요?</h3>
     <p><strong>함수가 바깥에서 값을 받아 담아 두는 변수</strong>예요. 함수를 만들 때 괄호 안에 적어요.</p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK <span class="run-tag-why">— 파일로 저장해 실행하거나 셸에 한 줄씩 입력해요</span></p>
 <pre><code>def greet(name):          # name = 매개변수
@@ -204,10 +158,8 @@ greet('영희')</code></pre>
       </tbody>
     </table>
     <p><strong>핵심 한 줄:</strong> 매개변수는 "값이 들어올 자리", 인수는 "그 자리에 실제로 들어간 값"이에요.</p>
-    </details>
 
-    <details class="qna" id="q5">
-    <summary><h3>Q5. <code>a_list</code>를 만들었는데 왜 <code>print a_list</code>가 아니라 <code>print list</code>예요?</h3></summary>
+    <h3 id="q5"><code>a_list</code>를 만들었는데 왜 <code>print a_list</code>가 아니라 <code>print list</code>예요?</h3>
     <p><code>print list</code>가 아니라 <strong><code>print_list</code> 한 단어</strong>예요. 밑줄(<code>_</code>)로 이어진 함수 이름이라 띄어 읽으면 안 돼요.</p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
 <pre><code>def print_list(a):     # print_list = 함수 이름, a = 매개변수
@@ -224,19 +176,17 @@ print_list(a_list)     # a_list를 print_list 함수에 넣어 실행</code></pr
     <p>실행 순서를 따라가면 이래요.</p>
     <ol>
       <li><code>print_list(a_list)</code>를 불러요.</li>
-      <li>함수 안에서 <code>a = a_list</code>가 돼요 (<a href="#q4">Q4</a>의 매개변수가 값을 받는 순간).</li>
+      <li>함수 안에서 <code>a = a_list</code>가 돼요 (<a href="#q4">매개변수</a>가 값을 받는 순간).</li>
       <li><code>for i in a:</code>가 원소를 하나씩 꺼내 <code>print(i)</code>로 출력해요 (<a href="beginner-python-ch02-part2-notes.html">2장 후반부의 for 문</a>).</li>
     </ol>
-    </details>
 
-    <details class="qna" id="q6">
-    <summary><h3>Q6. 이 절은 매개변수가 있는 함수와 없는 함수를 비교하는 내용인가요?</h3></summary>
+    <h3 id="q6">이 절은 매개변수가 있는 함수와 없는 함수를 비교하는 내용인가요?</h3>
     <p>반은 맞아요. 이 절은 함수를 <strong>처음 소개하는</strong> 글이고, 두 종류를 나란히 보여 주는 건 뒷부분이에요. 흐름은 네 단계예요.</p>
     <ol>
-      <li><strong>함수는 이미 써 봤다</strong> — <code>len()</code>이 함수였다 (<a href="#q1">Q1</a>)</li>
-      <li><strong>매개변수 있는 함수 만들기</strong> — <code>print_list(a)</code> (<a href="#q5">Q5</a>)</li>
-      <li><strong>매개변수 없는 함수 만들기</strong> — <code>boy()</code> (<a href="#q3">Q3</a>)</li>
-      <li><strong>직접 만들어 보기</strong> — 두 수 비교 과제 (<a href="#q7">Q7</a>)</li>
+      <li><strong>함수는 이미 써 봤다</strong> — <code>len()</code>이 함수였다 (<a href="#q1">함수란</a>)</li>
+      <li><strong>매개변수 있는 함수 만들기</strong> — <code>print_list(a)</code> (<a href="#q5">print_list</a>)</li>
+      <li><strong>매개변수 없는 함수 만들기</strong> — <code>boy()</code> (<a href="#q3">함수 부르기</a>)</li>
+      <li><strong>직접 만들어 보기</strong> — 두 수 비교 과제 (<a href="#q7">두 수 비교</a>)</li>
     </ol>
     <table>
       <thead><tr><th></th><th><code>print_list(a)</code></th><th><code>boy()</code></th></tr></thead>
@@ -247,10 +197,8 @@ print_list(a_list)     # a_list를 print_list 함수에 넣어 실행</code></pr
       </tbody>
     </table>
     <p><strong>핵심 한 줄:</strong> 매개변수가 있으면 넣는 값에 따라 다르게 동작하는 함수가 되고, 없으면 늘 같은 일을 하는 함수가 돼요.</p>
-    </details>
 
-    <details class="qna" id="q7">
-    <summary><h3>Q7. 두 수 비교 과제의 답은요? <code>a</code>와 <code>b</code>를 정의 안 했잖아요?</h3></summary>
+    <h3 id="q7">두 수 비교 과제의 답은요? <code>a</code>와 <code>b</code>를 정의 안 했잖아요?</h3>
     <p>과제는 <code>a</code>가 크면 <code>'a &gt; b'</code>, <code>b</code>가 크면 <code>'a &lt; b'</code>, 같으면 <code>'a == b'</code>를 출력하는 함수를 만드는 거예요. 예시 답은 이래요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 정의를 끝낸 뒤 빈 줄 엔터를 한 번 더</span></p>
 <pre><code>&gt;&gt;&gt; def compare(a, b):
@@ -278,7 +226,7 @@ a == b</code></pre>
     </table>
     <ul>
       <li>넣은 <strong>순서대로</strong> 들어가요. 첫 번째 값은 <code>a</code>, 두 번째 값은 <code>b</code>로 가요.</li>
-      <li>세 경우 중 하나는 반드시 참이라, 마지막은 <code>else</code>로 충분해요 (<a href="beginner-python-ch02-qna.html#q8">2장 Q8의 if/elif/else</a>).</li>
+      <li>세 경우 중 하나는 반드시 참이라, 마지막은 <code>else</code>로 충분해요 (<a href="beginner-python-ch02-qna.html#q8">2장의 if/elif/else</a>).</li>
       <li>교재가 "<code>(x, y)</code>와 같은 형식"이라고 한 것도 같은 뜻이에요. 이름은 <code>x, y</code>든 <code>a, b</code>든 상관없어요.</li>
     </ul>
     <p>값을 안 넣고 부르면 파이썬이 빈자리를 알려 줘요.</p>
@@ -286,15 +234,13 @@ a == b</code></pre>
 <pre><code>&gt;&gt;&gt; compare()
 TypeError: compare() missing 2 required positional arguments: 'a' and 'b'</code></pre>
     <p><a href="#suspect-missing-arg">이 에러를 만났을 때 ↓</a></p>
-    </details>
 
     <!-- ============ 3.1.1 ============ -->
     <hr>
     <h2><span class="hl">3.1.1 연습 문제: 자릿수를 구하는 함수 만들기</span></h2>
     <p>문제 원문: <a href="https://wikidocs.net/192431" target="_blank" rel="noopener">wikidocs.net/192431</a> · 양의 정수를 받아 몇 자리 수인지 출력하는 함수 <code>numOfDigits()</code> 만들기</p>
 
-    <details class="qna" id="q8">
-    <summary><h3>Q8. <code>print(len(str(num)))</code>는 어디서부터 읽나요?</h3></summary>
+    <h3 id="q8"><code>print(len(str(num)))</code>는 어디서부터 읽나요?</h3>
     <p><strong>저자 풀이</strong> 전체예요 (<a href="https://github.com/ychoi-kr/wikidocs-chobo-python/blob/master/ch03/numdigits.py" target="_blank" rel="noopener">numdigits.py</a>).</p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
 <pre><code>def numOfDigits(num):
@@ -322,10 +268,8 @@ TypeError: object of type 'int' has no len()
 &gt;&gt;&gt; len('12345')
 5</code></pre>
     <p><strong>핵심 한 줄:</strong> "숫자의 자릿수 = 그 숫자를 글자로 적었을 때 글자 수"라는 아이디어를 <code>str()</code>과 <code>len()</code> 두 함수로 옮긴 풀이예요.</p>
-    </details>
 
-    <details class="qna" id="q9">
-    <summary><h3>Q9. 도입부의 <code>_</code>, <code>8000_000_000</code>, <code>e+28</code>은 뭐예요?</h3></summary>
+    <h3 id="q9">도입부의 <code>_</code>, <code>8000_000_000</code>, <code>e+28</code>은 뭐예요?</h3>
     <p>문제 앞에서 IP 주소 개수를 세는 코드에 처음 보는 표기가 세 가지 나와요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— <code>_</code>는 셸에서만 동작해요</span></p>
 <pre><code>&gt;&gt;&gt; 256 ** 4
@@ -345,11 +289,9 @@ True
         <tr><td><code>e+28</code></td><td>"× 10²⁸"이라는 뜻. 아주 큰 실수는 이렇게 줄여서 보여 줘요</td></tr>
       </tbody>
     </table>
-    <p><code>len(str(_))</code>는 Q8의 풀이와 똑같은 모양이에요. 저자가 문제를 내기 전에 답의 아이디어를 미리 보여 준 셈이에요.</p>
-    </details>
+    <p><code>len(str(_))</code>는 앞 절 자릿수 풀이와 똑같은 모양이에요. 저자가 문제를 내기 전에 답의 아이디어를 미리 보여 준 셈이에요.</p>
 
-    <details class="qna" id="q10">
-    <summary><h3>Q10. 이 풀이는 어떤 입력에서 틀리나요?</h3></summary>
+    <h3 id="q10">이 풀이는 어떤 입력에서 틀리나요?</h3>
     <p>문제가 "양의 정수"라고 조건을 단 이유가 여기 있어요. 다른 값을 넣으면 에러 없이 이상한 답이 나와요.</p>
     <table>
       <thead><tr><th>입력</th><th>결과</th><th>이유</th></tr></thead>
@@ -360,23 +302,21 @@ True
         <tr><td><code>3.14</code></td><td><code>4</code></td><td><code>'3.14'</code>의 <code>.</code>도 한 글자로 셈</td></tr>
       </tbody>
     </table>
-    <p>그리고 이 함수는 결과를 <strong>화면에 찍기만</strong> 해요. 변수에 담으면 <code>None</code>이 들어가요 (<a href="#q14">Q14</a>에서 자세히).</p>
+    <p>그리고 이 함수는 결과를 <strong>화면에 찍기만</strong> 해요. 변수에 담으면 <code>None</code>이 들어가요 (<a href="#q14">print와 return의 차이</a>에서 자세히).</p>
     <p class="run-tag">실행: 파이썬 대화형 셸</p>
 <pre><code>&gt;&gt;&gt; r = numOfDigits(7)
 1
 &gt;&gt;&gt; print(r)
 None</code></pre>
     <p><strong>핵심 한 줄:</strong> 남의 함수를 읽을 때는 "이 함수는 어떤 입력을 가정하고 있나?"와 "결과를 돌려주나, 찍기만 하나?"를 먼저 확인해요.</p>
-    </details>
 
     <!-- ============ 3.1.2 ============ -->
     <hr>
     <h2><span class="hl">3.1.2 연습 문제: 구구단</span></h2>
     <p>문제 원문: <a href="https://wikidocs.net/67" target="_blank" rel="noopener">wikidocs.net/67</a> · 2단부터 9단까지 구구단 출력하기. 교재는 한 번에 만들지 말고 <code>2 * 1</code> → 2단 → 한 단 함수 → 전체 순으로 쪼개서 가요.</p>
 
-    <details class="qna" id="q11">
-    <summary><h3>Q11. <code>f'...'</code>가 뭐였죠?</h3></summary>
-    <p><strong>f-string</strong>이에요. 문자열 안에 변수 값이나 계산 결과를 끼워 넣을 때 써요. <a href="beginner-python-ch02-qna.html#q16b">2장 Q16-1</a>에서 처음 나왔어요.</p>
+    <h3 id="q11"><code>f'...'</code>가 뭐였죠?</h3>
+    <p><strong>f-string</strong>이에요. 문자열 안에 변수 값이나 계산 결과를 끼워 넣을 때 써요. <a href="beginner-python-ch02-qna.html#q16b">2장의 f-string</a>에서 처음 나왔어요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸</p>
 <pre><code>&gt;&gt;&gt; m = 2
 &gt;&gt;&gt; n = 1
@@ -399,10 +339,8 @@ None</code></pre>
       </tbody>
     </table>
     <p><code>{ }</code> 안에는 변수뿐 아니라 <code>m*n</code> 같은 <strong>식</strong>도 쓸 수 있어요. 결과는 같지만 f-string 쪽이 출력될 모양 그대로 보여서 읽기 쉬워요.</p>
-    </details>
 
-    <details class="qna" id="q12">
-    <summary><h3>Q12. <code>{m*n:2d}</code>에서 <code>:2d</code>는 무슨 뜻이에요?</h3></summary>
+    <h3 id="q12"><code>{m*n:2d}</code>에서 <code>:2d</code>는 무슨 뜻이에요?</h3>
     <p>값을 <strong>어떤 모양으로</strong> 출력할지 정하는 서식이에요. <code>{ }</code> 안에서 콜론(<code>:</code>) 뒤에 써요.</p>
     <table>
       <thead><tr><th>부분</th><th>뜻</th></tr></thead>
@@ -435,10 +373,8 @@ ValueError: Unknown format code 'd' for object of type 'float'</code></pre>
       </tbody>
     </table>
     <p><strong>핵심 한 줄:</strong> <code>:2d</code>는 한 자리 결과 앞에 공백을 하나 넣어, 일의 자리를 세로로 맞추는 서식이에요.</p>
-    </details>
 
-    <details class="qna" id="q13">
-    <summary><h3>Q13. <code>multi(m)</code> 함수는 어떻게 읽나요?</h3></summary>
+    <h3 id="q13"><code>multi(m)</code> 함수는 어떻게 읽나요?</h3>
     <p><strong>저자 풀이</strong> 전체예요 (<a href="https://github.com/ychoi-kr/wikidocs-chobo-python/blob/master/ch03/multiplication_table.py" target="_blank" rel="noopener">multiplication_table.py</a>).</p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK <span class="run-tag-why">— 파일로 저장해 실행하면 2단~9단이 모두 나와요</span></p>
 <pre><code>def multi(m):
@@ -492,15 +428,13 @@ if __name__ == '__main__':
       <li><code>print()</code>는 안쪽 <code>for</code>와 들여쓰기가 달라서, 한 단이 끝날 때마다 한 번만 실행돼요.</li>
       <li>함수 버전의 장점은 <code>multi(7)</code>처럼 <strong>원하는 단만</strong> 따로 부를 수 있다는 거예요.</li>
     </ul>
-    </details>
 
     <!-- ============ 3.2 ============ -->
     <hr>
     <h2><span class="hl">3.2 반환(return) 문</span></h2>
     <p>원문: <a href="https://wikidocs.net/63" target="_blank" rel="noopener">wikidocs.net/63</a></p>
 
-    <details class="qna" id="q14">
-    <summary><h3>Q14. <code>return y</code>와 <code>print(y)</code>는 어떻게 달라요?</h3></summary>
+    <h3 id="q14"><code>return y</code>와 <code>print(y)</code>는 어떻게 달라요?</h3>
     <p>둘 다 화면에 <code>35</code>가 보여서 같아 보이지만 하는 일이 달라요.</p>
     <ul>
       <li><code>print(y)</code>는 값을 <strong>화면에 보여 주기만</strong> 해요. 함수를 부른 쪽에는 아무것도 돌려주지 않아요.</li>
@@ -549,10 +483,8 @@ TypeError: unsupported operand type(s) for +: 'NoneType' and 'int'</code></pre>
       </tbody>
     </table>
     <p><strong>핵심 한 줄:</strong> <code>print</code>는 사람에게 보여 주는 것이고, <code>return</code>은 코드에게 넘겨주는 것이에요.</p>
-    </details>
 
-    <details class="qna" id="q15">
-    <summary><h3>Q15. 셸에서는 둘 다 35가 보이던데요?</h3></summary>
+    <h3 id="q15">셸에서는 둘 다 35가 보이던데요?</h3>
     <p>대화형 셸(<code>&gt;&gt;&gt;</code>)은 <strong>돌려받은 값을 자동으로 보여 주기</strong> 때문이에요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸</p>
 <pre><code>&gt;&gt;&gt; f1(10)
@@ -572,10 +504,8 @@ TypeError: unsupported operand type(s) for +: 'NoneType' and 'int'</code></pre>
       <li>반대로 <code>.py</code>로 옮겼더니 결과가 안 보인다면, <code>return</code>만 하고 <code>print</code>로 감싸지 않은 거예요. <a href="#suspect-py-silent">이 증상이 보일 때 ↓</a></li>
     </ul>
     <p>3.2.1 연습 문제의 예시 결과가 <code>'일'</code>처럼 <strong>따옴표째</strong> 보이는 것도 같은 이유예요. 셸이 돌려받은 문자열을 자동으로 보여 줄 때는 따옴표를 붙여요. <code>print</code>였다면 따옴표 없이 <code>일</code>로 나와요.</p>
-    </details>
 
-    <details class="qna" id="q16">
-    <summary><h3>Q16. <code>return</code> 뒤에 <code>1 + 2 == int(ans)</code> 같은 식을 써도 되나요?</h3></summary>
+    <h3 id="q16"><code>return</code> 뒤에 <code>1 + 2 == int(ans)</code> 같은 식을 써도 되나요?</h3>
     <p>돼요. <code>return</code> 뒤에 식이 오면 <strong>식을 계산한 결과</strong>가 돌아가요. 교재의 덧셈 퀴즈 함수가 그 예예요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 부를 때마다 답을 입력하라고 기다려요</span></p>
 <pre><code>&gt;&gt;&gt; def quiz():
@@ -591,19 +521,17 @@ False</code></pre>
     <ol>
       <li><code>input('1 + 2 = ')</code>가 화면에 <code>1 + 2 = </code>를 띄우고 입력을 <strong>문자열</strong>로 받아요.</li>
       <li><code>int(ans)</code>가 <code>'3'</code>을 숫자 <code>3</code>으로 바꿔요.</li>
-      <li><code>1 + 2 == 3</code>은 <code>True</code>예요. <code>==</code>는 "같은가?"를 묻는 연산이라 결과가 <code>True</code>나 <code>False</code>예요 (<a href="beginner-python-ch02-qna.html#q9">2장 Q9</a>).</li>
+      <li><code>1 + 2 == 3</code>은 <code>True</code>예요. <code>==</code>는 "같은가?"를 묻는 연산이라 결과가 <code>True</code>나 <code>False</code>예요 (<a href="beginner-python-ch02-qna.html#q9">2장의 비교 연산</a>).</li>
       <li><code>return</code>이 그 <code>True</code>를 돌려줘요.</li>
     </ol>
     <p><strong><code>int()</code>를 빼면?</strong> <code>3 == '3'</code>이 되는데, 숫자와 문자열은 다른 값이라 늘 <code>False</code>예요. 맞는 답을 넣어도 틀렸다고 나와요.</p>
-    </details>
 
     <!-- ============ 3.2.1 ============ -->
     <hr>
     <h2><span class="hl">3.2.1 연습 문제: 숫자 읽기 함수(1~10)</span></h2>
     <p>문제 원문: <a href="https://wikidocs.net/124002" target="_blank" rel="noopener">wikidocs.net/124002</a> · 1~10 정수를 받아 한국어 읽기(<code>'일'</code>, <code>'이'</code>, …)를 <strong>반환</strong>하는 함수 <code>korean_number()</code></p>
 
-    <details class="qna" id="q17">
-    <summary><h3>Q17. <code>return</code>이 열 개인데 어떻게 동작해요? 11을 넣으면요?</h3></summary>
+    <h3 id="q17"><code>return</code>이 열 개인데 어떻게 동작해요? 11을 넣으면요?</h3>
     <p><strong>저자 풀이</strong>예요 (<a href="https://github.com/ychoi-kr/wikidocs-chobo-python/blob/master/ch03/korean_1_to_10.py" target="_blank" rel="noopener">korean_1_to_10.py</a>). 4~9는 같은 모양이라 줄였어요.</p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK <span class="run-tag-why">— 줄인 부분을 채워 넣으면 그대로 돌아가요</span></p>
 <pre><code>def korean_number(num):
@@ -617,7 +545,7 @@ False</code></pre>
     elif num == 10:
         return '십'</code></pre>
     <ul>
-      <li>위에서부터 차례로 비교하다가 참인 조건을 만나면 그 줄의 <code>return</code>을 실행해요 (<a href="beginner-python-ch02-qna.html#q11">2장 Q11의 elif 체인</a>).</li>
+      <li>위에서부터 차례로 비교하다가 참인 조건을 만나면 그 줄의 <code>return</code>을 실행해요 (<a href="beginner-python-ch02-qna.html#q11">2장의 elif 체인</a>).</li>
       <li><strong><code>return</code>을 만나는 순간 함수가 끝나요.</strong> <code>korean_number(3)</code>이면 1, 2를 거쳐 3에서 <code>'삼'</code>을 돌려주고 끝나요. 아래 <code>elif</code>는 보지도 않아요.</li>
       <li>그래서 <code>return</code>이 열 개 있어도, 한 번 부를 때 실행되는 건 <strong>딱 하나</strong>예요.</li>
     </ul>
@@ -632,10 +560,8 @@ TypeError: can only concatenate str (not "NoneType") to str</code></pre>
       <li>그 값을 <strong>쓰는 순간</strong>(<code>'일' + None</code>) 에러가 나요. 원인은 11을 넣은 줄인데, 에러는 다른 줄에서 터져요.</li>
       <li>문제가 "1 이상 10 이하라고 가정"이라고 쓴 이유예요.</li>
     </ul>
-    </details>
 
-    <details class="qna" id="q18">
-    <summary><h3>Q18. 리스트로 한 줄에 줄인 버전은 왜 0에서 이상한 답을 내나요?</h3></summary>
+    <h3 id="q18">리스트로 한 줄에 줄인 버전은 왜 0에서 이상한 답을 내나요?</h3>
     <p>같은 일을 리스트로 줄여 쓴 코드를 읽어 볼게요.</p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
 <pre><code>def korean_number(num):
@@ -645,7 +571,7 @@ TypeError: can only concatenate str (not "NoneType") to str</code></pre>
       <li>음수 번호 <code>[-1]</code>은 "뒤에서 첫 번째"라는 뜻이에요.</li>
     </ul>
     <table>
-      <thead><tr><th>입력</th><th><code>if</code> 버전 (Q17)</th><th>리스트 버전</th></tr></thead>
+      <thead><tr><th>입력</th><th><code>if</code> 버전 (return 열 개)</th><th>리스트 버전</th></tr></thead>
       <tbody>
         <tr><td><code>1</code></td><td><code>'일'</code></td><td><code>'일'</code> (<code>[0]</code>)</td></tr>
         <tr><td><code>10</code></td><td><code>'십'</code></td><td><code>'십'</code> (<code>[9]</code>)</td></tr>
@@ -654,15 +580,13 @@ TypeError: can only concatenate str (not "NoneType") to str</code></pre>
       </tbody>
     </table>
     <p><strong>핵심 한 줄:</strong> 같은 문제를 푼 코드라도 모양이 다르면 <strong>잘못된 입력에서 틀리는 방식</strong>이 달라요. 에러가 나는 쪽이 조용히 틀리는 쪽보다 찾기 쉬워요.</p>
-    </details>
 
     <!-- ============ 3.2.2 ============ -->
     <hr>
     <h2><span class="hl">3.2.2 연습 문제: 함수 정의하기</span></h2>
     <p>문제 원문: <a href="https://wikidocs.net/121662" target="_blank" rel="noopener">wikidocs.net/121662</a> · 문제 1은 숫자는 3배, 문자열은 3번 반복하는 <code>triple()</code>, 문제 2는 태어난 해로 한국 나이를 구하는 <code>korean_age()</code></p>
 
-    <details class="qna" id="q19">
-    <summary><h3>Q19. <code>triple()</code> 한 줄로 숫자와 문자열을 둘 다 처리하는 이유는?</h3></summary>
+    <h3 id="q19"><code>triple()</code> 한 줄로 숫자와 문자열을 둘 다 처리하는 이유는?</h3>
     <p><strong>저자 풀이</strong>예요 (<a href="https://github.com/ychoi-kr/wikidocs-chobo-python/blob/master/ch03/define_functions.py" target="_blank" rel="noopener">define_functions.py</a>).</p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
 <pre><code>def triple(x):
@@ -684,10 +608,8 @@ TypeError: can only concatenate str (not "NoneType") to str</code></pre>
       </tbody>
     </table>
     <p>그래서 "숫자용", "문자열용" 함수를 따로 만들 필요가 없어요. 대신 <code>input()</code>으로 받은 <code>'3'</code>을 <code>int()</code> 없이 넣으면 <code>9</code>가 아니라 <code>'333'</code>이 나와요.</p>
-    </details>
 
-    <details class="qna" id="q20">
-    <summary><h3>Q20. <code>korean_age()</code>는 어떻게 읽나요?</h3></summary>
+    <h3 id="q20"><code>korean_age()</code>는 어떻게 읽나요?</h3>
     <p><strong>저자 풀이</strong>예요 (같은 파일).</p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
 <pre><code>def korean_age(birth_year):
@@ -710,15 +632,13 @@ TypeError: can only concatenate str (not "NoneType") to str</code></pre>
       <li><code>import</code>가 함수 <strong>안</strong>에 있어서 부를 때마다 실행돼요. 보통은 파일 맨 위에 한 번 써요.</li>
       <li>참고로 2023년 6월부터 법과 행정에서 쓰는 나이는 만 나이로 통일됐어요. 이 함수는 계산 연습으로 읽으면 돼요.</li>
     </ul>
-    </details>
 
     <!-- ============ 3.2.3 ============ -->
     <hr>
     <h2><span class="hl">3.2.3 연습 문제: 이자(단리) 계산</span></h2>
     <p>문제 원문: <a href="https://wikidocs.net/109529" target="_blank" rel="noopener">wikidocs.net/109529</a> · 원금·이율·기간을 받아 단리 이자와 원리금(원금 + 이자)을 돌려주는 함수 두 개</p>
 
-    <details class="qna" id="q21">
-    <summary><h3>Q21. 공식을 함수로 옮기면 인수는 어떻게 들어가나요?</h3></summary>
+    <h3 id="q21">공식을 함수로 옮기면 인수는 어떻게 들어가나요?</h3>
     <p>단리는 <strong>원금에만</strong> 이자가 붙는 방식이라 해마다 이자가 같아요. 공식은 두 개예요.</p>
     <table>
       <thead><tr><th>구하는 것</th><th>공식</th></tr></thead>
@@ -752,18 +672,16 @@ def simple_interest_amount(p, r, t):
       <li>결과에 <code>.0</code>이 붙는 건 이율 <code>0.03875</code>가 소수라서예요.</li>
       <li>기간이 5개월이면 <code>5/12</code>년으로 넣어요. 함수를 고칠 필요가 없어요.</li>
     </ul>
-    </details>
 
-    <details class="qna" id="q22">
-    <summary><h3>Q22. 원리금의 끝자리가 왜 계산할 때마다 달라요?</h3></summary>
+    <h3 id="q22">원리금의 끝자리가 왜 계산할 때마다 달라요?</h3>
     <p>수학으로는 같은 값인데, 계산 순서를 바꾸면 맨 끝자리가 달라져요.</p>
-    <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— Q21의 두 함수를 정의한 뒤</span></p>
+    <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 단리 이자의 두 함수를 정의한 뒤</span></p>
 <pre><code>&gt;&gt;&gt; simple_interest_amount(1100000, 0.05, 5/12)
 1122916.6666666665
 &gt;&gt;&gt; 1100000 + simple_interest(1100000, 0.05, 5/12)
 1122916.6666666667</code></pre>
     <ul>
-      <li>컴퓨터의 소수는 아주 작은 오차를 품고 있어요. <a href="beginner-python-ch02-qna.html#q6">2장 Q6의 얌체공</a>에서 본 것과 같은 원인이에요.</li>
+      <li>컴퓨터의 소수는 아주 작은 오차를 품고 있어요. <a href="beginner-python-ch02-qna.html#q6">2장의 얌체공</a>에서 본 것과 같은 원인이에요.</li>
       <li>계산 순서가 다르면 오차가 쌓이는 방식도 달라져서 끝자리가 달라요.</li>
       <li>실제 돈 계산에서는 원 단위로 반올림하거나 금액을 정수로 다뤄요.</li>
     </ul>
@@ -773,17 +691,15 @@ def simple_interest_amount(p, r, t):
     return p + simple_interest(p, r, t)</code></pre>
     <ul>
       <li>공식이 바뀌어도 <code>simple_interest</code> 한 곳만 고치면 돼요.</li>
-      <li><code>simple_interest</code>가 <code>return</code>하기 때문에 가능한 모양이에요. <code>print</code>만 했다면 <code>p + None</code>이 되어 에러가 나요 (<a href="#q14">Q14</a>).</li>
+      <li><code>simple_interest</code>가 <code>return</code>하기 때문에 가능한 모양이에요. <code>print</code>만 했다면 <code>p + None</code>이 되어 에러가 나요 (<a href="#q14">print와 return의 차이</a>).</li>
     </ul>
-    </details>
 
     <!-- ============ 3.2.5 ============ -->
     <hr>
     <h2><span class="hl">3.2.5 퀴즈</span></h2>
     <p>문제 원문: <a href="https://wikidocs.net/292549" target="_blank" rel="noopener">wikidocs.net/292549</a></p>
 
-    <details class="qna" id="q23">
-    <summary><h3>Q23. 퀴즈 두 문제의 정답과 함정은?</h3></summary>
+    <h3 id="q23">퀴즈 두 문제의 정답과 함정은?</h3>
     <p><strong>퀴즈 1</strong> — 이 코드의 출력은? (보기: 4, 12, 444, None)</p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
 <pre><code>def triple(x):
@@ -793,7 +709,7 @@ result = triple(4)
 print(result)</code></pre>
     <ul>
       <li><strong>정답은 <code>12</code></strong>예요. <code>x = 4</code> → <code>4 * 3 = 12</code> → <code>return</code> → <code>result = 12</code></li>
-      <li><code>444</code>는 <code>triple('4')</code>처럼 <strong>문자열</strong>을 넣었을 때의 답이에요 (<a href="#q19">Q19</a>). <code>4</code>는 따옴표가 없는 숫자예요.</li>
+      <li><code>444</code>는 <code>triple('4')</code>처럼 <strong>문자열</strong>을 넣었을 때의 답이에요 (<a href="#q19">triple()</a>). <code>4</code>는 따옴표가 없는 숫자예요.</li>
       <li><code>None</code>은 <code>return</code> 대신 <code>print</code>를 썼을 때의 답이에요.</li>
     </ul>
     <p><strong>퀴즈 2</strong> — <code>x</code>와 <code>y</code>에는 무엇이 들어갈까요?</p>
@@ -812,7 +728,6 @@ y = return_sum(3, 5)</code></pre>
       <li><code>return_sum</code>은 화면에 아무것도 안 찍고 <code>8</code>을 돌려줘요.</li>
       <li>함정: 이 코드를 실행하면 화면에 <code>8</code>이 <strong>한 번</strong> 나와요. 그건 <code>print_sum</code> 안의 <code>print</code>가 찍은 거지, <code>y</code>의 값이 나온 게 아니에요.</li>
     </ul>
-    </details>
 
     <hr>
     <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 함수를 만들었는데 결과가 이상할 때</h2>
@@ -828,27 +743,27 @@ y = return_sum(3, 5)</code></pre>
         <tr id="suspect-none">
           <td><code>TypeError</code> 메시지에 <code>NoneType</code>이 들어 있거나, 변수를 찍어 보니 <code>None</code>이 나와요</td>
           <td>그 값을 만든 함수. 에러가 난 줄은 범인이 아니라 그 값을 <strong>쓴</strong> 줄이에요</td>
-          <td>함수에 <code>return</code>이 있는지, 모든 <code>if</code> 갈래가 <code>return</code>을 만나는지 확인하고, <code>print</code>만 하고 있으면 <code>return</code>으로 바꿔요 (<a href="#q14">Q14</a>, <a href="#q17">Q17</a>)</td>
+          <td>함수에 <code>return</code>이 있는지, 모든 <code>if</code> 갈래가 <code>return</code>을 만나는지 확인하고, <code>print</code>만 하고 있으면 <code>return</code>으로 바꿔요 (<a href="#q14">print와 return의 차이</a>, <a href="#q17">return이 열 개</a>)</td>
         </tr>
         <tr id="suspect-no-call">
           <td>함수를 만들었는데 실행해도 아무 일이 없거나, <code>&lt;function 이름 at 0x...&gt;</code>가 찍혀요</td>
           <td>함수를 <strong>부르는</strong> 줄. <code>def</code> 안쪽 코드는 범인이 아닌 경우가 많아요</td>
-          <td>부르는 줄이 아예 있는지, 이름 뒤에 <code>()</code>가 붙었는지 봐요 (<a href="#q3">Q3</a>)</td>
+          <td>부르는 줄이 아예 있는지, 이름 뒤에 <code>()</code>가 붙었는지 봐요 (<a href="#q3">함수 부르기</a>)</td>
         </tr>
         <tr id="suspect-missing-arg">
           <td><code>TypeError: 이름() missing 2 required positional arguments</code>가 나요</td>
           <td>함수를 부르는 줄의 괄호 안</td>
-          <td><code>def</code> 줄의 매개변수 개수와 부를 때 넣은 인수 개수가 같은지 세어 봐요 (<a href="#q7">Q7</a>)</td>
+          <td><code>def</code> 줄의 매개변수 개수와 부를 때 넣은 인수 개수가 같은지 세어 봐요 (<a href="#q7">두 수 비교</a>)</td>
         </tr>
         <tr id="suspect-py-silent">
           <td>셸에서는 결과가 보였는데, 같은 코드를 <code>.py</code> 파일로 실행하니 아무것도 안 나와요</td>
           <td>함수를 부르는 줄</td>
-          <td><code>이름(값)</code>만 있고 <code>print(이름(값))</code>으로 감싸지 않았는지 봐요 (<a href="#q15">Q15</a>)</td>
+          <td><code>이름(값)</code>만 있고 <code>print(이름(값))</code>으로 감싸지 않았는지 봐요 (<a href="#q15">셸의 자동 출력</a>)</td>
         </tr>
         <tr id="suspect-arg-order">
           <td>에러는 없는데 이자·넓이 같은 결과가 터무니없이 크거나 작아요</td>
           <td>함수를 부르는 줄의 인수 순서</td>
-          <td><code>def</code> 줄의 매개변수 순서와 넣은 값의 순서를 한 칸씩 짝지어 봐요. 손으로 계산한 답 하나와 비교하면 빨라요 (<a href="#q21">Q21</a>)</td>
+          <td><code>def</code> 줄의 매개변수 순서와 넣은 값의 순서를 한 칸씩 짝지어 봐요. 손으로 계산한 답 하나와 비교하면 빨라요 (<a href="#q21">단리 이자</a>)</td>
         </tr>
       </tbody>
     </table>
@@ -857,8 +772,8 @@ y = return_sum(3, 5)</code></pre>
     <ul>
       <li><a href="python-study/beginner-python/ch03-code-reading.html">3장 코드 읽기 실습</a> — 함수·return을 1·2장 문법과 섞은 코드를 해석하는 18문제예요.</li>
       <li><a href="beginner-python-ch02-part2-notes.html">2장 후반부 정리(2.2.7~2.5)</a> — and/or, for, range(), for-else. 이 글의 구구단·리스트 반복이 기대는 내용이에요.</li>
-      <li><a href="beginner-python-ch02-qna.html">2장 문제 풀이와 질문 해설</a> — while, if/elif/else, f-string이 처음 나온 곳이에요.</li>
-      <li><a href="beginner-python-ch01-qna.html">1장 문제 풀이와 질문 해설</a> — / 와 //, 리스트 번호, 문자열 반복 같은 1장 내용이에요.</li>
+      <li><a href="beginner-python-ch02-qna.html">2장 전반부 해설</a> — while, if/elif/else, f-string이 처음 나온 곳이에요.</li>
+      <li><a href="beginner-python-ch01-qna.html">1장 전반부 해설</a> — / 와 //, 리스트 번호, 문자열 반복 같은 1장 내용이에요.</li>
       <li><a href="reading-python-code-basics.html">파이썬 코드 눈으로 읽기</a> — AI가 짠 파이썬에서 함수가 어떻게 보이는지 이어서 볼 수 있어요.</li>
       <li><a href="https://wikidocs.net/book/2" target="_blank" rel="noopener">왕초보를 위한 Python (위키독스)</a> — 이 글이 다룬 문제의 원래 교재예요.</li>
     </ul>
@@ -868,7 +783,6 @@ y = return_sum(3, 5)</code></pre>
   <footer class="site-footer">
     &copy; 2026 Tigermorning
   </footer>
-  <script src="qna-toggle.js"></script>
   <script src="fit-title.js"></script>
   <script src="sidebar-loader.js"></script>
 </body>

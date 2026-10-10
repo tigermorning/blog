@@ -105,7 +105,10 @@ description: tigermorning.github.io 블로그(이 저장소) 작업 중, 사용�
 2. **이 글을 읽기 전에 박스.** 한 줄 정의 바로 아래에 `<div class="why-read">`
    박스를 넣어, 독자가 본문을 읽기 전에 "이게 나한테 무슨 쓸모인가"를 먼저
    답해준다. 한 줄 정의가 "무엇인가"를 답한다면 이 박스는 "왜 읽나"를
-   답하는 자리다. 다섯 항목의 라벨 문구와 순서는 고정이고, `어디쯤인가`를
+   답하는 자리다. <strong>예외: 보충수업 책장 › 파이썬 스터디
+   (`posts.html#python-basics-books`, `beginner-python-*.html`) 글에는 이
+   박스를 넣지 않는다</strong>(2026-10-11 사용자). 한 줄 정의 다음에 바로
+   본문으로 간다. 다섯 항목의 라벨 문구와 순서는 고정이고, `어디쯤인가`를
    뺀 네 칸은 <strong>반드시 `<ul><li>` 불릿</strong>으로 쓴다.
    ```html
    <div class="why-read">
