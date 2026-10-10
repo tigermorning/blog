@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>왕초보를 위한 Python 4장 전반부 — 자료형·문자열·리스트 정리 - Tigermorning</title>
+  <meta name="description" content="위키독스 『왕초보를 위한 Python』 4.1 자료형부터 4.2.10 문자열·리스트 퀴즈까지, 새로 나오는 문법이 각각 무슨 뜻인지만 짧게 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="왕초보를 위한 Python 4장 전반부 — 자료형·문자열·리스트 정리">
+  <meta property="og:description" content="4.1 자료형부터 4.2.10 문자열·리스트까지, 문법 뜻만 짧게 정리한 글입니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/beginner-python-ch04-part1-notes.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">자료형·문자열·리스트 정리</span> — 왕초보 Python 4장 전반부 (1)</h1>
+    <p class="post-date">2026. 10. 11.</p>
+    <p class="post-date">※ 이 글은 위키독스 <a href="https://wikidocs.net/book/2" target="_blank" rel="noopener">『왕초보를 위한 Python』</a> 4.1 ~ 4.2.10절(4장 전반부)을 제 나름의 언어로 짧게 정리한 것입니다. 3장 후반부 내용은 <a href="beginner-python-ch03-part2-notes.html">3장 후반부 정리</a>에 있어요.</p>
+
+    <p class="one-liner">자료형, 문자열, 리스트, 외울 것만 공식처럼.</p>
+
+    <h2><span class="hl">핵심 정리</span></h2>
+    <table>
+      <thead><tr><th>개념</th><th>공식</th></tr></thead>
+      <tbody>
+        <tr><td><code>type(값)</code></td><td>자료형 확인</td></tr>
+        <tr><td>가변 / 불변</td><td>가변은 <code>list</code>, 불변은 <code>int</code>·<code>str</code>·<code>tuple</code></td></tr>
+        <tr><td><code>x[i]</code>, <code>x[a:b]</code></td><td>인덱스는 0부터, 슬라이스는 b 앞까지</td></tr>
+        <tr><td><code>x[::-1]</code></td><td>뒤집기</td></tr>
+        <tr><td>문자열 메서드</td><td>원본은 그대로, 새 문자열을 돌려줌</td></tr>
+        <tr><td><code>append</code> · <code>sort</code> · <code>insert</code> · <code>del</code> · <code>pop</code></td><td>리스트를 직접 바꿈</td></tr>
+        <tr><td><code>list()</code> · <code>str()</code> · <code>int()</code> · <code>float()</code></td><td>자료형 변환</td></tr>
+        <tr><td><code>값 in 리스트</code></td><td>완전히 같은 원소가 있나</td></tr>
+        <tr><td><code>a[:]</code></td><td>리스트 복사본</td></tr>
+      </tbody>
+    </table>
+
+    <h2><span class="hl">1. 자료형과 type()</span></h2>
+<pre><code># 숫자: int, float, complex / 시퀀스: str, list, tuple / 그 밖: dict, bool
+&gt;&gt;&gt; type(7)
+&lt;class 'int'&gt;
+&gt;&gt;&gt; type(3.5)
+&lt;class 'float'&gt;
+&gt;&gt;&gt; type('hi')
+&lt;class 'str'&gt;
+&gt;&gt;&gt; type([1, 2])
+&lt;class 'list'&gt;
+&gt;&gt;&gt; type((1, 2))
+&lt;class 'tuple'&gt;
+&gt;&gt;&gt; type({'a': 1})
+&lt;class 'dict'&gt;
+&gt;&gt;&gt; type(True)
+&lt;class 'bool'&gt;
+&gt;&gt;&gt; type(3 + 4j)
+&lt;class 'complex'&gt;
+
+# int 끼리 나눠도 / 는 float
+&gt;&gt;&gt; 10 / 2
+5.0
+
+# 큰 수는 _ 로 자릿수 구분
+&gt;&gt;&gt; 100_000_000
+100000000</code></pre>
+
+    <h2><span class="hl">2. 가변 / 불변</span></h2>
+<pre><code># 가변(mutable): list → 안의 원소를 바꿀 수 있다
+# 불변: int, str, tuple → 원소를 바꿀 수 없다</code></pre>
+    <p><strong>핵심 한 줄:</strong> 퀴즈 답, 가변 객체는 list.</p>
+
+    <h2><span class="hl">3. 인덱싱 · 슬라이싱</span></h2>
+<pre><code># x[시작:끝] 은 끝 앞까지
+&gt;&gt;&gt; x = 'python'
+&gt;&gt;&gt; x[0]
+'p'
+&gt;&gt;&gt; x[2:4]
+'th'
+&gt;&gt;&gt; x[:3]
+'pyt'
+&gt;&gt;&gt; x[3:]
+'hon'
+&gt;&gt;&gt; x[-1:]
+'n'
+&gt;&gt;&gt; x[::-1]
+'nohtyp'</code></pre>
+
+    <h2><span class="hl">4. 문자열 불변과 메서드</span></h2>
+<pre><code># 문자열은 불변: 일부만 바꿀 수 없다
+&gt;&gt;&gt; x = 'python'
+&gt;&gt;&gt; x[0] = 'P'
+TypeError: 'str' object does not support item assignment
+
+# 새 문자열을 만들어 다시 붙인다
+&gt;&gt;&gt; 'P' + x[1:]
+'Python'
+
+&gt;&gt;&gt; s = '  Hello World  '
+&gt;&gt;&gt; 'hello'.find('l')
+2
+&gt;&gt;&gt; 'hello'.find('z')
+-1
+&gt;&gt;&gt; s.strip()
+'Hello World'
+&gt;&gt;&gt; s.rstrip()
+'  Hello World'
+&gt;&gt;&gt; 'a,b,c'.split(',')
+['a', 'b', 'c']
+&gt;&gt;&gt; 'a b c'.split()
+['a', 'b', 'c']
+&gt;&gt;&gt; 'cat'.replace('c', 'b')
+'bat'
+&gt;&gt;&gt; 'ABC'.lower()
+'abc'
+&gt;&gt;&gt; ', '.join(['사과', '배'])
+'사과, 배'</code></pre>
+
+    <h2><span class="hl">5. 리스트 메서드</span></h2>
+<pre><code>&gt;&gt;&gt; L = [3, 1, 2]
+&gt;&gt;&gt; L.append(9)
+&gt;&gt;&gt; L
+[3, 1, 2, 9]
+&gt;&gt;&gt; L.sort()
+&gt;&gt;&gt; L
+[1, 2, 3, 9]
+&gt;&gt;&gt; L.insert(0, 7)
+&gt;&gt;&gt; L
+[7, 1, 2, 3, 9]
+&gt;&gt;&gt; del L[1]
+&gt;&gt;&gt; L
+[7, 2, 3, 9]
+
+# pop() 은 지우고 그 값을 돌려준다
+&gt;&gt;&gt; L.pop()
+9
+&gt;&gt;&gt; L
+[7, 2, 3]
+
+# 리스트는 가변이라 대입이 된다
+&gt;&gt;&gt; L[0] = 5
+&gt;&gt;&gt; L
+[5, 2, 3]
+
+# 리스트 안의 리스트
+&gt;&gt;&gt; m = [[1, 2], [3, 4]]
+&gt;&gt;&gt; m[1][0]
+3</code></pre>
+
+    <h2><span class="hl">6. 변환과 sum</span></h2>
+<pre><code>&gt;&gt;&gt; list('abc')
+['a', 'b', 'c']
+&gt;&gt;&gt; str(123)
+'123'
+&gt;&gt;&gt; int('123')
+123
+&gt;&gt;&gt; float('123')
+123.0
+&gt;&gt;&gt; sum([1, 2, 3])
+6
+&gt;&gt;&gt; sum(list(range(1, 11)))
+55</code></pre>
+
+    <h2><span class="hl">7. in 과 복사 a[:]</span></h2>
+<pre><code># in 은 원소가 완전히 같을 때만 True (부분 문자열은 False)
+&gt;&gt;&gt; books = ['해리포터', '반지의 제왕']
+&gt;&gt;&gt; '해리포터' in books
+True
+&gt;&gt;&gt; '해' in books
+False
+&gt;&gt;&gt; '반지의 제왕' in books
+True
+
+# a[:] 는 복사본: 복사본을 바꿔도 원본은 그대로
+&gt;&gt;&gt; a = [1, 2, 3]
+&gt;&gt;&gt; b = a[:]
+&gt;&gt;&gt; b.remove(2)
+&gt;&gt;&gt; b
+[1, 3]
+&gt;&gt;&gt; a
+[1, 2, 3]
+
+# c = a 는 복사가 아니라 같은 리스트: 같이 바뀐다
+&gt;&gt;&gt; c = a
+&gt;&gt;&gt; c.remove(2)
+&gt;&gt;&gt; a
+[1, 3]</code></pre>
+    <p><strong>핵심 한 줄:</strong> 순회하면서 그 리스트를 바꾸면 원소를 건너뛰니, <code>L[:]</code> 복사본을 순회하기.</p>
+
+    <h2><span class="hl">함께 보기</span></h2>
+    <ul>
+      <li><a href="beginner-python-ch04-part1-answers.html">문제 해설 — 자료형·문자열·리스트를 자세히 뜯어본다</a> — 이 정리를 문제에 적용해 풀어 보는 다음 글이에요. 해설을 읽은 뒤 실습 문제를 풀어 보세요.</li>
+      <li><a href="beginner-python-ch03-part2-notes.html">3장 후반부 정리(3.3~3.4)</a> — 지역·전역변수, lambda, map, reduce, filter 같은 앞부분 내용이에요.</li>
+      <li><a href="https://wikidocs.net/book/2" target="_blank" rel="noopener">왕초보를 위한 Python (위키독스)</a> — 이 글이 다룬 원래 교재예요.</li>
+    </ul>
+
+    <a class="post-nav" href="beginner-python-ch04-part1-answers.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">문제 해설 — 자료형·문자열·리스트를 자세히 뜯어본다</span>
+    </a>
+
+    <h3 id="series-list">"왕초보 Python 4장 전반부" 시리즈</h3>
+    <p class="post-date">(1) 자료형·문자열·리스트 정리 (이 글)</p>
+    <a class="post-nav" href="beginner-python-ch04-part1-answers.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">문제 해설 — 자료형·문자열·리스트를 자세히 뜯어본다</span>
+    </a>
+    <a class="post-nav" href="beginner-python-ch04-part1-practice.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">실습 문제 5개 — 문자열·리스트 코드 읽고 결과 예측하기</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>

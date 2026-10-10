@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>문제 해설 — 문자열·리스트 연습 문제를 자세히 뜯어본다 - Tigermorning</title>
+  <meta name="description" content="4장 전반부(자료형, 문자열과 리스트) 교재 연습 문제 7개와 실습 문제 5개, 퀴즈를 직접 풀고 값이 바뀌는 과정과 에러 메시지까지 해설합니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="문제 해설 — 문자열·리스트 연습 문제를 자세히 뜯어본다">
+  <meta property="og:description" content="in, 슬라이싱, 리스트 메서드, 순회 중 remove 함정까지 연습 문제를 실행 결과와 함께 해설합니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/beginner-python-ch04-part1-answers.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <a class="post-nav" href="beginner-python-ch04-part1-notes.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">자료형·문자열·리스트 정리</span>
+    </a>
+
+    <h1><span class="hl">문제 해설</span> — 문자열·리스트 연습 문제를 자세히 뜯어본다 (2)</h1>
+    <p class="post-date">2026. 10. 11.</p>
+    <p class="post-date">※ 이 글은 위키독스 <a href="https://wikidocs.net/book/2" target="_blank" rel="noopener">『왕초보를 위한 Python』</a> 4장 4.1~4.2의 연습 문제를 제가 직접 풀어 본 해설이에요. 문제는 줄여서 요약했고, 코드는 제가 새로 짰어요. 뒤쪽에는 <a href="beginner-python-ch04-part1-practice.html">다음 글의 실습 문제 5개</a> 해설도 있어요.</p>
+
+    <p class="one-liner">교재 연습 문제 7개와 실습 문제 5개, 퀴즈를 한 줄씩 쪼개 풀고, 값이 바뀌는 표와 에러 없이 틀리는 실수까지 실행 결과로 보여 주는 해설이에요.</p>
+
+    <h2><span class="hl">핵심 정리</span></h2>
+    <table>
+      <thead><tr><th>개념</th><th>한 줄 정리</th></tr></thead>
+      <tbody>
+        <tr><td>슬라이싱</td><td><code>x[2:4]</code>는 2번 이상 4번 미만, <code>x[::-1]</code>은 뒤집기, <code>x[-3:]</code>은 끝 세 개다.</td></tr>
+        <tr><td>문자열은 불변</td><td><code>x[0] = 'n'</code>은 TypeError이고, 새 문자열을 만들어 다시 붙인다(<code>'n' + x[1:]</code>).</td></tr>
+        <tr><td><code>split</code> · <code>strip</code> · <code>replace</code></td><td>쪼개기, 양끝 공백 지우기, 바꾸기. 모두 새 문자열을 돌려주고 원본은 그대로다.</td></tr>
+        <tr><td>리스트 메서드</td><td><code>append</code> 끝에 추가, <code>insert(0, v)</code> 앞에 추가, <code>pop()</code> 끝을 빼서 돌려줌, <code>del l[i]</code> 삭제.</td></tr>
+        <tr><td><code>in</code></td><td>리스트에서는 완전히 같은 원소만 찾고, 문자열에서는 부분 문자열도 찾는다.</td></tr>
+        <tr><td><code>a[:]</code></td><td>리스트의 복사본이라 고쳐도 원본 <code>a</code>는 그대로다(<code>b = a</code>는 복사가 아니다).</td></tr>
+        <tr><td>순회 중 <code>remove</code></td><td>돌고 있는 리스트를 고치면 원소를 건너뛰니, <code>L[:]</code> 복사본을 돈다.</td></tr>
+      </tbody>
+    </table>
+
+    <p>모든 코드는 Python 3에서 직접 실행해 출력과 에러 메시지를 옮겼어요.</p>
+    <hr>
+    <h2><span class="hl">문제 1 — 아이돌 팬 찾기</span> — <a href="https://wikidocs.net/258035" target="_blank" rel="noopener">교재 쪽</a></h2>
+
+    <h3 id="a1">정답과 해설</h3>
+    <p><strong>문제:</strong> 세 그룹의 팬 명단이 있어요. 첫째 그룹과 둘째 그룹의 팬이면서 셋째 그룹의 팬은 아닌 사람을 쉼표로 이어 출력해요.</p>
+    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
+<pre><code>newjeans = ['철수', '영희', '민수', '지현', '서연']
+ive = ['영희', '민수', '지수', '서연', '하나']
+aespa = ['철수', '지현', '지수', '서연', '나영']
+
+result = []
+for name in newjeans:
+    if name in ive and name not in aespa:
+        result.append(name)
+print(", ".join(result))</code></pre>
+<pre class="out"><code class="nohighlight">영희, 민수</code></pre>
+    <p><strong>한 줄씩 짚어보기</strong></p>
+    <ul>
+      <li><code>for name in newjeans</code> — 첫째 그룹 팬을 한 명씩 꺼내요.</li>
+      <li><code>name in ive and name not in aespa</code> — 둘째 명단에는 있고 셋째 명단에는 없을 때만 참이에요.</li>
+      <li><code>result.append(name)</code> — 통과한 사람만 빈 리스트에 모아요.</li>
+      <li><code>", ".join(result)</code> — 리스트를 쉼표와 공백으로 이어 한 문자열로 만들어요.</li>
+    </ul>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>name</th><th>둘째에 있나</th><th>셋째에 없나</th><th>result</th></tr></thead>
+        <tbody>
+          <tr><td>철수</td><td>없음</td><td>-</td><td>[]</td></tr>
+          <tr><td>영희</td><td>있음</td><td>없음(통과)</td><td>['영희']</td></tr>
+          <tr><td>민수</td><td>있음</td><td>없음(통과)</td><td>['영희', '민수']</td></tr>
+          <tr><td>지현</td><td>없음</td><td>-</td><td>['영희', '민수']</td></tr>
+          <tr><td>서연</td><td>있음</td><td>있음(탈락)</td><td>['영희', '민수']</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>핵심 한 줄:</strong> <code>in</code>은 "명단 안에 그 이름이 있나?"를 묻는 질문이고, <code>not in</code>은 그 반대예요.</p>
+    <hr>
+    <h2><span class="hl">문제 2 — 회문 판별</span> — <a href="https://wikidocs.net/121842" target="_blank" rel="noopener">교재 쪽</a></h2>
+
+    <h3 id="a2">정답과 해설</h3>
+    <p><strong>문제:</strong> 앞에서 읽으나 뒤에서 읽으나 같은 말(회문)이면 True를 돌려주는 함수 <code>palindrome()</code>을 만들어요. 문제 1은 소문자·공백 없음, 문제 2는 대소문자가 섞임, 문제 3은 공백이 들어 있어요.</p>
+    <p><strong>문제 1 — 소문자만</strong></p>
+    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
+<pre><code>def palindrome(text):
+    return text == text[::-1]
+
+print(palindrome('anna'))
+print(palindrome('banana'))</code></pre>
+<pre class="out"><code class="nohighlight">True
+False</code></pre>
+    <p><code>text[::-1]</code>이 글자를 뒤집은 문자열이라, 원래와 같으면 회문이에요. <code>'anna'</code>는 뒤집어도 <code>'anna'</code>, <code>'banana'</code>는 <code>'ananab'</code>라서 달라요.</p>
+    <p><strong>문제 2 — 대소문자 섞임</strong> 같은 함수에 <code>'Anna'</code>를 넣으면 뒤집은 글이 <code>'annA'</code>가 돼서 다르다고 나와요.</p>
+<pre><code>def palindrome(text):
+    return text == text[::-1]
+
+print(palindrome('Anna'))</code></pre>
+<pre class="out"><code class="nohighlight">False</code></pre>
+    <p>먼저 <code>lower()</code>로 모두 소문자로 만든 뒤에 비교해요.</p>
+<pre><code>def palindrome(text):
+    t = text.lower()
+    return t == t[::-1]
+
+print(palindrome('Anna'))</code></pre>
+<pre class="out"><code class="nohighlight">True</code></pre>
+    <p><strong>문제 3 — 공백 포함</strong> 공백도 글자라서 <code>replace(' ', '')</code>로 지우고 비교해요.</p>
+<pre><code>def palindrome(text):
+    t = text.lower().replace(' ', '')
+    return t == t[::-1]
+
+print(palindrome('My gym'))
+print(palindrome('Anna'))
+print(palindrome('banana'))
+print(palindrome('anna'))</code></pre>
+<pre class="out"><code class="nohighlight">True
+True
+False
+True</code></pre>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>단계</th><th><code>'My gym'</code>의 값</th></tr></thead>
+        <tbody>
+          <tr><td><code>lower()</code></td><td>'my gym'</td></tr>
+          <tr><td><code>replace(' ', '')</code></td><td>'mygym'</td></tr>
+          <tr><td><code>t[::-1]</code></td><td>'mygym'</td></tr>
+          <tr><td><code>t == t[::-1]</code></td><td>True</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>핵심 한 줄:</strong> 비교하기 전에 <code>lower()</code>와 <code>replace()</code>로 "같은 모양"으로 맞춘 뒤 <code>[::-1]</code>과 비교해요.</p>
+    <hr>
+    <h2><span class="hl">문제 3 — 각 자리 숫자의 합(리스트)</span> — <a href="https://wikidocs.net/101664" target="_blank" rel="noopener">교재 쪽</a></h2>
+
+    <h3 id="a3">정답과 해설</h3>
+    <p><strong>문제:</strong> 나눗셈을 쓰지 않고 정수 <code>num</code>의 각 자리 숫자를 더하는 함수 <code>sumOfDigits(num)</code>을 만들어요.</p>
+    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
+<pre><code>def sumOfDigits(num):
+    total = 0
+    for d in list(str(num)):
+        total = total + int(d)
+    return total
+
+print(list(str(643)))
+print(sumOfDigits(643))
+print(sumOfDigits(47253))</code></pre>
+<pre class="out"><code class="nohighlight">['6', '4', '3']
+13
+21</code></pre>
+    <p><strong>한 줄씩 짚어보기</strong></p>
+    <ul>
+      <li><code>str(num)</code>으로 숫자를 글자로 바꾸고 <code>list()</code>로 글자 하나씩 나눠요. 이때는 <code>'6'</code>처럼 아직 글자예요.</li>
+      <li><code>int(d)</code>로 글자를 숫자로 되돌려 <code>total</code>에 더해요.</li>
+    </ul>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>d</th><th>int(d)</th><th>total</th></tr></thead>
+        <tbody>
+          <tr><td>시작</td><td>-</td><td>0</td></tr>
+          <tr><td>'6'</td><td>6</td><td>6</td></tr>
+          <tr><td>'4'</td><td>4</td><td>10</td></tr>
+          <tr><td>'3'</td><td>3</td><td>13</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>핵심 한 줄:</strong> 숫자는 <code>str()</code>로 글자 줄로 바꿔야 한 자리씩 꺼낼 수 있고, 더할 때는 <code>int()</code>로 되돌려요.</p>
+    <hr>
+    <h2><span class="hl">문제 4 — 줄기와 잎 그림</span> — <a href="https://wikidocs.net/109396" target="_blank" rel="noopener">교재 쪽</a></h2>
+
+    <h3 id="a4">정답과 해설</h3>
+    <p><strong>문제:</strong> 점수 리스트를 10 미만, 10대, 20대로 나눠 세 칸 <code>stem_leaf</code>에 채워요(문제 1). 그다음 <code>0: [...]</code> 모양으로 한 줄씩 출력해요(문제 2). 칸에는 일의 자리 숫자만 넣어요.</p>
+    <p><strong>문제 1 — 칸에 채우기</strong></p>
+    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
+<pre><code>score = [0, 0, 2, 4, 7, 7, 9, 11, 11, 13, 18, 20]
+stem_leaf = [[], [], []]
+
+for s in score:
+    stem_leaf[s // 10].append(s % 10)
+print(stem_leaf)</code></pre>
+<pre class="out"><code class="nohighlight">[[0, 0, 2, 4, 7, 7, 9], [1, 1, 3, 8], [0]]</code></pre>
+    <ul>
+      <li><code>s // 10</code>은 몫이라 몇 번째 칸인지(0, 1, 2)가 돼요.</li>
+      <li><code>s % 10</code>은 나머지라 일의 자리 숫자예요.</li>
+      <li><code>stem_leaf[칸].append(잎)</code>은 리스트 안의 리스트에 값을 넣어요.</li>
+    </ul>
+    <p>각 점수가 어디로 가는지 직접 찍어 보면 이래요.</p>
+<pre><code>score = [0, 0, 2, 4, 7, 7, 9, 11, 11, 13, 18, 20]
+for s in score:
+    print(s, s // 10, s % 10)</code></pre>
+<pre class="out"><code class="nohighlight">0 0 0
+0 0 0
+2 0 2
+4 0 4
+7 0 7
+7 0 7
+9 0 9
+11 1 1
+11 1 1
+13 1 3
+18 1 8
+20 2 0</code></pre>
+    <p>줄마다 왼쪽부터 점수, 칸 번호, 잎이에요. 0~9는 0번 칸, 11·13·18은 1번 칸, 20은 2번 칸이에요.</p>
+    <p><strong>문제 2 — 모양대로 출력하기</strong></p>
+<pre><code>score = [0, 0, 2, 4, 7, 7, 9, 11, 11, 13, 18, 20]
+stem_leaf = [[], [], []]
+
+for s in score:
+    stem_leaf[s // 10].append(s % 10)
+
+for i in range(len(stem_leaf)):
+    print(str(i) + ': ' + str(stem_leaf[i]))</code></pre>
+<pre class="out"><code class="nohighlight">0: [0, 0, 2, 4, 7, 7, 9]
+1: [1, 1, 3, 8]
+2: [0]</code></pre>
+    <p><code>range(len(stem_leaf))</code>는 0, 1, 2를 차례로 줘서 칸 번호와 칸 내용을 함께 쓸 수 있어요. 숫자 <code>i</code>는 <code>str(i)</code>로 글자로 바꿔야 <code>':'</code>와 <code>+</code>로 이을 수 있어요.</p>
+    <p><strong>핵심 한 줄:</strong> 몫 <code>//</code>로 칸을 고르고, 나머지 <code>%</code>를 그 칸에 넣어요.</p>
+    <hr>
+    <h2><span class="hl">문제 5 — 놀이 공원(1) read()</span> — <a href="https://wikidocs.net/165950" target="_blank" rel="noopener">교재 쪽</a></h2>
+
+    <h3 id="a5">정답과 해설</h3>
+    <p><strong>문제:</strong> <code>read(text)</code>가 놀이기구 이름과 키 제한을 <code>(이름, 최소, 최대)</code>로 돌려줘요. 제한이 없는 칸은 <code>None</code>이에요.</p>
+    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
+<pre><code>def read(text):
+    name, rule = text.split(':')
+    name = name.strip()
+    rule = rule.strip()
+    if rule == '-':
+        return name, None, None
+    if '~' in rule:
+        low, high = rule.split('~')
+        return name, int(low.replace('cm', '')), int(high.replace('cm', ''))
+    return name, int(rule.replace('cm 이상', '')), None
+
+print(read('와일드 윙: 110cm 이상'))
+print(read('툼 오브 호러: -'))
+print(read('플라이벤처: 140cm~195cm'))</code></pre>
+<pre class="out"><code class="nohighlight">('와일드 윙', 110, None)
+('툼 오브 호러', None, None)
+('플라이벤처', 140, 195)</code></pre>
+    <p><strong>한 줄씩 짚어보기</strong></p>
+    <ul>
+      <li><code>text.split(':')</code>로 이름 쪽과 규칙 쪽으로 쪼개요. 규칙 쪽에는 앞에 공백이 붙어서 <code>strip()</code>이 필요해요.</li>
+      <li>규칙이 <code>'-'</code>이면 제한이 없으니 <code>None</code> 두 개를 돌려줘요.</li>
+      <li><code>'~'</code>가 있으면 한 번 더 쪼개 <code>'cm'</code>를 지우고 정수로 바꿔요.</li>
+      <li>나머지(<code>'110cm 이상'</code>)는 <code>'cm 이상'</code>을 지워 최소값만 구해요.</li>
+    </ul>
+<pre><code>text = '와일드 윙: 110cm 이상'
+print(text.split(':'))
+print(text.split(':')[1].strip())</code></pre>
+<pre class="out"><code class="nohighlight">['와일드 윙', ' 110cm 이상']
+110cm 이상</code></pre>
+<pre><code>print('110cm 이상'.replace('cm 이상', ''))
+print(int('110'))
+print('140cm~195cm'.split('~'))
+print('140cm'.replace('cm', ''))</code></pre>
+<pre class="out"><code class="nohighlight">110
+110
+['140cm', '195cm']
+140</code></pre>
+    <p><strong>핵심 한 줄:</strong> <code>split</code>으로 쪼개고 <code>strip</code>·<code>replace</code>로 다듬은 뒤 <code>int()</code>로 숫자로 바꿔요.</p>
+    <hr>
+    <h2><span class="hl">문제 6 — 각 자리 숫자의 합(map)</span> — <a href="https://wikidocs.net/106678" target="_blank" rel="noopener">교재 쪽</a></h2>
+
+    <h3 id="a6">정답과 해설</h3>
+    <p><strong>문제:</strong> 문제 3과 같은 계산을 리스트와 <code>map()</code>으로 짧게 풀어요.</p>
+    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
+<pre><code>def sumOfDigits(num):
+    return sum(map(int, str(num)))
+
+print(list(map(int, '643')))
+print(sumOfDigits(47253))
+print(sumOfDigits(643))</code></pre>
+<pre class="out"><code class="nohighlight">[6, 4, 3]
+21
+13</code></pre>
+    <ul>
+      <li><code>str(643)</code>은 <code>'643'</code>이고, 문자열은 글자를 하나씩 줘요.</li>
+      <li><code>map(int, '643')</code>은 글자마다 <code>int()</code>를 적용해요. <code>list()</code>로 감싸면 <code>[6, 4, 3]</code>이 보여요.</li>
+      <li><code>sum()</code>이 그 숫자들을 더해요.</li>
+    </ul>
+    <p><strong>핵심 한 줄:</strong> 문제 3의 <code>for</code> 문 네 줄이 <code>sum(map(int, str(num)))</code> 한 줄로 줄어요.</p>
+    <hr>
+    <h2><span class="hl">문제 7 — 소수 구하기(체 방식)</span> — <a href="https://wikidocs.net/93898" target="_blank" rel="noopener">교재 쪽</a></h2>
+
+    <h3 id="a7">정답과 해설</h3>
+    <p><strong>문제:</strong> <code>n</code> 이하의 소수를 리스트로 돌려줘요. 2부터 시작해 그 수의 배수를 차례로 지워요(체 방식).</p>
+    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
+<pre><code>def primes(n):
+    L = list(range(2, n + 1))
+    for p in L[:]:
+        for x in L[:]:
+            if x != p and x % p == 0:
+                L.remove(x)
+    return L
+
+print(primes(10))
+print(primes(20))
+print(primes(30))</code></pre>
+<pre class="out"><code class="nohighlight">[2, 3, 5, 7]
+[2, 3, 5, 7, 11, 13, 17, 19]
+[2, 3, 5, 7, 11, 13, 17, 19, 23, 29]</code></pre>
+    <p>교재의 입출력 예(10, 20, 30)와 모두 같아요. <code>n = 10</code>일 때 <code>p</code>가 바뀔 때마다 <code>L</code>이 이렇게 변해요.</p>
+<pre><code>L = list(range(2, 11))
+for p in L[:]:
+    for x in L[:]:
+        if x != p and x % p == 0:
+            L.remove(x)
+    print('p =', p, 'L =', L)</code></pre>
+<pre class="out"><code class="nohighlight">p = 2 L = [2, 3, 5, 7, 9]
+p = 3 L = [2, 3, 5, 7]
+p = 4 L = [2, 3, 5, 7]
+p = 5 L = [2, 3, 5, 7]
+p = 6 L = [2, 3, 5, 7]
+p = 7 L = [2, 3, 5, 7]
+p = 8 L = [2, 3, 5, 7]
+p = 9 L = [2, 3, 5, 7]
+p = 10 L = [2, 3, 5, 7]</code></pre>
+    <p><code>p = 2</code>일 때 4, 6, 8, 10이 지워지고, <code>p = 3</code>일 때 9가 지워져서 <code>[2, 3, 5, 7]</code>만 남아요. 그 뒤 <code>p</code>들은 지울 게 없어요(이미 지워진 4, 6, 8, 9, 10 같은 수는 <code>L[:]</code>의 옛 복사본에 남아 있어서 헛돌지만 결과는 안 바뀌어요).</p>
+    <p><strong>함정 — 돌고 있는 리스트에서 <code>remove</code>:</strong> <code>for p in L:</code>처럼 복사본 없이 돌면서 지우면 파이썬이 "몇 번째 칸까지 봤는지"만 기억해서 원소를 건너뛰어요. 작은 예로 확인해요.</p>
+<pre><code>L = [1, 2, 3, 4]
+for x in L:
+    L.remove(x)
+print(L)</code></pre>
+<pre class="out"><code class="nohighlight">[2, 4]</code></pre>
+<pre><code>L = [1, 2, 3, 4]
+for x in L:
+    print('x =', x, 'L =', L)
+    L.remove(x)
+print(L)</code></pre>
+<pre class="out"><code class="nohighlight">x = 1 L = [1, 2, 3, 4]
+x = 3 L = [2, 3, 4]
+[2, 4]</code></pre>
+    <p>1을 지우자 뒤의 원소들이 한 칸씩 앞으로 당겨졌는데, 반복은 다음 칸(번호 1)으로 가서 2를 건너뛰고 3을 봤어요. 그래서 2와 4가 남아요. 해결은 <code>for x in L[:]:</code>처럼 <strong>복사본을 돌면서 원본을 지우는</strong> 거예요.</p>
+    <p>참고로 같은 문제에서 복사본 없이 돈 버전(<code>for p in L</code>, <code>for x in L</code>)도 실행해 보니 10·20·30 입력에서는 결과가 위와 똑같이 나왔어요(건너뛴 원소가 마침 합성수라서요). 그래도 위험한 습관이니 복사본을 쓰는 게 안전해요.</p>
+<pre><code>def primes(n):
+    L = list(range(2, n + 1))
+    for p in L:
+        for x in L:
+            if x != p and x % p == 0:
+                L.remove(x)
+    return L
+
+print(primes(10))
+print(primes(20))
+print(primes(30))</code></pre>
+<pre class="out"><code class="nohighlight">[2, 3, 5, 7]
+[2, 3, 5, 7, 11, 13, 17, 19]
+[2, 3, 5, 7, 11, 13, 17, 19, 23, 29]</code></pre>
+    <p><strong>핵심 한 줄:</strong> 리스트를 돌면서 그 리스트를 고치지 말고, <code>L[:]</code> 복사본을 돌아요.</p>
+
+    <hr>
+    <h2><span class="hl">실습 문제 해설</span> — <a href="beginner-python-ch04-part1-practice.html">다음 글의 5문제</a></h2>
+    <p>아래 코드는 <a href="beginner-python-ch04-part1-practice.html">실습 글</a>과 같은 코드예요. 직접 예측해 본 뒤에 확인해 보세요.</p>
+
+    <h3 id="a-p1">실습 1 정답과 해설 — 슬라이싱</h3>
+    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
+<pre><code>word = 'python'
+nums = [10, 20, 30, 40, 50]
+print(word[::-1])
+print(word[1:4])
+print(nums[-3:])
+print(nums[::-1])
+print(word[:2] + word[-2:])</code></pre>
+<pre class="out"><code class="nohighlight">nohtyp
+yth
+[30, 40, 50]
+[50, 40, 30, 20, 10]
+pyon</code></pre>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>번호</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+        <tbody>
+          <tr><td><code>word</code></td><td>p</td><td>y</td><td>t</td><td>h</td><td>o</td><td>n</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul>
+      <li><code>word[1:4]</code> — 1번부터 4번 <strong>앞까지</strong>라 1, 2, 3번 글자예요.</li>
+      <li><code>word[:2]</code>는 앞 두 글자, <code>word[-2:]</code>는 뒤 두 글자라서 이어 붙여요.</li>
+      <li>리스트에서도 <code>nums[-3:]</code>(끝 세 개), <code>nums[::-1]</code>(뒤집기)가 똑같이 돼요.</li>
+    </ul>
+    <p><strong>핵심 한 줄:</strong> <code>[시작:끝]</code>의 끝은 포함하지 않고, <code>-1</code>은 맨 뒤예요.</p>
+
+    <h3 id="a-p2">실습 2 정답과 해설 — 문자열은 불변, split과 strip</h3>
+    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
+<pre><code>x = 'banana'
+y = 'n' + x[1:]
+print(x)
+print(y)
+line = '  apple, kiwi , melon  '
+parts = line.strip().split(',')
+print(parts)
+print(parts[1].strip())
+print(len(parts))</code></pre>
+<pre class="out"><code class="nohighlight">banana
+nanana
+['apple', ' kiwi ', ' melon']
+kiwi
+3</code></pre>
+    <ul>
+      <li><code>x[1:]</code>은 <code>'anana'</code>라서 <code>'n' + x[1:]</code>은 새 문자열 <code>'nanana'</code>예요. <code>x</code> 자체는 한 번도 바뀌지 않아서 <code>'banana'</code> 그대로예요.</li>
+      <li><code>line.strip()</code>이 양끝 공백만 지우므로 가운데 공백은 남아요. 그 결과를 쉼표로 쪼개면 원소 3개이고, 가운데 원소의 양쪽 공백은 그대로 남아요(<code>' kiwi '</code>).</li>
+      <li><code>parts[1].strip()</code>이 그 공백을 지워서 <code>'kiwi'</code>예요.</li>
+    </ul>
+    <p><strong>핵심 한 줄:</strong> 문자열 메서드는 새 문자열을 돌려줄 뿐 원본을 바꾸지 않아요. <code>strip()</code>은 양끝만 지워요.</p>
+
+    <h3 id="a-p3">실습 3 정답과 해설 — 리스트 메서드 연쇄</h3>
+    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
+<pre><code>a = [3, 1]
+a.append(5)
+a.insert(0, 9)
+x = a.pop()
+del a[1]
+a.append(x)
+print(a)
+print(x)
+print(len(a))</code></pre>
+<pre class="out"><code class="nohighlight">[9, 1, 5]
+5
+3</code></pre>
+    <p>한 줄마다 <code>a</code>를 찍어서 따라가 보면 이래요.</p>
+<pre><code>a = [3, 1]
+print(a)
+a.append(5)
+print(a)
+a.insert(0, 9)
+print(a)
+x = a.pop()
+print(a, x)
+del a[1]
+print(a)
+a.append(x)
+print(a)</code></pre>
+<pre class="out"><code class="nohighlight">[3, 1]
+[3, 1, 5]
+[9, 3, 1, 5]
+[9, 3, 1] 5
+[9, 1]
+[9, 1, 5]</code></pre>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>실행한 줄</th><th>a</th><th>x</th></tr></thead>
+        <tbody>
+          <tr><td><code>a = [3, 1]</code></td><td>[3, 1]</td><td>-</td></tr>
+          <tr><td><code>a.append(5)</code></td><td>[3, 1, 5]</td><td>-</td></tr>
+          <tr><td><code>a.insert(0, 9)</code></td><td>[9, 3, 1, 5]</td><td>-</td></tr>
+          <tr><td><code>x = a.pop()</code></td><td>[9, 3, 1]</td><td>5</td></tr>
+          <tr><td><code>del a[1]</code></td><td>[9, 1]</td><td>5</td></tr>
+          <tr><td><code>a.append(x)</code></td><td>[9, 1, 5]</td><td>5</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>핵심 한 줄:</strong> <code>pop()</code>은 지우면서 그 값을 돌려주고, <code>del a[1]</code>은 1번 칸을 지워요.</p>
+
+    <h3 id="a-p4">실습 4 정답과 해설 — in과 복사 a[:]</h3>
+    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
+<pre><code>a = [1, 2, 3]
+b = a[:]
+b.append(4)
+c = a
+c.append(5)
+print(a)
+print(b)
+print(2 in a)
+print('2' in a)
+print(4 in a)</code></pre>
+<pre class="out"><code class="nohighlight">[1, 2, 3, 5]
+[1, 2, 3, 4]
+True
+False
+False</code></pre>
+    <ul>
+      <li><code>b = a[:]</code>는 복사본이라 <code>b.append(4)</code>가 <code>a</code>에 영향을 주지 않아요.</li>
+      <li><code>c = a</code>는 복사가 아니라 <strong>같은 리스트에 이름을 하나 더 붙인 것</strong>이라 <code>c.append(5)</code>가 <code>a</code>에 그대로 보여요.</li>
+      <li><code>2 in a</code>는 숫자 2가 있어서 True, <code>'2' in a</code>는 글자 <code>'2'</code>는 없어서 False예요. <code>4 in a</code>는 4가 <code>b</code>에만 있어서 False예요.</li>
+    </ul>
+    <p><strong>핵심 한 줄:</strong> 복사는 <code>[:]</code>, 이름만 붙이는 건 <code>=</code>이고, <code>in</code>은 자료형까지 완전히 같아야 찾아요.</p>
+
+    <h3 id="a-p5">실습 5 정답과 해설 — 순회 중 remove</h3>
+    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
+<pre><code>L = [1, 2, 2, 3]
+for x in L:
+    if x == 2:
+        L.remove(x)
+print(L)
+
+M = [1, 2, 2, 3]
+for x in M[:]:
+    if x == 2:
+        M.remove(x)
+print(M)</code></pre>
+<pre class="out"><code class="nohighlight">[1, 2, 3]
+[1, 3]</code></pre>
+    <p>첫 번째 반복을 찍어 보면 이래요.</p>
+<pre><code>L = [1, 2, 2, 3]
+for x in L:
+    print('x =', x, 'L =', L)
+    if x == 2:
+        L.remove(x)
+print(L)</code></pre>
+<pre class="out"><code class="nohighlight">x = 1 L = [1, 2, 2, 3]
+x = 2 L = [1, 2, 2, 3]
+x = 3 L = [1, 2, 3]
+[1, 2, 3]</code></pre>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>칸 번호</th><th>x</th><th>실행 뒤 L</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>1</td><td>[1, 2, 2, 3]</td></tr>
+          <tr><td>1</td><td>2</td><td>[1, 2, 3] (2 하나 지움)</td></tr>
+          <tr><td>2</td><td>3</td><td>[1, 2, 3] (두 번째 2는 칸 번호 1로 당겨져서 건너뜀)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>복사본 <code>M[:]</code>을 도는 두 번째 코드는 돌아가는 목록이 바뀌지 않아서 2 두 개를 모두 지워요.</p>
+    <p><strong>핵심 한 줄:</strong> 지울 때는 복사본(<code>L[:]</code>)을 돌고 원본을 지워요.</p>
+
+    <hr>
+    <h2><span class="hl">퀴즈 해설</span> — 4.1.1과 4.2.10</h2>
+    <p>질문은 제가 줄여서 적었고, 코드는 직접 실행했어요.</p>
+    <p><strong>4.1.1 Q1</strong> — 가변(바꿀 수 있는) 객체는 무엇일까요? <strong>정답은 list</strong>예요. int·str·tuple은 불변이에요.</p>
+<pre><code>for v in (1, 'a', (1, 2), [1, 2]):
+    print(type(v).__name__)
+nums = [1, 2]
+nums[0] = 9
+print(nums)
+try:
+    word = 'ab'
+    word[0] = 'z'
+except TypeError as e:
+    print(e)</code></pre>
+<pre class="out"><code class="nohighlight">int
+str
+tuple
+list
+[9, 2]
+'str' object does not support item assignment</code></pre>
+    <p>리스트는 <code>nums[0] = 9</code>가 되지만 문자열은 대입이 안 돼서 TypeError가 나요.</p>
+    <p><strong>4.2.10 Q1</strong> — <code>a = [1, 2, 3]</code>, <code>b = a[:]</code>, <code>b.remove(2)</code> 뒤에 <code>a</code>를 출력하면? <strong>[1, 2, 3]</strong>이에요. 복사본이라 원본은 그대로예요.</p>
+<pre><code>a = [1, 2, 3]
+b = a[:]
+b.remove(2)
+print(a)
+print(b)</code></pre>
+<pre class="out"><code class="nohighlight">[1, 2, 3]
+[1, 3]</code></pre>
+    <p><strong>Q2</strong> — <code>", ".join(["사과", "바나나", "오렌지"])</code>의 결과는? <strong>사과, 바나나, 오렌지</strong>예요. 원소 사이에만 <code>", "</code>가 들어가요.</p>
+<pre><code>print(", ".join(["사과", "바나나", "오렌지"]))</code></pre>
+<pre class="out"><code class="nohighlight">사과, 바나나, 오렌지</code></pre>
+    <p><strong>Q3</strong> — 책 제목 리스트에서 <code>"해리포터" in books</code>와 <code>"해" in books</code>는? 앞은 True, 뒤는 False예요.</p>
+<pre><code>books = ["해리포터", "반지의 제왕"]
+print("해리포터" in books)
+print("해" in books)</code></pre>
+<pre class="out"><code class="nohighlight">True
+False</code></pre>
+    <p><strong>Q4</strong> — <code>in</code>은 어떤 원소를 찾을까요? <strong>완전히 일치하는 원소만</strong> 찾아요(부분 문자열은 찾지 않아요). 위 Q3의 <code>"해"</code>가 False인 이유예요.</p>
+    <p><strong>Q5</strong> — <code>numbers = ['', '일', '이', '삼', '사', '오']</code>일 때 <code>numbers[3]</code>은? 인덱스는 0부터 세니 <strong>삼</strong>이에요.</p>
+<pre><code>numbers = ['', '일', '이', '삼', '사', '오']
+print(numbers[3])</code></pre>
+<pre class="out"><code class="nohighlight">삼</code></pre>
+
+    <hr>
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 이 문제들을 짜다가 결과가 이상할 때</h2>
+    <p>에러가 나는 경우도 있고, 에러 없이 조용히 틀리는 경우도 있어요. 결과가 예상과 다르면 이 표부터 확인해요. 아래 증상은 모두 실제로 실행해 확인했어요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>지운 줄 알았는데 원소가 남아 있어요(에러 없음)</td>
+          <td>리스트를 돌면서 <code>remove</code> 하는 <code>for</code> 문</td>
+          <td><code>for x in L:</code>을 <code>for x in L[:]:</code>로 바꿔 봐요 (<a href="#a7">문제 7</a>, <a href="#a-p5">실습 5</a>)</td>
+        </tr>
+        <tr>
+          <td><code>TypeError: 'str' object does not support item assignment</code>가 나요</td>
+          <td><code>x[0] = ...</code>처럼 글자 칸에 대입하는 줄</td>
+          <td>문자열은 불변이라 <code>'n' + x[1:]</code>처럼 새 문자열을 만들어요 (<a href="#a-p2">실습 2</a>)</td>
+        </tr>
+        <tr>
+          <td><code>in</code> 결과가 기대와 달라요(에러 없음)</td>
+          <td><code>in</code> 앞뒤가 리스트인지 문자열인지</td>
+          <td>리스트는 완전히 같은 원소만, 문자열은 부분 문자열도 찾아요 (<a href="#a-p4">실습 4</a>)</td>
+        </tr>
+        <tr>
+          <td><code>b = a.sort()</code> 뒤 <code>b</code>를 찍으니 <code>None</code>이에요</td>
+          <td><code>sort()</code>를 부른 줄</td>
+          <td><code>sort()</code>는 제자리 정렬이고 값을 돌려주지 않아요. 새 리스트가 필요하면 <code>sorted(a)</code>를 써요</td>
+        </tr>
+        <tr>
+          <td>복사본만 고쳤는데 원본이 바뀌었어요(에러 없음)</td>
+          <td><code>b = a</code> 같은 대입 줄</td>
+          <td>복사는 <code>b = a[:]</code>로 해요 (<a href="#a-p4">실습 4</a>, 퀴즈 4.2.10 Q1)</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>실행해 본 코드와 결과예요.</p>
+    <p><strong>문자열에 대입하기</strong></p>
+<pre><code>x = 'banana'
+x[0] = 'n'
+</code></pre>
+<pre class="out"><code class="nohighlight">TypeError: 'str' object does not support item assignment</code></pre>
+    <p><strong>리스트와 문자열의 <code>in</code> 차이</strong></p>
+<pre><code>books = ['해리포터', '반지의 제왕']
+title = '해리포터와 마법사의 돌'
+print('해리' in books)
+print('해리' in title)
+print('해리포터' in books)</code></pre>
+<pre class="out"><code class="nohighlight">False
+True
+True</code></pre>
+    <p><strong>sort()의 반환값</strong></p>
+<pre><code>a = [3, 1, 2]
+b = a.sort()
+print(b)
+print(a)
+print(sorted([3, 1, 2]))</code></pre>
+<pre class="out"><code class="nohighlight">None
+[1, 2, 3]
+[1, 2, 3]</code></pre>
+    <p><strong>이름만 붙인 대입</strong></p>
+<pre><code>a = [1, 2, 3]
+b = a
+b.remove(2)
+print(a)</code></pre>
+<pre class="out"><code class="nohighlight">[1, 3]</code></pre>
+
+    <h2><span class="hl">함께 보기</span></h2>
+    <ul>
+      <li><a href="beginner-python-ch04-part1-notes.html">자료형·문자열·리스트 정리</a> — 이 문제들에 쓰인 문법 설명이에요.</li>
+      <li><a href="beginner-python-ch04-part1-practice.html">실습 문제 5개</a> — 이 해설을 읽은 뒤 직접 예측해 볼 문제 원문이에요.</li>
+      <li><a href="beginner-python-ch03-part2-answers.html">3장 후반부 문제 해설</a> — 지역·전역변수와 lambda·map·filter·reduce 해설이에요.</li>
+    </ul>
+
+    <a class="post-nav" href="beginner-python-ch04-part1-practice.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">실습 문제 5개 — 문자열·리스트 코드 읽고 결과 예측하기</span>
+    </a>
+
+    <h3 id="series-list">"왕초보 Python 4장 전반부" 시리즈</h3>
+    <a class="post-nav" href="beginner-python-ch04-part1-notes.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">자료형·문자열·리스트 정리</span>
+    </a>
+    <p class="post-date">(2) 문제 해설 — 문자열·리스트 연습 문제를 자세히 뜯어본다 (이 글)</p>
+    <a class="post-nav" href="beginner-python-ch04-part1-practice.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">실습 문제 5개 — 문자열·리스트 코드 읽고 결과 예측하기</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
