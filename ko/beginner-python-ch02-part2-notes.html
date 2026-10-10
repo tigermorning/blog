@@ -44,20 +44,20 @@
 
     <h2><span class="hl">1. and / or</span></h2>
 <pre><code># and: 둘 다 참이어야 참 / or: 하나라도 참이면 참
-&gt;&gt;&gt; s = 'banana'                      # 변수 s 에 문자열 'banana' 를 담아요
-&gt;&gt;&gt; if 'a' in s and 'b' in s:         # s 에 a 와 b 가 모두 있는지 따져요
-...     print('a도 있고 b도 있어요')  # 둘 다 있으면 이 문장을 출력해요
+&gt;&gt;&gt; s = 'banana'                      # s 에 'banana' 를 담아 주세요
+&gt;&gt;&gt; if 'a' in s and 'b' in s:         # 만약 'a' 가 s 안에 있고 'b' 도 s 안에 있으면
+...     print('a도 있고 b도 있어요')  # 'a도 있고 b도 있어요' 를 화면에 보여 주세요
 ...
 a도 있고 b도 있어요
-&gt;&gt;&gt; a, b = 3, 0                       # 변수 a 에 3, b 에 0 을 한꺼번에 담아요
-&gt;&gt;&gt; (a * b) &gt; 0 and (a / b) &gt; 0       # 왼쪽이 False라서 오른쪽 나눗셈은 안 해요
+&gt;&gt;&gt; a, b = 3, 0                       # a 에 3 을, b 에 0 을 담아 주세요
+&gt;&gt;&gt; (a * b) &gt; 0 and (a / b) &gt; 0       # a 곱하기 b 가 0 보다 크고 a 나누기 b 도 0 보다 큰가요?
 False</code></pre>
 
     <h2><span class="hl">2. for 문</span></h2>
 <pre><code># 원소를 앞에서부터 하나씩 x에 꺼낸다
-&gt;&gt;&gt; family = ['mother', 'father', 'sister']  # 변수 family 에 문자열 리스트를 담아요
-&gt;&gt;&gt; for x in family:                         # family 의 원소를 하나씩 꺼내 x 에 담아요
-...     print(x, len(x))                     # x 와 x 의 글자 수를 함께 출력해요
+&gt;&gt;&gt; family = ['mother', 'father', 'sister']  # family 에 'mother', 'father', 'sister' 목록을 담아 주세요
+&gt;&gt;&gt; for x in family:                         # family 의 원소를 하나씩 x 라고 부르며 아래를 반복해 주세요
+...     print(x, len(x))                     # x 와 x 의 길이를 화면에 보여 주세요
 ...
 mother 6
 father 6
@@ -65,10 +65,10 @@ sister 6</code></pre>
 
     <h2><span class="hl">3. range()</span></h2>
 <pre><code># range(시작, 끝): 끝은 빠진다
-&gt;&gt;&gt; list(range(2, 7))      # 2 부터 6 까지 숫자를 리스트로 만들어요
+&gt;&gt;&gt; list(range(2, 7))      # 2 이상 7 미만의 정수를 리스트로 만들면 뭐예요?
 [2, 3, 4, 5, 6]
-&gt;&gt;&gt; for i in range(4, 8):  # 4 부터 7 까지 숫자를 하나씩 i 에 담아요
-...     print(i)           # i 를 출력해요
+&gt;&gt;&gt; for i in range(4, 8):  # 4 부터 8 미만까지 i 라고 부르며 아래를 반복해 주세요
+...     print(i)           # i 를 화면에 보여 주세요
 ...
 4
 5

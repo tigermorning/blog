@@ -47,29 +47,29 @@
 
     <h2><span class="hl">1. 자료형과 type()</span></h2>
 <pre><code># 숫자: int, float, complex / 시퀀스: str, list, tuple / 그 밖: dict, bool
-&gt;&gt;&gt; type(7)         # 7은 정수라서 int 예요
+&gt;&gt;&gt; type(7)         # 7 의 자료형이 뭐예요?
 &lt;class 'int'&gt;
-&gt;&gt;&gt; type(3.5)       # 3.5는 소수라서 float 예요
+&gt;&gt;&gt; type(3.5)       # 3.5 의 자료형이 뭐예요?
 &lt;class 'float'&gt;
-&gt;&gt;&gt; type('hi')      # 따옴표로 감싼 글자는 str 이에요
+&gt;&gt;&gt; type('hi')      # 'hi' 의 자료형이 뭐예요?
 &lt;class 'str'&gt;
-&gt;&gt;&gt; type([1, 2])    # 대괄호로 묶으면 list 예요
+&gt;&gt;&gt; type([1, 2])    # [1, 2] 의 자료형이 뭐예요?
 &lt;class 'list'&gt;
-&gt;&gt;&gt; type((1, 2))    # 소괄호로 묶은 나열은 tuple 이에요
+&gt;&gt;&gt; type((1, 2))    # (1, 2) 의 자료형이 뭐예요?
 &lt;class 'tuple'&gt;
-&gt;&gt;&gt; type({'a': 1})  # 중괄호 안 이름표와 값은 dict 예요
+&gt;&gt;&gt; type({'a': 1})  # {'a': 1} 의 자료형이 뭐예요?
 &lt;class 'dict'&gt;
-&gt;&gt;&gt; type(True)      # True 는 참거짓 값이라 bool 이에요
+&gt;&gt;&gt; type(True)      # True 의 자료형이 뭐예요?
 &lt;class 'bool'&gt;
-&gt;&gt;&gt; type(3 + 4j)    # 4j 가 들어간 수는 complex 예요
+&gt;&gt;&gt; type(3 + 4j)    # 3 + 4j 의 자료형이 뭐예요?
 &lt;class 'complex'&gt;
 
 # int 끼리 나눠도 / 는 float
-&gt;&gt;&gt; 10 / 2          # 정수끼리 / 로 나눠도 결과는 float 예요
+&gt;&gt;&gt; 10 / 2          # 10 을 2 로 나누면?
 5.0
 
 # 큰 수는 _ 로 자릿수 구분
-&gt;&gt;&gt; 100_000_000     # _ 는 큰 수를 읽기 쉽게 나눈 표시예요
+&gt;&gt;&gt; 100_000_000     # 100_000_000 에 들어 있는 것이 뭐예요?
 100000000</code></pre>
 
     <h2><span class="hl">2. 가변 / 불변</span></h2>
@@ -79,118 +79,118 @@
 
     <h2><span class="hl">3. 인덱싱 · 슬라이싱</span></h2>
 <pre><code># x[시작:끝] 은 끝 앞까지
-&gt;&gt;&gt; x = 'python'  # 변수 x 에 문자열 'python' 을 담아요
-&gt;&gt;&gt; x[0]          # 맨 앞 글자 하나를 꺼내요
+&gt;&gt;&gt; x = 'python'  # x 에 문자열 'python' 을 담아 주세요
+&gt;&gt;&gt; x[0]          # x 의 0번 원소는 무엇인가요?
 'p'
-&gt;&gt;&gt; x[2:4]        # 2번부터 3번 자리까지 잘라 와요
+&gt;&gt;&gt; x[2:4]        # x 의 2번부터 3번까지 잘라 내면?
 'th'
-&gt;&gt;&gt; x[:3]         # 처음부터 2번 자리까지 잘라 와요
+&gt;&gt;&gt; x[:3]         # x 의 처음부터 2번까지 잘라 내면?
 'pyt'
-&gt;&gt;&gt; x[3:]         # 3번 자리부터 끝까지 잘라 와요
+&gt;&gt;&gt; x[3:]         # x 의 3번부터 끝까지 잘라 내면?
 'hon'
-&gt;&gt;&gt; x[-1:]        # 맨 뒤 글자부터 끝까지 잘라 와요
+&gt;&gt;&gt; x[-1:]        # x 의 뒤에서 1번째부터 끝까지 잘라 내면?
 'n'
-&gt;&gt;&gt; x[::-1]       # 끝에서 처음으로 거꾸로 읽어요
+&gt;&gt;&gt; x[::-1]       # x 를 거꾸로 읽으면 어떻게 되나요?
 'nohtyp'</code></pre>
 
     <h2><span class="hl">4. 문자열 불변과 메서드</span></h2>
 <pre><code># 문자열은 불변: 일부만 바꿀 수 없다
-&gt;&gt;&gt; x = 'python'             # 변수 x 에 문자열 'python' 을 담아요
-&gt;&gt;&gt; x[0] = 'P'               # 문자열 일부를 바꾸려 하면 에러가 나요
+&gt;&gt;&gt; x = 'python'             # x 에 문자열 'python' 을 담아 주세요
+&gt;&gt;&gt; x[0] = 'P'               # x 의 0번 원소를 'P' 로 바꿔 주세요
 TypeError: 'str' object does not support item assignment
 
 # 새 문자열을 만들어 다시 붙인다
-&gt;&gt;&gt; 'P' + x[1:]              # 'P' 뒤에 x 의 1번부터 끝까지를 붙여요
+&gt;&gt;&gt; 'P' + x[1:]              # 'P' 뒤에 x 의 1번부터 끝까지를 붙이면?
 'Python'
 
-&gt;&gt;&gt; s = '  Hello World  '    # 변수 s 에 앞뒤 공백이 있는 문자열을 담아요
-&gt;&gt;&gt; 'hello'.find('l')        # 'l' 이 처음 나온 자리를 알려 줘요
+&gt;&gt;&gt; s = '  Hello World  '    # s 에 앞뒤에 공백이 있는 문자열을 담아 주세요
+&gt;&gt;&gt; 'hello'.find('l')        # 'hello' 안에서 'l' 은 몇 번째 자리에 있나요?
 2
-&gt;&gt;&gt; 'hello'.find('z')        # 없는 글자는 -1 로 알려 줘요
+&gt;&gt;&gt; 'hello'.find('z')        # 'hello' 안에서 'z' 는 몇 번째 자리에 있나요?
 -1
-&gt;&gt;&gt; s.strip()                # 앞뒤 공백을 지워요
+&gt;&gt;&gt; s.strip()                # s 의 앞뒤 공백을 지우면?
 'Hello World'
-&gt;&gt;&gt; s.rstrip()               # 오른쪽 공백만 지워요
+&gt;&gt;&gt; s.rstrip()               # s 의 오른쪽 공백을 지우면?
 '  Hello World'
-&gt;&gt;&gt; 'a,b,c'.split(',')       # 쉼표를 기준으로 잘라 리스트로 만들어요
+&gt;&gt;&gt; 'a,b,c'.split(',')       # 'a,b,c' 를 쉼표 기준으로 자르면?
 ['a', 'b', 'c']
-&gt;&gt;&gt; 'a b c'.split()          # 공백을 기준으로 잘라 리스트로 만들어요
+&gt;&gt;&gt; 'a b c'.split()          # 'a b c' 를 공백 기준으로 자르면?
 ['a', 'b', 'c']
-&gt;&gt;&gt; 'cat'.replace('c', 'b')  # 'c' 를 'b' 로 바꾼 새 문자열을 만들어요
+&gt;&gt;&gt; 'cat'.replace('c', 'b')  # 'cat' 의 'c' 를 'b' 로 바꾸면?
 'bat'
-&gt;&gt;&gt; 'ABC'.lower()            # 모두 소문자로 바꿔요
+&gt;&gt;&gt; 'ABC'.lower()            # 'ABC' 를 소문자로 바꾸면?
 'abc'
-&gt;&gt;&gt; ', '.join(['사과', '배'])   # 리스트 원소를 ', ' 로 이어 한 문자열로 만들어요
+&gt;&gt;&gt; ', '.join(['사과', '배'])   # ['사과', '배'] 를 ', ' 로 이어 붙이면?
 '사과, 배'</code></pre>
 
     <h2><span class="hl">5. 리스트 메서드</span></h2>
-<pre><code>&gt;&gt;&gt; L = [3, 1, 2]         # 변수 L 에 숫자 세 개짜리 리스트를 담아요
-&gt;&gt;&gt; L.append(9)           # 리스트 맨 뒤에 9를 덧붙여요
-&gt;&gt;&gt; L                     # L 의 현재 내용을 확인해요
+<pre><code>&gt;&gt;&gt; L = [3, 1, 2]         # L 에 리스트 [3, 1, 2] 를 담아 주세요
+&gt;&gt;&gt; L.append(9)           # L 의 맨 뒤에 9 을 붙여 주세요
+&gt;&gt;&gt; L                     # L 에 들어 있는 것이 뭐예요?
 [3, 1, 2, 9]
-&gt;&gt;&gt; L.sort()              # 작은 수부터 큰 수 순서로 L 을 정렬해요
-&gt;&gt;&gt; L                     # L 의 현재 내용을 확인해요
+&gt;&gt;&gt; L.sort()              # L 을 작은 것부터 순서대로 정렬해 주세요
+&gt;&gt;&gt; L                     # L 에 들어 있는 것이 뭐예요?
 [1, 2, 3, 9]
-&gt;&gt;&gt; L.insert(0, 7)        # 0번 자리에 7을 끼워 넣어요
-&gt;&gt;&gt; L                     # L 의 현재 내용을 확인해요
+&gt;&gt;&gt; L.insert(0, 7)        # L 의 0번 자리에 7 을 끼워 넣어 주세요
+&gt;&gt;&gt; L                     # L 에 들어 있는 것이 뭐예요?
 [7, 1, 2, 3, 9]
-&gt;&gt;&gt; del L[1]              # 1번 자리 원소를 지워요
-&gt;&gt;&gt; L                     # L 의 현재 내용을 확인해요
+&gt;&gt;&gt; del L[1]              # L 의 1번 원소를 지워 주세요
+&gt;&gt;&gt; L                     # L 에 들어 있는 것이 뭐예요?
 [7, 2, 3, 9]
 
 # pop() 은 지우고 그 값을 돌려준다
-&gt;&gt;&gt; L.pop()               # 맨 뒤 원소를 지우고 그 값을 돌려줘요
+&gt;&gt;&gt; L.pop()               # L 의 맨 뒤 원소를 꺼내면?
 9
-&gt;&gt;&gt; L                     # L 의 현재 내용을 확인해요
+&gt;&gt;&gt; L                     # L 에 들어 있는 것이 뭐예요?
 [7, 2, 3]
 
 # 리스트는 가변이라 대입이 된다
-&gt;&gt;&gt; L[0] = 5              # 0번 자리 값을 5로 바꿔요
-&gt;&gt;&gt; L                     # L 의 현재 내용을 확인해요
+&gt;&gt;&gt; L[0] = 5              # L 의 0번 원소를 5 로 바꿔 주세요
+&gt;&gt;&gt; L                     # L 에 들어 있는 것이 뭐예요?
 [5, 2, 3]
 
 # 리스트 안의 리스트
-&gt;&gt;&gt; m = [[1, 2], [3, 4]]  # 리스트 안에 리스트를 담아요
-&gt;&gt;&gt; m[1][0]               # m 의 1번 리스트에서 0번 원소를 꺼내요
+&gt;&gt;&gt; m = [[1, 2], [3, 4]]  # m 에 리스트 두 개를 담은 리스트를 담아 주세요
+&gt;&gt;&gt; m[1][0]               # m 의 1번 원소의 0번 원소는?
 3</code></pre>
 
     <h2><span class="hl">6. 변환과 sum</span></h2>
-<pre><code>&gt;&gt;&gt; list('abc')              # 문자열을 글자 하나씩 리스트로 만들어요
+<pre><code>&gt;&gt;&gt; list('abc')              # 'abc' 를 리스트로 만들면?
 ['a', 'b', 'c']
-&gt;&gt;&gt; str(123)                 # 숫자 123을 문자열로 바꿔요
+&gt;&gt;&gt; str(123)                 # 123 을 문자열로 바꾸면?
 '123'
-&gt;&gt;&gt; int('123')               # 문자열 '123'을 정수로 바꿔요
+&gt;&gt;&gt; int('123')               # '123' 을 정수로 바꾸면?
 123
-&gt;&gt;&gt; float('123')             # 문자열 '123'을 소수로 바꿔요
+&gt;&gt;&gt; float('123')             # '123' 을 소수로 바꾸면?
 123.0
-&gt;&gt;&gt; sum([1, 2, 3])           # 리스트 안의 수를 모두 더해요
+&gt;&gt;&gt; sum([1, 2, 3])           # [1, 2, 3] 의 원소를 모두 더하면?
 6
-&gt;&gt;&gt; sum(list(range(1, 11)))  # 1부터 10까지 수를 리스트로 만들어 더해요
+&gt;&gt;&gt; sum(list(range(1, 11)))  # 1 부터 10 까지의 리스트를 모두 더하면?
 55</code></pre>
 
     <h2><span class="hl">7. in 과 복사 a[:]</span></h2>
 <pre><code># in 은 원소가 완전히 같을 때만 True (부분 문자열은 False)
-&gt;&gt;&gt; books = ['해리포터', '반지의 제왕']  # 변수 books 에 책 제목 두 개를 담아요
-&gt;&gt;&gt; '해리포터' in books             # 원소 중에 '해리포터'가 있는지 물어요
+&gt;&gt;&gt; books = ['해리포터', '반지의 제왕']  # books 에 책 제목 두 개의 리스트를 담아 주세요
+&gt;&gt;&gt; '해리포터' in books             # '해리포터' 가 books 안에 있나요?
 True
-&gt;&gt;&gt; '해' in books                # 원소 중에 '해'가 통째로 있는지 물어요
+&gt;&gt;&gt; '해' in books                # '해' 가 books 안에 있나요?
 False
-&gt;&gt;&gt; '반지의 제왕' in books           # 원소 중에 '반지의 제왕'이 있는지 물어요
+&gt;&gt;&gt; '반지의 제왕' in books           # '반지의 제왕' 가 books 안에 있나요?
 True
 
 # a[:] 는 복사본: 복사본을 바꿔도 원본은 그대로
-&gt;&gt;&gt; a = [1, 2, 3]               # 변수 a 에 숫자 세 개짜리 리스트를 담아요
-&gt;&gt;&gt; b = a[:]                    # a 의 복사본을 만들어 b 에 담아요
-&gt;&gt;&gt; b.remove(2)                 # b 에서 값이 2인 원소를 지워요
-&gt;&gt;&gt; b                           # b 의 현재 내용을 확인해요
+&gt;&gt;&gt; a = [1, 2, 3]               # a 에 리스트 [1, 2, 3] 을 담아 주세요
+&gt;&gt;&gt; b = a[:]                    # a 를 통째로 복사해 b 에 담아 주세요
+&gt;&gt;&gt; b.remove(2)                 # b 에서 값 2 를 찾아 지워 주세요
+&gt;&gt;&gt; b                           # b 에 들어 있는 것이 뭐예요?
 [1, 3]
-&gt;&gt;&gt; a                           # a 의 현재 내용을 확인해요
+&gt;&gt;&gt; a                           # a 에 들어 있는 것이 뭐예요?
 [1, 2, 3]
 
 # c = a 는 복사가 아니라 같은 리스트: 같이 바뀐다
-&gt;&gt;&gt; c = a                       # c 가 a 와 같은 리스트를 가리키게 해요
-&gt;&gt;&gt; c.remove(2)                 # c 에서 값이 2인 원소를 지워요
-&gt;&gt;&gt; a                           # a 의 현재 내용을 확인해요
+&gt;&gt;&gt; c = a                       # a 가 가리키는 것을 c 에도 담아 주세요
+&gt;&gt;&gt; c.remove(2)                 # c 에서 값 2 를 찾아 지워 주세요
+&gt;&gt;&gt; a                           # a 에 들어 있는 것이 뭐예요?
 [1, 3]</code></pre>
     <p><strong>핵심 한 줄:</strong> 순회하면서 그 리스트를 바꾸면 원소를 건너뛰니, <code>L[:]</code> 복사본을 순회하기.</p>
 

@@ -69,8 +69,8 @@
     <h3 id="q1">함수가 뭐예요? <code>len()</code>도 함수라는데요?</h3>
     <p>함수는 <strong>자주 하는 일을 이름 하나로 묶어 둔 것</strong>이에요. 1장에서 리스트 원소 개수를 셀 때 쓴 <code>len()</code>이 바로 함수예요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
-<pre><code>&gt;&gt;&gt; a_list = [3, 4, 62, 27, 83, 956, 26, 58, 3, 78, 168, 64, 78]  # 변수 a_list 에 숫자 13개짜리 리스트를 담아요
-&gt;&gt;&gt; len(a_list)  # a_list 의 원소 개수를 세요
+<pre><code>&gt;&gt;&gt; a_list = [3, 4, 62, 27, 83, 956, 26, 58, 3, 78, 168, 64, 78]  # 숫자 13개의 리스트를 a_list 에 담아 주세요
+&gt;&gt;&gt; len(a_list)                                                   # a_list 의 길이가 얼마예요?
 13</code></pre>
     <ul>
       <li>원소가 13개든 1000개든 <code>len()</code> 한 번이면 끝나요.</li>
@@ -88,9 +88,9 @@
     <h3 id="q2"><code>def</code>는 뭐예요?</h3>
     <p><code>def</code>는 <strong>define(정의하다)</strong>의 줄임말이에요. "지금부터 함수를 하나 만들겠다"고 파이썬에 알려 주는 낱말이에요.</p>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 각 부분의 이름을 보여 주려는 예시예요</span></p>
-<pre><code>def boy():                    # boy 라는 함수를 만들기 시작해요
-    print('I am a boy.')      # 'I am a boy.' 를 화면에 출력해요
-    print('You are a girl.')  # 'You are a girl.' 를 화면에 출력해요</code></pre>
+<pre><code>def boy():                    # boy 라는 동작을 만들어 주세요
+    print('I am a boy.')      # 'I am a boy.' 를 화면에 보여 주세요
+    print('You are a girl.')  # 'You are a girl.' 를 화면에 보여 주세요</code></pre>
     <table>
       <thead><tr><th>부분</th><th>뜻</th></tr></thead>
       <tbody>
@@ -109,11 +109,11 @@
     <h3 id="q3"><code>boy()</code>를 치면 어떻게 두 줄이 나오나요?</h3>
     <p>함수는 <strong>만드는 순간</strong>과 <strong>실행하는 순간</strong>이 따로 있기 때문이에요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
-<pre><code>&gt;&gt;&gt; def boy():           # boy 라는 함수를 만들기 시작해요
-...     print('I am a boy.')      # 'I am a boy.' 를 화면에 출력해요
-...     print('You are a girl.')  # 'You are a girl.' 를 화면에 출력해요
+<pre><code>&gt;&gt;&gt; def boy():           # boy 라는 동작을 만들어 주세요
+...     print('I am a boy.')      # 'I am a boy.' 를 화면에 보여 주세요
+...     print('You are a girl.')  # 'You are a girl.' 를 화면에 보여 주세요
 ...
-&gt;&gt;&gt; boy()                # boy 함수를 실행해요
+&gt;&gt;&gt; boy()                # boy 를 실행해 주세요
 I am a boy.
 You are a girl.</code></pre>
     <table>
@@ -133,11 +133,11 @@ You are a girl.</code></pre>
     <h3 id="q4">매개변수가 뭐예요?</h3>
     <p><strong>함수가 바깥에서 값을 받아 담아 두는 변수</strong>예요. 함수를 만들 때 괄호 안에 적어요.</p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK <span class="run-tag-why">— 파일로 저장해 실행하거나 셸에 한 줄씩 입력해요</span></p>
-<pre><code>def greet(name):        # 매개변수 name 을 받는 greet 함수를 만들어요
-    print('안녕,', name)  # '안녕,' 과 name 값을 함께 출력해요
+<pre><code>def greet(name):          # name 을 받는 greet 라는 동작을 만들어 주세요
+    print('안녕,', name)  # '안녕,' 과 name 을 화면에 보여 주세요
 
-greet('철수')             # 인수 '철수' 를 넣어 greet 를 실행해요
-greet('영희')             # 인수 '영희' 를 넣어 greet 를 실행해요</code></pre>
+greet('철수')             # greet 에 '철수' 를 넣어 실행해 주세요
+greet('영희')             # greet 에 '영희' 를 넣어 실행해 주세요</code></pre>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 직접 실행하는 코드 아니에요. 위 코드의 실행 결과예요</span></p>
 <pre><code>안녕, 철수
 안녕, 영희</code></pre>
@@ -162,12 +162,12 @@ greet('영희')             # 인수 '영희' 를 넣어 greet 를 실행해요<
     <h3 id="q5"><code>a_list</code>를 만들었는데 왜 <code>print a_list</code>가 아니라 <code>print list</code>예요?</h3>
     <p><code>print list</code>가 아니라 <strong><code>print_list</code> 한 단어</strong>예요. 밑줄(<code>_</code>)로 이어진 함수 이름이라 띄어 읽으면 안 돼요.</p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>def print_list(a):        # 매개변수 a 를 받는 print_list 함수를 만들어요
-    for i in a:           # a 의 원소를 하나씩 i 에 꺼내요
-        print(i)          # 꺼낸 원소 i 를 출력해요
+<pre><code>def print_list(a):                                            # a 를 받는 print_list 라는 동작을 만들어 주세요
+    for i in a:                                               # a 의 원소를 하나씩 i 라고 부르며 아래를 반복해 주세요
+        print(i)                                              # i 를 화면에 보여 주세요
 
-a_list = [3, 4, 62, 27, 83, 956, 26, 58, 3, 78, 168, 64, 78]  # 변수 a_list 에 숫자 13개짜리 리스트를 담아요
-print_list(a_list)        # a_list 를 넣어 print_list 를 실행해요</code></pre>
+a_list = [3, 4, 62, 27, 83, 956, 26, 58, 3, 78, 168, 64, 78]  # 숫자 13개의 리스트를 a_list 에 담아 주세요
+print_list(a_list)                                            # print_list 에 a_list 를 넣어 실행해 주세요</code></pre>
     <ul>
       <li><code>print_list</code>는 저자가 "리스트를 출력한다"는 뜻으로 지은 이름이에요. <code>show</code>로 지어도 똑같이 동작해요.</li>
       <li>파이썬에 원래 있는 <code>print()</code>와는 <strong>다른 함수</strong>예요.</li>
@@ -201,19 +201,19 @@ print_list(a_list)        # a_list 를 넣어 print_list 를 실행해요</code>
     <h3 id="q7">두 수 비교 과제의 답은요? <code>a</code>와 <code>b</code>를 정의 안 했잖아요?</h3>
     <p>과제는 <code>a</code>가 크면 <code>'a &gt; b'</code>, <code>b</code>가 크면 <code>'a &lt; b'</code>, 같으면 <code>'a == b'</code>를 출력하는 함수를 만드는 거예요. 예시 답은 이래요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 정의를 끝낸 뒤 빈 줄 엔터를 한 번 더</span></p>
-<pre><code>&gt;&gt;&gt; def compare(a, b):        # 값 두 개를 받는 compare 함수를 만들어요
-...     if a &gt; b:                   # a 가 b 보다 크면 아래를 실행해요
-...         print('a &gt; b')          # 'a &gt; b' 를 출력해요
-...     elif a &lt; b:                 # 아니고 a 가 b 보다 작으면 실행해요
-...         print('a &lt; b')          # 'a &lt; b' 를 출력해요
-...     else:                          # 위 조건이 모두 아니면(같으면) 실행해요
-...         print('a == b')            # 'a == b' 를 출력해요
+<pre><code>&gt;&gt;&gt; def compare(a, b):  # a 와 b 를 받는 compare 라는 동작을 만들어 주세요
+...     if a &gt; b:             # 만약 a 가 b 보다 크면
+...         print('a &gt; b')    # 'a &gt; b' 를 화면에 보여 주세요
+...     elif a &lt; b:           # 아니고, 만약 a 가 b 보다 작으면
+...         print('a &lt; b')    # 'a &lt; b' 를 화면에 보여 주세요
+...     else:                    # 그 밖의 경우에는
+...         print('a == b')      # 'a == b' 를 화면에 보여 주세요
 ...
-&gt;&gt;&gt; compare(5, 3)             # a 에 5, b 에 3 을 넣어 비교해요
+&gt;&gt;&gt; compare(5, 3)       # compare 에 5 와 3 을 넣어 실행해 주세요
 a &gt; b
-&gt;&gt;&gt; compare(2, 7)             # a 에 2, b 에 7 을 넣어 비교해요
+&gt;&gt;&gt; compare(2, 7)       # compare 에 2 와 7 을 넣어 실행해 주세요
 a &lt; b
-&gt;&gt;&gt; compare(4, 4)             # a 에 4, b 에 4 를 넣어 비교해요
+&gt;&gt;&gt; compare(4, 4)       # compare 에 4 와 4 를 넣어 실행해 주세요
 a == b</code></pre>
     <p><strong><code>a</code>와 <code>b</code>는 따로 정의할 필요가 없어요.</strong> 둘은 매개변수라서 <strong>부를 때</strong> 값이 들어와요.</p>
     <table>
@@ -231,7 +231,7 @@ a == b</code></pre>
     </ul>
     <p>값을 안 넣고 부르면 파이썬이 빈자리를 알려 줘요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸</p>
-<pre><code>&gt;&gt;&gt; compare()        # 값을 안 넣고 불러서 에러가 나요
+<pre><code>&gt;&gt;&gt; compare()  # compare 를 아무 값 없이 실행해 주세요
 TypeError: compare() missing 2 required positional arguments: 'a' and 'b'</code></pre>
     <p><a href="#suspect-missing-arg">이 에러를 만났을 때 ↓</a></p>
 
@@ -243,8 +243,8 @@ TypeError: compare() missing 2 required positional arguments: 'a' and 'b'</code>
     <h3 id="q8"><code>print(len(str(num)))</code>는 어디서부터 읽나요?</h3>
     <p><strong>저자 풀이</strong> 전체예요 (<a href="https://github.com/ychoi-kr/wikidocs-chobo-python/blob/master/ch03/numdigits.py" target="_blank" rel="noopener">numdigits.py</a>).</p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>def numOfDigits(num):        # 숫자 num 을 받는 numOfDigits 함수를 만들어요
-    print(len(str(num)))     # num 을 글자로 바꿔 글자 수를 출력해요</code></pre>
+<pre><code>def numOfDigits(num):     # num 을 받는 numOfDigits 라는 동작을 만들어 주세요
+    print(len(str(num)))  # num 을 글자로 바꾼 것의 길이를 화면에 보여 주세요</code></pre>
     <ul>
       <li><code>numOfDigits</code>: 함수 이름. "number of digits(자릿수)"예요.</li>
       <li><code>num</code>: 매개변수. 자릿수를 셀 숫자가 여기로 들어와요.</li>
@@ -263,22 +263,22 @@ TypeError: compare() missing 2 required positional arguments: 'a' and 'b'</code>
     </div>
     <p><strong>왜 문자열로 바꾸나요?</strong> <code>len()</code>은 숫자의 길이를 세지 못해요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸</p>
-<pre><code>&gt;&gt;&gt; len(12345)        # 숫자의 길이는 셀 수 없어서 에러가 나요
+<pre><code>&gt;&gt;&gt; len(12345)    # 12345 의 길이가 얼마예요?
 TypeError: object of type 'int' has no len()
-&gt;&gt;&gt; len('12345')      # 글자 5개짜리 문자열이라 5 가 나와요
+&gt;&gt;&gt; len('12345')  # '12345' 의 길이가 얼마예요?
 5</code></pre>
     <p><strong>핵심 한 줄:</strong> "숫자의 자릿수 = 그 숫자를 글자로 적었을 때 글자 수"라는 아이디어를 <code>str()</code>과 <code>len()</code> 두 함수로 옮긴 풀이예요.</p>
 
     <h3 id="q9">도입부의 <code>_</code>, <code>8000_000_000</code>, <code>e+28</code>은 뭐예요?</h3>
     <p>문제 앞에서 IP 주소 개수를 세는 코드에 처음 보는 표기가 세 가지 나와요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— <code>_</code>는 셸에서만 동작해요</span></p>
-<pre><code>&gt;&gt;&gt; 256 ** 4                 # 256 의 4제곱을 계산해요
+<pre><code>&gt;&gt;&gt; 256 ** 4                              # 256 의 4제곱이 얼마예요?
 4294967296
-&gt;&gt;&gt; len(str(_))              # 바로 앞 결과를 글자로 바꿔 글자 수를 세요
+&gt;&gt;&gt; len(str(_))                           # 바로 앞 결과를 글자로 바꾼 것의 길이가 얼마예요?
 10
-&gt;&gt;&gt; 256 ** 4 == (2 ** 8) ** 4 == 2 ** 32  # 세 값이 모두 같은지 물어요
+&gt;&gt;&gt; 256 ** 4 == (2 ** 8) ** 4 == 2 ** 32  # 256 의 4제곱, (2 의 8제곱)의 4제곱, 2 의 32제곱이 모두 같나요?
 True
-&gt;&gt;&gt; 2 ** 128 / 8000_000_000  # 2의 128제곱을 80억으로 나눠요
+&gt;&gt;&gt; 2 ** 128 / 8000_000_000               # 2 의 128제곱을 8000_000_000 으로 나누면 얼마예요?
 4.253529586511731e+28</code></pre>
     <table>
       <thead><tr><th>표기</th><th>뜻</th></tr></thead>
@@ -304,9 +304,9 @@ True
     </table>
     <p>그리고 이 함수는 결과를 <strong>화면에 찍기만</strong> 해요. 변수에 담으면 <code>None</code>이 들어가요 (<a href="#q14">print와 return의 차이</a>에서 자세히).</p>
     <p class="run-tag">실행: 파이썬 대화형 셸</p>
-<pre><code>&gt;&gt;&gt; r = numOfDigits(7)        # 함수를 실행하고 결과를 변수 r 에 담아요
+<pre><code>&gt;&gt;&gt; r = numOfDigits(7)  # numOfDigits 에 7 을 넣어 돌려받은 값을 r 에 담아 주세요
 1
-&gt;&gt;&gt; print(r)                  # r 에 든 값을 출력해요
+&gt;&gt;&gt; print(r)            # r 을 화면에 보여 주세요
 None</code></pre>
     <p><strong>핵심 한 줄:</strong> 남의 함수를 읽을 때는 "이 함수는 어떤 입력을 가정하고 있나?"와 "결과를 돌려주나, 찍기만 하나?"를 먼저 확인해요.</p>
 
@@ -318,11 +318,11 @@ None</code></pre>
     <h3 id="q11"><code>f'...'</code>가 뭐였죠?</h3>
     <p><strong>f-string</strong>이에요. 문자열 안에 변수 값이나 계산 결과를 끼워 넣을 때 써요. <a href="beginner-python-ch02-qna.html#q16b">2장의 f-string</a>에서 처음 나왔어요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸</p>
-<pre><code>&gt;&gt;&gt; m = 2                        # 변수 m 에 2 를 담아요
-&gt;&gt;&gt; n = 1                        # 변수 n 에 1 을 담아요
-&gt;&gt;&gt; print(m, '*', n, '=', m*n)   # 값 다섯 개를 쉼표로 이어 출력해요
+<pre><code>&gt;&gt;&gt; m = 2                        # m 에 2 를 담아 주세요
+&gt;&gt;&gt; n = 1                        # n 에 1 을 담아 주세요
+&gt;&gt;&gt; print(m, '*', n, '=', m*n)   # m, '*', n, '=', m*n 을 차례로 화면에 보여 주세요
 2 * 1 = 2
-&gt;&gt;&gt; print(f'{m} * {n} = {m*n}')  # f-string 으로 값을 끼워 넣어 출력해요
+&gt;&gt;&gt; print(f'{m} * {n} = {m*n}')  # m 과 n 과 m*n 을 글자 사이에 끼워 넣은 문장을 화면에 보여 주세요
 2 * 1 = 2</code></pre>
     <ul>
       <li>첫 번째 방법은 값 5개를 쉼표로 나열해요. <code>print</code>가 쉼표 사이에 공백을 한 칸씩 넣어 줘요.</li>
@@ -352,13 +352,13 @@ None</code></pre>
     </table>
     <p>값이 2칸보다 짧으면 <strong>왼쪽을 공백으로 채워</strong> 오른쪽에 붙여요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸</p>
-<pre><code>&gt;&gt;&gt; f'[{4:2d}]'        # 4 를 2칸 폭으로 맞춰요
+<pre><code>&gt;&gt;&gt; f'[{4:2d}]'    # 4 를 2칸 폭으로 글자 사이에 끼워 넣은 문장을 만들어 주세요
 '[ 4]'
-&gt;&gt;&gt; f'[{4:3d}]'        # 4 를 3칸 폭으로 맞춰요
+&gt;&gt;&gt; f'[{4:3d}]'    # 4 를 3칸 폭으로 글자 사이에 끼워 넣은 문장을 만들어 주세요
 '[  4]'
-&gt;&gt;&gt; f'[{123:2d}]'      # 123 은 2칸보다 길어서 그대로 나와요
+&gt;&gt;&gt; f'[{123:2d}]'  # 123 을 2칸 폭으로 글자 사이에 끼워 넣은 문장을 만들어 주세요
 '[123]'
-&gt;&gt;&gt; f'{2.5:2d}'        # 소수에 d 를 써서 에러가 나요
+&gt;&gt;&gt; f'{2.5:2d}'    # 2.5 를 2칸 정수 폭으로 글자 사이에 끼워 넣은 문장을 만들어 주세요
 ValueError: Unknown format code 'd' for object of type 'float'</code></pre>
     <ul>
       <li>칸 수보다 긴 값은 잘리지 않고 그대로 다 나와요.</li>
@@ -377,14 +377,14 @@ ValueError: Unknown format code 'd' for object of type 'float'</code></pre>
     <h3 id="q13"><code>multi(m)</code> 함수는 어떻게 읽나요?</h3>
     <p><strong>저자 풀이</strong> 전체예요 (<a href="https://github.com/ychoi-kr/wikidocs-chobo-python/blob/master/ch03/multiplication_table.py" target="_blank" rel="noopener">multiplication_table.py</a>).</p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK <span class="run-tag-why">— 파일로 저장해 실행하면 2단~9단이 모두 나와요</span></p>
-<pre><code>def multi(m):                           # 단 수 m 을 받는 multi 함수를 만들어요
-    for n in range(1, 10):              # n 에 1부터 9까지 차례로 넣어요
-        print(f'{m} * {n} = {m*n:2d}')  # 구구단 한 줄을 2칸 폭으로 출력해요
+<pre><code>def multi(m):                           # m 을 받는 multi 라는 동작을 만들어 주세요
+    for n in range(1, 10):              # 1 부터 9 까지 하나씩 n 이라고 부르며 아래를 반복해 주세요
+        print(f'{m} * {n} = {m*n:2d}')  # m 과 n 과 m*n 을 글자 사이에 끼워 넣은 문장을 화면에 보여 주세요
 
-if __name__ == '__main__':              # 이 파일을 직접 실행했을 때만 실행해요
-    for i in range(2, 10):              # i 에 2부터 9까지 차례로 넣어요
-        multi(i)                        # i 단을 출력해요
-        print()                         # 빈 줄 하나를 출력해요</code></pre>
+if __name__ == '__main__':              # 만약 __name__ 이 '__main__' 이면
+    for i in range(2, 10):              # 2 부터 9 까지 하나씩 i 라고 부르며 아래를 반복해 주세요
+        multi(i)                        # multi 에 i 를 넣어 실행해 주세요
+        print()                         # 빈 줄을 화면에 보여 주세요</code></pre>
     <p><strong>함수 부분</strong>은 "몇 단을 받아서 그 단 9줄을 출력"하는 일을 해요.</p>
     <ul>
       <li><code>multi</code>: multiplication(곱셈)에서 따온 이름이에요.</li>
@@ -393,7 +393,7 @@ if __name__ == '__main__':              # 이 파일을 직접 실행했을 때�
       <li><code>m</code>은 고정, <code>n</code>만 1 → 9로 바뀌어요.</li>
     </ul>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 위 함수를 정의한 뒤</span></p>
-<pre><code>&gt;&gt;&gt; multi(3)        # 3단을 출력해요
+<pre><code>&gt;&gt;&gt; multi(3)  # multi 에 3 을 넣어 실행해 주세요
 3 * 1 =  3
 3 * 2 =  6
 3 * 3 =  9
@@ -419,10 +419,10 @@ if __name__ == '__main__':              # 이 파일을 직접 실행했을 때�
     </ul>
     <p><strong>함수 없이 쓰면?</strong> 교재가 "직접 해 보라"고 남긴 이중 반복문 버전이에요. 짜는 대신 읽어 보면, 결과가 위와 똑같아요.</p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>for m in range(2, 10):                  # m 에 2부터 9까지 차례로 넣어요
-    for n in range(1, 10):              # n 에 1부터 9까지 차례로 넣어요
-        print(f'{m} * {n} = {m*n:2d}')  # 구구단 한 줄을 2칸 폭으로 출력해요
-    print()                             # 빈 줄 하나를 출력해요</code></pre>
+<pre><code>for m in range(2, 10):                  # 2 부터 9 까지 하나씩 m 이라고 부르며 아래를 반복해 주세요
+    for n in range(1, 10):              # 1 부터 9 까지 하나씩 n 이라고 부르며 아래를 반복해 주세요
+        print(f'{m} * {n} = {m*n:2d}')  # m 과 n 과 m*n 을 글자 사이에 끼워 넣은 문장을 화면에 보여 주세요
+    print()                             # 빈 줄을 화면에 보여 주세요</code></pre>
     <ul>
       <li>바깥 <code>for</code>가 한 번 돌 때 안쪽 <code>for</code>는 9번 돌아요.</li>
       <li><code>print()</code>는 안쪽 <code>for</code>와 들여쓰기가 달라서, 한 단이 끝날 때마다 한 번만 실행돼요.</li>
@@ -441,20 +441,20 @@ if __name__ == '__main__':              # 이 파일을 직접 실행했을 때�
       <li><code>return y</code>는 값을 함수를 <strong>부른 쪽에 돌려줘요</strong>. 받은 값은 변수에 담거나 다른 계산에 다시 쓸 수 있어요.</li>
     </ul>
     <p class="run-tag">실행: 파이썬 대화형 셸</p>
-<pre><code>&gt;&gt;&gt; def f1(x):        # 값 x 를 받는 f1 함수를 만들어요
-...     y = 3 * x + 5          # x 의 3배에 5를 더해 y 에 담아요
-...     return y               # y 값을 부른 쪽에 돌려줘요
+<pre><code>&gt;&gt;&gt; def f1(x):  # x 를 받는 f1 이라는 동작을 만들어 주세요
+...     y = 3 * x + 5    # 3 * x + 5 를 y 에 담아 주세요
+...     return y         # y 를 결과로 돌려주세요
 ...
-&gt;&gt;&gt; def f2(x):        # 값 x 를 받는 f2 함수를 만들어요
-...     y = 3 * x + 5          # x 의 3배에 5를 더해 y 에 담아요
-...     print(y)               # y 값을 화면에 출력해요
+&gt;&gt;&gt; def f2(x):  # x 를 받는 f2 라는 동작을 만들어 주세요
+...     y = 3 * x + 5    # 3 * x + 5 를 y 에 담아 주세요
+...     print(y)         # y 를 화면에 보여 주세요
 ...
-&gt;&gt;&gt; c = f1(10)        # f1 이 돌려준 값을 c 에 담아요
-&gt;&gt;&gt; print(c)          # c 에 든 값을 출력해요
+&gt;&gt;&gt; c = f1(10)  # f1 에 10 을 넣어 돌려받은 값을 c 에 담아 주세요
+&gt;&gt;&gt; print(c)    # c 를 화면에 보여 주세요
 35
-&gt;&gt;&gt; d = f2(10)        # f2 는 돌려주는 값이 없어 d 는 None 이에요
+&gt;&gt;&gt; d = f2(10)  # f2 에 10 을 넣어 돌려받은 값을 d 에 담아 주세요
 35
-&gt;&gt;&gt; print(d)          # d 에 든 값을 출력해요
+&gt;&gt;&gt; print(d)    # d 를 화면에 보여 주세요
 None</code></pre>
     <table>
       <thead><tr><th></th><th><code>c = f1(10)</code></th><th><code>d = f2(10)</code></th></tr></thead>
@@ -466,9 +466,9 @@ None</code></pre>
     </table>
     <p>차이는 그 결과로 <strong>계산을 이어 갈 때</strong> 확실히 드러나요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸</p>
-<pre><code>&gt;&gt;&gt; f1(10) + 1        # 돌려받은 35 에 1 을 더해요
+<pre><code>&gt;&gt;&gt; f1(10) + 1  # f1 에 10 을 넣어 돌려받은 값에 1 을 더하면 얼마예요?
 36
-&gt;&gt;&gt; f2(10) + 1        # None 에 1 을 더하려 해서 에러가 나요
+&gt;&gt;&gt; f2(10) + 1  # f2 에 10 을 넣어 돌려받은 값에 1 을 더하면 얼마예요?
 35
 TypeError: unsupported operand type(s) for +: 'NoneType' and 'int'</code></pre>
     <ul>
@@ -487,9 +487,9 @@ TypeError: unsupported operand type(s) for +: 'NoneType' and 'int'</code></pre>
     <h3 id="q15">셸에서는 둘 다 35가 보이던데요?</h3>
     <p>대화형 셸(<code>&gt;&gt;&gt;</code>)은 <strong>돌려받은 값을 자동으로 보여 주기</strong> 때문이에요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸</p>
-<pre><code>&gt;&gt;&gt; f1(10)        # f1 을 실행하면 셸이 35 를 보여 줘요
+<pre><code>&gt;&gt;&gt; f1(10)  # f1 에 10 을 넣으면 뭐가 돌아오나요?
 35
-&gt;&gt;&gt; f2(10)        # f2 안의 print 가 35 를 찍어요
+&gt;&gt;&gt; f2(10)  # f2 에 10 을 넣어 실행해 주세요
 35</code></pre>
     <table>
       <thead><tr><th></th><th>셸에서 <code>f1(10)</code></th><th><code>.py</code> 파일에서 <code>f1(10)</code></th></tr></thead>
@@ -508,14 +508,14 @@ TypeError: unsupported operand type(s) for +: 'NoneType' and 'int'</code></pre>
     <h3 id="q16"><code>return</code> 뒤에 <code>1 + 2 == int(ans)</code> 같은 식을 써도 되나요?</h3>
     <p>돼요. <code>return</code> 뒤에 식이 오면 <strong>식을 계산한 결과</strong>가 돌아가요. 교재의 덧셈 퀴즈 함수가 그 예예요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 부를 때마다 답을 입력하라고 기다려요</span></p>
-<pre><code>&gt;&gt;&gt; def quiz():          # 인수 없는 quiz 함수를 만들어요
-...     ans = input('1 + 2 = ')   # 입력을 문자열로 받아 ans 에 담아요
-...     return 1 + 2 == int(ans)  # 입력한 답이 3 인지 True/False 로 돌려줘요
+<pre><code>&gt;&gt;&gt; def quiz():          # 받는 값 없이 quiz 라는 동작을 만들어 주세요
+...     ans = input('1 + 2 = ')   # '1 + 2 = ' 를 보이고 입력받은 글자를 ans 에 담아 주세요
+...     return 1 + 2 == int(ans)  # ans 를 정수로 바꾼 값이 1 + 2 와 같은지를 결과로 돌려주세요
 ...
-&gt;&gt;&gt; quiz()               # quiz 함수를 실행해요
+&gt;&gt;&gt; quiz()               # quiz 를 실행하면 뭐가 돌아오나요?
 1 + 2 = 3
 True
-&gt;&gt;&gt; quiz()               # quiz 함수를 실행해요
+&gt;&gt;&gt; quiz()               # quiz 를 실행하면 뭐가 돌아오나요?
 1 + 2 = 4
 False</code></pre>
     <ol>
@@ -534,16 +534,16 @@ False</code></pre>
     <h3 id="q17"><code>return</code>이 열 개인데 어떻게 동작해요? 11을 넣으면요?</h3>
     <p><strong>저자 풀이</strong>예요 (<a href="https://github.com/ychoi-kr/wikidocs-chobo-python/blob/master/ch03/korean_1_to_10.py" target="_blank" rel="noopener">korean_1_to_10.py</a>). 4~9는 같은 모양이라 줄였어요.</p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK <span class="run-tag-why">— 줄인 부분을 채워 넣으면 그대로 돌아가요</span></p>
-<pre><code>def korean_number(num):        # 숫자 num 을 받는 korean_number 함수를 만들어요
-    if num == 1:               # num 이 1 이면 아래를 실행해요
-        return '일'             # '일' 을 돌려주고 함수를 끝내요
-    elif num == 2:             # num 이 2 이면 아래를 실행해요
-        return '이'             # '이' 를 돌려주고 함수를 끝내요
-    elif num == 3:             # num 이 3 이면 아래를 실행해요
-        return '삼'             # '삼' 을 돌려주고 함수를 끝내요
+<pre><code>def korean_number(num):  # num 을 받는 korean_number 라는 동작을 만들어 주세요
+    if num == 1:         # 만약 num 이 1 이면
+        return '일'      # '일' 을 결과로 돌려주세요
+    elif num == 2:       # 아니고, 만약 num 이 2 이면
+        return '이'      # '이' 를 결과로 돌려주세요
+    elif num == 3:       # 아니고, 만약 num 이 3 이면
+        return '삼'      # '삼' 을 결과로 돌려주세요
     # ... 4부터 9까지 같은 모양 ...
-    elif num == 10:            # num 이 10 이면 아래를 실행해요
-        return '십'             # '십' 을 돌려주고 함수를 끝내요</code></pre>
+    elif num == 10:      # 아니고, 만약 num 이 10 이면
+        return '십'      # '십' 을 결과로 돌려주세요</code></pre>
     <ul>
       <li>위에서부터 차례로 비교하다가 참인 조건을 만나면 그 줄의 <code>return</code>을 실행해요 (<a href="beginner-python-ch02-qna.html#q11">2장의 elif 체인</a>).</li>
       <li><strong><code>return</code>을 만나는 순간 함수가 끝나요.</strong> <code>korean_number(3)</code>이면 1, 2를 거쳐 3에서 <code>'삼'</code>을 돌려주고 끝나요. 아래 <code>elif</code>는 보지도 않아요.</li>
@@ -551,9 +551,9 @@ False</code></pre>
     </ul>
     <p><strong>11을 넣으면?</strong> 어떤 조건에도 안 맞아서 <code>return</code>을 한 번도 못 만나고 함수가 끝나요. 그러면 파이썬은 자동으로 <code>None</code>을 돌려줘요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸</p>
-<pre><code>&gt;&gt;&gt; print(korean_number(11))        # 11 을 넣은 결과를 출력해요
+<pre><code>&gt;&gt;&gt; print(korean_number(11))              # korean_number 에 11 을 넣어 돌려받은 값을 화면에 보여 주세요
 None
-&gt;&gt;&gt; korean_number(1) + korean_number(11)  # '일' 에 None 을 더하려 해서 에러가 나요
+&gt;&gt;&gt; korean_number(1) + korean_number(11)  # korean_number 에 1 을 넣은 값에 11 을 넣은 값을 더하면 뭐가 되나요?
 TypeError: can only concatenate str (not "NoneType") to str</code></pre>
     <ul>
       <li><code>None</code>을 출력만 할 때는 에러가 안 나요. 조용히 넘어가요.</li>
@@ -564,8 +564,8 @@ TypeError: can only concatenate str (not "NoneType") to str</code></pre>
     <h3 id="q18">리스트로 한 줄에 줄인 버전은 왜 0에서 이상한 답을 내나요?</h3>
     <p>같은 일을 리스트로 줄여 쓴 코드를 읽어 볼게요.</p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>def korean_number(num):        # 숫자 num 을 받는 korean_number 함수를 만들어요
-    return ['일', '이', '삼', '사', '오', '육', '칠', '팔', '구', '십'][num - 1]  # 리스트에서 num - 1 번째 글자를 돌려줘요</code></pre>
+<pre><code>def korean_number(num):                                                           # num 을 받는 korean_number 라는 동작을 만들어 주세요
+    return ['일', '이', '삼', '사', '오', '육', '칠', '팔', '구', '십'][num - 1]  # 리스트의 num - 1 번째 글자를 결과로 돌려주세요</code></pre>
     <ul>
       <li>리스트 번호는 0부터 시작해요 (<a href="beginner-python-ch01-qna.html">1장</a>). 그래서 1을 넣으면 <code>[0]</code>번 <code>'일'</code>이 나오도록 <code>num - 1</code>을 해요.</li>
       <li>음수 번호 <code>[-1]</code>은 "뒤에서 첫 번째"라는 뜻이에요.</li>
@@ -589,15 +589,15 @@ TypeError: can only concatenate str (not "NoneType") to str</code></pre>
     <h3 id="q19"><code>triple()</code> 한 줄로 숫자와 문자열을 둘 다 처리하는 이유는?</h3>
     <p><strong>저자 풀이</strong>예요 (<a href="https://github.com/ychoi-kr/wikidocs-chobo-python/blob/master/ch03/define_functions.py" target="_blank" rel="noopener">define_functions.py</a>).</p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>def triple(x):        # 값 x 를 받는 triple 함수를 만들어요
-    return x * 3      # x 를 3배 해서 돌려줘요</code></pre>
+<pre><code>def triple(x):    # x 를 받는 triple 이라는 동작을 만들어 주세요
+    return x * 3  # x * 3 을 결과로 돌려주세요</code></pre>
     <p><code>*</code>가 <strong>값의 종류에 따라 다르게</strong> 동작하기 때문이에요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 위 함수를 정의한 뒤</span></p>
-<pre><code>&gt;&gt;&gt; triple(2)        # 숫자 2 의 3배라서 6 이에요
+<pre><code>&gt;&gt;&gt; triple(2)       # triple 에 2 를 넣으면 뭐가 돌아오나요?
 6
-&gt;&gt;&gt; triple('x')      # 문자열 'x' 를 3번 이어 붙여요
+&gt;&gt;&gt; triple('x')     # triple 에 'x' 를 넣으면 뭐가 돌아오나요?
 'xxx'
-&gt;&gt;&gt; triple([1, 2])   # 리스트를 3번 이어 붙여요
+&gt;&gt;&gt; triple([1, 2])  # triple 에 [1, 2] 를 넣으면 뭐가 돌아오나요?
 [1, 2, 1, 2, 1, 2]</code></pre>
     <table>
       <thead><tr><th>들어온 값</th><th><code>* 3</code>이 하는 일</th></tr></thead>
@@ -612,10 +612,10 @@ TypeError: can only concatenate str (not "NoneType") to str</code></pre>
     <h3 id="q20"><code>korean_age()</code>는 어떻게 읽나요?</h3>
     <p><strong>저자 풀이</strong>예요 (같은 파일).</p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>def korean_age(birth_year):             # 태어난 해를 받는 korean_age 함수를 만들어요
-    from datetime import datetime       # 날짜 도구 datetime 을 가져와요
-    today = datetime.today()            # 지금 날짜와 시각을 today 에 담아요
-    return today.year - birth_year + 1  # 올해에서 태어난 해를 빼고 1을 더해요</code></pre>
+<pre><code>def korean_age(birth_year):             # birth_year 를 받는 korean_age 라는 동작을 만들어 주세요
+    from datetime import datetime       # datetime 도구 상자에서 datetime 을 가져와 주세요
+    today = datetime.today()            # datetime.today() 의 값을 today 에 담아 주세요
+    return today.year - birth_year + 1  # today.year - birth_year + 1 을 결과로 돌려주세요</code></pre>
     <table>
       <thead><tr><th>줄</th><th>하는 일</th></tr></thead>
       <tbody>
@@ -649,15 +649,15 @@ TypeError: can only concatenate str (not "NoneType") to str</code></pre>
     </table>
     <p><strong>저자 풀이</strong>는 공식을 그대로 옮긴 모양이에요 (<a href="https://github.com/ychoi-kr/wikidocs-chobo-python/blob/master/ch03/simpleInterest.py" target="_blank" rel="noopener">simpleInterest.py</a>).</p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>def simple_interest(p, r, t):         # 원금·이율·기간을 받는 이자 함수를 만들어요
-    return p * r * t                  # 원금 × 이율 × 기간, 즉 이자를 돌려줘요
+<pre><code>def simple_interest(p, r, t):         # p, r, t 를 받는 simple_interest 라는 동작을 만들어 주세요
+    return p * r * t                  # p * r * t 를 결과로 돌려주세요
 
-def simple_interest_amount(p, r, t):  # 원리금을 구하는 함수를 만들어요
-    return p * (1 + r * t)            # 원금 × (1 + 이율 × 기간)을 돌려줘요</code></pre>
+def simple_interest_amount(p, r, t):  # p, r, t 를 받는 simple_interest_amount 라는 동작을 만들어 주세요
+    return p * (1 + r * t)            # p * (1 + r * t) 를 결과로 돌려주세요</code></pre>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 위 두 함수를 정의한 뒤</span></p>
-<pre><code>&gt;&gt;&gt; simple_interest(10000000, 0.03875, 5)  # 1천만 원을 연 3.875%로 5년 맡긴 이자예요
+<pre><code>&gt;&gt;&gt; simple_interest(10000000, 0.03875, 5)  # simple_interest 에 10000000, 0.03875, 5 를 넣으면 뭐가 돌아오나요?
 1937500.0
-&gt;&gt;&gt; simple_interest(1100000, 0.05, 5/12)  # 110만 원을 연 5%로 5개월 맡긴 이자예요
+&gt;&gt;&gt; simple_interest(1100000, 0.05, 5/12)   # simple_interest 에 1100000, 0.05, 5/12 를 넣으면 뭐가 돌아오나요?
 22916.666666666668</code></pre>
     <table>
       <thead><tr><th>부르는 줄</th><th>p (원금)</th><th>r (이율)</th><th>t (기간, 년)</th></tr></thead>
@@ -676,9 +676,9 @@ def simple_interest_amount(p, r, t):  # 원리금을 구하는 함수를 만들�
     <h3 id="q22">원리금의 끝자리가 왜 계산할 때마다 달라요?</h3>
     <p>수학으로는 같은 값인데, 계산 순서를 바꾸면 맨 끝자리가 달라져요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 단리 이자의 두 함수를 정의한 뒤</span></p>
-<pre><code>&gt;&gt;&gt; simple_interest_amount(1100000, 0.05, 5/12)  # 원리금을 공식 한 번에 계산해요
+<pre><code>&gt;&gt;&gt; simple_interest_amount(1100000, 0.05, 5/12)     # simple_interest_amount 에 1100000, 0.05, 5/12 를 넣으면 뭐가 돌아오나요?
 1122916.6666666665
-&gt;&gt;&gt; 1100000 + simple_interest(1100000, 0.05, 5/12)  # 원금에 이자를 따로 구해 더해요
+&gt;&gt;&gt; 1100000 + simple_interest(1100000, 0.05, 5/12)  # 1100000 에 simple_interest(1100000, 0.05, 5/12) 의 값을 더하면 얼마예요?
 1122916.6666666667</code></pre>
     <ul>
       <li>컴퓨터의 소수는 아주 작은 오차를 품고 있어요. <a href="beginner-python-ch02-qna.html#q6">2장의 얌체공</a>에서 본 것과 같은 원인이에요.</li>
@@ -687,8 +687,8 @@ def simple_interest_amount(p, r, t):  # 원리금을 구하는 함수를 만들�
     </ul>
     <p><strong>함수를 다시 쓰는 버전</strong>도 읽어 볼게요. 원리금 = 원금 + 이자이니, 이미 만든 함수를 불러 쓸 수 있어요.</p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>def simple_interest_amount(p, r, t):        # 원리금을 구하는 함수를 만들어요
-    return p + simple_interest(p, r, t)     # 원금에 simple_interest 가 준 이자를 더해요</code></pre>
+<pre><code>def simple_interest_amount(p, r, t):     # p, r, t 를 받는 simple_interest_amount 라는 동작을 만들어 주세요
+    return p + simple_interest(p, r, t)  # p 와 simple_interest(p, r, t) 의 합을 결과로 돌려주세요</code></pre>
     <ul>
       <li>공식이 바뀌어도 <code>simple_interest</code> 한 곳만 고치면 돼요.</li>
       <li><code>simple_interest</code>가 <code>return</code>하기 때문에 가능한 모양이에요. <code>print</code>만 했다면 <code>p + None</code>이 되어 에러가 나요 (<a href="#q14">print와 return의 차이</a>).</li>
@@ -702,11 +702,11 @@ def simple_interest_amount(p, r, t):  # 원리금을 구하는 함수를 만들�
     <h3 id="q23">퀴즈 두 문제의 정답과 함정은?</h3>
     <p><strong>퀴즈 1</strong> — 이 코드의 출력은? (보기: 4, 12, 444, None)</p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>def triple(x):        # 값 x 를 받는 triple 함수를 만들어요
-    return x * 3      # x 를 3배 해서 돌려줘요
+<pre><code>def triple(x):      # x 를 받는 triple 이라는 동작을 만들어 주세요
+    return x * 3    # x * 3 을 결과로 돌려주세요
 
-result = triple(4)    # triple(4) 가 돌려준 12 를 result 에 담아요
-print(result)         # result 값을 출력해요</code></pre>
+result = triple(4)  # triple 에 4 를 넣어 돌려받은 값을 result 에 담아 주세요
+print(result)       # result 를 화면에 보여 주세요</code></pre>
     <ul>
       <li><strong>정답은 <code>12</code></strong>예요. <code>x = 4</code> → <code>4 * 3 = 12</code> → <code>return</code> → <code>result = 12</code></li>
       <li><code>444</code>는 <code>triple('4')</code>처럼 <strong>문자열</strong>을 넣었을 때의 답이에요 (<a href="#q19">triple()</a>). <code>4</code>는 따옴표가 없는 숫자예요.</li>
@@ -714,14 +714,14 @@ print(result)         # result 값을 출력해요</code></pre>
     </ul>
     <p><strong>퀴즈 2</strong> — <code>x</code>와 <code>y</code>에는 무엇이 들어갈까요?</p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>def print_sum(a, b):        # 두 값을 받아 출력만 하는 함수를 만들어요
-    print(a + b)            # a 와 b 의 합을 화면에 출력해요
+<pre><code>def print_sum(a, b):   # a 와 b 를 받는 print_sum 이라는 동작을 만들어 주세요
+    print(a + b)       # a + b 를 화면에 보여 주세요
 
-def return_sum(a, b):       # 두 값을 받아 합을 돌려주는 함수를 만들어요
-    return a + b            # a 와 b 의 합을 돌려줘요
+def return_sum(a, b):  # a 와 b 를 받는 return_sum 이라는 동작을 만들어 주세요
+    return a + b       # a + b 를 결과로 돌려주세요
 
-x = print_sum(3, 5)         # 8 을 출력하고 x 에는 None 이 담겨요
-y = return_sum(3, 5)        # 돌려받은 8 을 y 에 담아요</code></pre>
+x = print_sum(3, 5)    # print_sum 에 3 과 5 를 넣어 돌려받은 값을 x 에 담아 주세요
+y = return_sum(3, 5)   # return_sum 에 3 과 5 를 넣어 돌려받은 값을 y 에 담아 주세요</code></pre>
     <ul>
       <li><strong>정답은 <code>x = None</code>, <code>y = 8</code></strong>이에요.</li>
       <li><code>print_sum</code>은 화면에 <code>8</code>을 찍고 아무것도 돌려주지 않아요.</li>
