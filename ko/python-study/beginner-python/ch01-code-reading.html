@@ -346,6 +346,7 @@ details.sol summary::before {
   transition: transform .15s;
 }
 details.sol[open] summary::before { transform: rotate(45deg); }
+details.sol.hint summary { color: var(--ink-faint); }
 @media (prefers-reduced-motion: reduce) { details.sol summary::before { transition: none; } }
 .sol-body { display: grid; gap: 12px; padding-top: 10px; max-width: 70ch; }
 .sol-body p { margin: 0; }
@@ -374,7 +375,7 @@ body { margin: 0; }
     <a class="backlink" href="../../posts.html#python-basics-books">← Tigermorning 블로그 · 파이썬 스터디 › 왕초보를 위한 Python</a>
     <div class="eyebrow"><b>왕초보를 위한 Python</b> · 1장 파이썬 시작하기 · 1.1 – 1.6</div>
     <h1><span class="prompt">&gt;&gt;&gt;</span>1과 코드 읽기 실습</h1>
-    <p class="lead">사칙연산·변수·리스트를 계산기 문제가 아니라 <b>실제 코드에서 마주치는 모양</b>으로 읽어 보는 문제집. 1장에서 배운 문법만 씁니다. 해설은 문제마다 접혀 있으니 다 푼 뒤에 여세요.</p>
+    <p class="lead">사칙연산·변수·리스트를 계산기 문제가 아니라 <b>실제 코드에서 마주치는 모양</b>으로 읽어 보는 문제집. 1장에서 배운 문법만 씁니다. 문제마다 <b>힌트 보기</b>와 <b>정답·해설 보기</b>가 따로 접혀 있으니, 먼저 힌트를 보고 그래도 안 풀리면 정답·해설을 여세요.</p>
     <div class="counts">
       <span class="count all">21문제</span>
       <span class="count basic">기본 6</span>
@@ -510,7 +511,16 @@ body { margin: 0; }
           </ul>
         </div>
         <div class="memo"><label for="memo-b1">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b1"></textarea></div>
-        <details class="sol"><summary>해설 보기</summary>
+        <details class="sol hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <ul>
+              <li><code>/</code>, <code>//</code>, <code>%</code>가 각각 "나눗셈 / 몫 / 나머지" 중 무엇인지 먼저 구분하기</li>
+              <li><code>/</code>는 나누어떨어져도 결과가 정수가 아니라 소수점 있는 수(실수)로 나옴</li>
+              <li><code>divmod()</code>는 몫과 나머지 두 값을 괄호로 묶어 돌려줌</li>
+            </ul>
+          </div>
+        </details>
+        <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
 <pre class="out"><code class="nohighlight">3.5
 3
@@ -545,7 +555,16 @@ print('마지막 페이지 글 수:', last_page_posts)</code></pre>
           </ul>
         </div>
         <div class="memo"><label for="memo-b2">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b2"></textarea></div>
-        <details class="sol"><summary>해설 보기</summary>
+        <details class="sol hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <ul>
+              <li><code>//</code>는 몫, <code>%</code>는 나머지를 구함. <code>total_posts</code>를 <code>per_page</code>로 나누는 상황을 그려 보기</li>
+              <li><code>total_posts</code>가 <code>per_page</code>로 딱 나누어떨어지면 나머지가 얼마가 되는지 따져 보기</li>
+              <li>나머지가 그 값일 때 화면에서 어떤 페이지가 생기는지 생각해 보기</li>
+            </ul>
+          </div>
+        </details>
+        <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
 <pre class="out"><code class="nohighlight">꽉 찬 페이지: 4
 마지막 페이지 글 수: 7</code></pre>
@@ -572,7 +591,16 @@ print(score)</code></pre>
           </ul>
         </div>
         <div class="memo"><label for="memo-b3">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b3"></textarea></div>
-        <details class="sol"><summary>해설 보기</summary>
+        <details class="sol hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <ul>
+              <li>1번째 줄부터 한 줄씩 내려가며 <code>score</code>와 <code>bonus</code>의 값을 따로 적어 보기</li>
+              <li>3번째 줄의 <code>score + bonus</code>는 그 줄이 실행되는 <b>그 순간</b>의 <code>bonus</code> 값으로 계산됨</li>
+              <li>4번째 줄에서 바뀌는 변수가 어느 쪽인지 확인하기</li>
+            </ul>
+          </div>
+        </details>
+        <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
 <pre class="out"><code class="nohighlight">85</code></pre>
             <ul>
@@ -612,7 +640,16 @@ print(3 + 4)</code></pre>
           </ul>
         </div>
         <div class="memo"><label for="memo-b4">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b4"></textarea></div>
-        <details class="sol"><summary>해설 보기</summary>
+        <details class="sol hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <ul>
+              <li>따옴표가 있는 값은 문자열, 없는 값은 숫자인지 줄마다 확인하기</li>
+              <li>문자열끼리의 <code>+</code>는 이어 붙이기, 숫자끼리의 <code>+</code>는 덧셈</li>
+              <li><code>*</code>를 문자열에 쓰면 그 문자열을 그 횟수만큼 반복함</li>
+            </ul>
+          </div>
+        </details>
+        <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
 <pre class="out"><code class="nohighlight">김철수
 김 철수
@@ -643,7 +680,16 @@ print(members[len(members) - 1])</code></pre>
           </ul>
         </div>
         <div class="memo"><label for="memo-b5">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b5"></textarea></div>
-        <details class="sol"><summary>해설 보기</summary>
+        <details class="sol hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <ul>
+              <li>리스트의 번호(인덱스)는 <code>0</code>부터 시작한다는 점부터 확인하기</li>
+              <li><code>len(members)</code>는 원소의 <b>개수</b>. 마지막 원소의 번호는 개수와 한 칸 차이가 남</li>
+              <li>번호가 원소 범위를 벗어나면 에러가 남. 에러 이름은 실제로 실행해 확인하기</li>
+            </ul>
+          </div>
+        </details>
+        <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
 <pre class="out"><code class="nohighlight">5
 지민
@@ -926,7 +972,16 @@ print(price)</code></pre>
           </ul>
         </div>
         <div class="memo"><label for="memo-m1">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m1"></textarea></div>
-        <details class="sol"><summary>해설 보기</summary>
+        <details class="sol hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <ul>
+              <li>줄마다 <code>price</code>가 정수인지 실수인지 따라가기</li>
+              <li><code>*=</code>는 "곱한 결과를 다시 같은 변수에 담기"</li>
+              <li>정수에 <code>0.9</code> 같은 소수를 곱하면 결과 종류가 어떻게 되는지 기본 1을 떠올리기</li>
+            </ul>
+          </div>
+        </details>
+        <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
 <pre class="out"><code class="nohighlight">17000.0</code></pre>
             <ul>
@@ -955,7 +1010,16 @@ print(members[week % len(members)])</code></pre>
           </ul>
         </div>
         <div class="memo"><label for="memo-m2">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m2"></textarea></div>
-        <details class="sol"><summary>해설 보기</summary>
+        <details class="sol hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <ul>
+              <li>먼저 <code>len(members)</code>가 얼마인지 세어 보고, 그 값으로 <code>week</code>를 나눈 <b>나머지</b>부터 구하기</li>
+              <li>나머지가 곧 <code>members</code>의 번호가 됨 (번호는 <code>0</code>부터)</li>
+              <li>어떤 수를 <code>n</code>으로 나눈 나머지는 항상 <code>0</code>부터 <code>n - 1</code> 사이</li>
+            </ul>
+          </div>
+        </details>
+        <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
 <pre class="out"><code class="nohighlight">하은
 하은</code></pre>
@@ -985,7 +1049,16 @@ print(row, col)</code></pre>
           </ul>
         </div>
         <div class="memo"><label for="memo-m3">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m3"></textarea></div>
-        <details class="sol"><summary>해설 보기</summary>
+        <details class="sol hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <ul>
+              <li><code>//</code>는 몫, <code>%</code>는 나머지. 한 줄에 몇 자리인지(<code>cols</code>)로 나누기</li>
+              <li>몫은 "몇 번째 줄", 나머지는 "그 줄의 몇 번째 칸"에 해당 (둘 다 0부터 셈)</li>
+              <li>거꾸로 구할 때는 나눗셈의 반대인 곱셈과 덧셈을 떠올리기</li>
+            </ul>
+          </div>
+        </details>
+        <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
 <pre class="out"><code class="nohighlight">3 2</code></pre>
             <ul>
@@ -1011,7 +1084,16 @@ print('합계:', a + b)</code></pre>
           </ul>
         </div>
         <div class="memo"><label for="memo-m4">원인과 고친 코드 <span>이 브라우저에만 저장</span></label><textarea id="memo-m4"></textarea></div>
-        <details class="sol"><summary>해설 보기</summary>
+        <details class="sol hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <ul>
+              <li><code>input()</code>이 돌려주는 값이 숫자인지 문자열인지부터 생각하기</li>
+              <li>기본 4에서 본 것처럼 문자열끼리의 <code>+</code>는 어떻게 동작하는지 떠올리기</li>
+              <li>문자열을 정수로 바꿔 주는 함수 이름은 1.6.1 연습 문제에 있음</li>
+            </ul>
+          </div>
+        </details>
+        <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
 <pre class="out"><code class="nohighlight">합계: 34</code></pre>
             <ul>
@@ -1041,7 +1123,16 @@ print('남은 할 일 개수:', len(todo))</code></pre>
           </ul>
         </div>
         <div class="memo"><label for="memo-m5">원인 메모 <span>이 브라우저에만 저장</span></label><textarea id="memo-m5"></textarea></div>
-        <details class="sol"><summary>해설 보기</summary>
+        <details class="sol hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <ul>
+              <li><code>remove()</code> 직후 리스트가 어떤 모양이 되는지 먼저 적어 보기</li>
+              <li>원소 하나가 빠지면 그 뒤의 원소들 번호가 어떻게 바뀌는지 따져 보기</li>
+              <li><code>todo[2]</code>는 "지우기 전 리스트"가 아니라 "지운 뒤 리스트"의 세 번째 원소</li>
+            </ul>
+          </div>
+        </details>
+        <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
 <pre class="out"><code class="nohighlight">세 번째 할 일: 숙제
 남은 할 일 개수: 3</code></pre>
@@ -1069,7 +1160,16 @@ print('남은 할 일 개수:', len(todo))</code></pre>
           </ul>
         </div>
         <div class="memo"><label for="memo-m6">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m6"></textarea></div>
-        <details class="sol"><summary>해설 보기</summary>
+        <details class="sol hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <ul>
+              <li>연산 순서 표(1장)를 떠올리기: 괄호가 맨 먼저, <code>**</code>가 곱셈·나눗셈보다 먼저, 덧셈·뺄셈이 마지막</li>
+              <li>같은 순위끼리는 왼쪽부터 차례로 계산함 (첫째·넷째 줄에 해당)</li>
+              <li>식마다 가장 먼저 계산할 부분에 괄호를 쳐 보고 한 단계씩 줄여 나가기</li>
+            </ul>
+          </div>
+        </details>
+        <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
 <pre class="out"><code class="nohighlight">16
 50
@@ -1142,7 +1242,16 @@ print(pages)</code></pre>
           </ul>
         </div>
         <div class="memo"><label for="memo-a1">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a1"></textarea></div>
-        <details class="sol"><summary>해설 보기</summary>
+        <details class="sol hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <ul>
+              <li><code>total_posts + per_page - 1</code>을 먼저 계산한 다음 <code>//</code>로 나누는 순서로 보기</li>
+              <li>나머지가 없을 때와 나머지가 조금이라도 있을 때, 더한 값이 몫을 올리는지 따져 보기</li>
+              <li>표의 각 칸에 숫자를 직접 대입해서 계산해 보기. 두 번째 식은 <code>0</code>과 나누어떨어지는 경우를 확인</li>
+            </ul>
+          </div>
+        </details>
+        <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
             <div class="table-scroll fill">
               <table>
@@ -1183,7 +1292,16 @@ print(current, photos[current])</code></pre>
           </ul>
         </div>
         <div class="memo"><label for="memo-a2">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a2"></textarea></div>
-        <details class="sol"><summary>해설 보기</summary>
+        <details class="sol hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <ul>
+              <li><code>(current - 1)</code>이 먼저 음수가 되는 것을 확인하고, 그 값을 사진 개수로 나눈 나머지 구하기</li>
+              <li>파이썬의 <code>%</code> 결과는 나누는 수와 같은 부호(<code>0</code> 이상)로 나옴</li>
+              <li><code>//</code>는 소수점을 잘라 내는 것이 아니라 <b>더 작은 쪽으로 내림</b>. "몫 × 나누는 수 + 나머지"가 원래 수가 되는지 검산하기</li>
+            </ul>
+          </div>
+        </details>
+        <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
 <pre class="out"><code class="nohighlight">2 c.jpg</code></pre>
 <pre class="out"><code class="nohighlight">-4
@@ -1220,7 +1338,16 @@ print(len(team_a), len(team_b))</code></pre>
           </ul>
         </div>
         <div class="memo"><label for="memo-a3">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a3"></textarea></div>
-        <details class="sol"><summary>해설 보기</summary>
+        <details class="sol hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <ul>
+              <li>1장의 "변수는 상자가 아니라 이름표" 비유로 <code>y = x</code>, <code>team_b = team_a</code>를 각각 그림으로 그리기</li>
+              <li>숫자는 <code>x = x + 1</code>에서 새 값을 만들어 이름표만 옮김</li>
+              <li>리스트는 이름표가 두 개여도 리스트 자체는 하나이고, <code>remove()</code>는 그 하나를 직접 고침</li>
+            </ul>
+          </div>
+        </details>
+        <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
 <pre class="out"><code class="nohighlight">11 10
 ['지민', '하은']
@@ -1254,7 +1381,16 @@ print(len(team_a), len(team_b))</code></pre>
           </ul>
         </div>
         <div class="memo"><label for="memo-a4">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a4"></textarea></div>
-        <details class="sol"><summary>해설 보기</summary>
+        <details class="sol hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <ul>
+              <li>컴퓨터가 수를 2진수로 저장한다는 점과, 모든 소수가 2진수로 딱 떨어지지는 않는다는 점을 떠올리기</li>
+              <li>각 줄을 예측한 뒤 반드시 실행해서 비교하기. 정수끼리 곱하는 줄은 오차가 생기는지 따져 보기</li>
+              <li>오차가 생기는 줄과 안 생기는 줄을 나누는 기준은 "정확히 저장되는 수인가"</li>
+            </ul>
+          </div>
+        </details>
+        <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
 <pre class="out"><code class="nohighlight">0.30000000000000004
 3.3000000000000003
@@ -1287,7 +1423,16 @@ print(len(team_a), len(team_b))</code></pre>
           </ul>
         </div>
         <div class="memo"><label for="memo-a5">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a5"></textarea></div>
-        <details class="sol"><summary>해설 보기</summary>
+        <details class="sol hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <ul>
+              <li><code>**</code>는 다른 연산자와 달리 <b>오른쪽부터</b> 계산함. <code>2 ** 3 ** 2</code>에 괄호를 쳐 보기</li>
+              <li><code>-2 ** 2</code>에서 마이너스는 <code>**</code> 계산이 끝난 뒤에 붙는 부호로 취급됨</li>
+              <li><code>leg ** 2 / 2</code>에서는 <code>**</code>와 <code>/</code> 중 무엇이 먼저인지, <code>leg ** (2 / 2)</code>는 괄호 안이 어떤 종류의 수가 되는지 확인</li>
+            </ul>
+          </div>
+        </details>
+        <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
 <pre class="out"><code class="nohighlight">512
 -4
@@ -1329,7 +1474,16 @@ print('사거리와의 차이:', distance - attack_range)</code></pre>
           </ul>
         </div>
         <div class="memo"><label for="memo-a6">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a6"></textarea></div>
-        <details class="sol"><summary>해설 보기</summary>
+        <details class="sol hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <ul>
+              <li><code>dx</code>와 <code>dy</code>를 먼저 계산하고, <code>math.sqrt()</code> 안의 식을 제곱 → 덧셈 순서로 풀기</li>
+              <li><code>math.sqrt()</code>가 돌려주는 값은 정수일까 실수일까? 마지막 뺄셈 결과의 종류도 같이 정해짐</li>
+              <li>잘못 쓴 식은 괄호의 위치가 달라짐: <code>math.sqrt(...)</code>가 먼저 끝나고 그 값에 <code>** 2</code>가 적용됨. 끝자리는 상급 4를 참고</li>
+            </ul>
+          </div>
+        </details>
+        <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
 <pre class="out"><code class="nohighlight">거리: 5.0
 사거리와의 차이: 0.0</code></pre>
@@ -1409,7 +1563,16 @@ print(hours, minutes, seconds)</code></pre>
           </ul>
         </div>
         <div class="memo"><label for="memo-a8">내 추측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a8"></textarea></div>
-        <details class="sol"><summary>해설 보기</summary>
+        <details class="sol hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <ul>
+              <li><code>divmod(3725, 60)</code>가 돌려주는 값이 몇 개인지, 어떤 모양인지 먼저 보기 (몫과 나머지)</li>
+              <li><code>a, b = ...</code>에서 왼쪽 이름이 두 개이면 오른쪽 값이 순서대로 하나씩 붙는다고 추측해 보기</li>
+              <li>첫째 줄 결과를 <code>minutes</code>, <code>seconds</code>에 넣고, 둘째 줄은 그 <code>minutes</code>를 다시 60으로 나눠 보기</li>
+            </ul>
+          </div>
+        </details>
+        <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
 <pre class="out"><code class="nohighlight">1 2 5</code></pre>
             <ul>
