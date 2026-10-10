@@ -54,14 +54,14 @@
 
     <h3 id="a1">정답과 해설</h3>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>members = ['서준', '하은', '도윤']
-name = input()
-points = int(input())
+<pre><code>members = ['서준', '하은', '도윤']      # 변수 members 에 이름 리스트를 담아요
+name = input()                          # 입력한 문자열을 변수 name 에 담아요
+points = int(input())                   # 입력한 값을 정수로 바꿔 points 에 담아요
 
-if name in members and points &gt;= 1000:
-    print('VIP 회원입니다')
-else:
-    print('VIP 회원이 아닙니다')</code></pre>
+if name in members and points &gt;= 1000:  # 이름이 명단에 있고 포인트가 1000 이상인지 따져요
+    print('VIP 회원입니다')             # 조건이 참이면 이 문장을 출력해요
+else:                                   # 위 조건이 거짓일 때 실행할 곳이에요
+    print('VIP 회원이 아닙니다')        # 조건이 거짓이면 이 문장을 출력해요</code></pre>
     <p><strong>한 줄씩 짚어보기</strong></p>
     <ul>
       <li><code>name in members</code> — 이름이 리스트 안에 있으면 <code>True</code>, 없으면 <code>False</code>. 그 자체로 참/거짓 값 하나예요.</li>
@@ -102,11 +102,11 @@ else:
 
     <h3 id="a2">정답과 해설</h3>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>cart = [12000, 8500, 3000]
-total = 0
-for i in range(len(cart)):
-    total += cart[i]
-print('총액:', total)</code></pre>
+<pre><code>cart = [12000, 8500, 3000]  # 변수 cart 에 가격 리스트를 담아요
+total = 0                   # 합계를 모을 변수 total 을 0 으로 시작해요
+for i in range(len(cart)):  # cart 의 인덱스를 차례로 i 에 담아요
+    total += cart[i]        # cart[i] 를 total 에 더해요
+print('총액:', total)       # '총액:' 과 total 을 함께 출력해요</code></pre>
     <p><strong>한 줄씩 짚어보기</strong></p>
     <ul>
       <li><code>len(cart)</code> — 리스트 개수. <code>cart</code>는 3개니까 <code>3</code>.</li>
@@ -136,14 +136,14 @@ print('총액:', total)</code></pre>
 
     <h3 id="a3">정답과 해설</h3>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>members = ['지민', '서준', '하은']
-name = input()
-for m in members:
-    if m == name:
-        print('있음')
-        break
-else:
-    print('없음')</code></pre>
+<pre><code>members = ['지민', '서준', '하은']  # 변수 members 에 이름 리스트를 담아요
+name = input()                      # 입력한 문자열을 변수 name 에 담아요
+for m in members:                   # members 의 원소를 하나씩 꺼내 m 에 담아요
+    if m == name:                   # m 이 name 과 같은지 따져요
+        print('있음')               # 같으면 '있음' 을 출력해요
+        break                       # 반복을 바로 멈춰요
+else:                               # for 가 break 없이 끝났을 때 실행할 곳이에요
+    print('없음')                   # break 없이 끝났을 때 '없음' 을 출력해요</code></pre>
     <p><strong>한 줄씩 짚어보기</strong></p>
     <ul>
       <li><code>for m in members:</code> — m이 <code>'지민' → '서준' → '하은'</code> 순서로 리스트 원소를 하나씩 꺼내 와요.</li>
@@ -189,12 +189,12 @@ else:
       </tbody>
     </table>
     <p><strong>흔한 실수 — break를 빠뜨리면?</strong> 아래처럼 <code>break</code> 없이 짜면, '하은'을 찾아 <code>있음</code>을 출력하고도 반복이 계속 돌다가 끝까지 다 돌았으니(멈춘 적이 없으니) else도 함께 실행돼요.</p>
-<pre><code>for m in members:
-    if m == name:
-        print('있음')
+<pre><code>for m in members:      # members 의 원소를 하나씩 꺼내 m 에 담아요
+    if m == name:      # m 이 name 과 같은지 따져요
+        print('있음')  # 같으면 '있음' 을 출력해요
         # break 없음
-else:
-    print('없음')</code></pre>
+else:                  # for 가 break 없이 끝났을 때 실행할 곳이에요
+    print('없음')      # break 없이 끝났을 때 '없음' 을 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">있음
 없음</code></pre>
     <p>이게 바로 <a href="beginner-python-ch02-part2-notes.html#suspect-else-skip">지난 글 "이럴 때 의심하세요"</a>에서 말한 증상이에요 — <code>break</code>가 없으면 for는 찾은 뒤에도 멈추지 않고 끝까지 돌고, else는 "break로 안 멈췄다"는 사실만 보고 무조건 실행되니 두 줄이 같이 찍혀요.</p>

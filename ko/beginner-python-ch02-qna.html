@@ -66,10 +66,10 @@
     <h3 id="q1">while은 조건이 참인 동안 반복해요</h3>
     <p>while은 <strong>조건이 참인 동안</strong> 그 아래 들여쓴 코드를 반복해서 실행해요. 매번 반복하기 전에 조건부터 다시 검사해요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
-<pre><code>&gt;&gt;&gt; num = 1
-&gt;&gt;&gt; while num &lt;= 3:
-...     print(num)
-...     num = num + 1
+<pre><code>&gt;&gt;&gt; num = 1             # 변수 num 에 1 을 담아요
+&gt;&gt;&gt; while num &lt;= 3:  # num 이 3 이하인 동안 반복해요
+...     print(num)               # num 을 화면에 출력해요
+...     num = num + 1            # num 을 1 늘려서 반복이 끝나게 해요
 ...
 1
 2
@@ -97,9 +97,9 @@
     <h3 id="q2">카운터 갱신을 빠뜨리면 무한 루프가 돼요</h3>
     <p>while은 조건만 보고 반복 여부를 정해요. 조건에 쓰인 값이 반복 중에 <strong>한 번도 안 바뀌면</strong>, 조건은 영원히 똑같은 결과를 내서 반복이 끝나지 않아요.</p>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 절대 실행하지 마세요. num이 계속 1이라 조건이 늘 참이에요</span></p>
-<pre><code>num = 1
-while num &lt;= 3:
-    print(num)
+<pre><code>num = 1             # 변수 num 에 1 을 담아요
+while num &lt;= 3:  # num 이 3 이하인 동안 반복해요
+    print(num)      # num 을 화면에 출력해요
     # num = num + 1 을 빠뜨림</code></pre>
     <ul>
       <li>매번 검사할 때 <code>num</code>은 항상 <code>1</code> → <code>1 &lt;= 3</code>은 항상 참 → 1을 영원히 찍음</li>
@@ -107,10 +107,10 @@ while num &lt;= 3:
     </ul>
     <p><strong>무한 루프를 피하는 원칙:</strong> while 몸통 안에는 조건에 쓰인 값을 <strong>바꾸는 줄이 최소 하나</strong> 있어야 하고, 그 값이 언젠가는 조건을 거짓으로 만들 수 있어야 해요. 카운터를 늘리다가 빼먹거나(<code>num = num + 1</code> 자리를 지워도, 들여쓰기를 잘못해서 while 밖으로 나가도) 같은 실수로 자주 생겨요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 들여쓰기가 잘못돼서 num이 while 밖에서만 바뀌는 예</span></p>
-<pre><code>num = 1
-while num &lt;= 3:
-    print(num)
-num = num + 1   # 들여쓰기가 한 칸 덜 됨 → while 몸통이 아님</code></pre>
+<pre><code>num = 1             # 변수 num 에 1 을 담아요
+while num &lt;= 3:  # num 이 3 이하인 동안 반복해요
+    print(num)      # num 을 화면에 출력해요
+num = num + 1       # 들여쓰기가 모자라 while 몸통이 아니에요</code></pre>
     <ul>
       <li>마지막 줄이 <code>while</code>과 같은 위치까지 나와 있으면 몸통이 아니라 while이 끝난 뒤에 딱 한 번 실행되는 코드예요</li>
       <li>그러면 몸통 안에는 <code>print(num)</code>만 남아서 num이 영원히 1 → 무한 루프</li>
@@ -123,12 +123,12 @@ num = num + 1   # 들여쓰기가 한 칸 덜 됨 → while 몸통이 아님</co
 
     <h3 id="q3">반복 횟수를 세는 <code>i</code>와 출력할 값 <code>num</code>은 다른 변수예요</h3>
     <p><strong>공식 풀이</strong>는 이래요.</p>
-<pre><code>num = int(input())
+<pre><code>num = int(input())  # 입력받은 글자를 정수로 바꿔 num 에 담아요
 
-i = 0
-while i &lt; num:
-    print('', num)
-    i += 1</code></pre>
+i = 0               # 횟수를 세는 i 를 0 으로 시작해요
+while i &lt; num:   # i 가 num 보다 작은 동안 반복해요
+    print('', num)  # 앞에 공백 한 칸을 붙여 num 을 출력해요
+    i += 1          # i 를 1 늘려서 횟수를 세요</code></pre>
     <p><code>i</code>와 <code>num</code>은 하는 일이 완전히 달라요.</p>
     <table>
       <thead><tr><th>변수</th><th>역할</th><th>반복 중 값이 바뀌나</th></tr></thead>
@@ -158,9 +158,9 @@ while i &lt; num:
     <h3 id="q4"><code>print('', num)</code>의 빈 문자열은 공백을 만들어요</h3>
     <p>문제의 요구 사항이 "출력 앞에 공백을 한 칸 주어서 입력과 출력이 구분되게" 하는 것이었죠. <code>print()</code>에 쉼표로 여러 값을 넣으면 <strong>사이에 공백이 하나씩</strong> 자동으로 들어간다는 점(1장 기본 6)을 이용한 거예요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
-<pre><code>&gt;&gt;&gt; print('', 3)
+<pre><code>&gt;&gt;&gt; print('', 3)  # 앞에 공백 한 칸을 붙여 3 을 출력해요
  3
-&gt;&gt;&gt; print(3)
+&gt;&gt;&gt; print(3)      # 3 만 그대로 출력해요
 3</code></pre>
     <ul>
       <li><code>print('', 3)</code>은 빈 문자열 <code>''</code>과 <code>3</code>을 쉼표로 나열한 것 → 그 사이에 공백 1칸이 끼어서 <code>' 3'</code>처럼 보임</li>
@@ -176,11 +176,11 @@ while i &lt; num:
 
     <h3 id="q5">카운터를 1부터 시작하고 <code>&lt;= num</code>을 쓰는 이유</h3>
     <p><strong>공식 풀이</strong>는 이래요.</p>
-<pre><code>num = int(input())
-i = 1
-while i &lt;= num:
-    print(i, i * i)
-    i = i + 1</code></pre>
+<pre><code>num = int(input())   # 입력받은 글자를 정수로 바꿔 num 에 담아요
+i = 1                # i 를 1 부터 시작해요
+while i &lt;= num:   # i 가 num 이하인 동안 반복해요
+    print(i, i * i)  # i 와 i 의 제곱을 함께 출력해요
+    i = i + 1        # i 를 1 늘려요</code></pre>
     <p>입력이 <code>3</code>일 때 <code>1 1</code>, <code>2 4</code>, <code>3 9</code>가 나와야 하죠. "1부터 num까지, num도 포함"이 목표라서 <code>i = 1</code>로 시작하고 조건도 <code>&lt;=</code>(이하)를 써요.</p>
     <div class="table-scroll fill">
       <table>
@@ -211,24 +211,24 @@ while i &lt;= num:
 
     <h3 id="q6">곱셈을 반복하면 소수점 오차가 쌓이고, <code>round()</code>는 그걸 없애지 않아요</h3>
     <p><strong>공식 풀이</strong>는 이래요.</p>
-<pre><code>height = 100
-bounce = 3 / 5
+<pre><code>height = 100                    # 처음 높이를 100 으로 정해요
+bounce = 3 / 5                  # 튀어 오르는 비율 0.6 을 bounce 에 담아요
 
-i = 1
-while i &lt;= 10:
-    height = height * bounce
-    print(i, round(height, 4))
-    i = i + 1</code></pre>
+i = 1                           # 몇 번째인지 세는 i 를 1 로 시작해요
+while i &lt;= 10:               # i 가 10 이하인 동안 반복해요
+    height = height * bounce    # 높이에 비율을 곱해 새 높이를 구해요
+    print(i, round(height, 4))  # 횟수와 소수 넷째 자리로 반올림한 높이를 출력해요
+    i = i + 1                   # i 를 1 늘려요</code></pre>
     <p><code>round()</code> 없이 그냥 찍으면 벌써 세 번째 줄부터 지저분한 값이 나와요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— round() 없이 그대로 찍은 결과</span></p>
-<pre><code>&gt;&gt;&gt; height = 100 * (3/5)
-&gt;&gt;&gt; height
+<pre><code>&gt;&gt;&gt; height = 100 * (3/5)     # 100 의 5분의 3 인 60.0 을 height 에 담아요
+&gt;&gt;&gt; height                   # height 의 값을 확인해요
 60.0
-&gt;&gt;&gt; height = height * (3/5)
-&gt;&gt;&gt; height
+&gt;&gt;&gt; height = height * (3/5)  # 높이에 다시 5분의 3 을 곱해 담아요
+&gt;&gt;&gt; height                   # height 의 값을 확인해요
 36.0
-&gt;&gt;&gt; height = height * (3/5)
-&gt;&gt;&gt; height
+&gt;&gt;&gt; height = height * (3/5)  # 높이에 또 5분의 3 을 곱해 담아요
+&gt;&gt;&gt; height                   # height 의 값을 확인해요
 21.599999999999998</code></pre>
     <ul>
       <li>컴퓨터는 소수를 2진수로 저장하는데, <code>0.6</code>(<code>3/5</code>) 같은 수는 2진수로 딱 떨어지지 않아서 아주 작은 오차가 생겨요(1장 기본 6 <a href="python-study/beginner-python/ch01-code-reading.html#b6-q3">질문과 해설의 float 오차</a>와 같은 현상).</li>
@@ -257,10 +257,10 @@ while i &lt;= 10:
 
     <h3 id="q7">카운터가 줄어드는 while도 돼요</h3>
     <p>퀴즈 코드는 이래요.</p>
-<pre><code>count = 3
-while count &gt; 0:
-    print(count)
-    count = count - 1</code></pre>
+<pre><code>count = 3              # count 를 3 으로 시작해요
+while count &gt; 0:    # count 가 0 보다 큰 동안 반복해요
+    print(count)       # count 를 화면에 출력해요
+    count = count - 1  # count 를 1 줄여요</code></pre>
     <p>됩니다. while은 "조건이 참인 동안 반복"할 뿐, 값이 커지든 작아지든 상관하지 않아요. 흐름을 표로 그려요.</p>
     <div class="table-scroll fill">
       <table>
@@ -283,26 +283,26 @@ while count &gt; 0:
     <h3 id="q8">if/elif/else는 조건에 따라 블록을 골라요</h3>
     <p><code>if</code>는 "조건이 참이면 이 블록을, 아니면 건너뛰어라"예요. <code>else</code>를 붙이면 "참이 아닐 때 대신 실행할 것"을 정할 수 있고, <code>elif</code>를 끼워 넣으면 조건을 여러 개 검사할 수 있어요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
-<pre><code>&gt;&gt;&gt; a = 1234 * 4
-&gt;&gt;&gt; b = 13456 / 2
-&gt;&gt;&gt; if a &gt; b:
-...     print('a')
-... else:
-...     print('b')
+<pre><code>&gt;&gt;&gt; a = 1234 * 4   # 1234 곱하기 4 인 4936 을 a 에 담아요
+&gt;&gt;&gt; b = 13456 / 2  # 13456 나누기 2 인 6728.0 을 b 에 담아요
+&gt;&gt;&gt; if a &gt; b:   # a 가 b 보다 크면 아래를 실행해요
+...     print('a')          # a 가 더 클 때 a 를 출력해요
+... else:                   # 아니면 아래를 실행해요
+...     print('b')          # 그렇지 않을 때 b 를 출력해요
 ...
 b</code></pre>
     <ul>
       <li><code>a</code>는 <code>4936</code>, <code>b</code>는 <code>6728.0</code> → <code>a &gt; b</code>가 거짓 → <code>else</code> 블록이 실행돼 <code>b</code>가 찍혀요.</li>
       <li>elif를 여러 번 쓰면 조건을 순서대로 늘어놓을 수 있어요.</li>
     </ul>
-<pre><code>&gt;&gt;&gt; c = 15 * 5
-&gt;&gt;&gt; d = 15 + 15 + 15 + 15 + 15
-&gt;&gt;&gt; if c &gt; d:
-...     print('c is greater than d')
-... elif c == d:
-...     print('c is equal to d')
-... else:
-...     print('I don\'t know')
+<pre><code>&gt;&gt;&gt; c = 15 * 5                  # 15 곱하기 5 인 75 를 c 에 담아요
+&gt;&gt;&gt; d = 15 + 15 + 15 + 15 + 15  # 15 를 다섯 번 더한 75 를 d 에 담아요
+&gt;&gt;&gt; if c &gt; d:                # c 가 d 보다 크면 실행해요
+...     print('c is greater than d')     # c 가 더 클 때 출력해요
+... elif c == d:                         # 앞이 거짓이고 c 와 d 가 같으면 실행해요
+...     print('c is equal to d')         # 둘이 같을 때 출력해요
+... else:                                # 위가 모두 거짓이면 실행해요
+...     print('I don\'t know')           # 어느 경우도 아닐 때 출력해요
 ...
 c is equal to d</code></pre>
     <p><code>c</code>와 <code>d</code>는 둘 다 <code>75</code>라서 <code>c &gt; d</code>는 거짓, <code>c == d</code>는 참 → 두 번째 블록이 실행돼요.</p>
@@ -317,25 +317,25 @@ c is equal to d</code></pre>
       </tbody>
     </table>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
-<pre><code>&gt;&gt;&gt; c = 75
-&gt;&gt;&gt; d = 75
-&gt;&gt;&gt; c == d
+<pre><code>&gt;&gt;&gt; c = 75  # c 에 75 를 담아요
+&gt;&gt;&gt; d = 75  # d 에 75 를 담아요
+&gt;&gt;&gt; c == d  # c 와 d 가 같은지 비교해 True 가 나와요
 True
-&gt;&gt;&gt; c = d
-&gt;&gt;&gt; c
+&gt;&gt;&gt; c = d   # d 의 값 75 를 c 에 담아요(대입)
+&gt;&gt;&gt; c       # c 의 값을 확인해요
 75</code></pre>
     <p><code>if c = d:</code>처럼 조건 자리에 <code>=</code>를 쓰면 파이썬은 <code>SyntaxError</code>를 내요. 비교가 필요한 자리(<code>if</code>, <code>while</code>의 조건)에는 반드시 <code>==</code>를 써야 해요.</p>
 
     <h3 id="q10"><code>while True:</code>는 <code>break</code>로 끝내요</h3>
     <p><code>True</code>는 그 자체로 "항상 참"이에요. 그래서 <code>while True:</code>는 조건 검사 없이 무조건 도는 반복문이 돼요. 이걸 멈추려면 몸통 안에서 <code>break</code>로 직접 빠져나와야 해요.</p>
 <pre><code># filename: ten.py
-max = 10
+max = 10                           # 기준값 10 을 max 에 담아요
 
-while True:
-    num = int(input())
-    if num &gt; max:
-        print(num, 'is too big!')
-        break</code></pre>
+while True:                        # 조건이 항상 참이라 계속 반복해요
+    num = int(input())             # 입력받은 글자를 정수로 바꿔 num 에 담아요
+    if num &gt; max:               # num 이 max 보다 크면 실행해요
+        print(num, 'is too big!')  # num 과 너무 크다는 메시지를 출력해요
+        break                      # 반복을 즉시 끝내고 빠져나가요</code></pre>
     <p>입력이 <code>3</code>, <code>6</code>, <code>9</code>, <code>12</code> 순서로 들어온다고 하면 흐름은 이래요.</p>
     <div class="table-scroll fill">
       <table>
@@ -361,14 +361,14 @@ while True:
 
     <h3 id="q11">elif 체인은 처음 참인 조건 하나만 실행해요</h3>
     <p><strong>공식 풀이</strong>는 이래요.</p>
-<pre><code>num = int(input())
+<pre><code>num = int(input())  # 입력받은 글자를 정수로 바꿔 num 에 담아요
 
-if num == 1:
-    print('일')
-elif num == 2:
-    print('이')
-elif num == 3:
-    print('삼')</code></pre>
+if num == 1:        # num 이 1 이면 실행해요
+    print('일')      # 1 일 때 '일' 을 출력해요
+elif num == 2:      # 앞이 아니고 num 이 2 이면 실행해요
+    print('이')      # 2 일 때 '이' 를 출력해요
+elif num == 3:      # 앞이 아니고 num 이 3 이면 실행해요
+    print('삼')      # 3 일 때 '삼' 을 출력해요</code></pre>
     <p>파이썬은 <strong>위에서부터 순서대로</strong> 조건을 검사하다가, 처음으로 참인 조건 하나를 찾으면 그 블록만 실행하고 <strong>나머지 elif는 전부 건너뛰어요.</strong> 입력이 <code>2</code>라면 이렇게 진행돼요.</p>
     <div class="table-scroll fill">
       <table>
@@ -389,39 +389,39 @@ elif num == 3:
 
     <h3 id="q12">elif 조건은 작은 값부터 쓰는 이유</h3>
     <p><strong>공식 풀이</strong>는 이래요.</p>
-<pre><code>y = int(input('What year were you born? '))
+<pre><code>y = int(input('What year were you born? '))  # 안내 문구를 보여 주고 출생 연도를 정수로 받아요
 
-gen = None
+gen = None                                   # 세대 이름을 담을 gen 을 비워 둬요
 
-if y &lt;= 1924:
-    gen = 'the Greatest Generation'
-elif y &lt;= 1945:
-    gen = 'the Silent Generation'
-elif y &lt;= 1964:
-    gen = 'a baby boomer'
-elif y &lt;= 1980:
-    gen = 'a Gen X'
-elif y &lt;= 1996:
-    gen = 'a millennial'
-else:
-    gen = 'a Gen Z'
+if y &lt;= 1924:                             # y 가 1924 이하이면 실행해요
+    gen = 'the Greatest Generation'          # gen 에 'the Greatest Generation' 을 담아요
+elif y &lt;= 1945:                           # 앞이 아니고 1945 이하이면 실행해요
+    gen = 'the Silent Generation'            # gen 에 'the Silent Generation' 을 담아요
+elif y &lt;= 1964:                           # 앞이 아니고 1964 이하이면 실행해요
+    gen = 'a baby boomer'                    # gen 에 'a baby boomer' 를 담아요
+elif y &lt;= 1980:                           # 앞이 아니고 1980 이하이면 실행해요
+    gen = 'a Gen X'                          # gen 에 'a Gen X' 를 담아요
+elif y &lt;= 1996:                           # 앞이 아니고 1996 이하이면 실행해요
+    gen = 'a millennial'                     # gen 에 'a millennial' 을 담아요
+else:                                        # 위가 모두 아니면 실행해요
+    gen = 'a Gen Z'                          # gen 에 'a Gen Z' 를 담아요
 
-print(f"You're {gen}.")</code></pre>
+print(f"You're {gen}.")                      # gen 을 끼워 넣은 문장을 출력해요</code></pre>
     <p>앞에서 봤듯 elif 체인은 <strong>처음 참인 조건 하나만</strong> 골라요. 조건이 전부 <code>&lt;=</code>(이하)라서, 작은 경계부터 검사해야 "그 경계 바로 아래 구간"을 정확히 잡아낼 수 있어요. <code>y &lt;= 1945</code> 줄에 도착했다는 건 이미 위에서 <code>y &lt;= 1924</code>가 거짓으로 확인됐다는 뜻이라서, 굳이 <code>1925 &lt;= y &lt;= 1945</code>처럼 범위를 다 안 써도 돼요.</p>
     <p>순서를 반대로(큰 경계부터) 쓰면 무슨 일이 생기는지 실행해서 확인했어요.</p>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 순서만 뒤집은 잘못된 예</span></p>
-<pre><code>if y &lt;= 1996:
-    gen = 'a millennial'
-elif y &lt;= 1980:
-    gen = 'a Gen X'
-elif y &lt;= 1964:
-    gen = 'a baby boomer'
-elif y &lt;= 1945:
-    gen = 'the Silent Generation'
-elif y &lt;= 1924:
-    gen = 'the Greatest Generation'
-else:
-    gen = 'a Gen Z'</code></pre>
+<pre><code>if y &lt;= 1996:                     # y 가 1996 이하이면 먼저 걸려요
+    gen = 'a millennial'             # gen 에 'a millennial' 을 담아요
+elif y &lt;= 1980:                   # 앞이 아니고 1980 이하이면 실행해요
+    gen = 'a Gen X'                  # gen 에 'a Gen X' 를 담아요
+elif y &lt;= 1964:                   # 앞이 아니고 1964 이하이면 실행해요
+    gen = 'a baby boomer'            # gen 에 'a baby boomer' 를 담아요
+elif y &lt;= 1945:                   # 앞이 아니고 1945 이하이면 실행해요
+    gen = 'the Silent Generation'    # gen 에 'the Silent Generation' 을 담아요
+elif y &lt;= 1924:                   # 앞이 아니고 1924 이하이면 실행해요
+    gen = 'the Greatest Generation'  # gen 에 'the Greatest Generation' 을 담아요
+else:                                # 위가 모두 아니면 실행해요
+    gen = 'a Gen Z'                  # gen 에 'a Gen Z' 를 담아요</code></pre>
     <table class="choice-table">
       <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
       <tbody>
@@ -446,25 +446,25 @@ else:
 
     <h3 id="q13">큰 값부터 쓰는 elif 순서와 단위 기호</h3>
     <p>백만·10억 단위까지 확장한 <strong>공식 풀이</strong>는 이래요.</p>
-<pre><code>num = int(input())
-result = str(num)
+<pre><code>num = int(input())                                  # 입력받은 글자를 정수로 바꿔 num 에 담아요
+result = str(num)                                   # num 을 글자로 바꿔 result 의 기본값으로 해요
 
-if num &gt;= 1000000000000000000:
-    result = str(num // 1000000000000000000) + 'E'
-elif num &gt;= 1000000000000000:
-    result = str(num // 1000000000000000) + 'P'
-elif num &gt;= 1000000000000:
-    result = str(num // 1000000000000) + 'T'
-elif num &gt;= 1000000000:
-    result = str(num // 1000000000) + 'G'
-elif num &gt;= 1000000:
-    result = str(num // 1000000) + 'M'
-elif num &gt;= 1000:
-    result = str(num // 1000) + 'k'
-elif num &gt;= 0:
-    pass
+if num &gt;= 1000000000000000000:                   # num 이 10의 18제곱 이상이면 실행해요
+    result = str(num // 1000000000000000000) + 'E'  # 10의 18제곱으로 나눈 몫 뒤에 E 를 붙여요
+elif num &gt;= 1000000000000000:                    # 앞이 아니고 10의 15제곱 이상이면 실행해요
+    result = str(num // 1000000000000000) + 'P'     # 10의 15제곱으로 나눈 몫 뒤에 P 를 붙여요
+elif num &gt;= 1000000000000:                       # 앞이 아니고 10의 12제곱 이상이면 실행해요
+    result = str(num // 1000000000000) + 'T'        # 10의 12제곱으로 나눈 몫 뒤에 T 를 붙여요
+elif num &gt;= 1000000000:                          # 앞이 아니고 10의 9제곱 이상이면 실행해요
+    result = str(num // 1000000000) + 'G'           # 10의 9제곱으로 나눈 몫 뒤에 G 를 붙여요
+elif num &gt;= 1000000:                             # 앞이 아니고 10의 6제곱 이상이면 실행해요
+    result = str(num // 1000000) + 'M'              # 10의 6제곱으로 나눈 몫 뒤에 M 을 붙여요
+elif num &gt;= 1000:                                # 앞이 아니고 1000 이상이면 실행해요
+    result = str(num // 1000) + 'k'                 # 1000 으로 나눈 몫 뒤에 k 를 붙여요
+elif num &gt;= 0:                                   # 앞이 아니고 0 이상이면 실행해요
+    pass                                            # 아무 일도 하지 않고 넘어가요
 
-print(result)</code></pre>
+print(result)                                       # result 를 화면에 출력해요</code></pre>
     <p><strong><code>result = str(num)</code>이 왜 맨 위에 있을까요?</strong> 이건 "혹시 아래 elif 중 아무것도 안 걸리면 쓸 기본값"이에요. <code>num</code>이 1000 미만이면 어떤 elif도 참이 안 돼서 <code>result</code>는 이 첫 줄 값(원래 숫자를 글자로 바꾼 것) 그대로 출력돼요. <code>input()</code>은 애초에 글자를 돌려주지만(1장 해설), 여기 <code>num</code>은 이미 <code>int()</code>로 숫자가 된 뒤라서, 다시 글자로 합쳐 쓰려면 <code>str()</code>로 바꿔 둬야 해요.</p>
     <p><strong>E, P, T, G, M, k는 무슨 뜻인가요?</strong> 큰 수를 줄여 쓰는 단위 접두사(SI 접두어)예요. USB 용량 GB(기가바이트), 인터넷 속도 Mbps(메가)에 이미 쓰이는 그 접두사예요.</p>
     <table>
@@ -497,20 +497,20 @@ print(result)</code></pre>
       </tbody>
     </table>
     <p><strong>0 개수 세다 실수하기 쉽지 않나요?</strong> <code>1000000000000000000</code>처럼 0을 직접 세는 대신 <code>10 ** 18</code>처럼 거듭제곱으로 써도 값은 완전히 같아요.</p>
-<pre><code>if num &gt;= 10**18:
-    result = str(num // 10**18) + 'E'
-elif num &gt;= 10**15:
-    result = str(num // 10**15) + 'P'
-elif num &gt;= 10**12:
-    result = str(num // 10**12) + 'T'
-elif num &gt;= 10**9:
-    result = str(num // 10**9) + 'G'
-elif num &gt;= 10**6:
-    result = str(num // 10**6) + 'M'
-elif num &gt;= 10**3:
-    result = str(num // 10**3) + 'k'
-elif num &gt;= 0:
-    pass</code></pre>
+<pre><code>if num &gt;= 10**18:                   # num 이 10의 18제곱 이상이면 실행해요
+    result = str(num // 10**18) + 'E'  # 10의 18제곱으로 나눈 몫 뒤에 E 를 붙여요
+elif num &gt;= 10**15:                 # 앞이 아니고 10의 15제곱 이상이면 실행해요
+    result = str(num // 10**15) + 'P'  # 10의 15제곱으로 나눈 몫 뒤에 P 를 붙여요
+elif num &gt;= 10**12:                 # 앞이 아니고 10의 12제곱 이상이면 실행해요
+    result = str(num // 10**12) + 'T'  # 10의 12제곱으로 나눈 몫 뒤에 T 를 붙여요
+elif num &gt;= 10**9:                  # 앞이 아니고 10의 9제곱 이상이면 실행해요
+    result = str(num // 10**9) + 'G'   # 10의 9제곱으로 나눈 몫 뒤에 G 를 붙여요
+elif num &gt;= 10**6:                  # 앞이 아니고 10의 6제곱 이상이면 실행해요
+    result = str(num // 10**6) + 'M'   # 10의 6제곱으로 나눈 몫 뒤에 M 을 붙여요
+elif num &gt;= 10**3:                  # 앞이 아니고 10의 3제곱 이상이면 실행해요
+    result = str(num // 10**3) + 'k'   # 10의 3제곱으로 나눈 몫 뒤에 k 를 붙여요
+elif num &gt;= 0:                      # 앞이 아니고 0 이상이면 실행해요
+    pass                               # 아무 일도 하지 않고 넘어가요</code></pre>
     <p>지수(3, 6, 9, 12, 15, 18)가 3씩 늘어나는 걸 눈으로 바로 확인할 수 있어서, 0 개수를 세다 하나 빠뜨리는 실수를 줄여 줘요. 두 방식 모두 <code>500</code>, <code>1500</code>, <code>2500000</code>, <code>5000000000</code> 같은 값에 똑같은 결과(<code>500</code>, <code>1k</code>, <code>2M</code>, <code>5G</code>)를 내는 걸 직접 실행해 확인했어요.</p>
     <p><strong>핵심 한 줄(2.2.2와 이어서):</strong> elif 체인의 올바른 순서는 부등호 방향으로 정해져요 — <code>&lt;=</code>는 작은 값부터, <code>&gt;=</code>는 큰 값부터. <a href="#suspect-elif-order">이 버그가 의심될 때 확인하는 법 ↓</a></p>
 
@@ -518,10 +518,10 @@ elif num &gt;= 0:
     <p><code>pass</code>는 <strong>"여기서는 아무 일도 하지 않는다"</strong>는 뜻의 키워드예요. <code>elif num &gt;= 0:</code> 조건이 참일 때(0 이상 1000 미만) 딱히 더 할 일이 없어요. 맨 위에서 이미 <code>result = str(num)</code>으로 기본값을 넣어 뒀기 때문이에요.</p>
     <p>그런데 파이썬은 <code>if</code>, <code>elif</code>, <code>while</code> 같은 블록 뒤에 <strong>반드시 실행할 코드가 하나 이상</strong> 있어야 해요. 아무것도 안 쓰면 에러가 나요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— pass 없이 블록을 비워 두면 나는 에러</span></p>
-<pre><code>&gt;&gt;&gt; num = 5
-&gt;&gt;&gt; if num &gt;= 1000:
-...     result = 'big'
-... elif num &gt;= 0:
+<pre><code>&gt;&gt;&gt; num = 5             # num 에 5 를 담아요
+&gt;&gt;&gt; if num &gt;= 1000:  # num 이 1000 이상이면 실행해요
+...     result = 'big'           # result 에 'big' 을 담아요
+... elif num &gt;= 0:            # 앞이 아니고 0 이상이면 실행해요(몸통이 비어 에러)
 ...
   File "&lt;stdin&gt;", line 4
 IndentationError: expected an indented block after 'elif' statement on line 3</code></pre>
@@ -544,15 +544,15 @@ IndentationError: expected an indented block after 'elif' statement on line 3</c
 
     <h3 id="q15"><code>while True:</code>가 무한 루프가 아닌 이유와 <code>sum</code> 이름 문제</h3>
     <p><strong>공식 풀이</strong>는 이래요.</p>
-<pre><code>sum = 0
-while True:
-    num = int(input())
-    if num &lt; 0:
-        break
-    else:
-       sum += num
+<pre><code>sum = 0                 # 합계를 담을 sum 을 0 으로 시작해요
+while True:             # 조건이 항상 참이라 계속 반복해요
+    num = int(input())  # 입력받은 글자를 정수로 바꿔 num 에 담아요
+    if num &lt; 0:      # num 이 0 보다 작으면 실행해요
+        break           # 반복을 끝내고 빠져나가요
+    else:               # 음수가 아니면 실행해요
+       sum += num       # 입력값을 합계에 더해요
 
-print(sum)</code></pre>
+print(sum)              # 합계를 화면에 출력해요</code></pre>
     <p>앞에서 본 <code>while True:</code> + <code>break</code> 패턴이에요. "몇 개를 입력받을지 미리 모르고, 음수가 나오면 그만둔다"는 조건은 while의 조건 자리 하나로는 표현하기 어려워서, 무한 반복 + 조건부 탈출로 짜요.</p>
     <p>입력이 <code>1, 2, 3, -1</code> 순서일 때 흐름이에요.</p>
     <div class="table-scroll fill">
@@ -568,9 +568,9 @@ print(sum)</code></pre>
     </div>
     <p><strong>변수 이름 하나 더 짚기:</strong> 이 코드는 변수 이름으로 <code>sum</code>을 썼는데, <code>sum</code>은 사실 파이썬에 이미 있는 <strong>내장 함수</strong> 이름이에요(리스트를 더하는 <code>sum([1,2,3])</code>). 이 코드 안에서는 문제없이 동작하지만, <code>sum</code>이라는 이름을 변수로 써 버리면 그 아래에서는 진짜 <code>sum()</code> 함수를 더 이상 쓸 수 없어요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— sum을 변수로 먼저 쓴 뒤 원래 함수를 부르면 나는 에러</span></p>
-<pre><code>&gt;&gt;&gt; sum = 0
-&gt;&gt;&gt; sum += 5
-&gt;&gt;&gt; sum([1, 2, 3])
+<pre><code>&gt;&gt;&gt; sum = 0         # 변수 sum 에 0 을 담아요
+&gt;&gt;&gt; sum += 5        # sum 에 5 를 더해 5 가 돼요
+&gt;&gt;&gt; sum([1, 2, 3])  # sum 이 정수라 함수처럼 부를 수 없어 에러가 나요
 Traceback (most recent call last):
   ...
 TypeError: 'int' object is not callable</code></pre>
@@ -583,25 +583,25 @@ TypeError: 'int' object is not callable</code></pre>
 
     <h3 id="q16">중첩 if는 층이 있는 규칙을 그대로 따라가요</h3>
     <p><strong>공식 풀이</strong>는 이래요.</p>
-<pre><code>is_leap_year = None
+<pre><code>is_leap_year = None                      # 윤년 여부를 담을 변수를 비워 둬요
 
-year = int(input())
+year = int(input())                      # 입력한 연도를 정수로 받아 year 에 담아요
 
-if year % 4 == 0:
-    if year % 100 == 0:
-        if year % 400 == 0:
-            is_leap_year = True
-        else:
-            is_leap_year = False
-    else:
-        is_leap_year = True
-else:
-    is_leap_year = False
+if year % 4 == 0:                        # 4 로 나누어떨어지면 실행해요
+    if year % 100 == 0:                  # 100 으로도 나누어떨어지면 실행해요
+        if year % 400 == 0:              # 400 으로도 나누어떨어지면 실행해요
+            is_leap_year = True          # 윤년이라서 True 를 담아요
+        else:                            # 400 으로는 안 나누어떨어지면 실행해요
+            is_leap_year = False         # 윤년이 아니라서 False 를 담아요
+    else:                                # 100 으로는 안 나누어떨어지면 실행해요
+        is_leap_year = True              # 윤년이라서 True 를 담아요
+else:                                    # 4 로 나누어떨어지지 않으면 실행해요
+    is_leap_year = False                 # 윤년이 아니라서 False 를 담아요
 
-if is_leap_year:
-    print(f'{year} is a leap year')
-else:
-    print(f'{year} is not a leap year')</code></pre>
+if is_leap_year:                         # 윤년이면 실행해요
+    print(f'{year} is a leap year')      # 윤년이라고 출력해요
+else:                                    # 윤년이 아니면 실행해요
+    print(f'{year} is not a leap year')  # 윤년이 아니라고 출력해요</code></pre>
     <p><strong>중첩 if</strong>는 <code>if</code> 블록 안에 또 다른 <code>if</code>를 넣는 거예요. "4로 나누어떨어지는 것들 중에서, 다시 100으로 나누어떨어지는 것들 중에서, 다시 400으로 나누어떨어지는지"처럼 <strong>조건이 조건 안에 겹겹이 들어있을 때</strong> 자연스럽게 나오는 모양이에요. 규칙 자체가 "4의 배수인가 → (맞다면) 그중 100의 배수인가 → (맞다면) 그중 400의 배수인가"로 층이 있어서, 코드도 층을 그대로 따라가요.</p>
     <p>직접 실행해서 네 가지 경우를 다 확인했어요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 규칙의 네 갈래를 각각 대표하는 연도</span></p>
@@ -618,10 +618,10 @@ else:
     <h3 id="q16b"><code>f</code>와 <code>{ }</code>는 f-string이에요</h3>
     <p><code>f</code>는 문자열 앞에 붙이는 표시(접두사)예요. 이 표시가 있으면 문자열 안의 <code>{ }</code>에 넣은 변수가 <strong>그 값으로 바뀌어</strong> 들어가요. 이런 문자열을 <strong>f-string</strong>이라고 불러요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
-<pre><code>&gt;&gt;&gt; year = 2024
-&gt;&gt;&gt; print(f'{year} is a leap year')
+<pre><code>&gt;&gt;&gt; year = 2024                      # year 에 2024 를 담아요
+&gt;&gt;&gt; print(f'{year} is a leap year')  # f 를 붙여 {year} 자리에 2024 가 들어가요
 2024 is a leap year
-&gt;&gt;&gt; print('{year} is a leap year')
+&gt;&gt;&gt; print('{year} is a leap year')   # f 가 없어 {year} 가 글자 그대로 나와요
 {year} is a leap year</code></pre>
     <ul>
       <li><code>f</code>가 붙은 줄은 <code>{year}</code> 자리에 <code>year</code>의 값 <code>2024</code>를 넣어요.</li>
@@ -636,7 +636,7 @@ else:
       </tbody>
     </table>
     <p>f-string 없이 <code>str()</code>만으로 같은 결과를 만들려면 <code>+</code>로 직접 이어 붙여야 해요.</p>
-<pre><code>&gt;&gt;&gt; print(str(year) + ' is a leap year')
+<pre><code>&gt;&gt;&gt; print(str(year) + ' is a leap year')  # year 를 글자로 바꿔 이어 붙여 출력해요
 2024 is a leap year</code></pre>
     <p>즉 <code>f'{year} is a leap year'</code>는 <code>str(year) + ' is a leap year'</code>를 줄여 쓴 것과 같아요. <code>{ }</code> 안에 값을 넣으면 파이썬이 <code>str()</code>과 비슷한 변환을 자동으로 해 주기 때문에, <code>str()</code>과 <code>+</code>를 직접 안 써도 돼요.</p>
     <p><strong>괄호 세 종류를 한 번에 정리하면</strong> 이래요. 지금까지 나온 소괄호 <code>()</code>, 대괄호 <code>[]</code>와 헷갈리기 쉬워요.</p>
@@ -658,19 +658,19 @@ else:
 
     <h3 id="q17"><code>split()</code>으로 나눈 값을 두 변수에 나눠 담기</h3>
     <p><strong>공식 풀이</strong>의 앞부분이에요.</p>
-<pre><code>L = input().split()
-min = int(L[0])
-max = int(L[1])
+<pre><code>L = input().split()  # 입력을 공백으로 쪼개 리스트 L 에 담아요
+min = int(L[0])      # 첫 번째 값을 정수로 바꿔 min 에 담아요
+max = int(L[1])      # 두 번째 값을 정수로 바꿔 max 에 담아요
 # min, max = map(int, input().split())</code></pre>
     <p><code>split()</code>은 문자열을 공백 기준으로 잘라 <strong>리스트</strong>로 돌려줘요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
-<pre><code>&gt;&gt;&gt; '10 20'.split()
+<pre><code>&gt;&gt;&gt; '10 20'.split()  # 공백으로 쪼개 ['10', '20'] 리스트가 돼요
 ['10', '20']</code></pre>
     <p>이 풀이는 리스트를 만든 뒤 <code>L[0]</code>, <code>L[1]</code>로 인덱싱해서(1장 해설) 각각 정수로 바꿔요. 주석으로 남겨 둔 둘째 줄은 다른 방법이에요.</p>
-<pre><code>&gt;&gt;&gt; min, max = map(int, '10 20'.split())
-&gt;&gt;&gt; min
+<pre><code>&gt;&gt;&gt; min, max = map(int, '10 20'.split())  # 쪼갠 값을 정수로 바꿔 min 과 max 에 한 번에 담아요
+&gt;&gt;&gt; min                                   # min 의 값을 확인해요
 10
-&gt;&gt;&gt; max
+&gt;&gt;&gt; max                                   # max 의 값을 확인해요
 20</code></pre>
     <ul>
       <li><code>map(int, 리스트)</code>는 리스트의 원소 하나하나에 <code>int()</code>를 적용해 줘요. <code>['10', '20']</code> → <code>10</code>, <code>20</code></li>
@@ -682,27 +682,27 @@ max = int(L[1])
     <h3 id="q18"><code>min &lt;= temp &lt;= max</code>처럼 부등호를 연달아 써도 돼요</h3>
     <p>됩니다. 파이썬은 이런 <strong>연쇄 비교(chained comparison)</strong>를 지원해요. <code>min &lt;= temp &lt;= max</code>는 "temp가 min 이상이면서 동시에 max 이하"라는 뜻이에요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
-<pre><code>&gt;&gt;&gt; 10 &lt;= 15 &lt;= 20
+<pre><code>&gt;&gt;&gt; 10 &lt;= 15 &lt;= 20  # 15 가 10 이상 20 이하라서 True 가 나와요
 True
-&gt;&gt;&gt; 10 &lt;= 25 &lt;= 20
+&gt;&gt;&gt; 10 &lt;= 25 &lt;= 20  # 25 는 20 을 넘어서 False 가 나와요
 False</code></pre>
     <p>수학에서 <code>10 ≤ 15 ≤ 20</code>이라고 쓰는 것과 똑같은 모양이에요. 풀어 쓰면 <code>(min &lt;= temp) and (temp &lt;= max)</code>와 같은 뜻인데, <code>and</code>는 2.2.7에서 배우니 지금은 "부등호 두 개를 나란히 쓰면 범위를 한 번에 검사할 수 있다"는 것만 기억해도 충분해요.</p>
 
     <h3 id="q19"><code>-999</code> 같은 신호 값으로 반복을 끝내는 이유</h3>
     <p><strong>공식 풀이</strong> 전체예요.</p>
-<pre><code>L = input().split()
-min = int(L[0])
-max = int(L[1])
+<pre><code>L = input().split()                 # 입력을 공백으로 쪼개 리스트 L 에 담아요
+min = int(L[0])                     # 첫 번째 값을 정수로 바꿔 min 에 담아요
+max = int(L[1])                     # 두 번째 값을 정수로 바꿔 max 에 담아요
 
-temp = int(input())
+temp = int(input())                 # 첫 온도를 정수로 받아 temp 에 담아요
 
-while temp != -999:
-    if min &lt;= temp &lt;= max:
-        print('Nothing to report')
-        temp = int(input())
-    else:
-        print('Alert!')
-        break</code></pre>
+while temp != -999:                 # 온도가 -999 가 아닌 동안 반복해요
+    if min &lt;= temp &lt;= max:    # 온도가 min 이상 max 이하이면 실행해요
+        print('Nothing to report')  # 보고할 것이 없다고 출력해요
+        temp = int(input())         # 다음 온도를 받아요
+    else:                           # 범위 밖이면 실행해요
+        print('Alert!')             # 경고를 출력해요
+        break                       # 반복을 끝내고 빠져나가요</code></pre>
     <p><code>-999</code>는 온도로는 절대 나올 리 없는 값을 "그만 보내겠다"는 <strong>신호로 약속</strong>한 거예요. 이런 값을 <strong>센티널 값(sentinel value)</strong>이라고 불러요. 2.2.4의 "음수면 그만"과 비슷한 발상인데, 여기서는 정상적인 온도가 음수일 수도 있어서(영하 온도) 아예 있을 수 없는 <code>-999</code>를 약속 값으로 정한 거예요.</p>
     <p>예 1(최소 10, 최대 20 / 온도 15, 10, 20, 0, 15, -999)을 표로 따라가요.</p>
     <div class="table-scroll fill">

@@ -46,70 +46,70 @@
 
     <h2><span class="hl">1. 지역변수 / 전역변수</span></h2>
 <pre><code># 함수 안에서 x = ... 는 지역변수를 새로 만든다
-&gt;&gt;&gt; x = 10
-&gt;&gt;&gt; def f():
-...     x = 99
-...     print('안쪽', x)
+&gt;&gt;&gt; x = 10                 # 바깥에서 변수 x 에 10 을 담아요
+&gt;&gt;&gt; def f():               # f 라는 함수를 만들기 시작해요
+...     x = 99             # 함수 안에서 지역변수 x 를 새로 만들어요
+...     print('안쪽', x)   # 안쪽 x 의 값을 화면에 보여 줘요
 ...
-&gt;&gt;&gt; f()
+&gt;&gt;&gt; f()                    # 함수 f 를 실행해요
 안쪽 99
-&gt;&gt;&gt; print('바깥', x)
+&gt;&gt;&gt; print('바깥', x)       # 바깥 x 의 값을 화면에 보여 줘요
 바깥 10
 
 # 지역변수는 함수가 끝나면 사라진다
-&gt;&gt;&gt; def g():
-...     y = 5
+&gt;&gt;&gt; def g():               # g 라는 함수를 만들기 시작해요
+...     y = 5              # 함수 안에서 지역변수 y 를 만들어요
 ...
-&gt;&gt;&gt; g()
-&gt;&gt;&gt; print(y)
+&gt;&gt;&gt; g()                    # 함수 g 를 실행해요
+&gt;&gt;&gt; print(y)               # 함수 밖에서 y 를 보여 달라고 해요
 NameError: name 'y' is not defined
 
 # 전역변수는 함수 안에서 읽을 수 있다
-&gt;&gt;&gt; n = 3
-&gt;&gt;&gt; def read():
-...     print(n + 1)
+&gt;&gt;&gt; n = 3                  # 전역변수 n 에 3 을 담아요
+&gt;&gt;&gt; def read():            # read 라는 함수를 만들기 시작해요
+...     print(n + 1)       # 전역변수 n 에 1 을 더해 보여 줘요
 ...
-&gt;&gt;&gt; read()
+&gt;&gt;&gt; read()                 # 함수 read 를 실행해요
 4
 
 # 함수 안에서 전역변수를 바꾸려면 global
-&gt;&gt;&gt; count = 0
-&gt;&gt;&gt; def up():
-...     global count
-...     count = count + 1
+&gt;&gt;&gt; count = 0              # 전역변수 count 에 0 을 담아요
+&gt;&gt;&gt; def up():              # up 이라는 함수를 만들기 시작해요
+...     global count       # 전역변수 count 를 쓰겠다고 알려요
+...     count = count + 1  # 전역변수 count 를 1 늘려요
 ...
-&gt;&gt;&gt; up()
-&gt;&gt;&gt; up()
-&gt;&gt;&gt; print(count)
+&gt;&gt;&gt; up()                   # 함수 up 을 실행해요
+&gt;&gt;&gt; up()                   # 한 번 더 실행해요
+&gt;&gt;&gt; print(count)           # count 의 값을 화면에 보여 줘요
 2</code></pre>
     <p><strong>핵심 한 줄:</strong> 전역변수는 복잡해질수록 골칫거리, 되도록 쓰지 않기.</p>
 
     <h2><span class="hl">2. lambda</span></h2>
 <pre><code># lambda 매개변수: 표현식
-&gt;&gt;&gt; (lambda x, y: x + y)(10, 20)
+&gt;&gt;&gt; (lambda x, y: x + y)(10, 20)  # 이름 없는 함수를 만들어 바로 실행해요
 30
-&gt;&gt;&gt; square = lambda x: x * x
-&gt;&gt;&gt; square(7)
+&gt;&gt;&gt; square = lambda x: x * x      # 제곱하는 lambda 에 square 이름을 붙여요
+&gt;&gt;&gt; square(7)                     # square 에 7 을 넣어 실행해요
 49</code></pre>
 
     <h2><span class="hl">3. map()</span></h2>
 <pre><code># 파이썬 3: map 객체를 돌려주므로 list()로 감싼다
-&gt;&gt;&gt; list(map(lambda x: x * 2, [1, 2, 3, 4]))
+&gt;&gt;&gt; list(map(lambda x: x * 2, [1, 2, 3, 4]))  # 각 값에 2 를 곱해 리스트로 만들어요
 [2, 4, 6, 8]
-&gt;&gt;&gt; map(lambda x: x * 2, [1, 2, 3, 4])
+&gt;&gt;&gt; map(lambda x: x * 2, [1, 2, 3, 4])        # list() 없이 map 만 부르면 map 객체가 나와요
 &lt;map object at 0x000001DDAB69F5E0&gt;</code></pre>
 
     <h2><span class="hl">4. reduce()</span></h2>
 <pre><code># from functools import reduce 가 먼저 필요
-&gt;&gt;&gt; from functools import reduce
-&gt;&gt;&gt; reduce(lambda a, b: a + b, [1, 2, 3, 4, 5])
+&gt;&gt;&gt; from functools import reduce                 # functools 에서 reduce 를 가져와요
+&gt;&gt;&gt; reduce(lambda a, b: a + b, [1, 2, 3, 4, 5])  # 값들을 차례로 더해 하나로 합쳐요
 15
-&gt;&gt;&gt; reduce(lambda a, b: a * b, [1, 2, 3, 4])
+&gt;&gt;&gt; reduce(lambda a, b: a * b, [1, 2, 3, 4])     # 값들을 차례로 곱해 하나로 합쳐요
 24</code></pre>
 
     <h2><span class="hl">5. filter()</span></h2>
 <pre><code># 결과가 참인 것만 남긴다 (x % 2 는 홀수일 때 1 → 참)
-&gt;&gt;&gt; list(filter(lambda x: x % 2, [1, 2, 3, 4, 5, 6, 7]))
+&gt;&gt;&gt; list(filter(lambda x: x % 2, [1, 2, 3, 4, 5, 6, 7]))  # 조건이 참인 홀수만 골라 리스트로 만들어요
 [1, 3, 5, 7]</code></pre>
 
     <h2><span class="hl">함께 보기</span></h2>

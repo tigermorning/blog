@@ -44,10 +44,10 @@
     </table>
 
     <h2><span class="hl">while</span></h2>
-<pre><code>&gt;&gt;&gt; num = 1
-&gt;&gt;&gt; while num &lt;= 3:    # 참인 동안 반복
-...     print(num)
-...     num = num + 1    # 조건의 값을 바꾸는 줄이 있어야 끝난다
+<pre><code>&gt;&gt;&gt; num = 1             # 변수 num 에 1 을 담아요
+&gt;&gt;&gt; while num &lt;= 3:  # num 이 3 이하인 동안 반복해요
+...     print(num)               # num 을 화면에 출력해요
+...     num = num + 1            # num 을 1 늘려서 조건이 결국 거짓이 돼요
 ...
 1
 2
@@ -55,49 +55,49 @@
 
     <h2><span class="hl">무한 루프와 break</span></h2>
 <pre><code># filename: ten.py
-max = 10
+max = 10                           # 기준값 10 을 max 에 담아요
 
-while True:              # 무한 루프
-    num = int(input())
-    if num &gt; max:
-        print(num, 'is too big!')
-        break            # 즉시 탈출</code></pre>
+while True:                        # 조건이 항상 참이라 계속 반복해요(무한 루프)
+    num = int(input())             # 입력받은 글자를 정수로 바꿔 num 에 담아요
+    if num &gt; max:               # num 이 max 보다 크면 실행해요
+        print(num, 'is too big!')  # num 과 너무 크다는 메시지를 출력해요
+        break                      # 반복을 즉시 끝내고 빠져나가요</code></pre>
 
     <h2><span class="hl">if / elif / else 순서</span></h2>
-<pre><code>&gt;&gt;&gt; c = 15 * 5
-&gt;&gt;&gt; d = 15 + 15 + 15 + 15 + 15
-&gt;&gt;&gt; if c &gt; d:                  # 위에서부터 검사, 처음 참인 것 하나만 실행
-...     print('c is greater than d')
-... elif c == d:
-...     print('c is equal to d')
-... else:
-...     print('I don\'t know')
+<pre><code>&gt;&gt;&gt; c = 15 * 5                  # 15 곱하기 5 인 75 를 c 에 담아요
+&gt;&gt;&gt; d = 15 + 15 + 15 + 15 + 15  # 15 를 다섯 번 더한 75 를 d 에 담아요
+&gt;&gt;&gt; if c &gt; d:                # 위에서부터 검사해 처음 참인 것 하나만 실행해요
+...     print('c is greater than d')     # c 가 더 클 때 출력해요
+... elif c == d:                         # 앞이 거짓이고 c 와 d 가 같으면 실행해요
+...     print('c is equal to d')         # 둘이 같을 때 출력해요
+... else:                                # 위가 모두 거짓이면 실행해요
+...     print('I don\'t know')           # 어느 경우도 아닐 때 출력해요
 ...
 c is equal to d</code></pre>
     <p><strong>핵심 한 줄:</strong> <code>&lt;=</code>는 작은 경계부터, <code>&gt;=</code>는 큰 경계부터.</p>
 
     <h2><span class="hl">pass</span></h2>
-<pre><code>&gt;&gt;&gt; num = 5
-&gt;&gt;&gt; if num &gt;= 1000:
-...     result = 'big'
-... elif num &gt;= 0:        # 빈 블록은 에러 -> pass를 쓴다
+<pre><code>&gt;&gt;&gt; num = 5             # num 에 5 를 담아요
+&gt;&gt;&gt; if num &gt;= 1000:  # num 이 1000 이상이면 실행해요
+...     result = 'big'           # result 에 'big' 을 담아요
+... elif num &gt;= 0:            # 내용이 비면 에러라서 pass 를 써야 해요
 ...
   File "&lt;stdin&gt;", line 4
 IndentationError: expected an indented block after 'elif' statement on line 3</code></pre>
 
     <h2><span class="hl">중첩 if</span></h2>
-<pre><code>year = int(input())
+<pre><code>year = int(input())               # 입력한 연도를 정수로 받아 year 에 담아요
 
-if year % 4 == 0:
-    if year % 100 == 0:
-        if year % 400 == 0:
-            is_leap_year = True
-        else:
-            is_leap_year = False
-    else:
-        is_leap_year = True
-else:
-    is_leap_year = False
+if year % 4 == 0:                 # 4 로 나누어떨어지면 실행해요
+    if year % 100 == 0:           # 100 으로도 나누어떨어지면 실행해요
+        if year % 400 == 0:       # 400 으로도 나누어떨어지면 실행해요
+            is_leap_year = True   # 윤년이라서 True 를 담아요
+        else:                     # 400 으로는 안 나누어떨어지면 실행해요
+            is_leap_year = False  # 윤년이 아니라서 False 를 담아요
+    else:                         # 100 으로는 안 나누어떨어지면 실행해요
+        is_leap_year = True       # 윤년이라서 True 를 담아요
+else:                             # 4 로 나누어떨어지지 않으면 실행해요
+    is_leap_year = False          # 윤년이 아니라서 False 를 담아요
 
 2000 -&gt; 2000 is a leap year
 1900 -&gt; 1900 is not a leap year

@@ -55,14 +55,14 @@
 
     <h3 id="a1">정답과 해설</h3>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>x = 10
+<pre><code>x = 10                    # 바깥에서 변수 x 에 10 을 담아요
 
-def change():
-    x = 99
-    print('함수 안:', x)
+def change():             # change 라는 함수를 만들어요
+    x = 99                # 함수 안에서 지역변수 x 를 새로 만들어요
+    print('함수 안:', x)  # 안쪽 x 인 99 를 보여 줘요
 
-change()
-print('함수 밖:', x)</code></pre>
+change()                  # 함수 change 를 실행해요
+print('함수 밖:', x)      # 바깥 x 인 10 은 그대로예요</code></pre>
 <pre class="out"><code class="nohighlight">함수 안: 99
 함수 밖: 10</code></pre>
     <p><strong>한 줄씩 짚어보기</strong></p>
@@ -84,11 +84,11 @@ print('함수 밖:', x)</code></pre>
     </div>
     <p><strong>여기서 자주 막혀요:</strong> "<code>x = 99</code>를 했는데 왜 밖의 x는 10이지?" → 같은 이름이어도 <strong>다른 변수</strong>예요. 집 안 메모지와 집 밖 칠판에 같은 이름을 적었다고 한쪽을 고치면 다른 쪽이 바뀌는 건 아니에요.</p>
     <p><strong>흔한 실수 — 지역변수를 밖에서 쓰기:</strong> 함수 안에서만 만든 변수를 함수 밖에서 부르면 아예 없는 이름이라 에러가 나요.</p>
-<pre><code>def make():
-    y = 5
+<pre><code>def make():  # make 라는 함수를 만들어요
+    y = 5    # 함수 안에서 지역변수 y 를 만들어요
 
-make()
-print(y)</code></pre>
+make()       # 함수 make 를 실행해요
+print(y)     # 함수 밖에서 y 를 찾으니 오류가 나요</code></pre>
 <pre class="out"><code class="nohighlight">NameError: name 'y' is not defined</code></pre>
     <table class="choice-table">
       <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
@@ -110,16 +110,16 @@ print(y)</code></pre>
 
     <h3 id="a2">정답과 해설</h3>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>count = 0
+<pre><code>count = 0                     # 전역변수 count 에 0 을 담아요
 
-def add(n):
-    global count
-    count = count + n
-    print('더한 뒤:', count)
+def add(n):                   # 값 n 을 받는 add 함수를 만들어요
+    global count              # 전역변수 count 를 쓰겠다고 알려요
+    count = count + n         # count 에 n 을 더해 다시 담아요
+    print('더한 뒤:', count)  # 더한 뒤의 count 를 보여 줘요
 
-add(3)
-add(4)
-print('최종:', count)</code></pre>
+add(3)                        # add 함수를 3 으로 실행해요
+add(4)                        # add 함수를 4 로 실행해요
+print('최종:', count)         # 최종 count 7 을 보여 줘요</code></pre>
 <pre class="out"><code class="nohighlight">더한 뒤: 3
 더한 뒤: 7
 최종: 7</code></pre>
@@ -140,12 +140,12 @@ print('최종:', count)</code></pre>
     </div>
     <p><strong>여기서 자주 막혀요:</strong> "읽기는 되는데 왜 바꾸려면 global이 필요해?" → 함수 안에서 이름에 <strong>대입</strong>하면 파이썬이 그 이름을 지역변수로 보기 때문이에요. 읽기만 하는 이름은 전역을 그대로 봐요.</p>
     <p><strong>흔한 실수 — global을 빼먹으면?</strong> 아래 코드는 <code>global count</code> 한 줄만 뺀 거예요. 실제로 실행하면 이런 에러가 나요.</p>
-<pre><code>count = 0
+<pre><code>count = 0              # 전역변수 count 에 0 을 담아요
 
-def add(n):
-    count = count + n
+def add(n):            # 값 n 을 받는 add 함수를 만들어요
+    count = count + n  # global 이 없어 지역변수 count 를 읽다가 오류가 나요
 
-add(3)</code></pre>
+add(3)                 # add 를 실행하는 순간 오류가 나요</code></pre>
 <pre class="out"><code class="nohighlight">UnboundLocalError: cannot access local variable 'count' where it is not associated with a value</code></pre>
     <p>함수 안에 <code>count = ...</code>가 있으니 count가 지역변수로 정해졌는데, 오른쪽 <code>count + n</code>에서 그 지역 count를 값도 없이 읽으려 해서 나는 에러예요.</p>
     <table class="choice-table">
@@ -168,10 +168,10 @@ add(3)</code></pre>
 
     <h3 id="a3">정답과 해설</h3>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>square = lambda x: x * x
-print((lambda a, b: a + b)(3, 4))
-print(square(5))
-print(square(square(2)))</code></pre>
+<pre><code>square = lambda x: x * x           # 받은 값을 곱하는 lambda 에 square 이름을 붙여요
+print((lambda a, b: a + b)(3, 4))  # 이름 없는 lambda 로 3 + 4 를 계산해요
+print(square(5))                   # 5 의 제곱을 보여 줘요
+print(square(square(2)))           # 2 의 제곱을 다시 제곱해 보여 줘요</code></pre>
 <pre class="out"><code class="nohighlight">7
 25
 16</code></pre>
@@ -200,12 +200,12 @@ print(square(square(2)))</code></pre>
 
     <h3 id="a4">정답과 해설</h3>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>nums = [1, 2, 3, 4, 5, 6]
-doubled = list(map(lambda x: x * 2, nums))
-evens = list(filter(lambda x: x % 2 == 0, nums))
-print(doubled)
-print(evens)
-print(list(map(lambda x: x + 1, evens)))</code></pre>
+<pre><code>nums = [1, 2, 3, 4, 5, 6]                         # 숫자 여섯 개를 리스트 nums 에 담아요
+doubled = list(map(lambda x: x * 2, nums))        # 각 값에 2 를 곱해 리스트로 만들어요
+evens = list(filter(lambda x: x % 2 == 0, nums))  # 짝수만 골라 리스트로 만들어요
+print(doubled)                                    # 두 배가 된 리스트를 보여 줘요
+print(evens)                                      # 짝수 리스트를 보여 줘요
+print(list(map(lambda x: x + 1, evens)))          # 짝수마다 1 을 더해 보여 줘요</code></pre>
 <pre class="out"><code class="nohighlight">[2, 4, 6, 8, 10, 12]
 [2, 4, 6]
 [3, 5, 7]</code></pre>
@@ -231,8 +231,8 @@ print(list(map(lambda x: x + 1, evens)))</code></pre>
     <p>마지막 줄은 <code>evens</code>의 2, 4, 6에 각각 1을 더하니 3, 5, 7이에요. 출발이 <code>nums</code>가 아니라 <code>evens</code>라는 점이 핵심이에요.</p>
     <p><strong>여기서 자주 막혀요:</strong> "map은 개수가 같고 filter는 줄어든다" — 이것만 기억하면 헷갈리지 않아요. map은 <strong>값을 바꾸고</strong>, filter는 <strong>원소를 고르기만</strong> 해요.</p>
     <p><strong>흔한 실수 — list()로 감싸지 않으면?</strong> 파이썬 3의 map은 리스트가 아니라 map 객체를 돌려줘서, 그냥 출력하면 값이 안 보여요.</p>
-<pre><code>r = map(lambda x: x * 2, [1, 2])
-print(r)</code></pre>
+<pre><code>r = map(lambda x: x * 2, [1, 2])  # map 객체를 만들어 r 에 담아요
+print(r)                          # list() 로 감싸지 않아 map 객체 자체가 나와요</code></pre>
 <pre class="out"><code class="nohighlight">&lt;map object at 0x0000020CEEA56290&gt;</code></pre>
     <p>(뒤의 주소 숫자는 실행할 때마다 달라질 수 있어요.) <code>list(r)</code>처럼 <code>list()</code>로 감싸야 <code>[2, 4]</code>처럼 값이 보여요. filter도 마찬가지예요.</p>
     <table class="choice-table">
@@ -255,12 +255,12 @@ print(r)</code></pre>
 
     <h3 id="a5">정답과 해설</h3>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>from functools import reduce
+<pre><code>from functools import reduce              # functools 에서 reduce 를 가져와요
 
-nums = [1, 2, 3, 4]
-print(reduce(lambda a, b: a + b, nums))
-print(reduce(lambda a, b: a * b, nums))
-print(reduce(lambda a, b: b + a, 'abc'))</code></pre>
+nums = [1, 2, 3, 4]                       # 숫자 네 개를 리스트 nums 에 담아요
+print(reduce(lambda a, b: a + b, nums))   # nums 를 차례로 더해 보여 줘요
+print(reduce(lambda a, b: a * b, nums))   # nums 를 차례로 곱해 보여 줘요
+print(reduce(lambda a, b: b + a, 'abc'))  # 글자를 앞에 붙여 가며 뒤집어 보여 줘요</code></pre>
 <pre class="out"><code class="nohighlight">10
 24
 cba</code></pre>

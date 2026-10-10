@@ -50,14 +50,14 @@
 
     <h2 id="q1"><span class="hl">문제 1</span> — 정회원 확인</h2>
     <p>카페 정회원 명단과 적립 포인트를 보고 VIP 여부를 판정하는 코드예요.</p>
-<pre><code>members = ['서준', '하은', '도윤']
-name = input()
-points = int(input())
+<pre><code>members = ['서준', '하은', '도윤']      # 변수 members 에 이름 리스트를 담아요
+name = input()                          # 입력한 문자열을 변수 name 에 담아요
+points = int(input())                   # 입력한 값을 정수로 바꿔 points 에 담아요
 
-if name in members and points &gt;= 1000:
-    print('VIP 회원입니다')
-else:
-    print('VIP 회원이 아닙니다')</code></pre>
+if name in members and points &gt;= 1000:  # 이름이 명단에 있고 포인트가 1000 이상인지 따져요
+    print('VIP 회원입니다')             # 조건이 참이면 이 문장을 출력해요
+else:                                   # 위 조건이 거짓일 때 실행할 곳이에요
+    print('VIP 회원이 아닙니다')        # 조건이 거짓이면 이 문장을 출력해요</code></pre>
     <p>다음 네 가지 입력에서 각각 무엇이 출력될지 예측해보세요.</p>
     <div class="table-scroll fill">
       <table>
@@ -82,11 +82,11 @@ else:
 
     <h2 id="q2"><span class="hl">문제 2</span> — 장바구니 총액, 이번엔 for로</h2>
     <p>while이 아니라 <strong>for + range(len())</strong>로 리스트 합계를 구하는 코드예요.</p>
-<pre><code>cart = [12000, 8500, 3000]
-total = 0
-for i in range(len(cart)):
-    total += cart[i]
-print('총액:', total)</code></pre>
+<pre><code>cart = [12000, 8500, 3000]  # 변수 cart 에 가격 리스트를 담아요
+total = 0                   # 합계를 모을 변수 total 을 0 으로 시작해요
+for i in range(len(cart)):  # cart 의 인덱스를 차례로 i 에 담아요
+    total += cart[i]        # cart[i] 를 total 에 더해요
+print('총액:', total)       # '총액:' 과 total 을 함께 출력해요</code></pre>
     <p>이 코드를 실행하면 무엇이 출력될까요? <code>i</code>가 어떤 값들로 바뀌는지, 그때마다 <code>cart[i]</code>가 뭔지도 함께 짚어보세요.</p>
     <details>
       <summary>힌트 보기</summary>
@@ -100,26 +100,26 @@ print('총액:', total)</code></pre>
 
     <h2 id="q3"><span class="hl">문제 3</span> — 명단에서 이름 찾기, 이번엔 for-else로</h2>
     <p>while + found 변수 대신 <strong>for-else</strong>로 이름을 찾는 코드예요.</p>
-<pre><code>members = ['지민', '서준', '하은']
-name = input()
-for m in members:
-    if m == name:
-        print('있음')
-        break
-else:
-    print('없음')</code></pre>
+<pre><code>members = ['지민', '서준', '하은']  # 변수 members 에 이름 리스트를 담아요
+name = input()                      # 입력한 문자열을 변수 name 에 담아요
+for m in members:                   # members 의 원소를 하나씩 꺼내 m 에 담아요
+    if m == name:                   # m 이 name 과 같은지 따져요
+        print('있음')               # 같으면 '있음' 을 출력해요
+        break                       # 반복을 바로 멈춰요
+else:                               # for 가 break 없이 끝났을 때 실행할 곳이에요
+    print('없음')                   # break 없이 끝났을 때 '없음' 을 출력해요</code></pre>
     <p><code>name = '하은'</code>일 때와 <code>name = '수아'</code>일 때, 각각 무엇이 출력될까요?</p>
     <details>
       <summary>힌트 보기</summary>
       <p>for로 명단을 하나씩 확인하다 일치하면 <code>break</code>로 즉시 멈춰요. <code>else</code>는 if가 아니라 <strong>for에 딸린 것</strong>이라서, break를 한 번도 안 타고 끝까지 돌았을 때만 실행돼요.</p>
     </details>
     <p><strong>추가 질문 (버그 찾기):</strong> 아래는 위 코드에서 <code>break</code> 한 줄만 뺀 거예요. <code>name = '하은'</code>일 때 결과가 위 코드와 어떻게 달라질까요? 실행하지 말고 먼저 예측해보세요.</p>
-<pre><code>for m in members:
-    if m == name:
-        print('있음')
+<pre><code>for m in members:      # members 의 원소를 하나씩 꺼내 m 에 담아요
+    if m == name:      # m 이 name 과 같은지 따져요
+        print('있음')  # 같으면 '있음' 을 출력해요
         # break 없음
-else:
-    print('없음')</code></pre>
+else:                  # for 가 break 없이 끝났을 때 실행할 곳이에요
+    print('없음')      # break 없이 끝났을 때 '없음' 을 출력해요</code></pre>
     <details>
       <summary>힌트 보기</summary>
       <p><code>break</code>가 없으면 '있음'을 찍은 뒤에도 for는 멈추지 않고 남은 원소를 마저 확인해요. 그리고 <strong>break를 한 번도 안 탔으니</strong> 반복이 끝난 뒤 else도 실행돼요.</p>

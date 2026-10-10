@@ -500,11 +500,11 @@ body { margin: 0; }
       <article class="problem" id="b1">
         <div class="p-head"><span class="p-id">기본 1</span><span class="p-type">읽기</span><h3>나눗셈 네 형제</h3></div>
         <div class="p-body">
-<pre><code class="language-python-repl">&gt;&gt;&gt; 7 / 2
-&gt;&gt;&gt; 7 // 2
-&gt;&gt;&gt; 7 % 2
-&gt;&gt;&gt; 6 / 2
-&gt;&gt;&gt; divmod(7, 2)</code></pre>
+<pre><code class="language-python-repl">&gt;&gt;&gt; 7 / 2  # 7 을 2 로 나눈 값을 구해요
+&gt;&gt;&gt; 7 // 2  # 7 을 2 로 나눈 몫만 구해요
+&gt;&gt;&gt; 7 % 2  # 7 을 2 로 나눈 나머지를 구해요
+&gt;&gt;&gt; 6 / 2  # 6 을 2 로 나눈 값을 구해요
+&gt;&gt;&gt; divmod(7, 2)  # 7 을 2 로 나눈 몫과 나머지를 함께 구해요</code></pre>
           <ul>
             <li>각 줄의 결과를 예측하기</li>
             <li><code>6 / 2</code>의 결과가 <code>3</code>이 아닌 이유를 한 줄로 설명하기</li>
@@ -540,14 +540,14 @@ body { margin: 0; }
       <article class="problem" id="b2">
         <div class="p-head"><span class="p-id">기본 2</span><span class="p-type">읽기</span><h3>게시판 페이지 나누기</h3></div>
         <div class="p-body">
-<pre><code class="language-python">total_posts = 47
-per_page = 10
+<pre><code class="language-python">total_posts = 47  # 변수 total_posts 에 정수 47 을 담아요
+per_page = 10  # 변수 per_page 에 정수 10 을 담아요
 
-full_pages = total_posts // per_page
-last_page_posts = total_posts % per_page
+full_pages = total_posts // per_page  # 몫을 변수 full_pages 에 담아요
+last_page_posts = total_posts % per_page  # 나머지를 변수 last_page_posts 에 담아요
 
-print('꽉 찬 페이지:', full_pages)
-print('마지막 페이지 글 수:', last_page_posts)</code></pre>
+print('꽉 찬 페이지:', full_pages)  # 글자와 full_pages 값을 화면에 보여 줘요
+print('마지막 페이지 글 수:', last_page_posts)  # 글자와 last_page_posts 값을 화면에 보여 줘요</code></pre>
           <ul>
             <li>출력 두 줄을 예측하기</li>
             <li><code>total_posts</code>가 <code>50</code>이면 출력이 어떻게 바뀌는지 예측하기</li>
@@ -580,11 +580,11 @@ print('마지막 페이지 글 수:', last_page_posts)</code></pre>
       <article class="problem" id="b3">
         <div class="p-head"><span class="p-id">기본 3</span><span class="p-type">읽기</span><h3>변수 값 추적하기</h3></div>
         <div class="p-body">
-<pre><code class="language-python">score = 80
-bonus = 5
-score = score + bonus
-bonus = 10
-print(score)</code></pre>
+<pre><code class="language-python">score = 80  # 변수 score 에 정수 80 을 담아요
+bonus = 5  # 변수 bonus 에 정수 5 를 담아요
+score = score + bonus  # score 와 bonus 를 더해 score 에 다시 담아요
+bonus = 10  # 변수 bonus 에 정수 10 을 새로 담아요
+print(score)  # score 에 담긴 값을 화면에 보여 줘요</code></pre>
           <ul>
             <li>출력을 예측하기</li>
             <li><code>90</code>이 아닌 이유를 "몇 번째 줄에서 무슨 일이 일어났는지"로 설명하기</li>
@@ -627,13 +627,13 @@ print(score)</code></pre>
       <article class="problem" id="b4">
         <div class="p-head"><span class="p-id">기본 4</span><span class="p-type">읽기</span><h3>문자열과 숫자</h3></div>
         <div class="p-body">
-<pre><code class="language-python">first = '김'
-last = '철수'
-print(first + last)
-print(first + ' ' + last)
-print('-' * 10)
-print('3' + '4')
-print(3 + 4)</code></pre>
+<pre><code class="language-python">first = '김'  # 변수 first 에 문자열 '김' 을 담아요
+last = '철수'  # 변수 last 에 문자열 '철수' 를 담아요
+print(first + last)  # 두 문자열을 이어 붙여 보여 줘요
+print(first + ' ' + last)  # 두 문자열 사이에 공백을 넣어 이어 붙여 보여 줘요
+print('-' * 10)  # 문자열 '-' 를 10번 반복해 보여 줘요
+print('3' + '4')  # 문자열 '3' 과 '4' 를 이어 붙여 보여 줘요
+print(3 + 4)  # 정수 3 과 4 를 더해 보여 줘요</code></pre>
           <ul>
             <li>다섯 줄의 출력을 예측하기</li>
             <li><code>'3' + '4'</code>와 <code>3 + 4</code>의 차이를 따옴표 기준으로 설명하기</li>
@@ -668,11 +668,11 @@ print(3 + 4)</code></pre>
       <article class="problem" id="b5">
         <div class="p-head"><span class="p-id">기본 5</span><span class="p-type">읽기</span><h3>우리 스터디 명단</h3></div>
         <div class="p-body">
-<pre><code class="language-python">members = ['지민', '서준', '하은', '도윤', '수아']
-print(len(members))
-print(members[0])
-print(members[4])
-print(members[len(members) - 1])</code></pre>
+<pre><code class="language-python">members = ['지민', '서준', '하은', '도윤', '수아']  # 변수 members 에 이름 5개가 든 리스트를 담아요
+print(len(members))  # 리스트에 든 항목 개수를 보여 줘요
+print(members[0])  # 리스트의 0번 칸 항목을 보여 줘요
+print(members[4])  # 리스트의 4번 칸 항목을 보여 줘요
+print(members[len(members) - 1])  # 항목 개수보다 1 작은 번호의 칸을 보여 줘요</code></pre>
           <ul>
             <li>네 줄의 출력을 예측하기</li>
             <li><code>members[5]</code>를 실행하면 무슨 일이 생기는지 예측하고 실행해 보기</li>
@@ -720,8 +720,8 @@ print(members[len(members) - 1])</code></pre>
         <div class="memo"><label for="memo-b6">내 코드 <span>이 브라우저에만 저장</span></label><textarea id="memo-b6"></textarea></div>
         <details class="sol"><summary>풀이 예시 보기</summary>
           <div class="sol-body">
-<pre><code class="language-python">total = int(input())
-print(total // 60, '시간', total % 60, '분')</code></pre>
+<pre><code class="language-python">total = int(input())  # 입력받은 글자를 정수로 바꿔 변수 total 에 담아요
+print(total // 60, '시간', total % 60, '분')  # total 을 60 으로 나눈 몫과 나머지를 보여 줘요</code></pre>
             <ul>
               <li><code>print()</code>에 쉼표로 여러 값을 넣으면 사이에 공백이 하나씩 들어감</li>
               <li>출력만 같으면 다른 풀이도 정답</li>
@@ -741,9 +741,9 @@ print(total // 60, '시간', total % 60, '분')</code></pre>
             </ol>
 
             <p><b>1단계 · <code>input()</code> — 사용자가 친 내용을 받아 오기</b></p>
-<pre><code class="nohighlight">&gt;&gt;&gt; answer = input()
+<pre><code class="nohighlight">&gt;&gt;&gt; answer = input()  # 키보드로 친 글자를 변수 answer 에 담아요
 135                  ← 키보드로 치고 Enter
-&gt;&gt;&gt; answer
+&gt;&gt;&gt; answer  # 변수 answer 에 든 값을 확인해요
 '135'</code></pre>
             <ul>
               <li>프로그램이 멈추고, 사용자가 치고 Enter를 누를 때까지 기다림</li>
@@ -787,7 +787,7 @@ print(total // 60, '시간', total % 60, '분')</code></pre>
                 </tbody>
               </table>
             </div>
-<pre><code class="nohighlight">&gt;&gt;&gt; int('010')
+<pre><code class="nohighlight">&gt;&gt;&gt; int('010')  # 글자 '010' 을 정수로 바꿔요
 10</code></pre>
             <ul>
               <li>그래서 <code>input()</code>은 <b>받은 그대로(텍스트)</b> 넘겨 주고, 어떻게 읽을지는 코드를 쓰는 사람이 정함</li>
@@ -816,11 +816,11 @@ TypeError: unsupported operand type(s) for //: 'str' and 'int'</code></pre>
             </div>
 
             <p><b>3단계 · <code>int()</code> — 글자를 정수로 바꾸기</b></p>
-<pre><code class="nohighlight">&gt;&gt;&gt; int('135')
+<pre><code class="nohighlight">&gt;&gt;&gt; int('135')  # 글자 '135' 를 정수로 바꿔요
 135
-&gt;&gt;&gt; int('135') // 60
+&gt;&gt;&gt; int('135') // 60  # 정수로 바꾼 뒤 60 으로 나눈 몫을 구해요
 2
-&gt;&gt;&gt; int('abc')          # 숫자로 바꿀 수 없는 글자
+&gt;&gt;&gt; int('abc')  # 숫자로 바꿀 수 없는 글자예요
 ValueError: invalid literal for int() with base 10: 'abc'</code></pre>
             <ul>
               <li><code>int</code> = <b>integer(정수)</b>의 줄임말</li>
@@ -833,13 +833,13 @@ ValueError: invalid literal for int() with base 10: 'abc'</code></pre>
               <li><code>int('135')</code> → <code>135</code></li>
               <li><code>total = 135</code> → <code>total</code>이라는 이름표에 담기</li>
             </ol>
-<pre><code class="language-python">text = input()      # '135' (글자)
-total = int(text)   # 135   (숫자) — 위 한 줄과 같은 뜻</code></pre>
+<pre><code class="language-python">text = input()  # 입력받은 '135' 는 글자예요
+total = int(text)  # 글자를 숫자 135 로 바꿔요 (위 한 줄과 같은 뜻)</code></pre>
 
             <p><b>5단계 · <code>//</code>와 <code>%</code> — 시간과 분 구하기</b></p>
-<pre><code class="nohighlight">&gt;&gt;&gt; 135 // 60     # 몫 = 60이 몇 번 들어가나
+<pre><code class="nohighlight">&gt;&gt;&gt; 135 // 60  # 몫은 60 이 몇 번 들어가는지예요
 2
-&gt;&gt;&gt; 135 % 60      # 나머지 = 60씩 빼고 남은 것
+&gt;&gt;&gt; 135 % 60  # 나머지는 60 씩 빼고 남은 것이에요
 15</code></pre>
             <ul>
               <li>"135분은 몇 시간 몇 분?" = "60분 묶음이 몇 개이고 몇 분이 남나?"</li>
@@ -860,8 +860,8 @@ total = int(text)   # 135   (숫자) — 위 한 줄과 같은 뜻</code></pre>
               <li><code>분을 입력하세요:</code>가 뜨면 <code>135</code> 입력 후 Enter</li>
               <li><code>2 시간 15 분</code>이 나오면 성공 → <code>60</code>, <code>59</code>, <code>200</code>도 넣어 보기</li>
             </ol>
-<pre><code class="language-python">total = int(input('분을 입력하세요: '))
-print(total // 60, '시간', total % 60, '분')</code></pre>
+<pre><code class="language-python">total = int(input('분을 입력하세요: '))  # 안내 문구를 띄워 입력받고 정수로 바꿔 total 에 담아요
+print(total // 60, '시간', total % 60, '분')  # total 을 60 으로 나눈 몫과 나머지를 보여 줘요</code></pre>
 
             <h4 style="font-size:15.5px; letter-spacing:0; color:var(--ink); margin-top:14px;" id="b6-q2">Q2. input은 텍스트로, int는 숫자로 바꾸는 명령인가요?</h4>
             <ul>
@@ -871,7 +871,7 @@ print(total // 60, '시간', total % 60, '분')</code></pre>
               <li>비유: <code>input()</code>은 손님 주문을 종이에 받아 적는 직원(종이라 늘 글자), <code>int()</code>는 그 글자를 계산기에 숫자로 옮겨 치는 직원</li>
             </ul>
             <p>텍스트로 <b>바꾸는</b> 명령은 따로 있음 → <code>str</code> (string, 문자열)</p>
-<pre><code class="nohighlight">&gt;&gt;&gt; str(135)
+<pre><code class="nohighlight">&gt;&gt;&gt; str(135)  # 정수 135 를 글자로 바꿔요
 '135'</code></pre>
             <div class="table-scroll">
               <table>
@@ -885,9 +885,9 @@ print(total // 60, '시간', total % 60, '분')</code></pre>
               </table>
             </div>
             <p><code>int()</code>는 정수 전용이라 소수점을 다루지 못함</p>
-<pre><code class="nohighlight">&gt;&gt;&gt; int(3.7)       # 소수점 숫자는 소수점 아래를 버림
+<pre><code class="nohighlight">&gt;&gt;&gt; int(3.7)  # 소수점 숫자는 소수점 아래를 버려요
 3
-&gt;&gt;&gt; int('3.7')     # 소수점이 있는 글자는 바꾸지 못함
+&gt;&gt;&gt; int('3.7')  # 소수점이 있는 글자는 바로 바꾸지 못해요
 ValueError: invalid literal for int() with base 10: '3.7'</code></pre>
 
             <h4 style="font-size:15.5px; letter-spacing:0; color:var(--ink); margin-top:14px;" id="b6-q3">Q3. float는 뭔가요?</h4>
@@ -905,15 +905,15 @@ ValueError: invalid literal for int() with base 10: '3.7'</code></pre>
                 </tbody>
               </table>
             </div>
-<pre><code class="nohighlight">&gt;&gt;&gt; type(3)          # type()은 값의 종류를 알려 줌
+<pre><code class="nohighlight">&gt;&gt;&gt; type(3)  # type() 은 값의 종류를 알려 줘요
 &lt;class 'int'&gt;
-&gt;&gt;&gt; type(3.0)
+&gt;&gt;&gt; type(3.0)  # 소수점 있는 숫자의 종류를 확인해요
 &lt;class 'float'&gt;
-&gt;&gt;&gt; float('3.7')     # 글자를 실수로
+&gt;&gt;&gt; float('3.7')  # 글자를 실수로 바꿔요
 3.7
-&gt;&gt;&gt; float(3)         # 정수를 실수로
+&gt;&gt;&gt; float(3)  # 정수를 실수로 바꿔요
 3.0
-&gt;&gt;&gt; float('abc')
+&gt;&gt;&gt; float('abc')  # 숫자가 아닌 글자는 실수로 못 바꿔요
 ValueError: could not convert string to float: 'abc'</code></pre>
 
             <p><b>괄호를 빼면 안 됨</b></p>
@@ -936,9 +936,9 @@ SyntaxError: invalid syntax
             </ul>
 
             <p><b>float는 아주 조금 틀릴 때가 있음</b></p>
-<pre><code class="nohighlight">&gt;&gt;&gt; 0.1 + 0.2
+<pre><code class="nohighlight">&gt;&gt;&gt; 0.1 + 0.2  # 0.1 과 0.2 를 더해요
 0.30000000000000004
-&gt;&gt;&gt; round(0.1 + 0.2, 2)    # 소수 둘째 자리까지 반올림
+&gt;&gt;&gt; round(0.1 + 0.2, 2)  # 소수 둘째 자리까지 반올림해요
 0.3</code></pre>
             <ul>
               <li>컴퓨터가 소수를 0과 1로 저장하면서 생기는 작은 오차</li>
@@ -962,10 +962,10 @@ SyntaxError: invalid syntax
       <article class="problem" id="m1">
         <div class="p-head"><span class="p-id">중급 1</span><span class="p-type">읽기</span><h3>할인 계산</h3></div>
         <div class="p-body">
-<pre><code class="language-python">price = 20000
-price *= 0.9
-price = price - 1000
-print(price)</code></pre>
+<pre><code class="language-python">price = 20000  # 변수 price 에 정수 20000 을 담아요
+price *= 0.9  # price 에 0.9 를 곱해 다시 담아요
+price = price - 1000  # price 에서 1000 을 빼 다시 담아요
+print(price)  # price 에 담긴 값을 화면에 보여 줘요</code></pre>
           <ul>
             <li>출력을 예측하기</li>
             <li>결과에 <code>.0</code>이 붙는다면 몇 번째 줄에서 붙었는지 찾기</li>
@@ -996,13 +996,13 @@ print(price)</code></pre>
       <article class="problem" id="m2">
         <div class="p-head"><span class="p-id">중급 2</span><span class="p-type">읽기</span><h3>이번 주 발표자 정하기</h3></div>
         <div class="p-body">
-<pre><code class="language-python">members = ['지민', '서준', '하은', '도윤', '수아']
+<pre><code class="language-python">members = ['지민', '서준', '하은', '도윤', '수아']  # 변수 members 에 이름 5개가 든 리스트를 담아요
 
-week = 7
-print(members[week % len(members)])
+week = 7  # 변수 week 에 정수 7 을 담아요
+print(members[week % len(members)])  # 주 번호를 인원 수로 나눈 나머지 칸의 이름을 보여 줘요
 
-week = 12
-print(members[week % len(members)])</code></pre>
+week = 12  # 변수 week 에 정수 12 를 새로 담아요
+print(members[week % len(members)])  # 주 번호를 인원 수로 나눈 나머지 칸의 이름을 보여 줘요</code></pre>
           <ul>
             <li>두 줄의 출력을 예측하기</li>
             <li><code>week</code>가 <code>100</code>이어도 에러가 나지 않는 이유 설명하기</li>
@@ -1036,12 +1036,12 @@ print(members[week % len(members)])</code></pre>
       <article class="problem" id="m3">
         <div class="p-head"><span class="p-id">중급 3</span><span class="p-type">읽기</span><h3>좌석 번호를 줄·칸으로</h3></div>
         <div class="p-body">
-<pre><code class="language-python">seat_number = 14   # 좌석 번호 (0번부터 매김)
-cols = 4           # 한 줄에 4자리
+<pre><code class="language-python">seat_number = 14  # 좌석 번호예요 (0번부터 매겨요)
+cols = 4  # 한 줄에 4자리라는 뜻이에요
 
-row = seat_number // cols
-col = seat_number % cols
-print(row, col)</code></pre>
+row = seat_number // cols  # 좌석 번호를 cols 로 나눈 몫을 row 에 담아요
+col = seat_number % cols  # 좌석 번호를 cols 로 나눈 나머지를 col 에 담아요
+print(row, col)  # row 와 col 값을 보여 줘요</code></pre>
           <ul>
             <li>출력을 예측하기</li>
             <li>거꾸로 <code>row = 2</code>, <code>col = 3</code>일 때 <code>seat_number</code>를 구하는 식 쓰기</li>
@@ -1066,7 +1066,7 @@ print(row, col)</code></pre>
               <li>번호 → 줄·칸: <code>//</code>와 <code>%</code></li>
               <li>줄·칸 → 번호: <code>*</code>와 <code>+</code></li>
             </ul>
-<pre><code class="language-python">seat_number = row * cols + col   # 2 * 4 + 3 → 11</code></pre>
+<pre><code class="language-python">seat_number = row * cols + col  # 2 * 4 + 3 → 11 처럼 좌석 번호를 되돌려요</code></pre>
             <p class="real"><b>실제 코드에서</b> · 이미지 픽셀, 달력의 날짜 칸, 바둑판 게임에서 똑같이 쓰임</p>
           </div>
         </details>
@@ -1075,9 +1075,9 @@ print(row, col)</code></pre>
       <article class="problem" id="m4">
         <div class="p-head"><span class="p-id">중급 4</span><span class="p-type">버그</span><h3>합계가 이상하다</h3></div>
         <div class="p-body">
-<pre><code class="language-python">a = input('첫 번째 수: ')
-b = input('두 번째 수: ')
-print('합계:', a + b)</code></pre>
+<pre><code class="language-python">a = input('첫 번째 수: ')  # 입력받은 글자를 변수 a 에 담아요
+b = input('두 번째 수: ')  # 입력받은 글자를 변수 b 에 담아요
+print('합계:', a + b)  # 글자와 a + b 의 결과를 보여 줘요</code></pre>
           <ul>
             <li><code>3</code>, <code>4</code>를 입력하면 무엇이 출력되는지 예측하기</li>
             <li>원인을 설명하고 고친 코드 쓰기 (힌트: 1.6.1 연습 문제)</li>
@@ -1101,9 +1101,9 @@ print('합계:', a + b)</code></pre>
               <li><code>'3' + '4'</code> → <code>'34'</code> (기본 4와 같은 상황)</li>
             </ul>
             <h4>고친 코드</h4>
-<pre><code class="language-python">a = int(input('첫 번째 수: '))
-b = int(input('두 번째 수: '))
-print('합계:', a + b)</code></pre>
+<pre><code class="language-python">a = int(input('첫 번째 수: '))  # 입력받은 글자를 정수로 바꿔 a 에 담아요
+b = int(input('두 번째 수: '))  # 입력받은 글자를 정수로 바꿔 b 에 담아요
+print('합계:', a + b)  # 글자와 a + b 의 합을 보여 줘요</code></pre>
             <p class="real"><b>실제 코드에서</b> · 사용자 입력·파일·웹에서 받은 값은 문자열인 경우가 많음. 숫자처럼 보여도 의심하기</p>
           </div>
         </details>
@@ -1112,10 +1112,10 @@ print('합계:', a + b)</code></pre>
       <article class="problem" id="m5">
         <div class="p-head"><span class="p-id">중급 5</span><span class="p-type">버그</span><h3>할 일 목록에서 사라진 청소</h3></div>
         <div class="p-body">
-<pre><code class="language-python">todo = ['장보기', '빨래', '청소', '숙제']
-todo.remove('빨래')
-print('세 번째 할 일:', todo[2])
-print('남은 할 일 개수:', len(todo))</code></pre>
+<pre><code class="language-python">todo = ['장보기', '빨래', '청소', '숙제']  # 변수 todo 에 할 일 4개가 든 리스트를 담아요
+todo.remove('빨래')  # 리스트에서 '빨래' 항목을 지워요
+print('세 번째 할 일:', todo[2])  # 글자와 2번 칸 항목을 보여 줘요
+print('남은 할 일 개수:', len(todo))  # 글자와 리스트의 항목 개수를 보여 줘요</code></pre>
           <ul>
             <li>작성자는 <code>todo[2]</code>로 <code>'청소'</code>를 출력하려고 했음</li>
             <li>실제 출력을 예측하기</li>
@@ -1150,10 +1150,10 @@ print('남은 할 일 개수:', len(todo))</code></pre>
       <article class="problem" id="m6">
         <div class="p-head"><span class="p-id">중급 6</span><span class="p-type">읽기</span><h3>계산 순서</h3></div>
         <div class="p-body">
-<pre><code class="language-python-repl">&gt;&gt;&gt; 8 // 2 * (2 + 2)
-&gt;&gt;&gt; 2 + 3 * 4 ** 2
-&gt;&gt;&gt; (2 + 3) * 4 ** 2
-&gt;&gt;&gt; 10 - 4 - 3</code></pre>
+<pre><code class="language-python-repl">&gt;&gt;&gt; 8 // 2 * (2 + 2)  # 몫 연산과 곱셈, 괄호를 섞은 식이에요
+&gt;&gt;&gt; 2 + 3 * 4 ** 2  # 덧셈, 곱셈, 거듭제곱을 섞은 식이에요
+&gt;&gt;&gt; (2 + 3) * 4 ** 2  # 괄호로 덧셈을 먼저 묶은 식이에요
+&gt;&gt;&gt; 10 - 4 - 3  # 뺄셈을 두 번 이어 쓴 식이에요</code></pre>
           <ul>
             <li>각 줄의 결과를 예측하기</li>
             <li>둘째 줄을 계산 순서대로 괄호를 쳐서 다시 쓰기</li>
@@ -1200,10 +1200,10 @@ print('남은 할 일 개수:', len(todo))</code></pre>
         <div class="memo"><label for="memo-m7">내 코드 <span>이 브라우저에만 저장</span></label><textarea id="memo-m7"></textarea></div>
         <details class="sol"><summary>풀이 예시 보기</summary>
           <div class="sol-body">
-<pre><code class="language-python">total = int(input())
-h = divmod(total, 3600)
-m = divmod(h[1], 60)
-print(h[0], '시간', m[0], '분', m[1], '초')</code></pre>
+<pre><code class="language-python">total = int(input())  # 입력받은 글자를 정수로 바꿔 total 에 담아요
+h = divmod(total, 3600)  # 3600 으로 나눈 (몫, 나머지) 를 h 에 담아요
+m = divmod(h[1], 60)  # h 의 나머지를 60 으로 나눈 (몫, 나머지) 를 m 에 담아요
+print(h[0], '시간', m[0], '분', m[1], '초')  # 시·분·초 값을 글자와 함께 보여 줘요</code></pre>
             <ul>
               <li><code>divmod(3725, 3600)</code> → <code>(1, 125)</code> → 1시간, 남은 125초</li>
               <li><code>divmod(125, 60)</code> → <code>(2, 5)</code> → 2분 5초</li>
@@ -1225,10 +1225,10 @@ print(h[0], '시간', m[0], '분', m[1], '초')</code></pre>
       <article class="problem" id="a1">
         <div class="p-head"><span class="p-id">상급 1</span><span class="p-type">읽기</span><h3>페이지 수 올림 공식</h3></div>
         <div class="p-body">
-<pre><code class="language-python">total_posts = 47
-per_page = 10
-pages = (total_posts + per_page - 1) // per_page
-print(pages)</code></pre>
+<pre><code class="language-python">total_posts = 47  # 변수 total_posts 에 정수 47 을 담아요
+per_page = 10  # 변수 per_page 에 정수 10 을 담아요
+pages = (total_posts + per_page - 1) // per_page  # 남는 글이 있으면 한 페이지를 더하는 올림 계산이에요
+print(pages)  # pages 값을 보여 줘요</code></pre>
           <p class="spec"><code>total_posts</code>를 바꿔 가며 표 채우기</p>
           <div class="table-scroll fill">
             <table>
@@ -1275,18 +1275,18 @@ print(pages)</code></pre>
       <article class="problem" id="a2">
         <div class="p-head"><span class="p-id">상급 2</span><span class="p-type">읽기</span><h3>사진 뷰어의 "이전" 버튼</h3></div>
         <div class="p-body">
-<pre><code class="language-python">photos = ['a.jpg', 'b.jpg', 'c.jpg']
-current = 0
+<pre><code class="language-python">photos = ['a.jpg', 'b.jpg', 'c.jpg']  # 변수 photos 에 사진 파일명 3개가 든 리스트를 담아요
+current = 0  # 변수 current 에 정수 0 을 담아요
 
-current = (current - 1) % len(photos)
-print(current, photos[current])</code></pre>
+current = (current - 1) % len(photos)  # 한 칸 뒤로 가고 개수로 나눈 나머지를 취해요
+print(current, photos[current])  # current 값과 그 칸의 사진 이름을 보여 줘요</code></pre>
           <ul>
             <li>출력을 예측하기 (첫 사진에서 "이전"을 누른 상황)</li>
             <li>아래 결과도 예측하기</li>
           </ul>
-<pre><code class="language-python-repl">&gt;&gt;&gt; -7 // 2
-&gt;&gt;&gt; -7 % 2
-&gt;&gt;&gt; divmod(-7, 2)</code></pre>
+<pre><code class="language-python-repl">&gt;&gt;&gt; -7 // 2  # 음수를 2 로 나눈 몫이에요
+&gt;&gt;&gt; -7 % 2  # 음수를 2 로 나눈 나머지예요
+&gt;&gt;&gt; divmod(-7, 2)  # 몫과 나머지를 함께 구해요</code></pre>
           <ul>
             <li><code>-7 // 2</code>가 <code>-3</code>이 아닌 이유를 "몫 × 2 + 나머지 = -7" 검산으로 설명하기</li>
           </ul>
@@ -1321,16 +1321,16 @@ print(current, photos[current])</code></pre>
       <article class="problem" id="a3">
         <div class="p-head"><span class="p-id">상급 3</span><span class="p-type">읽기</span><h3>이름표는 어디에 붙었나</h3></div>
         <div class="p-body">
-<pre><code class="language-python">x = 10
-y = x
-x = x + 1
-print(x, y)
+<pre><code class="language-python">x = 10  # 변수 x 에 정수 10 을 담아요
+y = x  # x 에 든 값을 변수 y 에도 담아요
+x = x + 1  # x 에 1 을 더해 x 에 다시 담아요
+print(x, y)  # x 와 y 값을 보여 줘요
 
-team_a = ['지민', '서준', '하은']
-team_b = team_a
-team_b.remove('서준')
-print(team_a)
-print(len(team_a), len(team_b))</code></pre>
+team_a = ['지민', '서준', '하은']  # 변수 team_a 에 이름 3개가 든 리스트를 담아요
+team_b = team_a  # team_a 가 가리키는 리스트를 team_b 도 가리켜요
+team_b.remove('서준')  # team_b 리스트에서 '서준' 을 지워요
+print(team_a)  # team_a 리스트를 보여 줘요
+print(len(team_a), len(team_b))  # 두 리스트의 항목 개수를 보여 줘요</code></pre>
           <ul>
             <li>세 줄의 출력을 예측하기</li>
             <li>숫자는 따로 움직이고 리스트는 같이 바뀐 이유 설명하기</li>
@@ -1371,10 +1371,10 @@ print(len(team_a), len(team_b))</code></pre>
       <article class="problem" id="a4">
         <div class="p-head"><span class="p-id">상급 4</span><span class="p-type">읽기</span><h3>컴퓨터도 계산을 틀린다?</h3></div>
         <div class="p-body">
-<pre><code class="language-python-repl">&gt;&gt;&gt; 0.1 + 0.2
-&gt;&gt;&gt; 1.1 * 3
-&gt;&gt;&gt; 1000000 * 0.85
-&gt;&gt;&gt; 110 * 3</code></pre>
+<pre><code class="language-python-repl">&gt;&gt;&gt; 0.1 + 0.2  # 0.1 과 0.2 를 더해요
+&gt;&gt;&gt; 1.1 * 3  # 1.1 에 3 을 곱해요
+&gt;&gt;&gt; 1000000 * 0.85  # 1000000 에 0.85 를 곱해요
+&gt;&gt;&gt; 110 * 3  # 정수 110 에 3 을 곱해요</code></pre>
           <ul>
             <li>각 줄의 결과를 예측하고 실행하기</li>
             <li>쇼핑몰·은행 코드가 금액을 <code>1.1</code>(천 원 단위 실수)보다 <code>1100</code>(원 단위 정수)으로 저장하는 이유 토론하기</li>
@@ -1410,11 +1410,11 @@ print(len(team_a), len(team_b))</code></pre>
       <article class="problem" id="a5">
         <div class="p-head"><span class="p-id">상급 5</span><span class="p-type">읽기</span><h3>거듭제곱의 함정</h3></div>
         <div class="p-body">
-<pre><code class="language-python-repl">&gt;&gt;&gt; 2 ** 3 ** 2
-&gt;&gt;&gt; -2 ** 2
-&gt;&gt;&gt; leg = 5
-&gt;&gt;&gt; leg ** 2 / 2
-&gt;&gt;&gt; leg ** (2 / 2)</code></pre>
+<pre><code class="language-python-repl">&gt;&gt;&gt; 2 ** 3 ** 2  # 거듭제곱을 두 번 이어 쓴 식이에요
+&gt;&gt;&gt; -2 ** 2  # 음수 부호와 거듭제곱을 섞은 식이에요
+&gt;&gt;&gt; leg = 5  # 변수 leg 에 정수 5 를 담아요
+&gt;&gt;&gt; leg ** 2 / 2  # leg 를 제곱한 뒤 2 로 나눠요
+&gt;&gt;&gt; leg ** (2 / 2)  # 괄호 안을 먼저 계산해 거듭제곱해요</code></pre>
           <ul>
             <li>각 줄의 결과를 예측하기</li>
             <li><code>2 ** 3 ** 2</code>가 어느 쪽부터 계산되는지 결과로 알아내기</li>
@@ -1452,20 +1452,20 @@ print(len(team_a), len(team_b))</code></pre>
       <article class="problem" id="a6">
         <div class="p-head"><span class="p-id">상급 6</span><span class="p-type">읽기 + 버그</span><h3>게임의 공격 사거리</h3></div>
         <div class="p-body">
-<pre><code class="language-python">import math
+<pre><code class="language-python">import math  # 수학 도구 모음 math 를 불러와요
 
-player_x = 3
-player_y = 4
-enemy_x = 6
-enemy_y = 8
-attack_range = 5
+player_x = 3  # 변수 player_x 에 정수 3 을 담아요
+player_y = 4  # 변수 player_y 에 정수 4 를 담아요
+enemy_x = 6  # 변수 enemy_x 에 정수 6 을 담아요
+enemy_y = 8  # 변수 enemy_y 에 정수 8 을 담아요
+attack_range = 5  # 변수 attack_range 에 정수 5 를 담아요
 
-dx = enemy_x - player_x
-dy = enemy_y - player_y
-distance = math.sqrt(dx ** 2 + dy ** 2)
+dx = enemy_x - player_x  # 적과 플레이어의 x 좌표 차이를 구해요
+dy = enemy_y - player_y  # 적과 플레이어의 y 좌표 차이를 구해요
+distance = math.sqrt(dx ** 2 + dy ** 2)  # 두 점 사이 거리를 피타고라스로 구해요
 
-print('거리:', distance)
-print('사거리와의 차이:', distance - attack_range)</code></pre>
+print('거리:', distance)  # 글자와 거리를 보여 줘요
+print('사거리와의 차이:', distance - attack_range)  # 글자와 거리에서 사거리를 뺀 값을 보여 줘요</code></pre>
           <ul>
             <li>출력 두 줄을 예측하기</li>
             <li>적과 플레이어 위치를 서로 바꿔 <code>dx</code>, <code>dy</code>가 음수가 되어도 거리가 같은 이유 설명하기</li>
@@ -1523,22 +1523,22 @@ print('사거리와의 차이:', distance - attack_range)</code></pre>
         <div class="memo"><label for="memo-a7">내 코드 <span>이 브라우저에만 저장</span></label><textarea id="memo-a7"></textarea></div>
         <details class="sol"><summary>풀이 예시 보기</summary>
           <div class="sol-body">
-<pre><code class="language-python">total = int(input('총 비용: '))
-people = int(input('인원 수: '))
+<pre><code class="language-python">total = int(input('총 비용: '))  # 안내 문구를 띄워 입력받고 정수로 바꿔 total 에 담아요
+people = int(input('인원 수: '))  # 안내 문구를 띄워 입력받고 정수로 바꿔 people 에 담아요
 
-per_person = total // people // 10 * 10
-print('1인당:', per_person, '원')
-print('모자라는 금액:', total - per_person * people, '원')</code></pre>
+per_person = total // people // 10 * 10  # 인원수로 나눈 뒤 10 원 단위로 내림해요
+print('1인당:', per_person, '원')  # 글자와 1인당 금액을 보여 줘요
+print('모자라는 금액:', total - per_person * people, '원')  # 글자와 총 비용에서 걷힌 금액을 뺀 값을 보여 줘요</code></pre>
             <ul>
               <li><code>53870 // 5</code> → <code>10774</code></li>
               <li><code>10774 // 10 * 10</code> → <code>1077 * 10</code> → <code>10770</code> (일의 자리 버림)</li>
               <li><code>53870 - 10770 * 5</code> → <code>20</code></li>
             </ul>
             <h4>확장 과제 (올림)</h4>
-<pre><code class="language-python">unit = people * 10
-per_person_up = (total + unit - 1) // unit * 10
-print('1인당:', per_person_up, '원')
-print('남는 금액:', per_person_up * people - total, '원')</code></pre>
+<pre><code class="language-python">unit = people * 10  # 인원수에 10 을 곱해 unit 에 담아요
+per_person_up = (total + unit - 1) // unit * 10  # 10 원 단위로 올림해 1인당 금액을 구해요
+print('1인당:', per_person_up, '원')  # 글자와 올림한 1인당 금액을 보여 줘요
+print('남는 금액:', per_person_up * people - total, '원')  # 글자와 걷힌 금액에서 총 비용을 뺀 값을 보여 줘요</code></pre>
             <ul>
               <li>"10원짜리 묶음이 몇 개 필요한가"를 상급 1 공식으로 올림한 뒤 <code>* 10</code></li>
               <li><code>(53870 + 49) // 50</code> → <code>1078</code> → <code>10780</code></li>
@@ -1552,9 +1552,9 @@ print('남는 금액:', per_person_up * people - total, '원')</code></pre>
         <div class="p-head"><span class="p-id">상급 8</span><span class="p-type">추론</span><h3>처음 보는 문법 읽어 내기</h3></div>
         <div class="p-body">
           <p class="spec">1장에서 배우지 않은 문법이 섞인 코드입니다. 남의 코드를 읽을 때 매일 겪는 상황을 연습합니다.</p>
-<pre><code class="language-python">minutes, seconds = divmod(3725, 60)
-hours, minutes = divmod(minutes, 60)
-print(hours, minutes, seconds)</code></pre>
+<pre><code class="language-python">minutes, seconds = divmod(3725, 60)  # 3725 를 60 으로 나눈 (몫, 나머지) 를 각각 담아요
+hours, minutes = divmod(minutes, 60)  # 분을 60 으로 나눈 (몫, 나머지) 를 각각 담아요
+print(hours, minutes, seconds)  # 시·분·초 값을 보여 줘요</code></pre>
           <ul>
             <li>실행하지 말고 출력을 예측하기</li>
             <li><code>a, b = ...</code> 문법이 무슨 뜻인지 추측하기</li>

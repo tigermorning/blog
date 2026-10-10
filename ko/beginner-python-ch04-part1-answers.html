@@ -55,15 +55,15 @@
     <h3 id="a1">정답과 해설</h3>
     <p><strong>문제:</strong> 세 그룹의 팬 명단이 있어요. 첫째 그룹과 둘째 그룹의 팬이면서 셋째 그룹의 팬은 아닌 사람을 쉼표로 이어 출력해요.</p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>newjeans = ['철수', '영희', '민수', '지현', '서연']
-ive = ['영희', '민수', '지수', '서연', '하나']
-aespa = ['철수', '지현', '지수', '서연', '나영']
+<pre><code>newjeans = ['철수', '영희', '민수', '지현', '서연']  # 변수 newjeans 에 멤버 이름 다섯 개를 담아요
+ive = ['영희', '민수', '지수', '서연', '하나']       # 변수 ive 에 멤버 이름 다섯 개를 담아요
+aespa = ['철수', '지현', '지수', '서연', '나영']     # 변수 aespa 에 멤버 이름 다섯 개를 담아요
 
-result = []
-for name in newjeans:
-    if name in ive and name not in aespa:
-        result.append(name)
-print(", ".join(result))</code></pre>
+result = []                                # 뽑힌 이름을 모을 빈 리스트를 만들어요
+for name in newjeans:                      # newjeans 의 이름을 차례로 name 에 꺼내요
+    if name in ive and name not in aespa:  # ive 에는 있고 aespa 에는 없는 이름인지 따져요
+        result.append(name)                # 조건에 맞는 이름을 result 에 덧붙여요
+print(", ".join(result))                   # result 의 이름을 ', ' 로 이어 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">영희, 민수</code></pre>
     <p><strong>한 줄씩 짚어보기</strong></p>
     <ul>
@@ -92,36 +92,36 @@ print(", ".join(result))</code></pre>
     <p><strong>문제:</strong> 앞에서 읽으나 뒤에서 읽으나 같은 말(회문)이면 True를 돌려주는 함수 <code>palindrome()</code>을 만들어요. 문제 1은 소문자·공백 없음, 문제 2는 대소문자가 섞임, 문제 3은 공백이 들어 있어요.</p>
     <p><strong>문제 1 — 소문자만</strong></p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>def palindrome(text):
-    return text == text[::-1]
+<pre><code>def palindrome(text):          # palindrome 이라는 함수를 만들어요
+    return text == text[::-1]  # text 가 거꾸로 읽은 것과 같은지 돌려줘요
 
-print(palindrome('anna'))
-print(palindrome('banana'))</code></pre>
+print(palindrome('anna'))      # 'anna' 를 검사해 출력해요
+print(palindrome('banana'))    # 'banana' 를 검사해 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">True
 False</code></pre>
     <p><code>text[::-1]</code>이 글자를 뒤집은 문자열이라, 원래와 같으면 회문이에요. <code>'anna'</code>는 뒤집어도 <code>'anna'</code>, <code>'banana'</code>는 <code>'ananab'</code>라서 달라요.</p>
     <p><strong>문제 2 — 대소문자 섞임</strong> 같은 함수에 <code>'Anna'</code>를 넣으면 뒤집은 글이 <code>'annA'</code>가 돼서 다르다고 나와요.</p>
-<pre><code>def palindrome(text):
-    return text == text[::-1]
+<pre><code>def palindrome(text):          # palindrome 이라는 함수를 만들어요
+    return text == text[::-1]  # text 가 거꾸로 읽은 것과 같은지 돌려줘요
 
-print(palindrome('Anna'))</code></pre>
+print(palindrome('Anna'))      # 대문자 A 가 있는 'Anna' 를 검사해 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">False</code></pre>
     <p>먼저 <code>lower()</code>로 모두 소문자로 만든 뒤에 비교해요.</p>
-<pre><code>def palindrome(text):
-    t = text.lower()
-    return t == t[::-1]
+<pre><code>def palindrome(text):      # palindrome 이라는 함수를 만들어요
+    t = text.lower()       # text 를 소문자로 바꿔 t 에 담아요
+    return t == t[::-1]    # t 가 거꾸로 읽은 것과 같은지 돌려줘요
 
-print(palindrome('Anna'))</code></pre>
+print(palindrome('Anna'))  # 'Anna' 를 검사해 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">True</code></pre>
     <p><strong>문제 3 — 공백 포함</strong> 공백도 글자라서 <code>replace(' ', '')</code>로 지우고 비교해요.</p>
-<pre><code>def palindrome(text):
-    t = text.lower().replace(' ', '')
-    return t == t[::-1]
+<pre><code>def palindrome(text):                  # palindrome 이라는 함수를 만들어요
+    t = text.lower().replace(' ', '')  # 소문자로 바꾸고 공백을 지워 t 에 담아요
+    return t == t[::-1]                # t 가 거꾸로 읽은 것과 같은지 돌려줘요
 
-print(palindrome('My gym'))
-print(palindrome('Anna'))
-print(palindrome('banana'))
-print(palindrome('anna'))</code></pre>
+print(palindrome('My gym'))            # 'My gym' 을 검사해 출력해요
+print(palindrome('Anna'))              # 'Anna' 를 검사해 출력해요
+print(palindrome('banana'))            # 'banana' 를 검사해 출력해요
+print(palindrome('anna'))              # 'anna' 를 검사해 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">True
 True
 False
@@ -144,15 +144,15 @@ True</code></pre>
     <h3 id="a3">정답과 해설</h3>
     <p><strong>문제:</strong> 나눗셈을 쓰지 않고 정수 <code>num</code>의 각 자리 숫자를 더하는 함수 <code>sumOfDigits(num)</code>을 만들어요.</p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>def sumOfDigits(num):
-    total = 0
-    for d in list(str(num)):
-        total = total + int(d)
-    return total
+<pre><code>def sumOfDigits(num):           # 각 자리 숫자의 합을 구하는 함수를 만들어요
+    total = 0                   # 합을 담을 변수 total 을 0으로 시작해요
+    for d in list(str(num)):    # 숫자를 글자 리스트로 바꿔 한 글자씩 d 에 꺼내요
+        total = total + int(d)  # 글자 d 를 정수로 바꿔 total 에 더해요
+    return total                # 합 total 을 돌려줘요
 
-print(list(str(643)))
-print(sumOfDigits(643))
-print(sumOfDigits(47253))</code></pre>
+print(list(str(643)))           # 643 을 글자 리스트로 바꿔 출력해요
+print(sumOfDigits(643))         # 643 의 자리 숫자 합을 출력해요
+print(sumOfDigits(47253))       # 47253 의 자리 숫자 합을 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">['6', '4', '3']
 13
 21</code></pre>
@@ -180,12 +180,12 @@ print(sumOfDigits(47253))</code></pre>
     <p><strong>문제:</strong> 점수 리스트를 10 미만, 10대, 20대로 나눠 세 칸 <code>stem_leaf</code>에 채워요(문제 1). 그다음 <code>0: [...]</code> 모양으로 한 줄씩 출력해요(문제 2). 칸에는 일의 자리 숫자만 넣어요.</p>
     <p><strong>문제 1 — 칸에 채우기</strong></p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>score = [0, 0, 2, 4, 7, 7, 9, 11, 11, 13, 18, 20]
-stem_leaf = [[], [], []]
+<pre><code>score = [0, 0, 2, 4, 7, 7, 9, 11, 11, 13, 18, 20]  # 변수 score 에 점수 열두 개를 담아요
+stem_leaf = [[], [], []]                           # 십의 자리별 빈 리스트 세 칸을 만들어요
 
-for s in score:
-    stem_leaf[s // 10].append(s % 10)
-print(stem_leaf)</code></pre>
+for s in score:                                    # score 의 점수를 차례로 s 에 꺼내요
+    stem_leaf[s // 10].append(s % 10)              # 십의 자리 칸에 일의 자리 수를 덧붙여요
+print(stem_leaf)                                   # stem_leaf 를 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">[[0, 0, 2, 4, 7, 7, 9], [1, 1, 3, 8], [0]]</code></pre>
     <ul>
       <li><code>s // 10</code>은 몫이라 몇 번째 칸인지(0, 1, 2)가 돼요.</li>
@@ -193,9 +193,9 @@ print(stem_leaf)</code></pre>
       <li><code>stem_leaf[칸].append(잎)</code>은 리스트 안의 리스트에 값을 넣어요.</li>
     </ul>
     <p>각 점수가 어디로 가는지 직접 찍어 보면 이래요.</p>
-<pre><code>score = [0, 0, 2, 4, 7, 7, 9, 11, 11, 13, 18, 20]
-for s in score:
-    print(s, s // 10, s % 10)</code></pre>
+<pre><code>score = [0, 0, 2, 4, 7, 7, 9, 11, 11, 13, 18, 20]  # 변수 score 에 점수 열두 개를 담아요
+for s in score:                                    # score 의 점수를 차례로 s 에 꺼내요
+    print(s, s // 10, s % 10)                      # 점수, 십의 자리, 일의 자리를 함께 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">0 0 0
 0 0 0
 2 0 2
@@ -210,14 +210,14 @@ for s in score:
 20 2 0</code></pre>
     <p>줄마다 왼쪽부터 점수, 칸 번호, 잎이에요. 0~9는 0번 칸, 11·13·18은 1번 칸, 20은 2번 칸이에요.</p>
     <p><strong>문제 2 — 모양대로 출력하기</strong></p>
-<pre><code>score = [0, 0, 2, 4, 7, 7, 9, 11, 11, 13, 18, 20]
-stem_leaf = [[], [], []]
+<pre><code>score = [0, 0, 2, 4, 7, 7, 9, 11, 11, 13, 18, 20]  # 변수 score 에 점수 열두 개를 담아요
+stem_leaf = [[], [], []]                           # 십의 자리별 빈 리스트 세 칸을 만들어요
 
-for s in score:
-    stem_leaf[s // 10].append(s % 10)
+for s in score:                                    # score 의 점수를 차례로 s 에 꺼내요
+    stem_leaf[s // 10].append(s % 10)              # 십의 자리 칸에 일의 자리 수를 덧붙여요
 
-for i in range(len(stem_leaf)):
-    print(str(i) + ': ' + str(stem_leaf[i]))</code></pre>
+for i in range(len(stem_leaf)):                    # 칸 번호 i 를 0부터 차례로 꺼내요
+    print(str(i) + ': ' + str(stem_leaf[i]))       # 번호와 그 칸의 리스트를 글자로 이어 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">0: [0, 0, 2, 4, 7, 7, 9]
 1: [1, 1, 3, 8]
 2: [0]</code></pre>
@@ -229,20 +229,20 @@ for i in range(len(stem_leaf)):
     <h3 id="a5">정답과 해설</h3>
     <p><strong>문제:</strong> <code>read(text)</code>가 놀이기구 이름과 키 제한을 <code>(이름, 최소, 최대)</code>로 돌려줘요. 제한이 없는 칸은 <code>None</code>이에요.</p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>def read(text):
-    name, rule = text.split(':')
-    name = name.strip()
-    rule = rule.strip()
-    if rule == '-':
-        return name, None, None
-    if '~' in rule:
-        low, high = rule.split('~')
-        return name, int(low.replace('cm', '')), int(high.replace('cm', ''))
-    return name, int(rule.replace('cm 이상', '')), None
+<pre><code>def read(text):                                                               # 문자열 text 를 읽어 값을 돌려주는 함수를 만들어요
+    name, rule = text.split(':')                                              # ':' 를 기준으로 잘라 name 과 rule 에 나눠 담아요
+    name = name.strip()                                                       # name 의 앞뒤 공백을 지워요
+    rule = rule.strip()                                                       # rule 의 앞뒤 공백을 지워요
+    if rule == '-':                                                           # 제한이 없다는 뜻의 '-' 인지 따져요
+        return name, None, None                                               # 이름만 돌려주고 나머지는 None 으로 비워요
+    if '~' in rule:                                                           # 범위를 뜻하는 '~' 가 있는지 따져요
+        low, high = rule.split('~')                                           # '~' 를 기준으로 잘라 low 와 high 에 나눠 담아요
+        return name, int(low.replace('cm', '')), int(high.replace('cm', ''))  # 'cm' 을 지우고 정수로 바꿔 최소와 최대로 돌려줘요
+    return name, int(rule.replace('cm 이상', '')), None                         # 'cm 이상' 을 지운 수를 최소로, 최대는 None 으로 돌려줘요
 
-print(read('와일드 윙: 110cm 이상'))
-print(read('툼 오브 호러: -'))
-print(read('플라이벤처: 140cm~195cm'))</code></pre>
+print(read('와일드 윙: 110cm 이상'))                                                # '와일드 윙: 110cm 이상' 을 읽어 출력해요
+print(read('툼 오브 호러: -'))                                                     # '툼 오브 호러: -' 를 읽어 출력해요
+print(read('플라이벤처: 140cm~195cm'))                                             # '플라이벤처: 140cm~195cm' 를 읽어 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">('와일드 윙', 110, None)
 ('툼 오브 호러', None, None)
 ('플라이벤처', 140, 195)</code></pre>
@@ -253,15 +253,15 @@ print(read('플라이벤처: 140cm~195cm'))</code></pre>
       <li><code>'~'</code>가 있으면 한 번 더 쪼개 <code>'cm'</code>를 지우고 정수로 바꿔요.</li>
       <li>나머지(<code>'110cm 이상'</code>)는 <code>'cm 이상'</code>을 지워 최소값만 구해요.</li>
     </ul>
-<pre><code>text = '와일드 윙: 110cm 이상'
-print(text.split(':'))
-print(text.split(':')[1].strip())</code></pre>
+<pre><code>text = '와일드 윙: 110cm 이상'           # 변수 text 에 문자열을 담아요
+print(text.split(':'))             # ':' 를 기준으로 잘라 리스트로 출력해요
+print(text.split(':')[1].strip())  # 자른 것 중 1번 원소의 앞뒤 공백을 지워 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">['와일드 윙', ' 110cm 이상']
 110cm 이상</code></pre>
-<pre><code>print('110cm 이상'.replace('cm 이상', ''))
-print(int('110'))
-print('140cm~195cm'.split('~'))
-print('140cm'.replace('cm', ''))</code></pre>
+<pre><code>print('110cm 이상'.replace('cm 이상', ''))  # 'cm 이상' 을 지운 문자열을 출력해요
+print(int('110'))                       # 문자열 '110' 을 정수로 바꿔 출력해요
+print('140cm~195cm'.split('~'))         # '~' 를 기준으로 잘라 리스트로 출력해요
+print('140cm'.replace('cm', ''))        # 'cm' 을 지운 문자열을 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">110
 110
 ['140cm', '195cm']
@@ -273,12 +273,12 @@ print('140cm'.replace('cm', ''))</code></pre>
     <h3 id="a6">정답과 해설</h3>
     <p><strong>문제:</strong> 문제 3과 같은 계산을 리스트와 <code>map()</code>으로 짧게 풀어요.</p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>def sumOfDigits(num):
-    return sum(map(int, str(num)))
+<pre><code>def sumOfDigits(num):               # 각 자리 숫자의 합을 구하는 함수를 만들어요
+    return sum(map(int, str(num)))  # 각 글자를 정수로 바꿔 모두 더해 돌려줘요
 
-print(list(map(int, '643')))
-print(sumOfDigits(47253))
-print(sumOfDigits(643))</code></pre>
+print(list(map(int, '643')))        # '643' 의 글자를 정수로 바꿔 리스트로 출력해요
+print(sumOfDigits(47253))           # 47253 의 자리 숫자 합을 출력해요
+print(sumOfDigits(643))             # 643 의 자리 숫자 합을 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">[6, 4, 3]
 21
 13</code></pre>
@@ -294,27 +294,27 @@ print(sumOfDigits(643))</code></pre>
     <h3 id="a7">정답과 해설</h3>
     <p><strong>문제:</strong> <code>n</code> 이하의 소수를 리스트로 돌려줘요. 2부터 시작해 그 수의 배수를 차례로 지워요(체 방식).</p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>def primes(n):
-    L = list(range(2, n + 1))
-    for p in L[:]:
-        for x in L[:]:
-            if x != p and x % p == 0:
-                L.remove(x)
-    return L
+<pre><code>def primes(n):                         # primes 라는 함수를 만들어요 (n 은 끝 수)
+    L = list(range(2, n + 1))          # 2부터 n 까지 수를 리스트 L 에 담아요
+    for p in L[:]:                     # L 의 복사본 수를 차례로 p 에 꺼내요
+        for x in L[:]:                 # L 의 복사본 수를 차례로 x 에 꺼내요
+            if x != p and x % p == 0:  # x 가 p 가 아니면서 p 로 나눠떨어지는지 따져요
+                L.remove(x)            # p 의 배수 x 를 L 에서 지워요
+    return L                           # 남은 L 을 돌려줘요
 
-print(primes(10))
-print(primes(20))
-print(primes(30))</code></pre>
+print(primes(10))                      # primes(10) 결과를 출력해요
+print(primes(20))                      # primes(20) 결과를 출력해요
+print(primes(30))                      # primes(30) 결과를 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">[2, 3, 5, 7]
 [2, 3, 5, 7, 11, 13, 17, 19]
 [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]</code></pre>
     <p>교재의 입출력 예(10, 20, 30)와 모두 같아요. <code>n = 10</code>일 때 <code>p</code>가 바뀔 때마다 <code>L</code>이 이렇게 변해요.</p>
-<pre><code>L = list(range(2, 11))
-for p in L[:]:
-    for x in L[:]:
-        if x != p and x % p == 0:
-            L.remove(x)
-    print('p =', p, 'L =', L)</code></pre>
+<pre><code>L = list(range(2, 11))             # 변수 L 에 2부터 10까지 수를 담아요
+for p in L[:]:                     # L 의 복사본 수를 차례로 p 에 꺼내요
+    for x in L[:]:                 # L 의 복사본 수를 차례로 x 에 꺼내요
+        if x != p and x % p == 0:  # x 가 p 가 아니면서 p 로 나눠떨어지는지 따져요
+            L.remove(x)            # p 의 배수 x 를 L 에서 지워요
+    print('p =', p, 'L =', L)      # 지금 p 와 L 의 상태를 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">p = 2 L = [2, 3, 5, 7, 9]
 p = 3 L = [2, 3, 5, 7]
 p = 4 L = [2, 3, 5, 7]
@@ -326,32 +326,32 @@ p = 9 L = [2, 3, 5, 7]
 p = 10 L = [2, 3, 5, 7]</code></pre>
     <p><code>p = 2</code>일 때 4, 6, 8, 10이 지워지고, <code>p = 3</code>일 때 9가 지워져서 <code>[2, 3, 5, 7]</code>만 남아요. 그 뒤 <code>p</code>들은 지울 게 없어요(이미 지워진 4, 6, 8, 9, 10 같은 수는 <code>L[:]</code>의 옛 복사본에 남아 있어서 헛돌지만 결과는 안 바뀌어요).</p>
     <p><strong>함정 — 돌고 있는 리스트에서 <code>remove</code>:</strong> <code>for p in L:</code>처럼 복사본 없이 돌면서 지우면 파이썬이 "몇 번째 칸까지 봤는지"만 기억해서 원소를 건너뛰어요. 작은 예로 확인해요.</p>
-<pre><code>L = [1, 2, 3, 4]
-for x in L:
-    L.remove(x)
-print(L)</code></pre>
+<pre><code>L = [1, 2, 3, 4]  # 변수 L 에 숫자 네 개를 담아요
+for x in L:       # L 의 원소를 차례로 x 에 꺼내요
+    L.remove(x)   # L 에서 x 를 지워요
+print(L)          # L 을 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">[2, 4]</code></pre>
-<pre><code>L = [1, 2, 3, 4]
-for x in L:
-    print('x =', x, 'L =', L)
-    L.remove(x)
-print(L)</code></pre>
+<pre><code>L = [1, 2, 3, 4]               # 변수 L 에 숫자 네 개를 담아요
+for x in L:                    # L 의 원소를 차례로 x 에 꺼내요
+    print('x =', x, 'L =', L)  # 지금 x 와 L 의 상태를 출력해요
+    L.remove(x)                # L 에서 x 를 지워요
+print(L)                       # L 을 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">x = 1 L = [1, 2, 3, 4]
 x = 3 L = [2, 3, 4]
 [2, 4]</code></pre>
     <p>1을 지우자 뒤의 원소들이 한 칸씩 앞으로 당겨졌는데, 반복은 다음 칸(번호 1)으로 가서 2를 건너뛰고 3을 봤어요. 그래서 2와 4가 남아요. 해결은 <code>for x in L[:]:</code>처럼 <strong>복사본을 돌면서 원본을 지우는</strong> 거예요.</p>
     <p>참고로 같은 문제에서 복사본 없이 돈 버전(<code>for p in L</code>, <code>for x in L</code>)도 실행해 보니 10·20·30 입력에서는 결과가 위와 똑같이 나왔어요(건너뛴 원소가 마침 합성수라서요). 그래도 위험한 습관이니 복사본을 쓰는 게 안전해요.</p>
-<pre><code>def primes(n):
-    L = list(range(2, n + 1))
-    for p in L:
-        for x in L:
-            if x != p and x % p == 0:
-                L.remove(x)
-    return L
+<pre><code>def primes(n):                         # primes 라는 함수를 만들어요 (n 은 끝 수)
+    L = list(range(2, n + 1))          # 2부터 n 까지 수를 리스트 L 에 담아요
+    for p in L:                        # L 의 원소를 차례로 p 에 꺼내요
+        for x in L:                    # L 의 원소를 차례로 x 에 꺼내요
+            if x != p and x % p == 0:  # x 가 p 가 아니면서 p 로 나눠떨어지는지 따져요
+                L.remove(x)            # p 의 배수 x 를 L 에서 지워요
+    return L                           # 남은 L 을 돌려줘요
 
-print(primes(10))
-print(primes(20))
-print(primes(30))</code></pre>
+print(primes(10))                      # primes(10) 결과를 출력해요
+print(primes(20))                      # primes(20) 결과를 출력해요
+print(primes(30))                      # primes(30) 결과를 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">[2, 3, 5, 7]
 [2, 3, 5, 7, 11, 13, 17, 19]
 [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]</code></pre>
@@ -363,13 +363,13 @@ print(primes(30))</code></pre>
 
     <h3 id="a-p1">실습 1 정답과 해설 — 슬라이싱</h3>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>word = 'python'
-nums = [10, 20, 30, 40, 50]
-print(word[::-1])
-print(word[1:4])
-print(nums[-3:])
-print(nums[::-1])
-print(word[:2] + word[-2:])</code></pre>
+<pre><code>word = 'python'              # 변수 word 에 문자열 'python' 을 담아요
+nums = [10, 20, 30, 40, 50]  # 변수 nums 에 숫자 다섯 개짜리 리스트를 담아요
+print(word[::-1])            # word 를 거꾸로 읽어 출력해요
+print(word[1:4])             # word 의 1~3번 자리를 잘라 출력해요
+print(nums[-3:])             # nums 의 뒤에서 세 개를 잘라 출력해요
+print(nums[::-1])            # nums 를 거꾸로 읽어 출력해요
+print(word[:2] + word[-2:])  # 앞 두 글자와 뒤 두 글자를 이어 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">nohtyp
 yth
 [30, 40, 50]
@@ -392,15 +392,15 @@ pyon</code></pre>
 
     <h3 id="a-p2">실습 2 정답과 해설 — 문자열은 불변, split과 strip</h3>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>x = 'banana'
-y = 'n' + x[1:]
-print(x)
-print(y)
-line = '  apple, kiwi , melon  '
-parts = line.strip().split(',')
-print(parts)
-print(parts[1].strip())
-print(len(parts))</code></pre>
+<pre><code>x = 'banana'                      # 변수 x 에 문자열 'banana' 를 담아요
+y = 'n' + x[1:]                   # 'n' 뒤에 x 의 1번부터 끝까지를 붙여 y 에 담아요
+print(x)                          # x 는 그대로라서 banana 가 나와요
+print(y)                          # y 는 새로 만든 문자열이에요
+line = '  apple, kiwi , melon  '  # 변수 line 에 앞뒤 공백이 있는 문자열을 담아요
+parts = line.strip().split(',')   # 공백을 지우고 쉼표로 잘라 parts 에 담아요
+print(parts)                      # 쉼표로 자른 리스트를 출력해요
+print(parts[1].strip())           # 1번 원소의 앞뒤 공백을 지워 출력해요
+print(len(parts))                 # 원소 개수를 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">banana
 nanana
 ['apple', ' kiwi ', ' melon']
@@ -415,31 +415,31 @@ kiwi
 
     <h3 id="a-p3">실습 3 정답과 해설 — 리스트 메서드 연쇄</h3>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>a = [3, 1]
-a.append(5)
-a.insert(0, 9)
-x = a.pop()
-del a[1]
-a.append(x)
-print(a)
-print(x)
-print(len(a))</code></pre>
+<pre><code>a = [3, 1]      # 변수 a 에 숫자 두 개짜리 리스트를 담아요
+a.append(5)     # a 맨 뒤에 5를 덧붙여요
+a.insert(0, 9)  # a 의 0번 자리에 9를 끼워 넣어요
+x = a.pop()     # a 맨 뒤 원소를 꺼내 x 에 담아요
+del a[1]        # a 의 1번 자리 원소를 지워요
+a.append(x)     # x 에 든 값을 a 맨 뒤에 덧붙여요
+print(a)        # a 를 출력해요
+print(x)        # x 를 출력해요
+print(len(a))   # a 의 원소 개수를 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">[9, 1, 5]
 5
 3</code></pre>
     <p>한 줄마다 <code>a</code>를 찍어서 따라가 보면 이래요.</p>
-<pre><code>a = [3, 1]
-print(a)
-a.append(5)
-print(a)
-a.insert(0, 9)
-print(a)
-x = a.pop()
-print(a, x)
-del a[1]
-print(a)
-a.append(x)
-print(a)</code></pre>
+<pre><code>a = [3, 1]      # 변수 a 에 숫자 두 개를 담아요
+print(a)        # a 를 출력해요
+a.append(5)     # a 맨 뒤에 5를 덧붙여요
+print(a)        # a 를 출력해요
+a.insert(0, 9)  # a 의 0번 자리에 9를 끼워 넣어요
+print(a)        # a 를 출력해요
+x = a.pop()     # a 맨 뒤 원소를 꺼내 x 에 담아요
+print(a, x)     # a 와 x 를 함께 출력해요
+del a[1]        # a 의 1번 자리 원소를 지워요
+print(a)        # a 를 출력해요
+a.append(x)     # x 를 a 맨 뒤에 덧붙여요
+print(a)        # a 를 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">[3, 1]
 [3, 1, 5]
 [9, 3, 1, 5]
@@ -463,16 +463,16 @@ print(a)</code></pre>
 
     <h3 id="a-p4">실습 4 정답과 해설 — in과 복사 a[:]</h3>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>a = [1, 2, 3]
-b = a[:]
-b.append(4)
-c = a
-c.append(5)
-print(a)
-print(b)
-print(2 in a)
-print('2' in a)
-print(4 in a)</code></pre>
+<pre><code>a = [1, 2, 3]    # 변수 a 에 리스트를 담아요
+b = a[:]         # a 의 복사본을 b 에 담아요
+b.append(4)      # b 맨 뒤에 4를 덧붙여요
+c = a            # c 가 a 와 같은 리스트를 가리키게 해요
+c.append(5)      # c 맨 뒤에 5를 덧붙여요 (a 도 같이 바뀌어요)
+print(a)         # a 를 출력해요
+print(b)         # b 를 출력해요
+print(2 in a)    # 숫자 2가 a 에 있는지 출력해요
+print('2' in a)  # 문자열 '2'가 a 에 있는지 출력해요
+print(4 in a)    # 숫자 4가 a 에 있는지 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">[1, 2, 3, 5]
 [1, 2, 3, 4]
 True
@@ -487,26 +487,26 @@ False</code></pre>
 
     <h3 id="a-p5">실습 5 정답과 해설 — 순회 중 remove</h3>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>L = [1, 2, 2, 3]
-for x in L:
-    if x == 2:
-        L.remove(x)
-print(L)
+<pre><code>L = [1, 2, 2, 3]     # 변수 L 에 리스트를 담아요
+for x in L:          # L 의 원소를 차례로 x 에 꺼내요
+    if x == 2:       # x 가 2와 같은지 따져요
+        L.remove(x)  # L 에서 x 와 같은 값을 지워요
+print(L)             # L 을 출력해요
 
-M = [1, 2, 2, 3]
-for x in M[:]:
-    if x == 2:
-        M.remove(x)
-print(M)</code></pre>
+M = [1, 2, 2, 3]     # 변수 M 에 리스트를 담아요
+for x in M[:]:       # M 의 복사본 원소를 차례로 x 에 꺼내요
+    if x == 2:       # x 가 2와 같은지 따져요
+        M.remove(x)  # M 에서 x 와 같은 값을 지워요
+print(M)             # M 을 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">[1, 2, 3]
 [1, 3]</code></pre>
     <p>첫 번째 반복을 찍어 보면 이래요.</p>
-<pre><code>L = [1, 2, 2, 3]
-for x in L:
-    print('x =', x, 'L =', L)
-    if x == 2:
-        L.remove(x)
-print(L)</code></pre>
+<pre><code>L = [1, 2, 2, 3]               # 변수 L 에 리스트를 담아요
+for x in L:                    # L 의 원소를 차례로 x 에 꺼내요
+    print('x =', x, 'L =', L)  # 지금 x 와 L 의 상태를 출력해요
+    if x == 2:                 # x 가 2와 같은지 따져요
+        L.remove(x)            # L 에서 x 를 지워요
+print(L)                       # L 을 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">x = 1 L = [1, 2, 2, 3]
 x = 2 L = [1, 2, 2, 3]
 x = 3 L = [1, 2, 3]
@@ -528,16 +528,16 @@ x = 3 L = [1, 2, 3]
     <h2><span class="hl">퀴즈 해설</span> — 4.1.1과 4.2.10</h2>
     <p>질문은 제가 줄여서 적었고, 코드는 직접 실행했어요.</p>
     <p><strong>4.1.1 Q1</strong> — 가변(바꿀 수 있는) 객체는 무엇일까요? <strong>정답은 list</strong>예요. int·str·tuple은 불변이에요.</p>
-<pre><code>for v in (1, 'a', (1, 2), [1, 2]):
-    print(type(v).__name__)
-nums = [1, 2]
-nums[0] = 9
-print(nums)
-try:
-    word = 'ab'
-    word[0] = 'z'
-except TypeError as e:
-    print(e)</code></pre>
+<pre><code>for v in (1, 'a', (1, 2), [1, 2]):  # 값 네 개를 차례로 v 에 꺼내요
+    print(type(v).__name__)         # v 의 자료형 이름을 출력해요
+nums = [1, 2]                       # 변수 nums 에 리스트를 담아요
+nums[0] = 9                         # 리스트의 0번 원소를 9로 바꿔요
+print(nums)                         # nums 를 출력해요
+try:                                # 에러가 날 수 있는 코드를 시도해요
+    word = 'ab'                     # 변수 word 에 문자열 'ab' 를 담아요
+    word[0] = 'z'                   # 문자열 0번을 바꾸려 해서 에러가 나요
+except TypeError as e:              # TypeError 가 나면 e 에 받아요
+    print(e)                        # 에러 메시지를 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">int
 str
 tuple
@@ -546,26 +546,26 @@ list
 'str' object does not support item assignment</code></pre>
     <p>리스트는 <code>nums[0] = 9</code>가 되지만 문자열은 대입이 안 돼서 TypeError가 나요.</p>
     <p><strong>4.2.10 Q1</strong> — <code>a = [1, 2, 3]</code>, <code>b = a[:]</code>, <code>b.remove(2)</code> 뒤에 <code>a</code>를 출력하면? <strong>[1, 2, 3]</strong>이에요. 복사본이라 원본은 그대로예요.</p>
-<pre><code>a = [1, 2, 3]
-b = a[:]
-b.remove(2)
-print(a)
-print(b)</code></pre>
+<pre><code>a = [1, 2, 3]  # 변수 a 에 리스트를 담아요
+b = a[:]       # a 의 복사본을 b 에 담아요
+b.remove(2)    # b 에서 값이 2인 원소를 지워요
+print(a)       # a 는 그대로예요
+print(b)       # b 만 바뀌어요</code></pre>
 <pre class="out"><code class="nohighlight">[1, 2, 3]
 [1, 3]</code></pre>
     <p><strong>Q2</strong> — <code>", ".join(["사과", "바나나", "오렌지"])</code>의 결과는? <strong>사과, 바나나, 오렌지</strong>예요. 원소 사이에만 <code>", "</code>가 들어가요.</p>
-<pre><code>print(", ".join(["사과", "바나나", "오렌지"]))</code></pre>
+<pre><code>print(", ".join(["사과", "바나나", "오렌지"]))  # 리스트 원소를 ', ' 로 이어 한 문자열로 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">사과, 바나나, 오렌지</code></pre>
     <p><strong>Q3</strong> — 책 제목 리스트에서 <code>"해리포터" in books</code>와 <code>"해" in books</code>는? 앞은 True, 뒤는 False예요.</p>
-<pre><code>books = ["해리포터", "반지의 제왕"]
-print("해리포터" in books)
-print("해" in books)</code></pre>
+<pre><code>books = ["해리포터", "반지의 제왕"]  # 변수 books 에 책 제목 두 개를 담아요
+print("해리포터" in books)      # '해리포터' 가 원소로 있는지 출력해요
+print("해" in books)         # '해' 가 원소로 있는지 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">True
 False</code></pre>
     <p><strong>Q4</strong> — <code>in</code>은 어떤 원소를 찾을까요? <strong>완전히 일치하는 원소만</strong> 찾아요(부분 문자열은 찾지 않아요). 위 Q3의 <code>"해"</code>가 False인 이유예요.</p>
     <p><strong>Q5</strong> — <code>numbers = ['', '일', '이', '삼', '사', '오']</code>일 때 <code>numbers[3]</code>은? 인덱스는 0부터 세니 <strong>삼</strong>이에요.</p>
-<pre><code>numbers = ['', '일', '이', '삼', '사', '오']
-print(numbers[3])</code></pre>
+<pre><code>numbers = ['', '일', '이', '삼', '사', '오']  # 변수 numbers 에 글자 여섯 개를 담아요
+print(numbers[3])                        # 3번 자리 원소를 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">삼</code></pre>
 
     <hr>
@@ -603,33 +603,33 @@ print(numbers[3])</code></pre>
     </table>
     <p>실행해 본 코드와 결과예요.</p>
     <p><strong>문자열에 대입하기</strong></p>
-<pre><code>x = 'banana'
-x[0] = 'n'
+<pre><code>x = 'banana'  # 변수 x 에 문자열 'banana' 를 담아요
+x[0] = 'n'    # 문자열 0번을 바꾸려 해서 에러가 나요
 </code></pre>
 <pre class="out"><code class="nohighlight">TypeError: 'str' object does not support item assignment</code></pre>
     <p><strong>리스트와 문자열의 <code>in</code> 차이</strong></p>
-<pre><code>books = ['해리포터', '반지의 제왕']
-title = '해리포터와 마법사의 돌'
-print('해리' in books)
-print('해리' in title)
-print('해리포터' in books)</code></pre>
+<pre><code>books = ['해리포터', '반지의 제왕']  # 변수 books 에 책 제목 두 개를 담아요
+title = '해리포터와 마법사의 돌'      # 변수 title 에 긴 제목 문자열을 담아요
+print('해리' in books)        # '해리' 가 리스트 원소인지 물어 출력해요
+print('해리' in title)        # '해리' 가 문자열 안에 있는지 물어 출력해요
+print('해리포터' in books)      # '해리포터' 가 리스트 원소인지 물어 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">False
 True
 True</code></pre>
     <p><strong>sort()의 반환값</strong></p>
-<pre><code>a = [3, 1, 2]
-b = a.sort()
-print(b)
-print(a)
-print(sorted([3, 1, 2]))</code></pre>
+<pre><code>a = [3, 1, 2]             # 변수 a 에 숫자 세 개를 담아요
+b = a.sort()              # sort() 가 돌려준 값을 b 에 담아요
+print(b)                  # b 를 출력해요
+print(a)                  # 정렬된 a 를 출력해요
+print(sorted([3, 1, 2]))  # 원본은 두고 정렬한 새 리스트를 출력해요</code></pre>
 <pre class="out"><code class="nohighlight">None
 [1, 2, 3]
 [1, 2, 3]</code></pre>
     <p><strong>이름만 붙인 대입</strong></p>
-<pre><code>a = [1, 2, 3]
-b = a
-b.remove(2)
-print(a)</code></pre>
+<pre><code>a = [1, 2, 3]  # 변수 a 에 리스트를 담아요
+b = a          # b 가 a 와 같은 리스트를 가리키게 해요
+b.remove(2)    # b 에서 값이 2인 원소를 지워요
+print(a)       # a 도 같이 바뀌어 있어요</code></pre>
 <pre class="out"><code class="nohighlight">[1, 3]</code></pre>
 
     <h2><span class="hl">함께 보기</span></h2>

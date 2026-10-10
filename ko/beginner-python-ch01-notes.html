@@ -48,55 +48,55 @@
     </table>
 
     <h2><span class="hl">1. / 와 //</span></h2>
-<pre><code>8 / 2   → 4.0
-8 // 2  → 4
-7 / 2   → 3.5
-7 // 2  → 3</code></pre>
+<pre><code>8 / 2   → 4.0  # 나누기는 소수점이 붙은 4.0 이 돼요
+8 // 2  → 4    # 몫만 남겨서 정수 4 가 돼요
+7 / 2   → 3.5  # 정확하게 나눠서 3.5 가 돼요
+7 // 2  → 3    # 3.5 의 소수점을 버려 3 이 돼요</code></pre>
     <p><strong>핵심 한 줄:</strong> <code>/</code>는 소수점 유지, <code>//</code>는 버림.</p>
 
     <h2><span class="hl">2. import와 math</span></h2>
-<pre><code>math.sqrt(2)  → NameError: name 'math' is not defined. Did you forget to import 'math'?
-from math import sqrt
-sqrt(2)       → 1.4142135623730951
-import math as m
-m.sqrt(2)     → 1.4142135623730951</code></pre>
+<pre><code>math.sqrt(2)  → NameError: name 'math' is not defined. Did you forget to import 'math'?  # math 를 가져오지 않아서 오류가 나요
+from math import sqrt                                                                    # math 에서 sqrt 만 가져와요
+sqrt(2)       → 1.4142135623730951                                                       # math. 없이 바로 2 의 제곱근을 구해요
+import math as m                                                                         # math 를 m 이라는 별명으로 가져와요
+m.sqrt(2)     → 1.4142135623730951                                                       # 별명 m 으로 2 의 제곱근을 구해요</code></pre>
 
     <h2><span class="hl">3. ** 거듭제곱</span></h2>
-<pre><code>3 ** 2   → 9
-3 ** 3   → 27
-2 ** 10  → 1024
-550 ^ 2  → 548    # ^ 는 거듭제곱이 아님
-math.hypot(3, 4)  → 5.0</code></pre>
+<pre><code>3 ** 2   → 9             # 3 을 2번 곱해서 9 가 돼요
+3 ** 3   → 27            # 3 을 3번 곱해서 27 이 돼요
+2 ** 10  → 1024          # 2 를 10번 곱해서 1024 가 돼요
+550 ^ 2  → 548           # ^ 는 거듭제곱이 아니라 다른 연산이라 548 이 나와요
+math.hypot(3, 4)  → 5.0  # 가로 3, 세로 4 인 직각삼각형의 빗변 5.0 을 구해요</code></pre>
 
     <h2><span class="hl">4. 리스트 인덱싱·슬라이싱</span></h2>
-<pre><code>s = ['시청', '을지로입구', '을지로3가', '을지로4가', '동대문역사문화공원', '신당', '상왕십리', '왕십리']
-s[0]     → '시청'
-s[-1]    → '왕십리'
-s[1:4]   → ['을지로입구', '을지로3가', '을지로4가']    # 1 이상 4 미만
-s[::2]   → ['시청', '을지로3가', '동대문역사문화공원', '상왕십리']
-s[::-1]  → ['왕십리', '상왕십리', '신당', '동대문역사문화공원', '을지로4가', '을지로3가', '을지로입구', '시청']</code></pre>
+<pre><code>s = ['시청', '을지로입구', '을지로3가', '을지로4가', '동대문역사문화공원', '신당', '상왕십리', '왕십리']         # 리스트 s 에 지하철 역 8개를 순서대로 담아요
+s[0]     → '시청'                                                                                                # 0번 칸이 첫 역이라 '시청' 이에요
+s[-1]    → '왕십리'                                                                                              # -1 은 맨 뒤 칸이라 마지막 역이에요
+s[1:4]   → ['을지로입구', '을지로3가', '을지로4가']                                                              # 1번부터 3번까지 역 3개를 잘라요
+s[::2]   → ['시청', '을지로3가', '동대문역사문화공원', '상왕십리']                                               # 처음부터 끝까지 두 칸씩 건너뛰어 골라요
+s[::-1]  → ['왕십리', '상왕십리', '신당', '동대문역사문화공원', '을지로4가', '을지로3가', '을지로입구', '시청']  # 리스트를 거꾸로 뒤집어요</code></pre>
 
     <h2><span class="hl">5. 추가·삭제</span></h2>
-<pre><code>f = ['mother', 'father']
-f.append('me')              → ['mother', 'father', 'me']                                  # 1개
-f.extend(['sister', 'dog']) → ['mother', 'father', 'me', 'sister', 'dog']                 # 여러 개
-f.insert(1, 'grandma')      → ['mother', 'grandma', 'father', 'me', 'sister', 'dog']      # 1번 자리
-f.remove('dog')             → ['mother', 'grandma', 'father', 'me', 'sister']             # 값으로
-f.pop()                     → 'sister'                                                    # 꺼내서 반환
-f.pop(1)                    → 'grandma'
-del f[0]                    → ['father', 'me']                                            # 반환 없음</code></pre>
+<pre><code>f = ['mother', 'father']                                                              # 리스트 f 에 가족 두 명을 담아요
+f.append('me')              → ['mother', 'father', 'me']                              # 'me' 하나를 맨 뒤에 붙여요
+f.extend(['sister', 'dog']) → ['mother', 'father', 'me', 'sister', 'dog']             # 여러 값을 풀어서 맨 뒤에 붙여요
+f.insert(1, 'grandma')      → ['mother', 'grandma', 'father', 'me', 'sister', 'dog']  # 1번 자리에 'grandma' 를 끼워 넣어요
+f.remove('dog')             → ['mother', 'grandma', 'father', 'me', 'sister']         # 값이 'dog' 인 원소를 찾아 지워요
+f.pop()                     → 'sister'                                                # 맨 뒤 값을 꺼내서 돌려줘요
+f.pop(1)                    → 'grandma'                                               # 1번 자리 값을 꺼내서 돌려줘요
+del f[0]                    → ['father', 'me']                                        # 0번 원소를 지우기만 하고 값은 돌려주지 않아요</code></pre>
 
     <h2><span class="hl">6. 메서드와 키워드</span></h2>
-<pre><code>f.pop(0)         # 메서드: 점 + 괄호
-del f[0]         # 키워드: 괄호 없음
-'hello'.upper()  → 'HELLO'
-'hello'.append('!')  → AttributeError: 'str' object has no attribute 'append'</code></pre>
+<pre><code>f.pop(0)                                                                       # 점과 괄호로 쓰는 메서드로 0번 원소를 꺼내요
+del f[0]                                                                       # 괄호 없이 쓰는 키워드로 0번 원소를 지워요
+'hello'.upper()  → 'HELLO'                                                     # 문자열을 모두 대문자로 바꿔요
+'hello'.append('!')  → AttributeError: 'str' object has no attribute 'append'  # 문자열에는 append 가 없어서 오류가 나요</code></pre>
 
     <h2><span class="hl">7. input()과 int()</span></h2>
-<pre><code>num = int(input())
-print(num * num)
-'3' * '3'  → TypeError: can't multiply sequence by non-int of type 'str'
-'3' * 3    → '333'</code></pre>
+<pre><code>num = int(input())                                                        # 입력한 글자를 정수로 바꿔 num 에 담아요
+print(num * num)                                                          # num 을 제곱한 값을 출력해요
+'3' * '3'  → TypeError: can't multiply sequence by non-int of type 'str'  # 글자끼리는 곱할 수 없어서 오류가 나요
+'3' * 3    → '333'                                                        # 글자 '3' 을 3번 반복해 '333' 이 돼요</code></pre>
 
     <h2><span class="hl">함께 보기</span></h2>
     <ul>

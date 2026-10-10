@@ -514,11 +514,11 @@ body { margin: 0; }
       <article class="problem" id="b1">
         <div class="p-head"><span class="p-id">기본 1</span><span class="p-type">읽기</span><h3>대기줄 부르기</h3></div>
         <div class="p-body">
-<pre><code class="language-python">queue = ['서준', '하은', '도윤']
-i = 0
-while i &lt; len(queue):
-    print(queue[i], '다음 손님입니다')
-    i += 1</code></pre>
+<pre><code class="language-python">queue = ['서준', '하은', '도윤']  # 리스트 queue 에 손님 이름 세 개를 담아요
+i = 0  # 변수 i 에 0 을 담아요
+while i &lt; len(queue):  # i 가 queue 의 길이보다 작은 동안 반복해요
+    print(queue[i], '다음 손님입니다')  # i 번째 손님 이름과 문구를 함께 출력해요
+    i += 1  # i 를 1 늘려 다음 칸으로 가요</code></pre>
           <ul>
             <li>출력을 예측하기</li>
             <li>리스트 순서와 출력 순서가 같은 이유를 <code>i</code>값으로 설명하기</li>
@@ -551,15 +551,15 @@ while i &lt; len(queue):
       <article class="problem" id="b2">
         <div class="p-head"><span class="p-id">기본 2</span><span class="p-type">읽기</span><h3>신호등 판단</h3></div>
         <div class="p-body">
-<pre><code class="language-python">color = input()
-if color == '빨강':
-    print('정지')
-elif color == '노랑':
-    print('서행')
-elif color == '초록':
-    print('직진')
-else:
-    print('알 수 없는 신호')</code></pre>
+<pre><code class="language-python">color = input()  # 입력 한 줄을 변수 color 에 담아요
+if color == '빨강':  # color 가 '빨강' 인지 확인해요
+    print('정지')  # '정지' 를 출력해요
+elif color == '노랑':  # 앞 조건이 아니고 '노랑' 이면 실행해요
+    print('서행')  # '서행' 을 출력해요
+elif color == '초록':  # 앞 조건이 아니고 '초록' 이면 실행해요
+    print('직진')  # '직진' 을 출력해요
+else:  # 위 조건이 모두 아닐 때 실행해요
+    print('알 수 없는 신호')  # '알 수 없는 신호' 를 출력해요</code></pre>
           <p class="spec">입력값 <code>초록</code>, <code>파랑</code>일 때 각각의 출력을 예측하기</p>
         </div>
         <div class="memo"><label for="memo-b2">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b2"></textarea></div>
@@ -592,9 +592,9 @@ else:
       <article class="problem" id="b3">
         <div class="p-head"><span class="p-id">기본 3</span><span class="p-type">버그</span><h3>재고 확인이 멈추지 않는다</h3></div>
         <div class="p-body">
-<pre><code class="language-python">stock = 3
-while stock &gt; 0:
-    print('판매 가능')</code></pre>
+<pre><code class="language-python">stock = 3  # 변수 stock 에 3 을 담아요
+while stock &gt; 0:  # stock 이 0 보다 큰 동안 반복해요
+    print('판매 가능')  # '판매 가능' 을 출력해요</code></pre>
           <ul>
             <li>이 코드를 실행하면 어떻게 되는지 예측하기 (직접 실행하지는 말기)</li>
             <li>원인을 한 줄로 설명하고, 고친 코드 쓰기</li>
@@ -621,10 +621,10 @@ while stock &gt; 0:
               <li><code>3 &gt; 0</code>은 항상 참이라 조건이 절대 거짓이 되지 않음 → 무한 루프</li>
             </ul>
             <h4>고친 코드</h4>
-<pre><code class="language-python">stock = 3
-while stock &gt; 0:
-    print('판매 가능')
-    stock -= 1</code></pre>
+<pre><code class="language-python">stock = 3  # 변수 stock 에 3 을 담아요
+while stock &gt; 0:  # stock 이 0 보다 큰 동안 반복해요
+    print('판매 가능')  # '판매 가능' 을 출력해요
+    stock -= 1  # stock 에서 1 을 빼요</code></pre>
             <p class="real"><b>실제 코드에서</b> · 재고·잔여 좌석·남은 시도 횟수처럼 "줄어들다가 0이 되면 멈추는" 로직은 감소 줄을 빼먹기 쉬움</p>
           </div>
         </details>
@@ -633,13 +633,13 @@ while stock &gt; 0:
       <article class="problem" id="b4">
         <div class="p-head"><span class="p-id">기본 4</span><span class="p-type">읽기</span><h3>장바구니 총액</h3></div>
         <div class="p-body">
-<pre><code class="language-python">cart = [12000, 8500, 3000]
-i = 0
-total = 0
-while i &lt; len(cart):
-    total += cart[i]
-    i += 1
-print('총액:', total)</code></pre>
+<pre><code class="language-python">cart = [12000, 8500, 3000]  # 리스트 cart 에 가격 세 개를 담아요
+i = 0  # 변수 i 에 0 을 담아요
+total = 0  # 변수 total 에 0 을 담아요
+while i &lt; len(cart):  # i 가 cart 의 길이보다 작은 동안 반복해요
+    total += cart[i]  # total 에 i 번째 가격을 더해요
+    i += 1  # i 를 1 늘려 다음 칸으로 가요
+print('총액:', total)  # '총액:' 과 total 값을 출력해요</code></pre>
           <ul>
             <li>출력을 예측하기</li>
             <li><code>i</code>가 <code>len(cart)</code>와 같아지는 순간 무슨 일이 생기는지 설명하기</li>
@@ -679,16 +679,16 @@ print('총액:', total)</code></pre>
       <article class="problem" id="b5">
         <div class="p-head"><span class="p-id">기본 5</span><span class="p-type">읽기</span><h3>명단에서 이름 찾기</h3></div>
         <div class="p-body">
-<pre><code class="language-python">members = ['지민', '서준', '하은']
-name = '하은'
-i = 0
-found = False
-while i &lt; len(members):
-    if members[i] == name:
-        found = True
-        break
-    i += 1
-print(found)</code></pre>
+<pre><code class="language-python">members = ['지민', '서준', '하은']  # 리스트 members 에 이름 세 개를 담아요
+name = '하은'  # 변수 name 에 문자열 '하은' 을 담아요
+i = 0  # 변수 i 에 0 을 담아요
+found = False  # found 에 False 를 담아요
+while i &lt; len(members):  # i 가 members 의 길이보다 작은 동안 반복해요
+    if members[i] == name:  # i 번째 이름이 name 과 같은지 확인해요
+        found = True  # found 를 True 로 바꿔요
+        break  # 반복문을 바로 끝내요
+    i += 1  # i 를 1 늘려 다음 칸으로 가요
+print(found)  # found 값을 출력해요</code></pre>
           <ul>
             <li><code>name = '하은'</code>일 때와 <code>name = '수아'</code>일 때 각각 출력을 예측하기</li>
             <li><code>found</code> 변수가 하는 역할을 한 문장으로 설명하기</li>
@@ -736,16 +736,16 @@ False  # name = '수아'</code></pre>
         <div class="memo"><label for="memo-b6">내 코드 <span>이 브라우저에만 저장</span></label><textarea id="memo-b6"></textarea></div>
         <details class="sol"><summary>풀이 예시 보기</summary>
           <div class="sol-body">
-<pre><code class="language-python">members = ['지민', '서준', '하은']
-name = input()
-i = 0
-index = -1
-while i &lt; len(members):
-    if members[i] == name:
-        index = i
-        break
-    i += 1
-print(index)</code></pre>
+<pre><code class="language-python">members = ['지민', '서준', '하은']  # 리스트 members 에 이름 세 개를 담아요
+name = input()  # 입력 한 줄을 name 에 담아요
+i = 0  # 변수 i 에 0 을 담아요
+index = -1  # index 에 -1 을 담아요
+while i &lt; len(members):  # i 가 members 의 길이보다 작은 동안 반복해요
+    if members[i] == name:  # i 번째 이름이 name 과 같은지 확인해요
+        index = i  # index 에 현재 위치 i 를 담아요
+        break  # 반복문을 바로 끝내요
+    i += 1  # i 를 1 늘려 다음 칸으로 가요
+print(index)  # index 값을 출력해요</code></pre>
             <ul>
               <li><code>index</code>를 미리 <code>-1</code>(못 찾았을 때의 기본값)로 잡아 두고, 찾으면 그 자리에서 실제 번호로 덮어씀</li>
               <li>기본 5의 <code>found</code>(찾았는지 True/False)와 달리, 이번엔 "몇 번째인지" 번호 자체가 필요해서 <code>index</code>에 <code>i</code>를 담음</li>
@@ -766,13 +766,13 @@ print(index)</code></pre>
       <article class="problem" id="m1">
         <div class="p-head"><span class="p-id">중급 1</span><span class="p-type">읽기</span><h3>"완료"라고 할 때까지 주문받기</h3></div>
         <div class="p-body">
-<pre><code class="language-python">order = []
-while True:
-    item = input()
-    if item == '완료':
-        break
-    order.append(item)
-print(order)</code></pre>
+<pre><code class="language-python">order = []  # 빈 리스트 order 를 만들어요
+while True:  # break 를 만날 때까지 계속 반복해요
+    item = input()  # 입력 한 줄을 item 에 담아요
+    if item == '완료':  # item 이 '완료' 인지 확인해요
+        break  # 반복문을 바로 끝내요
+    order.append(item)  # order 리스트 끝에 item 을 추가해요
+print(order)  # order 리스트를 출력해요</code></pre>
           <p class="spec">입력이 순서대로 <code>라떼</code>, <code>쿠키</code>, <code>완료</code>일 때 출력을 예측하기</p>
         </div>
         <div class="memo"><label for="memo-m1">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m1"></textarea></div>
@@ -800,14 +800,14 @@ print(order)</code></pre>
       <article class="problem" id="m2">
         <div class="p-head"><span class="p-id">중급 2</span><span class="p-type">버그</span><h3>배송비가 이상하게 붙는다</h3></div>
         <div class="p-body">
-<pre><code class="language-python">total = 35000
-if total &gt;= 30000:
-    fee = 0
-elif total &gt;= 50000:
-    fee = 1000
-else:
-    fee = 3000
-print(fee)</code></pre>
+<pre><code class="language-python">total = 35000  # 변수 total 에 35000 을 담아요
+if total &gt;= 30000:  # total 이 30000 이상인지 확인해요
+    fee = 0  # fee 에 0 을 담아요
+elif total &gt;= 50000:  # 앞 조건이 아니고 total 이 50000 이상이면 실행해요
+    fee = 1000  # fee 에 1000 을 담아요
+else:  # 위 조건이 모두 아닐 때 실행해요
+    fee = 3000  # fee 에 3000 을 담아요
+print(fee)  # fee 값을 출력해요</code></pre>
           <ul>
             <li>작성자는 "5만 원 이상만 무료배송, 3만 원 이상은 1000원, 나머지는 3000원"을 의도했음</li>
             <li>실제 출력을 예측하기</li>
@@ -833,14 +833,14 @@ print(fee)</code></pre>
               <li><code>&gt;=</code> 조건은 큰 값부터 검사해야 함(2장 해설 Q13과 같은 원인)</li>
             </ul>
             <h4>고친 코드</h4>
-<pre><code class="language-python">total = 35000
-if total &gt;= 50000:
-    fee = 0
-elif total &gt;= 30000:
-    fee = 1000
-else:
-    fee = 3000
-print(fee)</code></pre>
+<pre><code class="language-python">total = 35000  # 변수 total 에 35000 을 담아요
+if total &gt;= 50000:  # total 이 50000 이상인지 확인해요
+    fee = 0  # fee 에 0 을 담아요
+elif total &gt;= 30000:  # 앞 조건이 아니고 total 이 30000 이상이면 실행해요
+    fee = 1000  # fee 에 1000 을 담아요
+else:  # 위 조건이 모두 아닐 때 실행해요
+    fee = 3000  # fee 에 3000 을 담아요
+print(fee)  # fee 값을 출력해요</code></pre>
             <p class="real"><b>실제 코드에서</b> · 배송비·요금제·할인율처럼 구간을 나누는 elif는 순서 버그가 가장 흔함 — 에러 없이 조용히 틀림</p>
           </div>
         </details>
@@ -849,14 +849,14 @@ print(fee)</code></pre>
       <article class="problem" id="m3">
         <div class="p-head"><span class="p-id">중급 3</span><span class="p-type">읽기</span><h3>제목에 느낌표 몇 개?</h3></div>
         <div class="p-body">
-<pre><code class="language-python">title = '대박!! 이벤트!!!'
-i = 0
-count = 0
-while i &lt; len(title):
-    if title[i] == '!':
-        count += 1
-    i += 1
-print(count)</code></pre>
+<pre><code class="language-python">title = '대박!! 이벤트!!!'  # 변수 title 에 제목 문자열을 담아요
+i = 0  # 변수 i 에 0 을 담아요
+count = 0  # 변수 count 에 0 을 담아요
+while i &lt; len(title):  # i 가 title 의 글자 수보다 작은 동안 반복해요
+    if title[i] == '!':  # i 번째 글자가 '!' 인지 확인해요
+        count += 1  # count 를 1 늘려요
+    i += 1  # i 를 1 늘려 다음 칸으로 가요
+print(count)  # count 값을 출력해요</code></pre>
           <ul>
             <li>출력을 예측하기</li>
             <li><code>title[i]</code>로 문자열을 한 글자씩 검사하는 방식을 설명하기</li>
@@ -887,14 +887,14 @@ print(count)</code></pre>
       <article class="problem" id="m4">
         <div class="p-head"><span class="p-id">중급 4</span><span class="p-type">버그</span><h3>영하 기온 중 최고 기온</h3></div>
         <div class="p-body">
-<pre><code class="language-python">temps = [-5, -2, -8]
-max_temp = 0
-i = 0
-while i &lt; len(temps):
-    if temps[i] &gt; max_temp:
-        max_temp = temps[i]
-    i += 1
-print(max_temp)</code></pre>
+<pre><code class="language-python">temps = [-5, -2, -8]  # 리스트 temps 에 온도 세 개를 담아요
+max_temp = 0  # 변수 max_temp 에 0 을 담아요
+i = 0  # 변수 i 에 0 을 담아요
+while i &lt; len(temps):  # i 가 temps 의 길이보다 작은 동안 반복해요
+    if temps[i] &gt; max_temp:  # i 번째 값이 max_temp 보다 큰지 확인해요
+        max_temp = temps[i]  # max_temp 를 i 번째 값으로 바꿔요
+    i += 1  # i 를 1 늘려 다음 칸으로 가요
+print(max_temp)  # max_temp 값을 출력해요</code></pre>
           <ul>
             <li>작성자는 일주일치 기온 중 가장 높은 <code>-2</code>도가 나오길 기대했음</li>
             <li>실제 출력을 예측하기</li>
@@ -919,14 +919,14 @@ print(max_temp)</code></pre>
               <li>그래서 실제로는 있지도 않은 <code>0</code>도가 최고 기온으로 출력됨 — 에러 없이 조용히 틀림</li>
             </ul>
             <h4>고친 코드</h4>
-<pre><code class="language-python">temps = [-5, -2, -8]
-max_temp = temps[0]
-i = 1
-while i &lt; len(temps):
-    if temps[i] &gt; max_temp:
-        max_temp = temps[i]
-    i += 1
-print(max_temp)</code></pre>
+<pre><code class="language-python">temps = [-5, -2, -8]  # 리스트 temps 에 온도 세 개를 담아요
+max_temp = temps[0]  # max_temp 에 첫 번째 값을 담아요
+i = 1  # i 에 1 을 담아요
+while i &lt; len(temps):  # i 가 temps 의 길이보다 작은 동안 반복해요
+    if temps[i] &gt; max_temp:  # i 번째 값이 max_temp 보다 큰지 확인해요
+        max_temp = temps[i]  # max_temp 를 i 번째 값으로 바꿔요
+    i += 1  # i 를 1 늘려 다음 칸으로 가요
+print(max_temp)  # max_temp 값을 출력해요</code></pre>
             <ul>
               <li>시작값을 "있을 법한 아무 값(0)"이 아니라 <code>temps[0]</code>(실제 데이터의 첫 값)으로 잡음 → <code>i</code>도 이미 비교한 0번을 건너뛰고 <code>1</code>부터 시작</li>
               <li><b>1장 복습:</b> <code>i = 1</code>부터 도는 대신 1장의 슬라이싱으로 <code>temps[1:]</code>(0번을 뺀 나머지)을 만들어 두고 그 위를 훑어도 결과는 같음 — "0번을 건너뛴다"는 뜻을 슬라이싱으로 미리 표현한 것</li>
@@ -939,17 +939,17 @@ print(max_temp)</code></pre>
       <article class="problem" id="m5">
         <div class="p-head"><span class="p-id">중급 5</span><span class="p-type">읽기</span><h3>판매중·품절 개수 세기</h3></div>
         <div class="p-body">
-<pre><code class="language-python">status = ['판매중', '품절', '판매중', '품절', '판매중']
-i = 0
-available = 0
-soldout = 0
-while i &lt; len(status):
-    if status[i] == '판매중':
-        available += 1
-    else:
-        soldout += 1
-    i += 1
-print(available, soldout)</code></pre>
+<pre><code class="language-python">status = ['판매중', '품절', '판매중', '품절', '판매중']  # 리스트 status 에 판매 상태 다섯 개를 담아요
+i = 0  # 변수 i 에 0 을 담아요
+available = 0  # 변수 available 에 0 을 담아요
+soldout = 0  # 변수 soldout 에 0 을 담아요
+while i &lt; len(status):  # i 가 status 의 길이보다 작은 동안 반복해요
+    if status[i] == '판매중':  # i 번째 상태가 '판매중' 인지 확인해요
+        available += 1  # available 을 1 늘려요
+    else:  # 위 조건이 모두 아닐 때 실행해요
+        soldout += 1  # soldout 을 1 늘려요
+    i += 1  # i 를 1 늘려 다음 칸으로 가요
+print(available, soldout)  # 두 값을 한 줄에 출력해요</code></pre>
           <ul>
             <li>출력을 예측하기</li>
             <li><code>available</code>과 <code>soldout</code>이 같은 반복 안에서 동시에 관리되는 이유 설명하기</li>
@@ -986,22 +986,22 @@ print(available, soldout)</code></pre>
             <li><code>while</code>로 전부 더한 뒤, <code>시간 분 초</code> 형태로 출력하기</li>
             <li>조건: <code>divmod()</code>를 사용하기 (1장 상급 7 "영상 길이 표시"에서 배운 도구)</li>
           </ul>
-<pre><code class="language-python">video = [385, 210, 640]</code></pre>
+<pre><code class="language-python">video = [385, 210, 640]  # 리스트 video 에 영상 길이 세 개를 담아요</code></pre>
 <pre class="out"><code class="nohighlight">0 시간 20 분 35 초</code></pre>
         </div>
         <div class="memo"><label for="memo-m6">내 코드 <span>이 브라우저에만 저장</span></label><textarea id="memo-m6"></textarea></div>
         <details class="sol"><summary>풀이 예시 보기</summary>
           <div class="sol-body">
-<pre><code class="language-python">video = [385, 210, 640]
-i = 0
-total = 0
-while i &lt; len(video):
-    total += video[i]
-    i += 1
+<pre><code class="language-python">video = [385, 210, 640]  # 리스트 video 에 영상 길이 세 개를 담아요
+i = 0  # 변수 i 에 0 을 담아요
+total = 0  # 변수 total 에 0 을 담아요
+while i &lt; len(video):  # i 가 video 의 길이보다 작은 동안 반복해요
+    total += video[i]  # total 에 i 번째 영상 길이를 더해요
+    i += 1  # i 를 1 늘려 다음 칸으로 가요
 
-h, remainder = divmod(total, 3600)
-m, s = divmod(remainder, 60)
-print(h, '시간', m, '분', s, '초')</code></pre>
+h, remainder = divmod(total, 3600)  # total 을 3600 으로 나눈 몫·나머지를 담아요
+m, s = divmod(remainder, 60)  # remainder 를 60 으로 나눈 몫·나머지를 담아요
+print(h, '시간', m, '분', s, '초')  # h, m, s 를 시간 형식으로 출력해요</code></pre>
             <ul>
               <li>앞부분(<code>while</code>로 리스트 합계 내기)은 기본 4 장바구니 총액과 완전히 같은 모양</li>
               <li><b>1장 복습:</b> 초 단위 합계를 시·분·초로 바꾸는 <code>divmod()</code>는 1장 상급 7 "영상 길이 표시"에서 이미 써 본 도구 — 거기선 영상 1개, 여기선 여러 개를 <code>while</code>로 먼저 합친 뒤에 씀</li>
@@ -1024,22 +1024,22 @@ print(h, '시간', m, '분', s, '초')</code></pre>
       <article class="problem" id="a1">
         <div class="p-head"><span class="p-id">상급 1</span><span class="p-type">읽기</span><h3>비밀번호 3번의 기회</h3></div>
         <div class="p-body">
-<pre><code class="language-python">password = '1234'
-tries = 0
-success = False
-attempts = []
-while tries &lt; 3:
-    guess = input()
-    attempts.append(guess)
-    if guess == password:
-        success = True
-        break
-    tries += 1
-if success:
-    print('성공')
-else:
-    print('실패')
-print(attempts)</code></pre>
+<pre><code class="language-python">password = '1234'  # 변수 password 에 문자열 '1234' 를 담아요
+tries = 0  # 변수 tries 에 0 을 담아요
+success = False  # 변수 success 에 False 를 담아요
+attempts = []  # 빈 리스트 attempts 를 만들어요
+while tries &lt; 3:  # tries 가 3 보다 작은 동안 반복해요
+    guess = input()  # 입력 한 줄을 guess 에 담아요
+    attempts.append(guess)  # attempts 리스트 끝에 guess 를 추가해요
+    if guess == password:  # guess 가 password 와 같은지 확인해요
+        success = True  # success 를 True 로 바꿔요
+        break  # 반복문을 바로 끝내요
+    tries += 1  # tries 를 1 늘려요
+if success:  # success 가 True 인지 확인해요
+    print('성공')  # '성공' 을 출력해요
+else:  # 위 조건이 모두 아닐 때 실행해요
+    print('실패')  # '실패' 를 출력해요
+print(attempts)  # attempts 리스트를 출력해요</code></pre>
           <ul>
             <li>입력이 순서대로 <code>0000</code>, <code>1111</code>, <code>2222</code>일 때 출력(두 줄)을 예측하기</li>
             <li>입력이 <code>0000</code>, <code>1234</code>, <code>9999</code>일 때(둘째 시도에 성공) 출력을 예측하기 — <code>attempts</code>에 <code>9999</code>가 들어가는지도 확인하기</li>
@@ -1104,12 +1104,12 @@ print(attempts)</code></pre>
 
             <h4 style="font-size:15.5px; letter-spacing:0; color:var(--ink); margin-top:14px;">Q2. <code>append</code>는 뭐고, 왜 소괄호를 쓰나요?</h4>
             <p><code>append</code>는 "덧붙이다"라는 뜻으로, 리스트 맨 뒤에 값 하나를 추가하는 리스트의 기능(메서드)이에요.</p>
-<pre><code>&gt;&gt;&gt; attempts = []
-&gt;&gt;&gt; attempts.append('0000')
-&gt;&gt;&gt; attempts
+<pre><code>&gt;&gt;&gt; attempts = []  # 빈 리스트 attempts 를 만들어요
+&gt;&gt;&gt; attempts.append('0000')  # attempts 에 '0000' 을 추가해요
+&gt;&gt;&gt; attempts  # attempts 의 내용을 확인해요
 ['0000']
-&gt;&gt;&gt; attempts.append('1234')
-&gt;&gt;&gt; attempts
+&gt;&gt;&gt; attempts.append('1234')  # attempts 에 '1234' 를 추가해요
+&gt;&gt;&gt; attempts  # attempts 의 내용을 확인해요
 ['0000', '1234']</code></pre>
             <p>소괄호 <code>()</code>를 쓰는 이유: <code>append</code>는 메서드라서 "지금 실행해라"라는 신호로 괄호가 필요하고, 그 안에 "무엇을 추가할지"(<code>guess</code>)를 적어요. 반대로 대괄호 <code>[]</code>는 리스트를 만들거나(<code>attempts = []</code>) 번호로 값을 꺼낼 때(<code>members[0]</code>) 써요.</p>
             <table>
@@ -1120,17 +1120,17 @@ print(attempts)</code></pre>
               </tbody>
             </table>
             <p><strong>그럼 <code>attempts(guess)</code>라고 쓰면 안 되나요?</strong> 안 돼요. <code>attempts</code>는 함수가 아니라 리스트(데이터) 그 자체라서, 함수처럼 괄호를 바로 붙이면 에러가 나요.</p>
-<pre><code>&gt;&gt;&gt; attempts = []
-&gt;&gt;&gt; attempts(guess)
+<pre><code>&gt;&gt;&gt; attempts = []  # 빈 리스트 attempts 를 만들어요
+&gt;&gt;&gt; attempts(guess)  # 리스트를 함수처럼 호출하는 잘못된 코드예요
 TypeError: 'list' object is not callable</code></pre>
             <p><code>attempts.append(guess)</code>의 점(<code>.</code>)이 핵심이에요. "attempts <b>안에 있는</b> append 기능을 써라"는 뜻이라, 리스트 자신과 리스트가 가진 기능을 구분해 줘요. TV로 비유하면 "TV를 누른다"가 아니라 "TV의 채널 버튼을 누른다"에 가까워요.</p>
 
             <h4 style="font-size:15.5px; letter-spacing:0; color:var(--ink); margin-top:14px;">Q3. <code>print(attempts)</code>가 맨 마지막 줄인데, 여기서 뭔가 다시 돌아가나요?</h4>
             <p>아니요. 위에서 아래로 순서대로 실행되다가, 맨 마지막 줄까지 오면 <b>그냥 프로그램이 끝나요.</b> 들여쓰기를 보면 왜 그런지 알 수 있어요.</p>
-<pre><code>if success:
-    print('성공')
-else:
-    print('실패')
+<pre><code>if success:  # success 가 True 인지 확인해요
+    print('성공')  # '성공' 을 출력해요
+else:  # 위 조건이 모두 아닐 때 실행해요
+    print('실패')  # '실패' 를 출력해요
 print(attempts)          # if/else와 같은 들여쓰기 — 블록 밖</code></pre>
             <p><code>print(attempts)</code>는 <code>if</code>, <code>else</code>와 같은 들여쓰기 위치라서 그 블록 <b>안</b>이 아니라 <b>밖</b>이에요. 그래서 <code>if</code>든 <code>else</code>든 둘 중 하나가 끝나면, 항상 이어서 <code>print(attempts)</code>가 한 번 더 실행돼요.</p>
             <p>0000, 1111, 2222(전부 실패)를 넣으면 최종 화면은 이래요.</p>
@@ -1144,17 +1144,17 @@ print(attempts)          # if/else와 같은 들여쓰기 — 블록 밖</code><
       <article class="problem" id="a2">
         <div class="p-head"><span class="p-id">상급 2</span><span class="p-type">읽기</span><h3>놀이공원 요금 판정</h3></div>
         <div class="p-body">
-<pre><code class="language-python">age = int(input())
-is_member = input() == 'Y'
+<pre><code class="language-python">age = int(input())  # 입력을 정수로 바꿔 age 에 담아요
+is_member = input() == 'Y'  # 입력이 'Y' 인지 True/False 로 담아요
 
-if age &lt; 13:
-    price = 5000
-else:
-    if is_member:
-        price = 8000
-    else:
-        price = 10000
-print(price)</code></pre>
+if age &lt; 13:  # age 가 13 보다 작은지 확인해요
+    price = 5000  # price 에 5000 을 담아요
+else:  # 위 조건이 모두 아닐 때 실행해요
+    if is_member:  # is_member 가 True 인지 확인해요
+        price = 8000  # price 에 8000 을 담아요
+    else:  # 위 조건이 모두 아닐 때 실행해요
+        price = 10000  # price 에 10000 을 담아요
+print(price)  # price 값을 출력해요</code></pre>
           <p class="spec">(나이, 회원 여부 입력) → 출력 예측: (12, N) / (13, Y) / (13, N)</p>
         </div>
         <div class="memo"><label for="memo-a2">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a2"></textarea></div>
@@ -1192,22 +1192,22 @@ print(price)</code></pre>
       <article class="problem" id="a3">
         <div class="p-head"><span class="p-id">상급 3</span><span class="p-type">읽기</span><h3>회원가입 비밀번호 검사</h3></div>
         <div class="p-body">
-<pre><code class="language-python">banned = ['12345678', 'password1', 'qwertyui']
-pw = input()
-i = 0
-is_banned = False
-while i &lt; len(banned):
-    if pw == banned[i]:
-        is_banned = True
-        break
-    i += 1
+<pre><code class="language-python">banned = ['12345678', 'password1', 'qwertyui']  # 리스트 banned 에 흔한 비밀번호를 담아요
+pw = input()  # 입력 한 줄을 pw 에 담아요
+i = 0  # 변수 i 에 0 을 담아요
+is_banned = False  # 변수 is_banned 에 False 를 담아요
+while i &lt; len(banned):  # i 가 banned 의 길이보다 작은 동안 반복해요
+    if pw == banned[i]:  # pw 가 i 번째 금지 비밀번호와 같은지 확인해요
+        is_banned = True  # is_banned 를 True 로 바꿔요
+        break  # 반복문을 바로 끝내요
+    i += 1  # i 를 1 늘려 다음 칸으로 가요
 
-if len(pw) &lt; 8:
-    print('비밀번호가 너무 짧습니다')
-elif is_banned:
-    print('너무 흔한 비밀번호입니다')
-else:
-    print('사용 가능한 비밀번호입니다')</code></pre>
+if len(pw) &lt; 8:  # pw 의 글자 수가 8 보다 작은지 확인해요
+    print('비밀번호가 너무 짧습니다')  # 너무 짧다는 안내를 출력해요
+elif is_banned:  # 앞 조건이 아니고 is_banned 가 True 면 실행해요
+    print('너무 흔한 비밀번호입니다')  # 너무 흔하다는 안내를 출력해요
+else:  # 위 조건이 모두 아닐 때 실행해요
+    print('사용 가능한 비밀번호입니다')  # 사용 가능하다는 안내를 출력해요</code></pre>
           <p class="spec">입력값 <code>abc123</code>, <code>password1</code>, <code>myp@ssw0rd</code>일 때 각각의 출력을 예측하기</p>
         </div>
         <div class="memo"><label for="memo-a3">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a3"></textarea></div>
@@ -1246,11 +1246,11 @@ else:
       <article class="problem" id="a4">
         <div class="p-head"><span class="p-id">상급 4</span><span class="p-type">버그</span><h3>알림이 두 개 다 뜬다</h3></div>
         <div class="p-body">
-<pre><code class="language-python">total = 55000
-if total &gt;= 50000:
-    print('무료배송')
-if total &gt;= 30000:
-    print('쿠폰 적용')</code></pre>
+<pre><code class="language-python">total = 55000  # 변수 total 에 55000 을 담아요
+if total &gt;= 50000:  # total 이 50000 이상인지 확인해요
+    print('무료배송')  # '무료배송' 을 출력해요
+if total &gt;= 30000:  # total 이 30000 이상인지 확인해요
+    print('쿠폰 적용')  # '쿠폰 적용' 을 출력해요</code></pre>
           <ul>
             <li>작성자는 "5만 원 이상이면 무료배송 안내만" 하려고 했음</li>
             <li>실제 출력을 예측하기</li>
@@ -1276,11 +1276,11 @@ if total &gt;= 30000:
               <li><code>total = 55000</code>은 <code>total &gt;= 50000</code>도 참, <code>total &gt;= 30000</code>도 참 → 둘 다 실행돼 두 줄이 찍힘</li>
             </ul>
             <h4>고친 코드</h4>
-<pre><code class="language-python">total = 55000
-if total &gt;= 50000:
-    print('무료배송')
-elif total &gt;= 30000:
-    print('쿠폰 적용')</code></pre>
+<pre><code class="language-python">total = 55000  # 변수 total 에 55000 을 담아요
+if total &gt;= 50000:  # total 이 50000 이상인지 확인해요
+    print('무료배송')  # '무료배송' 을 출력해요
+elif total &gt;= 30000:  # 앞 조건이 아니고 total 이 30000 이상이면 실행해요
+    print('쿠폰 적용')  # '쿠폰 적용' 을 출력해요</code></pre>
             <p class="real"><b>실제 코드에서</b> · "이 중 하나만" 원할 땐 elif, "각각 따로 검사"가 맞으면 if를 여러 번 — 헷갈리면 알림 메시지가 중복으로 나가는 버그가 생김</p>
           </div>
         </details>
@@ -1289,22 +1289,22 @@ elif total &gt;= 30000:
       <article class="problem" id="a5">
         <div class="p-head"><span class="p-id">상급 5</span><span class="p-type">읽기</span><h3>서버 응답시간 모니터</h3></div>
         <div class="p-body">
-<pre><code class="language-python">L = input().split()
-low = int(L[0])
-high = int(L[1])
-count = 0
+<pre><code class="language-python">L = input().split()  # 입력을 공백으로 나눈 리스트를 L 에 담아요
+low = int(L[0])  # 첫 값을 정수로 바꿔 low 에 담아요
+high = int(L[1])  # 둘째 값을 정수로 바꿔 high 에 담아요
+count = 0  # 변수 count 에 0 을 담아요
 
-ms = int(input())
-while ms != -1:
-    if low &lt;= ms &lt;= high:
-        print('정상', ms, 'ms')
-        count += 1
-        ms = int(input())
-    else:
-        print('응답 지연 감지, 알림 전송', ms, 'ms')
-        break
+ms = int(input())  # 입력을 정수로 바꿔 ms 에 담아요
+while ms != -1:  # ms 가 -1 이 아닌 동안 반복해요
+    if low &lt;= ms &lt;= high:  # ms 가 low 이상 high 이하인지 확인해요
+        print('정상', ms, 'ms')  # '정상' 과 ms 값을 출력해요
+        count += 1  # count 를 1 늘려요
+        ms = int(input())  # 입력을 정수로 바꿔 ms 에 담아요
+    else:  # 위 조건이 모두 아닐 때 실행해요
+        print('응답 지연 감지, 알림 전송', ms, 'ms')  # 지연 감지 안내와 ms 값을 출력해요
+        break  # 반복문을 바로 끝내요
 
-print('정상 응답 횟수:', count)</code></pre>
+print('정상 응답 횟수:', count)  # 문구와 count 값을 출력해요</code></pre>
           <p class="spec">첫 줄 입력 <code>50 200</code>, 이어서 <code>80</code>, <code>150</code>, <code>900</code>, <code>-1</code> 순서로 입력했을 때 출력을 예측하기</p>
         </div>
         <div class="memo"><label for="memo-a5">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a5"></textarea></div>
@@ -1347,12 +1347,12 @@ print('정상 응답 횟수:', count)</code></pre>
         <div class="p-head"><span class="p-id">상급 6</span><span class="p-type">추론</span><h3>처음 보는 초기화 문법</h3></div>
         <div class="p-body">
           <p class="spec">2장에서 직접 배우지 않은 문법이 한 줄 섞여 있습니다. 남의 코드를 읽을 때 매일 겪는 상황을 연습합니다.</p>
-<pre><code class="language-python">i, total = 0, 0
-views = [120, 340, 90]
-while i &lt; len(views):
-    total = total + views[i]
-    i = i + 1
-print(i, total)</code></pre>
+<pre><code class="language-python">i, total = 0, 0  # i 와 total 에 각각 0 을 담아요
+views = [120, 340, 90]  # 리스트 views 에 조회수 세 개를 담아요
+while i &lt; len(views):  # i 가 views 의 길이보다 작은 동안 반복해요
+    total = total + views[i]  # total 에 i 번째 조회수를 더해 다시 담아요
+    i = i + 1  # i 에 1 을 더해 다시 담아요
+print(i, total)  # i 와 total 값을 출력해요</code></pre>
           <ul>
             <li>실행하지 말고 출력을 예측하기</li>
             <li><code>i, total = 0, 0</code>이 무슨 뜻인지 추측하기</li>

@@ -61,9 +61,9 @@
     <h3 id="q1">왜 <code>/</code>가 아니라 <code>//</code>인가 — 8÷2(2+2) 식</h3>
     <p>이 식에서는 <code>/</code>를 써도 계산 결과는 같아요. 달라지는 건 결과의 <strong>자료형</strong>뿐이에요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
-<pre><code>&gt;&gt;&gt; 8 / 2 * (2 + 2)
+<pre><code>&gt;&gt;&gt; 8 / 2 * (2 + 2)   # 나눗셈 결과 4.0 에 4 를 곱해서 16.0 이 나와요
 16.0
-&gt;&gt;&gt; 8 // 2 * (2 + 2)
+&gt;&gt;&gt; 8 // 2 * (2 + 2)  # 몫 4 에 4 를 곱해서 정수 16 이 나와요
 16</code></pre>
     <table>
       <thead><tr><th>연산자</th><th>하는 일</th><th>예</th></tr></thead>
@@ -78,10 +78,10 @@
     </ul>
     <p><strong>주의 — 항상 바꿔 쓸 수 있는 건 아니에요.</strong> 8이 2로 나누어떨어져서 우연히 같았을 뿐이에요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
-<pre><code>&gt;&gt;&gt; 7 / 2 * 4
-14.0      # 수학적으로 맞는 값
-&gt;&gt;&gt; 7 // 2 * 4
-12        # 3.5에서 소수점을 버려 3, 3 × 4 = 12</code></pre>
+<pre><code>&gt;&gt;&gt; 7 / 2 * 4   # 3.5 에 4 를 곱해서 14.0 이 나와요
+14.0            # 수학적으로 맞는 값이에요
+&gt;&gt;&gt; 7 // 2 * 4  # 몫 3 에 4 를 곱해서 12 가 나와요
+12              # 3.5 에서 소수점을 버려 3 이 되고, 3 × 4 = 12 예요</code></pre>
     <ul>
       <li>일반 수학식을 옮길 때는 <code>/</code>가 맞아요.</li>
       <li><code>//</code>는 몫만 필요하거나, 결과가 정수라는 게 확실할 때 써요.</li>
@@ -107,7 +107,7 @@
 
     <p>가져오지 않고 쓰면 에러가 나요. 파이썬이 <code>math</code>가 뭔지 모르기 때문이에요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 새로 연 셸에서 import 없이 실행해야 보여요</span></p>
-<pre><code>&gt;&gt;&gt; math.sqrt(2)
+<pre><code>&gt;&gt;&gt; math.sqrt(2)  # math 를 가져오지 않고 써서 오류가 나요
 NameError: name 'math' is not defined. Did you forget to import 'math'?</code></pre>
 
     <p><code>math.sqrt(2)</code>는 이렇게 읽어요.</p>
@@ -119,21 +119,21 @@ NameError: name 'math' is not defined. Did you forget to import 'math'?</code></
     </ul>
     <p><strong>왜 처음부터 다 켜 두지 않을까요?</strong> 모듈이 수백 개라 전부 불러오면 느리고 메모리를 낭비해요. 그래서 필요한 것만 골라 가져와요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
-<pre><code>&gt;&gt;&gt; from math import sqrt    # sqrt 하나만 가져오기
-&gt;&gt;&gt; sqrt(2)                  # math. 없이 바로 사용
+<pre><code>&gt;&gt;&gt; from math import sqrt                     # sqrt 하나만 가져와요
+&gt;&gt;&gt; sqrt(2)                                   # math. 없이 바로 2 의 제곱근을 구해요
 1.4142135623730951
-&gt;&gt;&gt; import math as m         # 별명 붙여 가져오기
-&gt;&gt;&gt; m.sqrt(2)
+&gt;&gt;&gt; import math as m                          # math 에 별명 m 을 붙여 가져와요
+&gt;&gt;&gt; m.sqrt(2)                                 # 별명 m 으로 2 의 제곱근을 구해요
 1.4142135623730951
-&gt;&gt;&gt; math.pi, math.floor(3.7), math.ceil(3.2)   # math의 다른 기능: 원주율, 내림, 올림
+&gt;&gt;&gt; math.pi, math.floor(3.7), math.ceil(3.2)  # 원주율, 3.7 의 내림, 3.2 의 올림을 한 번에 구해요
 (3.141592653589793, 3, 4)</code></pre>
     <p>마지막 줄은 <code>import math</code>를 먼저 한 셸에서 실행해야 해요.</p>
 
     <h3 id="q3">두 가게 사이의 직선 거리 구하기</h3>
     <p><strong>문제 요약:</strong> 바둑판처럼 길이 직각으로 난 동네에서, A에서 B까지 550m, B에서 C까지 600m를 걸어요. 두 길이 직각으로 만날 때, A와 C 사이의 직선 거리를 <code>math.sqrt()</code>로 구하는 문제예요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
-<pre><code>&gt;&gt;&gt; import math
-&gt;&gt;&gt; math.sqrt(550 ** 2 + 600 ** 2)
+<pre><code>&gt;&gt;&gt; import math                     # math 모듈을 통째로 가져와요
+&gt;&gt;&gt; math.sqrt(550 ** 2 + 600 ** 2)  # 가로 550, 세로 600 인 빗변 길이를 구해요
 813.9410298049853</code></pre>
     <p>답은 약 814m예요.</p>
     <p><strong>풀이 순서</strong></p>
@@ -165,9 +165,9 @@ NameError: name 'math' is not defined. Did you forget to import 'math'?</code></
     </ul>
     <p><strong>다른 방법</strong></p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— import math를 먼저 한 셸에서</span></p>
-<pre><code>&gt;&gt;&gt; math.sqrt(550 * 550 + 600 * 600)   # ** 대신 같은 수를 직접 두 번 곱하기
+<pre><code>&gt;&gt;&gt; math.sqrt(550 * 550 + 600 * 600)  # 같은 수를 직접 곱해서 빗변 길이를 구해요
 813.9410298049853
-&gt;&gt;&gt; math.hypot(550, 600)               # 빗변 길이를 바로 구하는 함수 (아래 hypot 설명)
+&gt;&gt;&gt; math.hypot(550, 600)              # hypot 으로 빗변 길이를 바로 구해요
 813.9410298049853</code></pre>
     <table class="choice-table">
       <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
@@ -182,11 +182,11 @@ NameError: name 'math' is not defined. Did you forget to import 'math'?</code></
     <h3 id="q4"><code>hypot</code>은 무슨 뜻인가</h3>
     <p><code>hypot</code>은 <strong>hypotenuse(빗변)</strong>를 줄인 이름이에요. 직각을 끼는 두 변의 길이를 넣으면 빗변 길이, 즉 √(a² + b²)를 돌려줘요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— import math를 먼저 한 셸에서</span></p>
-<pre><code>&gt;&gt;&gt; math.hypot(3, 4)
+<pre><code>&gt;&gt;&gt; math.hypot(3, 4)            # 3 과 4 로 빗변 길이 5.0 을 구해요
 5.0
-&gt;&gt;&gt; math.sqrt(3 ** 2 + 4 ** 2)   # 같은 계산
+&gt;&gt;&gt; math.sqrt(3 ** 2 + 4 ** 2)  # 같은 계산을 제곱과 제곱근으로 풀어 써요
 5.0
-&gt;&gt;&gt; math.hypot(1, 2, 2)          # 값 3개도 가능 (Python 3.8부터): √(1² + 2² + 2²)
+&gt;&gt;&gt; math.hypot(1, 2, 2)         # 값 3개의 제곱합의 제곱근 3.0 을 구해요
 3.0</code></pre>
     <ul>
       <li><strong>sqrt 대신 쓰면 좋은 점:</strong> 코드가 짧고, "빗변을 구한다"는 뜻이 이름에 드러나요.</li>
@@ -223,24 +223,24 @@ NameError: name 'math' is not defined. Did you forget to import 'math'?</code></
     <p><strong>핵심 한 줄:</strong> 인덱스는 "출발역에서 몇 정거장 떨어졌나"라서 첫 역이 0이에요.</p>
 
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 번호 붙는 모양을 보여 주는 그림이에요</span></p>
-<pre><code>s = ['시청', '을지로입구', '을지로3가', '을지로4가', '동대문역사문화공원', '신당', '상왕십리', '왕십리']
+<pre><code>s = ['시청', '을지로입구', '을지로3가', '을지로4가', '동대문역사문화공원', '신당', '상왕십리', '왕십리']  # 리스트 s 에 지하철 역 8개를 순서대로 담아요
 #      0         1            2           3              4               5        6         7
 #     -8        -7           -6          -5             -4              -3       -2        -1</code></pre>
 
     <p><strong>1) 인덱싱 — 역 하나 고르기</strong></p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 위의 s = [...] 줄을 먼저 입력해요</span></p>
-<pre><code>&gt;&gt;&gt; s[0]      # 출발역
+<pre><code>&gt;&gt;&gt; s[0]  # 0번 칸의 첫 역을 꺼내요
 '시청'
-&gt;&gt;&gt; s[3]      # 3정거장 뒤
+&gt;&gt;&gt; s[3]  # 3번 칸의 역을 꺼내요
 '을지로4가'
-&gt;&gt;&gt; s[8]      # 없는 역
+&gt;&gt;&gt; s[8]  # 없는 8번 칸을 꺼내려 해서 오류가 나요
 IndexError: list index out of range</code></pre>
 
     <p><strong>2) 음수 인덱싱 — 종점부터 거꾸로</strong></p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 위의 s = [...] 줄을 먼저 입력해요</span></p>
-<pre><code>&gt;&gt;&gt; s[-1]     # 종점
+<pre><code>&gt;&gt;&gt; s[-1]  # 맨 뒤 칸의 종점을 꺼내요
 '왕십리'
-&gt;&gt;&gt; s[-2]     # 종점 바로 앞
+&gt;&gt;&gt; s[-2]  # 뒤에서 두 번째 역을 꺼내요
 '상왕십리'</code></pre>
     <ul>
       <li><code>-1</code>은 "뒤에서 첫 번째"예요.</li>
@@ -250,13 +250,13 @@ IndexError: list index out of range</code></pre>
 
     <p><strong>3) 슬라이싱 <code>[시작:끝]</code> — 구간 승차권</strong></p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 위의 s = [...] 줄을 먼저 입력해요</span></p>
-<pre><code>&gt;&gt;&gt; s[1:4]
+<pre><code>&gt;&gt;&gt; s[1:4]  # 1번부터 3번까지 역 3개를 잘라요
 ['을지로입구', '을지로3가', '을지로4가']
-&gt;&gt;&gt; s[:3]     # 시작 생략 = 처음부터
+&gt;&gt;&gt; s[:3]   # 처음부터 2번까지 역 3개를 잘라요
 ['시청', '을지로입구', '을지로3가']
-&gt;&gt;&gt; s[5:]     # 끝 생략 = 끝까지
+&gt;&gt;&gt; s[5:]   # 5번부터 끝까지 잘라요
 ['신당', '상왕십리', '왕십리']
-&gt;&gt;&gt; s[-3:]    # 뒤에서 3개
+&gt;&gt;&gt; s[-3:]  # 뒤에서 3개를 잘라요
 ['신당', '상왕십리', '왕십리']</code></pre>
     <ul>
       <li><strong>끝 번호의 역은 들어가지 않아요.</strong> 끝 번호는 "이 역 앞에서 내린다"는 뜻이에요(이유는 <a href="#q8">아래 끝 번호 설명</a>).</li>
@@ -265,11 +265,11 @@ IndexError: list index out of range</code></pre>
 
     <p><strong>4) 간격 <code>[시작:끝:간격]</code> — 급행열차</strong></p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 위의 s = [...] 줄을 먼저 입력해요</span></p>
-<pre><code>&gt;&gt;&gt; s[1:5:2]
+<pre><code>&gt;&gt;&gt; s[1:5:2]  # 1번부터 4번까지 두 칸씩 건너뛰며 골라요
 ['을지로입구', '을지로4가']
-&gt;&gt;&gt; s[::2]    # 처음부터 끝까지 한 역씩 건너뛰기
+&gt;&gt;&gt; s[::2]    # 처음부터 끝까지 두 칸씩 건너뛰어 골라요
 ['시청', '을지로3가', '동대문역사문화공원', '상왕십리']
-&gt;&gt;&gt; s[::-1]   # 반대 방향 열차 = 뒤집기
+&gt;&gt;&gt; s[::-1]   # 리스트를 거꾸로 뒤집어요
 ['왕십리', '상왕십리', '신당', '동대문역사문화공원', '을지로4가', '을지로3가', '을지로입구', '시청']</code></pre>
     <ul>
       <li><code>s[1:5:2]</code>는 1번에서 출발해 2정거장씩 가요.</li>
@@ -295,11 +295,11 @@ IndexError: list index out of range</code></pre>
       <li>교재가 가족 목록에 <code>family</code>라는 이름을 붙인 것과 같아요.</li>
     </ul>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
-<pre><code>&gt;&gt;&gt; stations = ['시청', '을지로입구', '을지로3가']
-&gt;&gt;&gt; stations[0]
+<pre><code>&gt;&gt;&gt; stations = ['시청', '을지로입구', '을지로3가']  # 리스트 stations 에 역 3개를 담아요
+&gt;&gt;&gt; stations[0]                                     # 0번 칸의 첫 역을 꺼내요
 '시청'
-&gt;&gt;&gt; subway = ['시청', '을지로입구', '을지로3가']
-&gt;&gt;&gt; subway[-1]
+&gt;&gt;&gt; subway = ['시청', '을지로입구', '을지로3가']    # 리스트 subway 에 같은 역 3개를 담아요
+&gt;&gt;&gt; subway[-1]                                      # 맨 뒤 칸의 역을 꺼내요
 '을지로3가'</code></pre>
     <p><strong>변수 이름 규칙</strong></p>
     <ul>
@@ -312,8 +312,8 @@ IndexError: list index out of range</code></pre>
     <h3 id="q7"><code>s[::-1]</code>의 <code>::</code>와 <code>s[-1]</code>은 어떻게 다른가</h3>
     <p>완전히 달라요. <code>::</code>는 기호 하나가 아니라, <strong>콜론 두 개 사이의 칸이 비어 있는 것</strong>이에요.</p>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 칸 배치를 보여 주는 그림이에요</span></p>
-<pre><code>s[ 시작 : 끝 : 간격 ]
-s[     :    : -1  ]   # 시작 생략, 끝 생략, 간격 -1</code></pre>
+<pre><code>s[ 시작 : 끝 : 간격 ]  # 슬라이싱의 기본 모양이에요
+s[     :    : -1  ]    # 시작과 끝을 비우고 간격 -1 로 거꾸로 가요</code></pre>
     <ul>
       <li>시작 생략 — 처음부터(간격이 음수면 맨 뒤부터)</li>
       <li>끝 생략 — 끝까지(간격이 음수면 맨 앞까지)</li>
@@ -321,12 +321,12 @@ s[     :    : -1  ]   # 시작 생략, 끝 생략, 간격 -1</code></pre>
       <li>합치면 "맨 뒤부터 맨 앞까지 한 칸씩 거꾸로" = <strong>뒤집기</strong></li>
     </ul>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
-<pre><code>&gt;&gt;&gt; s = ['시청', '을지로입구', '을지로3가', '을지로4가']
-&gt;&gt;&gt; s[-1]
+<pre><code>&gt;&gt;&gt; s = ['시청', '을지로입구', '을지로3가', '을지로4가']  # 리스트 s 에 역 4개를 담아요
+&gt;&gt;&gt; s[-1]                                                 # 맨 뒤 칸의 종점을 꺼내요
 '을지로4가'
-&gt;&gt;&gt; s[::-1]
+&gt;&gt;&gt; s[::-1]                                               # 리스트를 거꾸로 뒤집어요
 ['을지로4가', '을지로3가', '을지로입구', '시청']
-&gt;&gt;&gt; s[:-1]
+&gt;&gt;&gt; s[:-1]                                                # 맨 뒤 하나만 빼고 앞쪽을 모두 잘라요
 ['시청', '을지로입구', '을지로3가']</code></pre>
     <table>
       <thead><tr><th></th><th><code>s[-1]</code></th><th><code>s[::-1]</code></th><th><code>s[:-1]</code></th></tr></thead>
@@ -363,10 +363,10 @@ s[     :    : -1  ]   # 시작 생략, 끝 생략, 간격 -1</code></pre>
       </tbody>
     </table>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
-<pre><code>&gt;&gt;&gt; s = ['시청', '을지로입구', '을지로3가', '을지로4가', '동대문', '신당']
-&gt;&gt;&gt; s[1:5:2]    # 1, 3 → 다음 5는 끝 번호라 제외
+<pre><code>&gt;&gt;&gt; s = ['시청', '을지로입구', '을지로3가', '을지로4가', '동대문', '신당']  # 리스트 s 에 역 6개를 담아요
+&gt;&gt;&gt; s[1:5:2]                                                                # 1번부터 4번까지 두 칸씩 건너뛰며 골라요
 ['을지로입구', '을지로4가']
-&gt;&gt;&gt; s[1:6:2]    # 5번까지 넣고 싶으면 끝을 하나 크게
+&gt;&gt;&gt; s[1:6:2]                                                                # 끝을 6 으로 키워서 5번 칸까지 포함해요
 ['을지로입구', '을지로4가', '신당']</code></pre>
     <p><strong>핵심 한 줄:</strong> <code>[시작:끝]</code>은 "시작 이상, 끝 <strong>미만</strong>"으로 읽으면 헷갈리지 않아요.</p>
 
@@ -375,15 +375,15 @@ s[     :    : -1  ]   # 시작 생략, 끝 생략, 간격 -1</code></pre>
 
     <p><strong>추가</strong></p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 위에서부터 순서대로 입력해요</span></p>
-<pre><code>&gt;&gt;&gt; f = ['mother', 'father']
-&gt;&gt;&gt; f.append('me')                 # 원소 1개를 맨 뒤에
-&gt;&gt;&gt; f
+<pre><code>&gt;&gt;&gt; f = ['mother', 'father']     # 리스트 f 에 가족 두 명을 담아요
+&gt;&gt;&gt; f.append('me')               # 'me' 하나를 맨 뒤에 붙여요
+&gt;&gt;&gt; f                            # f 에 담긴 내용을 보여 줘요
 ['mother', 'father', 'me']
-&gt;&gt;&gt; f.extend(['sister', 'dog'])    # 여러 원소를 풀어서 맨 뒤에
-&gt;&gt;&gt; f
+&gt;&gt;&gt; f.extend(['sister', 'dog'])  # 여러 값을 풀어서 맨 뒤에 붙여요
+&gt;&gt;&gt; f                            # f 에 담긴 내용을 보여 줘요
 ['mother', 'father', 'me', 'sister', 'dog']
-&gt;&gt;&gt; f.insert(1, 'grandma')         # 1번 자리에 끼워 넣기, 뒤는 한 칸씩 밀림
-&gt;&gt;&gt; f
+&gt;&gt;&gt; f.insert(1, 'grandma')       # 1번 자리에 끼워 넣고 뒤는 한 칸씩 밀려요
+&gt;&gt;&gt; f                            # f 에 담긴 내용을 보여 줘요
 ['mother', 'grandma', 'father', 'me', 'sister', 'dog']</code></pre>
     <table class="choice-table">
       <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
@@ -397,22 +397,22 @@ s[     :    : -1  ]   # 시작 생략, 끝 생략, 간격 -1</code></pre>
 
     <p><strong>삭제</strong> (위에서 이어서)</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 위의 추가 코드에 이어서 입력해요</span></p>
-<pre><code>&gt;&gt;&gt; f.remove('dog')     # 값으로 찾아서 지우기
-&gt;&gt;&gt; f
+<pre><code>&gt;&gt;&gt; f.remove('dog')  # 값이 'dog' 인 원소를 찾아 지워요
+&gt;&gt;&gt; f                # f 에 담긴 내용을 보여 줘요
 ['mother', 'grandma', 'father', 'me', 'sister']
-&gt;&gt;&gt; x = f.pop()         # 맨 뒤를 꺼내고, 꺼낸 값을 돌려줌
-&gt;&gt;&gt; x
+&gt;&gt;&gt; x = f.pop()      # 맨 뒤 값을 꺼내 x 에 담아요
+&gt;&gt;&gt; x                # x 에 담긴 값을 보여 줘요
 'sister'
-&gt;&gt;&gt; y = f.pop(1)        # 1번 자리를 꺼냄
-&gt;&gt;&gt; y
+&gt;&gt;&gt; y = f.pop(1)     # 1번 자리 값을 꺼내 y 에 담아요
+&gt;&gt;&gt; y                # y 에 담긴 값을 보여 줘요
 'grandma'
-&gt;&gt;&gt; f
+&gt;&gt;&gt; f                # f 에 담긴 내용을 보여 줘요
 ['mother', 'father', 'me']
-&gt;&gt;&gt; del f[0]            # 위치로 지우기만, 돌려주는 값 없음
-&gt;&gt;&gt; f
+&gt;&gt;&gt; del f[0]         # 0번 원소를 지우기만 하고 값은 돌려주지 않아요
+&gt;&gt;&gt; f                # f 에 담긴 내용을 보여 줘요
 ['father', 'me']
-&gt;&gt;&gt; del f[0:1]          # 슬라이스로 구간 지우기
-&gt;&gt;&gt; f
+&gt;&gt;&gt; del f[0:1]       # 슬라이스로 0번 구간을 지워요
+&gt;&gt;&gt; f                # f 에 담긴 내용을 보여 줘요
 ['me']</code></pre>
     <ul>
       <li><strong><code>remove(값)</code>:</strong> 같은 값이 여러 개면 첫 번째만 지워요(<code>['a', 'b', 'a']</code> → <code>['b', 'a']</code>). 값이 없으면 <code>ValueError</code>가 나요.</li>
@@ -476,18 +476,18 @@ s[     :    : -1  ]   # 시작 생략, 끝 생략, 간격 -1</code></pre>
       <li><code>del(f[0])</code>도 동작은 해요. 다만 이때 괄호는 실행 신호가 아니라 <code>(1 + 2)</code>처럼 묶는 괄호라서, 보통 <code>del f[0]</code>으로 써요.</li>
     </ul>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 키워드 전체 목록 보기</span></p>
-<pre><code>&gt;&gt;&gt; import keyword
-&gt;&gt;&gt; 'del' in keyword.kwlist
+<pre><code>&gt;&gt;&gt; import keyword           # keyword 모듈을 가져와요
+&gt;&gt;&gt; 'del' in keyword.kwlist  # 'del' 이 예약어 목록에 있는지 확인해요
 True
-&gt;&gt;&gt; len(keyword.kwlist)    # Python 3.12 기준
+&gt;&gt;&gt; len(keyword.kwlist)      # Python 3.12 기준 예약어 개수를 세요
 35</code></pre>
 
     <h3 id="q12">"리스트에만 있는 기능"이란 무슨 말인가</h3>
     <p>핵심은 <strong>파이썬 자료에는 종류가 있고, 종류마다 할 줄 아는 일이 다르다</strong>는 거예요.</p>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 자료 종류를 보여 주는 예시예요</span></p>
-<pre><code>5                      # 숫자
-'hello'                # 문자열 (따옴표로 감싼 글자)
-['mother', 'father']   # 리스트 (대괄호로 묶은 목록)</code></pre>
+<pre><code>5                     # 5 는 숫자(정수)예요
+'hello'               # 따옴표로 감싼 글자라 문자열이에요
+['mother', 'father']  # 대괄호로 묶은 목록이라 리스트예요</code></pre>
     <table>
       <thead><tr><th>집 안 기계 비유</th><th>파이썬에서는</th></tr></thead>
       <tbody>
@@ -500,15 +500,15 @@ True
     </table>
     <p><strong>핵심 한 줄:</strong> TV로 전화를 걸 수 없듯, 리스트의 버튼은 문자열에서 누를 수 없어요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
-<pre><code>&gt;&gt;&gt; f = ['mother', 'father']
-&gt;&gt;&gt; f.append('me')          # 리스트의 버튼: 됨
-&gt;&gt;&gt; 'hello'.upper()         # 문자열의 버튼: 됨
+<pre><code>&gt;&gt;&gt; f = ['mother', 'father']  # 리스트 f 에 가족 두 명을 담아요
+&gt;&gt;&gt; f.append('me')            # 리스트에 있는 append 버튼이라 잘 돼요
+&gt;&gt;&gt; 'hello'.upper()           # 문자열에 있는 upper 버튼이라 잘 돼요
 'HELLO'
-&gt;&gt;&gt; 'hello'.append('!')     # 문자열에는 append 버튼이 없음
+&gt;&gt;&gt; 'hello'.append('!')       # 문자열에는 append 가 없어서 오류가 나요
 AttributeError: 'str' object has no attribute 'append'
-&gt;&gt;&gt; f.upper()               # 리스트에는 upper 버튼이 없음
+&gt;&gt;&gt; f.upper()                 # 리스트에는 upper 가 없어서 오류가 나요
 AttributeError: 'list' object has no attribute 'upper'
-&gt;&gt;&gt; len(f), len('hello')    # 공용 도구는 둘 다 됨
+&gt;&gt;&gt; len(f), len('hello')      # len 은 공용 도구라 둘 다 길이를 세요
 (3, 5)</code></pre>
     <ul>
       <li>에러의 <code>str</code>은 문자열, <code>list</code>는 리스트예요.</li>
@@ -538,10 +538,10 @@ AttributeError: 'list' object has no attribute 'upper'
     </table>
     <p>어떤 도구가 있는지 모를 때는 파이썬에게 물어봐요. 처음부터 외우기보다 필요할 때 찾아보며 손에 익히면 돼요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
-<pre><code>&gt;&gt;&gt; f = ['mother', 'father']
-&gt;&gt;&gt; dir(f)          # 리스트가 가진 메서드 목록 (앞쪽의 __이름__ 들은 건너뛰어요)
+<pre><code>&gt;&gt;&gt; f = ['mother', 'father']  # 리스트 f 에 가족 두 명을 담아요
+&gt;&gt;&gt; dir(f)                    # 리스트가 가진 메서드 목록을 보여 줘요
 [..., 'append', 'clear', 'copy', 'count', 'extend', 'index', 'insert', 'pop', 'remove', 'reverse', 'sort']
-&gt;&gt;&gt; help(f.pop)     # pop 사용법 설명</code></pre>
+&gt;&gt;&gt; help(f.pop)               # pop 의 사용법 설명을 보여 줘요</code></pre>
 
     <!-- ============ 1.6.1 ============ -->
     <hr>
@@ -552,8 +552,8 @@ AttributeError: 'list' object has no attribute 'upper'
     <p><strong>문제 요약:</strong> 사용자에게 정수를 입력받아, 그 수를 제곱해서 출력하는 스크립트를 만드는 문제예요. 3을 넣으면 9, 5를 넣으면 25가 나와야 해요.</p>
     <p>교재 페이지에는 답이 코드로 적혀 있지 않고 <a href="https://github.com/ychoi-kr/wikidocs-chobo-python/blob/master/ch01/square.py" target="_blank" rel="noopener">깃허브 파일(<code>ch01/square.py</code>)</a> 링크만 걸려 있어요. 그 파일을 열면 답은 두 줄이에요.</p>
     <p class="run-tag">실행: square.py로 저장 <span class="run-tag-why">— 아래 "직접 해 보기"에서 python 명령으로 실행해요</span></p>
-<pre><code>num = int(input())
-print(num * num)</code></pre>
+<pre><code>num = int(input())  # 입력한 글자를 정수로 바꿔 num 에 담아요
+print(num * num)    # num 을 제곱한 값을 출력해요</code></pre>
 
     <p><strong>첫째 줄 <code>num = int(input())</code> — 괄호는 안쪽부터</strong></p>
     <ol>
@@ -585,9 +585,9 @@ print(num * num)</code></pre>
 
     <p><strong>왜 <code>int</code>가 필요한가</strong></p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
-<pre><code>&gt;&gt;&gt; '3' * '3'
+<pre><code>&gt;&gt;&gt; '3' * '3'  # 글자끼리는 곱할 수 없어서 오류가 나요
 TypeError: can't multiply sequence by non-int of type 'str'
-&gt;&gt;&gt; '3' * 3
+&gt;&gt;&gt; '3' * 3    # 글자 '3' 을 3번 반복해요
 '333'</code></pre>
     <table class="choice-table">
       <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
@@ -601,12 +601,12 @@ TypeError: can't multiply sequence by non-int of type 'str'
 
     <p><strong>같은 답이 되는 다른 풀이</strong></p>
     <p class="run-tag">실행: square.py로 저장 <span class="run-tag-why">— 둘 중 아무거나 골라 써도 정답이에요</span></p>
-<pre><code>num = int(input())
-print(num ** 2)        # 거듭제곱 기호로 쓰기
+<pre><code>num = int(input())  # 입력한 글자를 정수로 바꿔 num 에 담아요
+print(num ** 2)     # 거듭제곱 기호로 num 의 제곱을 출력해요
 
-num = int(input())
-result = num * num     # 중간 결과에 이름 붙이기
-print(result)</code></pre>
+num = int(input())  # 입력한 글자를 정수로 바꿔 num 에 담아요
+result = num * num  # 곱한 값에 result 라는 이름을 붙여요
+print(result)       # result 에 담긴 값을 출력해요</code></pre>
     <ul>
       <li>출력이 같으면 모두 정답이에요.</li>
       <li><code>num ** 2</code>와 <code>num * num</code>은 결과가 같아요.</li>
@@ -617,13 +617,13 @@ print(result)</code></pre>
       <li>아래 두 줄을 <code>square.py</code>로 저장해요.</li>
     </ol>
     <p class="run-tag">실행: square.py로 저장 <span class="run-tag-why">— 다음 명령이 이 파일을 읽어요</span></p>
-<pre><code>num = int(input('정수를 입력하세요: '))
-print(num * num)</code></pre>
+<pre><code>num = int(input('정수를 입력하세요: '))  # 안내 문구를 보여 주고 정수를 입력받아 num 에 담아요
+print(num * num)                         # num 을 제곱한 값을 출력해요</code></pre>
     <ol start="2">
       <li>그 파일이 있는 폴더에서 터미널을 열고 실행해요.</li>
     </ol>
     <p class="run-tag">실행: 로컬 터미널</p>
-<pre><code>python square.py</code></pre>
+<pre><code>python square.py  # square.py 파일을 파이썬으로 실행해요</code></pre>
     <ol start="3">
       <li><code>3</code>을 넣으면 <code>9</code>, <code>5</code>를 넣으면 <code>25</code>가 나오면 성공이에요.</li>
     </ol>

@@ -48,46 +48,46 @@
     </table>
 
     <h2><span class="hl">1. def와 호출</span></h2>
-<pre><code>&gt;&gt;&gt; def boy():
-...     print('I am a boy.')
-...     print('You are a girl.')
+<pre><code>&gt;&gt;&gt; def boy():           # boy 라는 함수를 만들기 시작해요
+...     print('I am a boy.')      # 'I am a boy.' 를 화면에 출력해요
+...     print('You are a girl.')  # 'You are a girl.' 를 화면에 출력해요
 ...
-&gt;&gt;&gt; boy()
+&gt;&gt;&gt; boy()                # boy 함수를 실행해요
 I am a boy.
 You are a girl.</code></pre>
     <p><strong>핵심 한 줄:</strong> <code>def</code>는 만들기만 하고, <code>이름()</code>이 실행한다.</p>
 
     <h2><span class="hl">2. 매개변수와 인수</span></h2>
-<pre><code>def greet(name):          # name = 매개변수
-    print('안녕,', name)
+<pre><code>def greet(name):        # 매개변수 name 을 받는 greet 함수를 만들어요
+    print('안녕,', name)  # '안녕,' 과 name 값을 함께 출력해요
 
-greet('철수')              # '철수' = 인수
-greet('영희')</code></pre>
+greet('철수')             # 인수 '철수' 를 넣어 greet 를 실행해요
+greet('영희')             # 인수 '영희' 를 넣어 greet 를 실행해요</code></pre>
     <p><strong>핵심 한 줄:</strong> 매개변수는 자리, 인수는 그 자리에 들어간 값. 순서대로 들어간다.</p>
 
     <h2><span class="hl">3. return과 print</span></h2>
-<pre><code>&gt;&gt;&gt; c = f1(10)
-&gt;&gt;&gt; print(c)
+<pre><code>&gt;&gt;&gt; c = f1(10)        # f1 이 돌려준 값을 c 에 담아요
+&gt;&gt;&gt; print(c)          # c 에 든 값을 출력해요
 35
-&gt;&gt;&gt; d = f2(10)
+&gt;&gt;&gt; d = f2(10)        # f2 는 돌려주는 값이 없어 d 는 None 이에요
 35
-&gt;&gt;&gt; print(d)
+&gt;&gt;&gt; print(d)          # d 에 든 값을 출력해요
 None</code></pre>
     <p><strong>핵심 한 줄:</strong> <code>return</code>은 코드에게 넘기고, <code>print</code>는 사람에게 보인다. <code>return</code>을 만나면 함수는 끝난다.</p>
 
     <h2><span class="hl">4. None</span></h2>
-<pre><code>&gt;&gt;&gt; print(korean_number(11))
+<pre><code>&gt;&gt;&gt; print(korean_number(11))        # 11 을 넣은 결과를 출력해요
 None</code></pre>
     <p><strong>핵심 한 줄:</strong> <code>return</code> 없이 끝나면 <code>None</code>. <code>None</code>으로 계산하면 에러.</p>
 
     <h2><span class="hl">5. f-string과 :2d</span></h2>
-<pre><code>&gt;&gt;&gt; print(f'{m} * {n} = {m*n}')
+<pre><code>&gt;&gt;&gt; print(f'{m} * {n} = {m*n}')        # f-string 으로 값을 끼워 넣어 출력해요
 2 * 1 = 2
-&gt;&gt;&gt; f'[{4:2d}]'
+&gt;&gt;&gt; f'[{4:2d}]'                        # 4 를 2칸 폭으로 맞춰요
 '[ 4]'
-&gt;&gt;&gt; f'[{4:3d}]'
+&gt;&gt;&gt; f'[{4:3d}]'                        # 4 를 3칸 폭으로 맞춰요
 '[  4]'
-&gt;&gt;&gt; f'[{123:2d}]'
+&gt;&gt;&gt; f'[{123:2d}]'                      # 123 은 2칸보다 길어서 그대로 나와요
 '[123]'</code></pre>
     <p><strong>핵심 한 줄:</strong> <code>{ }</code>는 값으로 바뀌고, <code>:Nd</code>는 N칸에 오른쪽 맞춤이다.</p>
 

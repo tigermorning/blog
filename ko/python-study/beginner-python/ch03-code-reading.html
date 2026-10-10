@@ -512,14 +512,14 @@ footer { grid-column: 1 / -1; color: var(--ink-faint); font-size: 13px; border-t
       <article class="problem" id="b1">
         <div class="p-head"><span class="p-id">초급 1</span><span class="p-type">읽기</span><h3>정의와 호출의 순서</h3></div>
         <div class="p-body">
-<pre><code class="language-python">def hello():
-    print('안녕')
+<pre><code class="language-python">def hello():  # 함수 hello 를 만들어요(정의만 해요)
+    print('안녕')  # 화면에 '안녕' 을 출력하는 문장이에요
 
-print('시작')
-hello()
-print('끝')
-hello()
-print(hello)</code></pre>
+print('시작')  # 화면에 '시작' 을 출력해요
+hello()  # 함수 hello 를 호출해요
+print('끝')  # 화면에 '끝' 을 출력해요
+hello()  # 함수 hello 를 한 번 더 호출해요
+print(hello)  # 함수 hello 자체를 출력해요(호출은 아니에요)</code></pre>
           <ul>
             <li>출력을 모두 예측하기 (몇 줄인지부터)</li>
             <li>1~2번째 줄(<code>def</code>)을 실행할 때 화면에 아무것도 안 나오는 이유 설명하기</li>
@@ -557,14 +557,14 @@ print(hello)</code></pre>
       <article class="problem" id="b2">
         <div class="p-head"><span class="p-id">초급 2</span><span class="p-type">읽기</span><h3>넓이 계산기</h3></div>
         <div class="p-body">
-<pre><code class="language-python">def area(w, h):
-    return w * h
+<pre><code class="language-python">def area(w, h):  # w, h 를 받는 함수 area 를 만들어요
+    return w * h  # w 와 h 를 곱해서 돌려줘요
 
-print(area(3, 4))
-print(area(4, 3))
-a = area(2, 5)
-print(a + 1)
-print(area('ab', 2))</code></pre>
+print(area(3, 4))  # area 에 3, 4 를 넣고 돌려받은 값을 출력해요
+print(area(4, 3))  # area 에 4, 3 을 넣고 돌려받은 값을 출력해요
+a = area(2, 5)  # area(2, 5) 가 돌려준 값을 변수 a 에 담아요
+print(a + 1)  # a 에 1 을 더한 값을 출력해요
+print(area('ab', 2))  # area 에 문자열 'ab' 와 숫자 2 를 넣고 출력해요</code></pre>
           <ul>
             <li>출력 네 줄을 예측하기</li>
             <li><code>area(2, 5)</code>를 부를 때 <code>w</code>와 <code>h</code>에 각각 무엇이 들어가는지 말하기</li>
@@ -601,15 +601,15 @@ abab</code></pre>
       <article class="problem" id="b3">
         <div class="p-head"><span class="p-id">초급 3</span><span class="p-type">읽기</span><h3>print와 return 한 줄 차이</h3></div>
         <div class="p-body">
-<pre><code class="language-python">def add_print(a, b):
-    print(a + b)
+<pre><code class="language-python">def add_print(a, b):  # a, b 를 받는 함수 add_print 를 만들어요
+    print(a + b)  # a 와 b 를 더해서 화면에 출력해요
 
-def add_return(a, b):
-    return a + b
+def add_return(a, b):  # a, b 를 받는 함수 add_return 을 만들어요
+    return a + b  # a 와 b 를 더해서 돌려줘요
 
-x = add_print(2, 3)
-y = add_return(2, 3)
-print(x, y)</code></pre>
+x = add_print(2, 3)  # add_print(2, 3) 의 호출 결과를 변수 x 에 담아요
+y = add_return(2, 3)  # add_return(2, 3) 의 호출 결과를 변수 y 에 담아요
+print(x, y)  # x 와 y 를 나란히 출력해요</code></pre>
           <ul>
             <li>출력이 몇 줄인지, 각 줄에 무엇이 나오는지 예측하기</li>
             <li>첫 번째 줄의 출력은 코드의 몇 번째 줄이 찍은 것인지 찾기</li>
@@ -652,14 +652,14 @@ None 5</code></pre>
       <article class="problem" id="b4">
         <div class="p-head"><span class="p-id">초급 4</span><span class="p-type">읽기</span><h3>글자 수 세기</h3></div>
         <div class="p-body">
-<pre><code class="language-python">def show_len(word):
-    n = len(word)
-    print(f'{word}: {n}글자')
+<pre><code class="language-python">def show_len(word):  # 문자열 word 를 받는 함수 show_len 을 만들어요
+    n = len(word)  # word 의 글자 수를 변수 n 에 담아요
+    print(f'{word}: {n}글자')  # word 와 n 을 넣은 문장을 출력해요
 
-show_len('python')
-show_len('파이썬')
-show_len('hello world')
-show_len(str(2 ** 10))</code></pre>
+show_len('python')  # show_len 에 'python' 을 넣어 호출해요
+show_len('파이썬')  # show_len 에 '파이썬' 을 넣어 호출해요
+show_len('hello world')  # show_len 에 'hello world' 를 넣어 호출해요
+show_len(str(2 ** 10))  # 2 의 10제곱을 문자열로 바꿔 show_len 에 넣어요</code></pre>
           <ul>
             <li>출력 네 줄을 예측하기</li>
             <li>마지막 줄은 괄호 안쪽부터 순서대로 값이 어떻게 바뀌는지 적기</li>
@@ -696,17 +696,17 @@ hello world: 11글자
       <article class="problem" id="b5">
         <div class="p-head"><span class="p-id">초급 5</span><span class="p-type">읽기</span><h3>짝수 세기</h3></div>
         <div class="p-body">
-<pre><code class="language-python">def count_even(nums):
-    count = 0
-    for x in nums:
-        if x % 2 == 0:
-            count = count + 1
-    return count
+<pre><code class="language-python">def count_even(nums):  # 리스트 nums 를 받는 함수 count_even 을 만들어요
+    count = 0  # 세는 변수 count 를 0 으로 시작해요
+    for x in nums:  # nums 의 원소를 하나씩 x 로 꺼내요
+        if x % 2 == 0:  # x 를 2 로 나눈 나머지가 0 인지 확인해요
+            count = count + 1  # 조건이 맞으면 count 를 1 키워요
+    return count  # count 를 돌려주고 함수를 끝내요
 
-print(count_even([1, 2, 3, 4, 6]))
-print(count_even([1, 3, 5]))
-print(count_even([]))
-print(count_even(list(range(1, 11))))</code></pre>
+print(count_even([1, 2, 3, 4, 6]))  # count_even 에 [1, 2, 3, 4, 6] 을 넣고 출력해요
+print(count_even([1, 3, 5]))  # count_even 에 [1, 3, 5] 를 넣고 출력해요
+print(count_even([]))  # count_even 에 빈 리스트를 넣고 출력해요
+print(count_even(list(range(1, 11))))  # 1 부터 10 까지의 리스트를 만들어 넣고 출력해요</code></pre>
           <ul>
             <li>출력 네 줄을 예측하기</li>
             <li>첫 번째 호출에서 <code>x</code>와 <code>count</code>가 어떻게 변하는지 표로 적기</li>
@@ -764,15 +764,15 @@ print(count_even(list(range(1, 11))))</code></pre>
       <article class="problem" id="m1">
         <div class="p-head"><span class="p-id">중급 1</span><span class="p-type">읽기</span><h3>성적 등급</h3></div>
         <div class="p-body">
-<pre><code class="language-python">def grade(score):
-    if score &gt;= 90:
-        return 'A'
-    if score &gt;= 80:
-        return 'B'
-    return 'C'
-    print('여기는 실행될까?')
+<pre><code class="language-python">def grade(score):  # 점수 score 를 받는 함수 grade 를 만들어요
+    if score &gt;= 90:  # score 가 90 이상인지 확인해요
+        return 'A'  # 조건이 맞으면 'A' 를 돌려주고 함수를 끝내요
+    if score &gt;= 80:  # score 가 80 이상인지 확인해요
+        return 'B'  # 조건이 맞으면 'B' 를 돌려주고 함수를 끝내요
+    return 'C'  # 'C' 를 돌려주고 함수를 끝내요
+    print('여기는 실행될까?')  # 문자열을 출력하는 문장이에요
 
-print(grade(95), grade(85), grade(80), grade(50))</code></pre>
+print(grade(95), grade(85), grade(80), grade(50))  # grade 를 네 번 호출한 결과를 한 줄에 출력해요</code></pre>
           <ul>
             <li>출력을 예측하기</li>
             <li><code>'여기는 실행될까?'</code>가 출력되는 경우가 있는지 말하기</li>
@@ -807,18 +807,18 @@ print(grade(95), grade(85), grade(80), grade(50))</code></pre>
       <article class="problem" id="m2">
         <div class="p-head"><span class="p-id">중급 2</span><span class="p-type">읽기 + 버그</span><h3>숫자 읽기 함수의 빈틈</h3></div>
         <div class="p-body">
-<pre><code class="language-python">def korean_number(num):
-    if num == 1:
-        return '일'
-    elif num == 2:
-        return '이'
-    elif num == 3:
-        return '삼'
+<pre><code class="language-python">def korean_number(num):  # 숫자 num 을 받는 함수 korean_number 를 만들어요
+    if num == 1:  # num 이 1 인지 확인해요
+        return '일'  # 조건이 맞으면 '일' 을 돌려줘요
+    elif num == 2:  # 아니고 num 이 2 인지 확인해요
+        return '이'  # 조건이 맞으면 '이' 를 돌려줘요
+    elif num == 3:  # 아니고 num 이 3 인지 확인해요
+        return '삼'  # 조건이 맞으면 '삼' 을 돌려줘요
 
-print(korean_number(2))
-print(korean_number(4))
-print(korean_number(1) + korean_number(3))
-print(korean_number(1) + korean_number(4))</code></pre>
+print(korean_number(2))  # korean_number 에 2 를 넣고 출력해요
+print(korean_number(4))  # korean_number 에 4 를 넣고 출력해요
+print(korean_number(1) + korean_number(3))  # 두 호출 결과를 문자열로 이어 붙여 출력해요
+print(korean_number(1) + korean_number(4))  # 1 과 4 의 호출 결과를 이어 붙여 출력해요</code></pre>
           <ul>
             <li>출력을 예측하기. 에러가 난다면 몇 번째 <code>print</code>에서 나는지 찾기</li>
             <li><code>korean_number(4)</code>가 에러를 내지 않는 이유 설명하기</li>
@@ -856,15 +856,15 @@ TypeError: can only concatenate str (not "NoneType") to str</code></pre>
       <article class="problem" id="m3">
         <div class="p-head"><span class="p-id">중급 3</span><span class="p-type">읽기</span><h3>타이머 표시</h3></div>
         <div class="p-body">
-<pre><code class="language-python">def to_clock(total):
-    minutes = total // 60
-    seconds = total % 60
-    return f'{minutes:2d}:{seconds:2d}'
+<pre><code class="language-python">def to_clock(total):  # 초 단위 total 을 받는 함수 to_clock 을 만들어요
+    minutes = total // 60  # total 을 60 으로 나눈 몫을 minutes 에 담아요
+    seconds = total % 60  # total 을 60 으로 나눈 나머지를 seconds 에 담아요
+    return f'{minutes:2d}:{seconds:2d}'  # 폭 2 칸으로 맞춘 분:초 문자열을 돌려줘요
 
-print(to_clock(125))
-print(to_clock(3599))
-print(to_clock(3600))
-print(to_clock(59))</code></pre>
+print(to_clock(125))  # to_clock 에 125 를 넣고 출력해요
+print(to_clock(3599))  # to_clock 에 3599 를 넣고 출력해요
+print(to_clock(3600))  # to_clock 에 3600 을 넣고 출력해요
+print(to_clock(59))  # to_clock 에 59 를 넣고 출력해요</code></pre>
           <ul>
             <li>출력 네 줄을 예측하기 (공백 위치까지)</li>
             <li>실제 타이머 화면으로 보면 어색한 줄을 모두 찾고 이유 말하기</li>
@@ -901,13 +901,13 @@ print(to_clock(59))</code></pre>
       <article class="problem" id="m4">
         <div class="p-head"><span class="p-id">중급 4</span><span class="p-type">읽기</span><h3>함수를 부르는 반복문</h3></div>
         <div class="p-body">
-<pre><code class="language-python">def multi(m):
-    for n in range(1, 4):
-        print(f'{m} * {n} = {m*n:2d}')
+<pre><code class="language-python">def multi(m):  # m 을 받는 함수 multi 를 만들어요
+    for n in range(1, 4):  # n 을 1 부터 3 까지 차례로 바꾸며 반복해요
+        print(f'{m} * {n} = {m*n:2d}')  # m, n, 곱한 값을 한 줄로 출력해요(곱은 폭 2 칸)
 
-for i in range(2, 4):
-    multi(i)
-    print('---')</code></pre>
+for i in range(2, 4):  # i 를 2 부터 3 까지 차례로 바꾸며 반복해요
+    multi(i)  # i 를 넣어 multi 를 호출해요
+    print('---')  # 구분선 '---' 를 출력해요</code></pre>
           <ul>
             <li>출력을 모두 예측하기</li>
             <li><code>multi(i)</code>를 부를 때 <code>i</code>의 값이 함수 안의 어떤 이름으로 들어가는지 말하기</li>
@@ -949,16 +949,16 @@ for i in range(2, 4):
       <article class="problem" id="m5">
         <div class="p-head"><span class="p-id">중급 5</span><span class="p-type">읽기</span><h3>첫 번째 배수 찾기</h3></div>
         <div class="p-body">
-<pre><code class="language-python">def find_first(nums, k):
-    for x in nums:
-        if x % k == 0:
-            return x
-    return -1
+<pre><code class="language-python">def find_first(nums, k):  # 리스트 nums 와 숫자 k 를 받는 함수 find_first 를 만들어요
+    for x in nums:  # nums 의 원소를 하나씩 x 로 꺼내요
+        if x % k == 0:  # x 를 k 로 나눈 나머지가 0 인지 확인해요
+            return x  # 조건이 맞으면 x 를 돌려주고 함수를 끝내요
+    return -1  # 반복이 다 끝나면 -1 을 돌려줘요
 
-print(find_first([5, 7, 9, 12], 3))
-print(find_first([5, 7, 11], 3))
-print(find_first([10, 20], 5))
-print(find_first([], 5))</code></pre>
+print(find_first([5, 7, 9, 12], 3))  # find_first 에 [5, 7, 9, 12] 와 3 을 넣고 출력해요
+print(find_first([5, 7, 11], 3))  # find_first 에 [5, 7, 11] 과 3 을 넣고 출력해요
+print(find_first([10, 20], 5))  # find_first 에 [10, 20] 과 5 를 넣고 출력해요
+print(find_first([], 5))  # find_first 에 빈 리스트와 5 를 넣고 출력해요</code></pre>
           <ul>
             <li>출력 네 줄을 예측하기</li>
             <li>첫 줄이 <code>12</code>가 아닌 이유 설명하기</li>
@@ -987,10 +987,10 @@ print(find_first([], 5))</code></pre>
               <li><code>-1</code>은 "못 찾았다"는 신호로 약속한 값. 리스트 번호나 개수로는 나올 수 없는 값이라 구분이 쉬움</li>
             </ul>
             <h4>return -1을 for 안으로 들여쓰면</h4>
-<pre><code class="language-python">    for x in nums:
-        if x % k == 0:
-            return x
-        return -1</code></pre>
+<pre><code class="language-python">    for x in nums:  # nums 의 원소를 하나씩 x 로 꺼내요
+        if x % k == 0:  # x 가 k 로 나누어떨어지는지 확인해요
+            return x  # 나누어떨어지면 x 를 돌려줘요
+        return -1  # if 와 같은 깊이라서 첫 원소에서 바로 -1 을 돌려줘요</code></pre>
             <ul>
               <li>첫 원소 <code>5</code>를 보고 조건이 거짓 → 바로 <code>return -1</code>로 끝남 → 결과 <code>-1</code></li>
               <li>첫 원소만 검사하는 함수가 되어 버림. <code>[9, 5]</code>처럼 첫 원소가 맞을 때만 정상으로 보여서 버그를 늦게 발견함</li>
@@ -1004,14 +1004,14 @@ print(find_first([], 5))</code></pre>
       <article class="problem" id="m6">
         <div class="p-head"><span class="p-id">중급 6</span><span class="p-type">읽기</span><h3>0으로 나누기를 막는 순서</h3></div>
         <div class="p-body">
-<pre><code class="language-python">def safe_ratio(a, b):
-    return b != 0 and a / b &gt; 1
+<pre><code class="language-python">def safe_ratio(a, b):  # 함수 safe_ratio 를 만들어요
+    return b != 0 and a / b &gt; 1  # b 가 0 이 아니고, 나눈 값이 1 보다 큰지 돌려줘요
 
-def unsafe_ratio(a, b):
-    return a / b &gt; 1 and b != 0
+def unsafe_ratio(a, b):  # 함수 unsafe_ratio 를 만들어요
+    return a / b &gt; 1 and b != 0  # 나눈 값이 1 보다 크고, b 가 0 이 아닌지 돌려줘요
 
-print(safe_ratio(6, 3), safe_ratio(6, 0), safe_ratio(2, 3))
-print(unsafe_ratio(6, 0))</code></pre>
+print(safe_ratio(6, 3), safe_ratio(6, 0), safe_ratio(2, 3))  # safe_ratio 를 세 번 호출한 결과를 한 줄에 출력해요
+print(unsafe_ratio(6, 0))  # unsafe_ratio 에 6, 0 을 넣고 출력해요</code></pre>
           <ul>
             <li>첫 <code>print</code>의 출력을 예측하기</li>
             <li>둘째 <code>print</code>에서 무슨 일이 생기는지 예측하기</li>
@@ -1056,15 +1056,15 @@ ZeroDivisionError: division by zero</code></pre>
       <article class="problem" id="a1">
         <div class="p-head"><span class="p-id">고급 1</span><span class="p-type">버그</span><h3>보너스 합계가 안 된다</h3></div>
         <div class="p-body">
-<pre><code class="language-python">def add_bonus(scores):
-    for s in scores:
-        print(s + 5)
+<pre><code class="language-python">def add_bonus(scores):  # 리스트 scores 를 받는 함수 add_bonus 를 만들어요
+    for s in scores:  # scores 의 원소를 하나씩 s 로 꺼내요
+        print(s + 5)  # s 에 5 를 더한 값을 출력해요
 
-total = 0
-result = add_bonus([80, 90])
-print(result)
-total = total + result
-print(total)</code></pre>
+total = 0  # 변수 total 을 0 으로 시작해요
+result = add_bonus([80, 90])  # add_bonus 의 호출 결과를 변수 result 에 담아요
+print(result)  # result 를 출력해요
+total = total + result  # total 에 result 를 더해서 total 에 다시 담아요
+print(total)  # total 을 출력해요</code></pre>
           <ul>
             <li>작성자는 "보너스 5점을 더한 점수의 합계"를 <code>total</code>에 담으려고 했음</li>
             <li>실제 출력을 예측하고, 에러가 나는 줄을 찾기</li>
@@ -1094,13 +1094,13 @@ TypeError: unsupported operand type(s) for +: 'int' and 'NoneType'</code></pre>
               <li>착각: "화면에 보였다 = 값을 얻었다"</li>
             </ul>
             <h4>작성자의 의도대로 읽히는 코드</h4>
-<pre><code class="language-python">def add_bonus(scores):
-    total = 0
-    for s in scores:
-        total = total + s + 5
-    return total
+<pre><code class="language-python">def add_bonus(scores):  # 리스트 scores 를 받는 함수 add_bonus 를 만들어요
+    total = 0  # 합계 변수 total 을 0 으로 시작해요
+    for s in scores:  # scores 의 원소를 하나씩 s 로 꺼내요
+        total = total + s + 5  # total 에 s 와 5 를 더해서 담아요
+    return total  # total 을 돌려줘요
 
-print(add_bonus([80, 90]))   # 180</code></pre>
+print(add_bonus([80, 90]))  # 합계 180 이 출력돼요</code></pre>
             <ul>
               <li>반복하며 합계를 모으고, 끝난 뒤 <code>return</code></li>
               <li>화면 출력은 함수 밖에서 필요할 때만</li>
@@ -1113,15 +1113,15 @@ print(add_bonus([80, 90]))   # 180</code></pre>
       <article class="problem" id="a2">
         <div class="p-head"><span class="p-id">고급 2</span><span class="p-type">읽기</span><h3>명단에서 첫 사람 빼기</h3></div>
         <div class="p-body">
-<pre><code class="language-python">def drop_first(names):
-    names.remove(names[0])
-    return len(names)
+<pre><code class="language-python">def drop_first(names):  # 리스트 names 를 받는 함수 drop_first 를 만들어요
+    names.remove(names[0])  # names 의 첫 원소를 리스트에서 지워요
+    return len(names)  # 남은 원소 개수를 돌려줘요
 
-members = ['지민', '서준', '하은']
-n = drop_first(members)
-print(n, members)
-n = drop_first(members)
-print(n, members)</code></pre>
+members = ['지민', '서준', '하은']  # 이름 세 개짜리 리스트를 변수 members 에 담아요
+n = drop_first(members)  # drop_first(members) 의 결과를 변수 n 에 담아요
+print(n, members)  # n 과 members 를 나란히 출력해요
+n = drop_first(members)  # 같은 members 로 drop_first 를 한 번 더 호출해요
+print(n, members)  # n 과 members 를 다시 출력해요</code></pre>
           <ul>
             <li>출력 두 줄을 예측하기</li>
             <li>함수 안에서는 <code>names</code>만 건드렸는데 밖의 <code>members</code>도 바뀌는지 판단하기</li>
@@ -1156,22 +1156,22 @@ print(n, members)</code></pre>
       <article class="problem" id="a3">
         <div class="p-head"><span class="p-id">고급 3</span><span class="p-type">읽기</span><h3>단리와 복리</h3></div>
         <div class="p-body">
-<pre><code class="language-python">def simple_amount(p, r, t):
-    return p * (1 + r * t)
+<pre><code class="language-python">def simple_amount(p, r, t):  # 원금 p, 이율 r, 기간 t 를 받는 함수 simple_amount 를 만들어요
+    return p * (1 + r * t)  # 단리 계산식으로 구한 금액을 돌려줘요
 
-def compound_amount(p, r, years):
-    y = 0
-    while y &lt; years:
-        p = p * (1 + r)
-        y += 1
-    return p
+def compound_amount(p, r, years):  # 원금 p, 이율 r, 햇수 years 를 받는 함수를 만들어요
+    y = 0  # 지난 햇수를 세는 변수 y 를 0 으로 시작해요
+    while y &lt; years:  # y 가 years 보다 작은 동안 반복해요
+        p = p * (1 + r)  # p 에 (1 + r) 을 곱해서 p 에 다시 담아요
+        y += 1  # y 를 1 키워요
+    return p  # 계산된 p 를 돌려줘요
 
-principal = 1000000
-for year in range(1, 4):
-    s = simple_amount(principal, 0.05, year)
-    c = compound_amount(principal, 0.05, year)
-    print(year, s, c, int(c) - int(s))
-print(principal)</code></pre>
+principal = 1000000  # 원금 변수 principal 에 1000000 을 담아요
+for year in range(1, 4):  # year 를 1 부터 3 까지 차례로 바꾸며 반복해요
+    s = simple_amount(principal, 0.05, year)  # 단리로 계산한 금액을 변수 s 에 담아요
+    c = compound_amount(principal, 0.05, year)  # 복리로 계산한 금액을 변수 c 에 담아요
+    print(year, s, c, int(c) - int(s))  # year, s, c, 두 금액의 정수 차이를 한 줄에 출력해요
+print(principal)  # principal 을 출력해요</code></pre>
           <ul>
             <li>출력 네 줄을 예측하기</li>
             <li><code>compound_amount</code> 안에서 <code>p</code>를 계속 다시 대입하는데, 마지막 <code>print(principal)</code>은 무엇이 나오는지 판단하기</li>
@@ -1223,15 +1223,15 @@ print(principal)</code></pre>
       <article class="problem" id="a4">
         <div class="p-head"><span class="p-id">고급 4</span><span class="p-type">읽기</span><h3>자릿수 함수 두 개</h3></div>
         <div class="p-body">
-<pre><code class="language-python">def num_of_digits(num):
-    return len(str(num))
+<pre><code class="language-python">def num_of_digits(num):  # 숫자 num 을 받는 함수 num_of_digits 를 만들어요
+    return len(str(num))  # num 을 문자열로 바꾼 뒤 그 길이를 돌려줘요
 
-def num_of_digits2(num):
-    count = 0
-    while num &gt; 0:
-        num = num // 10
-        count += 1
-    return count</code></pre>
+def num_of_digits2(num):  # 숫자 num 을 받는 함수 num_of_digits2 를 만들어요
+    count = 0  # 자릿수를 세는 변수 count 를 0 으로 시작해요
+    while num &gt; 0:  # num 이 0 보다 큰 동안 반복해요
+        num = num // 10  # num 을 10 으로 나눈 몫으로 바꿔요
+        count += 1  # count 를 1 키워요
+    return count  # count 를 돌려줘요</code></pre>
           <ul>
             <li>두 함수 모두 3.1.1 자릿수 문제의 풀이. 아래 표를 채우기</li>
           </ul>
@@ -1298,19 +1298,19 @@ def num_of_digits2(num):
       <article class="problem" id="a5">
         <div class="p-head"><span class="p-id">고급 5</span><span class="p-type">읽기 + 버그</span><h3>소수 판별기의 구멍</h3></div>
         <div class="p-body">
-<pre><code class="language-python">def check(n):
-    for d in range(2, n):
-        if n % d == 0:
-            print(f'{n} = {d} * {n // d}')
-            break
-    else:
-        print(f'{n}은 소수')
+<pre><code class="language-python">def check(n):  # 숫자 n 을 받는 함수 check 를 만들어요
+    for d in range(2, n):  # d 를 2 부터 n 직전까지 차례로 바꾸며 반복해요
+        if n % d == 0:  # n 이 d 로 나누어떨어지는지 확인해요
+            print(f'{n} = {d} * {n // d}')  # n = d * 몫 모양의 문장을 출력해요
+            break  # 반복을 바로 멈춰요
+    else:  # 반복이 break 없이 다 끝났을 때만 실행되는 부분이에요
+        print(f'{n}은 소수')  # '소수' 라는 문장을 출력해요
 
-check(15)
-check(13)
-check(49)
-check(2)
-check(1)</code></pre>
+check(15)  # check 에 15 를 넣어 호출해요
+check(13)  # check 에 13 을 넣어 호출해요
+check(49)  # check 에 49 를 넣어 호출해요
+check(2)  # check 에 2 를 넣어 호출해요
+check(1)  # check 에 1 을 넣어 호출해요</code></pre>
           <ul>
             <li>출력 다섯 줄을 예측하기</li>
             <li><code>else</code>가 <code>if</code>가 아니라 <code>for</code>와 같은 들여쓰기인 것에 주의. 언제 실행되는지 2.5 내용으로 설명하기</li>
@@ -1350,14 +1350,14 @@ check(1)</code></pre>
       <article class="problem" id="a6">
         <div class="p-head"><span class="p-id">고급 6</span><span class="p-type">읽기</span><h3>무엇이든 세 배</h3></div>
         <div class="p-body">
-<pre><code class="language-python">def triple(x):
-    return x * 3
+<pre><code class="language-python">def triple(x):  # x 를 받는 함수 triple 을 만들어요
+    return x * 3  # x 에 3 을 곱한 값을 돌려줘요
 
-print(triple(2), triple('ab'), triple([1, 2]))
-print(triple('3') + '0')
-print(triple(int('3')) + 0)
-print(triple(0.1))
-print(triple(0.1) == 0.3)</code></pre>
+print(triple(2), triple('ab'), triple([1, 2]))  # 숫자, 문자열, 리스트를 각각 넣어 한 줄에 출력해요
+print(triple('3') + '0')  # triple('3') 의 결과에 문자열 '0' 을 이어 붙여 출력해요
+print(triple(int('3')) + 0)  # 문자열 '3' 을 정수로 바꿔 넣고, 0 을 더해 출력해요
+print(triple(0.1))  # triple 에 0.1 을 넣고 출력해요
+print(triple(0.1) == 0.3)  # triple(0.1) 과 0.3 이 같은지 비교해 출력해요</code></pre>
           <ul>
             <li>출력 다섯 줄을 예측하기</li>
             <li>둘째 줄과 셋째 줄이 다른 이유를 따옴표 기준으로 설명하기</li>
@@ -1397,15 +1397,15 @@ False</code></pre>
         <div class="p-head"><span class="p-id">고급 7</span><span class="p-type">추론</span><h3>처음 보는 문법 읽어 내기</h3></div>
         <div class="p-body">
           <p>아직 배우지 않은 문법이 두 가지 섞여 있습니다. 결과를 보고 뜻을 추측해 보세요.</p>
-<pre><code class="language-python">def split_time(total):
-    return total // 60, total % 60
+<pre><code class="language-python">def split_time(total):  # 초 단위 total 을 받는 함수 split_time 을 만들어요
+    return total // 60, total % 60  # 몫과 나머지 두 값을 함께 돌려줘요
 
-result = split_time(125)
-print(result)
+result = split_time(125)  # split_time(125) 의 결과를 변수 result 에 담아요
+print(result)  # result 를 출력해요
 
-m, s = split_time(125)
-print(f'{m:02d}:{s:02d}')
-print(f'{m:2d}:{s:2d}')</code></pre>
+m, s = split_time(125)  # 돌려받은 두 값을 m 과 s 에 나눠 담아요
+print(f'{m:02d}:{s:02d}')  # m 과 s 를 0 으로 채운 두 자리로 출력해요
+print(f'{m:2d}:{s:2d}')  # m 과 s 를 공백으로 채운 두 자리로 출력해요</code></pre>
           <ul>
             <li>실행하지 말고 출력 세 줄을 예측하기</li>
             <li><code>return</code> 뒤에 쉼표로 값 두 개를 쓰면 무엇이 돌아오는지 추측하기 (힌트: 1장 <code>divmod()</code>의 결과 모양)</li>

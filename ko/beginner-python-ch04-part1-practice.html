@@ -52,13 +52,13 @@
 
     <h2 id="q1"><span class="hl">문제 1</span> — 슬라이싱</h2>
     <p>문자열과 리스트를 잘라 보는 코드예요.</p>
-<pre><code>word = 'python'
-nums = [10, 20, 30, 40, 50]
-print(word[::-1])
-print(word[1:4])
-print(nums[-3:])
-print(nums[::-1])
-print(word[:2] + word[-2:])</code></pre>
+<pre><code>word = 'python'              # 변수 word 에 문자열 'python' 을 담아요
+nums = [10, 20, 30, 40, 50]  # 변수 nums 에 숫자 다섯 개짜리 리스트를 담아요
+print(word[::-1])            # word 를 끝에서 처음 방향으로 읽어 출력해요
+print(word[1:4])             # word 의 1번부터 3번 자리까지 잘라 출력해요
+print(nums[-3:])             # nums 의 뒤에서 세 번째부터 끝까지 잘라 출력해요
+print(nums[::-1])            # nums 를 끝에서 처음 방향으로 읽어 출력해요
+print(word[:2] + word[-2:])  # 앞 두 글자와 뒤 두 글자를 이어 출력해요</code></pre>
     <p>이 코드를 실행하면 다섯 줄이 출력돼요. 각 줄은 무엇일까요?</p>
     <div class="table-scroll fill">
       <table>
@@ -84,15 +84,15 @@ print(word[:2] + word[-2:])</code></pre>
 
     <h2 id="q2"><span class="hl">문제 2</span> — 문자열은 불변, split과 strip</h2>
     <p>문자열을 새로 만들고, 쪼개고, 공백을 지우는 코드예요.</p>
-<pre><code>x = 'banana'
-y = 'n' + x[1:]
-print(x)
-print(y)
-line = '  apple, kiwi , melon  '
-parts = line.strip().split(',')
-print(parts)
-print(parts[1].strip())
-print(len(parts))</code></pre>
+<pre><code>x = 'banana'                      # 변수 x 에 문자열 'banana' 를 담아요
+y = 'n' + x[1:]                   # 'n' 뒤에 x 의 1번 자리부터 끝까지를 붙여 y 에 담아요
+print(x)                          # x 를 출력해요
+print(y)                          # y 를 출력해요
+line = '  apple, kiwi , melon  '  # 변수 line 에 앞뒤 공백이 있는 문자열을 담아요
+parts = line.strip().split(',')   # 앞뒤 공백을 지우고 쉼표로 잘라 parts 에 담아요
+print(parts)                      # parts 를 출력해요
+print(parts[1].strip())           # parts 의 1번 원소 앞뒤 공백을 지워 출력해요
+print(len(parts))                 # parts 의 원소 개수를 출력해요</code></pre>
     <p>이 코드를 실행하면 다섯 줄이 출력돼요. 각 줄은 무엇일까요? 특히 <code>x</code>가 두 번째 줄에서 바뀌었는지 생각해 보세요.</p>
     <div class="table-scroll fill">
       <table>
@@ -118,15 +118,15 @@ print(len(parts))</code></pre>
 
     <h2 id="q3"><span class="hl">문제 3</span> — 리스트 메서드 연쇄</h2>
     <p>리스트에 값을 더하고 빼는 줄이 여러 개 이어지는 코드예요.</p>
-<pre><code>a = [3, 1]
-a.append(5)
-a.insert(0, 9)
-x = a.pop()
-del a[1]
-a.append(x)
-print(a)
-print(x)
-print(len(a))</code></pre>
+<pre><code>a = [3, 1]      # 변수 a 에 숫자 두 개짜리 리스트를 담아요
+a.append(5)     # a 맨 뒤에 5를 덧붙여요
+a.insert(0, 9)  # a 의 0번 자리에 9를 끼워 넣어요
+x = a.pop()     # a 맨 뒤 원소를 꺼내 x 에 담아요
+del a[1]        # a 의 1번 자리 원소를 지워요
+a.append(x)     # x 에 든 값을 a 맨 뒤에 덧붙여요
+print(a)        # a 를 출력해요
+print(x)        # x 를 출력해요
+print(len(a))   # a 의 원소 개수를 출력해요</code></pre>
     <p>이 코드를 실행하면 세 줄이 출력돼요. 각 줄은 무엇일까요? 줄마다 <code>a</code>가 어떻게 바뀌는지 적어 보세요.</p>
     <div class="table-scroll fill">
       <table>
@@ -150,16 +150,16 @@ print(len(a))</code></pre>
 
     <h2 id="q4"><span class="hl">문제 4</span> — in과 복사 a[:]</h2>
     <p>복사한 리스트와 이름만 붙인 리스트가 나오는 코드예요.</p>
-<pre><code>a = [1, 2, 3]
-b = a[:]
-b.append(4)
-c = a
-c.append(5)
-print(a)
-print(b)
-print(2 in a)
-print('2' in a)
-print(4 in a)</code></pre>
+<pre><code>a = [1, 2, 3]    # 변수 a 에 숫자 세 개짜리 리스트를 담아요
+b = a[:]         # a 의 복사본을 만들어 b 에 담아요
+b.append(4)      # b 맨 뒤에 4를 덧붙여요
+c = a            # c 가 a 와 같은 리스트를 가리키게 해요
+c.append(5)      # c 맨 뒤에 5를 덧붙여요
+print(a)         # a 를 출력해요
+print(b)         # b 를 출력해요
+print(2 in a)    # 숫자 2가 a 의 원소인지 물어 출력해요
+print('2' in a)  # 문자열 '2'가 a 의 원소인지 물어 출력해요
+print(4 in a)    # 숫자 4가 a 의 원소인지 물어 출력해요</code></pre>
     <p>이 코드를 실행하면 다섯 줄이 출력돼요. 각 줄은 무엇일까요? <code>a</code>가 바뀌는 줄이 어디인지 먼저 찾아보세요.</p>
     <div class="table-scroll fill">
       <table>
@@ -185,17 +185,17 @@ print(4 in a)</code></pre>
 
     <h2 id="q5"><span class="hl">문제 5</span> — 순회 중 remove와 복사본 순회</h2>
     <p>같은 일을 하는 두 코드 중 하나만 복사본을 도는 코드예요.</p>
-<pre><code>L = [1, 2, 2, 3]
-for x in L:
-    if x == 2:
-        L.remove(x)
-print(L)
+<pre><code>L = [1, 2, 2, 3]     # 변수 L 에 숫자 네 개짜리 리스트를 담아요
+for x in L:          # L 의 원소를 차례로 x 에 꺼내며 반복해요
+    if x == 2:       # x 가 2와 같은지 따져요
+        L.remove(x)  # L 에서 x 와 같은 값을 지워요
+print(L)             # L 을 출력해요
 
-M = [1, 2, 2, 3]
-for x in M[:]:
-    if x == 2:
-        M.remove(x)
-print(M)</code></pre>
+M = [1, 2, 2, 3]     # 변수 M 에 숫자 네 개짜리 리스트를 담아요
+for x in M[:]:       # M 의 복사본 원소를 차례로 x 에 꺼내며 반복해요
+    if x == 2:       # x 가 2와 같은지 따져요
+        M.remove(x)  # M 에서 x 와 같은 값을 지워요
+print(M)             # M 을 출력해요</code></pre>
     <p>이 코드를 실행하면 두 줄이 출력돼요. 각 줄은 무엇일까요? 두 줄이 같을지 다를지부터 예측해 보세요.</p>
     <div class="table-scroll fill">
       <table>
