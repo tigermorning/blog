@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>실습 문제 5개 — 지역·전역변수와 lambda·map·filter·reduce 코드 읽고 결과 예측하기 - Tigermorning</title>
+  <meta name="description" content="왕초보를 위한 Python 3장 후반부(지역·전역변수, global, lambda, map·filter·reduce) 완성된 코드 5개를 읽고 실행 결과를 예측하는 문제. 코드를 직접 짜지 않고 읽기만 해요.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="실습 문제 5개 — 지역·전역변수와 lambda·map·filter·reduce 코드 읽고 결과 예측하기">
+  <meta property="og:description" content="지역·전역변수, global, lambda, map·filter·reduce가 나오는 완성된 코드 5개를 읽고 결과를 예측하는 문제입니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/beginner-python-ch03-part2-practice.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <a class="post-nav" href="beginner-python-ch03-part2-answers.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">문제 해설 — 지역·전역변수와 lambda·map·filter·reduce를 자세히 뜯어본다</span>
+    </a>
+
+    <h1><span class="hl">실습 문제 5개</span> — 지역·전역변수와 lambda·map·filter·reduce 코드 읽고 결과 예측하기 (3)</h1>
+    <p class="post-date">2026. 10. 11.</p>
+    <p class="post-date">※ 이 글은 위키독스 <a href="https://wikidocs.net/book/2" target="_blank" rel="noopener">『왕초보를 위한 Python』</a> 3장 3.3~3.4 내용을 바탕으로 제가 직접 만든 문제입니다. 교재의 공식 연습 문제가 아니에요. 완성된 코드를 보여드리니 <strong>직접 짤 필요 없이</strong>, 코드를 읽고 실행 결과가 뭘지 먼저 예측해보세요. 자세한 정답과 이유는 앞 글(문제 해설)에 따로 있어요.</p>
+
+    <p class="one-liner">지역·전역변수, global, lambda, map·filter·reduce가 나오는 완성된 코드 5개를 보고, 코드를 짜지 않고 실행 결과만 예측해보는 읽기 문제예요.</p>
+
+    <h2><span class="hl">핵심 정리</span></h2>
+    <table>
+      <thead><tr><th>개념</th><th>한 줄 정리</th></tr></thead>
+      <tbody>
+        <tr><td>지역변수</td><td>함수 안에서 <code>x = ...</code>로 만든 변수는 그 함수 안에서만 살고, 같은 이름의 전역 x는 그대로다.</td></tr>
+        <tr><td><code>global 이름</code></td><td>함수 안에서 전역변수 값을 바꾸려면 먼저 이렇게 선언해야 한다.</td></tr>
+        <tr><td><code>lambda 매개변수: 식</code></td><td>이름 없는 한 줄짜리 함수이고, 식의 결과가 곧 return 값이다.</td></tr>
+        <tr><td><code>map(함수, 리스트)</code></td><td>모든 원소에 함수를 적용한다(결과는 <code>list()</code>로 감싸야 보인다).</td></tr>
+        <tr><td><code>filter(함수, 리스트)</code></td><td>함수 결과가 참인 원소만 남긴다.</td></tr>
+        <tr><td><code>reduce(함수, 리스트)</code></td><td>앞에서부터 두 개씩 합쳐 하나로 만든다(<code>from functools import reduce</code> 필요).</td></tr>
+      </tbody>
+    </table>
+
+    <p>다섯 문제 모두 <a href="beginner-python-ch03-part2-notes.html">지난 글</a>에서 정리한 문법만으로 읽을 수 있어요. 1·2번은 지역·전역변수, 3번은 lambda, 4·5번은 map·filter·reduce 문제예요. 코드를 눈으로 따라가며 결과를 예측한 뒤, <a href="beginner-python-ch03-part2-answers.html">문제 해설</a>에서 본 풀이와 맞춰 보세요.</p>
+
+    <h2 id="q1"><span class="hl">문제 1</span> — 이름이 같은 지역변수와 전역변수</h2>
+    <p>함수 밖과 함수 안에 똑같이 <code>x</code>가 있는 코드예요.</p>
+<pre><code>x = 10
+
+def change():
+    x = 99
+    print('함수 안:', x)
+
+change()
+print('함수 밖:', x)</code></pre>
+    <p>이 코드를 실행하면 두 줄이 차례로 출력돼요. 각각 무엇일까요?</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>출력 줄</th><th>예측</th></tr></thead>
+        <tbody>
+          <tr><td>첫 번째 줄(함수 안)</td><td>?</td></tr>
+          <tr><td>두 번째 줄(함수 밖)</td><td>?</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <details>
+      <summary>힌트 보기</summary>
+      <p>함수 안에서 <code>x = 99</code>라고 쓰면 전역 x를 고치는 게 아니라 <strong>이름만 같은 새 변수</strong>를 함수 안에 하나 더 만들어요. 함수 안 <code>print</code>가 어느 x를 보는지, 함수가 끝난 뒤 밖의 x는 어떻게 됐는지 따로 생각해보세요.</p>
+    </details>
+    <details class="sol-link">
+      <summary>정답·해설 보기</summary>
+      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
+      <p><a href="beginner-python-ch03-part2-answers.html#a1">문제 1 정답과 해설 →</a></p>
+    </details>
+
+    <h2 id="q2"><span class="hl">문제 2</span> — global로 전역 값 누적하기</h2>
+    <p>함수를 부를 때마다 전역변수 <code>count</code>에 값을 더하는 코드예요.</p>
+<pre><code>count = 0
+
+def add(n):
+    global count
+    count = count + n
+    print('더한 뒤:', count)
+
+add(3)
+add(4)
+print('최종:', count)</code></pre>
+    <p>이 코드를 실행하면 세 줄이 출력돼요. 각 줄은 무엇일까요? <code>add(3)</code>과 <code>add(4)</code>를 부른 뒤 <code>count</code>가 어떻게 변하는지도 함께 짚어보세요.</p>
+    <details>
+      <summary>힌트 보기</summary>
+      <p><code>global count</code> 덕분에 함수 안의 <code>count</code>는 새 변수가 아니라 <strong>바깥의 그 count 하나</strong>예요. 그래서 <code>add(3)</code>이 바꾼 값이 함수가 끝난 뒤에도 남아 있고, 이어지는 <code>add(4)</code>는 그 값에서 시작해요.</p>
+    </details>
+    <details class="sol-link">
+      <summary>정답·해설 보기</summary>
+      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
+      <p><a href="beginner-python-ch03-part2-answers.html#a2">문제 2 정답과 해설 →</a></p>
+    </details>
+
+    <h2 id="q3"><span class="hl">문제 3</span> — lambda를 바로 부르기, 변수에 담아 부르기</h2>
+    <p>같은 lambda를 두 가지 방식으로 쓰는 코드예요.</p>
+<pre><code>square = lambda x: x * x
+print((lambda a, b: a + b)(3, 4))
+print(square(5))
+print(square(square(2)))</code></pre>
+    <p>이 코드를 실행하면 세 줄이 출력돼요. 각 줄은 무엇일까요?</p>
+    <details>
+      <summary>힌트 보기</summary>
+      <p><code>lambda a, b: a + b</code> 뒤에 바로 <code>(3, 4)</code>를 붙이면 만들자마자 호출하는 거예요. <code>square(square(2))</code>는 <strong>안쪽 괄호부터</strong> 계산해서, 그 결과를 다시 <code>square</code>에 넣어요.</p>
+    </details>
+    <details class="sol-link">
+      <summary>정답·해설 보기</summary>
+      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
+      <p><a href="beginner-python-ch03-part2-answers.html#a3">문제 3 정답과 해설 →</a></p>
+    </details>
+
+    <h2 id="q4"><span class="hl">문제 4</span> — map과 filter로 리스트 만들기</h2>
+    <p>같은 리스트에 map과 filter를 각각 적용하고, filter 결과에 map을 한 번 더 쓰는 코드예요.</p>
+<pre><code>nums = [1, 2, 3, 4, 5, 6]
+doubled = list(map(lambda x: x * 2, nums))
+evens = list(filter(lambda x: x % 2 == 0, nums))
+print(doubled)
+print(evens)
+print(list(map(lambda x: x + 1, evens)))</code></pre>
+    <p>이 코드를 실행하면 세 줄이 출력돼요. 각 줄은 무엇일까요?</p>
+    <details>
+      <summary>힌트 보기</summary>
+      <p><code>map</code>은 원소를 <strong>전부</strong> 바꾸고 개수는 그대로예요. <code>filter</code>는 <strong>조건이 참인 원소만</strong> 남기고 값은 바꾸지 않아요. 마지막 줄은 <code>evens</code>에 남은 원소들에 다시 map을 적용한 거라, <code>nums</code>가 아니라 <code>evens</code>에서 출발해야 해요.</p>
+    </details>
+    <details class="sol-link">
+      <summary>정답·해설 보기</summary>
+      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
+      <p><a href="beginner-python-ch03-part2-answers.html#a4">문제 4 정답과 해설 →</a></p>
+    </details>
+
+    <h2 id="q5"><span class="hl">문제 5</span> — reduce로 합치기 (숫자와 문자)</h2>
+    <p>reduce로 숫자는 더하기·곱하기, 문자열은 뒤집기를 하는 코드예요.</p>
+<pre><code>from functools import reduce
+
+nums = [1, 2, 3, 4]
+print(reduce(lambda a, b: a + b, nums))
+print(reduce(lambda a, b: a * b, nums))
+print(reduce(lambda a, b: b + a, 'abc'))</code></pre>
+    <p>이 코드를 실행하면 세 줄이 출력돼요. 각 줄은 무엇일까요? 세 번째 줄은 <code>a</code>와 <code>b</code>에 반복마다 어떤 값이 들어가는지 표로 적어 보세요.</p>
+    <details>
+      <summary>힌트 보기</summary>
+      <p>reduce는 먼저 앞의 두 원소를 <code>a</code>, <code>b</code>로 받아 계산하고, 그 결과를 다음 반복의 <code>a</code>에 넣어요. 그다음 원소가 <code>b</code>로 들어오고요. 세 번째 줄은 <code>b + a</code>의 <strong>순서가 거꾸로</strong>라는 점이 핵심이에요. 문자열 <code>'abc'</code>는 <code>'a'</code>, <code>'b'</code>, <code>'c'</code> 세 원소로 취급돼요.</p>
+    </details>
+    <details class="sol-link">
+      <summary>정답·해설 보기</summary>
+      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
+      <p><a href="beginner-python-ch03-part2-answers.html#a5">문제 5 정답과 해설 →</a></p>
+    </details>
+
+    <h2><span class="hl">함께 보기</span></h2>
+    <ul>
+      <li><a href="beginner-python-ch03-part2-answers.html">문제 해설 — 지역·전역변수와 lambda·map·filter·reduce를 자세히 뜯어본다</a> — 이 5문제의 정답과 한 줄씩 짚어보는 해설이에요.</li>
+      <li><a href="beginner-python-ch03-part2-notes.html">지역·전역변수·lambda·map·reduce·filter 정리</a> — 이 문제들에 쓰인 문법 설명이에요.</li>
+      <li><a href="python-study/beginner-python/ch03-code-reading.html">3장 코드 읽기 실습(함수·return, 18문제)</a> — 함수와 return을 먼저 연습한 읽기 문제들이에요.</li>
+    </ul>
+
+    <h3 id="series-list">"왕초보 Python 3장 후반부" 시리즈</h3>
+    <a class="post-nav" href="beginner-python-ch03-part2-notes.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">지역·전역변수·lambda·map·reduce·filter 정리</span>
+    </a>
+    <a class="post-nav" href="beginner-python-ch03-part2-answers.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">문제 해설 — 지역·전역변수와 lambda·map·filter·reduce를 자세히 뜯어본다</span>
+    </a>
+    <p class="post-date">(3) 실습 문제 5개 — 지역·전역변수와 lambda·map·filter·reduce 코드 읽고 결과 예측하기 (이 글)</p>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>

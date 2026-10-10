@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>왕초보를 위한 Python 3장 후반부 — 지역·전역변수·lambda·map·reduce·filter 정리 - Tigermorning</title>
+  <meta name="description" content="위키독스 『왕초보를 위한 Python』 3.3 지역변수·전역변수부터 3.4 lambda·map·reduce·filter까지, 새로 나오는 문법이 각각 무슨 뜻인지만 짧게 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="왕초보를 위한 Python 3장 후반부 — 지역·전역변수·lambda·map·reduce·filter 정리">
+  <meta property="og:description" content="3.3 지역변수·전역변수부터 3.4 lambda·map·reduce·filter까지, 문법 뜻만 짧게 정리한 글입니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/beginner-python-ch03-part2-notes.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">지역·전역변수·lambda·map·reduce·filter 정리</span> — 왕초보 Python 3장 후반부 (1)</h1>
+    <p class="post-date">2026. 10. 11.</p>
+    <p class="post-date">※ 이 글은 위키독스 <a href="https://wikidocs.net/book/2" target="_blank" rel="noopener">『왕초보를 위한 Python』</a> 3.3 ~ 3.4절(3장의 나머지 전부)을 제 나름의 언어로 짧게 정리한 것입니다. 3.1 ~ 3.2.5 내용은 <a href="beginner-python-ch03-part1-notes.html">3장 전반부 정리</a>와 <a href="beginner-python-ch03-qna.html">3장 전반부 해설</a>에 있어요.</p>
+
+    <p class="one-liner">지역·전역변수, lambda, map, reduce, filter, 외울 것만 공식처럼.</p>
+
+    <h2><span class="hl">핵심 정리</span></h2>
+    <table>
+      <thead><tr><th>개념</th><th>공식</th></tr></thead>
+      <tbody>
+        <tr><td>함수 안 <code>x = ...</code></td><td>지역변수를 새로 만듦, 같은 이름 전역변수는 그대로</td></tr>
+        <tr><td>지역변수</td><td>함수가 끝나면 사라짐</td></tr>
+        <tr><td>전역변수</td><td>함수 안에서 읽기는 됨</td></tr>
+        <tr><td><code>global 이름</code></td><td>함수 안에서 전역변수 값을 바꾸고 싶을 때</td></tr>
+        <tr><td><code>lambda x: 식</code></td><td>이름 없는 한 줄 함수</td></tr>
+        <tr><td><code>map(함수, 이터러블)</code></td><td>전부에 함수 적용 (<code>list()</code>로 감싸 보기)</td></tr>
+        <tr><td><code>reduce(함수, 시퀀스)</code></td><td>원소를 누적해 하나로 (<code>functools</code>)</td></tr>
+        <tr><td><code>filter(함수, 이터러블)</code></td><td>결과가 참인 것만 남김</td></tr>
+      </tbody>
+    </table>
+
+    <h2><span class="hl">1. 지역변수 / 전역변수</span></h2>
+<pre><code># 함수 안에서 x = ... 는 지역변수를 새로 만든다
+&gt;&gt;&gt; x = 10
+&gt;&gt;&gt; def f():
+...     x = 99
+...     print('안쪽', x)
+...
+&gt;&gt;&gt; f()
+안쪽 99
+&gt;&gt;&gt; print('바깥', x)
+바깥 10
+
+# 지역변수는 함수가 끝나면 사라진다
+&gt;&gt;&gt; def g():
+...     y = 5
+...
+&gt;&gt;&gt; g()
+&gt;&gt;&gt; print(y)
+NameError: name 'y' is not defined
+
+# 전역변수는 함수 안에서 읽을 수 있다
+&gt;&gt;&gt; n = 3
+&gt;&gt;&gt; def read():
+...     print(n + 1)
+...
+&gt;&gt;&gt; read()
+4
+
+# 함수 안에서 전역변수를 바꾸려면 global
+&gt;&gt;&gt; count = 0
+&gt;&gt;&gt; def up():
+...     global count
+...     count = count + 1
+...
+&gt;&gt;&gt; up()
+&gt;&gt;&gt; up()
+&gt;&gt;&gt; print(count)
+2</code></pre>
+    <p><strong>핵심 한 줄:</strong> 전역변수는 복잡해질수록 골칫거리, 되도록 쓰지 않기.</p>
+
+    <h2><span class="hl">2. lambda</span></h2>
+<pre><code># lambda 매개변수: 표현식
+&gt;&gt;&gt; (lambda x, y: x + y)(10, 20)
+30
+&gt;&gt;&gt; square = lambda x: x * x
+&gt;&gt;&gt; square(7)
+49</code></pre>
+
+    <h2><span class="hl">3. map()</span></h2>
+<pre><code># 파이썬 3: map 객체를 돌려주므로 list()로 감싼다
+&gt;&gt;&gt; list(map(lambda x: x * 2, [1, 2, 3, 4]))
+[2, 4, 6, 8]
+&gt;&gt;&gt; map(lambda x: x * 2, [1, 2, 3, 4])
+&lt;map object at 0x000001DDAB69F5E0&gt;</code></pre>
+
+    <h2><span class="hl">4. reduce()</span></h2>
+<pre><code># from functools import reduce 가 먼저 필요
+&gt;&gt;&gt; from functools import reduce
+&gt;&gt;&gt; reduce(lambda a, b: a + b, [1, 2, 3, 4, 5])
+15
+&gt;&gt;&gt; reduce(lambda a, b: a * b, [1, 2, 3, 4])
+24</code></pre>
+
+    <h2><span class="hl">5. filter()</span></h2>
+<pre><code># 결과가 참인 것만 남긴다 (x % 2 는 홀수일 때 1 → 참)
+&gt;&gt;&gt; list(filter(lambda x: x % 2, [1, 2, 3, 4, 5, 6, 7]))
+[1, 3, 5, 7]</code></pre>
+
+    <h2><span class="hl">함께 보기</span></h2>
+    <ul>
+      <li><a href="beginner-python-ch03-part2-answers.html">문제 해설 — 지역·전역변수·lambda·map·reduce·filter를 자세히 뜯어본다</a> — 이 정리를 문제에 적용해 풀어 보는 다음 글이에요. 해설을 읽은 뒤 실습 문제를 풀어 보세요.</li>
+      <li><a href="beginner-python-ch03-part1-notes.html">3장 전반부 정리(3.1~3.2.5)</a> — 함수 정의, 매개변수, 반환값 같은 앞부분 내용이에요.</li>
+      <li><a href="beginner-python-ch03-qna.html">3장 전반부 해설(3.1~3.2.5)</a></li>
+      <li><a href="https://wikidocs.net/book/2" target="_blank" rel="noopener">왕초보를 위한 Python (위키독스)</a> — 이 글이 다룬 원래 교재예요.</li>
+    </ul>
+
+    <a class="post-nav" href="beginner-python-ch03-part2-answers.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">문제 해설 — 지역·전역변수·lambda·map·reduce·filter를 자세히 뜯어본다</span>
+    </a>
+
+    <h3 id="series-list">"왕초보 Python 3장 후반부" 시리즈</h3>
+    <p class="post-date">(1) 지역·전역변수·lambda·map·reduce·filter 정리 (이 글)</p>
+    <a class="post-nav" href="beginner-python-ch03-part2-answers.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">문제 해설 — 지역·전역변수·lambda·map·reduce·filter를 자세히 뜯어본다</span>
+    </a>
+    <a class="post-nav" href="beginner-python-ch03-part2-practice.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">실습 문제 — 지역·전역변수·lambda·map·reduce·filter 코드 읽고 결과 예측하기</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>

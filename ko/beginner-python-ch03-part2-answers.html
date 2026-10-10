@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>문제 해설 — 지역·전역변수와 lambda·map·filter·reduce를 자세히 뜯어본다 - Tigermorning</title>
+  <meta name="description" content="지역 vs 전역 변수, global 누적, lambda, map·filter, reduce 5문제를 변수 추적표와 실제 에러 메시지(NameError, UnboundLocalError)까지 곁들여 자세히 해설합니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="문제 해설 — 지역·전역변수와 lambda·map·filter·reduce를 자세히 뜯어본다">
+  <meta property="og:description" content="지역·전역변수, global, lambda, map·filter·reduce 5문제를 변수 추적표까지 자세히 해설합니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/beginner-python-ch03-part2-answers.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <a class="post-nav" href="beginner-python-ch03-part2-notes.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">지역·전역변수·lambda·map·reduce·filter 정리</span>
+    </a>
+
+    <h1><span class="hl">문제 해설</span> — 지역·전역변수와 lambda·map·filter·reduce를 자세히 뜯어본다 (2)</h1>
+    <p class="post-date">2026. 10. 11.</p>
+    <p class="post-date">※ 이 글은 <a href="beginner-python-ch03-part2-practice.html">다음 글의 실습 문제 5개</a>를 제가 직접 풀어보고, 변수 값이 어떻게 바뀌는지와 자주 하는 실수까지 정리한 해설입니다. 해설을 먼저 읽은 뒤 실습 문제를 풀어 보세요.</p>
+
+    <p class="one-liner">지역·전역변수 2문제와 lambda·map·filter·reduce 3문제를, 변수 값이 바뀌는 표와 자주 하는 실수(실제 에러 메시지 포함)까지 곁들여 자세히 풀어 쓴 해설이에요.</p>
+
+    <h2><span class="hl">핵심 정리</span></h2>
+    <table>
+      <thead><tr><th>개념</th><th>한 줄 정리</th></tr></thead>
+      <tbody>
+        <tr><td>지역변수</td><td>함수 안에서 <code>x = ...</code>로 만든 변수는 함수 안에서만 살고, 같은 이름의 전역 x는 그대로다.</td></tr>
+        <tr><td>전역변수 읽기·쓰기</td><td>함수 안에서 읽기만 하면 되지만, 값을 바꾸려면 <code>global 이름</code>이 필요하다.</td></tr>
+        <tr><td><code>lambda 매개변수: 식</code></td><td>이름 없는 한 줄 함수이고, 식의 결과가 return 값이다.</td></tr>
+        <tr><td><code>list(map(f, 리스트))</code></td><td>모든 원소에 f를 적용하고, 파이썬 3에서는 <code>list()</code>로 감싸야 값이 보인다.</td></tr>
+        <tr><td><code>list(filter(f, 리스트))</code></td><td>f 결과가 참인 원소만 남긴다.</td></tr>
+        <tr><td><code>reduce(f, 리스트)</code></td><td>앞의 결과(a)와 다음 원소(b)를 계속 합쳐 하나로 만든다.</td></tr>
+        <tr><td>변수 추적</td><td>호출·반복마다 바뀌는 값을 한 줄씩 표로 적으면 결과가 보인다.</td></tr>
+      </tbody>
+    </table>
+
+    <p>모든 코드는 Python 3에서 직접 실행해 출력과 에러 메시지를 확인했어요. 문제 원문은 <a href="beginner-python-ch03-part2-practice.html">실습 문제 5개</a>에 있어요.</p>
+
+    <hr>
+    <h2><span class="hl">문제 1</span> — 이름이 같은 지역변수와 전역변수</h2>
+
+    <h3 id="a1">정답과 해설</h3>
+    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
+<pre><code>x = 10
+
+def change():
+    x = 99
+    print('함수 안:', x)
+
+change()
+print('함수 밖:', x)</code></pre>
+<pre class="out"><code class="nohighlight">함수 안: 99
+함수 밖: 10</code></pre>
+    <p><strong>한 줄씩 짚어보기</strong></p>
+    <ul>
+      <li><code>x = 10</code> — 함수 밖에서 만든 <strong>전역변수</strong> x예요.</li>
+      <li><code>x = 99</code> — 함수 안에서 대입하면 파이썬은 "이 함수만의 <strong>새 변수</strong> x"를 만들어요. 전역 x는 건드리지 않아요.</li>
+      <li>함수 안 <code>print</code>는 가장 가까운 x, 즉 지역 x(99)를 봐요.</li>
+      <li>함수가 끝나면 지역 x는 사라지고, 함수 밖 <code>print</code>는 처음 그대로인 전역 x(10)를 봐요.</li>
+    </ul>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>시점</th><th>전역 x</th><th>지역 x</th></tr></thead>
+        <tbody>
+          <tr><td><code>x = 10</code> 직후</td><td>10</td><td>(없음)</td></tr>
+          <tr><td><code>change()</code> 안, <code>x = 99</code> 직후</td><td>10</td><td>99</td></tr>
+          <tr><td><code>change()</code>가 끝난 뒤</td><td>10</td><td>사라짐</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>여기서 자주 막혀요:</strong> "<code>x = 99</code>를 했는데 왜 밖의 x는 10이지?" → 같은 이름이어도 <strong>다른 변수</strong>예요. 집 안 메모지와 집 밖 칠판에 같은 이름을 적었다고 한쪽을 고치면 다른 쪽이 바뀌는 건 아니에요.</p>
+    <p><strong>흔한 실수 — 지역변수를 밖에서 쓰기:</strong> 함수 안에서만 만든 변수를 함수 밖에서 부르면 아예 없는 이름이라 에러가 나요.</p>
+<pre><code>def make():
+    y = 5
+
+make()
+print(y)</code></pre>
+<pre class="out"><code class="nohighlight">NameError: name 'y' is not defined</code></pre>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">
+            함수 안에서 <code>x = 99</code>만 쓰고 "전역 x가 바뀌었겠지" 하고 기대함 → 밖의 값은 그대로라서 결과가 어긋남
+          </td>
+          <td class="choice-good">
+            함수가 값을 밖으로 보내야 하면 <code>return</code>으로 돌려주고 밖에서 받음 → 값이 어디서 바뀌는지 눈에 보임
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p><strong>실제 코드에서</strong> · 함수마다 <code>i</code>, <code>total</code> 같은 흔한 이름을 써도 서로 안 부딪히는 건 지역변수 덕분이에요.</p>
+
+    <hr>
+    <h2><span class="hl">문제 2</span> — global로 전역 값 누적하기</h2>
+
+    <h3 id="a2">정답과 해설</h3>
+    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
+<pre><code>count = 0
+
+def add(n):
+    global count
+    count = count + n
+    print('더한 뒤:', count)
+
+add(3)
+add(4)
+print('최종:', count)</code></pre>
+<pre class="out"><code class="nohighlight">더한 뒤: 3
+더한 뒤: 7
+최종: 7</code></pre>
+    <p><strong>한 줄씩 짚어보기</strong></p>
+    <ul>
+      <li><code>global count</code> — "이 함수 안의 count는 새로 만들지 말고 바깥 전역 count를 써라"는 선언이에요.</li>
+      <li><code>count = count + n</code> — 이제 전역 count를 읽고, 거기에 n을 더해 <strong>전역 count에 다시 저장</strong>해요.</li>
+      <li>함수가 끝나도 전역 count는 사라지지 않아서, 다음 호출이 이어받아요.</li>
+    </ul>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>호출</th><th>n</th><th>계산 전 count</th><th>계산 후 count</th></tr></thead>
+        <tbody>
+          <tr><td><code>add(3)</code></td><td>3</td><td>0</td><td>3</td></tr>
+          <tr><td><code>add(4)</code></td><td>4</td><td>3</td><td>7</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>여기서 자주 막혀요:</strong> "읽기는 되는데 왜 바꾸려면 global이 필요해?" → 함수 안에서 이름에 <strong>대입</strong>하면 파이썬이 그 이름을 지역변수로 보기 때문이에요. 읽기만 하는 이름은 전역을 그대로 봐요.</p>
+    <p><strong>흔한 실수 — global을 빼먹으면?</strong> 아래 코드는 <code>global count</code> 한 줄만 뺀 거예요. 실제로 실행하면 이런 에러가 나요.</p>
+<pre><code>count = 0
+
+def add(n):
+    count = count + n
+
+add(3)</code></pre>
+<pre class="out"><code class="nohighlight">UnboundLocalError: cannot access local variable 'count' where it is not associated with a value</code></pre>
+    <p>함수 안에 <code>count = ...</code>가 있으니 count가 지역변수로 정해졌는데, 오른쪽 <code>count + n</code>에서 그 지역 count를 값도 없이 읽으려 해서 나는 에러예요.</p>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">
+            <code>global</code> 없이 <code>count = count + n</code>을 씀 → <code>UnboundLocalError</code>
+          </td>
+          <td class="choice-good">
+            바꿀 전역 이름 앞에 <code>global count</code>를 선언함 → 같은 count를 읽고 쓰게 됨
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p><strong>실제 코드에서</strong> · 전역변수를 함수가 고치기 시작하면 값이 어디서 바뀌는지 추적하기 어려워져서, 실무에서는 <code>global</code>을 가능한 한 줄이고 <code>return</code>으로 값을 주고받는 쪽을 더 많이 써요.</p>
+
+    <hr>
+    <h2><span class="hl">문제 3</span> — lambda를 바로 부르기, 변수에 담아 부르기</h2>
+
+    <h3 id="a3">정답과 해설</h3>
+    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
+<pre><code>square = lambda x: x * x
+print((lambda a, b: a + b)(3, 4))
+print(square(5))
+print(square(square(2)))</code></pre>
+<pre class="out"><code class="nohighlight">7
+25
+16</code></pre>
+    <p><strong>한 줄씩 짚어보기</strong></p>
+    <ul>
+      <li><code>lambda x: x * x</code> — "x를 받아 <code>x * x</code>를 돌려주는" 이름 없는 함수예요. <code>return</code>은 쓰지 않아도 식의 결과가 돌아와요.</li>
+      <li><code>square = ...</code> — 그 함수에 <code>square</code>라는 이름을 붙여 둔 거라, <code>def square(x): return x * x</code>와 같은 역할이에요.</li>
+      <li><code>(lambda a, b: a + b)(3, 4)</code> — 괄호로 lambda를 감싸고 바로 <code>(3, 4)</code>를 넣어 부르니, a=3, b=4로 <code>3 + 4</code>가 돼요.</li>
+    </ul>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>식</th><th>계산 과정</th><th>출력</th></tr></thead>
+        <tbody>
+          <tr><td><code>(lambda a, b: a + b)(3, 4)</code></td><td>3 + 4</td><td>7</td></tr>
+          <tr><td><code>square(5)</code></td><td>5 * 5</td><td>25</td></tr>
+          <tr><td><code>square(square(2))</code></td><td>안쪽 <code>square(2)</code> = 4 → <code>square(4)</code> = 16</td><td>16</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>여기서 자주 막혀요:</strong> "lambda 뒤에 왜 괄호가 두 번 나와?" → 앞 괄호는 lambda를 묶는 것이고, 뒤 괄호 <code>(3, 4)</code>는 함수를 부를 때 쓰는 평소의 호출 괄호예요. 이름이 없을 뿐 호출 방법은 똑같아요.</p>
+    <p><strong>흔한 실수:</strong> lambda 안에 <code>return</code>을 쓰면 문법 에러가 나요. lambda는 <strong>식 하나</strong>만 쓸 수 있고, 그 식의 값이 자동으로 돌려주는 값이 돼요.</p>
+    <p><strong>실제 코드에서</strong> · lambda는 직접 호출하기보다 map·filter·정렬 기준처럼 "함수를 인자로 넘기는 자리"에 한 줄로 끼워 쓰는 일이 훨씬 많아요(다음 두 문제).</p>
+
+    <hr>
+    <h2><span class="hl">문제 4</span> — map과 filter로 리스트 만들기</h2>
+
+    <h3 id="a4">정답과 해설</h3>
+    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
+<pre><code>nums = [1, 2, 3, 4, 5, 6]
+doubled = list(map(lambda x: x * 2, nums))
+evens = list(filter(lambda x: x % 2 == 0, nums))
+print(doubled)
+print(evens)
+print(list(map(lambda x: x + 1, evens)))</code></pre>
+<pre class="out"><code class="nohighlight">[2, 4, 6, 8, 10, 12]
+[2, 4, 6]
+[3, 5, 7]</code></pre>
+    <p><strong>한 줄씩 짚어보기</strong></p>
+    <ul>
+      <li><code>map(lambda x: x * 2, nums)</code> — nums의 원소를 하나씩 꺼내 x에 넣고 <code>x * 2</code>를 만들어요. 원소 6개면 결과도 6개예요.</li>
+      <li><code>filter(lambda x: x % 2 == 0, nums)</code> — 각 원소로 조건(짝수인가?)을 계산해서 <strong>참인 원소만</strong> 남겨요. 값 자체는 바뀌지 않아요.</li>
+      <li>마지막 줄은 filter 결과인 <code>evens = [2, 4, 6]</code>에 다시 map으로 1씩 더한 거예요.</li>
+    </ul>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>x</th><th>x * 2 (map)</th><th>x % 2 == 0 (filter)</th><th>evens에 남나?</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>2</td><td>거짓</td><td>안 남음</td></tr>
+          <tr><td>2</td><td>4</td><td>참</td><td>남음</td></tr>
+          <tr><td>3</td><td>6</td><td>거짓</td><td>안 남음</td></tr>
+          <tr><td>4</td><td>8</td><td>참</td><td>남음</td></tr>
+          <tr><td>5</td><td>10</td><td>거짓</td><td>안 남음</td></tr>
+          <tr><td>6</td><td>12</td><td>참</td><td>남음</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>마지막 줄은 <code>evens</code>의 2, 4, 6에 각각 1을 더하니 3, 5, 7이에요. 출발이 <code>nums</code>가 아니라 <code>evens</code>라는 점이 핵심이에요.</p>
+    <p><strong>여기서 자주 막혀요:</strong> "map은 개수가 같고 filter는 줄어든다" — 이것만 기억하면 헷갈리지 않아요. map은 <strong>값을 바꾸고</strong>, filter는 <strong>원소를 고르기만</strong> 해요.</p>
+    <p><strong>흔한 실수 — list()로 감싸지 않으면?</strong> 파이썬 3의 map은 리스트가 아니라 map 객체를 돌려줘서, 그냥 출력하면 값이 안 보여요.</p>
+<pre><code>r = map(lambda x: x * 2, [1, 2])
+print(r)</code></pre>
+<pre class="out"><code class="nohighlight">&lt;map object at 0x0000020CEEA56290&gt;</code></pre>
+    <p>(뒤의 주소 숫자는 실행할 때마다 달라질 수 있어요.) <code>list(r)</code>처럼 <code>list()</code>로 감싸야 <code>[2, 4]</code>처럼 값이 보여요. filter도 마찬가지예요.</p>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">
+            <code>print(map(...))</code>처럼 바로 출력함 → <code>&lt;map object at 0x...&gt;</code>만 보임
+          </td>
+          <td class="choice-good">
+            <code>print(list(map(...)))</code>로 감쌈 → 결과 리스트가 보임
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p><strong>실제 코드에서</strong> · "전부 변환(가격에 세금 붙이기)"은 map, "조건에 맞는 것만 추리기(재고 있는 상품만)"는 filter 자리예요.</p>
+
+    <hr>
+    <h2><span class="hl">문제 5</span> — reduce로 합치기 (숫자와 문자)</h2>
+
+    <h3 id="a5">정답과 해설</h3>
+    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
+<pre><code>from functools import reduce
+
+nums = [1, 2, 3, 4]
+print(reduce(lambda a, b: a + b, nums))
+print(reduce(lambda a, b: a * b, nums))
+print(reduce(lambda a, b: b + a, 'abc'))</code></pre>
+<pre class="out"><code class="nohighlight">10
+24
+cba</code></pre>
+    <p><strong>한 줄씩 짚어보기</strong></p>
+    <ul>
+      <li><code>from functools import reduce</code> — 파이썬 3에서는 reduce가 기본으로 들어 있지 않아서 꼭 불러와야 해요. 이 줄이 없으면 <code>NameError</code>가 나요.</li>
+      <li>reduce는 앞의 두 원소를 <code>a</code>, <code>b</code>로 받아 계산하고, 그 결과를 다음 반복의 <code>a</code>로 넘겨요. 그다음 원소가 <code>b</code>로 들어와요.</li>
+      <li>마지막 줄은 문자열의 글자 하나하나가 원소예요. <code>b + a</code>로 <strong>새로 온 글자를 앞에</strong> 붙여서 뒤집혀요.</li>
+    </ul>
+    <p>첫 번째 줄(<code>a + b</code>)의 추적표예요.</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>반복</th><th>a</th><th>b</th><th>a + b (다음 a)</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>1</td><td>2</td><td>3</td></tr>
+          <tr><td>2</td><td>3</td><td>3</td><td>6</td></tr>
+          <tr><td>3</td><td>6</td><td>4</td><td>10</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>두 번째 줄(<code>a * b</code>)은 같은 방식으로 1*2=2, 2*3=6, 6*4=24라서 <code>24</code>예요.</p>
+    <p>세 번째 줄(<code>b + a</code>, 문자열 <code>'abc'</code>)의 추적표예요.</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>반복</th><th>a</th><th>b</th><th>b + a (다음 a)</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>'a'</td><td>'b'</td><td>'ba'</td></tr>
+          <tr><td>2</td><td>'ba'</td><td>'c'</td><td>'cba'</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>여기서 자주 막혀요:</strong> "원소가 4개인데 왜 반복은 3번이야?" → 첫 반복에서 원소 두 개를 한꺼번에 쓰기 때문이에요. 원소가 n개면 합치는 횟수는 n-1번이에요.</p>
+    <p><strong>흔한 실수:</strong> <code>b + a</code>를 <code>a + b</code>로 쓰면 문자열이 뒤집히지 않고 <code>abc</code> 그대로 나와요. 문자열 합치기는 <strong>순서가 곧 결과</strong>라서 a와 b 자리를 꼭 확인해야 해요.</p>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">
+            reduce의 <code>a</code>와 <code>b</code>가 각각 뭔지 따져 보지 않고 결과를 짐작함 → 순서가 바뀌면 틀림
+          </td>
+          <td class="choice-good">
+            반복마다 a·b를 표로 적어 봄 → 결과가 한 줄씩 보임
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p><strong>실제 코드에서</strong> · 합계·곱·가장 큰 값처럼 "리스트를 하나의 값으로 줄이는" 계산이 reduce 자리예요. 다만 합계만 필요하면 <code>sum()</code>이 더 간단해요.</p>
+
+    <hr>
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 이 5문제를 짜다가 결과가 이상할 때</h2>
+    <p>에러가 나는 경우도 있고, 에러 없이 조용히 틀리는 경우도 있어요. 결과가 예상과 다르면 이 표부터 확인해요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>함수 안에서 값을 바꿨는데 밖의 변수는 그대로예요</td>
+          <td>함수 안의 <code>이름 = ...</code> 줄</td>
+          <td>그 이름이 새 지역변수로 만들어진 건 아닌지, <code>global</code> 선언이 있는지 확인해요 (<a href="#a1">문제 1</a>, <a href="#a2">문제 2</a>)</td>
+        </tr>
+        <tr>
+          <td><code>UnboundLocalError: cannot access local variable</code>가 나요</td>
+          <td>함수 안에서 이름에 대입하는 줄 위쪽</td>
+          <td>전역변수를 바꾸려는데 <code>global 이름</code>을 빼먹지 않았는지 확인해요 (<a href="#a2">문제 2</a>)</td>
+        </tr>
+        <tr>
+          <td><code>NameError: name '...' is not defined</code>가 나요</td>
+          <td>그 이름을 만든 자리</td>
+          <td>함수 안에서만 만든 지역변수를 밖에서 쓴 건 아닌지 확인해요 (<a href="#a1">문제 1</a>)</td>
+        </tr>
+        <tr>
+          <td>출력이 <code>&lt;map object at 0x...&gt;</code>처럼 나와요</td>
+          <td>map·filter를 부른 줄</td>
+          <td><code>list()</code>로 감쌌는지 확인해요 (<a href="#a4">문제 4</a>)</td>
+        </tr>
+        <tr>
+          <td>reduce를 부르면 <code>NameError</code>가 나요</td>
+          <td>파일 맨 위 import 줄</td>
+          <td><code>from functools import reduce</code>가 있는지 확인해요 (<a href="#a5">문제 5</a>)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2><span class="hl">함께 보기</span></h2>
+    <ul>
+      <li><a href="beginner-python-ch03-part2-notes.html">지역·전역변수·lambda·map·reduce·filter 정리</a> — 이 문제들에 쓰인 문법 설명이에요.</li>
+      <li><a href="beginner-python-ch03-part2-practice.html">실습 문제 5개</a> — 이 해설을 읽은 뒤 직접 풀어 볼 문제 원문이에요.</li>
+      <li><a href="beginner-python-ch03-qna.html">3장 전반부 해설(3.1~3.2.5)</a> — 함수와 return이 처음 나온 글이에요.</li>
+      <li><a href="python-study/beginner-python/ch03-code-reading.html">3장 코드 읽기 실습(함수·return, 18문제)</a></li>
+    </ul>
+
+    <a class="post-nav" href="beginner-python-ch03-part2-practice.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">실습 문제 5개 — 지역·전역변수와 lambda·map·filter·reduce 코드 읽고 결과 예측하기</span>
+    </a>
+
+    <h3 id="series-list">"왕초보 Python 3장 후반부" 시리즈</h3>
+    <a class="post-nav" href="beginner-python-ch03-part2-notes.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">지역·전역변수·lambda·map·reduce·filter 정리</span>
+    </a>
+    <p class="post-date">(2) 문제 해설 — 지역·전역변수와 lambda·map·filter·reduce를 자세히 뜯어본다 (이 글)</p>
+    <a class="post-nav" href="beginner-python-ch03-part2-practice.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">실습 문제 5개 — 지역·전역변수와 lambda·map·filter·reduce 코드 읽고 결과 예측하기</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
