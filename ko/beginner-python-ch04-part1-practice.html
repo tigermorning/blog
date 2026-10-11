@@ -30,53 +30,6 @@
 
     <h1><span class="hl">실습 문제 19개</span> — 초급·중급·고급으로 코드 읽고 결과 예측하기 (3)</h1>
     <p class="post-date">2026. 10. 11.</p>
-    <p class="post-date">※ 이 글은 위키독스 <a href="https://wikidocs.net/book/2" target="_blank" rel="noopener">『왕초보를 위한 Python』</a> 4장 4.1~4.2 내용을 바탕으로 제가 직접 만든 문제입니다. 교재의 공식 연습 문제가 아니에요. 완성된 코드를 보여드리니 <strong>직접 짤 필요 없이</strong>, 코드를 읽고 실행 결과가 뭘지 먼저 예측해보세요. 각 문제 아래의 "정답·해설 보기"를 열면 정답과 이유가 바로 나와요.</p>
-
-    <p class="one-liner">4장 전반부 개념 전부를 초급·중급·고급 19문제로 나눠, 코드를 짜지 않고 실행 결과만 예측하는 읽기 연습이에요. 중급부터는 1~3장 문법이 섞여 나와요.</p>
-
-    <h2><span class="hl">핵심 정리</span></h2>
-    <table>
-      <thead><tr><th>개념</th><th>한 줄 정리</th></tr></thead>
-      <tbody>
-        <tr><td><code>type()</code>과 <code>/</code></td><td><code>type()</code>은 값의 종류를 알려 주고, <code>/</code>는 나누어떨어져도 float(<code>5.0</code>)이다.</td></tr>
-        <tr><td>가변 / 불변</td><td>list는 원소를 바꿀 수 있고, int·str·tuple은 바꿀 수 없다.</td></tr>
-        <tr><td>슬라이싱</td><td><code>x[2:4]</code>는 2번 이상 4번 미만, <code>x[::-1]</code>은 뒤집기, <code>x[-3:]</code>은 끝 세 개다.</td></tr>
-        <tr><td>문자열 메서드</td><td><code>strip</code>·<code>split</code>·<code>replace</code>·<code>join</code>은 새 문자열(또는 리스트)을 돌려주고 원본은 그대로다.</td></tr>
-        <tr><td>리스트 메서드</td><td><code>append</code> 끝에 추가, <code>insert(0, v)</code> 앞에 추가, <code>pop()</code> 끝을 빼서 돌려줌, <code>del l[i]</code> 삭제.</td></tr>
-        <tr><td>변환과 <code>sum</code></td><td><code>list</code>·<code>str</code>·<code>int</code>·<code>float</code>로 자료형을 바꾸고, <code>sum</code>은 리스트를 더한다.</td></tr>
-        <tr><td><code>in</code></td><td>리스트에서는 완전히 같은 원소만 찾고, 문자열에서는 부분 문자열도 찾는다.</td></tr>
-        <tr><td><code>a[:]</code></td><td>리스트의 복사본이라 고쳐도 원본 <code>a</code>는 그대로다(<code>b = a</code>는 복사가 아니다).</td></tr>
-        <tr><td>순회 중 <code>remove</code></td><td>돌고 있는 리스트를 고치면 원소를 건너뛰니, <code>L[:]</code> 복사본을 돈다.</td></tr>
-      </tbody>
-    </table>
-
-    <p>문제는 <a href="#level-easy">초급</a> 6개, <a href="#level-mid">중급</a> 6개, <a href="#level-hard">고급</a> 7개예요. 모든 정답은 파이썬에서 직접 실행한 결과를 그대로 옮겼어요. 먼저 코드를 눈으로 따라가며 예측을 적은 뒤, 힌트와 정답을 순서대로 열어 보세요.</p>
-
-    <h2><span class="hl">이 글이 다루는 범위</span></h2>
-    <p>4장 전반부의 개념을 하나도 빼지 않고 문제로 만들었어요. 초급 6문제로 한 개념씩 확인하고, 중급 6문제와 고급 7문제에서는 개념을 합치면서 1~3장 내용도 함께 써요.</p>
-    <div class="table-scroll fill">
-      <table>
-        <thead><tr><th>개념</th><th>나오는 문제</th></tr></thead>
-        <tbody>
-          <tr><td>4장 · <code>type()</code>과 자료형</td><td><a href="#q1">초급 1</a></td></tr>
-          <tr><td>4장 · 가변 / 불변</td><td><a href="#q2">초급 2</a>, <a href="#q14">고급 2</a></td></tr>
-          <tr><td>4장 · 인덱싱과 슬라이싱</td><td><a href="#q3">초급 3</a>, <a href="#q7">중급 1</a>, <a href="#q11">중급 5</a></td></tr>
-          <tr><td>4장 · 문자열 불변과 메서드</td><td><a href="#q4">초급 4</a>, <a href="#q7">중급 1</a>, <a href="#q17">고급 5</a>, <a href="#q19">고급 7</a></td></tr>
-          <tr><td>4장 · 리스트 메서드</td><td><a href="#q5">초급 5</a>, <a href="#q9">중급 3</a>, <a href="#q19">고급 7</a></td></tr>
-          <tr><td>4장 · 변환과 <code>sum</code></td><td><a href="#q6">초급 6</a>, <a href="#q10">중급 4</a>, <a href="#q16">고급 4</a>, <a href="#q17">고급 5</a></td></tr>
-          <tr><td>4장 · <code>in</code>과 복사 <code>a[:]</code>, 순회 중 <code>remove</code></td><td><a href="#q8">중급 2</a>, <a href="#q9">중급 3</a>, <a href="#q13">고급 1</a>, <a href="#q18">고급 6</a>, <a href="#q19">고급 7</a></td></tr>
-          <tr><td>1장 · 변수, 연산(<code>//</code>), <code>len</code></td><td><a href="#q7">중급 1</a></td></tr>
-          <tr><td>2장 · <code>if</code> / <code>elif</code> / <code>else</code></td><td><a href="#q8">중급 2</a></td></tr>
-          <tr><td>2장 · <code>while</code></td><td><a href="#q10">중급 4</a></td></tr>
-          <tr><td>2장 · <code>for</code>와 중첩 <code>for</code></td><td><a href="#q8">중급 2</a>, <a href="#q12">중급 6</a>, <a href="#q13">고급 1</a>, <a href="#q18">고급 6</a>, <a href="#q19">고급 7</a></td></tr>
-          <tr><td>3장 · <code>def</code>와 <code>return</code></td><td><a href="#q11">중급 5</a>, <a href="#q14">고급 2</a>, <a href="#q15">고급 3</a>, <a href="#q18">고급 6</a></td></tr>
-          <tr><td>3장 · 지역변수와 <code>global</code></td><td><a href="#q14">고급 2</a>, <a href="#q15">고급 3</a></td></tr>
-          <tr><td>3장 · <code>lambda</code>, <code>map</code>, <code>filter</code></td><td><a href="#q16">고급 4</a>, <a href="#q17">고급 5</a></td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <hr>
     <h2 id="level-easy"><span class="hl">초급</span> — 4장 전반부 기본기 — 개념 하나씩</h2>
     <p>4장 전반부에서 배운 문법을 <strong>한 문제에 한 가지씩</strong> 확인해요. 자료형, 가변·불변, 인덱싱과 슬라이싱, 문자열 메서드, 리스트 메서드, 변환과 <code>sum</code>이에요.</p>
 

@@ -30,25 +30,6 @@
 
     <h1><span class="hl">실습 문제 5개</span> — 지역·전역변수와 lambda·map·filter·reduce 코드 읽고 결과 예측하기 (3)</h1>
     <p class="post-date">2026. 10. 11.</p>
-    <p class="post-date">※ 이 글은 위키독스 <a href="https://wikidocs.net/book/2" target="_blank" rel="noopener">『왕초보를 위한 Python』</a> 3장 3.3~3.4 내용을 바탕으로 제가 직접 만든 문제입니다. 교재의 공식 연습 문제가 아니에요. 완성된 코드를 보여드리니 <strong>직접 짤 필요 없이</strong>, 코드를 읽고 실행 결과가 뭘지 먼저 예측해보세요. 자세한 정답과 이유는 앞 글(문제 해설)에 따로 있어요.</p>
-
-    <p class="one-liner">지역·전역변수, global, lambda, map·filter·reduce가 나오는 완성된 코드 5개를 보고, 코드를 짜지 않고 실행 결과만 예측해보는 읽기 문제예요.</p>
-
-    <h2><span class="hl">핵심 정리</span></h2>
-    <table>
-      <thead><tr><th>개념</th><th>한 줄 정리</th></tr></thead>
-      <tbody>
-        <tr><td>지역변수</td><td>함수 안에서 <code>x = ...</code>로 만든 변수는 그 함수 안에서만 살고, 같은 이름의 전역 x는 그대로다.</td></tr>
-        <tr><td><code>global 이름</code></td><td>함수 안에서 전역변수 값을 바꾸려면 먼저 이렇게 선언해야 한다.</td></tr>
-        <tr><td><code>lambda 매개변수: 식</code></td><td>이름 없는 한 줄짜리 함수이고, 식의 결과가 곧 return 값이다.</td></tr>
-        <tr><td><code>map(함수, 리스트)</code></td><td>모든 원소에 함수를 적용한다(결과는 <code>list()</code>로 감싸야 보인다).</td></tr>
-        <tr><td><code>filter(함수, 리스트)</code></td><td>함수 결과가 참인 원소만 남긴다.</td></tr>
-        <tr><td><code>reduce(함수, 리스트)</code></td><td>앞에서부터 두 개씩 합쳐 하나로 만든다(<code>from functools import reduce</code> 필요).</td></tr>
-      </tbody>
-    </table>
-
-    <p>다섯 문제 모두 <a href="beginner-python-ch03-part2-notes.html">지난 글</a>에서 정리한 문법만으로 읽을 수 있어요. 1·2번은 지역·전역변수, 3번은 lambda, 4·5번은 map·filter·reduce 문제예요. 코드를 눈으로 따라가며 결과를 예측한 뒤, <a href="beginner-python-ch03-part2-answers.html">문제 해설</a>에서 본 풀이와 맞춰 보세요.</p>
-
     <h2 id="q1"><span class="hl">문제 1</span> — 이름이 같은 지역변수와 전역변수</h2>
     <p>함수 밖과 함수 안에 똑같이 <code>x</code>가 있는 코드예요.</p>
 <pre><code>x = 10                    # x 에 10 을 담아 주세요

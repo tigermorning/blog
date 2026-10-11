@@ -30,24 +30,6 @@
 
     <h1><span class="hl">실습 문제 3개</span> — and/or·for·for-else 코드 읽고 결과 예측하기 (3)</h1>
     <p class="post-date">2026. 9. 28.</p>
-    <p class="post-date">※ 이 글은 위키독스 <a href="https://wikidocs.net/book/2" target="_blank" rel="noopener">『왕초보를 위한 Python』</a> 1장·2장 내용을 바탕으로 제가 직접 만든 문제입니다. 교재의 공식 연습 문제가 아니에요. 완성된 코드를 보여드리니 <strong>직접 짤 필요 없이</strong>, 코드를 읽고 실행 결과가 뭘지 먼저 예측해보세요. 자세한 정답과 이유는 앞 글(문제 해설)에 따로 있어요.</p>
-
-    <p class="one-liner">1장 리스트·변수와 2장 후반부 and/or·for·for-else가 섞인 완성된 코드 3개를 보고, 코드를 짜지 않고 실행 결과만 예측해보는 읽기 문제예요.</p>
-
-    <h2><span class="hl">핵심 정리</span></h2>
-    <table>
-      <thead><tr><th>개념</th><th>한 줄 정리</th></tr></thead>
-      <tbody>
-        <tr><td><code>A and B</code></td><td>둘 다 참이어야 참이고, 왼쪽이 거짓이면 오른쪽은 보지 않는다.</td></tr>
-        <tr><td><code>x in 리스트</code></td><td>리스트 안에 x가 있으면 참이다.</td></tr>
-        <tr><td><code>for x in 리스트:</code></td><td>원소를 하나씩 꺼내 x에 담고 몸통을 되풀이한다.</td></tr>
-        <tr><td><code>range(len(cart))</code></td><td>인덱스 0부터 개수-1까지 만든다(개수는 빠짐).</td></tr>
-        <tr><td><code>for-else</code></td><td>else는 break 없이 끝까지 돌았을 때만 실행된다.</td></tr>
-      </tbody>
-    </table>
-
-    <p>세 문제 모두 <a href="beginner-python-ch02-part2-notes.html">지난 글</a>에서 정리한 문법만으로 읽을 수 있어요. 1번은 지난 글의 "정문 출입" 비유, 3번은 "우편함" 비유를 그대로 코드로 옮긴 문제예요. 코드를 눈으로 따라가며 입력마다 결과를 예측해본 뒤, <a href="beginner-python-ch02-part2-answers.html">문제 해설</a>에서 본 풀이와 맞춰 보세요.</p>
-
     <h2 id="q1"><span class="hl">문제 1</span> — 정회원 확인</h2>
     <p>카페 정회원 명단과 적립 포인트를 보고 VIP 여부를 판정하는 코드예요.</p>
 <pre><code>members = ['서준', '하은', '도윤']      # members 에 '서준', '하은', '도윤' 목록을 담아 주세요
