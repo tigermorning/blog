@@ -2,11 +2,11 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>실습 문제 5개 — 문자열·리스트 코드 읽고 결과 예측하기 - Tigermorning</title>
-  <meta name="description" content="왕초보를 위한 Python 4장 전반부(슬라이싱, 문자열은 불변, 리스트 메서드, in과 복사, 순회 중 remove) 완성된 코드 5개를 읽고 결과를 예측하는 문제.">
+  <title>실습 문제 19개 — 초급·중급·고급으로 코드 읽고 결과 예측하기 - Tigermorning</title>
+  <meta name="description" content="왕초보를 위한 Python 4장 전반부(자료형, 가변·불변, 슬라이싱, 문자열·리스트 메서드, 변환, in과 복사)를 초급 6·중급 6·고급 7문제로 나눠 1~3장 문법과 함께 코드를 읽고 결과를 예측하는 문제.">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="실습 문제 5개 — 문자열·리스트 코드 읽고 결과 예측하기">
-  <meta property="og:description" content="슬라이싱, 문자열·리스트 메서드, in, 복사, 순회 중 remove가 나오는 코드 5개를 읽고 결과를 예측합니다.">
+  <meta property="og:title" content="실습 문제 19개 — 초급·중급·고급으로 코드 읽고 결과 예측하기">
+  <meta property="og:description" content="자료형, 슬라이싱, 문자열·리스트 메서드, in과 복사가 나오는 코드 19개를 초급·중급·고급으로 나눠 읽고 결과를 예측합니다.">
   <meta property="og:url" content="https://tigermorning.github.io/blog/ko/beginner-python-ch04-part1-practice.html">
   <meta property="og:locale" content="ko_KR">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -28,37 +28,944 @@
       <span class="post-nav-title">문제 해설 — 문자열·리스트 연습 문제를 자세히 뜯어본다</span>
     </a>
 
-    <h1><span class="hl">실습 문제 5개</span> — 문자열·리스트 코드 읽고 결과 예측하기 (3)</h1>
+    <h1><span class="hl">실습 문제 19개</span> — 초급·중급·고급으로 코드 읽고 결과 예측하기 (3)</h1>
     <p class="post-date">2026. 10. 11.</p>
-    <p class="post-date">※ 이 글은 위키독스 <a href="https://wikidocs.net/book/2" target="_blank" rel="noopener">『왕초보를 위한 Python』</a> 4장 4.1~4.2 내용을 바탕으로 제가 직접 만든 문제입니다. 교재의 공식 연습 문제가 아니에요. 완성된 코드를 보여드리니 <strong>직접 짤 필요 없이</strong>, 코드를 읽고 실행 결과가 뭘지 먼저 예측해보세요. 정답과 이유는 앞 글(문제 해설)의 실습 문제 해설에 있어요.</p>
+    <p class="post-date">※ 이 글은 위키독스 <a href="https://wikidocs.net/book/2" target="_blank" rel="noopener">『왕초보를 위한 Python』</a> 4장 4.1~4.2 내용을 바탕으로 제가 직접 만든 문제입니다. 교재의 공식 연습 문제가 아니에요. 완성된 코드를 보여드리니 <strong>직접 짤 필요 없이</strong>, 코드를 읽고 실행 결과가 뭘지 먼저 예측해보세요. 각 문제 아래의 "정답·해설 보기"를 열면 정답과 이유가 바로 나와요.</p>
 
-    <p class="one-liner">슬라이싱, 문자열은 불변, 리스트 메서드, in과 복사, 순회 중 remove가 나오는 완성된 코드 5개를 보고, 코드를 짜지 않고 실행 결과만 예측해보는 읽기 문제예요.</p>
+    <p class="one-liner">4장 전반부 개념 전부를 초급·중급·고급 19문제로 나눠, 코드를 짜지 않고 실행 결과만 예측하는 읽기 연습이에요. 중급부터는 1~3장 문법이 섞여 나와요.</p>
 
     <h2><span class="hl">핵심 정리</span></h2>
     <table>
       <thead><tr><th>개념</th><th>한 줄 정리</th></tr></thead>
       <tbody>
+        <tr><td><code>type()</code>과 <code>/</code></td><td><code>type()</code>은 값의 종류를 알려 주고, <code>/</code>는 나누어떨어져도 float(<code>5.0</code>)이다.</td></tr>
+        <tr><td>가변 / 불변</td><td>list는 원소를 바꿀 수 있고, int·str·tuple은 바꿀 수 없다.</td></tr>
         <tr><td>슬라이싱</td><td><code>x[2:4]</code>는 2번 이상 4번 미만, <code>x[::-1]</code>은 뒤집기, <code>x[-3:]</code>은 끝 세 개다.</td></tr>
-        <tr><td>문자열은 불변</td><td><code>x[0] = 'n'</code>은 TypeError이고, 새 문자열을 만들어 다시 붙인다(<code>'n' + x[1:]</code>).</td></tr>
-        <tr><td><code>split</code> · <code>strip</code> · <code>replace</code></td><td>쪼개기, 양끝 공백 지우기, 바꾸기. 모두 새 문자열을 돌려주고 원본은 그대로다.</td></tr>
+        <tr><td>문자열 메서드</td><td><code>strip</code>·<code>split</code>·<code>replace</code>·<code>join</code>은 새 문자열(또는 리스트)을 돌려주고 원본은 그대로다.</td></tr>
         <tr><td>리스트 메서드</td><td><code>append</code> 끝에 추가, <code>insert(0, v)</code> 앞에 추가, <code>pop()</code> 끝을 빼서 돌려줌, <code>del l[i]</code> 삭제.</td></tr>
+        <tr><td>변환과 <code>sum</code></td><td><code>list</code>·<code>str</code>·<code>int</code>·<code>float</code>로 자료형을 바꾸고, <code>sum</code>은 리스트를 더한다.</td></tr>
         <tr><td><code>in</code></td><td>리스트에서는 완전히 같은 원소만 찾고, 문자열에서는 부분 문자열도 찾는다.</td></tr>
         <tr><td><code>a[:]</code></td><td>리스트의 복사본이라 고쳐도 원본 <code>a</code>는 그대로다(<code>b = a</code>는 복사가 아니다).</td></tr>
         <tr><td>순회 중 <code>remove</code></td><td>돌고 있는 리스트를 고치면 원소를 건너뛰니, <code>L[:]</code> 복사본을 돈다.</td></tr>
       </tbody>
     </table>
 
-    <p>다섯 문제 모두 <a href="beginner-python-ch04-part1-notes.html">지난 글</a>에서 정리한 문법만으로 읽을 수 있어요. 난이도는 1번에서 5번으로 갈수록 조금씩 올라가요. 코드를 눈으로 따라가며 예측한 뒤, <a href="beginner-python-ch04-part1-answers.html">문제 해설</a>과 맞춰 보세요.</p>
+    <p>문제는 <a href="#level-easy">초급</a> 6개, <a href="#level-mid">중급</a> 6개, <a href="#level-hard">고급</a> 7개예요. 모든 정답은 파이썬에서 직접 실행한 결과를 그대로 옮겼어요. 먼저 코드를 눈으로 따라가며 예측을 적은 뒤, 힌트와 정답을 순서대로 열어 보세요.</p>
 
-    <h2 id="q1"><span class="hl">문제 1</span> — 슬라이싱</h2>
-    <p>문자열과 리스트를 잘라 보는 코드예요.</p>
-<pre><code>word = 'python'              # word 에 문자열 'python' 을 담아 주세요
-nums = [10, 20, 30, 40, 50]  # nums 에 리스트 [10, 20, 30, 40, 50] 을 담아 주세요
-print(word[::-1])            # word 를 거꾸로 읽은 것을 화면에 보여 주세요
-print(word[1:4])             # word 의 1번부터 3번까지 잘라 낸 것을 화면에 보여 주세요
-print(nums[-3:])             # nums 의 뒤에서 3번째부터 끝까지 잘라 낸 것을 화면에 보여 주세요
-print(nums[::-1])            # nums 를 거꾸로 읽은 것을 화면에 보여 주세요
-print(word[:2] + word[-2:])  # word 의 앞 두 글자와 뒤 두 글자를 붙여 화면에 보여 주세요</code></pre>
+    <h2><span class="hl">이 글이 다루는 범위</span></h2>
+    <p>4장 전반부의 개념을 하나도 빼지 않고 문제로 만들었어요. 초급 6문제로 한 개념씩 확인하고, 중급 6문제와 고급 7문제에서는 개념을 합치면서 1~3장 내용도 함께 써요.</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>개념</th><th>나오는 문제</th></tr></thead>
+        <tbody>
+          <tr><td>4장 · <code>type()</code>과 자료형</td><td><a href="#q1">초급 1</a></td></tr>
+          <tr><td>4장 · 가변 / 불변</td><td><a href="#q2">초급 2</a>, <a href="#q14">고급 2</a></td></tr>
+          <tr><td>4장 · 인덱싱과 슬라이싱</td><td><a href="#q3">초급 3</a>, <a href="#q7">중급 1</a>, <a href="#q11">중급 5</a></td></tr>
+          <tr><td>4장 · 문자열 불변과 메서드</td><td><a href="#q4">초급 4</a>, <a href="#q7">중급 1</a>, <a href="#q17">고급 5</a>, <a href="#q19">고급 7</a></td></tr>
+          <tr><td>4장 · 리스트 메서드</td><td><a href="#q5">초급 5</a>, <a href="#q9">중급 3</a>, <a href="#q19">고급 7</a></td></tr>
+          <tr><td>4장 · 변환과 <code>sum</code></td><td><a href="#q6">초급 6</a>, <a href="#q10">중급 4</a>, <a href="#q16">고급 4</a>, <a href="#q17">고급 5</a></td></tr>
+          <tr><td>4장 · <code>in</code>과 복사 <code>a[:]</code>, 순회 중 <code>remove</code></td><td><a href="#q8">중급 2</a>, <a href="#q9">중급 3</a>, <a href="#q13">고급 1</a>, <a href="#q18">고급 6</a>, <a href="#q19">고급 7</a></td></tr>
+          <tr><td>1장 · 변수, 연산(<code>//</code>), <code>len</code></td><td><a href="#q7">중급 1</a></td></tr>
+          <tr><td>2장 · <code>if</code> / <code>elif</code> / <code>else</code></td><td><a href="#q8">중급 2</a></td></tr>
+          <tr><td>2장 · <code>while</code></td><td><a href="#q10">중급 4</a></td></tr>
+          <tr><td>2장 · <code>for</code>와 중첩 <code>for</code></td><td><a href="#q8">중급 2</a>, <a href="#q12">중급 6</a>, <a href="#q13">고급 1</a>, <a href="#q18">고급 6</a>, <a href="#q19">고급 7</a></td></tr>
+          <tr><td>3장 · <code>def</code>와 <code>return</code></td><td><a href="#q11">중급 5</a>, <a href="#q14">고급 2</a>, <a href="#q15">고급 3</a>, <a href="#q18">고급 6</a></td></tr>
+          <tr><td>3장 · 지역변수와 <code>global</code></td><td><a href="#q14">고급 2</a>, <a href="#q15">고급 3</a></td></tr>
+          <tr><td>3장 · <code>lambda</code>, <code>map</code>, <code>filter</code></td><td><a href="#q16">고급 4</a>, <a href="#q17">고급 5</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <hr>
+    <h2 id="level-easy"><span class="hl">초급</span> — 4장 전반부 기본기 — 개념 하나씩</h2>
+    <p>4장 전반부에서 배운 문법을 <strong>한 문제에 한 가지씩</strong> 확인해요. 자료형, 가변·불변, 인덱싱과 슬라이싱, 문자열 메서드, 리스트 메서드, 변환과 <code>sum</code>이에요.</p>
+
+    <h3 id="q1">초급 1 — type()과 자료형</h3>
+    <p>값마다 정해진 자료형을 <code>type()</code>으로 알아보는 코드예요.</p>
+<pre><code>print(type(7))       # 7 의 자료형을 화면에 보여 주세요
+print(type(3.5))     # 3.5 의 자료형을 화면에 보여 주세요
+print(type('hi'))    # 'hi' 의 자료형을 화면에 보여 주세요
+print(type([1, 2]))  # [1, 2] 의 자료형을 화면에 보여 주세요
+print(type(True))    # True 의 자료형을 화면에 보여 주세요
+print(type(10 / 2))  # 10 을 2 로 나눈 값의 자료형을 화면에 보여 주세요
+print(100_000)       # 100_000 을 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 일곱 줄이 출력돼요. 각 줄은 무엇일까요?</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>출력 줄</th><th>예측</th></tr></thead>
+        <tbody>
+          <tr><td>첫 번째 줄</td><td>?</td></tr>
+          <tr><td>두 번째 줄</td><td>?</td></tr>
+          <tr><td>세 번째 줄</td><td>?</td></tr>
+          <tr><td>네 번째 줄</td><td>?</td></tr>
+          <tr><td>다섯 번째 줄</td><td>?</td></tr>
+          <tr><td>여섯 번째 줄</td><td>?</td></tr>
+          <tr><td>일곱 번째 줄</td><td>?</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <details>
+      <summary>힌트 보기</summary>
+      <p><code>type()</code>은 값의 종류를 알려 주는 함수예요. 따옴표로 감싸면 str, <code>True</code>와 <code>False</code>는 bool이에요. 여섯 번째 줄은 <code>10 / 2</code>의 값이 정수일지 소수일지부터 생각해 보세요.</p>
+    </details>
+    <details class="sol-link">
+      <summary>정답·해설 보기</summary>
+      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
+<pre class="out"><code class="nohighlight">&lt;class 'int'&gt;
+&lt;class 'float'&gt;
+&lt;class 'str'&gt;
+&lt;class 'list'&gt;
+&lt;class 'bool'&gt;
+&lt;class 'float'&gt;
+100000</code></pre>
+    <ul>
+      <li><code>&lt;class 'int'&gt;</code>는 "자료형은 int(정수)"라는 뜻이에요. 앞의 <code>class</code>와 바깥의 <code>&lt; &gt;</code>는 파이썬이 자료형을 보여 줄 때 늘 붙이는 모양이에요.</li>
+      <li><code>10 / 2</code>는 딱 나누어떨어져도 결과가 <code>5.0</code>(float)이라서 float이에요. <code>/</code>는 늘 소수가 있는 수를 내요. 몫만 정수로 얻는 건 <code>//</code>예요.</li>
+      <li><code>100_000</code>의 밑줄은 자릿수를 읽기 쉽게 나눈 표시일 뿐이라 값은 <code>100000</code>이에요.</li>
+    </ul>
+    <p><strong>핵심 한 줄:</strong> <code>type()</code>은 값의 종류를 알려 주고, <code>/</code>는 늘 float을 내요.</p>
+    </details>
+
+    <h3 id="q2">초급 2 — 가변과 불변</h3>
+    <p>리스트와 문자열의 원소를 같은 방법으로 바꿔 보는 코드예요.</p>
+<pre><code>a = [1, 2, 3]  # a 에 리스트 [1, 2, 3] 을 담아 주세요
+a[0] = 9       # a 의 0번 원소를 9 로 바꿔 주세요
+print(a)       # a 를 화면에 보여 주세요
+s = 'abc'      # s 에 문자열 'abc' 를 담아 주세요
+s[0] = 'z'     # s 의 0번 원소를 'z' 로 바꿔 주세요
+print(s)       # s 를 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 어디까지 출력되고, 어떤 에러가 날까요? (실제 화면에는 에러가 난 줄 번호가 더 나오지만, 핵심은 마지막 줄이에요.)</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>확인할 것</th><th>예측</th></tr></thead>
+        <tbody>
+          <tr><td>첫 번째로 출력되는 것</td><td>?</td></tr>
+          <tr><td>에러가 나는 줄</td><td>?</td></tr>
+          <tr><td>에러 이름</td><td>?</td></tr>
+          <tr><td>마지막 <code>print(s)</code>가 실행되는가</td><td>?</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <details>
+      <summary>힌트 보기</summary>
+      <p>원소를 바꿀 수 있는 자료(가변)와 바꿀 수 없는 자료(불변)를 떠올려 보세요. 리스트는 가변이에요. 에러가 나면 파이썬은 그 줄에서 멈춰요.</p>
+    </details>
+    <details class="sol-link">
+      <summary>정답·해설 보기</summary>
+      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
+<pre class="out"><code class="nohighlight">[9, 2, 3]
+TypeError: 'str' object does not support item assignment</code></pre>
+    <ul>
+      <li>리스트는 <strong>가변</strong>이라 <code>a[0] = 9</code>가 되어 <code>[9, 2, 3]</code>이 출력돼요.</li>
+      <li>문자열은 <strong>불변</strong>이라 <code>s[0] = 'z'</code>에서 <code>TypeError</code>가 나요. 에러가 난 줄에서 프로그램이 멈추니 마지막 <code>print(s)</code>는 실행되지 않아요.</li>
+      <li>불변인 자료는 int, str, tuple이고, 가변인 자료는 list예요.</li>
+      <li>문자열을 바꾸고 싶으면 일부를 고치는 대신 새 문자열을 만들어요: <code>'z' + s[1:]</code>은 <code>'zbc'</code>예요.</li>
+    </ul>
+    <p><strong>핵심 한 줄:</strong> list는 원소를 바꿀 수 있고, str은 바꿀 수 없어요.</p>
+    </details>
+
+    <h3 id="q3">초급 3 — 인덱싱과 슬라이싱</h3>
+    <p>문자열을 번호로 꺼내고 잘라 보는 코드예요.</p>
+<pre><code>h = 'Hello world!'  # h 에 문자열 'Hello world!' 를 담아 주세요
+print(h[0])         # h 의 0번 글자를 화면에 보여 주세요
+print(h[-1])        # h 의 맨 뒤 글자를 화면에 보여 주세요
+print(h[-1:])       # h 의 뒤에서 1번째부터 끝까지 잘라 낸 것을 화면에 보여 주세요
+print(h[:5])        # h 의 처음부터 4번까지 잘라 낸 것을 화면에 보여 주세요
+print(h[6:])        # h 의 6번부터 끝까지 잘라 낸 것을 화면에 보여 주세요
+print(h[-6:])       # h 의 뒤에서 6번째부터 끝까지 잘라 낸 것을 화면에 보여 주세요
+print(h[::-1])      # h 를 거꾸로 읽은 것을 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 일곱 줄이 출력돼요. 각 줄은 무엇일까요? 공백도 글자 하나라는 점에 주의하세요.</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>출력 줄</th><th>예측</th></tr></thead>
+        <tbody>
+          <tr><td>첫 번째 줄</td><td>?</td></tr>
+          <tr><td>두 번째 줄</td><td>?</td></tr>
+          <tr><td>세 번째 줄</td><td>?</td></tr>
+          <tr><td>네 번째 줄</td><td>?</td></tr>
+          <tr><td>다섯 번째 줄</td><td>?</td></tr>
+          <tr><td>여섯 번째 줄</td><td>?</td></tr>
+          <tr><td>일곱 번째 줄</td><td>?</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <details>
+      <summary>힌트 보기</summary>
+      <p>글자마다 0번부터 번호를 붙여 보세요(공백도 한 칸이에요). <code>[시작:끝]</code>에서 <strong>끝 번호의 칸은 포함하지 않고</strong>, 음수 번호는 뒤에서부터 세요.</p>
+    </details>
+    <details class="sol-link">
+      <summary>정답·해설 보기</summary>
+      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
+<pre class="out"><code class="nohighlight">H
+!
+!
+Hello
+world!
+world!
+!dlrow olleH</code></pre>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>번호</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th></tr></thead>
+        <tbody>
+          <tr><td><code>h</code></td><td>H</td><td>e</td><td>l</td><td>l</td><td>o</td><td>(공백)</td><td>w</td><td>o</td><td>r</td><td>l</td><td>d</td><td>!</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul>
+      <li><code>h[-1]</code>은 글자 하나(<code>!</code>)를 꺼내고, <code>h[-1:]</code>은 "뒤에서 첫 번째부터 끝까지"를 잘라서 길이 1인 문자열을 만들어요. 문자열에서는 둘이 똑같이 보여요.</li>
+      <li><code>h[:5]</code>는 0~4번이라 <code>Hello</code>예요(5번 칸인 공백은 빠져요).</li>
+      <li><code>h[6:]</code>와 <code>h[-6:]</code>는 둘 다 <code>world!</code>예요. 앞에서 6번째부터 끝까지와 뒤에서 6글자는 같은 자리예요.</li>
+      <li><code>h[::-1]</code>은 뒤집기라 공백까지 그대로 뒤집혀요.</li>
+    </ul>
+    <p><strong>핵심 한 줄:</strong> <code>[시작:끝]</code>의 끝은 포함하지 않고, <code>-1</code>은 맨 뒤예요.</p>
+    </details>
+
+    <h3 id="q4">초급 4 — 문자열 메서드</h3>
+    <p>문자열을 다듬고 쪼개고 이어 붙이는 코드예요.</p>
+<pre><code>s = '  Hello World  '           # s 에 앞뒤로 공백 두 칸씩 있는 문자열을 담아 주세요
+print(len(s.strip()))           # s 의 앞뒤 공백을 지운 것의 글자 수를 화면에 보여 주세요
+print(len(s.rstrip()))          # s 의 오른쪽 공백을 지운 것의 글자 수를 화면에 보여 주세요
+print('a,b,c'.split(','))       # 'a,b,c' 를 쉼표로 자른 것을 화면에 보여 주세요
+print('a b  c'.split())         # 'a b  c' 를 공백으로 자른 것을 화면에 보여 주세요
+print('cat'.replace('c', 'b'))  # 'cat' 의 'c' 를 'b' 로 바꾼 것을 화면에 보여 주세요
+print('hello'.find('z'))        # 'hello' 안에서 'z' 의 자리를 화면에 보여 주세요
+print(', '.join(['사과', '배']))   # ['사과', '배'] 를 ', ' 로 이어 붙인 것을 화면에 보여 주세요
+print(len(s))                   # s 의 글자 수를 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 여덟 줄이 출력돼요. 각 줄은 무엇일까요? 마지막 줄에서 <code>s</code>가 바뀌었는지도 생각해 보세요.</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>출력 줄</th><th>예측</th></tr></thead>
+        <tbody>
+          <tr><td>첫 번째 줄</td><td>?</td></tr>
+          <tr><td>두 번째 줄</td><td>?</td></tr>
+          <tr><td>세 번째 줄</td><td>?</td></tr>
+          <tr><td>네 번째 줄</td><td>?</td></tr>
+          <tr><td>다섯 번째 줄</td><td>?</td></tr>
+          <tr><td>여섯 번째 줄</td><td>?</td></tr>
+          <tr><td>일곱 번째 줄</td><td>?</td></tr>
+          <tr><td>여덟 번째 줄</td><td>?</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <details>
+      <summary>힌트 보기</summary>
+      <p><code>'  Hello World  '</code>는 앞뒤 공백 2칸씩과 <code>Hello World</code> 11글자예요. <code>split()</code>은 공백 여러 칸을 하나로 묶고, <code>find</code>는 없으면 에러 대신 <code>-1</code>이에요.</p>
+    </details>
+    <details class="sol-link">
+      <summary>정답·해설 보기</summary>
+      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
+<pre class="out"><code class="nohighlight">11
+13
+['a', 'b', 'c']
+['a', 'b', 'c']
+bat
+-1
+사과, 배
+15</code></pre>
+    <ul>
+      <li>전체 길이는 2 + 11 + 2 = 15예요. <code>strip()</code>은 양쪽을 지워 <code>11</code>, <code>rstrip()</code>은 오른쪽만 지워 <code>13</code>이에요.</li>
+      <li><code>split(',')</code>는 쉼표 기준, <code>split()</code>은 공백 기준이에요. 공백 인자가 없으면 연속 공백(<code>'a b  c'</code>의 두 칸)을 하나로 묶어 빈 문자열이 안 생겨요.</li>
+      <li><code>find('z')</code>는 못 찾으면 에러가 아니라 <code>-1</code>을 돌려줘요. <code>-1</code>은 "마지막 자리"가 아니라 "없음" 신호예요.</li>
+      <li><code>join</code>은 구분자(<code>', '</code>) 문자열의 메서드라서 구분자가 앞에 와요.</li>
+      <li>마지막 줄이 여전히 <code>15</code>인 이유: 문자열 메서드는 모두 <strong>새 문자열을 돌려줄 뿐</strong> 원본 <code>s</code>는 안 바꿔요.</li>
+    </ul>
+    <p><strong>핵심 한 줄:</strong> 문자열 메서드는 새 문자열을 돌려주고 원본은 그대로예요.</p>
+    </details>
+
+    <h3 id="q5">초급 5 — 리스트 메서드</h3>
+    <p>리스트에 더하고, 정렬하고, 지우는 코드예요.</p>
+<pre><code>L = [3, 1, 2]   # L 에 리스트 [3, 1, 2] 를 담아 주세요
+L.append(9)     # L 의 맨 뒤에 9 를 붙여 주세요
+print(L)        # L 을 화면에 보여 주세요
+L.sort()        # L 을 작은 것부터 순서대로 정렬해 주세요
+print(L)        # L 을 화면에 보여 주세요
+L.insert(0, 7)  # L 의 0번 자리에 7 을 끼워 넣어 주세요
+del L[1]        # L 의 1번 원소를 지워 주세요
+print(L)        # L 을 화면에 보여 주세요
+print(L.pop())  # L 의 맨 뒤 원소를 꺼내 그 값을 화면에 보여 주세요
+print(L)        # L 을 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 다섯 줄이 출력돼요. 각 줄은 무엇일까요? 줄마다 <code>L</code>이 어떻게 바뀌는지 적으면서 따라가 보세요.</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>출력 줄</th><th>예측</th></tr></thead>
+        <tbody>
+          <tr><td>첫 번째 줄</td><td>?</td></tr>
+          <tr><td>두 번째 줄</td><td>?</td></tr>
+          <tr><td>세 번째 줄</td><td>?</td></tr>
+          <tr><td>네 번째 줄</td><td>?</td></tr>
+          <tr><td>다섯 번째 줄</td><td>?</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <details>
+      <summary>힌트 보기</summary>
+      <p>메서드는 위에서 아래로 차례로 <code>L</code>을 바꿔요. <code>insert(0, 7)</code> 뒤에 <code>del L[1]</code>이 어느 원소를 지우는지 번호로 세어 보고, <code>pop()</code>은 지우면서 그 값을 돌려준다는 점을 기억하세요.</p>
+    </details>
+    <details class="sol-link">
+      <summary>정답·해설 보기</summary>
+      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
+<pre class="out"><code class="nohighlight">[3, 1, 2, 9]
+[1, 2, 3, 9]
+[7, 2, 3, 9]
+9
+[7, 2, 3]</code></pre>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>실행한 줄</th><th>그 뒤 L</th></tr></thead>
+        <tbody>
+          <tr><td><code>L.append(9)</code></td><td>[3, 1, 2, 9]</td></tr>
+          <tr><td><code>L.sort()</code></td><td>[1, 2, 3, 9]</td></tr>
+          <tr><td><code>L.insert(0, 7)</code></td><td>[7, 1, 2, 3, 9]</td></tr>
+          <tr><td><code>del L[1]</code></td><td>[7, 2, 3, 9] (1번 칸의 1이 지워짐)</td></tr>
+          <tr><td><code>L.pop()</code></td><td>[7, 2, 3] (꺼낸 9를 화면에 보여 줌)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul>
+      <li><code>del</code>은 지우기만 하고, <code>pop()</code>은 지우면서 그 값을 돌려줘서 <code>print(L.pop())</code>이 <code>9</code>를 보여 줘요.</li>
+      <li>이 메서드들은 모두 <code>L</code> 자체를 바꿔요(리스트는 가변).</li>
+    </ul>
+    <p><strong>핵심 한 줄:</strong> <code>pop()</code>은 지우면서 값을 돌려주고, <code>del</code>은 지우기만 해요.</p>
+    </details>
+
+    <h3 id="q6">초급 6 — 변환과 sum</h3>
+    <p>자료를 다른 자료형으로 바꾸고 합계를 내는 코드예요.</p>
+<pre><code>print(list('abc'))              # 'abc' 를 리스트로 만든 것을 화면에 보여 주세요
+print(str(123) + '4')           # 123 을 문자열로 바꾼 것에 '4' 를 붙여 화면에 보여 주세요
+print(int('123') + 4)           # '123' 을 정수로 바꾼 것에 4 를 더해 화면에 보여 주세요
+print(float('123'))             # '123' 을 소수로 바꾼 것을 화면에 보여 주세요
+print(sum([1, 2, 3]))           # [1, 2, 3] 의 원소를 모두 더해 화면에 보여 주세요
+print(sum(list(range(1, 11))))  # 1 부터 10 까지를 리스트로 만들어 모두 더해 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 여섯 줄이 출력돼요. 각 줄은 무엇일까요?</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>출력 줄</th><th>예측</th></tr></thead>
+        <tbody>
+          <tr><td>첫 번째 줄</td><td>?</td></tr>
+          <tr><td>두 번째 줄</td><td>?</td></tr>
+          <tr><td>세 번째 줄</td><td>?</td></tr>
+          <tr><td>네 번째 줄</td><td>?</td></tr>
+          <tr><td>다섯 번째 줄</td><td>?</td></tr>
+          <tr><td>여섯 번째 줄</td><td>?</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <details>
+      <summary>힌트 보기</summary>
+      <p>문자열끼리 <code>+</code>는 이어 붙이기, 숫자끼리 <code>+</code>는 더하기예요. <code>range(1, 11)</code>은 1부터 10까지예요(끝 번호는 빠져요).</p>
+    </details>
+    <details class="sol-link">
+      <summary>정답·해설 보기</summary>
+      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
+<pre class="out"><code class="nohighlight">['a', 'b', 'c']
+1234
+127
+123.0
+6
+55</code></pre>
+    <ul>
+      <li><code>list('abc')</code>는 글자 하나씩을 원소로 하는 리스트를 만들어요.</li>
+      <li><code>str(123) + '4'</code>는 문자열 <code>'123'</code>과 <code>'4'</code>를 이어 붙여 <code>1234</code>이고, <code>int('123') + 4</code>는 숫자 더하기라 <code>127</code>이에요. 같은 <code>+</code>라도 자료형에 따라 달라요.</li>
+      <li><code>float('123')</code>은 <code>123.0</code>이에요.</li>
+      <li>1부터 10까지의 합은 55예요.</li>
+    </ul>
+    <p><strong>핵심 한 줄:</strong> <code>str</code>·<code>int</code>·<code>float</code>·<code>list</code>는 자료형을 바꾸고, <code>sum</code>은 리스트의 합을 내요.</p>
+    </details>
+
+    <hr>
+    <h2 id="level-mid"><span class="hl">중급</span> — 개념 합치기 — 1~3장 문법과 함께</h2>
+    <p>4장 개념을 <strong>두 가지 이상 합치고</strong>, 1~3장에서 배운 연산(<code>//</code>), <code>if</code>/<code>elif</code>/<code>else</code>, <code>while</code>, <code>for</code>, <code>def</code>와 <code>return</code>을 섞어요.</p>
+
+    <h3 id="q7">중급 1 — 가운데 글자 바꾸기 — 슬라이싱 + 불변 + //</h3>
+    <p>문자열은 일부를 바꿀 수 없으니, 잘라서 새 문자열을 만드는 코드예요.</p>
+<pre><code>word = 'apple'                           # word 에 문자열 'apple' 을 담아 주세요
+mid = len(word) // 2                     # word 의 글자 수를 2 로 나눈 몫을 mid 에 담아 주세요
+new = word[:mid] + 'X' + word[mid + 1:]  # word 의 mid 앞까지, 'X', word 의 mid 다음부터 끝까지를 붙여 new 에 담아 주세요
+print(mid)                               # mid 를 화면에 보여 주세요
+print(new)                               # new 를 화면에 보여 주세요
+print(word)                              # word 를 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 세 줄이 출력돼요. 각 줄은 무엇일까요? <code>word</code>가 바뀌었는지도 생각해 보세요.</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>출력 줄</th><th>예측</th></tr></thead>
+        <tbody>
+          <tr><td>첫 번째 줄</td><td>?</td></tr>
+          <tr><td>두 번째 줄</td><td>?</td></tr>
+          <tr><td>세 번째 줄</td><td>?</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <details>
+      <summary>힌트 보기</summary>
+      <p><code>len('apple')</code>은 5이고 <code>5 // 2</code>는 몫만 구해요. <code>word[mid + 1:]</code>은 <code>mid</code>번 글자를 <strong>건너뛰고</strong> 그 다음부터예요.</p>
+    </details>
+    <details class="sol-link">
+      <summary>정답·해설 보기</summary>
+      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
+<pre class="out"><code class="nohighlight">2
+apXle
+apple</code></pre>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>번호</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th></tr></thead>
+        <tbody>
+          <tr><td><code>word</code></td><td>a</td><td>p</td><td>p</td><td>l</td><td>e</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul>
+      <li><code>len(word) // 2</code>는 <code>5 // 2</code>라 <code>2</code>예요(<code>//</code>는 몫).</li>
+      <li><code>word[:2]</code>는 <code>ap</code>, <code>word[3:]</code>는 <code>le</code>이고 가운데 2번 글자 <code>p</code>는 빠지고 <code>X</code>가 들어가서 <code>apXle</code>이에요.</li>
+      <li>문자열은 불변이라 <code>word</code>는 그대로 <code>apple</code>이에요. 새 문자열 <code>new</code>를 만들었을 뿐이에요.</li>
+    </ul>
+    <p><strong>핵심 한 줄:</strong> 문자열 일부를 바꾸려면 잘라서 이어 붙여 새 문자열을 만들어요.</p>
+    </details>
+
+    <h3 id="q8">중급 2 — in — 리스트와 문자열의 차이 + 조건문</h3>
+    <p>같은 <code>in</code>이 리스트와 문자열에서 다르게 동작하는 것을 확인하는 코드예요.</p>
+<pre><code>books = ['해리포터', '반지의 제왕']                    # books 에 책 제목 두 개의 리스트를 담아 주세요
+for title in ['해리포터', '해', '반지의 제왕', '나니아']:  # 리스트의 원소를 하나씩 title 이라고 부르며 아래를 반복해 주세요
+    if title in books:                        # 만약 title 이 books 안에 있으면
+        print(title, '있음')                    # title 과 '있음' 을 화면에 보여 주세요
+    elif title in '해리포터 이야기':                 # 아니고 만약 title 이 문자열 '해리포터 이야기' 안에 있으면
+        print(title, '일부')                    # title 과 '일부' 를 화면에 보여 주세요
+    else:                                     # 그 밖의 경우에는
+        print(title, '없음')                    # title 과 '없음' 을 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 네 줄이 출력돼요. 각 줄은 무엇일까요?</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>출력 줄</th><th>예측</th></tr></thead>
+        <tbody>
+          <tr><td>첫 번째 줄</td><td>?</td></tr>
+          <tr><td>두 번째 줄</td><td>?</td></tr>
+          <tr><td>세 번째 줄</td><td>?</td></tr>
+          <tr><td>네 번째 줄</td><td>?</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <details>
+      <summary>힌트 보기</summary>
+      <p>리스트에서 <code>in</code>은 원소가 <strong>완전히 같을 때만</strong> 참이고, 문자열에서 <code>in</code>은 <strong>부분 문자열</strong>도 찾아요. <code>if / elif / else</code>는 위에서부터 처음 참인 곳 하나만 실행해요.</p>
+    </details>
+    <details class="sol-link">
+      <summary>정답·해설 보기</summary>
+      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
+<pre class="out"><code class="nohighlight">해리포터 있음
+해 일부
+반지의 제왕 있음
+나니아 없음</code></pre>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>title</th><th>books 안에 있나</th><th>'해리포터 이야기' 안에 있나</th><th>출력</th></tr></thead>
+        <tbody>
+          <tr><td>해리포터</td><td>참</td><td>(검사 안 함)</td><td>있음</td></tr>
+          <tr><td>해</td><td>거짓</td><td>참</td><td>일부</td></tr>
+          <tr><td>반지의 제왕</td><td>참</td><td>(검사 안 함)</td><td>있음</td></tr>
+          <tr><td>나니아</td><td>거짓</td><td>거짓</td><td>없음</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul>
+      <li>리스트 <code>books</code>에는 <code>'해'</code>라는 원소가 없어서 <code>'해' in books</code>는 거짓이에요.</li>
+      <li>하지만 문자열 <code>'해리포터 이야기'</code> 안에는 <code>'해'</code>가 들어 있어서 두 번째 조건이 참이 돼요.</li>
+      <li><code>if</code>가 참이면 <code>elif</code>와 <code>else</code>는 검사하지 않고 넘어가요.</li>
+    </ul>
+    <p><strong>핵심 한 줄:</strong> 리스트의 <code>in</code>은 완전 일치, 문자열의 <code>in</code>은 부분 일치예요.</p>
+    </details>
+
+    <h3 id="q9">중급 3 — 복사 a[:]와 c = a의 차이</h3>
+    <p>복사본과 같은 리스트에 이름만 하나 더 붙인 것의 차이를 확인하는 코드예요.</p>
+<pre><code>a = [1, 2, 3]  # a 에 리스트 [1, 2, 3] 을 담아 주세요
+b = a[:]       # a 를 통째로 복사해 b 에 담아 주세요
+c = a          # a 가 가리키는 리스트를 c 에도 담아 주세요
+b.append(4)    # b 의 맨 뒤에 4 를 붙여 주세요
+c.remove(1)    # c 에서 값 1 을 찾아 지워 주세요
+a.append(7)    # a 의 맨 뒤에 7 을 붙여 주세요
+print(a)       # a 를 화면에 보여 주세요
+print(b)       # b 를 화면에 보여 주세요
+print(c)       # c 를 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 세 줄이 출력돼요. 각 줄은 무엇일까요?</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>출력 줄</th><th>예측</th></tr></thead>
+        <tbody>
+          <tr><td>첫 번째 줄</td><td>?</td></tr>
+          <tr><td>두 번째 줄</td><td>?</td></tr>
+          <tr><td>세 번째 줄</td><td>?</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <details>
+      <summary>힌트 보기</summary>
+      <p><code>a[:]</code>는 새 리스트를 만들고, <code>c = a</code>는 새 리스트를 만들지 않고 <strong>같은 리스트에 이름표를 하나 더</strong> 붙여요. 누구 리스트가 바뀌는지 따로 따져 보세요.</p>
+    </details>
+    <details class="sol-link">
+      <summary>정답·해설 보기</summary>
+      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
+<pre class="out"><code class="nohighlight">[2, 3, 7]
+[1, 2, 3, 4]
+[2, 3, 7]</code></pre>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>실행한 줄</th><th>a (와 c)</th><th>b</th></tr></thead>
+        <tbody>
+          <tr><td><code>b = a[:]</code>, <code>c = a</code></td><td>[1, 2, 3]</td><td>[1, 2, 3] (복사본)</td></tr>
+          <tr><td><code>b.append(4)</code></td><td>[1, 2, 3]</td><td>[1, 2, 3, 4]</td></tr>
+          <tr><td><code>c.remove(1)</code></td><td>[2, 3] (a와 c는 같은 리스트)</td><td>[1, 2, 3, 4]</td></tr>
+          <tr><td><code>a.append(7)</code></td><td>[2, 3, 7]</td><td>[1, 2, 3, 4]</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul>
+      <li><code>a</code>와 <code>c</code>는 같은 리스트라서 어느 쪽에서 바꿔도 둘 다 보이는 모습이 같아요.</li>
+      <li><code>b</code>는 복사본이라 <code>a</code>와 <code>c</code>의 변화가 닿지 않고, 반대로 <code>b</code>의 변화도 그들에게 닿지 않아요.</li>
+      <li><code>remove(1)</code>은 위치가 아니라 <strong>값 1</strong>을 찾아 지워요.</li>
+    </ul>
+    <p><strong>핵심 한 줄:</strong> <code>a[:]</code>는 복사본, <code>c = a</code>는 같은 리스트예요.</p>
+    </details>
+
+    <h3 id="q10">중급 4 — while로 자릿수 더하기 — 반복 + 인덱싱 + 변환</h3>
+    <p>숫자 글자를 한 자리씩 꺼내 더하는 <code>while</code> 코드예요.</p>
+<pre><code>digits = '4096'                     # digits 에 문자열 '4096' 을 담아 주세요
+i = 0                               # i 에 0 을 담아 주세요
+total = 0                           # total 에 0 을 담아 주세요
+while i &lt; len(digits):              # i 가 digits 의 글자 수보다 작은 동안 아래를 반복해 주세요
+    total = total + int(digits[i])  # total 에 digits 의 i번 글자를 정수로 바꾼 값을 더해 다시 담아 주세요
+    print(i, digits[i], total)      # i, digits 의 i번 글자, total 을 화면에 보여 주세요
+    i = i + 1                       # i 에 i 보다 1 큰 값을 담아 주세요
+print(i, total)                     # i 와 total 을 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 다섯 줄이 출력돼요. 각 줄은 무엇일까요? 마지막 줄의 <code>i</code>는 얼마일까요?</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>출력 줄</th><th>예측</th></tr></thead>
+        <tbody>
+          <tr><td>첫 번째 줄</td><td>?</td></tr>
+          <tr><td>두 번째 줄</td><td>?</td></tr>
+          <tr><td>세 번째 줄</td><td>?</td></tr>
+          <tr><td>네 번째 줄</td><td>?</td></tr>
+          <tr><td>다섯 번째 줄</td><td>?</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <details>
+      <summary>힌트 보기</summary>
+      <p><code>while</code> 조건이 거짓이 되는 순간 반복이 끝나요. <code>i</code>가 0, 1, 2, 3일 때 안쪽이 실행되고, 맨 마지막에 <code>i</code>가 얼마가 되어 멈추는지 보세요.</p>
+    </details>
+    <details class="sol-link">
+      <summary>정답·해설 보기</summary>
+      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
+<pre class="out"><code class="nohighlight">0 4 4
+1 0 4
+2 9 13
+3 6 19
+4 19</code></pre>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>i</th><th>digits[i]</th><th>실행 뒤 total</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>'4'</td><td>4</td></tr>
+          <tr><td>1</td><td>'0'</td><td>4</td></tr>
+          <tr><td>2</td><td>'9'</td><td>13</td></tr>
+          <tr><td>3</td><td>'6'</td><td>19</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul>
+      <li><code>digits[i]</code>는 글자라서 <code>int(...)</code>로 정수로 바꿔야 더할 수 있어요.</li>
+      <li><code>i</code>가 4가 되면 <code>4 &lt; 4</code>가 거짓이라 반복이 끝나고, 마지막 줄은 <code>4 19</code>예요.</li>
+      <li><code>i = i + 1</code>을 빠뜨리면 <code>i</code>가 영원히 0이라 무한 반복이 돼요.</li>
+    </ul>
+    <p><strong>핵심 한 줄:</strong> <code>while</code>은 조건이 참인 동안 반복하고, 카운터를 올리는 줄이 꼭 있어야 해요.</p>
+    </details>
+
+    <h3 id="q11">중급 5 — 함수로 만들기 — def · return + 슬라이싱</h3>
+    <p>앞 두 글자와 뒤 두 글자를 붙이던 일을 함수로 만든 코드예요.</p>
+<pre><code>def edges(s, n):           # s, n 을 받는 edges 라는 동작을 만들어 주세요
+    return s[:n] + s[-n:]  # s 의 앞 n 글자와 뒤 n 글자를 붙여 결과로 돌려주세요
+
+print(edges('python', 2))  # edges 에 'python' 과 2 를 넣은 결과를 화면에 보여 주세요
+print(edges('abcdef', 3))  # edges 에 'abcdef' 와 3 을 넣은 결과를 화면에 보여 주세요
+print(edges('ab', 1))      # edges 에 'ab' 와 1 을 넣은 결과를 화면에 보여 주세요
+print(edges('hello', 0))   # edges 에 'hello' 와 0 을 넣은 결과를 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 네 줄이 출력돼요. 각 줄은 무엇일까요? 마지막 줄이 함정이에요.</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>출력 줄</th><th>예측</th></tr></thead>
+        <tbody>
+          <tr><td>첫 번째 줄</td><td>?</td></tr>
+          <tr><td>두 번째 줄</td><td>?</td></tr>
+          <tr><td>세 번째 줄</td><td>?</td></tr>
+          <tr><td>네 번째 줄</td><td>?</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <details>
+      <summary>힌트 보기</summary>
+      <p>앞의 세 줄은 <code>s[:n]</code>과 <code>s[-n:]</code>를 그대로 계산하면 돼요. 마지막 줄은 <code>n</code>이 0일 때 <code>s[-0:]</code>가 무슨 뜻인지 생각해 보세요. <code>-0</code>은 <code>0</code>과 같아요.</p>
+    </details>
+    <details class="sol-link">
+      <summary>정답·해설 보기</summary>
+      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
+<pre class="out"><code class="nohighlight">pyon
+abcdef
+ab
+hello</code></pre>
+    <ul>
+      <li><code>edges('python', 2)</code>는 <code>'py' + 'on'</code>이라 <code>pyon</code>이에요.</li>
+      <li><code>edges('abcdef', 3)</code>는 <code>'abc' + 'def'</code>라 글자가 전부 이어져 <code>abcdef</code>가 돼요.</li>
+      <li><code>edges('ab', 1)</code>은 <code>'a' + 'b'</code>라 <code>ab</code>예요.</li>
+      <li><code>edges('hello', 0)</code>의 <code>s[:0]</code>은 빈 문자열이지만, <code>s[-0:]</code>는 <code>s[0:]</code>와 같아서 <strong>문자열 전체</strong>가 나와요. 그래서 결과는 <code>hello</code>예요. "뒤에서 0개"를 기대하면 틀려요.</li>
+      <li><code>return</code>이 돌려준 값을 <code>print</code>가 화면에 보여 줘요.</li>
+    </ul>
+    <p><strong>핵심 한 줄:</strong> <code>def</code>로 만든 동작은 값을 <code>return</code>으로 돌려주고, <code>s[-0:]</code>는 전체예요.</p>
+    </details>
+
+    <h3 id="q12">중급 6 — 중첩 리스트와 이중 for</h3>
+    <p>리스트 안에 리스트가 있을 때 번호로 꺼내고, 두 겹으로 반복하는 코드예요.</p>
+<pre><code>m = [[1, 2], [3, 4], [5, 6]]  # m 에 리스트 세 개를 담은 리스트를 담아 주세요
+print(m[1][0])                # m 의 1번 원소의 0번 원소를 화면에 보여 주세요
+print(len(m))                 # m 의 원소 개수를 화면에 보여 주세요
+print(m[-1])                  # m 의 맨 뒤 원소를 화면에 보여 주세요
+total = 0                     # total 에 0 을 담아 주세요
+for row in m:                 # m 의 원소를 하나씩 row 라고 부르며 아래를 반복해 주세요
+    for v in row:             # row 의 원소를 하나씩 v 라고 부르며 아래를 반복해 주세요
+        total += v            # total 에 v 를 더한 값을 다시 담아 주세요
+print(total)                  # total 을 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 네 줄이 출력돼요. 각 줄은 무엇일까요?</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>출력 줄</th><th>예측</th></tr></thead>
+        <tbody>
+          <tr><td>첫 번째 줄</td><td>?</td></tr>
+          <tr><td>두 번째 줄</td><td>?</td></tr>
+          <tr><td>세 번째 줄</td><td>?</td></tr>
+          <tr><td>네 번째 줄</td><td>?</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <details>
+      <summary>힌트 보기</summary>
+      <p><code>m[1]</code>이 <code>[3, 4]</code>라는 점부터 시작하세요. <code>len(m)</code>은 바깥 리스트의 원소(안쪽 리스트) 개수예요. 이중 <code>for</code>는 바깥이 한 번 돌 때마다 안쪽이 한 바퀴 돌아요.</p>
+    </details>
+    <details class="sol-link">
+      <summary>정답·해설 보기</summary>
+      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
+<pre class="out"><code class="nohighlight">3
+3
+[5, 6]
+21</code></pre>
+    <ul>
+      <li><code>m[1]</code>은 <code>[3, 4]</code>이고, 그 0번 원소는 <code>3</code>이에요. 번호를 두 번 붙이면 안쪽까지 들어가요.</li>
+      <li><code>len(m)</code>은 바깥 리스트의 원소 개수라 <code>3</code>이에요(안쪽 숫자 6개를 세는 게 아니에요).</li>
+      <li><code>m[-1]</code>은 맨 뒤 원소라 <code>[5, 6]</code>이에요.</li>
+      <li><code>row</code>가 <code>[1, 2]</code>, <code>[3, 4]</code>, <code>[5, 6]</code>일 때 안쪽 <code>for</code>가 각 숫자를 더해서 1+2+3+4+5+6 = <code>21</code>이에요.</li>
+    </ul>
+    <p><strong>핵심 한 줄:</strong> 번호를 두 번 붙이면 중첩 리스트의 안쪽을 꺼내요.</p>
+    </details>
+
+    <hr>
+    <h2 id="level-hard"><span class="hl">고급</span> — 함정과 종합 — 3장까지 누적</h2>
+    <p>실수하기 쉬운 지점(순회 중 <code>remove</code>, 함수 안에서의 변경, <code>global</code>)과 <code>lambda</code>·<code>map</code>·<code>filter</code>까지 포함한 종합 코드를 읽어요.</p>
+
+    <h3 id="q13">고급 1 — 순회 중 remove — 건너뛰기</h3>
+    <p>돌고 있는 리스트를 직접 고치는 코드와 복사본을 도는 코드를 비교해요.</p>
+<pre><code>L = [1, 2, 3, 4]     # L 에 리스트 [1, 2, 3, 4] 를 담아 주세요
+for x in L:          # L 의 원소를 하나씩 x 라고 부르며 아래를 반복해 주세요
+    print('x =', x)  # 'x =' 와 x 를 화면에 보여 주세요
+    L.remove(x)      # L 에서 값 x 를 찾아 지워 주세요
+print(L)             # L 을 화면에 보여 주세요
+K = [1, 2, 3, 4]     # K 에 리스트 [1, 2, 3, 4] 를 담아 주세요
+for x in K[:]:       # K 의 복사본 원소를 하나씩 x 라고 부르며 아래를 반복해 주세요
+    K.remove(x)      # K 에서 값 x 를 찾아 지워 주세요
+print(K)             # K 를 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 네 줄이 출력돼요. 각 줄은 무엇일까요? <code>L</code>이 빈 리스트가 될까요?</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>출력 줄</th><th>예측</th></tr></thead>
+        <tbody>
+          <tr><td>첫 번째 줄</td><td>?</td></tr>
+          <tr><td>두 번째 줄</td><td>?</td></tr>
+          <tr><td>세 번째 줄</td><td>?</td></tr>
+          <tr><td>네 번째 줄</td><td>?</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <details>
+      <summary>힌트 보기</summary>
+      <p><code>for</code>는 "몇 번째 칸"을 따라가요. 지우면 뒤 원소가 앞으로 당겨져서 칸 번호는 그대로인데 그 자리의 값이 바뀌어요. 복사본을 돌면 원본에서 지워도 도는 목록이 안 변해요.</p>
+    </details>
+    <details class="sol-link">
+      <summary>정답·해설 보기</summary>
+      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
+<pre class="out"><code class="nohighlight">x = 1
+x = 3
+[2, 4]
+[]</code></pre>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>칸 번호</th><th>x</th><th>지운 뒤 L</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>1</td><td>[2, 3, 4]</td></tr>
+          <tr><td>1</td><td>3 (2는 0번 칸으로 밀려 건너뜀)</td><td>[2, 4]</td></tr>
+          <tr><td>2</td><td>(칸 없음)</td><td>반복 끝</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul>
+      <li>그래서 <code>L</code>은 비지 않고 <code>[2, 4]</code>가 남아요. <code>x</code>도 1과 3뿐이었어요.</li>
+      <li><code>K[:]</code>는 복사본이라 칸 번호가 어긋나지 않고 네 원소를 모두 만나서 <code>K</code>가 <code>[]</code>가 돼요.</li>
+    </ul>
+    <p><strong>핵심 한 줄:</strong> 지울 때는 복사본(<code>L[:]</code>)을 돌고 원본을 지워요.</p>
+    </details>
+
+    <h3 id="q14">고급 2 — 함수 안에서 바꾸면 밖도 바뀔까 — 가변·불변과 지역변수</h3>
+    <p>함수에 리스트, 숫자, 문자열을 넘겼을 때 바깥 값이 바뀌는지 보는 코드예요.</p>
+<pre><code>def grow(items, n):  # items, n 을 받는 grow 라는 동작을 만들어 주세요
+    items.append(n)  # items 의 맨 뒤에 n 을 붙여 주세요
+    n = n + 1        # n 에 n 보다 1 큰 값을 담아 주세요
+    return n         # n 을 결과로 돌려주세요
+
+def reset(s):        # s 를 받는 reset 이라는 동작을 만들어 주세요
+    s = 'X' + s[1:]  # s 에 'X' 와 s 의 1번부터 끝까지를 붙인 것을 담아 주세요
+    return s         # s 를 결과로 돌려주세요
+
+nums = [1]           # nums 에 리스트 [1] 을 담아 주세요
+k = 5                # k 에 5 를 담아 주세요
+r = grow(nums, k)    # grow 에 nums 와 k 를 넣은 결과를 r 에 담아 주세요
+print(nums)          # nums 를 화면에 보여 주세요
+print(k)             # k 를 화면에 보여 주세요
+print(r)             # r 을 화면에 보여 주세요
+word = 'abc'         # word 에 문자열 'abc' 를 담아 주세요
+reset(word)          # reset 에 word 를 넣어 실행해 주세요
+print(word)          # word 를 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 네 줄이 출력돼요. 각 줄은 무엇일까요?</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>출력 줄</th><th>예측</th></tr></thead>
+        <tbody>
+          <tr><td>첫 번째 줄</td><td>?</td></tr>
+          <tr><td>두 번째 줄</td><td>?</td></tr>
+          <tr><td>세 번째 줄</td><td>?</td></tr>
+          <tr><td>네 번째 줄</td><td>?</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <details>
+      <summary>힌트 보기</summary>
+      <p>리스트는 가변이라 함수가 받은 <code>items</code>와 바깥 <code>nums</code>는 <strong>같은 리스트</strong>예요. 숫자와 문자열은 불변이라 함수 안에서 <code>n = ...</code>, <code>s = ...</code>를 하면 <strong>그 함수 안의 새 이름</strong>이 생길 뿐이에요. 마지막 줄은 <code>reset</code>이 돌려준 값을 어디에도 담지 않았다는 점도 보세요.</p>
+    </details>
+    <details class="sol-link">
+      <summary>정답·해설 보기</summary>
+      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
+<pre class="out"><code class="nohighlight">[1, 5]
+5
+6
+abc</code></pre>
+    <ul>
+      <li><code>items.append(n)</code>은 받은 리스트 <strong>자체</strong>를 바꿔서 바깥 <code>nums</code>가 <code>[1, 5]</code>가 돼요.</li>
+      <li><code>n = n + 1</code>은 숫자(불변)라 함수 안의 <code>n</code>만 6이 되고, 바깥 <code>k</code>는 그대로 <code>5</code>예요. 바뀐 값은 <code>return n</code>으로 <code>r</code>에 담겨 <code>6</code>이에요.</li>
+      <li><code>reset</code>은 문자열(불변)이라 안에서 새 문자열을 만들 뿐이고, 그 결과를 <code>return</code>으로 돌려줬지만 <code>reset(word)</code>의 결과를 어디에도 담지 않아서 <code>word</code>는 <code>abc</code> 그대로예요.</li>
+    </ul>
+    <p><strong>핵심 한 줄:</strong> 가변 자료(리스트)는 함수 안에서 바꾸면 밖도 바뀌고, 불변 자료(숫자·문자열)는 안 바뀌어요.</p>
+    </details>
+
+    <h3 id="q15">고급 3 — global — 바깥 변수를 바꾸기 vs 안에서 새로 만들기</h3>
+    <p>전역변수를 함수 안에서 바꾸려면 <code>global</code>이 필요한지 확인하는 코드예요.</p>
+<pre><code>total = 10             # total 에 10 을 담아 주세요
+
+def bump():            # bump 라는 동작을 만들어 주세요
+    global total       # 바깥의 total 을 이 안에서 바꾸겠다고 알려 주세요
+    total = total + 1  # total 에 total 보다 1 큰 값을 담아 주세요
+
+def shadow():          # shadow 라는 동작을 만들어 주세요
+    total = 100        # total 에 100 을 담아 주세요
+    return total       # total 을 결과로 돌려주세요
+
+bump()                 # bump 를 실행해 주세요
+bump()                 # bump 를 실행해 주세요
+print(total)           # total 을 화면에 보여 주세요
+print(shadow())        # shadow 의 결과를 화면에 보여 주세요
+print(total)           # total 을 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 세 줄이 출력돼요. 각 줄은 무엇일까요?</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>출력 줄</th><th>예측</th></tr></thead>
+        <tbody>
+          <tr><td>첫 번째 줄</td><td>?</td></tr>
+          <tr><td>두 번째 줄</td><td>?</td></tr>
+          <tr><td>세 번째 줄</td><td>?</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <details>
+      <summary>힌트 보기</summary>
+      <p><code>global total</code>이 있으면 함수 안의 <code>total</code>은 바깥 변수와 같은 것이에요. 없으면 <code>total = ...</code>은 함수 안에서만 쓰는 <strong>새 지역변수</strong>를 만들어요.</p>
+    </details>
+    <details class="sol-link">
+      <summary>정답·해설 보기</summary>
+      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
+<pre class="out"><code class="nohighlight">12
+100
+12</code></pre>
+    <ul>
+      <li><code>bump()</code>를 두 번 실행하면 바깥 <code>total</code>이 10에서 11, 12로 늘어나요. <code>global total</code> 덕분이에요.</li>
+      <li><code>shadow()</code> 안의 <code>total = 100</code>은 <code>global</code>이 없어서 함수 안에서만 쓰는 새 변수예요. 그 값 <code>100</code>은 돌려받아 출력되지만 바깥 <code>total</code>은 안 건드려요.</li>
+      <li>그래서 마지막 <code>print(total)</code>은 여전히 <code>12</code>예요.</li>
+    </ul>
+    <p><strong>핵심 한 줄:</strong> <code>global</code>이 없으면 함수 안의 대입은 새 지역변수를 만들어요.</p>
+    </details>
+
+    <h3 id="q16">고급 4 — lambda · map · filter와 변환 연쇄</h3>
+    <p>문자열을 숫자 리스트로 바꾸고 걸러내고 다시 문자열로 돌리는 코드예요.</p>
+<pre><code>nums = list(map(int, '643'))                     # '643' 의 글자마다 int 를 적용한 결과를 리스트로 만들어 nums 에 담아 주세요
+print(nums)                                      # nums 를 화면에 보여 주세요
+print(sum(nums))                                 # nums 의 원소를 모두 더해 화면에 보여 주세요
+print(list(filter(lambda x: x % 2 == 0, nums)))  # nums 에서 짝수만 걸러 리스트로 만들어 화면에 보여 주세요
+print(list(map(lambda x: x * 2, nums)))          # nums 의 원소마다 두 배로 만들어 리스트로 화면에 보여 주세요
+print(list(map(str, nums)))                      # nums 의 원소마다 str 을 적용해 리스트로 화면에 보여 주세요
+print(''.join(map(str, nums[::-1])))             # nums 를 거꾸로 읽어 글자로 바꾼 것을 빈 글자로 이어 붙여 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 여섯 줄이 출력돼요. 각 줄은 무엇일까요?</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>출력 줄</th><th>예측</th></tr></thead>
+        <tbody>
+          <tr><td>첫 번째 줄</td><td>?</td></tr>
+          <tr><td>두 번째 줄</td><td>?</td></tr>
+          <tr><td>세 번째 줄</td><td>?</td></tr>
+          <tr><td>네 번째 줄</td><td>?</td></tr>
+          <tr><td>다섯 번째 줄</td><td>?</td></tr>
+          <tr><td>여섯 번째 줄</td><td>?</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <details>
+      <summary>힌트 보기</summary>
+      <p><code>map(함수, 목록)</code>은 목록의 원소마다 함수를 적용하고, <code>filter</code>는 조건이 참인 것만 남겨요. 둘 다 <code>list()</code>로 감싸야 눈에 보여요. 마지막 줄은 안쪽부터 <code>nums[::-1]</code> → <code>map(str, ...)</code> → <code>join</code> 순서로 읽으세요.</p>
+    </details>
+    <details class="sol-link">
+      <summary>정답·해설 보기</summary>
+      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
+<pre class="out"><code class="nohighlight">[6, 4, 3]
+13
+[6, 4]
+[12, 8, 6]
+['6', '4', '3']
+346</code></pre>
+    <ul>
+      <li><code>map(int, '643')</code>은 글자 <code>'6'</code>, <code>'4'</code>, <code>'3'</code>을 하나씩 정수로 바꿔 <code>[6, 4, 3]</code>이에요.</li>
+      <li><code>sum</code>은 6 + 4 + 3 = <code>13</code>이에요.</li>
+      <li><code>x % 2 == 0</code>인 짝수만 남기니 <code>[6, 4]</code>이고, 두 배로 만들면 <code>[12, 8, 6]</code>이에요.</li>
+      <li><code>map(str, nums)</code>는 숫자를 글자로 바꾼 <code>['6', '4', '3']</code>이에요.</li>
+      <li>마지막 줄은 뒤집은 <code>[3, 4, 6]</code>을 글자로 바꿔 빈 글자(<code>''</code>)로 이어 붙여서 <code>346</code>이에요. <code>join</code>은 글자만 이을 수 있어서 <code>map(str, ...)</code>이 꼭 필요해요.</li>
+    </ul>
+    <p><strong>핵심 한 줄:</strong> <code>map</code>은 모두에게 적용, <code>filter</code>는 조건에 맞는 것만, <code>join</code>은 글자만 이어요.</p>
+    </details>
+
+    <h3 id="q17">고급 5 — 쪼개고 다듬고 합치기 — 문자열·리스트 종합</h3>
+    <p>공백이 섞인 입력을 정리해서 계산하는 코드예요.</p>
+<pre><code>line = ' 3, 14 ,15,92 '                                 # line 에 공백이 섞인 문자열 ' 3, 14 ,15,92 ' 를 담아 주세요
+parts = line.strip().split(',')                         # line 의 앞뒤 공백을 지우고 쉼표로 잘라 parts 에 담아 주세요
+print(parts)                                            # parts 를 화면에 보여 주세요
+nums = list(map(int, parts))                            # parts 의 원소마다 int 를 적용한 결과를 리스트로 만들어 nums 에 담아 주세요
+print(nums)                                             # nums 를 화면에 보여 주세요
+print(sum(nums))                                        # nums 의 원소를 모두 더해 화면에 보여 주세요
+print('+'.join(map(str, nums)) + '=' + str(sum(nums)))  # nums 를 글자로 바꿔 '+' 로 이어 붙이고 '=' 와 합계를 붙여 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 네 줄이 출력돼요. 각 줄은 무엇일까요? <code>int(' 14 ')</code>가 에러가 날지도 생각해 보세요.</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>출력 줄</th><th>예측</th></tr></thead>
+        <tbody>
+          <tr><td>첫 번째 줄</td><td>?</td></tr>
+          <tr><td>두 번째 줄</td><td>?</td></tr>
+          <tr><td>세 번째 줄</td><td>?</td></tr>
+          <tr><td>네 번째 줄</td><td>?</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <details>
+      <summary>힌트 보기</summary>
+      <p><code>strip()</code>은 문자열의 양쪽 끝만 다듬고 쉼표로 쪼갠 뒤 <strong>가운데 조각들의 공백은 그대로</strong> 남아요. <code>int()</code>가 공백 낀 숫자 글자를 어떻게 다루는지는 직접 확인해 보세요.</p>
+    </details>
+    <details class="sol-link">
+      <summary>정답·해설 보기</summary>
+      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
+<pre class="out"><code class="nohighlight">['3', ' 14 ', '15', '92']
+[3, 14, 15, 92]
+124
+3+14+15+92=124</code></pre>
+    <ul>
+      <li><code>strip()</code>이 양쪽 끝 공백을 지우고 <code>'3, 14 ,15,92'</code>가 돼요. 쉼표로 자르면 <code>['3', ' 14 ', '15', '92']</code>이고, <code>' 14 '</code>의 안쪽 공백은 그대로 남아요.</li>
+      <li><code>int(' 14 ')</code>는 앞뒤 공백을 무시하고 <code>14</code>로 바꿔 주니 에러가 나지 않아요.</li>
+      <li>합계는 3 + 14 + 15 + 92 = <code>124</code>이에요.</li>
+      <li>마지막 줄은 <code>'+'.join(map(str, nums))</code>가 <code>'3+14+15+92'</code>를 만들고, 거기에 <code>'='</code>와 <code>str(124)</code>를 이어 붙여요.</li>
+    </ul>
+    <p><strong>핵심 한 줄:</strong> <code>split</code> → <code>map(int, ...)</code> → <code>sum</code>은 문자열 입력을 계산으로 바꾸는 단골 연쇄예요.</p>
+    </details>
+
+    <h3 id="q18">고급 6 — 소수 거르기 코드 읽기 — 조건 하나의 역할</h3>
+    <p>2부터 n까지에서 소수만 남기는 코드와, 조건 하나를 뺀 변형 코드를 비교해요.</p>
+<pre><code>def primes(n):                         # n 을 받는 primes 라는 동작을 만들어 주세요
+    L = list(range(2, n + 1))          # 2 부터 n 까지의 수를 리스트로 만들어 L 에 담아 주세요
+    for p in L[:]:                     # L 의 복사본 원소를 하나씩 p 라고 부르며 아래를 반복해 주세요
+        for x in L[:]:                 # L 의 복사본 원소를 하나씩 x 라고 부르며 아래를 반복해 주세요
+            if x != p and x % p == 0:  # 만약 x 가 p 와 다르고 x 를 p 로 나눈 나머지가 0 이면
+                L.remove(x)            # L 에서 값 x 를 찾아 지워 주세요
+    return L                           # L 을 결과로 돌려주세요
+
+def primes_b(n):                       # n 을 받는 primes_b 라는 동작을 만들어 주세요
+    L = list(range(2, n + 1))          # 2 부터 n 까지의 수를 리스트로 만들어 L 에 담아 주세요
+    for p in L[:]:                     # L 의 복사본 원소를 하나씩 p 라고 부르며 아래를 반복해 주세요
+        for x in L[:]:                 # L 의 복사본 원소를 하나씩 x 라고 부르며 아래를 반복해 주세요
+            if x % p == 0:             # 만약 x 를 p 로 나눈 나머지가 0 이면
+                L.remove(x)            # L 에서 값 x 를 찾아 지워 주세요
+    return L                           # L 을 결과로 돌려주세요
+
+print(primes(10))                      # primes 에 10 을 넣은 결과를 화면에 보여 주세요
+print(primes(20))                      # primes 에 20 을 넣은 결과를 화면에 보여 주세요
+print(primes_b(10))                    # primes_b 에 10 을 넣은 결과를 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 세 줄이 출력돼요. 각 줄은 무엇일까요? 첫 두 줄은 소수만 남아요. 세 번째 줄은 <code>primes</code>에서 <code>x != p and</code>만 뺀 <code>primes_b</code>의 결과예요.</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>출력 줄</th><th>예측</th></tr></thead>
+        <tbody>
+          <tr><td>첫 번째 줄</td><td>?</td></tr>
+          <tr><td>두 번째 줄</td><td>?</td></tr>
+          <tr><td>세 번째 줄</td><td>?</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <details>
+      <summary>힌트 보기</summary>
+      <p><code>primes</code>는 <code>p</code>의 배수를 <code>L</code>에서 지워 나가요. 그런데 어떤 수든 <strong>자기 자신으로 나누면 나머지가 0</strong>이에요. <code>x != p</code>는 이 자기 자신을 지우지 않으려는 조건이에요. 이 조건이 없으면 <code>p = 2</code>일 때 2는 어떻게 될까요?</p>
+    </details>
+    <details class="sol-link">
+      <summary>정답·해설 보기</summary>
+      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
+<pre class="out"><code class="nohighlight">[2, 3, 5, 7]
+[2, 3, 5, 7, 11, 13, 17, 19]
+[]</code></pre>
+    <ul>
+      <li><code>primes</code>는 <code>p = 2</code>일 때 4, 6, 8, 10을, <code>p = 3</code>일 때 9를 지워서 <code>[2, 3, 5, 7]</code>이에요. 20까지는 <code>[2, 3, 5, 7, 11, 13, 17, 19]</code>이에요.</li>
+      <li><code>primes_b</code>는 <code>x != p and</code>를 뺐어서 <code>p</code> 자신도 지워요. <code>p = 2</code>일 때 2, 4, 6, 8, 10이 모두 지워지고, 같은 식으로 3, 5, 7도 지워져서 결과가 <code>[]</code>(빈 리스트)가 돼요.</li>
+      <li>그래서 <code>x != p</code>가 "자기 자신은 남긴다"는 역할을 해요. 두 <code>for</code> 모두 복사본(<code>L[:]</code>)을 돌아서 <code>remove</code>해도 건너뛰기가 생기지 않아요.</li>
+    </ul>
+    <p><strong>핵심 한 줄:</strong> <code>x != p</code>는 소수 자신을 남기는 조건이고, 지울 때는 복사본을 돌아요.</p>
+    </details>
+
+    <h3 id="q19">고급 7 — 단어 세기 — 중복 빼고 정렬해서 합치기</h3>
+    <p>문장을 단어로 쪼개고, 중복을 빼고, 정렬해서 다시 합치는 종합 코드예요.</p>
+<pre><code>text = '  the cat the dog  '  # text 에 앞뒤로 공백이 있는 문자열을 담아 주세요
+words = text.strip().split()  # text 의 앞뒤 공백을 지우고 공백으로 잘라 words 에 담아 주세요
+print(words)                  # words 를 화면에 보여 주세요
+uniq = []                     # uniq 에 빈 리스트를 담아 주세요
+for w in words:               # words 의 원소를 하나씩 w 라고 부르며 아래를 반복해 주세요
+    if w not in uniq:         # 만약 w 가 uniq 안에 없으면
+        uniq.append(w)        # uniq 의 맨 뒤에 w 를 붙여 주세요
+print(uniq)                   # uniq 를 화면에 보여 주세요
+uniq.sort()                   # uniq 를 순서대로 정렬해 주세요
+print(uniq)                   # uniq 를 화면에 보여 주세요
+print(' '.join(uniq[::-1]))   # uniq 를 거꾸로 읽어 공백으로 이어 붙인 것을 화면에 보여 주세요
+print(len(words), len(uniq))  # words 의 원소 개수와 uniq 의 원소 개수를 화면에 보여 주세요</code></pre>
     <p>이 코드를 실행하면 다섯 줄이 출력돼요. 각 줄은 무엇일까요?</p>
     <div class="table-scroll fill">
       <table>
@@ -74,299 +981,38 @@ print(word[:2] + word[-2:])  # word 의 앞 두 글자와 뒤 두 글자를 붙�
     </div>
     <details>
       <summary>힌트 보기</summary>
-      <p><code>word</code>의 글자마다 0번부터 번호를 붙여 보세요. <code>[시작:끝]</code>에서 <strong>끝 번호의 칸은 포함하지 않아요</strong>. 음수 번호는 뒤에서부터 세고, 맨 뒤 칸이 <code>-1</code>이에요.</p>
+      <p><code>uniq</code>는 처음 본 단어만 모으는 리스트예요. 단어가 <code>uniq</code>에 이미 있으면 건너뛰어요. 정렬은 알파벳순(작은 것부터)이고, 마지막 <code>join</code> 줄은 정렬된 목록을 뒤집은 것이에요.</p>
     </details>
     <details class="sol-link">
       <summary>정답·해설 보기</summary>
       <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
-    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>word = 'python'              # word 에 문자열 'python' 을 담아 주세요
-nums = [10, 20, 30, 40, 50]  # nums 에 리스트 [10, 20, 30, 40, 50] 을 담아 주세요
-print(word[::-1])            # word 를 거꾸로 읽은 것을 화면에 보여 주세요
-print(word[1:4])             # word 의 1번부터 3번까지 잘라 낸 것을 화면에 보여 주세요
-print(nums[-3:])             # nums 의 뒤에서 3번째부터 끝까지 잘라 낸 것을 화면에 보여 주세요
-print(nums[::-1])            # nums 를 거꾸로 읽은 것을 화면에 보여 주세요
-print(word[:2] + word[-2:])  # word 의 앞 두 글자와 뒤 두 글자를 붙여 화면에 보여 주세요</code></pre>
-<pre class="out"><code class="nohighlight">nohtyp
-yth
-[30, 40, 50]
-[50, 40, 30, 20, 10]
-pyon</code></pre>
+<pre class="out"><code class="nohighlight">['the', 'cat', 'the', 'dog']
+['the', 'cat', 'dog']
+['cat', 'dog', 'the']
+the dog cat
+4 3</code></pre>
     <div class="table-scroll fill">
       <table>
-        <thead><tr><th>번호</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+        <thead><tr><th>w</th><th>uniq 안에 이미 있나</th><th>실행 뒤 uniq</th></tr></thead>
         <tbody>
-          <tr><td><code>word</code></td><td>p</td><td>y</td><td>t</td><td>h</td><td>o</td><td>n</td></tr>
+          <tr><td>the</td><td>없음</td><td>['the']</td></tr>
+          <tr><td>cat</td><td>없음</td><td>['the', 'cat']</td></tr>
+          <tr><td>the</td><td>있음 (건너뜀)</td><td>['the', 'cat']</td></tr>
+          <tr><td>dog</td><td>없음</td><td>['the', 'cat', 'dog']</td></tr>
         </tbody>
       </table>
     </div>
     <ul>
-      <li><code>word[1:4]</code> — 1번부터 4번 <strong>앞까지</strong>라 1, 2, 3번 글자예요.</li>
-      <li><code>word[:2]</code>는 앞 두 글자, <code>word[-2:]</code>는 뒤 두 글자라서 이어 붙여요.</li>
-      <li>리스트에서도 <code>nums[-3:]</code>(끝 세 개), <code>nums[::-1]</code>(뒤집기)가 똑같이 돼요.</li>
+      <li><code>split()</code>은 공백 인자 없이 쓰면 연속 공백과 앞뒤 공백을 알아서 처리해서 단어 4개가 나와요.</li>
+      <li>정렬하면 <code>['cat', 'dog', 'the']</code>가 되고, <code>[::-1]</code>로 뒤집어 공백으로 이으면 <code>the dog cat</code>이에요.</li>
+      <li>단어는 4개(<code>len(words)</code>), 중복을 뺀 단어는 3개(<code>len(uniq)</code>)예요.</li>
     </ul>
-    <p><strong>핵심 한 줄:</strong> <code>[시작:끝]</code>의 끝은 포함하지 않고, <code>-1</code>은 맨 뒤예요.</p>
-    </details>
-
-    <h2 id="q2"><span class="hl">문제 2</span> — 문자열은 불변, split과 strip</h2>
-    <p>문자열을 새로 만들고, 쪼개고, 공백을 지우는 코드예요.</p>
-<pre><code>x = 'banana'                      # x 에 문자열 'banana' 를 담아 주세요
-y = 'n' + x[1:]                   # 'n' 뒤에 x 의 1번부터 끝까지를 붙여 y 에 담아 주세요
-print(x)                          # x 를 화면에 보여 주세요
-print(y)                          # y 를 화면에 보여 주세요
-line = '  apple, kiwi , melon  '  # line 에 문자열 '  apple, kiwi , melon  ' 을 담아 주세요
-parts = line.strip().split(',')   # line 의 앞뒤 공백을 지우고 쉼표로 잘라 parts 에 담아 주세요
-print(parts)                      # parts 를 화면에 보여 주세요
-print(parts[1].strip())           # parts 의 1번 원소의 앞뒤 공백을 지워 화면에 보여 주세요
-print(len(parts))                 # parts 의 원소 개수를 화면에 보여 주세요</code></pre>
-    <p>이 코드를 실행하면 다섯 줄이 출력돼요. 각 줄은 무엇일까요? 특히 <code>x</code>가 두 번째 줄에서 바뀌었는지 생각해 보세요.</p>
-    <div class="table-scroll fill">
-      <table>
-        <thead><tr><th>출력 줄</th><th>예측</th></tr></thead>
-        <tbody>
-          <tr><td>첫 번째 줄</td><td>?</td></tr>
-          <tr><td>두 번째 줄</td><td>?</td></tr>
-          <tr><td>세 번째 줄</td><td>?</td></tr>
-          <tr><td>네 번째 줄</td><td>?</td></tr>
-          <tr><td>다섯 번째 줄</td><td>?</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <details>
-      <summary>힌트 보기</summary>
-      <p><code>x[1:]</code>이 무엇인지부터 구하세요. 문자열 메서드와 <code>+</code>는 <strong>새 문자열</strong>을 만들 뿐 <code>x</code>를 고치지 않아요. <code>strip()</code>은 <strong>양끝</strong> 공백만 지우고, <code>split(',')</code>는 쉼표 자리에서 자를 뿐 쉼표 옆 공백은 그대로 두는 점을 주의하세요.</p>
-    </details>
-    <details class="sol-link">
-      <summary>정답·해설 보기</summary>
-      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
-    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>x = 'banana'                      # x 에 문자열 'banana' 를 담아 주세요
-y = 'n' + x[1:]                   # 'n' 뒤에 x 의 1번부터 끝까지를 붙여 y 에 담아 주세요
-print(x)                          # x 를 화면에 보여 주세요
-print(y)                          # y 를 화면에 보여 주세요
-line = '  apple, kiwi , melon  '  # line 에 문자열 '  apple, kiwi , melon  ' 을 담아 주세요
-parts = line.strip().split(',')   # line 의 앞뒤 공백을 지우고 쉼표로 잘라 parts 에 담아 주세요
-print(parts)                      # parts 를 화면에 보여 주세요
-print(parts[1].strip())           # parts 의 1번 원소의 앞뒤 공백을 지워 화면에 보여 주세요
-print(len(parts))                 # parts 의 원소 개수를 화면에 보여 주세요</code></pre>
-<pre class="out"><code class="nohighlight">banana
-nanana
-['apple', ' kiwi ', ' melon']
-kiwi
-3</code></pre>
-    <ul>
-      <li><code>x[1:]</code>은 <code>'anana'</code>라서 <code>'n' + x[1:]</code>은 새 문자열 <code>'nanana'</code>예요. <code>x</code> 자체는 한 번도 바뀌지 않아서 <code>'banana'</code> 그대로예요.</li>
-      <li><code>line.strip()</code>이 양끝 공백만 지우므로 가운데 공백은 남아요. 그 결과를 쉼표로 쪼개면 원소 3개이고, 가운데 원소의 양쪽 공백은 그대로 남아요(<code>' kiwi '</code>).</li>
-      <li><code>parts[1].strip()</code>이 그 공백을 지워서 <code>'kiwi'</code>예요.</li>
-    </ul>
-    <p><strong>핵심 한 줄:</strong> 문자열 메서드는 새 문자열을 돌려줄 뿐 원본을 바꾸지 않아요. <code>strip()</code>은 양끝만 지워요.</p>
-    </details>
-
-    <h2 id="q3"><span class="hl">문제 3</span> — 리스트 메서드 연쇄</h2>
-    <p>리스트에 값을 더하고 빼는 줄이 여러 개 이어지는 코드예요.</p>
-<pre><code>a = [3, 1]      # a 에 리스트 [3, 1] 을 담아 주세요
-a.append(5)     # a 의 맨 뒤에 5 를 붙여 주세요
-a.insert(0, 9)  # a 의 0번 자리에 9 을 끼워 넣어 주세요
-x = a.pop()     # a 의 맨 뒤 원소를 꺼내 x 에 담아 주세요
-del a[1]        # a 의 1번 원소를 지워 주세요
-a.append(x)     # a 의 맨 뒤에 x 를 붙여 주세요
-print(a)        # a 를 화면에 보여 주세요
-print(x)        # x 를 화면에 보여 주세요
-print(len(a))   # a 의 원소 개수를 화면에 보여 주세요</code></pre>
-    <p>이 코드를 실행하면 세 줄이 출력돼요. 각 줄은 무엇일까요? 줄마다 <code>a</code>가 어떻게 바뀌는지 적어 보세요.</p>
-    <div class="table-scroll fill">
-      <table>
-        <thead><tr><th>출력 줄</th><th>예측</th></tr></thead>
-        <tbody>
-          <tr><td>첫 번째 줄 (<code>a</code>)</td><td>?</td></tr>
-          <tr><td>두 번째 줄 (<code>x</code>)</td><td>?</td></tr>
-          <tr><td>세 번째 줄 (<code>len(a)</code>)</td><td>?</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <details>
-      <summary>힌트 보기</summary>
-      <p>줄마다 <code>a</code>를 한 칸씩 다시 적어 가며 따라가요. <code>append</code>는 끝에, <code>insert(0, 값)</code>은 맨 앞에 넣어요. <code>pop()</code>은 끝 원소를 <strong>지우면서 그 값을 돌려줘서</strong> <code>x</code>에 담겨요. <code>del a[1]</code>은 그 시점의 1번 칸을 지워요.</p>
-    </details>
-    <details class="sol-link">
-      <summary>정답·해설 보기</summary>
-      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
-    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>a = [3, 1]      # a 에 리스트 [3, 1] 을 담아 주세요
-a.append(5)     # a 의 맨 뒤에 5 를 붙여 주세요
-a.insert(0, 9)  # a 의 0번 자리에 9 을 끼워 넣어 주세요
-x = a.pop()     # a 의 맨 뒤 원소를 꺼내 x 에 담아 주세요
-del a[1]        # a 의 1번 원소를 지워 주세요
-a.append(x)     # a 의 맨 뒤에 x 를 붙여 주세요
-print(a)        # a 를 화면에 보여 주세요
-print(x)        # x 를 화면에 보여 주세요
-print(len(a))   # a 의 원소 개수를 화면에 보여 주세요</code></pre>
-<pre class="out"><code class="nohighlight">[9, 1, 5]
-5
-3</code></pre>
-    <p>한 줄마다 <code>a</code>를 찍어서 따라가 보면 이래요.</p>
-<pre><code>a = [3, 1]      # a 에 리스트 [3, 1] 을 담아 주세요
-print(a)        # a 를 화면에 보여 주세요
-a.append(5)     # a 의 맨 뒤에 5 를 붙여 주세요
-print(a)        # a 를 화면에 보여 주세요
-a.insert(0, 9)  # a 의 0번 자리에 9 을 끼워 넣어 주세요
-print(a)        # a 를 화면에 보여 주세요
-x = a.pop()     # a 의 맨 뒤 원소를 꺼내 x 에 담아 주세요
-print(a, x)     # a 와 x 를 화면에 보여 주세요
-del a[1]        # a 의 1번 원소를 지워 주세요
-print(a)        # a 를 화면에 보여 주세요
-a.append(x)     # a 의 맨 뒤에 x 를 붙여 주세요
-print(a)        # a 를 화면에 보여 주세요</code></pre>
-<pre class="out"><code class="nohighlight">[3, 1]
-[3, 1, 5]
-[9, 3, 1, 5]
-[9, 3, 1] 5
-[9, 1]
-[9, 1, 5]</code></pre>
-    <div class="table-scroll fill">
-      <table>
-        <thead><tr><th>실행한 줄</th><th>a</th><th>x</th></tr></thead>
-        <tbody>
-          <tr><td><code>a = [3, 1]</code></td><td>[3, 1]</td><td>-</td></tr>
-          <tr><td><code>a.append(5)</code></td><td>[3, 1, 5]</td><td>-</td></tr>
-          <tr><td><code>a.insert(0, 9)</code></td><td>[9, 3, 1, 5]</td><td>-</td></tr>
-          <tr><td><code>x = a.pop()</code></td><td>[9, 3, 1]</td><td>5</td></tr>
-          <tr><td><code>del a[1]</code></td><td>[9, 1]</td><td>5</td></tr>
-          <tr><td><code>a.append(x)</code></td><td>[9, 1, 5]</td><td>5</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p><strong>핵심 한 줄:</strong> <code>pop()</code>은 지우면서 그 값을 돌려주고, <code>del a[1]</code>은 1번 칸을 지워요.</p>
-    </details>
-
-    <h2 id="q4"><span class="hl">문제 4</span> — in과 복사 a[:]</h2>
-    <p>복사한 리스트와 이름만 붙인 리스트가 나오는 코드예요.</p>
-<pre><code>a = [1, 2, 3]    # a 에 리스트 [1, 2, 3] 을 담아 주세요
-b = a[:]         # a 를 통째로 복사해 b 에 담아 주세요
-b.append(4)      # b 의 맨 뒤에 4 를 붙여 주세요
-c = a            # a 가 가리키는 것을 c 에도 담아 주세요
-c.append(5)      # c 의 맨 뒤에 5 를 붙여 주세요
-print(a)         # a 를 화면에 보여 주세요
-print(b)         # b 를 화면에 보여 주세요
-print(2 in a)    # 2 가 a 안에 있는지 화면에 보여 주세요
-print('2' in a)  # '2' 가 a 안에 있는지 화면에 보여 주세요
-print(4 in a)    # 4 가 a 안에 있는지 화면에 보여 주세요</code></pre>
-    <p>이 코드를 실행하면 다섯 줄이 출력돼요. 각 줄은 무엇일까요? <code>a</code>가 바뀌는 줄이 어디인지 먼저 찾아보세요.</p>
-    <div class="table-scroll fill">
-      <table>
-        <thead><tr><th>출력 줄</th><th>예측</th></tr></thead>
-        <tbody>
-          <tr><td>첫 번째 줄 (<code>a</code>)</td><td>?</td></tr>
-          <tr><td>두 번째 줄 (<code>b</code>)</td><td>?</td></tr>
-          <tr><td>세 번째 줄</td><td>?</td></tr>
-          <tr><td>네 번째 줄</td><td>?</td></tr>
-          <tr><td>다섯 번째 줄</td><td>?</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <details>
-      <summary>힌트 보기</summary>
-      <p><code>b = a[:]</code>는 새 리스트(복사본)이고 <code>c = a</code>는 같은 리스트에 이름만 하나 더 붙인 거예요. 누구의 <code>append</code>가 <code>a</code>에 보이는지 따져 보세요. <code>in</code>은 <strong>자료형까지 완전히 같은</strong> 원소를 찾아요.</p>
-    </details>
-    <details class="sol-link">
-      <summary>정답·해설 보기</summary>
-      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
-    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>a = [1, 2, 3]    # a 에 리스트 [1, 2, 3] 을 담아 주세요
-b = a[:]         # a 를 통째로 복사해 b 에 담아 주세요
-b.append(4)      # b 의 맨 뒤에 4 를 붙여 주세요
-c = a            # a 가 가리키는 것을 c 에도 담아 주세요
-c.append(5)      # c 의 맨 뒤에 5 를 붙여 주세요
-print(a)         # a 를 화면에 보여 주세요
-print(b)         # b 를 화면에 보여 주세요
-print(2 in a)    # 2 가 a 안에 있는지 화면에 보여 주세요
-print('2' in a)  # '2' 가 a 안에 있는지 화면에 보여 주세요
-print(4 in a)    # 4 가 a 안에 있는지 화면에 보여 주세요</code></pre>
-<pre class="out"><code class="nohighlight">[1, 2, 3, 5]
-[1, 2, 3, 4]
-True
-False
-False</code></pre>
-    <ul>
-      <li><code>b = a[:]</code>는 복사본이라 <code>b.append(4)</code>가 <code>a</code>에 영향을 주지 않아요.</li>
-      <li><code>c = a</code>는 복사가 아니라 <strong>같은 리스트에 이름을 하나 더 붙인 것</strong>이라 <code>c.append(5)</code>가 <code>a</code>에 그대로 보여요.</li>
-      <li><code>2 in a</code>는 숫자 2가 있어서 True, <code>'2' in a</code>는 글자 <code>'2'</code>는 없어서 False예요. <code>4 in a</code>는 4가 <code>b</code>에만 있어서 False예요.</li>
-    </ul>
-    <p><strong>핵심 한 줄:</strong> 복사는 <code>[:]</code>, 이름만 붙이는 건 <code>=</code>이고, <code>in</code>은 자료형까지 완전히 같아야 찾아요.</p>
-    </details>
-
-    <h2 id="q5"><span class="hl">문제 5</span> — 순회 중 remove와 복사본 순회</h2>
-    <p>같은 일을 하는 두 코드 중 하나만 복사본을 도는 코드예요.</p>
-<pre><code>L = [1, 2, 2, 3]     # L 에 리스트 [1, 2, 2, 3] 을 담아 주세요
-for x in L:          # L 의 원소를 하나씩 x 라고 부르며 아래를 반복해 주세요
-    if x == 2:       # 만약 x 가 2 와 같으면
-        L.remove(x)  # L 에서 값 x 를 찾아 지워 주세요
-print(L)             # L 을 화면에 보여 주세요
-
-M = [1, 2, 2, 3]     # M 에 리스트 [1, 2, 2, 3] 을 담아 주세요
-for x in M[:]:       # M 의 복사본 원소를 하나씩 x 라고 부르며 아래를 반복해 주세요
-    if x == 2:       # 만약 x 가 2 와 같으면
-        M.remove(x)  # M 에서 값 x 를 찾아 지워 주세요
-print(M)             # M 을 화면에 보여 주세요</code></pre>
-    <p>이 코드를 실행하면 두 줄이 출력돼요. 각 줄은 무엇일까요? 두 줄이 같을지 다를지부터 예측해 보세요.</p>
-    <div class="table-scroll fill">
-      <table>
-        <thead><tr><th>출력 줄</th><th>예측</th></tr></thead>
-        <tbody>
-          <tr><td>첫 번째 줄 (<code>L</code>)</td><td>?</td></tr>
-          <tr><td>두 번째 줄 (<code>M</code>)</td><td>?</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <details>
-      <summary>힌트 보기</summary>
-      <p><code>for</code> 문은 "지금 몇 번째 칸을 보고 있는지"만 기억해요. 첫 코드에서 2를 지우면 뒤 원소들이 한 칸씩 앞으로 당겨지는데, 반복은 그다음 번호로 가요. 그러면 당겨진 원소를 한 번 건너뛰지 않을까요? 두 번째 코드는 도는 대상이 <code>M</code>이 아니라 <code>M[:]</code>이라는 점이 달라요.</p>
-    </details>
-    <details class="sol-link">
-      <summary>정답·해설 보기</summary>
-      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
-    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>L = [1, 2, 2, 3]     # L 에 리스트 [1, 2, 2, 3] 을 담아 주세요
-for x in L:          # L 의 원소를 하나씩 x 라고 부르며 아래를 반복해 주세요
-    if x == 2:       # 만약 x 가 2 와 같으면
-        L.remove(x)  # L 에서 값 x 를 찾아 지워 주세요
-print(L)             # L 을 화면에 보여 주세요
-
-M = [1, 2, 2, 3]     # M 에 리스트 [1, 2, 2, 3] 을 담아 주세요
-for x in M[:]:       # M 의 복사본 원소를 하나씩 x 라고 부르며 아래를 반복해 주세요
-    if x == 2:       # 만약 x 가 2 와 같으면
-        M.remove(x)  # M 에서 값 x 를 찾아 지워 주세요
-print(M)             # M 을 화면에 보여 주세요</code></pre>
-<pre class="out"><code class="nohighlight">[1, 2, 3]
-[1, 3]</code></pre>
-    <p>첫 번째 반복을 찍어 보면 이래요.</p>
-<pre><code>L = [1, 2, 2, 3]               # L 에 리스트 [1, 2, 2, 3] 을 담아 주세요
-for x in L:                    # L 의 원소를 하나씩 x 라고 부르며 아래를 반복해 주세요
-    print('x =', x, 'L =', L)  # 'x =' 와 x, 'L =' 와 L 을 화면에 보여 주세요
-    if x == 2:                 # 만약 x 가 2 와 같으면
-        L.remove(x)            # L 에서 값 x 를 찾아 지워 주세요
-print(L)                       # L 을 화면에 보여 주세요</code></pre>
-<pre class="out"><code class="nohighlight">x = 1 L = [1, 2, 2, 3]
-x = 2 L = [1, 2, 2, 3]
-x = 3 L = [1, 2, 3]
-[1, 2, 3]</code></pre>
-    <div class="table-scroll fill">
-      <table>
-        <thead><tr><th>칸 번호</th><th>x</th><th>실행 뒤 L</th></tr></thead>
-        <tbody>
-          <tr><td>0</td><td>1</td><td>[1, 2, 2, 3]</td></tr>
-          <tr><td>1</td><td>2</td><td>[1, 2, 3] (2 하나 지움)</td></tr>
-          <tr><td>2</td><td>3</td><td>[1, 2, 3] (두 번째 2는 칸 번호 1로 당겨져서 건너뜀)</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p>복사본 <code>M[:]</code>을 도는 두 번째 코드는 돌아가는 목록이 바뀌지 않아서 2 두 개를 모두 지워요.</p>
-    <p><strong>핵심 한 줄:</strong> 지울 때는 복사본(<code>L[:]</code>)을 돌고 원본을 지워요.</p>
+    <p><strong>핵심 한 줄:</strong> <code>not in</code> 검사로 중복을 걸러 새 리스트에 모으고, <code>sort</code>·<code>[::-1]</code>·<code>join</code>으로 다듬어요.</p>
     </details>
 
     <h2><span class="hl">함께 보기</span></h2>
     <ul>
-      <li><a href="beginner-python-ch04-part1-answers.html">문제 해설 — 문자열·리스트 연습 문제를 자세히 뜯어본다</a> — 이 5문제의 정답과 한 줄씩 짚어보는 해설이에요(실습 문제 해설 구역).</li>
+      <li><a href="beginner-python-ch04-part1-answers.html">문제 해설 — 문자열·리스트 연습 문제를 자세히 뜯어본다</a> — 이전 5문제 버전의 정답과 한 줄씩 짚어보는 해설이에요(실습 문제 해설 구역).</li>
       <li><a href="beginner-python-ch04-part1-notes.html">자료형·문자열·리스트 정리</a> — 이 문제들에 쓰인 문법 설명이에요.</li>
       <li><a href="beginner-python-ch03-part2-practice.html">3장 후반부 실습 문제 5개</a> — 지역·전역변수와 lambda·map·filter·reduce 읽기 문제들이에요.</li>
     </ul>
@@ -380,7 +1026,7 @@ x = 3 L = [1, 2, 3]
       <span class="post-nav-label">(2)</span>
       <span class="post-nav-title">문제 해설 — 문자열·리스트 연습 문제를 자세히 뜯어본다</span>
     </a>
-    <p class="post-date">(3) 실습 문제 5개 — 문자열·리스트 코드 읽고 결과 예측하기 (이 글)</p>
+    <p class="post-date">(3) 실습 문제 19개 — 초급·중급·고급으로 코드 읽고 결과 예측하기 (이 글)</p>
 
   </main>
   </div>
