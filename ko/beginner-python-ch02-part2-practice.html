@@ -77,7 +77,49 @@ else:                                   # 그 밖의 경우에는
     <details class="sol-link">
       <summary>정답·해설 보기</summary>
       <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
-      <p><a href="beginner-python-ch02-part2-answers.html#a1">문제 1 정답과 해설 →</a></p>
+    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
+<pre><code>members = ['서준', '하은', '도윤']      # members 에 '서준', '하은', '도윤' 목록을 담아 주세요
+name = input()                          # 입력을 받아 name 에 담아 주세요
+points = int(input())                   # 입력을 받아 정수로 바꿔 points 에 담아 주세요
+
+if name in members and points &gt;= 1000:  # 만약 name 이 members 안에 있고 points 가 1000 이상이면
+    print('VIP 회원입니다')             # 'VIP 회원입니다' 를 화면에 보여 주세요
+else:                                   # 그 밖의 경우에는
+    print('VIP 회원이 아닙니다')        # 'VIP 회원이 아닙니다' 를 화면에 보여 주세요</code></pre>
+    <p><strong>한 줄씩 짚어보기</strong></p>
+    <ul>
+      <li><code>name in members</code> — 이름이 리스트 안에 있으면 <code>True</code>, 없으면 <code>False</code>. 그 자체로 참/거짓 값 하나예요.</li>
+      <li><code>points &gt;= 1000</code> — 이것도 참/거짓 값 하나예요.</li>
+      <li><code>A and B</code>는 <strong>둘 다 True일 때만</strong> True예요. 하나라도 False면 전체가 False가 돼요.</li>
+    </ul>
+    <p>and로 이은 두 조건 중 <strong>왼쪽 항인 <code>name in members</code>부터</strong> 검사해요. 네 가지 입력으로 어떻게 갈리는지 표로 볼게요.</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>name</th><th>points</th><th>name in members ?</th><th>points &gt;= 1000 ?</th><th>출력</th></tr></thead>
+        <tbody>
+          <tr><td>하은</td><td>1200</td><td>참</td><td>참</td><td>VIP 회원입니다</td></tr>
+          <tr><td>수아</td><td>1200</td><td>거짓</td><td>(평가 안 함)</td><td>VIP 회원이 아닙니다</td></tr>
+          <tr><td>서준</td><td>500</td><td>참</td><td>거짓</td><td>VIP 회원이 아닙니다</td></tr>
+          <tr><td>도윤</td><td>1000</td><td>참</td><td>참</td><td>VIP 회원입니다</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>'수아' 행</strong>이 중요해요. <code>name in members</code>가 이미 거짓이라 and 전체 결과가 거짓으로 확정되고, 파이썬은 오른쪽의 <code>points &gt;= 1000</code>은 아예 검사하지 않아요(<a href="beginner-python-ch02-part2-notes.html">지난 글</a>에서 본 단락 평가). 그래서 명단에 없는 사람의 포인트가 아무리 높아도 소용없어요.</p>
+    <p><strong>여기서 자주 막혀요:</strong> "포인트 1200인데 왜 수아는 VIP가 아니지?" → 명단에 없으면(<code>in</code>이 이미 False) 포인트는 아예 안 보고 넘어가요. and는 "둘 다" 만족해야 하니까요.</p>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">
+            <code>if name in members:</code>과 <code>if points &gt;= 1000:</code>을 <strong>따로따로</strong> 쓰고, 두 번째 if의 결과로 앞의 판정을 덮어씀 → 명단에 없어도 포인트만 높으면 VIP로 잘못 판정
+          </td>
+          <td class="choice-good">
+            <code>if name in members and points &gt;= 1000:</code>처럼 <strong>한 문장</strong>으로 묶음 → 두 조건이 동시에 참일 때만 통과
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p><strong>실제 코드에서</strong> · 쿠폰 발급, 등급 산정처럼 "자격 + 실적"을 같이 봐야 하는 판정 로직은 거의 다 이 모양이에요.</p>
     </details>
 
     <h2 id="q2"><span class="hl">문제 2</span> — 장바구니 총액, 이번엔 for로</h2>
@@ -95,7 +137,35 @@ print('총액:', total)       # '총액:' 과 total 을 화면에 보여 주세�
     <details class="sol-link">
       <summary>정답·해설 보기</summary>
       <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
-      <p><a href="beginner-python-ch02-part2-answers.html#a2">문제 2 정답과 해설 →</a></p>
+    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
+<pre><code>cart = [12000, 8500, 3000]  # cart 에 12000, 8500, 3000 목록을 담아 주세요
+total = 0                   # total 에 0 을 담아 주세요
+for i in range(len(cart)):  # 0 부터 cart 의 길이 미만까지 i 라고 부르며 아래를 반복해 주세요
+    total += cart[i]        # total 에 cart[i] 를 더한 값을 다시 담아 주세요
+print('총액:', total)       # '총액:' 과 total 을 화면에 보여 주세요</code></pre>
+    <p><strong>한 줄씩 짚어보기</strong></p>
+    <ul>
+      <li><code>len(cart)</code> — 리스트 개수. <code>cart</code>는 3개니까 <code>3</code>.</li>
+      <li><code>range(3)</code> — <code>0, 1, 2</code> 세 숫자를 순서대로 만들어요.</li>
+      <li><code>for i in range(3):</code> — i가 <code>0 → 1 → 2</code> 순서로 바뀌면서 몸통을 3번 반복해요.</li>
+      <li><code>cart[i]</code> — i번째 값. i=0이면 <code>cart[0]</code>(12000), i=1이면 <code>cart[1]</code>(8500), i=2면 <code>cart[2]</code>(3000).</li>
+      <li><code>total += cart[i]</code> — <code>total = total + cart[i]</code>의 줄임말. 반복마다 누적돼요.</li>
+    </ul>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>i</th><th>cart[i]</th><th>total</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>12000</td><td>12000</td></tr>
+          <tr><td>1</td><td>8500</td><td>20500</td></tr>
+          <tr><td>2</td><td>3000</td><td>23500</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><code>len(cart)</code>는 3이라서 <code>range(len(cart))</code>는 <code>0, 1, 2</code>를 순서대로 만들어요. while로 짤 때 <code>i = 0</code>을 미리 만들고 <code>i += 1</code>을 몸통 끝에 직접 써야 했던 것과 달리, for는 그 두 줄을 대신 해 줘요 — i를 0으로 시작해서 1씩 늘리며 range가 끝날 때까지 도는 일을 for가 통째로 맡는다는 뜻이에요.</p>
+    <p><strong>여기서 자주 막혀요:</strong> "i가 대체 뭔데?" → 그냥 순서 번호(0, 1, 2)예요. "왜 <code>cart[i]</code>지 <code>cart[0]</code>이 아니야?" → i가 반복마다 바뀌니까 <code>cart[i]</code>를 쓰면 자동으로 0, 1, 2번째 값이 차례로 들어와요. <code>cart[0]</code>으로 고정하면 매번 첫 번째 값(12000)만 더하게 돼요.</p>
+    <p><strong>더 나아가기:</strong> 사실 인덱스 <code>i</code>가 굳이 필요 없다면, <code>for price in cart:</code>처럼 리스트 원소를 바로 꺼내 <code>total += price</code>로 써도 결과는 같아요. <code>range(len())</code>은 "몇 번째인지(i)"가 진짜 필요할 때만 쓰는 게 더 파이썬다워요.</p>
+    <p><strong>흔한 실수:</strong> <code>range(cart)</code>처럼 리스트를 통째로 넣으면 <code>TypeError: 'list' object cannot be interpreted as an integer</code>가 나요. range()는 정수만 받으니 꼭 <code>range(len(cart))</code>로 길이를 넣어야 해요.</p>
+    <p><strong>실제 코드에서</strong> · 장바구니·영수증·재생목록처럼 리스트 값을 다 더하는 코드는 while로도 for로도 짤 수 있는데, 실무 코드는 대부분 for 쪽이에요 — 반복 횟수를 세는 변수를 직접 관리하지 않아도 되기 때문이에요.</p>
     </details>
 
     <h2 id="q3"><span class="hl">문제 3</span> — 명단에서 이름 찾기, 이번엔 for-else로</h2>
@@ -127,7 +197,70 @@ else:                  # 끝까지 다 돌았으면(중간에 멈추지 않았�
     <details class="sol-link">
       <summary>정답·해설 보기</summary>
       <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
-      <p><a href="beginner-python-ch02-part2-answers.html#a3">문제 3 정답과 해설 →</a></p>
+    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
+<pre><code>members = ['지민', '서준', '하은']  # members 에 '지민', '서준', '하은' 목록을 담아 주세요
+name = input()                      # 입력을 받아 name 에 담아 주세요
+for m in members:                   # members 의 원소를 하나씩 m 이라고 부르며 아래를 반복해 주세요
+    if m == name:                   # 만약 m 이 name 과 같으면
+        print('있음')               # '있음' 을 화면에 보여 주세요
+        break                       # 반복을 멈추고 빠져나와 주세요
+else:                               # 끝까지 다 돌았으면(중간에 멈추지 않았으면)
+    print('없음')                   # '없음' 을 화면에 보여 주세요</code></pre>
+    <p><strong>한 줄씩 짚어보기</strong></p>
+    <ul>
+      <li><code>for m in members:</code> — m이 <code>'지민' → '서준' → '하은'</code> 순서로 리스트 원소를 하나씩 꺼내 와요.</li>
+      <li>매번 <code>if m == name:</code>으로 지금 꺼낸 값이 찾는 이름과 같은지 확인해요.</li>
+      <li>같으면 <code>있음</code>을 찍고 <code>break</code>로 <strong>반복을 그 자리에서 즉시 끝내요.</strong></li>
+      <li><code>else:</code>는 <strong>for에 딸린 것</strong>이에요(if의 else가 아니에요!). <strong>break를 한 번도 안 타고 반복이 끝까지 다 돌았을 때만</strong> 실행돼요.</li>
+    </ul>
+    <p><code>name = '하은'</code>과 <code>name = '수아'</code>를 표로 따라가 볼게요.</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>m</th><th>m == '하은' ?</th><th>동작</th></tr></thead>
+        <tbody>
+          <tr><td>지민</td><td>거짓</td><td>다음 원소로</td></tr>
+          <tr><td>서준</td><td>거짓</td><td>다음 원소로</td></tr>
+          <tr><td>하은</td><td>참</td><td>'있음' 출력, break로 반복 즉시 종료 → else 건너뜀</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>m</th><th>m == '수아' ?</th><th>동작</th></tr></thead>
+        <tbody>
+          <tr><td>지민</td><td>거짓</td><td>다음 원소로</td></tr>
+          <tr><td>서준</td><td>거짓</td><td>다음 원소로</td></tr>
+          <tr><td>하은</td><td>거짓</td><td>다음 원소로 (원소 끝)</td></tr>
+          <tr><td>(반복 끝)</td><td>—</td><td>break 없이 끝까지 돎 → else 실행, '없음' 출력</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>여기서 자주 막혀요:</strong> 헷갈리는 지점은 <code>else</code>가 <strong>for와 같은 들여쓰기</strong>라는 거예요. "if를 못 만족하면 else"가 아니라 "반복 전체가 break 없이 끝나면 else"예요. break를 빼먹으면 '있음'을 찍고도 계속 돌다가 결국 else까지 실행돼서 '있음'과 '없음'이 같이 찍히는 버그가 나요 (바로 아래에서 실제로 확인해요).</p>
+    <p>기존 while + <code>found</code> 플래그 방식과 비교하면 이래요.</p>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택(과거 방식)</th><th>좋은 선택(for-else)</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">
+            <code>found = False</code>를 미리 만들고, 찾으면 <code>found = True</code>로 바꾼 뒤, 반복이 끝나고 나서 <code>if found:</code>로 따로 검사 → 코드가 한 줄 더 길고, <code>found = True</code>로 바꾸는 줄을 깜빡하면 찾았는데도 "없음"이 나오는 조용한 버그가 생김
+          </td>
+          <td class="choice-good">
+            <code>for ... else:</code>를 쓰면 break를 못 타고 끝까지 돈 경우를 파이썬이 알아서 판단해 줌 → <code>found</code> 변수 자체가 필요 없고, 깜빡할 지점도 하나 줄어듦
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p><strong>흔한 실수 — break를 빠뜨리면?</strong> 아래처럼 <code>break</code> 없이 짜면, '하은'을 찾아 <code>있음</code>을 출력하고도 반복이 계속 돌다가 끝까지 다 돌았으니(멈춘 적이 없으니) else도 함께 실행돼요.</p>
+<pre><code>for m in members:      # members 의 원소를 하나씩 m 이라고 부르며 아래를 반복해 주세요
+    if m == name:      # 만약 m 이 name 과 같으면
+        print('있음')  # '있음' 을 화면에 보여 주세요
+        # break 없음
+else:                  # 끝까지 다 돌았으면(중간에 멈추지 않았으면)
+    print('없음')      # '없음' 을 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">있음
+없음</code></pre>
+    <p>이게 바로 <a href="beginner-python-ch02-part2-notes.html#suspect-else-skip">지난 글 "이럴 때 의심하세요"</a>에서 말한 증상이에요 — <code>break</code>가 없으면 for는 찾은 뒤에도 멈추지 않고 끝까지 돌고, else는 "break로 안 멈췄다"는 사실만 보고 무조건 실행되니 두 줄이 같이 찍혀요.</p>
+    <p><strong>실제 코드에서</strong> · 아이디 중복 확인, 재고에 있는지 검사처럼 "리스트 안에 있는지"를 찾고 없을 때만 안내가 필요한 코드에 이 모양이 그대로 쓰여요.</p>
     </details>
 
     <h2><span class="hl">함께 보기</span></h2>
