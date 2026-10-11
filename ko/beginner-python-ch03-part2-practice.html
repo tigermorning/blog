@@ -1,38 +1,433 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>실습 문제 5개 — 지역·전역변수와 lambda·map·filter·reduce 코드 읽고 결과 예측하기 - Tigermorning</title>
-  <meta name="description" content="왕초보를 위한 Python 3장 후반부(지역·전역변수, global, lambda, map·filter·reduce) 완성된 코드 5개를 읽고 실행 결과를 예측하는 문제. 코드를 직접 짜지 않고 읽기만 해요.">
-  <meta property="og:type" content="article">
-  <meta property="og:title" content="실습 문제 5개 — 지역·전역변수와 lambda·map·filter·reduce 코드 읽고 결과 예측하기">
-  <meta property="og:description" content="지역·전역변수, global, lambda, map·filter·reduce가 나오는 완성된 코드 5개를 읽고 결과를 예측하는 문제입니다.">
-  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/beginner-python-ch03-part2-practice.html">
-  <meta property="og:locale" content="ko_KR">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="../style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>실습 문제 5개 — 지역·전역변수와 lambda·map·filter·reduce 코드 읽고 결과 예측하기 - Tigermorning</title>
+<meta name="description" content="왕초보를 위한 Python 3장 후반부(지역·전역변수, global, lambda, map·filter·reduce) 완성된 코드 5개를 읽고 결과를 예측하는 실습과 정답·해설">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=JetBrains+Mono:wght@400;600&family=Nanum+Gothic+Coding:wght@400;700&display=swap">
+<style>
+:root {
+  --ground: #F3F6F5;
+  --surface: #FFFFFF;
+  --sunken: #E8EEEC;
+  --ink: #18221F;
+  --ink-soft: #4B5A56;
+  --ink-faint: #7C8A86;
+  --line: #D3DCD9;
+  --accent: #2B5B84;
+  --accent-ink: #FFFFFF;
+  --memo: #FFF6D1;
+  --memo-line: #E3C75A;
+  --lv-basic: #2A7563;
+  --lv-basic-bg: #DDEFE9;
+  --lv-mid: #2B5B84;
+  --lv-mid-bg: #DCE8F3;
+  --lv-adv: #7A3E6E;
+  --lv-adv-bg: #F0E0EC;
+  --code-bg: #1C2724;
+  --code-ink: #DCE5E1;
+  --c-kw: #F2C94C;
+  --c-str: #9FD8A8;
+  --c-num: #F4A37A;
+  --c-com: #7F938D;
+  --c-fn: #8CC4F2;
+  --c-meta: #6F827C;
+  --font-display: "Hahmlet", "Noto Serif KR", "Batang", serif;
+  --font-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Nanum Gothic Coding", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #111816;
+    --surface: #18211F;
+    --sunken: #1F2A27;
+    --ink: #E2EAE7;
+    --ink-soft: #A7B5B0;
+    --ink-faint: #74847F;
+    --line: #2C3935;
+    --accent: #7FB2E0;
+    --accent-ink: #0E1A24;
+    --memo: #2A2717;
+    --memo-line: #8C7A33;
+    --lv-basic: #7ACCB5;
+    --lv-basic-bg: #1B322B;
+    --lv-mid: #8DBBE6;
+    --lv-mid-bg: #1C2B38;
+    --lv-adv: #D9A3CC;
+    --lv-adv-bg: #33222F;
+    --code-bg: #0B110F;
+    --code-ink: #D6E0DC;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #111816;
+  --surface: #18211F;
+  --sunken: #1F2A27;
+  --ink: #E2EAE7;
+  --ink-soft: #A7B5B0;
+  --ink-faint: #74847F;
+  --line: #2C3935;
+  --accent: #7FB2E0;
+  --accent-ink: #0E1A24;
+  --memo: #2A2717;
+  --memo-line: #8C7A33;
+  --lv-basic: #7ACCB5;
+  --lv-basic-bg: #1B322B;
+  --lv-mid: #8DBBE6;
+  --lv-mid-bg: #1C2B38;
+  --lv-adv: #D9A3CC;
+  --lv-adv-bg: #33222F;
+  --code-bg: #0B110F;
+  --code-ink: #D6E0DC;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15.5px;
+  line-height: 1.7;
+  padding-inline: 20px;
+  padding-block: 0 80px;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+.wrap {
+  max-width: 1100px;
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 48px;
+}
+
+/* ---------- header ---------- */
+.masthead {
+  grid-column: 1 / -1;
+  padding-block: 48px 8px;
+  display: grid;
+  gap: 14px;
+  max-width: 760px;
+}
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+}
+.eyebrow b { color: var(--ink-soft); font-weight: 600; }
+h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(30px, 5vw, 44px);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin: 0;
+  text-wrap: balance;
+}
+h1 .prompt { font-family: var(--font-mono); color: var(--accent); font-weight: 600; font-size: 0.7em; vertical-align: 0.12em; margin-right: 0.3em; }
+.lead { margin: 0; color: var(--ink-soft); max-width: 62ch; }
+.counts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.count {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}
+.count.basic { background: var(--lv-basic-bg); color: var(--lv-basic); }
+.count.mid { background: var(--lv-mid-bg); color: var(--lv-mid); }
+.count.adv { background: var(--lv-adv-bg); color: var(--lv-adv); }
+.count.all { background: var(--sunken); color: var(--ink-soft); }
+
+/* ---------- sidebar ---------- */
+.toc {
+  position: sticky;
+  top: 24px;
+  align-self: start;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  padding-block: 8px;
+  font-size: 13.5px;
+}
+.toc h2 {
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+  font-weight: 600;
+  margin: 18px 0 6px;
+}
+.toc h2:first-child { margin-top: 0; }
+.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; }
+.toc a {
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  gap: 6px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  padding: 3px 8px;
+  border-radius: 6px;
+  line-height: 1.45;
+}
+.toc a:hover { background: var(--sunken); color: var(--ink); }
+.toc a .n { font-family: var(--font-mono); font-size: 12px; color: var(--ink-faint); font-variant-numeric: tabular-nums; padding-top: 1px; }
+.toc .grp-basic h2 { color: var(--lv-basic); }
+.toc .grp-mid h2 { color: var(--lv-mid); }
+.toc .grp-adv h2 { color: var(--lv-adv); }
+
+main { min-width: 0; display: grid; gap: 56px; }
+
+/* ---------- toolbar ---------- */
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--ground);
+  padding-block: 12px;
+  margin-block: -12px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid var(--line);
+}
+.seg { display: flex; flex-wrap: wrap; gap: 4px; }
+.seg button, .ghost {
+  font: 500 13.5px/1 var(--font-body);
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid var(--line);
+  padding: 8px 13px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.seg button:hover, .ghost:hover { color: var(--ink); border-color: var(--ink-faint); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--ground); border-color: var(--ink); }
+
+/* ---------- intro blocks ---------- */
+.intro { display: grid; gap: 28px; }
+h2.sec {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 22px;
+  margin: 0 0 12px;
+  text-wrap: balance;
+}
+.howto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+.howto div {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: grid;
+  gap: 6px;
+  align-content: start;
+}
+.howto .k { font-family: var(--font-mono); font-size: 12.5px; font-weight: 600; color: var(--accent); }
+.howto ul, .p-body ul, .sol ul { margin: 0; padding-left: 1.1em; display: grid; gap: 3px; }
+.howto li { font-size: 14px; color: var(--ink-soft); }
+.note { font-size: 14px; color: var(--ink-soft); margin: 12px 0 0; }
+
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 8px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+th { font-size: 12px; letter-spacing: 0.05em; color: var(--ink-faint); font-weight: 600; background: var(--sunken); }
+td.src { color: var(--ink-faint); font-size: 13px; white-space: nowrap; }
+.table-scroll.fill td, .table-scroll.fill th { text-align: center; font-variant-numeric: tabular-nums; font-family: var(--font-mono); font-size: 13px; }
+.table-scroll.fill td:first-child, .table-scroll.fill th:first-child { text-align: left; }
+
+code { font-family: var(--font-mono); font-size: 0.88em; background: var(--sunken); padding: 1px 5px; border-radius: 4px; }
+pre { margin: 0; }
+pre code {
+  display: block;
+  background: var(--code-bg);
+  color: var(--code-ink);
+  padding: 14px 18px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  line-height: 1.65;
+  overflow-x: auto;
+  tab-size: 4;
+}
+pre.out code { background: var(--sunken); color: var(--ink); border: 1px dashed var(--line); }
+pre.out { position: relative; }
+pre.out::before {
+  content: "출력";
+  position: absolute; top: 6px; right: 10px;
+  font: 600 10.5px/1 var(--font-body); letter-spacing: 0.08em; color: var(--ink-faint);
+}
+.hljs-keyword, .hljs-literal { color: var(--c-kw); }
+.hljs-string { color: var(--c-str); }
+.hljs-number { color: var(--c-num); }
+.hljs-comment { color: var(--c-com); font-style: italic; }
+.hljs-built_in, .hljs-title { color: var(--c-fn); }
+.hljs-meta { color: var(--c-meta); }
+
+/* ---------- level sections ---------- */
+.level { display: grid; gap: 18px; }
+/* display:grid가 hidden 속성을 덮어쓰지 않게 — 난이도 필터가 이 속성으로 숨긴다 */
+[data-level][hidden] { display: none; }
+.level-head { display: grid; gap: 4px; padding-bottom: 4px; }
+.level-head .tag {
+  justify-self: start;
+  font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+  padding: 2px 10px; border-radius: 999px;
+}
+.level-head h2 { font-family: var(--font-display); font-weight: 700; font-size: 28px; margin: 0; text-wrap: balance; }
+.level-head p { margin: 0; color: var(--ink-soft); max-width: 62ch; }
+.level.basic { --lv: var(--lv-basic); --lv-bg: var(--lv-basic-bg); }
+.level.mid { --lv: var(--lv-mid); --lv-bg: var(--lv-mid-bg); }
+.level.adv { --lv: var(--lv-adv); --lv-bg: var(--lv-adv-bg); }
+.level-head .tag { background: var(--lv-bg); color: var(--lv); }
+
+/* ---------- problem ---------- */
+.problem {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 22px 24px;
+  display: grid;
+  gap: 14px;
+}
+.p-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px; }
+.p-id { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--lv); font-variant-numeric: tabular-nums; }
+.p-type {
+  font-size: 12px; font-weight: 600; letter-spacing: 0.02em;
+  color: var(--ink-soft); border: 1px solid var(--line); border-radius: 5px; padding: 0 7px;
+}
+.problem h3 { font-family: var(--font-display); font-weight: 500; font-size: 19px; margin: 0; flex-basis: 100%; line-height: 1.4; text-wrap: balance; }
+.p-body { display: grid; gap: 12px; max-width: 70ch; }
+.p-body p { margin: 0; }
+.p-body li, .sol li { padding-left: 2px; }
+.spec { font-size: 14px; color: var(--ink-soft); }
+
+.memo { display: grid; gap: 6px; }
+.memo label { font-size: 12.5px; font-weight: 600; color: var(--ink-soft); display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.memo label span { font-weight: 400; color: var(--ink-faint); }
+.memo textarea {
+  width: 100%;
+  min-height: 72px;
+  resize: vertical;
+  font: 13.5px/1.6 var(--font-mono);
+  color: var(--ink);
+  background: var(--memo);
+  border: 1px dashed var(--memo-line);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+details.sol { border-top: 1px solid var(--line); padding-top: 12px; }
+details.sol summary {
+  cursor: pointer;
+  list-style: none;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-weight: 600; font-size: 14px; color: var(--lv);
+  padding: 4px 0;
+}
+details.sol summary::-webkit-details-marker { display: none; }
+details.sol summary::before {
+  content: "";
+  width: 7px; height: 7px;
+  border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform .15s;
+}
+details.sol[open] summary::before { transform: rotate(45deg); }
+@media (prefers-reduced-motion: reduce) { details.sol summary::before { transition: none; } }
+.sol-body { display: grid; gap: 12px; padding-top: 10px; max-width: 70ch; }
+.sol-body p { margin: 0; }
+.sol-body h4 { margin: 4px 0 0; font-size: 13px; letter-spacing: 0.04em; color: var(--ink-faint); font-weight: 600; }
+.sol-body .real { background: var(--lv-bg); border-radius: 8px; padding: 10px 14px; font-size: 14.5px; }
+.sol-body .real b { color: var(--lv); }
+
+footer { grid-column: 1 / -1; color: var(--ink-faint); font-size: 13px; border-top: 1px solid var(--line); padding-top: 18px; }
+
+@media (max-width: 860px) {
+  .wrap { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .toc { display: none; }
+  .masthead { padding-top: 32px; }
+  .problem { padding: 18px 16px; }
+  pre code { font-size: 13px; padding: 12px 14px; }
+}
+body { margin: 0; }
+.backlink { font-family: var(--font-body); font-size: 13px; text-decoration: none; }
+.backlink:hover { text-decoration: underline; }
+
+details.hint { border-top: 1px solid var(--line); padding-top: 12px; }
+details.hint summary {
+  cursor: pointer; list-style: none;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-weight: 600; font-size: 14px; color: var(--ink-soft);
+  padding: 4px 0;
+}
+details.hint summary::-webkit-details-marker { display: none; }
+details.hint summary::before {
+  content: ""; width: 7px; height: 7px;
+  border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg); transition: transform .15s;
+}
+details.hint[open] summary::before { transform: rotate(45deg); }
+main, .problem, .p-body, .sol-body, .level { min-width: 0; }
+.p-body pre, .sol-body pre { max-width: 100%; overflow-x: auto; }
+.p-body p { margin: 0; }
+.p-body .table-scroll, .sol-body .table-scroll { overflow-x: auto; }
+</style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="container">
-      <a class="site-title" href="/blog/">Tigermorning</a>
+
+<div class="wrap">
+  <header class="masthead">
+    <a class="backlink" href="posts.html#python-basics-books">← Tigermorning 블로그 · 파이썬 스터디 › 왕초보를 위한 Python</a>
+    <div class="eyebrow"><b>왕초보를 위한 Python</b> · 3장 후반부 · 지역·전역변수 · lambda · map · filter · reduce</div>
+    <h1><span class="prompt">&gt;&gt;&gt;</span>3장 후반부 코드 읽기 실습</h1>
+    <p class="lead">코드를 짜지 않고 <b>완성된 코드를 읽고 실행 결과를 예측</b>하는 문제집. 문제마다 <b>힌트 보기</b>와 <b>정답·해설 보기</b>가 따로 접혀 있으니, 먼저 힌트를 보고 그래도 안 풀리면 정답·해설을 여세요.</p>
+    <div class="counts">
+      <span class="count all">5문제</span>
     </div>
   </header>
 
-  <div class="page-layout">
-  <div id="sidebar-mount"></div>
+  <nav class="toc" aria-label="문제 목록">
+    <div class="grp-basic"><h2>문제</h2>
+      <ol>
+        <li><a href="#q1"><span class="n">1</span>이름이 같은 지역변수와 전역변수</a></li>
+        <li><a href="#q2"><span class="n">2</span>global로 전역 값 누적하기</a></li>
+        <li><a href="#q3"><span class="n">3</span>lambda를 바로 부르기, 변수에 담아 부르기</a></li>
+        <li><a href="#q4"><span class="n">4</span>map과 filter로 리스트 만들기</a></li>
+        <li><a href="#q5"><span class="n">5</span>reduce로 합치기 (숫자와 문자)</a></li>
+      </ol>
+    </div>
+  </nav>
 
   <main>
-    <a class="post-nav" href="beginner-python-ch03-part2-answers.html">
-      <span class="post-nav-label">← 이전 편</span>
-      <span class="post-nav-title">문제 해설 — 지역·전역변수와 lambda·map·filter·reduce를 자세히 뜯어본다</span>
-    </a>
+    <div class="toolbar">
+      <button type="button" class="ghost" id="toggle-sol">정답·해설 모두 펼치기</button>
+    </div>
 
-    <h1><span class="hl">실습 문제 5개</span> — 지역·전역변수와 lambda·map·filter·reduce 코드 읽고 결과 예측하기 (3)</h1>
-    <p class="post-date">2026. 10. 11.</p>
-    <h2 id="q1"><span class="hl">문제 1</span> — 이름이 같은 지역변수와 전역변수</h2>
-    <p>함수 밖과 함수 안에 똑같이 <code>x</code>가 있는 코드예요.</p>
-<pre><code>x = 10                    # x 에 10 을 담아 주세요
+    <section class="level basic" data-level="basic">
+      <div class="level-head">
+        <span class="tag">실습</span>
+        <h2>코드 읽기 문제 5개</h2>
+        <p>지역·전역변수, global, lambda, map·filter·reduce가 나오는 완성된 코드를 보고, 코드를 짜지 않고 실행 결과만 예측합니다.</p>
+      </div>
+
+      <article class="problem" id="q1">
+        <div class="p-head"><span class="p-id">문제 1</span><span class="p-type">읽기</span><h3>이름이 같은 지역변수와 전역변수</h3></div>
+        <div class="p-body">
+<p>함수 밖과 함수 안에 똑같이 <code>x</code>가 있는 코드예요.</p>
+<pre><code class="language-python">x = 10                    # x 에 10 을 담아 주세요
 
 def change():             # change 라는 동작을 만들어 주세요
     x = 99                # x 에 99 를 담아 주세요
@@ -41,7 +436,7 @@ def change():             # change 라는 동작을 만들어 주세요
 change()                  # change 를 실행해 주세요
 print('함수 밖:', x)      # '함수 밖:' 과 x 를 화면에 보여 주세요</code></pre>
     <p>이 코드를 실행하면 두 줄이 차례로 출력돼요. 각각 무엇일까요?</p>
-    <div class="table-scroll fill">
+    <div class="table-scroll">
       <table>
         <thead><tr><th>출력 줄</th><th>예측</th></tr></thead>
         <tbody>
@@ -50,15 +445,17 @@ print('함수 밖:', x)      # '함수 밖:' 과 x 를 화면에 보여 주세�
         </tbody>
       </table>
     </div>
-    <details>
-      <summary>힌트 보기</summary>
-      <p>함수 안에서 <code>x = 99</code>라고 쓰면 전역 x를 고치는 게 아니라 <strong>이름만 같은 새 변수</strong>를 함수 안에 하나 더 만들어요. 함수 안 <code>print</code>가 어느 x를 보는지, 함수가 끝난 뒤 밖의 x는 어떻게 됐는지 따로 생각해보세요.</p>
-    </details>
-    <details class="sol-link">
-      <summary>정답·해설 보기</summary>
-      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
-    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>x = 10                    # x 에 10 을 담아 주세요
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <p>함수 안에서 <code>x = 99</code>라고 쓰면 전역 x를 고치는 게 아니라 <strong>이름만 같은 새 변수</strong>를 함수 안에 하나 더 만들어요. 함수 안 <code>print</code>가 어느 x를 보는지, 함수가 끝난 뒤 밖의 x는 어떻게 됐는지 따로 생각해보세요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-q1">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-q1"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
+<pre><code class="language-python">x = 10                    # x 에 10 을 담아 주세요
 
 def change():             # change 라는 동작을 만들어 주세요
     x = 99                # x 에 99 를 담아 주세요
@@ -75,7 +472,7 @@ print('함수 밖:', x)      # '함수 밖:' 과 x 를 화면에 보여 주세�
       <li>함수 안 <code>print</code>는 가장 가까운 x, 즉 지역 x(99)를 봐요.</li>
       <li>함수가 끝나면 지역 x는 사라지고, 함수 밖 <code>print</code>는 처음 그대로인 전역 x(10)를 봐요.</li>
     </ul>
-    <div class="table-scroll fill">
+    <div class="table-scroll">
       <table>
         <thead><tr><th>시점</th><th>전역 x</th><th>지역 x</th></tr></thead>
         <tbody>
@@ -87,7 +484,7 @@ print('함수 밖:', x)      # '함수 밖:' 과 x 를 화면에 보여 주세�
     </div>
     <p><strong>여기서 자주 막혀요:</strong> "<code>x = 99</code>를 했는데 왜 밖의 x는 10이지?" → 같은 이름이어도 <strong>다른 변수</strong>예요. 집 안 메모지와 집 밖 칠판에 같은 이름을 적었다고 한쪽을 고치면 다른 쪽이 바뀌는 건 아니에요.</p>
     <p><strong>흔한 실수 — 지역변수를 밖에서 쓰기:</strong> 함수 안에서만 만든 변수를 함수 밖에서 부르면 아예 없는 이름이라 에러가 나요.</p>
-<pre><code>def make():  # make 라는 동작을 만들어 주세요
+<pre><code class="language-python">def make():  # make 라는 동작을 만들어 주세요
     y = 5    # y 에 5 를 담아 주세요
 
 make()       # make 를 실행해 주세요
@@ -107,11 +504,15 @@ print(y)     # y 를 화면에 보여 주세요</code></pre>
       </tbody>
     </table>
     <p><strong>실제 코드에서</strong> · 함수마다 <code>i</code>, <code>total</code> 같은 흔한 이름을 써도 서로 안 부딪히는 건 지역변수 덕분이에요.</p>
-    </details>
+          </div>
+        </details>
+      </article>
 
-    <h2 id="q2"><span class="hl">문제 2</span> — global로 전역 값 누적하기</h2>
-    <p>함수를 부를 때마다 전역변수 <code>count</code>에 값을 더하는 코드예요.</p>
-<pre><code>count = 0                     # count 에 0 을 담아 주세요
+      <article class="problem" id="q2">
+        <div class="p-head"><span class="p-id">문제 2</span><span class="p-type">읽기</span><h3>global로 전역 값 누적하기</h3></div>
+        <div class="p-body">
+<p>함수를 부를 때마다 전역변수 <code>count</code>에 값을 더하는 코드예요.</p>
+<pre><code class="language-python">count = 0                     # count 에 0 을 담아 주세요
 
 def add(n):                   # n 을 받는 add 라는 동작을 만들어 주세요
     global count              # 이 안에서 count 는 바깥 전역변수를 쓰겠다고 알려 주세요
@@ -122,15 +523,17 @@ add(3)                        # add 에 3 을 넣어 실행해 주세요
 add(4)                        # add 에 4 를 넣어 실행해 주세요
 print('최종:', count)         # '최종:' 과 count 를 화면에 보여 주세요</code></pre>
     <p>이 코드를 실행하면 세 줄이 출력돼요. 각 줄은 무엇일까요? <code>add(3)</code>과 <code>add(4)</code>를 부른 뒤 <code>count</code>가 어떻게 변하는지도 함께 짚어보세요.</p>
-    <details>
-      <summary>힌트 보기</summary>
-      <p><code>global count</code> 덕분에 함수 안의 <code>count</code>는 새 변수가 아니라 <strong>바깥의 그 count 하나</strong>예요. 그래서 <code>add(3)</code>이 바꾼 값이 함수가 끝난 뒤에도 남아 있고, 이어지는 <code>add(4)</code>는 그 값에서 시작해요.</p>
-    </details>
-    <details class="sol-link">
-      <summary>정답·해설 보기</summary>
-      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
-    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>count = 0                     # count 에 0 을 담아 주세요
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <p><code>global count</code> 덕분에 함수 안의 <code>count</code>는 새 변수가 아니라 <strong>바깥의 그 count 하나</strong>예요. 그래서 <code>add(3)</code>이 바꾼 값이 함수가 끝난 뒤에도 남아 있고, 이어지는 <code>add(4)</code>는 그 값에서 시작해요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-q2">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-q2"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
+<pre><code class="language-python">count = 0                     # count 에 0 을 담아 주세요
 
 def add(n):                   # n 을 받는 add 라는 동작을 만들어 주세요
     global count              # 이 안에서 count 는 바깥 전역변수를 쓰겠다고 알려 주세요
@@ -149,7 +552,7 @@ print('최종:', count)         # '최종:' 과 count 를 화면에 보여 주�
       <li><code>count = count + n</code> — 이제 전역 count를 읽고, 거기에 n을 더해 <strong>전역 count에 다시 저장</strong>해요.</li>
       <li>함수가 끝나도 전역 count는 사라지지 않아서, 다음 호출이 이어받아요.</li>
     </ul>
-    <div class="table-scroll fill">
+    <div class="table-scroll">
       <table>
         <thead><tr><th>호출</th><th>n</th><th>계산 전 count</th><th>계산 후 count</th></tr></thead>
         <tbody>
@@ -160,7 +563,7 @@ print('최종:', count)         # '최종:' 과 count 를 화면에 보여 주�
     </div>
     <p><strong>여기서 자주 막혀요:</strong> "읽기는 되는데 왜 바꾸려면 global이 필요해?" → 함수 안에서 이름에 <strong>대입</strong>하면 파이썬이 그 이름을 지역변수로 보기 때문이에요. 읽기만 하는 이름은 전역을 그대로 봐요.</p>
     <p><strong>흔한 실수 — global을 빼먹으면?</strong> 아래 코드는 <code>global count</code> 한 줄만 뺀 거예요. 실제로 실행하면 이런 에러가 나요.</p>
-<pre><code>count = 0              # count 에 0 을 담아 주세요
+<pre><code class="language-python">count = 0              # count 에 0 을 담아 주세요
 
 def add(n):            # n 을 받는 add 라는 동작을 만들어 주세요
     count = count + n  # count 에 count + n 을 담아 주세요
@@ -182,24 +585,30 @@ add(3)                 # add 에 3 을 넣어 실행해 주세요</code></pre>
       </tbody>
     </table>
     <p><strong>실제 코드에서</strong> · 전역변수를 함수가 고치기 시작하면 값이 어디서 바뀌는지 추적하기 어려워져서, 실무에서는 <code>global</code>을 가능한 한 줄이고 <code>return</code>으로 값을 주고받는 쪽을 더 많이 써요.</p>
-    </details>
+          </div>
+        </details>
+      </article>
 
-    <h2 id="q3"><span class="hl">문제 3</span> — lambda를 바로 부르기, 변수에 담아 부르기</h2>
-    <p>같은 lambda를 두 가지 방식으로 쓰는 코드예요.</p>
-<pre><code>square = lambda x: x * x           # x 를 x 와 곱하는 이름 없는 함수를 square 라고 불러 주세요
+      <article class="problem" id="q3">
+        <div class="p-head"><span class="p-id">문제 3</span><span class="p-type">읽기</span><h3>lambda를 바로 부르기, 변수에 담아 부르기</h3></div>
+        <div class="p-body">
+<p>같은 lambda를 두 가지 방식으로 쓰는 코드예요.</p>
+<pre><code class="language-python">square = lambda x: x * x           # x 를 x 와 곱하는 이름 없는 함수를 square 라고 불러 주세요
 print((lambda a, b: a + b)(3, 4))  # a 와 b 를 더하는 이름 없는 함수에 3 과 4 를 넣은 값을 보여 주세요
 print(square(5))                   # square 에 5 를 넣은 값을 화면에 보여 주세요
 print(square(square(2)))           # square 에 2 를 넣고 그 값을 다시 square 에 넣은 값을 보여 주세요</code></pre>
     <p>이 코드를 실행하면 세 줄이 출력돼요. 각 줄은 무엇일까요?</p>
-    <details>
-      <summary>힌트 보기</summary>
-      <p><code>lambda a, b: a + b</code> 뒤에 바로 <code>(3, 4)</code>를 붙이면 만들자마자 호출하는 거예요. <code>square(square(2))</code>는 <strong>안쪽 괄호부터</strong> 계산해서, 그 결과를 다시 <code>square</code>에 넣어요.</p>
-    </details>
-    <details class="sol-link">
-      <summary>정답·해설 보기</summary>
-      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
-    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>square = lambda x: x * x           # x 를 x 와 곱하는 이름 없는 함수를 square 라고 불러 주세요
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <p><code>lambda a, b: a + b</code> 뒤에 바로 <code>(3, 4)</code>를 붙이면 만들자마자 호출하는 거예요. <code>square(square(2))</code>는 <strong>안쪽 괄호부터</strong> 계산해서, 그 결과를 다시 <code>square</code>에 넣어요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-q3">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-q3"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
+<pre><code class="language-python">square = lambda x: x * x           # x 를 x 와 곱하는 이름 없는 함수를 square 라고 불러 주세요
 print((lambda a, b: a + b)(3, 4))  # a 와 b 를 더하는 이름 없는 함수에 3 과 4 를 넣은 값을 보여 주세요
 print(square(5))                   # square 에 5 를 넣은 값을 화면에 보여 주세요
 print(square(square(2)))           # square 에 2 를 넣고 그 값을 다시 square 에 넣은 값을 보여 주세요</code></pre>
@@ -212,7 +621,7 @@ print(square(square(2)))           # square 에 2 를 넣고 그 값을 다시 s
       <li><code>square = ...</code> — 그 함수에 <code>square</code>라는 이름을 붙여 둔 거라, <code>def square(x): return x * x</code>와 같은 역할이에요.</li>
       <li><code>(lambda a, b: a + b)(3, 4)</code> — 괄호로 lambda를 감싸고 바로 <code>(3, 4)</code>를 넣어 부르니, a=3, b=4로 <code>3 + 4</code>가 돼요.</li>
     </ul>
-    <div class="table-scroll fill">
+    <div class="table-scroll">
       <table>
         <thead><tr><th>식</th><th>계산 과정</th><th>출력</th></tr></thead>
         <tbody>
@@ -225,26 +634,32 @@ print(square(square(2)))           # square 에 2 를 넣고 그 값을 다시 s
     <p><strong>여기서 자주 막혀요:</strong> "lambda 뒤에 왜 괄호가 두 번 나와?" → 앞 괄호는 lambda를 묶는 것이고, 뒤 괄호 <code>(3, 4)</code>는 함수를 부를 때 쓰는 평소의 호출 괄호예요. 이름이 없을 뿐 호출 방법은 똑같아요.</p>
     <p><strong>흔한 실수:</strong> lambda 안에 <code>return</code>을 쓰면 문법 에러가 나요. lambda는 <strong>식 하나</strong>만 쓸 수 있고, 그 식의 값이 자동으로 돌려주는 값이 돼요.</p>
     <p><strong>실제 코드에서</strong> · lambda는 직접 호출하기보다 map·filter·정렬 기준처럼 "함수를 인자로 넘기는 자리"에 한 줄로 끼워 쓰는 일이 훨씬 많아요(다음 두 문제).</p>
-    </details>
+          </div>
+        </details>
+      </article>
 
-    <h2 id="q4"><span class="hl">문제 4</span> — map과 filter로 리스트 만들기</h2>
-    <p>같은 리스트에 map과 filter를 각각 적용하고, filter 결과에 map을 한 번 더 쓰는 코드예요.</p>
-<pre><code>nums = [1, 2, 3, 4, 5, 6]                         # nums 에 [1, 2, 3, 4, 5, 6] 을 담아 주세요
+      <article class="problem" id="q4">
+        <div class="p-head"><span class="p-id">문제 4</span><span class="p-type">읽기</span><h3>map과 filter로 리스트 만들기</h3></div>
+        <div class="p-body">
+<p>같은 리스트에 map과 filter를 각각 적용하고, filter 결과에 map을 한 번 더 쓰는 코드예요.</p>
+<pre><code class="language-python">nums = [1, 2, 3, 4, 5, 6]                         # nums 에 [1, 2, 3, 4, 5, 6] 을 담아 주세요
 doubled = list(map(lambda x: x * 2, nums))        # nums 의 원소마다 x * 2 를 한 리스트를 doubled 에 담아 주세요
 evens = list(filter(lambda x: x % 2 == 0, nums))  # nums 에서 x % 2 == 0 이 참인 원소의 리스트를 evens 에 담아 주세요
 print(doubled)                                    # doubled 를 화면에 보여 주세요
 print(evens)                                      # evens 를 화면에 보여 주세요
 print(list(map(lambda x: x + 1, evens)))          # evens 의 원소마다 x + 1 을 한 리스트를 화면에 보여 주세요</code></pre>
     <p>이 코드를 실행하면 세 줄이 출력돼요. 각 줄은 무엇일까요?</p>
-    <details>
-      <summary>힌트 보기</summary>
-      <p><code>map</code>은 원소를 <strong>전부</strong> 바꾸고 개수는 그대로예요. <code>filter</code>는 <strong>조건이 참인 원소만</strong> 남기고 값은 바꾸지 않아요. 마지막 줄은 <code>evens</code>에 남은 원소들에 다시 map을 적용한 거라, <code>nums</code>가 아니라 <code>evens</code>에서 출발해야 해요.</p>
-    </details>
-    <details class="sol-link">
-      <summary>정답·해설 보기</summary>
-      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
-    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>nums = [1, 2, 3, 4, 5, 6]                         # nums 에 [1, 2, 3, 4, 5, 6] 을 담아 주세요
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <p><code>map</code>은 원소를 <strong>전부</strong> 바꾸고 개수는 그대로예요. <code>filter</code>는 <strong>조건이 참인 원소만</strong> 남기고 값은 바꾸지 않아요. 마지막 줄은 <code>evens</code>에 남은 원소들에 다시 map을 적용한 거라, <code>nums</code>가 아니라 <code>evens</code>에서 출발해야 해요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-q4">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-q4"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
+<pre><code class="language-python">nums = [1, 2, 3, 4, 5, 6]                         # nums 에 [1, 2, 3, 4, 5, 6] 을 담아 주세요
 doubled = list(map(lambda x: x * 2, nums))        # nums 의 원소마다 x * 2 를 한 리스트를 doubled 에 담아 주세요
 evens = list(filter(lambda x: x % 2 == 0, nums))  # nums 에서 x % 2 == 0 이 참인 원소의 리스트를 evens 에 담아 주세요
 print(doubled)                                    # doubled 를 화면에 보여 주세요
@@ -259,7 +674,7 @@ print(list(map(lambda x: x + 1, evens)))          # evens 의 원소마다 x + 1
       <li><code>filter(lambda x: x % 2 == 0, nums)</code> — 각 원소로 조건(짝수인가?)을 계산해서 <strong>참인 원소만</strong> 남겨요. 값 자체는 바뀌지 않아요.</li>
       <li>마지막 줄은 filter 결과인 <code>evens = [2, 4, 6]</code>에 다시 map으로 1씩 더한 거예요.</li>
     </ul>
-    <div class="table-scroll fill">
+    <div class="table-scroll">
       <table>
         <thead><tr><th>x</th><th>x * 2 (map)</th><th>x % 2 == 0 (filter)</th><th>evens에 남나?</th></tr></thead>
         <tbody>
@@ -275,7 +690,7 @@ print(list(map(lambda x: x + 1, evens)))          # evens 의 원소마다 x + 1
     <p>마지막 줄은 <code>evens</code>의 2, 4, 6에 각각 1을 더하니 3, 5, 7이에요. 출발이 <code>nums</code>가 아니라 <code>evens</code>라는 점이 핵심이에요.</p>
     <p><strong>여기서 자주 막혀요:</strong> "map은 개수가 같고 filter는 줄어든다" — 이것만 기억하면 헷갈리지 않아요. map은 <strong>값을 바꾸고</strong>, filter는 <strong>원소를 고르기만</strong> 해요.</p>
     <p><strong>흔한 실수 — list()로 감싸지 않으면?</strong> 파이썬 3의 map은 리스트가 아니라 map 객체를 돌려줘서, 그냥 출력하면 값이 안 보여요.</p>
-<pre><code>r = map(lambda x: x * 2, [1, 2])  # [1, 2] 의 원소마다 x * 2 를 하는 map 을 r 에 담아 주세요
+<pre><code class="language-python">r = map(lambda x: x * 2, [1, 2])  # [1, 2] 의 원소마다 x * 2 를 하는 map 을 r 에 담아 주세요
 print(r)                          # r 을 화면에 보여 주세요</code></pre>
 <pre class="out"><code class="nohighlight">&lt;map object at 0x0000020CEEA56290&gt;</code></pre>
     <p>(뒤의 주소 숫자는 실행할 때마다 달라질 수 있어요.) <code>list(r)</code>처럼 <code>list()</code>로 감싸야 <code>[2, 4]</code>처럼 값이 보여요. filter도 마찬가지예요.</p>
@@ -293,26 +708,32 @@ print(r)                          # r 을 화면에 보여 주세요</code></pre
       </tbody>
     </table>
     <p><strong>실제 코드에서</strong> · "전부 변환(가격에 세금 붙이기)"은 map, "조건에 맞는 것만 추리기(재고 있는 상품만)"는 filter 자리예요.</p>
-    </details>
+          </div>
+        </details>
+      </article>
 
-    <h2 id="q5"><span class="hl">문제 5</span> — reduce로 합치기 (숫자와 문자)</h2>
-    <p>reduce로 숫자는 더하기·곱하기, 문자열은 뒤집기를 하는 코드예요.</p>
-<pre><code>from functools import reduce              # functools 상자에서 reduce 를 가져와 주세요
+      <article class="problem" id="q5">
+        <div class="p-head"><span class="p-id">문제 5</span><span class="p-type">읽기</span><h3>reduce로 합치기 (숫자와 문자)</h3></div>
+        <div class="p-body">
+<p>reduce로 숫자는 더하기·곱하기, 문자열은 뒤집기를 하는 코드예요.</p>
+<pre><code class="language-python">from functools import reduce              # functools 상자에서 reduce 를 가져와 주세요
 
 nums = [1, 2, 3, 4]                       # nums 에 [1, 2, 3, 4] 를 담아 주세요
 print(reduce(lambda a, b: a + b, nums))   # nums 를 a + b 로 차례로 합친 값을 화면에 보여 주세요
 print(reduce(lambda a, b: a * b, nums))   # nums 를 a * b 로 차례로 합친 값을 화면에 보여 주세요
 print(reduce(lambda a, b: b + a, 'abc'))  # 'abc' 를 b + a 로 차례로 합친 값을 화면에 보여 주세요</code></pre>
     <p>이 코드를 실행하면 세 줄이 출력돼요. 각 줄은 무엇일까요? 세 번째 줄은 <code>a</code>와 <code>b</code>에 반복마다 어떤 값이 들어가는지 표로 적어 보세요.</p>
-    <details>
-      <summary>힌트 보기</summary>
-      <p>reduce는 먼저 앞의 두 원소를 <code>a</code>, <code>b</code>로 받아 계산하고, 그 결과를 다음 반복의 <code>a</code>에 넣어요. 그다음 원소가 <code>b</code>로 들어오고요. 세 번째 줄은 <code>b + a</code>의 <strong>순서가 거꾸로</strong>라는 점이 핵심이에요. 문자열 <code>'abc'</code>는 <code>'a'</code>, <code>'b'</code>, <code>'c'</code> 세 원소로 취급돼요.</p>
-    </details>
-    <details class="sol-link">
-      <summary>정답·해설 보기</summary>
-      <p>먼저 힌트로 다시 풀어 보고, 그래도 안 되면 열어 보세요.</p>
-    <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
-<pre><code>from functools import reduce              # functools 상자에서 reduce 를 가져와 주세요
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <p>reduce는 먼저 앞의 두 원소를 <code>a</code>, <code>b</code>로 받아 계산하고, 그 결과를 다음 반복의 <code>a</code>에 넣어요. 그다음 원소가 <code>b</code>로 들어오고요. 세 번째 줄은 <code>b + a</code>의 <strong>순서가 거꾸로</strong>라는 점이 핵심이에요. 문자열 <code>'abc'</code>는 <code>'a'</code>, <code>'b'</code>, <code>'c'</code> 세 원소로 취급돼요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-q5">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-q5"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
+<pre><code class="language-python">from functools import reduce              # functools 상자에서 reduce 를 가져와 주세요
 
 nums = [1, 2, 3, 4]                       # nums 에 [1, 2, 3, 4] 를 담아 주세요
 print(reduce(lambda a, b: a + b, nums))   # nums 를 a + b 로 차례로 합친 값을 화면에 보여 주세요
@@ -328,7 +749,7 @@ cba</code></pre>
       <li>마지막 줄은 문자열의 글자 하나하나가 원소예요. <code>b + a</code>로 <strong>새로 온 글자를 앞에</strong> 붙여서 뒤집혀요.</li>
     </ul>
     <p>첫 번째 줄(<code>a + b</code>)의 추적표예요.</p>
-    <div class="table-scroll fill">
+    <div class="table-scroll">
       <table>
         <thead><tr><th>반복</th><th>a</th><th>b</th><th>a + b (다음 a)</th></tr></thead>
         <tbody>
@@ -340,7 +761,7 @@ cba</code></pre>
     </div>
     <p>두 번째 줄(<code>a * b</code>)은 같은 방식으로 1*2=2, 2*3=6, 6*4=24라서 <code>24</code>예요.</p>
     <p>세 번째 줄(<code>b + a</code>, 문자열 <code>'abc'</code>)의 추적표예요.</p>
-    <div class="table-scroll fill">
+    <div class="table-scroll">
       <table>
         <thead><tr><th>반복</th><th>a</th><th>b</th><th>b + a (다음 a)</th></tr></thead>
         <tbody>
@@ -365,38 +786,77 @@ cba</code></pre>
       </tbody>
     </table>
     <p><strong>실제 코드에서</strong> · 합계·곱·가장 큰 값처럼 "리스트를 하나의 값으로 줄이는" 계산이 reduce 자리예요. 다만 합계만 필요하면 <code>sum()</code>이 더 간단해요.</p>
-    </details>
-
-    <h2><span class="hl">함께 보기</span></h2>
-    <ul>
-      <li><a href="beginner-python-ch03-part2-answers.html">문제 해설 — 지역·전역변수와 lambda·map·filter·reduce를 자세히 뜯어본다</a> — 이 5문제의 정답과 한 줄씩 짚어보는 해설이에요.</li>
-      <li><a href="beginner-python-ch03-part2-notes.html">지역·전역변수·lambda·map·reduce·filter 정리</a> — 이 문제들에 쓰인 문법 설명이에요.</li>
-      <li><a href="python-study/beginner-python/ch03-code-reading.html">3장 코드 읽기 실습(함수·return, 18문제)</a> — 함수와 return을 먼저 연습한 읽기 문제들이에요.</li>
-    </ul>
-
-    <a class="post-nav" href="beginner-python-ch04-part1-notes.html">
-      <span class="post-nav-label">다음 글 →</span>
-      <span class="post-nav-title">4장 전반부 정리 — 자료형·문자열·리스트</span>
-    </a>
-
-    <h3 id="series-list">"왕초보 Python 3장 후반부" 시리즈</h3>
-    <a class="post-nav" href="beginner-python-ch03-part2-notes.html">
-      <span class="post-nav-label">(1)</span>
-      <span class="post-nav-title">지역·전역변수·lambda·map·reduce·filter 정리</span>
-    </a>
-    <a class="post-nav" href="beginner-python-ch03-part2-answers.html">
-      <span class="post-nav-label">(2)</span>
-      <span class="post-nav-title">문제 해설 — 지역·전역변수와 lambda·map·filter·reduce를 자세히 뜯어본다</span>
-    </a>
-    <p class="post-date">(3) 실습 문제 5개 — 지역·전역변수와 lambda·map·filter·reduce 코드 읽고 결과 예측하기 (이 글)</p>
-
+          </div>
+        </details>
+      </article>
+    </section>
   </main>
-  </div>
 
-  <footer class="site-footer">
-    &copy; 2026 Tigermorning
-  </footer>
-  <script src="fit-title.js"></script>
-  <script src="sidebar-loader.js"></script>
+  <footer>같은 시리즈: <a href="beginner-python-ch03-part2-notes.html">(1) 지역·전역변수·lambda·map·reduce·filter 정리</a> · <a href="beginner-python-ch03-part2-answers.html">(2) 문제 해설</a> · (3) 이 글 · <a href="beginner-python-ch04-part1-notes.html">다음 글 → 4장 전반부 정리</a> · 교재: <a href="https://wikidocs.net/book/2">왕초보를 위한 Python</a> (위키독스)</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>
+(function () {
+  if (window.hljs) {
+    hljs.configure({ ignoreUnescapedHTML: true });
+    document.querySelectorAll('pre code:not(.nohighlight)').forEach(function (el) {
+      if (!hljs.getLanguage('python-repl') && el.classList.contains('language-python-repl')) {
+        el.classList.replace('language-python-repl', 'language-python');
+      }
+      hljs.highlightElement(el);
+    });
+  }
+
+  // 메모: 이 브라우저에만 저장
+  var store = null;
+  try { store = window.localStorage; store.getItem('x'); } catch (e) { store = null; }
+  document.querySelectorAll('.memo textarea').forEach(function (ta) {
+    var key = 'py-ch03b:' + ta.id;
+    try { var v = store && store.getItem(key); if (v) ta.value = v; } catch (e) {}
+    ta.addEventListener('input', function () {
+      try { store && store.setItem(key, ta.value); } catch (e) {}
+    });
+  });
+
+  // 난이도 필터
+  var buttons = document.querySelectorAll('.seg button');
+  var sections = document.querySelectorAll('[data-level]');
+  buttons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var f = btn.dataset.filter;
+      buttons.forEach(function (b) { b.setAttribute('aria-pressed', String(b === btn)); });
+      var picked = null;
+      sections.forEach(function (s) {
+        var lv = s.dataset.level;
+        s.hidden = !(f === 'all' || lv === f);
+        if (lv === f) picked = s;
+      });
+      // 고른 난이도의 첫머리로 옮긴다. 전체면 맨 위로.
+      if (picked) picked.scrollIntoView({ block: 'start' });
+      else window.scrollTo({ top: 0 });
+    });
+  });
+
+  // 목차 링크를 누르면 필터 해제
+  document.querySelectorAll('.toc a').forEach(function (a) {
+    a.addEventListener('click', function () {
+      var target = document.querySelector(a.getAttribute('href'));
+      var sec = target && target.closest('[data-level]');
+      if (sec && sec.hidden) document.getElementById('f-all').click();
+    });
+  });
+
+  // 해설 모두 펼치기 / 접기
+  var toggle = document.getElementById('toggle-sol');
+  toggle.addEventListener('click', function () {
+    var all = document.querySelectorAll('details.sol');
+    var open = toggle.dataset.open === '1';
+    all.forEach(function (d) { d.open = !open; });
+    toggle.dataset.open = open ? '0' : '1';
+    toggle.textContent = open ? '정답·해설 모두 펼치기' : '정답·해설 모두 접기';
+  });
+})();
+</script>
 </body>
 </html>
