@@ -46,6 +46,19 @@
     </table>
 
     <h2><span class="hl">1. 자료형과 type()</span></h2>
+    <ul>
+      <li><strong>자료형</strong>: 값의 종류. 7 은 정수, <code>'hi'</code> 는 문자열처럼 값마다 이미 정해져 있다.</li>
+      <li><strong><code>type()</code></strong>: 그 종류를 <em>물어보는</em> 함수. 자료형을 만드는 게 아니라 알아낸다.</li>
+      <li>비유: 혈액형 = 자료형, 혈액형 검사 = <code>type()</code>, 결과지 "A형" = <code>&lt;class 'int'&gt;</code>.</li>
+    </ul>
+    <table>
+      <thead><tr><th>줄 모양</th><th>누가 쓴 것</th></tr></thead>
+      <tbody>
+        <tr><td><code>&gt;&gt;&gt; type(7)</code></td><td>내가 입력한 코드 (<code>#</code> 뒤 주석은 파이썬이 읽지 않음)</td></tr>
+        <tr><td><code>&lt;class 'int'&gt;</code></td><td>파이썬이 돌려준 답. "7 은 int(정수) 종류"라는 뜻</td></tr>
+      </tbody>
+    </table>
+    <p><strong>답 읽는 법:</strong> <code>class</code> = 자료형, <code>'int'</code> = 그 이름, <code>&lt; &gt;</code> = "글자가 아니라 물건을 설명한 것"이라는 표시. 다시 입력하는 코드가 아니다.</p>
 <pre><code># 숫자: int, float, complex / 시퀀스: str, list, tuple / 그 밖: dict, bool
 &gt;&gt;&gt; type(7)         # 7 의 자료형이 뭐예요?
 &lt;class 'int'&gt;
