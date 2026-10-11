@@ -29,27 +29,11 @@
 
     <p class="one-liner">자료형, 문자열, 리스트, 외울 것만 공식처럼.</p>
 
-    <h2><span class="hl">핵심 정리</span></h2>
-    <table>
-      <thead><tr><th>개념</th><th>공식</th></tr></thead>
-      <tbody>
-        <tr><td><code>type(값)</code></td><td>자료형 확인</td></tr>
-        <tr><td>가변 / 불변</td><td>가변은 <code>list</code>, 불변은 <code>int</code>·<code>str</code>·<code>tuple</code></td></tr>
-        <tr><td><code>x[i]</code>, <code>x[a:b]</code></td><td>인덱스는 0부터, 슬라이스는 b 앞까지</td></tr>
-        <tr><td><code>x[::-1]</code></td><td>뒤집기</td></tr>
-        <tr><td>문자열 메서드</td><td>원본은 그대로, 새 문자열을 돌려줌</td></tr>
-        <tr><td><code>append</code> · <code>sort</code> · <code>insert</code> · <code>del</code> · <code>pop</code></td><td>리스트를 직접 바꿈</td></tr>
-        <tr><td><code>list()</code> · <code>str()</code> · <code>int()</code> · <code>float()</code></td><td>자료형 변환</td></tr>
-        <tr><td><code>값 in 리스트</code></td><td>완전히 같은 원소가 있나</td></tr>
-        <tr><td><code>a[:]</code></td><td>리스트 복사본</td></tr>
-      </tbody>
-    </table>
 
     <h2><span class="hl">1. 자료형과 type()</span></h2>
     <ul>
       <li><strong>자료형</strong>: 값의 종류. 7 은 정수, <code>'hi'</code> 는 문자열처럼 값마다 이미 정해져 있다.</li>
-      <li><strong><code>type()</code></strong>: 그 종류를 <em>물어보는</em> 함수. 자료형을 만드는 게 아니라 알아낸다.</li>
-      <li>비유: 혈액형 = 자료형, 혈액형 검사 = <code>type()</code>, 결과지 "A형" = <code>&lt;class 'int'&gt;</code>.</li>
+      <li><strong><code>type()</code></strong>: 값의 <strong>종류</strong>를 알려 주는 함수. 자료형을 만드는 게 아니라 알아낸다.</li>
     </ul>
     <table>
       <thead><tr><th>줄 모양</th><th>누가 쓴 것</th></tr></thead>
@@ -58,7 +42,7 @@
         <tr><td><code>&lt;class 'int'&gt;</code></td><td>파이썬이 돌려준 답. "7 은 int(정수) 종류"라는 뜻</td></tr>
       </tbody>
     </table>
-    <p><strong>답 읽는 법:</strong> <code>class</code> = 자료형, <code>'int'</code> = 그 이름, <code>&lt; &gt;</code> = "글자가 아니라 물건을 설명한 것"이라는 표시. 다시 입력하는 코드가 아니다.</p>
+    <p><strong>답 읽는 법:</strong> <code>&lt;class 'int'&gt;</code> 는 "자료형은 <code>int</code>" 라는 뜻이다. 앞의 <code>class</code> 와 바깥의 <code>&lt; &gt;</code> 는 파이썬이 자료형을 보여 줄 때 늘 붙이는 모양이라, 따옴표 안의 이름만 읽으면 된다.</p>
 <pre><code># 숫자: int, float, complex / 시퀀스: str, list, tuple / 그 밖: dict, bool
 &gt;&gt;&gt; type(7)         # 7 의 자료형이 뭐예요?
 &lt;class 'int'&gt;
@@ -206,6 +190,22 @@ True
 &gt;&gt;&gt; a                           # a 에 들어 있는 것이 뭐예요?
 [1, 3]</code></pre>
     <p><strong>핵심 한 줄:</strong> 순회하면서 그 리스트를 바꾸면 원소를 건너뛰니, <code>L[:]</code> 복사본을 순회하기.</p>
+
+    <h2><span class="hl">한눈에 복습</span></h2>
+    <table>
+      <thead><tr><th>개념</th><th>공식</th></tr></thead>
+      <tbody>
+        <tr><td><code>type(값)</code></td><td>자료형 확인</td></tr>
+        <tr><td>가변 / 불변</td><td>가변은 <code>list</code>, 불변은 <code>int</code>·<code>str</code>·<code>tuple</code></td></tr>
+        <tr><td><code>x[i]</code>, <code>x[a:b]</code></td><td>인덱스는 0부터, 슬라이스는 b 앞까지</td></tr>
+        <tr><td><code>x[::-1]</code></td><td>뒤집기</td></tr>
+        <tr><td>문자열 메서드</td><td>원본은 그대로, 새 문자열을 돌려줌</td></tr>
+        <tr><td><code>append</code> · <code>sort</code> · <code>insert</code> · <code>del</code> · <code>pop</code></td><td>리스트를 직접 바꿈</td></tr>
+        <tr><td><code>list()</code> · <code>str()</code> · <code>int()</code> · <code>float()</code></td><td>자료형 변환</td></tr>
+        <tr><td><code>값 in 리스트</code></td><td>완전히 같은 원소가 있나</td></tr>
+        <tr><td><code>a[:]</code></td><td>리스트 복사본</td></tr>
+      </tbody>
+    </table>
 
     <h2><span class="hl">함께 보기</span></h2>
     <ul>
