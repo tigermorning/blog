@@ -49,6 +49,11 @@
         <tr><td>자료 종류</td><td>자료는 종류마다 쓸 수 있는 메서드가 달라서 <code>f.append()</code>는 리스트만 된다 (<code>'hi'.append()</code>는 에러)</td></tr>
         <tr><td>입력</td><td><code>input()</code>은 글자를 돌려주므로 계산하려면 <code>int(input())</code>으로 정수로 바꾼다</td></tr>
         <tr><td>제곱</td><td>정수 <code>num</code>의 제곱은 <code>num * num</code> 또는 <code>num ** 2</code>다</td></tr>
+        <tr><td><code>find</code>의 <code>-1</code></td><td><code>find</code>가 돌려주는 <code>-1</code>은 마지막 글자가 아니라 "못 찾음" 신호라서 <code>if</code>에 바로 쓰지 말고 <code>x in s</code>나 <code>!= -1</code>로 비교한다</td></tr>
+        <tr><td><code>strip</code>과 <code>split</code></td><td><code>strip</code>은 양쪽 끝을 다듬어 문자열을, <code>split</code>은 구분자로 쪼개 리스트를 돌려주고, <code>split()</code>은 연속 공백을 하나로 묶지만 <code>split(',')</code>는 빈 문자열이 생긴다</td></tr>
+        <tr><td><code>join</code></td><td><code>join</code>은 구분자 문자열의 메서드라 <code>', '.join(리스트)</code>로 쓰고, 리스트 요소는 모두 문자열이어야 한다</td></tr>
+        <tr><td><code>for</code> 문</td><td><code>for A in B:</code>는 "B의 각각의 A에 대해"로 읽고, 들여쓴 코드를 요소마다 한 번씩 실행한다</td></tr>
+        <tr><td><code>set</code>과 <code>add</code></td><td><code>set</code>은 순서 없고 중복 없는 자료라 리스트에는 <code>append</code>, 집합에는 <code>add</code>를 쓴다</td></tr>
       </tbody>
     </table>
     <p>모든 코드는 Python 3.12에서 직접 실행해 결과를 확인했어요. 코드 블록의 <code>&gt;&gt;&gt;</code>는 파이썬 대화형 셸의 입력 표시라서 따라 치지 않아요. 1장 범위로 따로 만든 <a href="python-study/beginner-python/ch01-code-reading.html">1장 코드 읽기 실습 21문제</a>도 있어요.</p>
@@ -627,6 +632,155 @@ print(num * num)                 # num 곱하기 num 을 화면에 보여 주세
     <ol start="3">
       <li><code>3</code>을 넣으면 <code>9</code>, <code>5</code>를 넣으면 <code>25</code>가 나오면 성공이에요.</li>
     </ol>
+
+    <hr>
+    <h2><span class="hl">문자열·반복문·집합</span> — 추가 학습 질문</h2>
+    <p>1.3 리스트를 배우다 문자열 메서드·반복문·집합으로 질문이 번졌어요. 아래에서 차례로 풀어요.</p>
+
+    <h3 id="q15"><code>find</code>가 돌려주는 <code>-1</code>은 마지막 글자인가요? 불리언은 뭔가요?</h3>
+    <p>같은 숫자 <code>-1</code>이 두 가지 뜻으로 쓰여서 헷갈려요.</p>
+    <table>
+      <thead><tr><th>쓰임</th><th>뜻</th></tr></thead>
+      <tbody>
+        <tr><td><code>s[-1]</code></td><td>인덱스예요. 뒤에서 첫 번째 글자(<a href="#q7">Q7</a>)</td></tr>
+        <tr><td><code>s.find(x)</code>가 돌려준 <code>-1</code></td><td>위치가 아니라 <strong>"못 찾음" 신호</strong>예요. 파이썬이 정한 약속이에요</td></tr>
+      </tbody>
+    </table>
+    <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
+<pre><code>&gt;&gt;&gt; 'hello'.find('z')      # 없으면 에러가 아니라 -1
+-1
+&gt;&gt;&gt; 'hello'.find('h')      # 맨 앞에서 찾으면 0
+0
+&gt;&gt;&gt; 'z' in 'hello'         # "있나 없나"만 알고 싶을 때
+False</code></pre>
+    <ul>
+      <li><strong>불리언(boolean)</strong>은 참·거짓 둘 중 하나만 가지는 값이에요. 파이썬에서는 <code>True</code>, <code>False</code>예요. 비교(<code>3 &gt; 2</code>)나 <code>in</code>의 결과가 불리언이에요.</li>
+      <li><code>True == 1</code>, <code>False == 0</code>은 맞아요. 하지만 "못 찾음 = -1"은 불리언 규칙이 아니라 <code>find</code>만의 약속이에요.</li>
+      <li>그래서 <code>if s.find(x):</code>로 쓰면 틀려요. <code>-1</code>은 0이 아니라서 참으로 취급되고, 맨 앞에서 찾은 <code>0</code>은 거짓으로 취급돼요.</li>
+      <li>단순히 있는지만 볼 때는 <code>x in s</code>가 안전해요. 위치가 필요하면 <code>idx != -1</code>로 명시해서 비교해요.</li>
+      <li>에러로 알려 주길 원하면 <code>'hello'.index('z')</code>를 써요. <code>ValueError: substring not found</code>가 나요.</li>
+    </ul>
+
+    <h3 id="q16"><code>strip</code>과 <code>split</code>은 어떻게 다른가요? <code>split()</code>과 <code>split(',')</code>는요?</h3>
+    <p><strong>한 줄 차이:</strong> <code>strip</code>은 끝 다듬기(문자열 &#8594; 문자열), <code>split</code>은 쪼개기(문자열 &#8594; 리스트)예요.</p>
+    <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
+<pre><code>&gt;&gt;&gt; '  hello  '.strip()        # 인자 없으면 양쪽 끝 공백 제거
+'hello'
+&gt;&gt;&gt; 'xxhixx'.strip('x')        # 지울 문자를 괄호에 적어요
+'hi'
+&gt;&gt;&gt; '--a-b--'.strip('-')       # 가운데는 그대로 둬요
+'a-b'
+&gt;&gt;&gt; 'abcba'.strip('ab')        # 인자는 "문자 모음"이에요
+'c'</code></pre>
+    <ul>
+      <li>양쪽 <strong>끝</strong>에서만 지워요. 가운데 문자는 건드리지 않아요.</li>
+      <li>인자는 순서가 있는 단어가 아니라 문자 모음이에요. 끝에서부터 그 모음에 속하는 글자가 나오는 동안 계속 지워요.</li>
+      <li>한쪽만 지우려면 <code>lstrip</code>(왼쪽), <code>rstrip</code>(오른쪽)을 써요.</li>
+    </ul>
+    <p><strong><code>split()</code>과 <code>split(',')</code>의 차이</strong></p>
+    <table>
+      <thead><tr><th>쓰임</th><th>구분자</th><th>연속되면</th></tr></thead>
+      <tbody>
+        <tr><td><code>split()</code></td><td>공백 전부(스페이스·탭·줄바꿈)</td><td>하나로 묶어 처리해요. 빈 문자열이 안 생겨요</td></tr>
+        <tr><td><code>split(',')</code></td><td>쉼표 하나하나</td><td>빈 문자열이 생겨요</td></tr>
+      </tbody>
+    </table>
+    <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
+<pre><code>&gt;&gt;&gt; 'a  b   c'.split()
+['a', 'b', 'c']
+&gt;&gt;&gt; 'a  b   c'.split(' ')      # 공백 한 칸을 구분자로 지정하면 빈 문자열이 끼어요
+['a', '', 'b', '', '', 'c']
+&gt;&gt;&gt; 'a,,b'.split(',')
+['a', '', 'b']
+&gt;&gt;&gt; s = 'hello Python!'
+&gt;&gt;&gt; s.split()[0]               # split()이 만든 리스트에 [0]을 이어서 적용
+'hello'
+&gt;&gt;&gt; s.split()[-1]
+'Python!'</code></pre>
+    <ul>
+      <li>공백 단위로 단어를 쪼갤 때는 <code>split()</code>, 특정 문자로 쪼갤 때는 <code>split('그문자')</code>예요.</li>
+      <li><code>s.split()[0]</code>은 두 단계예요. 먼저 <code>s.split()</code>이 리스트를 만들고, 그 리스트의 첫 요소를 꺼내요. 결과는 리스트가 아니라 문자열이에요.</li>
+      <li>요소가 2개인 리스트에서 <code>[-1]</code>은 마지막 요소라 <code>[1]</code>과 같고, <code>[-2]</code>는 <code>[0]</code>과 같아요. <code>[-3]</code>은 <code>IndexError: list index out of range</code>예요.</li>
+    </ul>
+
+    <h3 id="q17"><code>join</code>은 왜 구분자가 앞에 오나요?</h3>
+    <p><code>join</code>은 <strong>문자열의 메서드</strong>라서 그래요. 파이썬 문법은 <code>객체.메서드(재료)</code>이고, 점 앞이 메서드를 가진 객체예요. 이 경우 객체는 구분자 문자열이고, 괄호 안은 이어 붙일 리스트예요.</p>
+    <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
+<pre><code>&gt;&gt;&gt; ', '.join(['사과', '배'])
+'사과, 배'
+&gt;&gt;&gt; ','.join(['사과', '배'])
+'사과,배'
+&gt;&gt;&gt; ''.join(['사과', '배'])
+'사과배'</code></pre>
+    <ul>
+      <li><code>['사과', '배']</code>는 결과가 아니라 <strong>입력</strong>이에요. 결과는 <code>'사과, 배'</code> 문자열 하나예요.</li>
+      <li><code>join(,)</code>처럼 쓰면 <code>SyntaxError</code>예요. 구분자는 따옴표로 감싼 문자열이어야 하고, 괄호에는 구분자가 아니라 리스트를 넣어요.</li>
+      <li>읽는 법: "<code>', '</code>로 이어 붙여라, 이 리스트를."</li>
+      <li><code>split</code>과 반대 관계예요. <code>split</code>은 문자열 &#8594; 리스트, <code>join</code>은 리스트 &#8594; 문자열이에요.</li>
+      <li>리스트 안 요소가 모두 문자열이어야 해요. 숫자가 섞이면 <code>TypeError: sequence item 1: expected str instance, int found</code>가 나요. 숫자는 <code>', '.join(str(x) for x in nums)</code>로 바꿔서 이어요.</li>
+    </ul>
+
+    <h3 id="q18"><code>for</code> 문을 일반 문장으로 읽으면?</h3>
+    <p><code>for</code> 문은 반복문이에요. 리스트·문자열 같은 것의 요소를 하나씩 꺼내 같은 코드를 반복해서 실행해요. 읽는 요령은 <strong>"<code>for A in B:</code> = B의 각각의 A에 대해"</strong>예요.</p>
+    <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요 (들여쓰기 뒤 Enter를 한 번 더 눌러요)</span></p>
+<pre><code>&gt;&gt;&gt; for fruit in ['사과', '배', '귤']:
+...     print(fruit)
+...
+사과
+배
+귤
+&gt;&gt;&gt; for i in range(3):
+...     print(i)
+...
+0
+1
+2</code></pre>
+    <table>
+      <thead><tr><th>코드</th><th>일반 문장</th></tr></thead>
+      <tbody>
+        <tr><td><code>for fruit in ['사과', '배', '귤']:</code> + <code>print(fruit)</code></td><td>과일 목록의 각 <code>fruit</code>에 대해, <code>fruit</code>를 출력해라</td></tr>
+        <tr><td><code>for i in range(3):</code> + <code>print(i)</code></td><td>0부터 2까지의 각 <code>i</code>에 대해, <code>i</code>를 출력해라</td></tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>첫 줄 끝의 콜론(<code>:</code>)은 필수예요.</li>
+      <li>다음 줄들은 들여쓰기(보통 스페이스 4칸)해요. 들여쓴 부분이 반복되는 코드예요.</li>
+      <li><code>range(3)</code>은 0부터 3 직전까지라 <code>0, 1, 2</code>예요. 문자열도 반복할 수 있어요: <code>for ch in 'hi':</code>는 <code>h</code>, <code>i</code> 순서예요.</li>
+    </ul>
+
+    <h3 id="q19">복소수, <code>set</code>의 순서, <code>append</code>와 <code>add</code>의 차이는?</h3>
+    <p><strong>복소수(complex number)</strong>는 실수부 + 허수부 형태의 수예요. 허수 단위 <code>i</code>는 <code>i² = -1</code>인 수예요. 파이썬에서는 <code>i</code>가 아니라 <code>j</code>로 써요. 일반 프로그래밍에서는 거의 안 쓰고 신호처리·물리·공학 계산에서 써요.</p>
+    <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
+<pre><code>&gt;&gt;&gt; z = 3 + 4j
+&gt;&gt;&gt; z.real
+3.0
+&gt;&gt;&gt; z.imag
+4.0
+&gt;&gt;&gt; abs(z)           # 원점에서의 거리
+5.0
+&gt;&gt;&gt; type(z)
+&lt;class 'complex'&gt;</code></pre>
+    <p><strong><code>set</code>은 순서가 섞여도 되나요?</strong> 돼요. <code>set</code>은 순서 없는 자료형이라 인덱스(<code>s[0]</code>)도 못 써요. 출력 순서가 넣은 순서와 다를 수 있으니 순서에 기대면 안 돼요.</p>
+    <ul>
+      <li>중복은 자동으로 제거돼요. <code>{1, 1, 2}</code>는 <code>{1, 2}</code>예요.</li>
+      <li>비교할 때 순서는 무관해요. <code>{1, 2} == {2, 1}</code>은 <code>True</code>예요.</li>
+      <li>순서가 필요하면 리스트를 쓰고, 중복만 없애고 정렬해서 보려면 <code>sorted(set(x))</code>를 써요.</li>
+    </ul>
+    <p><strong><code>append</code>와 <code>add</code>:</strong> 둘 다 요소 하나를 추가하는 메서드인데, <code>append</code>는 리스트용, <code>add</code>는 집합용이에요.</p>
+    <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
+<pre><code>&gt;&gt;&gt; a = [1, 2]
+&gt;&gt;&gt; a.append(2)      # 맨 뒤에 추가, 중복 허용
+&gt;&gt;&gt; a
+[1, 2, 2]
+&gt;&gt;&gt; s = {1, 2}
+&gt;&gt;&gt; s.add(2)         # 이미 있으면 변화 없음
+&gt;&gt;&gt; s
+{1, 2}
+&gt;&gt;&gt; {1}.append(2)    # 종류가 다르면 버튼이 없어요 (Q12)
+AttributeError: 'set' object has no attribute 'append'
+&gt;&gt;&gt; [1].add(2)
+AttributeError: 'list' object has no attribute 'add'</code></pre>
+    <p>둘 다 원본을 직접 바꾸고 <code>None</code>을 돌려줘요.</p>
 
     <hr>
     <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 1장 문법으로 짠 코드의 결과가 이상할 때</h2>
