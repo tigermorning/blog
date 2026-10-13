@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>실습 문제 14개 — 초급·중급·고급으로 튜플·딕셔너리·세트 코드 짜기 - Tigermorning</title>
+  <meta name="description" content="왕초보를 위한 Python 4장 후반부(튜플, 딕셔너리, 세트)를 초급·중급·고급 10문제와 1~3장 누적 4문제로 나눠 직접 코드를 짜 보는 실습 문제.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="실습 문제 14개 — 초급·중급·고급으로 튜플·딕셔너리·세트 코드 짜기">
+  <meta property="og:description" content="튜플·딕셔너리·세트가 나오는 코드 14개를 초급·중급·고급·누적으로 나눠 직접 짜 봅니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/beginner-python-ch04-part2-practice.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <a class="post-nav" href="beginner-python-ch04-part2-answers.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">문제 해설 — 튜플·딕셔너리·세트 연습 문제를 자세히 뜯어본다</span>
+    </a>
+
+    <h1><span class="hl">실습 문제 14개</span> — 초급·중급·고급으로 튜플·딕셔너리·세트 코드 짜기 (3)</h1>
+    <p class="post-date">2026. 10. 13.</p>
+    <p class="post-date">※ 이 글은 위키독스 <a href="https://wikidocs.net/book/2" target="_blank" rel="noopener">『왕초보를 위한 Python』</a> 4.3 ~ 4.5절 내용을 바탕으로 제가 직접 만든 문제입니다. 교재의 공식 연습 문제가 아니에요. 먼저 직접 풀고, 막히면 정답·해설을 열어 보세요.</p>
+
+    <p class="one-liner">튜플·딕셔너리·세트를 초급·중급·고급 10문제로, 1~3장 문법과 섞어 코드로 직접 짜 보는 문제 4개를 더해 모두 14문제예요.</p>
+    <ul>
+      <li>초급: 자료형과 기본 문법 확인</li>
+      <li>중급: 함수·반복문과 섞기</li>
+      <li>고급: 튜플·딕셔너리·세트를 골라 쓰는 판단</li>
+      <li>누적: 1~3장 문법(반복문·<code>if</code>·함수·<code>input()</code>)과 함께 풀기</li>
+    </ul>
+
+    <h2><span class="hl">초급</span></h2>
+
+    <h3 id="q1">문제 1</h3>
+    <p>다음 값의 자료형을 각각 맞혀 보세요. <code>(5)</code>, <code>(5,)</code>, <code>()</code>, <code>{}</code>, <code>{5}</code>, <code>set()</code>, <code>{5: 'a'}</code></p>
+    <details>
+      <summary>정답·해설 보기 (문제 1)</summary>
+      <p><strong>정답 코드</strong></p>
+<pre><code>print(type((5)), type((5,)), type(()))                   # (5), (5,), () 의 자료형을 화면에 보여 주세요
+print(type({}), type({5}), type(set()), type({5: 'a'}))  # {}, {5}, set(), {5: 'a'} 의 자료형을 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">&lt;class 'int'&gt; &lt;class 'tuple'&gt; &lt;class 'tuple'&gt;
+&lt;class 'dict'&gt; &lt;class 'set'&gt; &lt;class 'set'&gt; &lt;class 'dict'&gt;</code></pre>
+    <p><code>(5)</code>는 콤마가 없어서 튜플이 아니라 정수예요. 원소 하나짜리 튜플은 <code>(5,)</code>예요. 중괄호는 비어 있으면 딕셔너리, 값만 나열하면 세트, <code>키: 값</code>이 있으면 딕셔너리예요. 빈 세트는 <code>set()</code>으로 만들어요.</p>
+    </details>
+
+    <h3 id="q2">문제 2</h3>
+    <p>임시 변수 없이 <code>x = 3</code>, <code>y = 7</code>의 값을 맞바꿔 출력하세요. 이어서 튜플 <code>t = (1, 2, 3)</code>의 0번 원소를 9로 바꾸면 어떻게 되는지 확인하세요.</p>
+    <details>
+      <summary>정답·해설 보기 (문제 2)</summary>
+      <p><strong>정답 코드</strong></p>
+<pre><code>x, y = 3, 7                 # x 에 3, y 에 7 을 한 번에 담아 주세요
+x, y = y, x                 # x 와 y 에 담긴 값을 서로 바꿔 주세요
+print(x, y)                 # x 와 y 를 화면에 보여 주세요
+t = (1, 2, 3)               # t 에 (1, 2, 3) 튜플을 담아 주세요
+try:                        # 아래를 시도해 주세요
+    t[0] = 9                # t 의 0번 자리에 9 를 담아 주세요
+except TypeError as e:      # TypeError 가 나면 그 오류를 e 라고 부르며
+    print('TypeError:', e)  # 'TypeError:' 와 e 를 화면에 보여 주세요
+print(t)                    # t 를 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">7 3
+TypeError: 'tuple' object does not support item assignment
+(1, 2, 3)</code></pre>
+    <p><code>x, y = y, x</code>는 오른쪽에 <code>(y, x)</code> 튜플을 만들어 왼쪽에 풀어 담아요. 튜플은 불변이라 원소 대입이 TypeError를 일으키고, 튜플은 그대로 남아요.</p>
+    </details>
+
+    <h3 id="q3">문제 3</h3>
+    <p>딕셔너리 <code>stock = {'apple': 3, 'banana': 5}</code>에 mango 2개를 더하고, apple을 10개로 바꾸고, banana를 지운 뒤 출력하세요. 이어서 mango와 banana가 있는지, 키·값·쌍을 각각 리스트로 출력하세요.</p>
+    <details>
+      <summary>정답·해설 보기 (문제 3)</summary>
+      <p><strong>정답 코드</strong></p>
+<pre><code>stock = {'apple': 3, 'banana': 5}           # stock 에 apple 과 banana 가 든 딕셔너리를 담아 주세요
+stock['mango'] = 2                          # stock 의 'mango' 자리에 2 를 담아 주세요
+stock['apple'] = 10                         # stock 의 'apple' 자리에 10 을 담아 주세요
+del stock['banana']                         # stock 의 'banana' 쌍을 지워 주세요
+print(stock)                                # stock 을 화면에 보여 주세요
+print('mango' in stock, 'banana' in stock)  # 'mango' 와 'banana' 가 stock 의 키에 있나요?
+print(list(stock.keys()))                   # stock 의 키들을 리스트로 화면에 보여 주세요
+print(list(stock.values()))                 # stock 의 값들을 리스트로 화면에 보여 주세요
+print(list(stock.items()))                  # stock 의 (키, 값) 쌍들을 리스트로 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">{'apple': 10, 'mango': 2}
+True False
+['apple', 'mango']
+[10, 2]
+[('apple', 10), ('mango', 2)]</code></pre>
+    <p>없는 키에 대입하면 추가, 있는 키에 대입하면 수정이에요. <code>in</code>은 값이 아니라 키가 있는지를 확인해요. <code>items()</code>는 (키, 값) 튜플의 모음이에요.</p>
+    </details>
+
+    <h3 id="q4">문제 4</h3>
+    <p>리스트 <code>nums = [3, 1, 3, 2, 1, 3]</code>에서 중복을 없앤 값의 개수와, 그 값들을 작은 것부터 출력하세요.</p>
+    <details>
+      <summary>정답·해설 보기 (문제 4)</summary>
+      <p><strong>정답 코드</strong></p>
+<pre><code>nums = [3, 1, 3, 2, 1, 3]      # nums 에 [3, 1, 3, 2, 1, 3] 리스트를 담아 주세요
+unique = set(nums)             # unique 에 nums 로 만든 세트를 담아 주세요
+print(len(nums), len(unique))  # nums 와 unique 의 원소 개수를 화면에 보여 주세요
+print(sorted(unique))          # unique 를 정렬해서 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">6 3
+[1, 2, 3]</code></pre>
+    <p><code>set(리스트)</code>가 중복을 지워요. 세트는 순서가 없으니 <code>sorted()</code>로 정렬한 리스트를 출력해요.</p>
+    </details>
+
+    <h2><span class="hl">중급</span></h2>
+
+    <h3 id="q5">문제 5</h3>
+    <p>숫자를 몇 개든 받아 <strong>합계와 개수</strong>를 함께 돌려주는 함수 <code>total</code>을 만드세요. <code>total(4, 8, 15)</code>는 통째로 받아 출력하고, <code>total(1, 2)</code>는 두 변수에 풀어 받아 출력하고, 인자 없는 <code>total()</code>의 결과도 출력하세요.</p>
+    <details>
+      <summary>정답·해설 보기 (문제 5)</summary>
+      <p><strong>정답 코드</strong></p>
+<pre><code>def total(*nums):         # 남는 인자를 모두 nums 로 받는 total 이라는 동작을 만들어 주세요
+    s = 0                 # s 에 0 을 담아 주세요
+    for n in nums:        # nums 의 원소를 하나씩 n 이라고 부르며 아래를 반복해 주세요
+        s += n            # s 에 n 을 더해 다시 담아 주세요
+    return s, len(nums)   # s 와 nums 의 길이를 결과로 돌려주세요
+result = total(4, 8, 15)  # result 에 total 에 4, 8, 15 를 넣은 결과를 담아 주세요
+s, count = total(1, 2)    # total 에 1, 2 를 넣은 결과를 s 와 count 에 나눠 담아 주세요
+print(result)             # result 를 화면에 보여 주세요
+print(s, count)           # s 와 count 를 화면에 보여 주세요
+print(total())            # total 에 아무것도 넣지 않은 결과를 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">(27, 3)
+3 2
+(0, 0)</code></pre>
+    <p><code>*nums</code>가 인자를 튜플로 모으고, <code>return s, len(nums)</code>는 튜플 하나를 돌려줘요. 받는 쪽은 <code>result</code>처럼 통째로 받거나 <code>s, count</code>처럼 풀어 받을 수 있어요. 인자가 없으면 <code>nums</code>는 빈 튜플이라 합계 0, 개수 0이에요.</p>
+    </details>
+
+    <h3 id="q6">문제 6</h3>
+    <p>문자열 <code>'banana'</code>에서 글자별로 몇 번 나오는지 딕셔너리로 세어 출력하세요. (<code>count()</code> 메서드는 쓰지 않아요.)</p>
+    <details>
+      <summary>정답·해설 보기 (문제 6)</summary>
+      <p><strong>정답 코드</strong></p>
+<pre><code>word = 'banana'         # word 에 'banana' 를 담아 주세요
+count = {}              # count 에 빈 딕셔너리를 담아 주세요
+for ch in word:         # word 의 글자를 하나씩 ch 라고 부르며 아래를 반복해 주세요
+    if ch in count:     # 만약 ch 가 count 의 키에 있으면
+        count[ch] += 1  # count 의 ch 자리에 1 을 더해 다시 담아 주세요
+    else:               # 아니면
+        count[ch] = 1   # count 의 ch 자리에 1 을 담아 주세요
+print(count)            # count 를 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">{'b': 1, 'a': 3, 'n': 2}</code></pre>
+    <p>글자를 키로, 나온 횟수를 값으로 해요. 처음 보는 글자(<code>ch in count</code>가 False)는 1로 만들고, 이미 있는 글자는 1을 더해요. 문자열도 반복문으로 한 글자씩 꺼낼 수 있어요.</p>
+    </details>
+
+    <h3 id="q7">문제 7</h3>
+    <p>수학반 <code>{'철수', '영희', '민수'}</code>와 미술반 <code>{'영희', '지현', '민수', '서연'}</code>이 있어요. 두 반에 모두 있는 학생, 둘 중 한 반에라도 있는 학생과 그 수, 수학반에만 있는 학생을 구하세요. (출력은 정렬해요)</p>
+    <details>
+      <summary>정답·해설 보기 (문제 7)</summary>
+      <p><strong>정답 코드</strong></p>
+<pre><code>math = {'철수', '영희', '민수'}                   # math 에 수학반 학생 세트를 담아 주세요
+art = {'영희', '지현', '민수', '서연'}              # art 에 미술반 학생 세트를 담아 주세요
+print(sorted(math &amp; art))                   # math 와 art 의 교집합을 정렬해서 화면에 보여 주세요
+print(sorted(math | art), len(math | art))  # math 와 art 의 합집합을 정렬한 것과 그 원소 개수를 화면에 보여 주세요
+print(sorted(math - art))                   # math 에서 art 를 뺀 차집합을 정렬해서 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">['민수', '영희']
+['민수', '서연', '영희', '지현', '철수'] 5
+['철수']</code></pre>
+    <p>"모두"는 교집합 <code>&amp;</code>, "하나라도"는 합집합 <code>|</code>, "~에만"은 차집합 <code>-</code>예요. 합집합에서는 두 반에 모두 있는 학생을 한 번만 세요.</p>
+    </details>
+
+    <h2><span class="hl">고급</span></h2>
+
+    <h3 id="q8">문제 8</h3>
+    <p>점수 딕셔너리 <code>scores = {'철수': 82, '영희': 95, '민수': 78}</code>에서 최고 점수를 받은 사람의 이름과 점수를 <code>max()</code> 없이 구하세요.</p>
+    <details>
+      <summary>정답·해설 보기 (문제 8)</summary>
+      <p><strong>정답 코드</strong></p>
+<pre><code>scores = {'철수': 82, '영희': 95, '민수': 78}  # scores 에 이름과 점수가 짝지어진 딕셔너리를 담아 주세요
+best_name = None                         # best_name 에 None 을 담아 주세요
+best_score = -1                          # best_score 에 -1 을 담아 주세요
+for name, score in scores.items():       # scores 의 (키, 값) 쌍을 하나씩 name 과 score 라고 부르며 아래를 반복해 주세요
+    if score &gt; best_score:               # 만약 score 가 best_score 보다 크면
+        best_name = name                 # best_name 에 name 을 담아 주세요
+        best_score = score               # best_score 에 score 를 담아 주세요
+print(best_name, best_score)             # best_name 과 best_score 를 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">영희 95</code></pre>
+    <p><code>items()</code>가 (키, 값) 튜플을 내주고 <code>for name, score in ...</code>가 그것을 풀어 담아요. 지금까지의 최고 점수보다 크면 이름과 점수를 바꿔요. 시작값 <code>-1</code>은 어떤 점수보다 작아서 첫 반복에서 반드시 바뀌어요.</p>
+    </details>
+
+    <h3 id="q9">문제 9</h3>
+    <p>이름 리스트 <code>['민수', '영희', '민수', '철수', '영희', '지현']</code>에서 중복을 지우되 <strong>처음 나온 순서는 유지</strong>한 리스트를 만드세요. (<code>set(names)</code>만 쓰면 순서가 보장되지 않아요.)</p>
+    <details>
+      <summary>정답·해설 보기 (문제 9)</summary>
+      <p><strong>정답 코드</strong></p>
+<pre><code>names = ['민수', '영희', '민수', '철수', '영희', '지현']  # names 에 이름 여섯 개의 리스트를 담아 주세요
+seen = set()                                  # seen 에 빈 세트를 담아 주세요
+unique = []                                   # unique 에 빈 리스트를 담아 주세요
+for n in names:                               # names 의 원소를 하나씩 n 이라고 부르며 아래를 반복해 주세요
+    if n not in seen:                         # 만약 n 이 seen 에 없으면
+        seen.add(n)                           # seen 에 n 을 더해 주세요
+        unique.append(n)                      # unique 의 맨 뒤에 n 을 붙여 주세요
+print(unique)                                 # unique 를 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">['민수', '영희', '철수', '지현']</code></pre>
+    <p>세트 <code>seen</code>은 "이미 본 이름인지" 확인하는 데만 쓰고, 순서는 리스트 <code>unique</code>가 맡아요. 처음 보는 이름일 때만 두 곳에 모두 넣어요. 세트는 순서가 없고 리스트는 중복을 막지 못하는 약점을 서로 보완한 거예요.</p>
+    </details>
+
+    <h3 id="q10">문제 10</h3>
+    <p>격자 좌표를 키로 하는 딕셔너리 <code>{(0, 0): 'start', (2, 3): 'goal'}</code>을 만들어 (2, 3)의 값을 출력하고, (0, 0)이 키로 있는지 확인하세요. 이어서 키를 <strong>리스트</strong> <code>[0, 0]</code>으로 쓰면 어떻게 되는지 확인하세요.</p>
+    <details>
+      <summary>정답·해설 보기 (문제 10)</summary>
+      <p><strong>정답 코드</strong></p>
+<pre><code>grid = {(0, 0): 'start', (2, 3): 'goal'}  # grid 에 좌표와 이름이 짝지어진 딕셔너리를 담아 주세요
+print(grid[(2, 3)])                       # grid 의 (2, 3) 자리에 담긴 것을 화면에 보여 주세요
+print((0, 0) in grid)                     # (0, 0) 이 grid 의 키에 있나요?
+try:                                      # 아래를 시도해 주세요
+    bad = {[0, 0]: 'start'}               # bad 에 [0, 0] 을 키로 쓴 딕셔너리를 담아 주세요
+except TypeError as e:                    # TypeError 가 나면 그 오류를 e 라고 부르며
+    print('TypeError:', e)                # 'TypeError:' 와 e 를 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">goal
+True
+TypeError: unhashable type: 'list'</code></pre>
+    <p>딕셔너리의 키는 바뀌지 않는 값이어야 해요. 튜플은 불변이라 키로 쓸 수 있고, 리스트는 가변이라 TypeError가 나요. 좌표처럼 "값 여러 개가 한 쌍"인 키가 필요할 때 튜플을 써요.</p>
+    </details>
+
+    <h2><span class="hl">누적</span></h2>
+
+    <h3 id="q11">문제 11</h3>
+    <p>1부터 20까지의 수 중 2의 배수 세트와 3의 배수 세트를 각각 만든 뒤, 둘 모두에 속하는 수(6의 배수)를 작은 것부터 출력하세요.</p>
+    <details>
+      <summary>정답·해설 보기 (문제 11)</summary>
+      <p><strong>정답 코드</strong></p>
+<pre><code>evens = set()                  # evens 에 빈 세트를 담아 주세요
+threes = set()                 # threes 에 빈 세트를 담아 주세요
+for n in range(1, 21):         # 1 부터 20 까지의 수를 하나씩 n 이라고 부르며 아래를 반복해 주세요
+    if n % 2 == 0:             # 만약 n 을 2 로 나눈 나머지가 0 이면
+        evens.add(n)           # evens 에 n 을 더해 주세요
+    if n % 3 == 0:             # 만약 n 을 3 으로 나눈 나머지가 0 이면
+        threes.add(n)          # threes 에 n 을 더해 주세요
+print(sorted(evens &amp; threes))  # evens 와 threes 의 교집합을 정렬해서 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">[6, 12, 18]</code></pre>
+    <p><code>range(1, 21)</code>은 1부터 20까지예요. <code>%</code>가 나머지라서 <code>n % 2 == 0</code>이 2의 배수예요. 두 <code>if</code>는 서로 독립이라 <code>elif</code>가 아니라 <code>if</code> 두 개로 써요. 교집합 <code>&amp;</code>로 두 조건을 모두 만족하는 수를 얻어요.</p>
+    </details>
+
+    <h3 id="q12">문제 12</h3>
+    <p>문자열을 받아 단어별 등장 횟수를 딕셔너리로 돌려주는 함수 <code>word_count(text)</code>를 만들고, <code>'to be or not to be'</code>로 불러 단어를 사전순으로 출력하세요.</p>
+    <details>
+      <summary>정답·해설 보기 (문제 12)</summary>
+      <p><strong>정답 코드</strong></p>
+<pre><code>def word_count(text):                      # text 를 받는 word_count 라는 동작을 만들어 주세요
+    counts = {}                            # counts 에 빈 딕셔너리를 담아 주세요
+    for w in text.split():                 # text 를 공백으로 자른 단어를 하나씩 w 라고 부르며 아래를 반복해 주세요
+        if w in counts:                    # 만약 w 가 counts 의 키에 있으면
+            counts[w] += 1                 # counts 의 w 자리에 1 을 더해 다시 담아 주세요
+        else:                              # 아니면
+            counts[w] = 1                  # counts 의 w 자리에 1 을 담아 주세요
+    return counts                          # counts 를 결과로 돌려주세요
+result = word_count('to be or not to be')  # result 에 word_count 에 'to be or not to be' 를 넣은 결과를 담아 주세요
+for w in sorted(result):                   # result 의 키를 정렬한 것을 하나씩 w 라고 부르며 아래를 반복해 주세요
+    print(w, result[w])                    # w 와 result 의 w 자리에 담긴 것을 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">be 2
+not 1
+or 1
+to 2</code></pre>
+    <p><code>split()</code>이 단어 리스트를 만들고, 문제 6과 같은 방식으로 세요. 함수가 딕셔너리를 <code>return</code>해요. <code>sorted(딕셔너리)</code>는 키를 정렬한 리스트를 돌려주니 사전순으로 돌 수 있어요.</p>
+    </details>
+
+    <h3 id="q13">문제 13</h3>
+    <p>숫자 리스트에서 <strong>최솟값과 최댓값</strong>을 튜플로 돌려주는 함수 <code>min_max(nums)</code>를 <code>min()</code>·<code>max()</code> 없이 만드세요. <code>[7, 3, 9, 1, 5]</code>는 두 변수에 풀어 받아 출력하고, <code>[4]</code>는 결과를 그대로 출력하세요.</p>
+    <details>
+      <summary>정답·해설 보기 (문제 13)</summary>
+      <p><strong>정답 코드</strong></p>
+<pre><code>def min_max(nums):                 # nums 를 받는 min_max 라는 동작을 만들어 주세요
+    low = nums[0]                  # low 에 nums 의 첫 원소를 담아 주세요
+    high = nums[0]                 # high 에 nums 의 첫 원소를 담아 주세요
+    for n in nums:                 # nums 의 원소를 하나씩 n 이라고 부르며 아래를 반복해 주세요
+        if n &lt; low:                # 만약 n 이 low 보다 작으면
+            low = n                # low 에 n 을 담아 주세요
+        if n &gt; high:               # 만약 n 이 high 보다 크면
+            high = n               # high 에 n 을 담아 주세요
+    return low, high               # low 와 high 를 결과로 돌려주세요
+lo, hi = min_max([7, 3, 9, 1, 5])  # min_max 에 [7, 3, 9, 1, 5] 를 넣은 결과를 lo 와 hi 에 나눠 담아 주세요
+print(lo, hi)                      # lo 와 hi 를 화면에 보여 주세요
+print(min_max([4]))                # min_max 에 [4] 를 넣은 결과를 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">1 9
+(4, 4)</code></pre>
+    <p>첫 원소로 <code>low</code>, <code>high</code>를 시작해 하나씩 비교하며 바꿔요. 원소가 하나뿐이면 최솟값과 최댓값이 같아요. <code>return low, high</code>가 튜플을 돌려주고 부르는 쪽에서 풀어 받아요.</p>
+    </details>
+
+    <h3 id="q14">문제 14</h3>
+    <p>전화번호부 프로그램을 만드세요. <code>add</code>는 이름과 번호를 저장하고, <code>find</code>는 이름으로 번호를 찾고 없으면 "없는 이름입니다."를 출력하고, <code>quit</code>는 "등록된 사람 수:"를 출력하고 끝내요. (번호는 예시용 가짜 값이에요.)</p>
+    <details>
+      <summary>정답·해설 보기 (문제 14)</summary>
+      <p><strong>정답 코드</strong></p>
+<pre><code>book = {}                               # book 에 빈 딕셔너리를 담아 주세요
+while True:                             # 아래를 끝없이 반복해 주세요
+    cmd = input('명령(add/find/quit): ')  # '명령(add/find/quit): ' 를 보여 주고 입력받은 것을 cmd 에 담아 주세요
+    if cmd == 'quit':                   # 만약 cmd 가 'quit' 와 같으면
+        break                           # 반복을 끝내 주세요
+    elif cmd == 'add':                  # 아니고 만약 cmd 가 'add' 와 같으면
+        name = input('이름: ')            # '이름: ' 을 보여 주고 입력받은 것을 name 에 담아 주세요
+        number = input('번호: ')          # '번호: ' 를 보여 주고 입력받은 것을 number 에 담아 주세요
+        book[name] = number             # book 의 name 자리에 number 를 담아 주세요
+    elif cmd == 'find':                 # 아니고 만약 cmd 가 'find' 와 같으면
+        name = input('이름: ')            # '이름: ' 을 보여 주고 입력받은 것을 name 에 담아 주세요
+        if name in book:                # 만약 name 이 book 의 키에 있으면
+            print(book[name])           # book 의 name 자리에 담긴 것을 화면에 보여 주세요
+        else:                           # 아니면
+            print('없는 이름입니다.')          # '없는 이름입니다.' 를 화면에 보여 주세요
+print('등록된 사람 수:', len(book))           # '등록된 사람 수:' 와 book 의 길이를 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">명령(add/find/quit): add
+이름: 철수
+번호: 010-1111-2222
+명령(add/find/quit): find
+이름: 철수
+010-1111-2222
+명령(add/find/quit): find
+이름: 영희
+없는 이름입니다.
+명령(add/find/quit): quit
+등록된 사람 수: 1</code></pre>
+    <p>이름을 키, 번호를 값으로 하는 딕셔너리가 전화번호부 역할을 해요. <code>while True</code>로 명령을 계속 받다가 <code>quit</code>에서 <code>break</code>해요. 같은 이름으로 <code>add</code>를 다시 하면 번호가 덮어써져요. 위 결과는 <code>add 철수</code> → <code>find 철수</code> → <code>find 영희</code> → <code>quit</code> 순서로 입력했을 때예요.</p>
+    </details>
+
+    <h2><span class="hl">마무리 체크</span></h2>
+    <ul>
+      <li><code>(5)</code>와 <code>(5,)</code>, <code>{}</code>와 <code>set()</code>의 차이를 말할 수 있나요? (문제 1)</li>
+      <li><code>a, b = b, a</code>와 <code>*rest</code>가 튜플을 어떻게 쓰는지 설명할 수 있나요? (문제 2, 5)</li>
+      <li>딕셔너리에서 추가·수정·삭제·키 확인을 코드로 쓸 수 있나요? (문제 3, 6, 14)</li>
+      <li><code>items()</code>를 <code>for 키, 값 in</code>으로 도는 코드를 쓸 수 있나요? (문제 8)</li>
+      <li><code>&amp;</code>, <code>|</code>, <code>-</code>가 각각 무엇을 구하는지 말할 수 있나요? (문제 7, 11)</li>
+      <li>세트의 약점(순서 없음)과 리스트의 약점(중복)을 함께 쓰는 방법을 알고 있나요? (문제 9)</li>
+      <li>딕셔너리 키가 될 수 있는 값과 없는 값을 구분할 수 있나요? (문제 10)</li>
+    </ul>
+
+    <h2><span class="hl">함께 보기</span></h2>
+    <ul>
+      <li><a href="beginner-python-ch04-part2-notes.html">튜플·딕셔너리·세트 정리</a> — 문법을 표로 모아 둔 글이에요.</li>
+      <li><a href="beginner-python-ch04-part2-answers.html">문제 해설 — 튜플·딕셔너리·세트 연습 문제</a> — 교재 연습 문제 해설이에요.</li>
+      <li><a href="beginner-python-ch04-part1-practice.html">4장 전반부 실습 문제 19개</a> — 자료형·문자열·리스트 실습이에요.</li>
+    </ul>
+
+    <h3 id="series-list">"왕초보 Python 4장 후반부" 시리즈</h3>
+    <a class="post-nav" href="beginner-python-ch04-part2-notes.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">튜플·딕셔너리·세트 정리</span>
+    </a>
+    <a class="post-nav" href="beginner-python-ch04-part2-answers.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">문제 해설 — 튜플·딕셔너리·세트 연습 문제를 자세히 뜯어본다</span>
+    </a>
+    <p class="post-date">(3) 실습 문제 14개 — 초급·중급·고급으로 튜플·딕셔너리·세트 코드 짜기 (이 글)</p>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
