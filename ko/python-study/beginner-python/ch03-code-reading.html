@@ -251,6 +251,9 @@ td.src { color: var(--ink-faint); font-size: 13px; white-space: nowrap; }
 
 code { font-family: var(--font-mono); font-size: 0.88em; background: var(--sunken); padding: 1px 5px; border-radius: 4px; }
 pre { margin: 0; }
+/* 코드 블록이 좁은 화면에서 격자 칸을 밀어 페이지를 가로로 넘치게 하지 않도록, 칸이 줄어들 수 있게 한다. */
+.intro { grid-template-columns: minmax(0, 1fr); }
+.level > *, .p-body, .p-body > *, .sol-body, .sol-body > *, .howto > *, .p-body li, .sol li, .howto li { min-width: 0; max-width: 100%; }
 pre code {
   display: block;
   background: var(--code-bg);
