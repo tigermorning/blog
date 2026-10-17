@@ -89,7 +89,9 @@ magu_print(1, 2)                     # magu_print 에 1, 2 만 넣어 주세요<
       </table>
     </div>
 
-    <h3>슬라이싱: 대괄호 안에 콜론(:)으로 일부분을 잘라낸다</h3>
+    <div class="side-note">
+      <p class="side-note-label"><span class="side-note-badge">보충</span>아래 코드가 낯설면: 슬라이싱, <code>+</code> 와 <code>,</code></p>
+      <h4>슬라이싱: 대괄호 안에 콜론(:)으로 일부분을 잘라낸다</h4>
     <p><code>p[시작:끝]</code> 처럼 <strong>콜론이 들어간 대괄호</strong>를 슬라이싱이라고 부른다. 시작 번호부터 <strong>끝 번호 바로 앞</strong>까지 잘라내고, 시작을 비우면 처음부터, 끝을 비우면 끝까지다. 번호는 0부터 센다.</p>
     <div class="table-scroll fill">
       <table>
@@ -104,7 +106,7 @@ magu_print(1, 2)                     # magu_print 에 1, 2 만 넣어 주세요<
     </div>
     <p>슬라이싱 결과는 원소가 하나뿐이어도 <strong>튜플 조각</strong>이다. 원래 <code>p</code> 는 그대로이고, 잘라낸 것은 새 튜플이다. 가운데 2 는 <code>p[:1]</code> 에도 <code>p[2:]</code> 에도 들어가지 않아서, 둘 사이에 <code>(5,)</code> 를 끼워 넣으면 2 가 5 로 바뀐 튜플이 된다.</p>
 
-    <h3><code>+</code> 와 <code>,</code> 는 하는 일이 다르다</h3>
+      <h4><code>+</code> 와 <code>,</code> 는 하는 일이 다르다</h4>
     <div class="table-scroll fill">
       <table>
         <thead><tr><th>기호</th><th>하는 일</th><th>a = (1, 2), b = (3,) 일 때</th></tr></thead>
@@ -116,6 +118,7 @@ magu_print(1, 2)                     # magu_print 에 1, 2 만 넣어 주세요<
     </div>
     <p>상자 <code>[1, 2]</code> 와 <code>[3]</code> 이 있다면, <code>+</code> 는 두 상자 속 물건을 한 상자에 쏟아 붓는 것이고 <code>,</code> 는 두 상자를 더 큰 상자에 그대로 넣는 것이다. 그래서 아래 <code>q</code> 는 <code>(1,) + (5,) + (3,)</code> 이 합쳐져 숫자 3개짜리가 되고, <code>r</code> 은 <code>(1,)</code>, <code>5</code>, <code>(3,)</code> 이 그대로 담겨 안에 튜플이 든 튜플이 된다.</p>
     <p><code>(5,)</code> 의 쉼표를 빼고 <code>(5)</code> 로 쓰면 튜플이 아니라 그냥 숫자 5 라서, <code>(1,) + 5</code> 처럼 튜플에 숫자를 더하는 꼴이 되어 오류가 난다.</p>
+    </div>
 <pre><code>p = (1, 2, 3)               # p 에 (1, 2, 3) 튜플을 담아 주세요
 q = p[:1] + (5,) + p[2:]   # q 에 p 의 앞 1개, (5,), p 의 2번부터 끝까지를 이어 붙인 튜플을 담아 주세요
 r = p[:1], 5, p[2:]         # r 에 p[:1], 5, p[2:] 세 값을 묶은 튜플을 담아 주세요
@@ -252,7 +255,7 @@ print(type({}), type(set()))       # {} 와 set() 의 자료형을 화면에 보
         <thead><tr><th></th><th>리스트</th><th>튜플</th><th>딕셔너리</th><th>세트</th></tr></thead>
         <tbody>
         <tr><td>만드는 기호</td><td><code>[ ]</code></td><td><code>( )</code> 또는 쉼표</td><td><code>{키: 값}</code></td><td><code>{값}</code> / <code>set()</code></td></tr>
-        <tr><td>값 찾는 법</td><td>인덱스</td><td>인덱스</td><td>키</td><td>인덱스로 못 찾음 (<code>in</code>으로 확인)</td></tr>
+        <tr><td>값 찾는 법</td><td>인덱스, 슬라이싱</td><td>인덱스, 슬라이싱</td><td>키</td><td>인덱스로 못 찾음 (<code>in</code>으로 확인)</td></tr>
         <tr><td>중복</td><td>허용</td><td>허용</td><td>키는 하나뿐</td><td>없음</td></tr>
         <tr><td>값 바꾸기</td><td>가능</td><td>불가</td><td>가능</td><td>원소 추가·삭제 가능</td></tr>
         </tbody>

@@ -1788,3 +1788,38 @@ details[open] > summary .tree-toggle-icon {
     min-width: var(--fig-min, 640px);
   }
 }
+
+/* 보충 설명 상자: 본문 흐름을 끊지 않는 곁가지 설명(슬라이싱 같은 선행 문법)을 담는다. */
+.side-note {
+  border: 1.5px dashed var(--muted);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--muted) 6%, transparent);
+  padding: 0.8rem 1.1rem 0.9rem;
+  margin: 1.2rem 0 1.5rem;
+  font-size: 0.95em;
+}
+
+.side-note-label {
+  margin: 0 0 0.6rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.side-note-badge {
+  display: inline-block;
+  margin-right: 0.45rem;
+  padding: 0.05rem 0.7rem;
+  border-radius: 999px;
+  background: var(--muted);
+  color: #fff;
+  line-height: 1.6;
+}
+
+.side-note h4 {
+  margin: 0.8rem 0 0.4rem;
+  font-size: 1em;
+}
+
+.side-note > :last-child {
+  margin-bottom: 0;
+}
