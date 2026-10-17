@@ -41,7 +41,7 @@
         <tr><td>슬라이싱</td><td><code>x[2:4]</code>는 2번 이상 4번 미만, <code>x[::-1]</code>은 뒤집기, <code>x[-3:]</code>은 끝 세 개다.</td></tr>
         <tr><td>문자열은 불변</td><td><code>x[0] = 'n'</code>은 TypeError이고, 새 문자열을 만들어 다시 붙인다(<code>'n' + x[1:]</code>).</td></tr>
         <tr><td><code>split</code> · <code>strip</code> · <code>replace</code></td><td>쪼개기, 양끝 공백 지우기, 바꾸기. 모두 새 문자열을 돌려주고 원본은 그대로다.</td></tr>
-        <tr><td>리스트 메서드</td><td><code>append</code> 끝에 추가, <code>insert(0, v)</code> 앞에 추가, <code>pop()</code> 끝을 빼서 돌려줌, <code>del l[i]</code> 삭제.</td></tr>
+        <tr><td>리스트 메서드</td><td><code>append</code> 끝에 추가, <code>insert(0, v)</code> 앞에 추가, <code>pop()</code> 끝을 빼서 돌려줌, <code>del a[i]</code> 삭제.</td></tr>
         <tr><td><code>in</code></td><td>리스트에서는 완전히 같은 원소만 찾고, 문자열에서는 부분 문자열도 찾는다.</td></tr>
         <tr><td><code>a[:]</code></td><td>리스트의 복사본이라 고쳐도 원본 <code>a</code>는 그대로다(<code>b = a</code>는 복사가 아니다).</td></tr>
         <tr><td>순회 중 <code>remove</code></td><td>돌고 있는 리스트를 고치면 원소를 건너뛰니, <code>L[:]</code> 복사본을 돈다.</td></tr>
