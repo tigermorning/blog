@@ -85,7 +85,7 @@ magu_print(1, 2)                     # magu_print 에 1, 2 만 넣어 주세요<
         <thead><tr><th>항목</th><th>내용</th></tr></thead>
         <tbody>
         <tr><td><code style="white-space:nowrap">p[1] = 5</code></td><td>튜플의 원소를 직접 바꾸면 TypeError<sup class="table-note-mark">※</sup></td></tr>
-        <tr><td>새로 만들기</td><td><code>p[:1] + (5,) + p[2:]</code> — 잘라서 이어 붙인 새 튜플</td></tr>
+        <tr><td>새로 만들기</td><td><code>p[:1] + (5,) + p[2:]</code> — 가운데 2 를 뺀 앞뒤 조각 사이에 5 를 끼워 이어 붙인 새 튜플</td></tr>
         <tr><td><code style="white-space:nowrap">p[:1], 5, p[2:]</code></td><td>이어 붙이는 게 아니라 세 값을 묶은 튜플이 된다</td></tr>
         </tbody>
       </table>
@@ -113,7 +113,6 @@ print(q)        # q 를 화면에 보여 주세요
 print(p)        # p 를 화면에 보여 주세요</code></pre>
 <pre class="out"><code class="nohighlight">(1, 2)
 (1, 2, 3)</code></pre>
-    <p>가운데 2 는 <code>p[:1]</code> 에도 <code>p[2:]</code> 에도 들어가지 않아서, 둘 사이에 <code>(5,)</code> 를 끼워 넣으면 2 가 5 로 바뀐 튜플이 된다.</p>
 
       <h4><code>+</code> 와 <code>,</code> 는 하는 일이 다르다</h4>
     <div class="table-scroll fill">
