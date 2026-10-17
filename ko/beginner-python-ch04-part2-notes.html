@@ -91,9 +91,8 @@ magu_print(1, 2)                     # magu_print 에 1, 2 만 넣어 주세요<
       </table>
     </div>
 
-    <div class="side-note">
-      <p class="side-note-label"><span class="side-note-badge">보충</span>바로 아래 코드(<code>q</code>, <code>r</code>)를 읽기 전에 알아야 할 것: 슬라이싱, <code>+</code> 와 <code>,</code></p>
-      <h4>슬라이싱: 대괄호 안에 콜론(:)으로 일부분을 잘라낸다</h4>
+    <details class="side-note">
+      <summary><span class="side-note-badge">보충</span>슬라이싱: 대괄호 안에 콜론(:)으로 일부분을 잘라낸다</summary>
     <p><code>p[시작:끝]</code> 처럼 <strong>콜론이 들어간 대괄호</strong>를 슬라이싱이라고 부른다. 시작 번호부터 <strong>끝 번호 바로 앞</strong>까지 잘라내고, 시작을 비우면 처음부터, 끝을 비우면 끝까지다. 번호는 0부터 센다.</p>
     <div class="table-scroll fill">
       <table>
@@ -113,8 +112,10 @@ print(q)        # q 를 화면에 보여 주세요
 print(p)        # p 를 화면에 보여 주세요</code></pre>
 <pre class="out"><code class="nohighlight">(1, 2)
 (1, 2, 3)</code></pre>
+    </details>
 
-      <h4><code>+</code> 와 <code>,</code> 는 하는 일이 다르다</h4>
+    <details class="side-note">
+      <summary><span class="side-note-badge">보충</span><code>+</code> 와 <code>,</code> 는 하는 일이 다르다</summary>
     <div class="table-scroll fill">
       <table>
         <thead><tr><th>기호</th><th>하는 일</th><th>a = (1, 2), b = (3,) 일 때</th></tr></thead>
@@ -126,7 +127,7 @@ print(p)        # p 를 화면에 보여 주세요</code></pre>
     </div>
     <p>상자 <code>[1, 2]</code> 와 <code>[3]</code> 이 있다면, <code>+</code> 는 두 상자 속 물건을 한 상자에 쏟아 붓는 것이고 <code>,</code> 는 두 상자를 더 큰 상자에 그대로 넣는 것이다. 그래서 아래 <code>q</code> 는 <code>(1,) + (5,) + (3,)</code> 이 합쳐져 숫자 3개짜리가 되고, <code>r</code> 은 <code>(1,)</code>, <code>5</code>, <code>(3,)</code> 이 그대로 담겨 안에 튜플이 든 튜플이 된다.</p>
     <p><code>(5,)</code> 의 쉼표를 빼고 <code>(5)</code> 로 쓰면 튜플이 아니라 그냥 숫자 5 라서, <code>(1,) + 5</code> 처럼 튜플에 숫자를 더하는 꼴이 되어 오류가 난다.</p>
-    </div>
+    </details>
 <pre><code>p = (1, 2, 3)               # p 에 (1, 2, 3) 튜플을 담아 주세요
 q = p[:1] + (5,) + p[2:]   # q 에 p 의 앞 1개, (5,), p 의 2번부터 끝까지를 이어 붙인 튜플을 담아 주세요
 r = p[:1], 5, p[2:]         # r 에 p[:1], 5, p[2:] 세 값을 묶은 튜플을 담아 주세요
