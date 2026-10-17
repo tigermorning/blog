@@ -1823,3 +1823,22 @@ details[open] > summary .tree-toggle-icon {
 .side-note > :last-child {
   margin-bottom: 0;
 }
+
+/* 표 아래 캡션: 표 안의 ※ 표시가 가리키는 추가 설명을 표 바로 밑에 붙인다. */
+table caption.table-note {
+  caption-side: bottom;
+  text-align: left;
+  padding: 0.6rem 0.2rem 0;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.table-note-mark {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+sup.table-note-mark {
+  font-size: 0.75em;
+  line-height: 0;
+}

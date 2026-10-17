@@ -57,10 +57,11 @@ print(not_tuple, type(not_tuple))  # not_tuple 과 not_tuple 의 자료형을 �
     <h3>값 맞바꾸기와 *rest</h3>
     <div class="table-scroll fill">
       <table>
+        <caption class="table-note"><span class="table-note-mark">※</span> <code>def magu_print(x, y, *rest)</code>에서는 <code>x</code>, <code>y</code>, <code>*rest</code>가 모두 매개변수이고, <code>*rest</code>는 앞 두 자리를 채우고 남은 인자를 전부 튜플로 받는 자리예요. 위키독스는 매개변수와 인자를 섞어 "인자(매개변수)"처럼 쓰기도 해서, 처음에는 같은 말로 읽어도 큰 문제는 없어요.</caption>
         <thead><tr><th>외울 것</th><th>내용</th></tr></thead>
         <tbody>
         <tr><td><code style="white-space:nowrap">c, d = d, c</code></td><td>오른쪽 튜플 <code>(d, c)</code>를 만들어 왼쪽 <code>c, d</code>에 풀어 담는다. 한 줄로 맞바꾼다</td></tr>
-        <tr><td><code>*rest</code></td><td>함수를 정의할 때 매개변수 앞에 <code>*</code>를 붙이면 남는 인자를 전부 튜플로 받는다</td></tr>
+        <tr><td><code>*rest</code></td><td>함수를 정의할 때 매개변수<sup class="table-note-mark">※</sup> 앞에 <code>*</code>를 붙이면 남는 인자를 전부 튜플로 받는다</td></tr>
         <tr><td>매개변수 / 인자</td><td><strong>매개변수</strong>는 함수를 만들 때 <code>def</code> 괄호 안에 적는 "받을 값의 자리 이름"(<code>def add(x, y)</code>의 <code>x</code>, <code>y</code>), <strong>인자</strong>는 함수를 부를 때 그 자리에 넘기는 실제 값(<code>add(3, 5)</code>의 <code>3</code>, <code>5</code>)이다</td></tr>
         </tbody>
       </table>
