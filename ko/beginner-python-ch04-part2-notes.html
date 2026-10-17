@@ -60,7 +60,8 @@ print(not_tuple, type(not_tuple))  # not_tuple 과 not_tuple 의 자료형을 �
         <thead><tr><th>외울 것</th><th>내용</th></tr></thead>
         <tbody>
         <tr><td><code style="white-space:nowrap">c, d = d, c</code></td><td>오른쪽 튜플 <code>(d, c)</code>를 만들어 왼쪽 <code>c, d</code>에 풀어 담는다. 한 줄로 맞바꾼다</td></tr>
-        <tr><td><code>*rest</code></td><td>함수를 정의할 때 매개변수<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup> 앞에 <code>*</code>를 붙이면 남는 인자<sup class="fn-ref"><a href="#fn1" id="fnref1b">1</a></sup>를 전부 튜플로 받는다</td></tr>
+        <tr><td><code>*rest</code></td><td>함수를 정의할 때 매개변수 앞에 <code>*</code>를 붙이면 남는 인자를 전부 튜플로 받는다</td></tr>
+        <tr><td>매개변수 / 인자</td><td><strong>매개변수</strong>는 함수를 만들 때 <code>def</code> 괄호 안에 적는 "받을 값의 자리 이름"(<code>def add(x, y)</code>의 <code>x</code>, <code>y</code>), <strong>인자</strong>는 함수를 부를 때 그 자리에 넘기는 실제 값(<code>add(3, 5)</code>의 <code>3</code>, <code>5</code>)이다</td></tr>
         </tbody>
       </table>
     </div>
@@ -268,12 +269,6 @@ print(type({}), type(set()))       # {} 와 set() 의 자료형을 화면에 보
       <li><a href="beginner-python-ch04-part1-notes.html">4장 전반부 정리(4.1~4.2)</a> — 자료형, 가변·불변, 문자열·리스트 같은 앞부분 내용이에요.</li>
       <li><a href="https://wikidocs.net/book/2" target="_blank" rel="noopener">왕초보를 위한 Python (위키독스)</a> — 이 글이 다룬 원래 교재예요.</li>
     </ul>
-
-    <section class="footnotes">
-      <ol>
-        <li id="fn1">매개변수와 인자 — 매개변수는 함수를 <code>def</code>로 만들 때 괄호 안에 적는 "받을 값의 자리 이름"이고, 인자는 함수를 부를 때 그 자리에 실제로 넘기는 값이에요. <code>def add(x, y)</code>의 <code>x</code>, <code>y</code>가 매개변수이고, <code>add(3, 5)</code>의 <code>3</code>, <code>5</code>가 인자예요. <code>def magu_print(x, y, *rest)</code>에서는 <code>x</code>, <code>y</code>, <code>*rest</code>가 모두 매개변수이고, <code>*rest</code>는 앞 두 자리를 채우고 남은 인자를 전부 튜플로 받는 자리예요. 위키독스는 둘을 섞어 "인자(매개변수)"처럼 쓰기도 해서, 처음에는 같은 말로 읽어도 큰 문제는 없어요. <a href="#fnref1">↩</a></li>
-      </ol>
-    </section>
 
     <a class="post-nav" href="beginner-python-ch04-part2-answers.html">
       <span class="post-nav-label">다음 편 →</span>
