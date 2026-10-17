@@ -88,8 +88,36 @@ magu_print(1, 2)                     # magu_print 에 1, 2 만 넣어 주세요<
         </tbody>
       </table>
     </div>
+
+    <h3>슬라이싱: 대괄호 안에 콜론(:)으로 일부분을 잘라낸다</h3>
+    <p><code>p[시작:끝]</code> 처럼 <strong>콜론이 들어간 대괄호</strong>를 슬라이싱이라고 부른다. 시작 번호부터 <strong>끝 번호 바로 앞</strong>까지 잘라내고, 시작을 비우면 처음부터, 끝을 비우면 끝까지다. 번호는 0부터 센다.</p>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>코드 (p = (1, 2, 3))</th><th>하는 일</th><th>결과</th></tr></thead>
+        <tbody>
+        <tr><td><code>p[0]</code></td><td>0번 원소 하나를 꺼냄 (콜론이 없으니 슬라이싱이 아님)</td><td><code>1</code></td></tr>
+        <tr><td><code>p[:1]</code></td><td>처음부터 0번까지 잘라냄</td><td><code>(1,)</code></td></tr>
+        <tr><td><code>p[1:]</code></td><td>1번부터 끝까지 잘라냄</td><td><code>(2, 3)</code></td></tr>
+        <tr><td><code>p[2:]</code></td><td>2번부터 끝까지 잘라냄</td><td><code>(3,)</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>슬라이싱 결과는 원소가 하나뿐이어도 <strong>튜플 조각</strong>이다. 원래 <code>p</code> 는 그대로이고, 잘라낸 것은 새 튜플이다. 가운데 2 는 <code>p[:1]</code> 에도 <code>p[2:]</code> 에도 들어가지 않아서, 둘 사이에 <code>(5,)</code> 를 끼워 넣으면 2 가 5 로 바뀐 튜플이 된다.</p>
+
+    <h3><code>+</code> 와 <code>,</code> 는 하는 일이 다르다</h3>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>기호</th><th>하는 일</th><th>a = (1, 2), b = (3,) 일 때</th></tr></thead>
+        <tbody>
+        <tr><td><code>a + b</code></td><td>두 튜플의 내용물을 꺼내 한 튜플로 합침</td><td><code>(1, 2, 3)</code> — 원소 3개</td></tr>
+        <tr><td><code>a, b</code></td><td>쉼표 앞뒤의 것을 각각 원소 하나로 담음</td><td><code>((1, 2), (3,))</code> — 원소 2개</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>상자 <code>[1, 2]</code> 와 <code>[3]</code> 이 있다면, <code>+</code> 는 두 상자 속 물건을 한 상자에 쏟아 붓는 것이고 <code>,</code> 는 두 상자를 더 큰 상자에 그대로 넣는 것이다. 그래서 아래 <code>q</code> 는 <code>(1,) + (5,) + (3,)</code> 이 합쳐져 숫자 3개짜리가 되고, <code>r</code> 은 <code>(1,)</code>, <code>5</code>, <code>(3,)</code> 이 그대로 담겨 안에 튜플이 든 튜플이 된다.</p>
+    <p><code>(5,)</code> 의 쉼표를 빼고 <code>(5)</code> 로 쓰면 튜플이 아니라 그냥 숫자 5 라서, <code>(1,) + 5</code> 처럼 튜플에 숫자를 더하는 꼴이 되어 오류가 난다.</p>
 <pre><code>p = (1, 2, 3)               # p 에 (1, 2, 3) 튜플을 담아 주세요
-q = p[:1] + (5,) + p[2:]    # q 에 p 의 앞 1개, (5,), p 의 2번부터 끝까지를 이어 붙인 튜플을 담아 주세요
+q = p[:1] + (5,) + p[2:]   # q 에 p 의 앞 1개, (5,), p 의 2번부터 끝까지를 이어 붙인 튜플을 담아 주세요
 r = p[:1], 5, p[2:]         # r 에 p[:1], 5, p[2:] 세 값을 묶은 튜플을 담아 주세요
 print(q)                    # q 를 화면에 보여 주세요
 print(r)                    # r 을 화면에 보여 주세요
