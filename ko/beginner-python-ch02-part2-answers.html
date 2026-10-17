@@ -38,11 +38,11 @@
     <table>
       <thead><tr><th>개념</th><th>한 줄 정리</th></tr></thead>
       <tbody>
-        <tr><td><code>A and B</code></td><td>둘 다 참일 때만 참이고, 왼쪽이 거짓이면 오른쪽은 계산하지 않는다.</td></tr>
-        <tr><td><code>for x in 리스트:</code></td><td>원소를 앞에서부터 하나씩 x에 꺼내 몸통을 되풀이한다.</td></tr>
-        <tr><td><code>range(len(cart))</code></td><td>인덱스 0부터 개수-1까지 만들고 개수 자신은 빠진다.</td></tr>
-        <tr><td><code>total += v</code></td><td><code>total = total + v</code>이고, 반복마다 누적된다.</td></tr>
-        <tr><td><code>for-else</code></td><td>else는 break 없이 끝까지 돌았을 때만 실행된다.</td></tr>
+        <tr><td><code style="white-space:nowrap">A and B</code></td><td>둘 다 참일 때만 참이고, 왼쪽이 거짓이면 오른쪽은 계산하지 않는다.</td></tr>
+        <tr><td><code style="white-space:nowrap">for x in 리스트:</code></td><td>원소를 앞에서부터 하나씩 x에 꺼내 몸통을 되풀이한다.</td></tr>
+        <tr><td><code style="white-space:nowrap">range(len(cart))</code></td><td>인덱스 0부터 개수-1까지 만들고 개수 자신은 빠진다.</td></tr>
+        <tr><td><code style="white-space:nowrap">total += v</code></td><td><code>total = total + v</code>이고, 반복마다 누적된다.</td></tr>
+        <tr><td><code style="white-space:nowrap">for-else</code></td><td>else는 break 없이 끝까지 돌았을 때만 실행된다.</td></tr>
         <tr><td>변수 추적</td><td>반복마다 바뀌는 값을 한 줄씩 표로 적으면 결과가 보인다.</td></tr>
       </tbody>
     </table>
@@ -87,7 +87,7 @@ else:                                   # 그 밖의 경우에는
       <tbody>
         <tr>
           <td class="choice-bad">
-            <code>if name in members:</code>과 <code>if points &gt;= 1000:</code>을 <strong>따로따로</strong> 쓰고, 두 번째 if의 결과로 앞의 판정을 덮어씀 → 명단에 없어도 포인트만 높으면 VIP로 잘못 판정
+            <code style="white-space:nowrap">if name in members:</code>과 <code style="white-space:nowrap">if points &gt;= 1000:</code>을 <strong>따로따로</strong> 쓰고, 두 번째 if의 결과로 앞의 판정을 덮어씀 → 명단에 없어도 포인트만 높으면 VIP로 잘못 판정
           </td>
           <td class="choice-good">
             <code>if name in members and points &gt;= 1000:</code>처럼 <strong>한 문장</strong>으로 묶음 → 두 조건이 동시에 참일 때만 통과
@@ -180,7 +180,7 @@ else:                               # 끝까지 다 돌았으면(중간에 멈�
       <tbody>
         <tr>
           <td class="choice-bad">
-            <code>found = False</code>를 미리 만들고, 찾으면 <code>found = True</code>로 바꾼 뒤, 반복이 끝나고 나서 <code>if found:</code>로 따로 검사 → 코드가 한 줄 더 길고, <code>found = True</code>로 바꾸는 줄을 깜빡하면 찾았는데도 "없음"이 나오는 조용한 버그가 생김
+            <code style="white-space:nowrap">found = False</code>를 미리 만들고, 찾으면 <code style="white-space:nowrap">found = True</code>로 바꾼 뒤, 반복이 끝나고 나서 <code style="white-space:nowrap">if found:</code>로 따로 검사 → 코드가 한 줄 더 길고, <code style="white-space:nowrap">found = True</code>로 바꾸는 줄을 깜빡하면 찾았는데도 "없음"이 나오는 조용한 버그가 생김
           </td>
           <td class="choice-good">
             <code>for ... else:</code>를 쓰면 break를 못 타고 끝까지 돈 경우를 파이썬이 알아서 판단해 줌 → <code>found</code> 변수 자체가 필요 없고, 깜빡할 지점도 하나 줄어듦

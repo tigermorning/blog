@@ -38,8 +38,8 @@
     <table>
       <thead><tr><th>줄 모양</th><th>누가 쓴 것</th></tr></thead>
       <tbody>
-        <tr><td><code>&gt;&gt;&gt; type(7)</code></td><td>내가 입력한 코드 (<code>#</code> 뒤 주석은 파이썬이 읽지 않음)</td></tr>
-        <tr><td><code>&lt;class 'int'&gt;</code></td><td>파이썬이 돌려준 답. "7 은 int(정수) 종류"라는 뜻</td></tr>
+        <tr><td><code style="white-space:nowrap">&gt;&gt;&gt; type(7)</code></td><td>내가 입력한 코드 (<code>#</code> 뒤 주석은 파이썬이 읽지 않음)</td></tr>
+        <tr><td><code style="white-space:nowrap">&lt;class 'int'&gt;</code></td><td>파이썬이 돌려준 답. "7 은 int(정수) 종류"라는 뜻</td></tr>
       </tbody>
     </table>
     <p><strong>답 읽는 법:</strong> <code>&lt;class 'int'&gt;</code> 는 "자료형은 <code>int</code>" 라는 뜻이다. 앞의 <code>class</code> 와 바깥의 <code>&lt; &gt;</code> 는 파이썬이 자료형을 보여 줄 때 늘 붙이는 모양이라, 따옴표 안의 이름만 읽으면 된다.</p>
@@ -75,6 +75,7 @@
     <p><strong>핵심 한 줄:</strong> 퀴즈 답, 가변 객체는 list.</p>
 
     <h2><span class="hl">3. 인덱싱 · 슬라이싱</span></h2>
+    <p><strong>인덱싱</strong>은 번호로 원소 <strong>하나</strong>를 꺼내는 것(<code>x[0]</code>), <strong>슬라이싱</strong>은 콜론(<code>:</code>)으로 <strong>일부분을 잘라내는 것</strong>(<code>x[2:4]</code>)이다. 번호는 0부터 세고, 슬라이싱은 끝 번호 바로 앞까지 자른다.</p>
 <pre><code># x[시작:끝] 은 끝 앞까지
 &gt;&gt;&gt; x = 'python'  # x 에 문자열 'python' 을 담아 주세요
 &gt;&gt;&gt; x[0]          # x 의 0번 원소는 무엇인가요?
@@ -195,15 +196,15 @@ True
     <table>
       <thead><tr><th>개념</th><th>공식</th></tr></thead>
       <tbody>
-        <tr><td><code>type(값)</code></td><td>자료형 확인</td></tr>
+        <tr><td><code style="white-space:nowrap">type(값)</code></td><td>자료형 확인</td></tr>
         <tr><td>가변 / 불변</td><td>가변은 <code>list</code>, 불변은 <code>int</code>·<code>str</code>·<code>tuple</code></td></tr>
-        <tr><td><code>x[i]</code>, <code>x[a:b]</code></td><td>인덱스는 0부터, 슬라이스는 b 앞까지</td></tr>
-        <tr><td><code>x[::-1]</code></td><td>뒤집기</td></tr>
+        <tr><td><code style="white-space:nowrap">x[i]</code>, <code style="white-space:nowrap">x[a:b]</code></td><td>인덱스는 0부터, 슬라이스는 b 앞까지</td></tr>
+        <tr><td><code style="white-space:nowrap">x[::-1]</code></td><td>뒤집기</td></tr>
         <tr><td>문자열 메서드</td><td>원본은 그대로, 새 문자열을 돌려줌</td></tr>
-        <tr><td><code>append</code> · <code>sort</code> · <code>insert</code> · <code>del</code> · <code>pop</code></td><td>리스트를 직접 바꿈</td></tr>
-        <tr><td><code>list()</code> · <code>str()</code> · <code>int()</code> · <code>float()</code></td><td>자료형 변환</td></tr>
-        <tr><td><code>값 in 리스트</code></td><td>완전히 같은 원소가 있나</td></tr>
-        <tr><td><code>a[:]</code></td><td>리스트 복사본</td></tr>
+        <tr><td><code style="white-space:nowrap">append</code> · <code style="white-space:nowrap">sort</code> · <code style="white-space:nowrap">insert</code> · <code style="white-space:nowrap">del</code> · <code style="white-space:nowrap">pop</code></td><td>리스트를 직접 바꿈</td></tr>
+        <tr><td><code style="white-space:nowrap">list()</code> · <code style="white-space:nowrap">str()</code> · <code style="white-space:nowrap">int()</code> · <code style="white-space:nowrap">float()</code></td><td>자료형 변환</td></tr>
+        <tr><td><code style="white-space:nowrap">값 in 리스트</code></td><td>완전히 같은 원소가 있나</td></tr>
+        <tr><td><code style="white-space:nowrap">a[:]</code></td><td>리스트 복사본</td></tr>
       </tbody>
     </table>
 

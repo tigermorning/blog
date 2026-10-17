@@ -61,7 +61,7 @@ print(not_tuple, type(not_tuple))  # not_tuple 과 not_tuple 의 자료형을 �
         <thead><tr><th>항목</th><th>내용</th></tr></thead>
         <tbody>
         <tr><td><code style="white-space:nowrap">c, d = d, c</code></td><td>오른쪽 튜플 <code>(d, c)</code>를 만들어 왼쪽 <code>c, d</code>에 풀어 담는다. 한 줄로 맞바꾼다</td></tr>
-        <tr><td><code>*rest</code></td><td>함수를 정의할 때 매개변수<sup class="table-note-mark">※</sup> 앞에 <code>*</code>를 붙이면 남는 인자를 전부 튜플로 받는다</td></tr>
+        <tr><td><code style="white-space:nowrap">*rest</code></td><td>함수를 정의할 때 매개변수<sup class="table-note-mark">※</sup> 앞에 <code>*</code>를 붙이면 남는 인자를 전부 튜플로 받는다</td></tr>
         </tbody>
       </table>
     </div>
@@ -81,7 +81,7 @@ magu_print(1, 2)                     # magu_print 에 1, 2 만 넣어 주세요<
     <h3>튜플은 바꿀 수 없으니 잘라 붙인다</h3>
     <div class="table-scroll fill">
       <table>
-        <caption class="table-note"><span class="table-note-mark">※</span> <strong>리스트와 비교</strong> — 리스트 <code>nums = [1, 2, 3]</code>은 <code>nums[1] = 5</code>로 그 자리에서 바로 바뀌어 <code>[1, 5, 3]</code>이 된다(가변). 튜플은 이게 안 되니(불변) 잘라 붙여 <strong>새 튜플</strong>을 만들어야 한다. 리스트도 <code>nums[:1] + [5] + nums[2:]</code>로 잘라 붙이면 새 리스트가 나오고 원래 <code>nums</code>는 그대로다. 정리하면 <strong>리스트는 직접 고치고, 튜플은 새로 만든다.</strong></caption>
+        <caption class="table-note"><span class="table-note-mark">※</span> <strong>리스트와 비교</strong> — 리스트 <code>nums = [1, 2, 3]</code>은 <code>nums[1] = 5</code>로 그 자리에서 바로 바뀌어 <code>[1, 5, 3]</code>이 된다(가변). 튜플은 이게 안 되니(불변) 잘라 붙여 <strong>새 튜플</strong>을 만들어야 한다. 정리하면 <strong>리스트는 직접 고치고, 튜플은 새로 만든다.</strong></caption>
         <thead><tr><th>항목</th><th>내용</th></tr></thead>
         <tbody>
         <tr><td><code style="white-space:nowrap">p[1] = 5</code></td><td>튜플의 원소를 직접 바꾸면 TypeError<sup class="table-note-mark">※</sup></td></tr>
@@ -99,10 +99,10 @@ magu_print(1, 2)                     # magu_print 에 1, 2 만 넣어 주세요<
       <table>
         <thead><tr><th>코드 (p = (1, 2, 3))</th><th>하는 일</th><th>결과</th></tr></thead>
         <tbody>
-        <tr><td><code>p[0]</code></td><td>0번 원소 하나를 꺼냄 (콜론이 없으니 슬라이싱이 아님)</td><td><code>1</code></td></tr>
-        <tr><td><code>p[:1]</code></td><td>처음부터 0번까지 잘라냄</td><td><code>(1,)</code></td></tr>
-        <tr><td><code>p[1:]</code></td><td>1번부터 끝까지 잘라냄</td><td><code>(2, 3)</code></td></tr>
-        <tr><td><code>p[2:]</code></td><td>2번부터 끝까지 잘라냄</td><td><code>(3,)</code></td></tr>
+        <tr><td><code style="white-space:nowrap">p[0]</code></td><td>0번 원소 하나를 꺼냄 (콜론이 없으니 슬라이싱이 아님)</td><td><code>1</code></td></tr>
+        <tr><td><code style="white-space:nowrap">p[:1]</code></td><td>처음부터 0번까지 잘라냄</td><td><code>(1,)</code></td></tr>
+        <tr><td><code style="white-space:nowrap">p[1:]</code></td><td>1번부터 끝까지 잘라냄</td><td><code>(2, 3)</code></td></tr>
+        <tr><td><code style="white-space:nowrap">p[2:]</code></td><td>2번부터 끝까지 잘라냄</td><td><code>(3,)</code></td></tr>
         </tbody>
       </table>
     </div>
@@ -114,7 +114,7 @@ magu_print(1, 2)                     # magu_print 에 1, 2 만 넣어 주세요<
         <thead><tr><th>기호</th><th>하는 일</th><th>a = (1, 2), b = (3,) 일 때</th></tr></thead>
         <tbody>
         <tr><td><code style="white-space:nowrap">a + b</code></td><td>두 튜플의 내용물을 꺼내 한 튜플로 합침</td><td><code>(1, 2, 3)</code> — 원소 3개</td></tr>
-        <tr><td><code>a, b</code></td><td>쉼표 앞뒤의 것을 각각 원소 하나로 담음</td><td><code>((1, 2), (3,))</code> — 원소 2개</td></tr>
+        <tr><td><code style="white-space:nowrap">a, b</code></td><td>쉼표 앞뒤의 것을 각각 원소 하나로 담음</td><td><code>((1, 2), (3,))</code> — 원소 2개</td></tr>
         </tbody>
       </table>
     </div>

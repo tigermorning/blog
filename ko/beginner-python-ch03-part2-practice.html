@@ -476,9 +476,9 @@ print('함수 밖:', x)      # '함수 밖:' 과 x 를 화면에 보여 주세�
       <table>
         <thead><tr><th>시점</th><th>전역 x</th><th>지역 x</th></tr></thead>
         <tbody>
-          <tr><td><code>x = 10</code> 직후</td><td>10</td><td>(없음)</td></tr>
-          <tr><td><code>change()</code> 안, <code>x = 99</code> 직후</td><td>10</td><td>99</td></tr>
-          <tr><td><code>change()</code>가 끝난 뒤</td><td>10</td><td>사라짐</td></tr>
+          <tr><td><code style="white-space:nowrap">x = 10</code> 직후</td><td>10</td><td>(없음)</td></tr>
+          <tr><td><code style="white-space:nowrap">change()</code> 안, <code style="white-space:nowrap">x = 99</code> 직후</td><td>10</td><td>99</td></tr>
+          <tr><td><code style="white-space:nowrap">change()</code>가 끝난 뒤</td><td>10</td><td>사라짐</td></tr>
         </tbody>
       </table>
     </div>
@@ -495,7 +495,7 @@ print(y)     # y 를 화면에 보여 주세요</code></pre>
       <tbody>
         <tr>
           <td class="choice-bad">
-            함수 안에서 <code>x = 99</code>만 쓰고 "전역 x가 바뀌었겠지" 하고 기대함 → 밖의 값은 그대로라서 결과가 어긋남
+            함수 안에서 <code style="white-space:nowrap">x = 99</code>만 쓰고 "전역 x가 바뀌었겠지" 하고 기대함 → 밖의 값은 그대로라서 결과가 어긋남
           </td>
           <td class="choice-good">
             함수가 값을 밖으로 보내야 하면 <code>return</code>으로 돌려주고 밖에서 받음 → 값이 어디서 바뀌는지 눈에 보임
@@ -556,8 +556,8 @@ print('최종:', count)         # '최종:' 과 count 를 화면에 보여 주�
       <table>
         <thead><tr><th>호출</th><th>n</th><th>계산 전 count</th><th>계산 후 count</th></tr></thead>
         <tbody>
-          <tr><td><code>add(3)</code></td><td>3</td><td>0</td><td>3</td></tr>
-          <tr><td><code>add(4)</code></td><td>4</td><td>3</td><td>7</td></tr>
+          <tr><td><code style="white-space:nowrap">add(3)</code></td><td>3</td><td>0</td><td>3</td></tr>
+          <tr><td><code style="white-space:nowrap">add(4)</code></td><td>4</td><td>3</td><td>7</td></tr>
         </tbody>
       </table>
     </div>
@@ -576,7 +576,7 @@ add(3)                 # add 에 3 을 넣어 실행해 주세요</code></pre>
       <tbody>
         <tr>
           <td class="choice-bad">
-            <code>global</code> 없이 <code>count = count + n</code>을 씀 → <code>UnboundLocalError</code>
+            <code style="white-space:nowrap">global</code> 없이 <code style="white-space:nowrap">count = count + n</code>을 씀 → <code style="white-space:nowrap">UnboundLocalError</code>
           </td>
           <td class="choice-good">
             바꿀 전역 이름 앞에 <code>global count</code>를 선언함 → 같은 count를 읽고 쓰게 됨
@@ -625,9 +625,9 @@ print(square(square(2)))           # square 에 2 를 넣고 그 값을 다시 s
       <table>
         <thead><tr><th>식</th><th>계산 과정</th><th>출력</th></tr></thead>
         <tbody>
-          <tr><td><code>(lambda a, b: a + b)(3, 4)</code></td><td>3 + 4</td><td>7</td></tr>
-          <tr><td><code>square(5)</code></td><td>5 * 5</td><td>25</td></tr>
-          <tr><td><code>square(square(2))</code></td><td>안쪽 <code>square(2)</code> = 4 → <code>square(4)</code> = 16</td><td>16</td></tr>
+          <tr><td><code style="white-space:nowrap">(lambda a, b: a + b)(3, 4)</code></td><td>3 + 4</td><td>7</td></tr>
+          <tr><td><code style="white-space:nowrap">square(5)</code></td><td>5 * 5</td><td>25</td></tr>
+          <tr><td><code style="white-space:nowrap">square(square(2))</code></td><td>안쪽 <code>square(2)</code> = 4 → <code>square(4)</code> = 16</td><td>16</td></tr>
         </tbody>
       </table>
     </div>
@@ -699,7 +699,7 @@ print(r)                          # r 을 화면에 보여 주세요</code></pre
       <tbody>
         <tr>
           <td class="choice-bad">
-            <code>print(map(...))</code>처럼 바로 출력함 → <code>&lt;map object at 0x...&gt;</code>만 보임
+            <code style="white-space:nowrap">print(map(...))</code>처럼 바로 출력함 → <code style="white-space:nowrap">&lt;map object at 0x...&gt;</code>만 보임
           </td>
           <td class="choice-good">
             <code>print(list(map(...)))</code>로 감쌈 → 결과 리스트가 보임
@@ -777,7 +777,7 @@ cba</code></pre>
       <tbody>
         <tr>
           <td class="choice-bad">
-            reduce의 <code>a</code>와 <code>b</code>가 각각 뭔지 따져 보지 않고 결과를 짐작함 → 순서가 바뀌면 틀림
+            reduce의 <code style="white-space:nowrap">a</code>와 <code style="white-space:nowrap">b</code>가 각각 뭔지 따져 보지 않고 결과를 짐작함 → 순서가 바뀌면 틀림
           </td>
           <td class="choice-good">
             반복마다 a·b를 표로 적어 봄 → 결과가 한 줄씩 보임

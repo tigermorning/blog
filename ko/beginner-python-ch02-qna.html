@@ -33,27 +33,27 @@
     <table>
       <thead><tr><th>개념</th><th>한 줄 정리</th></tr></thead>
       <tbody>
-        <tr><td><code>while 조건:</code></td><td>조건이 참인 동안 들여쓴 블록을 되풀이한다.</td></tr>
+        <tr><td><code style="white-space:nowrap">while 조건:</code></td><td>조건이 참인 동안 들여쓴 블록을 되풀이한다.</td></tr>
         <tr><td>while과 if</td><td><code>if</code>는 한 번, <code>while</code>은 참인 동안 계속 실행한다.</td></tr>
         <tr><td>무한 루프</td><td>조건에 쓰인 값이 반복 중 안 바뀌면 끝나지 않는다.</td></tr>
-        <tr><td>카운터 <code>i</code></td><td>횟수를 세는 변수이고, 출력할 값 <code>num</code>과는 따로 둔다.</td></tr>
-        <tr><td><code>print('', num)</code></td><td>쉼표 사이에는 공백이 들어가서 앞에 한 칸이 생긴다.</td></tr>
-        <tr><td><code>i &lt;= num</code></td><td>1부터 num까지 num도 포함해서 돌 때 쓴다.</td></tr>
+        <tr><td>카운터 <code style="white-space:nowrap">i</code></td><td>횟수를 세는 변수이고, 출력할 값 <code>num</code>과는 따로 둔다.</td></tr>
+        <tr><td><code style="white-space:nowrap">print('', num)</code></td><td>쉼표 사이에는 공백이 들어가서 앞에 한 칸이 생긴다.</td></tr>
+        <tr><td><code style="white-space:nowrap">i &lt;= num</code></td><td>1부터 num까지 num도 포함해서 돌 때 쓴다.</td></tr>
         <tr><td>부동소수점 오차</td><td>0.6 같은 수는 2진수로 딱 떨어지지 않아 곱할수록 오차가 쌓인다.</td></tr>
-        <tr><td><code>round(x, 4)</code></td><td>화면에 보일 자릿수만 정리하고 저장된 값은 안 고친다.</td></tr>
+        <tr><td><code style="white-space:nowrap">round(x, 4)</code></td><td>화면에 보일 자릿수만 정리하고 저장된 값은 안 고친다.</td></tr>
         <tr><td>줄어드는 카운터</td><td><code>count &gt; 0</code>에 <code>count - 1</code>처럼 줄여도 while은 된다.</td></tr>
-        <tr><td><code>if / elif / else</code></td><td>위에서부터 검사해 처음 참인 블록 하나만 실행한다.</td></tr>
-        <tr><td><code>=</code>와 <code>==</code></td><td><code>=</code>는 대입, <code>==</code>는 같은지 비교다.</td></tr>
-        <tr><td><code>while True:</code></td><td>항상 참이라 무한히 돌고, <code>break</code>가 있어야 끝난다.</td></tr>
+        <tr><td><code style="white-space:nowrap">if / elif / else</code></td><td>위에서부터 검사해 처음 참인 블록 하나만 실행한다.</td></tr>
+        <tr><td><code style="white-space:nowrap">=</code>와 <code style="white-space:nowrap">==</code></td><td><code>=</code>는 대입, <code>==</code>는 같은지 비교다.</td></tr>
+        <tr><td><code style="white-space:nowrap">while True:</code></td><td>항상 참이라 무한히 돌고, <code>break</code>가 있어야 끝난다.</td></tr>
         <tr><td>elif 순서</td><td><code>&lt;=</code>는 작은 값부터, <code>&gt;=</code>는 큰 값부터 쓴다.</td></tr>
-        <tr><td><code>pass</code></td><td>블록에 할 일이 없을 때 자리만 채우는 키워드다.</td></tr>
+        <tr><td><code style="white-space:nowrap">pass</code></td><td>블록에 할 일이 없을 때 자리만 채우는 키워드다.</td></tr>
         <tr><td>내장 함수 이름</td><td><code>sum</code>, <code>min</code>, <code>max</code>를 변수로 쓰면 원래 함수를 못 부른다.</td></tr>
         <tr><td>중첩 if</td><td>조건이 층층이 있으면 if 안에 if를 넣는다.</td></tr>
-        <tr><td><code>f'{year}'</code></td><td><code>f</code>를 붙인 문자열의 <code>{ }</code> 안 변수는 값으로 바뀐다.</td></tr>
-        <tr><td><code>split()</code></td><td>문자열을 공백으로 잘라 리스트로 만든다.</td></tr>
-        <tr><td><code>a, b = map(int, ...)</code></td><td>리스트 원소를 모두 정수로 바꿔 두 변수에 한 번에 담는다.</td></tr>
-        <tr><td><code>min &lt;= t &lt;= max</code></td><td>부등호를 이어 써서 범위를 한 번에 검사한다.</td></tr>
-        <tr><td><code>-999</code> 같은 값</td><td>입력이 끝났다는 신호로 약속한 값(센티널)이다.</td></tr>
+        <tr><td><code style="white-space:nowrap">f'{year}'</code></td><td><code>f</code>를 붙인 문자열의 <code>{ }</code> 안 변수는 값으로 바뀐다.</td></tr>
+        <tr><td><code style="white-space:nowrap">split()</code></td><td>문자열을 공백으로 잘라 리스트로 만든다.</td></tr>
+        <tr><td><code style="white-space:nowrap">a, b = map(int, ...)</code></td><td>리스트 원소를 모두 정수로 바꿔 두 변수에 한 번에 담는다.</td></tr>
+        <tr><td><code style="white-space:nowrap">min &lt;= t &lt;= max</code></td><td>부등호를 이어 써서 범위를 한 번에 검사한다.</td></tr>
+        <tr><td><code style="white-space:nowrap">-999</code> 같은 값</td><td>입력이 끝났다는 신호로 약속한 값(센티널)이다.</td></tr>
       </tbody>
     </table>
     <p>모든 코드는 Python 3.14에서 직접 실행해 결과를 확인했어요. 코드 블록의 <code>&gt;&gt;&gt;</code>는 파이썬 대화형 셸의 입력 표시라서 따라 치지 않아요. 1장~2.2.6절 범위로 따로 만든 <a href="python-study/beginner-python/ch02-code-reading.html">2장 코드 읽기 실습</a>도 있어요.</p>
@@ -133,8 +133,8 @@ while i &lt; num:      # i 가 num 보다 작은 동안 아래를 반복해 주�
     <table>
       <thead><tr><th>변수</th><th>역할</th><th>반복 중 값이 바뀌나</th></tr></thead>
       <tbody>
-        <tr><td><code>num</code></td><td>화면에 찍을 값 (입력받은 그 수 자체)</td><td>안 바뀜</td></tr>
-        <tr><td><code>i</code></td><td>몇 번 돌았는지 세는 <strong>카운터</strong></td><td>매번 1씩 늘어남</td></tr>
+        <tr><td><code style="white-space:nowrap">num</code></td><td>화면에 찍을 값 (입력받은 그 수 자체)</td><td>안 바뀜</td></tr>
+        <tr><td><code style="white-space:nowrap">i</code></td><td>몇 번 돌았는지 세는 <strong>카운터</strong></td><td>매번 1씩 늘어남</td></tr>
       </tbody>
     </table>
     <p>입력이 <code>3</code>일 때 흐름을 표로 그리면 이래요.</p>
@@ -198,7 +198,7 @@ while i &lt;= num:      # i 가 num 이하인 동안 아래를 반복해 주세�
       <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
       <tbody>
         <tr>
-          <td class="choice-bad">1부터 num까지 다 돌리려고 <code>i = 1</code>로 시작하고 조건을 <code>i &lt; num</code>으로 쓴다 → num 줄이 통째로 빠져요(입력 3이면 1, 2만 나옴).</td>
+          <td class="choice-bad">1부터 num까지 다 돌리려고 <code style="white-space:nowrap">i = 1</code>로 시작하고 조건을 <code style="white-space:nowrap">i &lt; num</code>으로 쓴다 → num 줄이 통째로 빠져요(입력 3이면 1, 2만 나옴).</td>
           <td class="choice-good"><code>&lt;=</code>를 쓴다 → num까지 포함돼서 3줄이 정확히 나와요.</td>
         </tr>
       </tbody>
@@ -312,8 +312,8 @@ c is equal to d</code></pre>
     <table>
       <thead><tr><th>기호</th><th>뜻</th><th>예</th></tr></thead>
       <tbody>
-        <tr><td><code>=</code></td><td>오른쪽 값을 왼쪽 이름에 <strong>대입</strong>하기</td><td><code>watch = 1000000</code> → watch에 백만을 넣어라</td></tr>
-        <tr><td><code>==</code></td><td>양쪽 값이 <strong>같은지 비교</strong>하기 (참/거짓을 돌려줌)</td><td><code>c == d</code> → c와 d가 같은가?</td></tr>
+        <tr><td><code style="white-space:nowrap">=</code></td><td>오른쪽 값을 왼쪽 이름에 <strong>대입</strong>하기</td><td><code>watch = 1000000</code> → watch에 백만을 넣어라</td></tr>
+        <tr><td><code style="white-space:nowrap">==</code></td><td>양쪽 값이 <strong>같은지 비교</strong>하기 (참/거짓을 돌려줌)</td><td><code>c == d</code> → c와 d가 같은가?</td></tr>
       </tbody>
     </table>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요</span></p>
@@ -426,7 +426,7 @@ else:                                # 그 밖의 경우에는
       <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
       <tbody>
         <tr>
-          <td class="choice-bad">큰 경계(1996)부터 검사한다 → 1930년생도 <code>y &lt;= 1996</code>이 먼저 참이 되어 <b>'a millennial'</b>로 잘못 나와요. 1965년생도 마찬가지로 <b>'a millennial'</b>로 잘못 나와요.</td>
+          <td class="choice-bad">큰 경계(1996)부터 검사한다 → 1930년생도 <code style="white-space:nowrap">y &lt;= 1996</code>이 먼저 참이 되어 <b>'a millennial'</b>로 잘못 나와요. 1965년생도 마찬가지로 <b>'a millennial'</b>로 잘못 나와요.</td>
           <td class="choice-good">작은 경계(1924)부터 검사한다 → 1930년생은 <b>'the Silent Generation'</b>, 1965년생은 <b>'a Gen X'</b>로 정확히 나와요.</td>
         </tr>
       </tbody>
@@ -470,12 +470,12 @@ print(result)                                       # result 를 화면에 보�
     <table>
       <thead><tr><th>기호</th><th>이름</th><th>배수</th></tr></thead>
       <tbody>
-        <tr><td><code>k</code></td><td>킬로(kilo)</td><td>1,000 (10³)</td></tr>
-        <tr><td><code>M</code></td><td>메가(mega)</td><td>100만 (10⁶)</td></tr>
-        <tr><td><code>G</code></td><td>기가(giga)</td><td>10억 (10⁹)</td></tr>
-        <tr><td><code>T</code></td><td>테라(tera)</td><td>1조 (10¹²)</td></tr>
-        <tr><td><code>P</code></td><td>페타(peta)</td><td>1000조 (10¹⁵)</td></tr>
-        <tr><td><code>E</code></td><td>엑사(exa)</td><td>100경 (10¹⁸)</td></tr>
+        <tr><td><code style="white-space:nowrap">k</code></td><td>킬로(kilo)</td><td>1,000 (10³)</td></tr>
+        <tr><td><code style="white-space:nowrap">M</code></td><td>메가(mega)</td><td>100만 (10⁶)</td></tr>
+        <tr><td><code style="white-space:nowrap">G</code></td><td>기가(giga)</td><td>10억 (10⁹)</td></tr>
+        <tr><td><code style="white-space:nowrap">T</code></td><td>테라(tera)</td><td>1조 (10¹²)</td></tr>
+        <tr><td><code style="white-space:nowrap">P</code></td><td>페타(peta)</td><td>1000조 (10¹⁵)</td></tr>
+        <tr><td><code style="white-space:nowrap">E</code></td><td>엑사(exa)</td><td>100경 (10¹⁸)</td></tr>
       </tbody>
     </table>
     <p>2.2.2와 반대로 보이지만 원칙은 똑같아요. <strong>elif 체인은 위에서부터 검사해 처음 참인 조건 하나만 쓴다</strong>는 규칙은 그대로고, 다만 이번엔 조건이 <code>&gt;=</code>(이상)예요. <code>&gt;=</code>는 "그 값과 그보다 큰 모든 값"을 잡기 때문에, 큰 경계부터 먼저 걸러내지 않으면 정말 큰 수도 제일 작은 조건(<code>&gt;= 1000</code>)에 걸려 버려요.</p>
@@ -491,7 +491,7 @@ print(result)                                       # result 를 화면에 보�
       <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
       <tbody>
         <tr>
-          <td class="choice-bad"><code>elif num &gt;= 1000:</code>을 맨 위에 둔다 → 50억(<code>5000000000</code>)도 <code>&gt;= 1000</code>에 먼저 걸려서 <b>5000000k</b>처럼 단위를 못 줄인 값이 나와요. 에러는 안 나요.</td>
+          <td class="choice-bad"><code style="white-space:nowrap">elif num &gt;= 1000:</code>을 맨 위에 둔다 → 50억(<code style="white-space:nowrap">5000000000</code>)도 <code style="white-space:nowrap">&gt;= 1000</code>에 먼저 걸려서 <b>5000000k</b>처럼 단위를 못 줄인 값이 나와요. 에러는 안 나요.</td>
           <td class="choice-good">가장 큰 단위(E)부터 검사한다 → 50억은 <b>5G</b>로 정확히 줄어들어요.</td>
         </tr>
       </tbody>
@@ -632,7 +632,7 @@ else:                                    # 그 밖의 경우에는
       <thead><tr><th></th><th><code>str()</code></th><th>f-string</th></tr></thead>
       <tbody>
         <tr><td>하는 일</td><td>숫자 → 문자열 변환만</td><td>변환 + 다른 글자와 조립까지</td></tr>
-        <tr><td><code>year = 2024</code>일 때</td><td><code>str(year)</code> → <code>'2024'</code></td><td><code>f'{year}년'</code> → <code>'2024년'</code></td></tr>
+        <tr><td><code style="white-space:nowrap">year = 2024</code>일 때</td><td><code>str(year)</code> → <code>'2024'</code></td><td><code>f'{year}년'</code> → <code>'2024년'</code></td></tr>
       </tbody>
     </table>
     <p>f-string 없이 <code>str()</code>만으로 같은 결과를 만들려면 <code>+</code>로 직접 이어 붙여야 해요.</p>
@@ -643,9 +643,9 @@ else:                                    # 그 밖의 경우에는
     <table>
       <thead><tr><th>괄호</th><th>이 교재에서 쓰인 곳</th><th>예</th></tr></thead>
       <tbody>
-        <tr><td>소괄호 <code>()</code></td><td>함수 호출, 식 순서 묶기</td><td><code>int(input())</code>, <code>(a + b) * c</code></td></tr>
-        <tr><td>대괄호 <code>[]</code></td><td>리스트, 인덱싱·슬라이싱</td><td><code>L[0]</code> (아래 split 해설)</td></tr>
-        <tr><td>중괄호 <code>{ }</code></td><td>f-string 안에서 값 넣는 자리</td><td><code>f'{year}년'</code></td></tr>
+        <tr><td>소괄호 <code style="white-space:nowrap">()</code></td><td>함수 호출, 식 순서 묶기</td><td><code>int(input())</code>, <code>(a + b) * c</code></td></tr>
+        <tr><td>대괄호 <code style="white-space:nowrap">[]</code></td><td>리스트, 인덱싱·슬라이싱</td><td><code>L[0]</code> (아래 split 해설)</td></tr>
+        <tr><td>중괄호 <code style="white-space:nowrap">{ }</code></td><td>f-string 안에서 값 넣는 자리</td><td><code>f'{year}년'</code></td></tr>
       </tbody>
     </table>
     <p>참고로 중괄호는 <strong>딕셔너리</strong>(이름표와 값을 짝지어 담는 자료형, 예: <code>{'name': '김철수'}</code>)를 만들 때도 쓰는데, 딕셔너리는 이 교재 2장 범위 밖이라 여기서는 f-string 용법만 기억해 두면 충분해요.</p>
@@ -739,12 +739,12 @@ while temp != -999:                 # temp 가 -999 가 아닌 동안 아래를 
           <td>조건이 <code>&lt;=</code>면 작은 값부터, <code>&gt;=</code>면 큰 값부터 쓰여 있는지 확인해요 (<a href="#q12">작은 값부터 쓰는 이유</a>, <a href="#q13">큰 값부터 쓰는 경우</a>)</td>
         </tr>
         <tr id="suspect-builtin-shadow">
-          <td><code>sum()</code>, <code>min()</code>, <code>max()</code> 같은 함수를 불렀는데 <code>TypeError: 'int' object is not callable</code>이 나요</td>
+          <td><code style="white-space:nowrap">sum()</code>, <code style="white-space:nowrap">min()</code>, <code style="white-space:nowrap">max()</code> 같은 함수를 불렀는데 <code>TypeError: 'int' object is not callable</code>이 나요</td>
           <td>같은 이름을 변수로 먼저 만든 적이 있는지</td>
           <td>그 위에서 <code>sum = ...</code>, <code>min = ...</code> 같은 대입이 있었는지 찾아 <code>total</code>, <code>lo</code> 같은 이름으로 바꿔요 (<a href="#q15">내장 함수 이름 해설</a>)</td>
         </tr>
         <tr id="suspect-missing-pass">
-          <td><code>elif</code>나 <code>if</code> 아래에서 <code>IndentationError: expected an indented block</code>가 나요</td>
+          <td><code style="white-space:nowrap">elif</code>나 <code style="white-space:nowrap">if</code> 아래에서 <code>IndentationError: expected an indented block</code>가 나요</td>
           <td>조건은 맞는데 실행할 코드를 안 쓴 블록</td>
           <td>그 자리에 할 일이 정말 없다면 <code>pass</code>를 넣어요 (<a href="#q14">pass 해설</a>)</td>
         </tr>

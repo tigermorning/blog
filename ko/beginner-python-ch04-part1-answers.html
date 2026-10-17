@@ -40,11 +40,11 @@
       <tbody>
         <tr><td>슬라이싱</td><td><code>x[2:4]</code>는 2번 이상 4번 미만, <code>x[::-1]</code>은 뒤집기, <code>x[-3:]</code>은 끝 세 개다.</td></tr>
         <tr><td>문자열은 불변</td><td><code>x[0] = 'n'</code>은 TypeError이고, 새 문자열을 만들어 다시 붙인다(<code>'n' + x[1:]</code>).</td></tr>
-        <tr><td><code>split</code> · <code>strip</code> · <code>replace</code></td><td>쪼개기, 양끝 공백 지우기, 바꾸기. 모두 새 문자열을 돌려주고 원본은 그대로다.</td></tr>
+        <tr><td><code style="white-space:nowrap">split</code> · <code style="white-space:nowrap">strip</code> · <code style="white-space:nowrap">replace</code></td><td>쪼개기, 양끝 공백 지우기, 바꾸기. 모두 새 문자열을 돌려주고 원본은 그대로다.</td></tr>
         <tr><td>리스트 메서드</td><td><code>append</code> 끝에 추가, <code>insert(0, v)</code> 앞에 추가, <code>pop()</code> 끝을 빼서 돌려줌, <code>del a[i]</code> 삭제.</td></tr>
-        <tr><td><code>in</code></td><td>리스트에서는 완전히 같은 원소만 찾고, 문자열에서는 부분 문자열도 찾는다.</td></tr>
-        <tr><td><code>a[:]</code></td><td>리스트의 복사본이라 고쳐도 원본 <code>a</code>는 그대로다(<code>b = a</code>는 복사가 아니다).</td></tr>
-        <tr><td>순회 중 <code>remove</code></td><td>돌고 있는 리스트를 고치면 원소를 건너뛰니, <code>L[:]</code> 복사본을 돈다.</td></tr>
+        <tr><td><code style="white-space:nowrap">in</code></td><td>리스트에서는 완전히 같은 원소만 찾고, 문자열에서는 부분 문자열도 찾는다.</td></tr>
+        <tr><td><code style="white-space:nowrap">a[:]</code></td><td>리스트의 복사본이라 고쳐도 원본 <code>a</code>는 그대로다(<code>b = a</code>는 복사가 아니다).</td></tr>
+        <tr><td>순회 중 <code style="white-space:nowrap">remove</code></td><td>돌고 있는 리스트를 고치면 원소를 건너뛰니, <code>L[:]</code> 복사본을 돈다.</td></tr>
       </tbody>
     </table>
 
@@ -130,10 +130,10 @@ True</code></pre>
       <table>
         <thead><tr><th>단계</th><th><code>'My gym'</code>의 값</th></tr></thead>
         <tbody>
-          <tr><td><code>lower()</code></td><td>'my gym'</td></tr>
-          <tr><td><code>replace(' ', '')</code></td><td>'mygym'</td></tr>
-          <tr><td><code>t[::-1]</code></td><td>'mygym'</td></tr>
-          <tr><td><code>t == t[::-1]</code></td><td>True</td></tr>
+          <tr><td><code style="white-space:nowrap">lower()</code></td><td>'my gym'</td></tr>
+          <tr><td><code style="white-space:nowrap">replace(' ', '')</code></td><td>'mygym'</td></tr>
+          <tr><td><code style="white-space:nowrap">t[::-1]</code></td><td>'mygym'</td></tr>
+          <tr><td><code style="white-space:nowrap">t == t[::-1]</code></td><td>True</td></tr>
         </tbody>
       </table>
     </div>
@@ -379,7 +379,7 @@ pyon</code></pre>
       <table>
         <thead><tr><th>번호</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
         <tbody>
-          <tr><td><code>word</code></td><td>p</td><td>y</td><td>t</td><td>h</td><td>o</td><td>n</td></tr>
+          <tr><td><code style="white-space:nowrap">word</code></td><td>p</td><td>y</td><td>t</td><td>h</td><td>o</td><td>n</td></tr>
         </tbody>
       </table>
     </div>
@@ -450,12 +450,12 @@ print(a)        # a 를 화면에 보여 주세요</code></pre>
       <table>
         <thead><tr><th>실행한 줄</th><th>a</th><th>x</th></tr></thead>
         <tbody>
-          <tr><td><code>a = [3, 1]</code></td><td>[3, 1]</td><td>-</td></tr>
-          <tr><td><code>a.append(5)</code></td><td>[3, 1, 5]</td><td>-</td></tr>
-          <tr><td><code>a.insert(0, 9)</code></td><td>[9, 3, 1, 5]</td><td>-</td></tr>
-          <tr><td><code>x = a.pop()</code></td><td>[9, 3, 1]</td><td>5</td></tr>
-          <tr><td><code>del a[1]</code></td><td>[9, 1]</td><td>5</td></tr>
-          <tr><td><code>a.append(x)</code></td><td>[9, 1, 5]</td><td>5</td></tr>
+          <tr><td><code style="white-space:nowrap">a = [3, 1]</code></td><td>[3, 1]</td><td>-</td></tr>
+          <tr><td><code style="white-space:nowrap">a.append(5)</code></td><td>[3, 1, 5]</td><td>-</td></tr>
+          <tr><td><code style="white-space:nowrap">a.insert(0, 9)</code></td><td>[9, 3, 1, 5]</td><td>-</td></tr>
+          <tr><td><code style="white-space:nowrap">x = a.pop()</code></td><td>[9, 3, 1]</td><td>5</td></tr>
+          <tr><td><code style="white-space:nowrap">del a[1]</code></td><td>[9, 1]</td><td>5</td></tr>
+          <tr><td><code style="white-space:nowrap">a.append(x)</code></td><td>[9, 1, 5]</td><td>5</td></tr>
         </tbody>
       </table>
     </div>
@@ -585,12 +585,12 @@ print(numbers[3])                        # numbers 의 3번 원소 를 화면에
           <td>문자열은 불변이라 <code>'n' + x[1:]</code>처럼 새 문자열을 만들어요 (<a href="#a-p2">실습 2</a>)</td>
         </tr>
         <tr>
-          <td><code>in</code> 결과가 기대와 달라요(에러 없음)</td>
+          <td><code style="white-space:nowrap">in</code> 결과가 기대와 달라요(에러 없음)</td>
           <td><code>in</code> 앞뒤가 리스트인지 문자열인지</td>
           <td>리스트는 완전히 같은 원소만, 문자열은 부분 문자열도 찾아요 (<a href="#a-p4">실습 4</a>)</td>
         </tr>
         <tr>
-          <td><code>b = a.sort()</code> 뒤 <code>b</code>를 찍으니 <code>None</code>이에요</td>
+          <td><code style="white-space:nowrap">b = a.sort()</code> 뒤 <code style="white-space:nowrap">b</code>를 찍으니 <code style="white-space:nowrap">None</code>이에요</td>
           <td><code>sort()</code>를 부른 줄</td>
           <td><code>sort()</code>는 제자리 정렬이고 값을 돌려주지 않아요. 새 리스트가 필요하면 <code>sorted(a)</code>를 써요</td>
         </tr>

@@ -52,6 +52,7 @@ m.sqrt(2)     → 1.4142135623730951                                            
 math.hypot(3, 4)  → 5.0  # 가로 3 세로 4 인 직각삼각형의 빗변은 얼마예요?</code></pre>
 
     <h2><span class="hl">4. 리스트 인덱싱·슬라이싱</span></h2>
+    <p><strong>인덱싱</strong>은 번호로 원소 <strong>하나</strong>를 꺼내는 것(<code>s[0]</code>), <strong>슬라이싱</strong>은 콜론(<code>:</code>)으로 <strong>일부분을 잘라내는 것</strong>(<code>s[1:4]</code>)이다. 번호는 0부터 세고, 슬라이싱은 끝 번호 바로 앞까지 자른다.</p>
 <pre><code>s = ['시청', '을지로입구', '을지로3가', '을지로4가', '동대문역사문화공원', '신당', '상왕십리', '왕십리']         # s 에 역 이름 8개의 목록을 담아 주세요
 s[0]     → '시청'                                                                 # s 의 0번 원소는 무엇인가요?
 s[-1]    → '왕십리'                                                                # s 의 맨 뒤 원소는 무엇인가요?
@@ -85,17 +86,17 @@ print(num * num)                                                          # num 
     <table>
       <thead><tr><th>개념</th><th>공식</th></tr></thead>
       <tbody>
-        <tr><td><code>/</code></td><td>float.</td></tr>
-        <tr><td><code>//</code></td><td>소수점 버림.</td></tr>
-        <tr><td><code>import</code></td><td>모듈 가져오기.</td></tr>
-        <tr><td><code>**</code></td><td>거듭제곱.</td></tr>
-        <tr><td><code>math.hypot(a, b)</code></td><td>√(a² + b²).</td></tr>
+        <tr><td><code style="white-space:nowrap">/</code></td><td>float.</td></tr>
+        <tr><td><code style="white-space:nowrap">//</code></td><td>소수점 버림.</td></tr>
+        <tr><td><code style="white-space:nowrap">import</code></td><td>모듈 가져오기.</td></tr>
+        <tr><td><code style="white-space:nowrap">**</code></td><td>거듭제곱.</td></tr>
+        <tr><td><code style="white-space:nowrap">math.hypot(a, b)</code></td><td>√(a² + b²).</td></tr>
         <tr><td>인덱스</td><td>0부터, 음수는 뒤에서.</td></tr>
-        <tr><td><code>s[a:b]</code></td><td>a 이상 b 미만.</td></tr>
-        <tr><td><code>append</code> / <code>extend</code></td><td>1개 / 여러 개.</td></tr>
-        <tr><td><code>remove</code> / <code>pop</code> / <code>del</code></td><td>값 / 위치+반환 / 위치.</td></tr>
+        <tr><td><code style="white-space:nowrap">s[a:b]</code></td><td>a 이상 b 미만.</td></tr>
+        <tr><td><code style="white-space:nowrap">append</code> / <code style="white-space:nowrap">extend</code></td><td>1개 / 여러 개.</td></tr>
+        <tr><td><code style="white-space:nowrap">remove</code> / <code style="white-space:nowrap">pop</code> / <code style="white-space:nowrap">del</code></td><td>값 / 위치+반환 / 위치.</td></tr>
         <tr><td>메서드 / 키워드</td><td><code>f.pop()</code> / <code>del f[0]</code>.</td></tr>
-        <tr><td><code>input()</code></td><td>글자. 계산은 <code>int()</code>.</td></tr>
+        <tr><td><code style="white-space:nowrap">input()</code></td><td>글자. 계산은 <code>int()</code>.</td></tr>
       </tbody>
     </table>
 
