@@ -156,6 +156,7 @@ print(q, r)    # q 와 r 을 화면에 보여 주세요</code></pre>
         <tr><td>만들기</td><td><code>{}</code> 또는 <code>{키: 값, 키: 값}</code></td></tr>
         <tr><td>조회</td><td><code>dic[키]</code></td></tr>
         <tr><td>추가·수정</td><td><code>dic[키] = 값</code> — 없는 키면 추가, 있는 키면 덮어쓴다</td></tr>
+        <tr><td>같은 키 두 번</td><td>키는 하나뿐이라 <strong>뒤의 값이 앞의 값을 덮어쓴다</strong>. <code>{'a': 1, 'a': 2}</code> 는 <code>{'a': 2}</code> 가 된다. 값은 같아도 된다</td></tr>
         <tr><td>삭제</td><td><code>del dic[키]</code></td></tr>
         <tr><td>키 확인</td><td><code>키 in dic</code> — 값이 아니라 <strong>키</strong>가 있는지 본다</td></tr>
         <tr><td>모아 보기</td><td><code>dic.keys()</code> 키, <code>dic.values()</code> 값, <code>dic.items()</code> (키, 값) 쌍</td></tr>
@@ -200,6 +201,7 @@ except KeyError as e:                   # KeyError 가 나면 그 오류를 e �
 <pre class="out"><code class="nohighlight">{'a': 2}
 {'mom': 'Kim', 'dad': 'Park'}
 KeyError: 'sister'</code></pre>
+    <p>코드의 첫 줄처럼 같은 키 <code>'a'</code> 를 두 번 쓰면 결과에는 <code>'a'</code> 가 한 번만 남고 값은 <strong>마지막 값</strong>인 <code>2</code> 다. 딕셔너리에는 같은 키가 하나만 있을 수 있어서, 파이썬이 앞에서부터 읽다가 <code>'a': 2</code> 를 만나면 이미 있는 <code>'a'</code> 의 값을 <code>2</code> 로 바꾸기 때문이다. <code>len(d)</code> 도 <code>2</code> 가 아니라 <code>1</code> 이다. 이것은 <code>dic['a'] = 1</code> 다음에 <code>dic['a'] = 2</code> 를 하는 것과 같은 규칙이다. 중복이 안 되는 것은 <strong>키</strong>뿐이고, <code>'dad': 'Choi'</code>, <code>'baby': 'Choi'</code> 처럼 값은 같아도 된다.</p>
     <p>교재는 딕셔너리가 순서대로 저장되지 않는다고 설명해요. 이 글을 만든 파이썬 3.12에서는 넣은 순서대로 나오지만, 순서에 기대지 않고 <strong>키로 찾는 용도</strong>로 쓰는 게 안전해요.</p>
 
     <h2><span class="hl">3. 세트(set)</span></h2>
