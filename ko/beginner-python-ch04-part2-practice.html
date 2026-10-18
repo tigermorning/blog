@@ -1063,6 +1063,19 @@ print(min_max([4]))                # min_max 에 [4] 를 넣은 결과를 화면
     </div>
     <p>마지막에 <code>return low, high</code>가 <code>(1, 9)</code>를 돌려주고, <code>lo, hi =</code>가 그것을 풀어 담아요. <code>[4]</code>는 원소가 하나뿐이라 <code>low</code>와 <code>high</code>가 모두 4이고 <code>(4, 4)</code>예요.</p>
     <p>첫 원소로 <code>low</code>, <code>high</code>를 시작해 하나씩 비교하며 바꿔요. 원소가 하나뿐이면 최솟값과 최댓값이 같아요. <code>return low, high</code>가 튜플을 돌려주고 부르는 쪽에서 풀어 받아요.</p>
+    <p><strong>왜 마지막 값만 나오나</strong> — <code>low</code>와 <code>high</code>는 칸이 하나뿐이라, 반복마다 새 값을 담으면 이전 값은 지워져요. 반복이 끝난 뒤 <code>for</code> 밖의 <code>return low, high</code>가 최종 값 한 쌍만 내보내고, <code>print(lo, hi)</code>는 그 두 값만 알아요. 함수 안에서 있었던 중간 값(<code>7 7</code>, <code>3 7</code>, <code>3 9</code>…)은 밖에서 보이지 않아요.</p>
+    <p><strong>결과를 모으는 방법</strong> — 문제가 원하는 답이 몇 개인지로 정해요.</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>원하는 답</th><th>모으는 방법</th><th>예</th></tr></thead>
+        <tbody>
+          <tr><td>답 <strong>하나</strong> (합계, 최솟값, 최고 점수)</td><td>변수 하나를 덮어쓰기</td><td><code style="white-space:nowrap">s += n</code>, <code style="white-space:nowrap">low = n</code></td></tr>
+          <tr><td>답 <strong>여러 개</strong> (바꾼 목록, 조건에 맞는 것들, 과정 기록)</td><td>빈 리스트에 <code>append</code></td><td><code style="white-space:nowrap">doubled.append(n * 2)</code></td></tr>
+          <tr><td>이름표마다 답 (글자·단어별 횟수)</td><td>딕셔너리에 쌓기</td><td><code style="white-space:nowrap">count[ch] += 1</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>어느 쪽이든 <code>return</code>은 <code>for</code> 밖에 둬요. <code>for</code> 안(들여쓴 안쪽)에 두면 첫 반복에서 함수가 끝나서 첫 값만 나와요.</p>
     <p><strong>핵심 한 줄:</strong> 첫 원소에서 시작해 비교하며 바꾸고, <code>return low, high</code>로 튜플을 돌려줘요.</p>
           </div>
         </details>
