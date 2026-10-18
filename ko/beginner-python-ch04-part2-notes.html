@@ -266,7 +266,7 @@ print(type({}), type(set()))       # {} 와 set() 의 자료형을 화면에 보
 6 4
 {1, 2, 4, 5, 7}
 &lt;class 'dict'&gt; &lt;class 'set'&gt;</code></pre>
-    <p>세트를 그냥 출력하면 실행할 때마다 순서가 달라질 수 있어요. 교재의 출력과 내 화면의 순서가 달라도 오류가 아니에요. 같은 코드를 파이썬이 쓰는 해시 시드만 바꿔 두 번 돌리면 이렇게 달라져요. 그래서 이 글은 세트를 <code>sorted()</code>로 정렬해서 출력했어요.</p>
+    <p>세트를 그냥 출력하면 실행할 때마다 순서가 달라질 수 있어요. 교재의 출력과 내 화면의 순서가 달라도 오류가 아니에요. 같은 코드를 파이썬이 쓰는 해시 시드만 바꿔 두 번 돌리면 이렇게 달라져요. 그래서 이 글은 세트를 <code>sorted()</code>로 정렬해서 출력했어요. <code>sorted()</code>는 세트를 정렬한 <strong>리스트</strong>(대괄호)로 돌려줘요.</p>
 <pre><code>print({'apple', 'banana', 'orange'})  # 'apple', 'banana', 'orange' 세트를 화면에 보여 주세요</code></pre>
 <pre class="out"><code class="nohighlight">{'apple', 'banana', 'orange'}</code></pre>
 <pre class="out"><code class="nohighlight">{'orange', 'banana', 'apple'}</code></pre>

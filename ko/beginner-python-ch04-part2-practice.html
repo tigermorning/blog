@@ -850,7 +850,7 @@ print(sorted(evens &amp; threes))  # evens 와 threes 의 교집합을 정렬해
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
 <pre class="out"><code class="nohighlight">[6, 12, 18]</code></pre>
-    <p><code>range(1, 21)</code>은 1부터 20까지예요. <code>%</code>가 나머지라서 <code>n % 2 == 0</code>이 2의 배수예요. 두 <code>if</code>는 서로 독립이라 <code>elif</code>가 아니라 <code>if</code> 두 개로 써요. 교집합 <code>&amp;</code>로 두 조건을 모두 만족하는 수를 얻어요.</p>
+    <p><code>range(1, 21)</code>은 1부터 20까지예요. <code>%</code>가 나머지라서 <code>n % 2 == 0</code>이 2의 배수예요. 두 <code>if</code>는 서로 독립이라 <code>elif</code>가 아니라 <code>if</code> 두 개로 써요. 교집합 <code>&amp;</code>로 두 조건을 모두 만족하는 수를 얻어요. <code>sorted()</code>는 세트를 정렬한 <strong>리스트</strong>(대괄호)로 돌려줘요.</p>
     <p>※ 빈 것을 만들 때는 <strong>모양</strong>이 자료형을 정해요.</p>
 <pre><code class="language-python">a = {}      # dict    중괄호, 비어 있음 -> 딕셔너리
 b = []      # list    대괄호 -> 리스트
