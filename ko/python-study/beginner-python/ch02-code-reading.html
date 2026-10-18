@@ -398,7 +398,7 @@ body { margin: 0; }
       <ol>
         <li><a href="#b1"><span class="n">1</span>대기줄 부르기</a></li>
         <li><a href="#b2"><span class="n">2</span>신호등 판단</a></li>
-        <li><a href="#b3"><span class="n">3</span>재고 확인이 멈추지 않는다</a></li>
+        <li><a href="#b3"><span class="n">3</span>재고 확인 반복</a></li>
         <li><a href="#b4"><span class="n">4</span>장바구니 총액</a></li>
         <li><a href="#b5"><span class="n">5</span>명단에서 이름 찾기</a></li>
         <li><a href="#b6"><span class="n">6</span>몇 번째 회원인지 찾기</a></li>
@@ -407,7 +407,7 @@ body { margin: 0; }
     <div class="grp-mid"><h2>중급</h2>
       <ol>
         <li><a href="#m1"><span class="n">1</span>"완료"라고 할 때까지 주문받기</a></li>
-        <li><a href="#m2"><span class="n">2</span>배송비가 이상하게 붙는다</a></li>
+        <li><a href="#m2"><span class="n">2</span>배송비 계산</a></li>
         <li><a href="#m3"><span class="n">3</span>제목에 느낌표 몇 개?</a></li>
         <li><a href="#m4"><span class="n">4</span>영하 기온 중 최고 기온</a></li>
         <li><a href="#m5"><span class="n">5</span>판매중·품절 개수 세기</a></li>
@@ -419,7 +419,7 @@ body { margin: 0; }
         <li><a href="#a1"><span class="n">1</span>비밀번호 3번의 기회</a></li>
         <li><a href="#a2"><span class="n">2</span>놀이공원 요금 판정</a></li>
         <li><a href="#a3"><span class="n">3</span>회원가입 비밀번호 검사</a></li>
-        <li><a href="#a4"><span class="n">4</span>알림이 두 개 다 뜬다</a></li>
+        <li><a href="#a4"><span class="n">4</span>배송과 쿠폰 알림</a></li>
         <li><a href="#a5"><span class="n">5</span>서버 응답시간 모니터</a></li>
         <li><a href="#a6"><span class="n">6</span>처음 보는 초기화 문법</a></li>
       </ol>
@@ -593,7 +593,7 @@ else:                         # 그 밖의 경우에는
       </article>
 
       <article class="problem" id="b3">
-        <div class="p-head"><span class="p-id">기본 3</span><span class="p-type">버그</span><h3>재고 확인이 멈추지 않는다</h3></div>
+        <div class="p-head"><span class="p-id">기본 3</span><span class="p-type">버그</span><h3>재고 확인 반복</h3></div>
         <div class="p-body">
 <pre><code class="language-python">stock = 3               # stock 에 3 을 담아 주세요
 while stock &gt; 0:        # stock 이 0 보다 큰 동안 아래를 반복해 주세요
@@ -801,7 +801,7 @@ print(order)            # order 를 화면에 보여 주세요</code></pre>
       </article>
 
       <article class="problem" id="m2">
-        <div class="p-head"><span class="p-id">중급 2</span><span class="p-type">버그</span><h3>배송비가 이상하게 붙는다</h3></div>
+        <div class="p-head"><span class="p-id">중급 2</span><span class="p-type">버그</span><h3>배송비 계산</h3></div>
         <div class="p-body">
 <pre><code class="language-python">total = 35000         # total 에 35000 을 담아 주세요
 if total &gt;= 30000:    # 만약 total 이 30000 이상이면
@@ -1021,7 +1021,7 @@ print(h, '시간', m, '분', s, '초')  # h, '시간', m, '분', s, '초' 를 �
       <div class="level-head">
         <span class="tag">상급</span>
         <h2>여러 개념이 겹치는 실전형 코드</h2>
-        <p>while True, 중첩 if, elif 순서, 깃발 변수, 튜플 언패킹이 한 코드 안에 섞여 나옵니다. 결과를 보고 "왜"를 끝까지 설명하는 것이 목표입니다.</p>
+        <p>여러 개념이 한 코드 안에 겹쳐 나옵니다. 결과를 보고 "왜"를 끝까지 설명하는 것이 목표입니다.</p>
       </div>
 
       <article class="problem" id="a1">
@@ -1247,7 +1247,7 @@ else:                                           # 그 밖의 경우에는
       </article>
 
       <article class="problem" id="a4">
-        <div class="p-head"><span class="p-id">상급 4</span><span class="p-type">버그</span><h3>알림이 두 개 다 뜬다</h3></div>
+        <div class="p-head"><span class="p-id">상급 4</span><span class="p-type">버그</span><h3>배송과 쿠폰 알림</h3></div>
         <div class="p-body">
 <pre><code class="language-python">total = 55000           # total 에 55000 을 담아 주세요
 if total &gt;= 50000:      # 만약 total 이 50000 이상이면

@@ -396,14 +396,14 @@ footer { grid-column: 1 / -1; color: var(--ink-faint); font-size: 13px; border-t
       <ol>
         <li><a href="#b1"><span class="n">1</span>정의와 호출의 순서</a></li>
         <li><a href="#b2"><span class="n">2</span>넓이 계산기</a></li>
-        <li><a href="#b3"><span class="n">3</span>print와 return 한 줄 차이</a></li>
+        <li><a href="#b3"><span class="n">3</span>함수 두 개 비교</a></li>
         <li><a href="#b4"><span class="n">4</span>글자 수 세기</a></li>
       </ol>
     </div>
     <div class="grp-mid"><h2>중급</h2>
       <ol>
         <li><a href="#m1"><span class="n">1</span>성적 등급</a></li>
-        <li><a href="#m2"><span class="n">2</span>숫자 읽기 함수의 빈틈</a></li>
+        <li><a href="#m2"><span class="n">2</span>숫자 읽기 함수</a></li>
         <li><a href="#m3"><span class="n">3</span>타이머 표시</a></li>
         <li><a href="#m4"><span class="n">4</span>함수를 부르는 반복문</a></li>
         <li><a href="#m5"><span class="n">5</span>짝수 세기</a></li>
@@ -412,13 +412,13 @@ footer { grid-column: 1 / -1; color: var(--ink-faint); font-size: 13px; border-t
     </div>
     <div class="grp-adv"><h2>고급</h2>
       <ol>
-        <li><a href="#a1"><span class="n">1</span>0으로 나누기를 막는 순서</a></li>
-        <li><a href="#a2"><span class="n">2</span>보너스 합계가 안 된다</a></li>
+        <li><a href="#a1"><span class="n">1</span>나눗셈 비교 함수 두 개</a></li>
+        <li><a href="#a2"><span class="n">2</span>보너스 합계 함수</a></li>
         <li><a href="#a3"><span class="n">3</span>명단에서 첫 사람 빼기</a></li>
         <li><a href="#a4"><span class="n">4</span>단리와 복리</a></li>
         <li><a href="#a5"><span class="n">5</span>자릿수 함수 두 개</a></li>
-        <li><a href="#a6"><span class="n">6</span>소수 판별기의 구멍</a></li>
-        <li><a href="#a7"><span class="n">7</span>무엇이든 세 배</a></li>
+        <li><a href="#a6"><span class="n">6</span>소수 판별 함수</a></li>
+        <li><a href="#a7"><span class="n">7</span>triple 함수</a></li>
         <li><a href="#a8"><span class="n">8</span>처음 보는 문법 읽어 내기</a></li>
       </ol>
     </div>
@@ -602,7 +602,7 @@ abab</code></pre>
       </article>
 
       <article class="problem" id="b3">
-        <div class="p-head"><span class="p-id">초급 3</span><span class="p-type">읽기</span><h3>print와 return 한 줄 차이</h3></div>
+        <div class="p-head"><span class="p-id">초급 3</span><span class="p-type">읽기</span><h3>함수 두 개 비교</h3></div>
         <div class="p-body">
 <pre><code class="language-python">def add_print(a, b):   # a 와 b 를 받는 add_print 라는 동작을 만들어 주세요
     print(a + b)       # a 더하기 b 를 화면에 보여 주세요
@@ -702,7 +702,7 @@ hello world: 11글자
       <div class="level-head">
         <span class="tag">중급</span>
         <h2>return과 조건·반복이 섞일 때</h2>
-        <p><code>return</code>이 함수를 끝내는 시점, 조건에 없는 값이 들어왔을 때, 반복문 안의 함수 호출을 따라갑니다.</p>
+        <p><code>return</code>, 조건, 반복이 한 함수 안에서 섞인 코드를 따라갑니다.</p>
       </div>
 
       <article class="problem" id="m1">
@@ -749,7 +749,7 @@ print(grade(95), grade(85), grade(80), grade(50))  # grade 의 결과 네 개를
       </article>
 
       <article class="problem" id="m2">
-        <div class="p-head"><span class="p-id">중급 2</span><span class="p-type">읽기 + 버그</span><h3>숫자 읽기 함수의 빈틈</h3></div>
+        <div class="p-head"><span class="p-id">중급 2</span><span class="p-type">읽기 + 버그</span><h3>숫자 읽기 함수</h3></div>
         <div class="p-body">
 <pre><code class="language-python">def korean_number(num):                     # num 을 받는 korean_number 라는 동작을 만들어 주세요
     if num == 1:                            # 만약 num 이 1 이면
@@ -1010,11 +1010,11 @@ print(find_first([], 5))             # find_first 에 [] 와 5 를 넣으면 뭐
       <div class="level-head">
         <span class="tag">고급</span>
         <h2>실제 코드에서 헷갈리는 지점</h2>
-        <p><code>None</code>이 퍼지는 버그, 함수 안에서 바뀌는 리스트와 안 바뀌는 숫자, 경계 값에서 틀리는 함수, <code>and</code>의 계산 순서를 읽어 냅니다.</p>
+        <p>실제 코드에서 헷갈리는 지점을 읽어 냅니다.</p>
       </div>
 
       <article class="problem" id="a1">
-        <div class="p-head"><span class="p-id">고급 1</span><span class="p-type">읽기</span><h3>0으로 나누기를 막는 순서</h3></div>
+        <div class="p-head"><span class="p-id">고급 1</span><span class="p-type">읽기</span><h3>나눗셈 비교 함수 두 개</h3></div>
         <div class="p-body">
 <pre><code class="language-python">def safe_ratio(a, b):                                        # a 와 b 를 받는 safe_ratio 라는 동작을 만들어 주세요
     return b != 0 and a / b &gt; 1                              # b 가 0 이 아니고, a 나누기 b 가 1 보다 큰지 결과로 돌려주세요
@@ -1057,7 +1057,7 @@ ZeroDivisionError: division by zero</code></pre>
       </article>
 
       <article class="problem" id="a2">
-        <div class="p-head"><span class="p-id">고급 2</span><span class="p-type">버그</span><h3>보너스 합계가 안 된다</h3></div>
+        <div class="p-head"><span class="p-id">고급 2</span><span class="p-type">버그</span><h3>보너스 합계 함수</h3></div>
         <div class="p-body">
 <pre><code class="language-python">def add_bonus(scores):        # scores 를 받는 add_bonus 라는 동작을 만들어 주세요
     for s in scores:          # scores 의 원소를 하나씩 s 라고 부르며 아래를 반복해 주세요
@@ -1299,7 +1299,7 @@ def num_of_digits2(num):  # num 을 받는 num_of_digits2 라는 동작을 만�
       </article>
 
       <article class="problem" id="a6">
-        <div class="p-head"><span class="p-id">고급 6</span><span class="p-type">읽기 + 버그</span><h3>소수 판별기의 구멍</h3></div>
+        <div class="p-head"><span class="p-id">고급 6</span><span class="p-type">읽기 + 버그</span><h3>소수 판별 함수</h3></div>
         <div class="p-body">
 <pre><code class="language-python">def check(n):                               # n 을 받는 check 라는 동작을 만들어 주세요
     for d in range(2, n):                   # range(2, n) 의 원소를 하나씩 d 라고 부르며 아래를 반복해 주세요
@@ -1351,7 +1351,7 @@ check(1)                                    # check 에 1 을 넣어 실행해 �
       </article>
 
       <article class="problem" id="a7">
-        <div class="p-head"><span class="p-id">고급 7</span><span class="p-type">읽기</span><h3>무엇이든 세 배</h3></div>
+        <div class="p-head"><span class="p-id">고급 7</span><span class="p-type">읽기</span><h3>triple 함수</h3></div>
         <div class="p-body">
 <pre><code class="language-python">def triple(x):                                  # x 를 받는 triple 이라는 동작을 만들어 주세요
     return x * 3                                # x 곱하기 3 을 결과로 돌려주세요

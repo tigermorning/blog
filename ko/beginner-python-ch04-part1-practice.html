@@ -415,23 +415,23 @@ main, .problem, .p-body, .sol-body, .level { min-width: 0; }
     </div>
     <div class="grp-mid"><h2>중급</h2>
       <ol>
-        <li><a href="#m1"><span class="n">1</span>가운데 글자 바꾸기 — 슬라이싱 + 불변 + //</a></li>
-        <li><a href="#m2"><span class="n">2</span>in — 리스트와 문자열의 차이 + 조건문</a></li>
-        <li><a href="#m3"><span class="n">3</span>복사 a[:]와 c = a의 차이</a></li>
-        <li><a href="#m4"><span class="n">4</span>while로 자릿수 더하기 — 반복 + 인덱싱 + 변환</a></li>
-        <li><a href="#m5"><span class="n">5</span>함수로 만들기 — def · return + 슬라이싱</a></li>
-        <li><a href="#m6"><span class="n">6</span>중첩 리스트와 이중 for</a></li>
+        <li><a href="#m1"><span class="n">1</span>단어의 가운데 글자</a></li>
+        <li><a href="#m2"><span class="n">2</span>이름 찾기와 글자 찾기</a></li>
+        <li><a href="#m3"><span class="n">3</span>리스트 b와 c 따라가기</a></li>
+        <li><a href="#m4"><span class="n">4</span>숫자 한 자리씩 더하기</a></li>
+        <li><a href="#m5"><span class="n">5</span>글자를 자르는 함수</a></li>
+        <li><a href="#m6"><span class="n">6</span>표를 한 칸씩 읽기</a></li>
       </ol>
     </div>
     <div class="grp-adv"><h2>고급</h2>
       <ol>
-        <li><a href="#a1"><span class="n">1</span>순회 중 remove — 건너뛰기</a></li>
-        <li><a href="#a2"><span class="n">2</span>함수 안에서 바꾸면 밖도 바뀔까 — 가변·불변과 지역변수</a></li>
-        <li><a href="#a3"><span class="n">3</span>global — 바깥 변수를 바꾸기 vs 안에서 새로 만들기</a></li>
-        <li><a href="#a4"><span class="n">4</span>lambda · map · filter와 변환 연쇄</a></li>
-        <li><a href="#a5"><span class="n">5</span>쪼개고 다듬고 합치기 — 문자열·리스트 종합</a></li>
-        <li><a href="#a6"><span class="n">6</span>소수 거르기 코드 읽기 — 조건 하나의 역할</a></li>
-        <li><a href="#a7"><span class="n">7</span>단어 세기 — 중복 빼고 정렬해서 합치기</a></li>
+        <li><a href="#a1"><span class="n">1</span>리스트에서 값 지우기</a></li>
+        <li><a href="#a2"><span class="n">2</span>함수에 넘긴 값의 행방</a></li>
+        <li><a href="#a3"><span class="n">3</span>함수 둘과 변수 하나</a></li>
+        <li><a href="#a4"><span class="n">4</span>리스트가 거치는 세 단계</a></li>
+        <li><a href="#a5"><span class="n">5</span>문장을 다시 이어 붙이기</a></li>
+        <li><a href="#a6"><span class="n">6</span>수를 걸러 내는 함수</a></li>
+        <li><a href="#a7"><span class="n">7</span>문장 속 단어 정리하기</a></li>
       </ol>
     </div>
   </nav>
@@ -791,7 +791,7 @@ print(sum(list(range(1, 11))))  # 1 부터 10 까지를 리스트로 만들어 �
       </div>
 
       <article class="problem" id="m1">
-        <div class="p-head"><span class="p-id">중급 1</span><span class="p-type">읽기</span><h3>가운데 글자 바꾸기 — 슬라이싱 + 불변 + //</h3></div>
+        <div class="p-head"><span class="p-id">중급 1</span><span class="p-type">읽기</span><h3>단어의 가운데 글자</h3></div>
         <div class="p-body">
 <p>문자열은 일부를 바꿀 수 없으니, 잘라서 새 문자열을 만드는 코드예요.</p>
 <pre><code class="language-python">word = 'apple'                           # word 에 문자열 'apple' 을 담아 주세요
@@ -842,7 +842,7 @@ apple</code></pre>
       </article>
 
       <article class="problem" id="m2">
-        <div class="p-head"><span class="p-id">중급 2</span><span class="p-type">읽기</span><h3>in — 리스트와 문자열의 차이 + 조건문</h3></div>
+        <div class="p-head"><span class="p-id">중급 2</span><span class="p-type">읽기</span><h3>이름 찾기와 글자 찾기</h3></div>
         <div class="p-body">
 <p>같은 <code>in</code>이 리스트와 문자열에서 다르게 동작하는 것을 확인하는 코드예요.</p>
 <pre><code class="language-python">books = ['해리포터', '반지의 제왕']                    # books 에 책 제목 두 개의 리스트를 담아 주세요
@@ -900,7 +900,7 @@ for title in ['해리포터', '해', '반지의 제왕', '나니아']:  # 리스
       </article>
 
       <article class="problem" id="m3">
-        <div class="p-head"><span class="p-id">중급 3</span><span class="p-type">읽기</span><h3>복사 a[:]와 c = a의 차이</h3></div>
+        <div class="p-head"><span class="p-id">중급 3</span><span class="p-type">읽기</span><h3>리스트 b와 c 따라가기</h3></div>
         <div class="p-body">
 <p>복사본과 같은 리스트에 이름만 하나 더 붙인 것의 차이를 확인하는 코드예요.</p>
 <pre><code class="language-python">a = [1, 2, 3]  # a 에 리스트 [1, 2, 3] 을 담아 주세요
@@ -957,7 +957,7 @@ print(c)       # c 를 화면에 보여 주세요</code></pre>
       </article>
 
       <article class="problem" id="m4">
-        <div class="p-head"><span class="p-id">중급 4</span><span class="p-type">읽기</span><h3>while로 자릿수 더하기 — 반복 + 인덱싱 + 변환</h3></div>
+        <div class="p-head"><span class="p-id">중급 4</span><span class="p-type">읽기</span><h3>숫자 한 자리씩 더하기</h3></div>
         <div class="p-body">
 <p>숫자 글자를 한 자리씩 꺼내 더하는 <code>while</code> 코드예요.</p>
 <pre><code class="language-python">digits = '4096'                     # digits 에 문자열 '4096' 을 담아 주세요
@@ -1017,7 +1017,7 @@ print(i, total)                     # i 와 total 을 화면에 보여 주세요
       </article>
 
       <article class="problem" id="m5">
-        <div class="p-head"><span class="p-id">중급 5</span><span class="p-type">읽기</span><h3>함수로 만들기 — def · return + 슬라이싱</h3></div>
+        <div class="p-head"><span class="p-id">중급 5</span><span class="p-type">읽기</span><h3>글자를 자르는 함수</h3></div>
         <div class="p-body">
 <p>앞 두 글자와 뒤 두 글자를 붙이던 일을 함수로 만든 코드예요.</p>
 <pre><code class="language-python">def edges(s, n):           # s, n 을 받는 edges 라는 동작을 만들어 주세요
@@ -1065,7 +1065,7 @@ hello</code></pre>
       </article>
 
       <article class="problem" id="m6">
-        <div class="p-head"><span class="p-id">중급 6</span><span class="p-type">읽기</span><h3>중첩 리스트와 이중 for</h3></div>
+        <div class="p-head"><span class="p-id">중급 6</span><span class="p-type">읽기</span><h3>표를 한 칸씩 읽기</h3></div>
         <div class="p-body">
 <p>리스트 안에 리스트가 있을 때 번호로 꺼내고, 두 겹으로 반복하는 코드예요.</p>
 <pre><code class="language-python">m = [[1, 2], [3, 4], [5, 6]]  # m 에 리스트 세 개를 담은 리스트를 담아 주세요
@@ -1118,11 +1118,11 @@ print(total)                  # total 을 화면에 보여 주세요</code></pre
       <div class="level-head">
         <span class="tag">고급</span>
         <h2>함정과 종합 — 3장까지 누적</h2>
-        <p>실수하기 쉬운 지점(순회 중 remove, 함수 안에서의 변경, global)과 lambda·map·filter까지 포함한 종합 코드를 읽어요.</p>
+        <p>실수하기 쉬운 지점과 lambda·map·filter까지 포함한 종합 코드를 읽어요.</p>
       </div>
 
       <article class="problem" id="a1">
-        <div class="p-head"><span class="p-id">고급 1</span><span class="p-type">읽기</span><h3>순회 중 remove — 건너뛰기</h3></div>
+        <div class="p-head"><span class="p-id">고급 1</span><span class="p-type">읽기</span><h3>리스트에서 값 지우기</h3></div>
         <div class="p-body">
 <p>돌고 있는 리스트를 직접 고치는 코드와 복사본을 도는 코드를 비교해요.</p>
 <pre><code class="language-python">L = [1, 2, 3, 4]     # L 에 리스트 [1, 2, 3, 4] 를 담아 주세요
@@ -1179,7 +1179,7 @@ x = 3
       </article>
 
       <article class="problem" id="a2">
-        <div class="p-head"><span class="p-id">고급 2</span><span class="p-type">읽기</span><h3>함수 안에서 바꾸면 밖도 바뀔까 — 가변·불변과 지역변수</h3></div>
+        <div class="p-head"><span class="p-id">고급 2</span><span class="p-type">읽기</span><h3>함수에 넘긴 값의 행방</h3></div>
         <div class="p-body">
 <p>함수에 리스트, 숫자, 문자열을 넘겼을 때 바깥 값이 바뀌는지 보는 코드예요.</p>
 <pre><code class="language-python">def grow(items, n):  # items, n 을 받는 grow 라는 동작을 만들어 주세요
@@ -1236,7 +1236,7 @@ abc</code></pre>
       </article>
 
       <article class="problem" id="a3">
-        <div class="p-head"><span class="p-id">고급 3</span><span class="p-type">읽기</span><h3>global — 바깥 변수를 바꾸기 vs 안에서 새로 만들기</h3></div>
+        <div class="p-head"><span class="p-id">고급 3</span><span class="p-type">읽기</span><h3>함수 둘과 변수 하나</h3></div>
         <div class="p-body">
 <p>전역변수를 함수 안에서 바꾸려면 <code>global</code>이 필요한지 확인하는 코드예요.</p>
 <pre><code class="language-python">total = 10             # total 에 10 을 담아 주세요
@@ -1288,7 +1288,7 @@ print(total)           # total 을 화면에 보여 주세요</code></pre>
       </article>
 
       <article class="problem" id="a4">
-        <div class="p-head"><span class="p-id">고급 4</span><span class="p-type">읽기</span><h3>lambda · map · filter와 변환 연쇄</h3></div>
+        <div class="p-head"><span class="p-id">고급 4</span><span class="p-type">읽기</span><h3>리스트가 거치는 세 단계</h3></div>
         <div class="p-body">
 <p>문자열을 숫자 리스트로 바꾸고 걸러내고 다시 문자열로 돌리는 코드예요.</p>
 <pre><code class="language-python">nums = list(map(int, '643'))                     # '643' 의 글자마다 int 를 적용한 결과를 리스트로 만들어 nums 에 담아 주세요
@@ -1340,7 +1340,7 @@ print(''.join(map(str, nums[::-1])))             # nums 를 거꾸로 읽어 글
       </article>
 
       <article class="problem" id="a5">
-        <div class="p-head"><span class="p-id">고급 5</span><span class="p-type">읽기</span><h3>쪼개고 다듬고 합치기 — 문자열·리스트 종합</h3></div>
+        <div class="p-head"><span class="p-id">고급 5</span><span class="p-type">읽기</span><h3>문장을 다시 이어 붙이기</h3></div>
         <div class="p-body">
 <p>공백이 섞인 입력을 정리해서 계산하는 코드예요.</p>
 <pre><code class="language-python">line = ' 3, 14 ,15,92 '                                 # line 에 공백이 섞인 문자열 ' 3, 14 ,15,92 ' 를 담아 주세요
@@ -1387,7 +1387,7 @@ print('+'.join(map(str, nums)) + '=' + str(sum(nums)))  # nums 를 글자로 바
       </article>
 
       <article class="problem" id="a6">
-        <div class="p-head"><span class="p-id">고급 6</span><span class="p-type">읽기</span><h3>소수 거르기 코드 읽기 — 조건 하나의 역할</h3></div>
+        <div class="p-head"><span class="p-id">고급 6</span><span class="p-type">읽기</span><h3>수를 걸러 내는 함수</h3></div>
         <div class="p-body">
 <p>2부터 n까지에서 소수만 남기는 코드와, 조건 하나를 뺀 변형 코드를 비교해요.</p>
 <pre><code class="language-python">def primes(n):                         # n 을 받는 primes 라는 동작을 만들어 주세요
@@ -1443,7 +1443,7 @@ print(primes_b(10))                    # primes_b 에 10 을 넣은 결과를 �
       </article>
 
       <article class="problem" id="a7">
-        <div class="p-head"><span class="p-id">고급 7</span><span class="p-type">읽기</span><h3>단어 세기 — 중복 빼고 정렬해서 합치기</h3></div>
+        <div class="p-head"><span class="p-id">고급 7</span><span class="p-type">읽기</span><h3>문장 속 단어 정리하기</h3></div>
         <div class="p-body">
 <p>문장을 단어로 쪼개고, 중복을 빼고, 정렬해서 다시 합치는 종합 코드예요.</p>
 <pre><code class="language-python">text = '  the cat the dog  '  # text 에 앞뒤로 공백이 있는 문자열을 담아 주세요
