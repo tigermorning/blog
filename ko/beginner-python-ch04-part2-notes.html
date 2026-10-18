@@ -150,7 +150,6 @@ print(q, r)    # q 와 r 을 화면에 보여 주세요</code></pre>
     <h2><span class="hl">2. 딕셔너리(dict)</span></h2>
     <div class="table-scroll fill">
       <table>
-        <caption class="table-note"><span class="table-note-mark">※</span> <code>in</code> 은 "있나?"만 묻고 <code>True</code> / <code>False</code> 로 답한다. 값을 꺼내는 것이 아니다. <code>family = {'mom': 'Kim', 'dad': 'Choi', 'baby': 'Choi'}</code> 에서 <code>'dad' in family</code> 는 <code>True</code>, 값 <code>'Choi'</code> 를 꺼내려면 <code>family['dad']</code> 를 쓴다. <code>'Kim' in family</code> 는 <code>'Kim'</code> 이 키가 아니라 값이라서 <code>False</code> 이고, 값에 있는지 보려면 <code>'Kim' in family.values()</code> 로 쓴다.</caption>
         <thead><tr><th>항목</th><th>내용</th></tr></thead>
         <tbody>
         <tr><td>딕셔너리</td><td>키(key)와 값(value)이 짝을 이룬 자료형. 숫자 인덱스 대신 <strong>키</strong>로 값을 찾는다</td></tr>
@@ -158,7 +157,7 @@ print(q, r)    # q 와 r 을 화면에 보여 주세요</code></pre>
         <tr><td>조회</td><td><code>dic[키]</code></td></tr>
         <tr><td>추가·수정</td><td><code>dic[키] = 값</code> — 없는 키면 추가, 있는 키면 덮어쓴다</td></tr>
         <tr><td>삭제</td><td><code>del dic[키]</code></td></tr>
-        <tr><td>키 확인</td><td><code>키 in dic</code> — 값이 아니라 <strong>키</strong>가 있는지 본다<sup class="table-note-mark">※</sup></td></tr>
+        <tr><td>키 확인</td><td><code>키 in dic</code> — 값이 아니라 <strong>키</strong>가 있는지 본다</td></tr>
         <tr><td>모아 보기</td><td><code>dic.keys()</code> 키, <code>dic.values()</code> 값, <code>dic.items()</code> (키, 값) 쌍</td></tr>
         <tr><td>없는 키 조회</td><td>KeyError</td></tr>
         </tbody>
@@ -188,6 +187,7 @@ dict_items([('mom', 'Kim'), ('dad', 'Choi'), ('baby', 'Choi')])
 True
 False
 False</code></pre>
+<p class="code-note"><span class="table-note-mark">※</span> <code>in</code> 은 "있나?"만 묻고 <code>True</code> / <code>False</code> 로 답한다. 값을 꺼내는 것이 아니다. <code>'dad' in family</code> 는 <code>True</code>, 값 <code>'Choi'</code> 를 꺼내려면 <code>family['dad']</code> 를 쓴다. <code>'Kim' in family</code> 는 <code>'Kim'</code> 이 키가 아니라 값이라서 <code>False</code> 이고, 값에 있는지 보려면 <code>'Kim' in family.values()</code> 로 쓴다.</p>
 <pre><code>d = {'a': 1, 'a': 2}                    # d 에 키 'a' 를 두 번 쓴 딕셔너리를 담아 주세요
 print(d)                                # d 를 화면에 보여 주세요
 family = {'mom': 'Kim', 'dad': 'Choi'}  # family 에 두 쌍이 든 딕셔너리를 담아 주세요
