@@ -289,6 +289,12 @@ print(len(sums))              # sums 의 원소 개수를 화면에 보여 주�
 <pre class="out"><code class="nohighlight">[3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
 17</code></pre>
     <p>이중 반복문으로 6 × 6 = 36가지 조합을 모두 돌며 합을 세트에 넣어요. 세트는 이미 있는 값을 또 더해도 변화가 없어서 "같은 숫자는 한 번만" 조건이 저절로 해결돼요.</p>
+    <p>※ 빈 것을 만들 때는 <strong>모양</strong>이 자료형을 정해요.</p>
+<pre><code>a = {}      # dict    중괄호, 비어 있음 -> 딕셔너리
+b = []      # list    대괄호 -> 리스트
+c = ()      # tuple   소괄호 -> 튜플
+d = set()   # set     set() -> 빈 세트
+e = 0       # int     숫자 -> 정수</code></pre>
 
     <h3 id="c3">4.5.3 끝말 잇기 (1)</h3>
     <p><strong>문제:</strong> 플레이어와 컴퓨터가 끝말잇기를 해요. 컴퓨터는 정해진 단어 목록 중에서 고르고, 글자가 안 이어지거나 이미 나온 단어를 말하면 지는 규칙이에요. <a href="https://wikidocs.net/200848" target="_blank" rel="noopener">원문 보기</a></p>
