@@ -379,9 +379,9 @@ footer { grid-column: 1 / -1; color: var(--ink-faint); font-size: 13px; border-t
     <p class="lead">함수·매개변수·<code>return</code>을 1장(연산·변수·리스트)과 2장(반복문·조건문)에 섞어서 <b>이미 짜여 있는 코드를 읽고 해석하는</b> 문제집입니다. 코드를 새로 짜는 문제는 없습니다. 문제마다 <b>힌트 보기</b>와 <b>정답·해설 보기</b>가 접혀 있습니다. 먼저 힌트를 보고, 그래도 안 풀리면 정답·해설을 여세요.</p>
     <div class="counts">
       <span class="count all">18문제</span>
-      <span class="count basic">초급 5</span>
+      <span class="count basic">초급 4</span>
       <span class="count mid">중급 6</span>
-      <span class="count adv">고급 7</span>
+      <span class="count adv">고급 8</span>
     </div>
   </header>
 
@@ -398,7 +398,6 @@ footer { grid-column: 1 / -1; color: var(--ink-faint); font-size: 13px; border-t
         <li><a href="#b2"><span class="n">2</span>넓이 계산기</a></li>
         <li><a href="#b3"><span class="n">3</span>print와 return 한 줄 차이</a></li>
         <li><a href="#b4"><span class="n">4</span>글자 수 세기</a></li>
-        <li><a href="#b5"><span class="n">5</span>짝수 세기</a></li>
       </ol>
     </div>
     <div class="grp-mid"><h2>중급</h2>
@@ -407,19 +406,20 @@ footer { grid-column: 1 / -1; color: var(--ink-faint); font-size: 13px; border-t
         <li><a href="#m2"><span class="n">2</span>숫자 읽기 함수의 빈틈</a></li>
         <li><a href="#m3"><span class="n">3</span>타이머 표시</a></li>
         <li><a href="#m4"><span class="n">4</span>함수를 부르는 반복문</a></li>
-        <li><a href="#m5"><span class="n">5</span>첫 번째 배수 찾기</a></li>
-        <li><a href="#m6"><span class="n">6</span>0으로 나누기를 막는 순서</a></li>
+        <li><a href="#m5"><span class="n">5</span>짝수 세기</a></li>
+        <li><a href="#m6"><span class="n">6</span>첫 번째 배수 찾기</a></li>
       </ol>
     </div>
     <div class="grp-adv"><h2>고급</h2>
       <ol>
-        <li><a href="#a1"><span class="n">1</span>보너스 합계가 안 된다</a></li>
-        <li><a href="#a2"><span class="n">2</span>명단에서 첫 사람 빼기</a></li>
-        <li><a href="#a3"><span class="n">3</span>단리와 복리</a></li>
-        <li><a href="#a4"><span class="n">4</span>자릿수 함수 두 개</a></li>
-        <li><a href="#a5"><span class="n">5</span>소수 판별기의 구멍</a></li>
-        <li><a href="#a6"><span class="n">6</span>무엇이든 세 배</a></li>
-        <li><a href="#a7"><span class="n">7</span>처음 보는 문법 읽어 내기</a></li>
+        <li><a href="#a1"><span class="n">1</span>0으로 나누기를 막는 순서</a></li>
+        <li><a href="#a2"><span class="n">2</span>보너스 합계가 안 된다</a></li>
+        <li><a href="#a3"><span class="n">3</span>명단에서 첫 사람 빼기</a></li>
+        <li><a href="#a4"><span class="n">4</span>단리와 복리</a></li>
+        <li><a href="#a5"><span class="n">5</span>자릿수 함수 두 개</a></li>
+        <li><a href="#a6"><span class="n">6</span>소수 판별기의 구멍</a></li>
+        <li><a href="#a7"><span class="n">7</span>무엇이든 세 배</a></li>
+        <li><a href="#a8"><span class="n">8</span>처음 보는 문법 읽어 내기</a></li>
       </ol>
     </div>
   </nav>
@@ -487,17 +487,17 @@ footer { grid-column: 1 / -1; color: var(--ink-faint); font-size: 13px; border-t
           <table>
             <thead><tr><th>앞 장 도구</th><th>배운 곳</th><th>3장 실습에서 다시 나오는 문제</th></tr></thead>
             <tbody>
-              <tr><td><code style="white-space:nowrap">//</code>, <code style="white-space:nowrap">%</code></td><td class="src">1.1</td><td>초급 5, 중급 3·5, 고급 4·5·7</td></tr>
-              <tr><td><code style="white-space:nowrap">str()</code>, <code style="white-space:nowrap">int()</code>, <code style="white-space:nowrap">len()</code></td><td class="src">1.3, 1.6</td><td>초급 4, 고급 4·6</td></tr>
-              <tr><td>문자열·리스트 반복 <code style="white-space:nowrap">'ab' * 3</code></td><td class="src">1.6 예제 코드</td><td>초급 2, 고급 6</td></tr>
-              <tr><td><code style="white-space:nowrap">.remove()</code>, <code style="white-space:nowrap">리스트[번호]</code></td><td class="src">1.3</td><td>고급 2</td></tr>
-              <tr><td>실수 오차 (<code style="white-space:nowrap">0.1 + 0.2</code>)</td><td class="src">ch01 실습 상급 4</td><td>고급 6</td></tr>
-              <tr><td><code style="white-space:nowrap">divmod()</code>와 값 나눠 담기</td><td class="src">ch01 실습 상급 8</td><td>고급 7</td></tr>
-              <tr><td><code style="white-space:nowrap">while</code>, <code style="white-space:nowrap">+=</code></td><td class="src">2.1</td><td>고급 3·4</td></tr>
+              <tr><td><code style="white-space:nowrap">//</code>, <code style="white-space:nowrap">%</code></td><td class="src">1.1</td><td>중급 3·5·6, 고급 5·6·8</td></tr>
+              <tr><td><code style="white-space:nowrap">str()</code>, <code style="white-space:nowrap">int()</code>, <code style="white-space:nowrap">len()</code></td><td class="src">1.3, 1.6</td><td>초급 4, 고급 5·7</td></tr>
+              <tr><td>문자열·리스트 반복 <code style="white-space:nowrap">'ab' * 3</code></td><td class="src">1.6 예제 코드</td><td>초급 2, 고급 7</td></tr>
+              <tr><td><code style="white-space:nowrap">.remove()</code>, <code style="white-space:nowrap">리스트[번호]</code></td><td class="src">1.3</td><td>고급 3</td></tr>
+              <tr><td>실수 오차 (<code style="white-space:nowrap">0.1 + 0.2</code>)</td><td class="src">ch01 실습 상급 4</td><td>고급 7</td></tr>
+              <tr><td><code style="white-space:nowrap">divmod()</code>와 값 나눠 담기</td><td class="src">ch01 실습 상급 8</td><td>고급 8</td></tr>
+              <tr><td><code style="white-space:nowrap">while</code>, <code style="white-space:nowrap">+=</code></td><td class="src">2.1</td><td>고급 4·5</td></tr>
               <tr><td><code style="white-space:nowrap">if</code> / <code style="white-space:nowrap">elif</code> 체인</td><td class="src">2.2</td><td>중급 1·2</td></tr>
-              <tr><td><code style="white-space:nowrap">and</code>의 계산 순서</td><td class="src">2.2.7</td><td>중급 6</td></tr>
-              <tr><td><code style="white-space:nowrap">for</code>, <code style="white-space:nowrap">range()</code></td><td class="src">2.3</td><td>초급 5, 중급 4·5, 고급 1·5</td></tr>
-              <tr><td><code style="white-space:nowrap">for</code>-<code style="white-space:nowrap">else</code>, <code style="white-space:nowrap">break</code></td><td class="src">2.5</td><td>고급 5</td></tr>
+              <tr><td><code style="white-space:nowrap">and</code>의 계산 순서</td><td class="src">2.2.7</td><td>고급 1</td></tr>
+              <tr><td><code style="white-space:nowrap">for</code>, <code style="white-space:nowrap">range()</code></td><td class="src">2.3</td><td>중급 4·5·6, 고급 2·6</td></tr>
+              <tr><td><code style="white-space:nowrap">for</code>-<code style="white-space:nowrap">else</code>, <code style="white-space:nowrap">break</code></td><td class="src">2.5</td><td>고급 6</td></tr>
             </tbody>
           </table>
         </div>
@@ -695,65 +695,6 @@ hello world: 11글자
           </div>
         </details>
       </article>
-
-      <article class="problem" id="b5">
-        <div class="p-head"><span class="p-id">초급 5</span><span class="p-type">읽기</span><h3>짝수 세기</h3></div>
-        <div class="p-body">
-<pre><code class="language-python">def count_even(nums):                  # nums 를 받는 count_even 이라는 동작을 만들어 주세요
-    count = 0                          # count 에 0 을 담아 주세요
-    for x in nums:                     # nums 의 원소를 하나씩 x 라고 부르며 아래를 반복해 주세요
-        if x % 2 == 0:                 # 만약 x 를 2 로 나눈 나머지가 0 이면
-            count = count + 1          # count 에 count 더하기 1 을 담아 주세요
-    return count                       # count 를 결과로 돌려주세요
-
-print(count_even([1, 2, 3, 4, 6]))     # count_even 에 [1, 2, 3, 4, 6] 을 넣으면 뭐가 돌아오나요? 화면에 보여 주세요
-print(count_even([1, 3, 5]))           # count_even 에 [1, 3, 5] 를 넣으면 뭐가 돌아오나요? 화면에 보여 주세요
-print(count_even([]))                  # count_even 에 [] 를 넣으면 뭐가 돌아오나요? 화면에 보여 주세요
-print(count_even(list(range(1, 11))))  # count_even 에 list(range(1, 11)) 을 넣은 결과를 화면에 보여 주세요</code></pre>
-          <ul>
-            <li>출력 네 줄을 예측하기</li>
-            <li>첫 번째 호출에서 <code>x</code>와 <code>count</code>가 어떻게 변하는지 표로 적기</li>
-            <li><code>return count</code>의 들여쓰기가 <code>for</code>와 같은 이유 말하기</li>
-          </ul>
-        </div>
-        <div class="memo"><label for="memo-b5">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b5"></textarea></div>
-        <details class="sol hint"><summary>힌트 보기</summary>
-          <div class="sol-body">
-            <ul>
-              <li><code>x</code>와 <code>count</code>를 한 칸씩 적는 표를 만들어 따라가기</li>
-              <li><code>for</code>가 한 번도 안 도는 경우(빈 리스트)에는 <code>count</code>가 처음 값에서 변하지 않음</li>
-              <li><code>return count</code>의 들여쓰기가 반복 안인지 밖인지 보기</li>
-            </ul>
-          </div>
-        </details>
-        <details class="sol"><summary>정답·해설 보기</summary>
-          <div class="sol-body">
-<pre class="out"><code class="nohighlight">3
-0
-0
-5</code></pre>
-            <div class="table-scroll fill">
-              <table>
-                <thead><tr><th>x</th><th>x % 2</th><th>짝수?</th><th>count</th></tr></thead>
-                <tbody>
-                  <tr><td>1</td><td>1</td><td>아니오</td><td>0</td></tr>
-                  <tr><td>2</td><td>0</td><td>예</td><td>1</td></tr>
-                  <tr><td>3</td><td>1</td><td>아니오</td><td>1</td></tr>
-                  <tr><td>4</td><td>0</td><td>예</td><td>2</td></tr>
-                  <tr><td>6</td><td>0</td><td>예</td><td>3</td></tr>
-                </tbody>
-              </table>
-            </div>
-            <ul>
-              <li>빈 리스트 <code>[]</code>는 <code>for</code>가 한 번도 안 돎 → 처음 값 <code>0</code>이 그대로 반환</li>
-              <li><code>list(range(1, 11))</code> = 1~10 → 짝수 2, 4, 6, 8, 10 → <code>5</code></li>
-              <li><code>return</code>이 <code>for</code>와 같은 들여쓰기 → 반복이 <b>다 끝난 뒤</b> 한 번 실행</li>
-              <li>만약 <code>return</code>을 <code>for</code> 안으로 들여쓰면 첫 원소만 보고 끝나 버림 (중급 5에서 이어짐)</li>
-            </ul>
-            <p class="real"><b>실제 코드에서</b> · "0으로 시작 → 반복하며 조건 맞으면 1씩 더하기 → 끝나고 반환"은 개수 세기의 기본 모양. 이 모양을 보면 "무엇을 세는 함수인가?"만 찾으면 됨</p>
-          </div>
-        </details>
-      </article>
     </section>
 
     <!-- ================= 중급 ================= -->
@@ -892,7 +833,7 @@ print(to_clock(59))                      # to_clock 에 59 를 넣으면 뭐가 
             <ul>
               <li><code>125 // 60 = 2</code>, <code>125 % 60 = 5</code> (1장의 몫과 나머지)</li>
               <li><code>:2d</code>는 2칸을 맞추되 <b>빈칸을 공백으로</b> 채움 → <code> 2: 5</code></li>
-              <li>어색한 점 1: 타이머는 보통 <code>02:05</code>처럼 <b>0으로</b> 채움 → 고급 7에서 이어짐</li>
+              <li>어색한 점 1: 타이머는 보통 <code>02:05</code>처럼 <b>0으로</b> 채움 → 고급 8에서 이어짐</li>
               <li>어색한 점 2: <code>3600</code>초는 1시간인데 <code>60: 0</code>으로 나옴. 시간 단위를 다루지 않는 함수</li>
               <li>함수가 문자열을 <b>반환</b>하므로 <code>print</code>로 감싸야 보임</li>
             </ul>
@@ -950,7 +891,66 @@ for i in range(2, 4):                   # range(2, 4) 의 원소를 하나씩 i 
       </article>
 
       <article class="problem" id="m5">
-        <div class="p-head"><span class="p-id">중급 5</span><span class="p-type">읽기</span><h3>첫 번째 배수 찾기</h3></div>
+        <div class="p-head"><span class="p-id">중급 5</span><span class="p-type">읽기</span><h3>짝수 세기</h3></div>
+        <div class="p-body">
+<pre><code class="language-python">def count_even(nums):                  # nums 를 받는 count_even 이라는 동작을 만들어 주세요
+    count = 0                          # count 에 0 을 담아 주세요
+    for x in nums:                     # nums 의 원소를 하나씩 x 라고 부르며 아래를 반복해 주세요
+        if x % 2 == 0:                 # 만약 x 를 2 로 나눈 나머지가 0 이면
+            count = count + 1          # count 에 count 더하기 1 을 담아 주세요
+    return count                       # count 를 결과로 돌려주세요
+
+print(count_even([1, 2, 3, 4, 6]))     # count_even 에 [1, 2, 3, 4, 6] 을 넣으면 뭐가 돌아오나요? 화면에 보여 주세요
+print(count_even([1, 3, 5]))           # count_even 에 [1, 3, 5] 를 넣으면 뭐가 돌아오나요? 화면에 보여 주세요
+print(count_even([]))                  # count_even 에 [] 를 넣으면 뭐가 돌아오나요? 화면에 보여 주세요
+print(count_even(list(range(1, 11))))  # count_even 에 list(range(1, 11)) 을 넣은 결과를 화면에 보여 주세요</code></pre>
+          <ul>
+            <li>출력 네 줄을 예측하기</li>
+            <li>첫 번째 호출에서 <code>x</code>와 <code>count</code>가 어떻게 변하는지 표로 적기</li>
+            <li><code>return count</code>의 들여쓰기가 <code>for</code>와 같은 이유 말하기</li>
+          </ul>
+        </div>
+        <div class="memo"><label for="memo-m5">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m5"></textarea></div>
+        <details class="sol hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <ul>
+              <li><code>x</code>와 <code>count</code>를 한 칸씩 적는 표를 만들어 따라가기</li>
+              <li><code>for</code>가 한 번도 안 도는 경우(빈 리스트)에는 <code>count</code>가 처음 값에서 변하지 않음</li>
+              <li><code>return count</code>의 들여쓰기가 반복 안인지 밖인지 보기</li>
+            </ul>
+          </div>
+        </details>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">3
+0
+0
+5</code></pre>
+            <div class="table-scroll fill">
+              <table>
+                <thead><tr><th>x</th><th>x % 2</th><th>짝수?</th><th>count</th></tr></thead>
+                <tbody>
+                  <tr><td>1</td><td>1</td><td>아니오</td><td>0</td></tr>
+                  <tr><td>2</td><td>0</td><td>예</td><td>1</td></tr>
+                  <tr><td>3</td><td>1</td><td>아니오</td><td>1</td></tr>
+                  <tr><td>4</td><td>0</td><td>예</td><td>2</td></tr>
+                  <tr><td>6</td><td>0</td><td>예</td><td>3</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <ul>
+              <li>빈 리스트 <code>[]</code>는 <code>for</code>가 한 번도 안 돎 → 처음 값 <code>0</code>이 그대로 반환</li>
+              <li><code>list(range(1, 11))</code> = 1~10 → 짝수 2, 4, 6, 8, 10 → <code>5</code></li>
+              <li><code>return</code>이 <code>for</code>와 같은 들여쓰기 → 반복이 <b>다 끝난 뒤</b> 한 번 실행</li>
+              <li>만약 <code>return</code>을 <code>for</code> 안으로 들여쓰면 첫 원소만 보고 끝나 버림 (중급 6에서 이어짐)</li>
+            </ul>
+            <p class="real"><b>실제 코드에서</b> · "0으로 시작 → 반복하며 조건 맞으면 1씩 더하기 → 끝나고 반환"은 개수 세기의 기본 모양. 이 모양을 보면 "무엇을 세는 함수인가?"만 찾으면 됨</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="m6">
+        <div class="p-head"><span class="p-id">중급 6</span><span class="p-type">읽기</span><h3>첫 번째 배수 찾기</h3></div>
         <div class="p-body">
 <pre><code class="language-python">def find_first(nums, k):             # nums 와 k 를 받는 find_first 라는 동작을 만들어 주세요
     for x in nums:                   # nums 의 원소를 하나씩 x 라고 부르며 아래를 반복해 주세요
@@ -968,7 +968,7 @@ print(find_first([], 5))             # find_first 에 [] 와 5 를 넣으면 뭐
             <li>누군가 마지막 <code>return -1</code>을 한 칸 더 들여써서 <code>if</code>와 같은 줄에 맞췄다면, 첫 줄의 결과가 어떻게 바뀔지 예측하기</li>
           </ul>
         </div>
-        <div class="memo"><label for="memo-m5">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m5"></textarea></div>
+        <div class="memo"><label for="memo-m6">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m6"></textarea></div>
         <details class="sol hint"><summary>힌트 보기</summary>
           <div class="sol-body">
             <ul>
@@ -1003,9 +1003,18 @@ print(find_first([], 5))             # find_first 에 [] 와 5 를 넣으면 뭐
           </div>
         </details>
       </article>
+    </section>
 
-      <article class="problem" id="m6">
-        <div class="p-head"><span class="p-id">중급 6</span><span class="p-type">읽기</span><h3>0으로 나누기를 막는 순서</h3></div>
+    <!-- ================= 고급 ================= -->
+    <section class="level adv" data-level="adv">
+      <div class="level-head">
+        <span class="tag">고급</span>
+        <h2>실제 코드에서 헷갈리는 지점</h2>
+        <p><code>None</code>이 퍼지는 버그, 함수 안에서 바뀌는 리스트와 안 바뀌는 숫자, 경계 값에서 틀리는 함수, <code>and</code>의 계산 순서를 읽어 냅니다.</p>
+      </div>
+
+      <article class="problem" id="a1">
+        <div class="p-head"><span class="p-id">고급 1</span><span class="p-type">읽기</span><h3>0으로 나누기를 막는 순서</h3></div>
         <div class="p-body">
 <pre><code class="language-python">def safe_ratio(a, b):                                        # a 와 b 를 받는 safe_ratio 라는 동작을 만들어 주세요
     return b != 0 and a / b &gt; 1                              # b 가 0 이 아니고, a 나누기 b 가 1 보다 큰지 결과로 돌려주세요
@@ -1021,7 +1030,7 @@ print(unsafe_ratio(6, 0))                                    # unsafe_ratio 에 
             <li>두 함수는 <code>and</code> 양쪽의 순서만 다름. 결과가 달라지는 이유를 2.2.7 내용으로 설명하기</li>
           </ul>
         </div>
-        <div class="memo"><label for="memo-m6">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m6"></textarea></div>
+        <div class="memo"><label for="memo-a1">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a1"></textarea></div>
         <details class="sol hint"><summary>힌트 보기</summary>
           <div class="sol-body">
             <ul>
@@ -1046,18 +1055,9 @@ ZeroDivisionError: division by zero</code></pre>
           </div>
         </details>
       </article>
-    </section>
 
-    <!-- ================= 고급 ================= -->
-    <section class="level adv" data-level="adv">
-      <div class="level-head">
-        <span class="tag">고급</span>
-        <h2>실제 코드에서 헷갈리는 지점</h2>
-        <p><code>None</code>이 퍼지는 버그, 함수 안에서 바뀌는 리스트와 안 바뀌는 숫자, 경계 값에서 틀리는 함수를 읽어 냅니다.</p>
-      </div>
-
-      <article class="problem" id="a1">
-        <div class="p-head"><span class="p-id">고급 1</span><span class="p-type">버그</span><h3>보너스 합계가 안 된다</h3></div>
+      <article class="problem" id="a2">
+        <div class="p-head"><span class="p-id">고급 2</span><span class="p-type">버그</span><h3>보너스 합계가 안 된다</h3></div>
         <div class="p-body">
 <pre><code class="language-python">def add_bonus(scores):        # scores 를 받는 add_bonus 라는 동작을 만들어 주세요
     for s in scores:          # scores 의 원소를 하나씩 s 라고 부르며 아래를 반복해 주세요
@@ -1074,7 +1074,7 @@ print(total)                  # total 을 화면에 보여 주세요</code></pre
             <li>화면에 <code>85</code>, <code>95</code>가 보이니까 작성자는 함수가 잘 된다고 착각했음. 무엇을 착각했는지 설명하기</li>
           </ul>
         </div>
-        <div class="memo"><label for="memo-a1">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a1"></textarea></div>
+        <div class="memo"><label for="memo-a2">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a2"></textarea></div>
         <details class="sol hint"><summary>힌트 보기</summary>
           <div class="sol-body">
             <ul>
@@ -1113,8 +1113,8 @@ print(add_bonus([80, 90]))     # add_bonus 에 [80, 90] 을 넣으면 뭐가 돌
         </details>
       </article>
 
-      <article class="problem" id="a2">
-        <div class="p-head"><span class="p-id">고급 2</span><span class="p-type">읽기</span><h3>명단에서 첫 사람 빼기</h3></div>
+      <article class="problem" id="a3">
+        <div class="p-head"><span class="p-id">고급 3</span><span class="p-type">읽기</span><h3>명단에서 첫 사람 빼기</h3></div>
         <div class="p-body">
 <pre><code class="language-python">def drop_first(names):              # names 를 받는 drop_first 라는 동작을 만들어 주세요
     names.remove(names[0])          # names 에서 names[0] 을 지워 주세요
@@ -1131,7 +1131,7 @@ print(n, members)                   # n 과 members 를 화면에 보여 주세�
             <li>1장 "변수는 이름표" 비유로 설명하기</li>
           </ul>
         </div>
-        <div class="memo"><label for="memo-a2">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a2"></textarea></div>
+        <div class="memo"><label for="memo-a3">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a3"></textarea></div>
         <details class="sol hint"><summary>힌트 보기</summary>
           <div class="sol-body">
             <ul>
@@ -1151,13 +1151,13 @@ print(n, members)                   # n 과 members 를 화면에 보여 주세�
               <li><code>names[0]</code>은 호출할 때마다 그 순간의 첫 원소 → 처음엔 <code>'지민'</code>, 다음엔 <code>'서준'</code></li>
               <li>함수가 돌려준 값(<code>n</code>)은 개수뿐이지만, 리스트는 <b>돌려주지 않아도</b> 바뀜</li>
             </ul>
-            <p class="real"><b>실제 코드에서</b> · 리스트를 받는 함수는 "원본을 고치는가?"를 먼저 확인하기. 고친다면 호출 전후로 원본 값이 달라짐 (고급 3과 비교)</p>
+            <p class="real"><b>실제 코드에서</b> · 리스트를 받는 함수는 "원본을 고치는가?"를 먼저 확인하기. 고친다면 호출 전후로 원본 값이 달라짐 (고급 4과 비교)</p>
           </div>
         </details>
       </article>
 
-      <article class="problem" id="a3">
-        <div class="p-head"><span class="p-id">고급 3</span><span class="p-type">읽기</span><h3>단리와 복리</h3></div>
+      <article class="problem" id="a4">
+        <div class="p-head"><span class="p-id">고급 4</span><span class="p-type">읽기</span><h3>단리와 복리</h3></div>
         <div class="p-body">
 <pre><code class="language-python">def simple_amount(p, r, t):                     # p, r, t 를 받는 simple_amount 라는 동작을 만들어 주세요
     return p * (1 + r * t)                      # p 곱하기 (1 + r * t) 를 결과로 돌려주세요
@@ -1178,16 +1178,16 @@ print(principal)                                # principal 을 화면에 보여
           <ul>
             <li>출력 네 줄을 예측하기</li>
             <li><code>compound_amount</code> 안에서 <code>p</code>를 계속 다시 대입하는데, 마지막 <code>print(principal)</code>은 무엇이 나오는지 판단하기</li>
-            <li>고급 2의 리스트와 결과가 다른 이유 설명하기</li>
+            <li>고급 3의 리스트와 결과가 다른 이유 설명하기</li>
           </ul>
         </div>
-        <div class="memo"><label for="memo-a3">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a3"></textarea></div>
+        <div class="memo"><label for="memo-a4">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a4"></textarea></div>
         <details class="sol hint"><summary>힌트 보기</summary>
           <div class="sol-body">
             <ul>
               <li>한 해씩 표로 만들기: 단리는 매번 <code>principal</code>에서, 복리는 <code>while</code>이 돌 때마다 <code>p</code>가 어떻게 바뀌는지</li>
               <li><code>p = ...</code> 대입은 함수 안 이름표만 옮김. 밖의 <code>principal</code>이 달라지는지 생각하기</li>
-              <li>리스트를 <code>.remove()</code>로 고치던 고급 2와 비교하기</li>
+              <li>리스트를 <code>.remove()</code>로 고치던 고급 3와 비교하기</li>
             </ul>
           </div>
         </details>
@@ -1216,15 +1216,15 @@ print(principal)                                # principal 을 화면에 보여
             <ul>
               <li><code>principal</code>은 끝까지 <code>1000000</code></li>
               <li><code>p = p * (1 + r)</code>는 <code>p</code> 이름표를 <b>새 숫자로 옮겨 붙일</b> 뿐. 원래 숫자나 <code>principal</code>은 그대로</li>
-              <li>고급 2의 <code>.remove()</code>는 리스트 <b>자체를 고친</b> 것이라 밖에서도 보임</li>
+              <li>고급 3의 <code>.remove()</code>는 리스트 <b>자체를 고친</b> 것이라 밖에서도 보임</li>
             </ul>
             <p class="real"><b>실제 코드에서</b> · 매개변수에 <code>=</code>로 다시 대입하는 것은 밖에 영향 없음. <code>.remove()</code>처럼 <b>점(.)으로 고치는</b> 동작은 밖의 리스트까지 바꿈</p>
           </div>
         </details>
       </article>
 
-      <article class="problem" id="a4">
-        <div class="p-head"><span class="p-id">고급 4</span><span class="p-type">읽기</span><h3>자릿수 함수 두 개</h3></div>
+      <article class="problem" id="a5">
+        <div class="p-head"><span class="p-id">고급 5</span><span class="p-type">읽기</span><h3>자릿수 함수 두 개</h3></div>
         <div class="p-body">
 <pre><code class="language-python">def num_of_digits(num):   # num 을 받는 num_of_digits 라는 동작을 만들어 주세요
     return len(str(num))  # str(num) 의 길이를 결과로 돌려주세요
@@ -1252,7 +1252,7 @@ def num_of_digits2(num):  # num 을 받는 num_of_digits2 라는 동작을 만�
             <li>두 함수가 "틀리는 입력"을 각각 찾고, 어느 쪽이 더 믿을 만한지 이야기하기</li>
           </ul>
         </div>
-        <div class="memo"><label for="memo-a4">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a4"></textarea></div>
+        <div class="memo"><label for="memo-a5">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a5"></textarea></div>
         <details class="sol hint"><summary>힌트 보기</summary>
           <div class="sol-body">
             <ul>
@@ -1298,8 +1298,8 @@ def num_of_digits2(num):  # num 을 받는 num_of_digits2 라는 동작을 만�
         </details>
       </article>
 
-      <article class="problem" id="a5">
-        <div class="p-head"><span class="p-id">고급 5</span><span class="p-type">읽기 + 버그</span><h3>소수 판별기의 구멍</h3></div>
+      <article class="problem" id="a6">
+        <div class="p-head"><span class="p-id">고급 6</span><span class="p-type">읽기 + 버그</span><h3>소수 판별기의 구멍</h3></div>
         <div class="p-body">
 <pre><code class="language-python">def check(n):                               # n 을 받는 check 라는 동작을 만들어 주세요
     for d in range(2, n):                   # range(2, n) 의 원소를 하나씩 d 라고 부르며 아래를 반복해 주세요
@@ -1320,7 +1320,7 @@ check(1)                                    # check 에 1 을 넣어 실행해 �
             <li>수학적으로 틀린 출력을 찾고, 왜 그렇게 나오는지 <code>range</code>로 설명하기</li>
           </ul>
         </div>
-        <div class="memo"><label for="memo-a5">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a5"></textarea></div>
+        <div class="memo"><label for="memo-a6">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a6"></textarea></div>
         <details class="sol hint"><summary>힌트 보기</summary>
           <div class="sol-body">
             <ul>
@@ -1350,8 +1350,8 @@ check(1)                                    # check 에 1 을 넣어 실행해 �
         </details>
       </article>
 
-      <article class="problem" id="a6">
-        <div class="p-head"><span class="p-id">고급 6</span><span class="p-type">읽기</span><h3>무엇이든 세 배</h3></div>
+      <article class="problem" id="a7">
+        <div class="p-head"><span class="p-id">고급 7</span><span class="p-type">읽기</span><h3>무엇이든 세 배</h3></div>
         <div class="p-body">
 <pre><code class="language-python">def triple(x):                                  # x 를 받는 triple 이라는 동작을 만들어 주세요
     return x * 3                                # x 곱하기 3 을 결과로 돌려주세요
@@ -1367,7 +1367,7 @@ print(triple(0.1) == 0.3)                       # triple(0.1) 이 0.3 과 같은
             <li>마지막 줄이 <code>True</code>가 아니라면 그 이유 말하기</li>
           </ul>
         </div>
-        <div class="memo"><label for="memo-a6">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a6"></textarea></div>
+        <div class="memo"><label for="memo-a7">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a7"></textarea></div>
         <details class="sol hint"><summary>힌트 보기</summary>
           <div class="sol-body">
             <ul>
@@ -1396,8 +1396,8 @@ False</code></pre>
         </details>
       </article>
 
-      <article class="problem" id="a7">
-        <div class="p-head"><span class="p-id">고급 7</span><span class="p-type">추론</span><h3>처음 보는 문법 읽어 내기</h3></div>
+      <article class="problem" id="a8">
+        <div class="p-head"><span class="p-id">고급 8</span><span class="p-type">추론</span><h3>처음 보는 문법 읽어 내기</h3></div>
         <div class="p-body">
           <p>아직 배우지 않은 문법이 두 가지 섞여 있습니다. 결과를 보고 뜻을 추측해 보세요.</p>
 <pre><code class="language-python">def split_time(total):              # total 을 받는 split_time 이라는 동작을 만들어 주세요
@@ -1416,7 +1416,7 @@ print(f'{m:2d}:{s:2d}')             # m 과 s 를 글자 사이에 끼워 넣은
             <li>중급 3의 어색했던 타이머를 이 문법으로 어떻게 고칠 수 있을지 말로 설명하기</li>
           </ul>
         </div>
-        <div class="memo"><label for="memo-a7">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a7"></textarea></div>
+        <div class="memo"><label for="memo-a8">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a8"></textarea></div>
         <details class="sol hint"><summary>힌트 보기</summary>
           <div class="sol-body">
             <ul>
