@@ -1304,6 +1304,28 @@ print('등록된 사람 수:', len(book))           # '등록된 사람 수:' �
 명령(add/find/quit): quit
 등록된 사람 수: 1</code></pre>
     <p><strong>한 문장으로:</strong> 명령을 계속 입력받아 <code>add</code>는 저장, <code>find</code>는 조회, <code>quit</code>는 종료하는 전화번호부 프로그램이에요.</p>
+    <p><strong>먼저 알아 둘 두 가지</strong></p>
+    <ul>
+      <li><code>input('이름: ')</code>은 화면에 <code>이름: </code>을 보여 주고 <strong>멈춰서 기다려요</strong>. 내가 친 글자가 <code>name = input(...)</code>의 <code>name</code>에 담겨요.</li>
+      <li><code>while True:</code>는 <code>break</code>를 만날 때까지 아래 블록을 <strong>계속 반복</strong>해요. 한 바퀴에 명령 하나를 받고, <code>if / elif / elif</code>는 셋 중 하나만 실행해요.</li>
+    </ul>
+    <p><strong>입력 창에서 일어나는 일</strong> — 화면에 뜨는 글자(프로그램)와 내가 치는 글자를 나눠 봐요.</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>순서</th><th>화면에 뜨는 것(프로그램)</th><th>내가 치는 것</th><th>담기는 곳</th><th>그 결과</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td><code style="white-space:nowrap">명령(add/find/quit): </code></td><td><code>add</code></td><td><code>cmd</code></td><td><code>add</code> 갈래로 가요</td></tr>
+          <tr><td>2</td><td><code>이름: </code></td><td><code>철수</code></td><td><code>name</code></td><td></td></tr>
+          <tr><td>3</td><td><code>번호: </code></td><td><code style="white-space:nowrap">010-1111-2222</code></td><td><code>number</code></td><td><code style="white-space:nowrap">book['철수'] = '010-1111-2222'</code> 저장, 한 바퀴 끝(맨 위로)</td></tr>
+          <tr><td>4</td><td><code style="white-space:nowrap">명령(add/find/quit): </code></td><td><code>find</code></td><td><code>cmd</code></td><td><code>find</code> 갈래로 가요</td></tr>
+          <tr><td>5</td><td><code>이름: </code></td><td><code>철수</code></td><td><code>name</code></td><td><code>book</code>의 키에 <strong>있어서</strong> 번호를 화면에 찍어요 → <code style="white-space:nowrap">010-1111-2222</code></td></tr>
+          <tr><td>6</td><td><code style="white-space:nowrap">명령(add/find/quit): </code></td><td><code>find</code></td><td><code>cmd</code></td><td></td></tr>
+          <tr><td>7</td><td><code>이름: </code></td><td><code>영희</code></td><td><code>name</code></td><td><code>book</code>에 <strong>없어서</strong> 화면에 찍어요 → <code>없는 이름입니다.</code></td></tr>
+          <tr><td>8</td><td><code style="white-space:nowrap">명령(add/find/quit): </code></td><td><code>quit</code></td><td><code>cmd</code></td><td><code>break</code>로 반복이 끝나고 마지막 줄이 <code>등록된 사람 수: 1</code>을 찍어요</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>위 정답 출력은 이 8단계를 한 화면에 이어 적은 것이라 <code>add</code>, <code>철수</code>처럼 <strong>내가 친 글자</strong>가 섞여 보여요. 프로그램이 직접 찍는 줄은 <code style="white-space:nowrap">010-1111-2222</code>, <code>없는 이름입니다.</code>, <code>등록된 사람 수: 1</code> 세 줄뿐이에요.</p>
     <p><strong>명령을 넣을 때마다</strong></p>
     <div class="table-scroll">
       <table>
