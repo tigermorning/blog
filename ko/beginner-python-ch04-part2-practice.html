@@ -610,8 +610,18 @@ print(sorted(unique))          # unique 를 정렬해서 화면에 보여 주세
           <div class="sol-body">
 <pre class="out"><code class="nohighlight">6 3
 [1, 2, 3]</code></pre>
-    <p><code>set(리스트)</code>가 중복을 지워요. 세트는 순서가 없으니 <code>sorted()</code>로 정렬한 리스트를 출력해요.</p>
-    <p><strong>핵심 한 줄:</strong> <code>set(리스트)</code>는 중복을 지워요.</p>
+    <p><code>set(리스트)</code>가 중복을 지워요. 세트는 순서가 없어서 정렬 순서를 담을 수 없으니, <code>sorted()</code>가 정렬한 <strong>리스트</strong>로 돌려줘요.</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>이름</th><th>값</th><th>자료형</th><th>모양</th></tr></thead>
+        <tbody>
+          <tr><td><code>unique</code></td><td>1, 2, 3</td><td>세트</td><td><code>{1, 2, 3}</code></td></tr>
+          <tr><td><code>sorted(unique)</code></td><td>1, 2, 3</td><td>리스트</td><td><code>[1, 2, 3]</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>값은 같아도 모양이 달라요. 이 코드는 세트 자체를 출력하지 않고 <code>sorted(unique)</code>를 출력하니, 정답은 <code>{1, 2, 3}</code>이 아니라 <code>[1, 2, 3]</code>이에요.</p>
+    <p><strong>핵심 한 줄:</strong> <code>set(리스트)</code>는 중복을 지우고, <code>sorted()</code>는 무엇을 넣어도 리스트를 돌려줘요.</p>
           </div>
         </details>
       </article>
