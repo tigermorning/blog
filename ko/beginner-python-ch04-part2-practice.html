@@ -803,6 +803,17 @@ print(sorted(math - art))                   # math 에서 art 를 뺀 차집합�
 ['민수', '서연', '영희', '지현', '철수'] 5
 ['철수']</code></pre>
     <p>"모두"는 교집합 <code>&amp;</code>, "하나라도"는 합집합 <code>|</code>, "~에만"은 차집합 <code>-</code>예요. 합집합에서는 두 반에 모두 있는 학생을 한 번만 세요.</p>
+    <p>세트 연산의 결과는 세트(중괄호)인데, 출력에 대괄호가 보이는 이유는 <code>sorted()</code>가 정렬한 <strong>리스트</strong>로 돌려주기 때문이에요. 세트는 순서가 없어서 정렬 순서를 담을 수 없어요.</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>식</th><th>자료형</th><th>모양</th></tr></thead>
+        <tbody>
+          <tr><td><code style="white-space:nowrap">math &amp; art</code></td><td>세트</td><td><code>{'민수', '영희'}</code></td></tr>
+          <tr><td><code style="white-space:nowrap">sorted(math &amp; art)</code></td><td>리스트</td><td><code>['민수', '영희']</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>둘째 줄 끝의 <code>5</code>는 <code>len(math | art)</code>의 결과인 숫자라서 대괄호가 없어요.</p>
     <p><strong>핵심 한 줄:</strong> 모두는 <code>&amp;</code>, 하나라도는 <code>|</code>, ~에만은 <code>-</code>예요.</p>
           </div>
         </details>
