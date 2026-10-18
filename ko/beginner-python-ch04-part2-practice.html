@@ -720,7 +720,24 @@ print(count)            # count 를 화면에 보여 주세요</code></pre>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
 <pre class="out"><code class="nohighlight">{'b': 1, 'a': 3, 'n': 2}</code></pre>
-    <p><code>for ch in word:</code>가 <code>word</code>('banana')에서 글자를 하나씩 꺼내 <code>ch</code>에 담아 줘요. <code>for 이름 in 묶음:</code>은 "묶음에서 하나씩 꺼내 이름에 담으며 아래를 반복해라"라는 문장이고, <code>ch</code>는 이 줄에서 만들어지는 내가 정한 이름이에요. 문자열은 글자의 묶음이라 글자가 하나씩 나와요.</p>
+    <p><strong>한 문장으로:</strong> <code>'banana'</code>의 글자를 하나씩 보면서 "글자: 횟수" 짝을 <code>count</code>라는 딕셔너리에 쌓아 가는 코드예요.</p>
+    <p><strong>줄별 풀이</strong></p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>줄</th><th>하는 일</th></tr></thead>
+        <tbody>
+          <tr><td><code style="white-space:nowrap">word = 'banana'</code></td><td>글자들이 든 <code>'banana'</code>를 <code>word</code>에 담는다</td></tr>
+          <tr><td><code style="white-space:nowrap">count = {}</code></td><td><strong>빈 딕셔너리</strong>를 <code>count</code>에 담는다 (아직 적힌 것 없음)</td></tr>
+          <tr><td><code style="white-space:nowrap">for ch in word:</code></td><td><code>word</code>에서 글자를 하나씩 꺼내 <code>ch</code>에 담으며 아래를 반복한다. <code>ch</code>는 이 줄에서 만들어지는 내가 정한 이름이에요</td></tr>
+          <tr><td><code style="white-space:nowrap">if ch in count:</code></td><td>꺼낸 글자 <code>ch</code>가 <code>count</code>의 <strong>키</strong>로 이미 있나?</td></tr>
+          <tr><td><code style="white-space:nowrap">count[ch] += 1</code></td><td>있다면 → 그 글자의 값(횟수)에 1을 더한다</td></tr>
+          <tr><td><code style="white-space:nowrap">else:</code></td><td>없다면 (처음 보는 글자)</td></tr>
+          <tr><td><code style="white-space:nowrap">count[ch] = 1</code></td><td>→ 그 글자를 키로, 횟수 1을 값으로 새로 적는다</td></tr>
+          <tr><td><code style="white-space:nowrap">print(count)</code></td><td>다 끝난 <code>count</code>를 화면에 보여 준다</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>쌓여 가는 모습</strong> — 첫 반복에서 <code>b</code>는 <code>count</code>에 없으니 <code>else</code>로 가요.</p>
     <div class="table-scroll">
       <table>
         <thead><tr><th>반복</th><th><code>ch</code></th><th><code>ch in count</code>?</th><th>실행되는 줄</th><th>그 뒤 <code>count</code></th></tr></thead>
@@ -734,15 +751,22 @@ print(count)            # count 를 화면에 보여 주세요</code></pre>
         </tbody>
       </table>
     </div>
-    <p><code>count[ch]</code>의 <code>ch</code>는 그때 꺼낸 글자 자리예요. <code>ch in count</code>는 값이 아니라 키에 그 글자가 있는지 묻고, 처음 보는 글자는 <code>1</code>로 시작하고 이미 있으면 <code>1</code>을 더해요.</p>
+    <p><strong>왜 답이 딕셔너리 모양으로 나오나</strong> — <code>print(count)</code>는 <code>count</code>에 든 것을 그대로 보여 주는데, <code>count</code>가 처음부터 딕셔너리였기 때문이에요.</p>
+    <ol>
+      <li><code>count = {}</code>에서 <code>count</code>는 <strong>딕셔너리</strong>로 정해져요.</li>
+      <li><code>count[ch] = 1</code>과 <code>count[ch] += 1</code>은 모두 "키 <code>ch</code>에 값을 담는" 일이고, 딕셔너리에서는 이것이 <code>키: 값</code> 짝 하나를 만드는 일이에요.</li>
+      <li>짝이 쌓이면 <code>{'b': 1, 'a': 3, 'n': 2}</code>처럼 중괄호 안에 <code>키: 값</code>이 나열돼요.</li>
+      <li><code>print</code>는 그 모양을 바꾸지 않고 그대로 찍어요.</li>
+    </ol>
+    <p>글자(키)마다 횟수(값)를 짝지어 적어야 해서 딕셔너리를 써요. 딕셔너리는 이름표(키)로 값을 찾는 자료형이라, "<code>a</code>의 횟수는?"을 <code>count['a']</code>로 바로 물을 수 있어요.</p>
     <p>※ 빈 것을 만들 때는 <strong>모양</strong>이 자료형을 정해요.</p>
 <pre><code class="language-python">a = {}      # dict    중괄호, 비어 있음 -> 딕셔너리
 b = []      # list    대괄호 -> 리스트
 c = ()      # tuple   소괄호 -> 튜플
 d = set()   # set     set() -> 빈 세트
 e = 0       # int     숫자 -> 정수</code></pre>
-    <p><strong>핵심 한 줄:</strong> 처음 보면 1, 이미 있으면 +1 — 딕셔너리로 세요.</p>
-          </div>
+    <p><strong>핵심 한 줄:</strong> 빈 딕셔너리로 시작해, 글자를 볼 때마다 처음이면 <code>글자: 1</code>로 적고 이미 있으면 그 글자의 값을 1 올려요.</p>
+      </div>
         </details>
       </article>
 
