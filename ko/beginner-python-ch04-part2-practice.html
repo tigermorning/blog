@@ -476,7 +476,18 @@ print(type({}), type({5}), type(set()), type({5: 'a'}))  # {}, {5}, set(), {5: '
           <div class="sol-body">
 <pre class="out"><code class="nohighlight">&lt;class 'int'&gt; &lt;class 'tuple'&gt; &lt;class 'tuple'&gt;
 &lt;class 'dict'&gt; &lt;class 'set'&gt; &lt;class 'set'&gt; &lt;class 'dict'&gt;</code></pre>
-    <p><code>(5)</code>는 콤마가 없어서 튜플이 아니라 정수예요. 원소 하나짜리 튜플은 <code>(5,)</code>예요. 중괄호는 비어 있으면 딕셔너리, 값만 나열하면 세트, <code>키: 값</code>이 있으면 딕셔너리예요. 빈 세트는 <code>set()</code>으로 만들어요.</p>
+    <p><code>(5)</code>는 콤마가 없어서 튜플이 아니라 정수예요. 원소 하나짜리 튜플은 <code>(5,)</code>예요. 중괄호는 안에 든 것을 보고 구분해요.</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>중괄호 안</th><th>자료형</th><th>코드의 예</th></tr></thead>
+        <tbody>
+          <tr><td><code>키: 값</code> 쌍 (콜론 있음)</td><td>딕셔너리</td><td><code>{5: 'a'}</code></td></tr>
+          <tr><td>값만 나열 (콜론 없음)</td><td>세트</td><td><code>{5}</code></td></tr>
+          <tr><td>아무것도 없음</td><td>딕셔너리</td><td><code>{}</code></td></tr>
+          <tr><td>빈 세트는 이렇게</td><td>세트</td><td><code>set()</code></td></tr>
+        </tbody>
+      </table>
+    </div>
     <p><strong>핵심 한 줄:</strong> 콤마가 없으면 튜플이 아니고, <code>{}</code>는 빈 딕셔너리, 빈 세트는 <code>set()</code>이에요.</p>
           </div>
         </details>
