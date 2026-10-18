@@ -1292,16 +1292,8 @@ print('등록된 사람 수:', len(book))           # '등록된 사람 수:' �
         <div class="memo"><label for="memo-a4">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a4"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
-<pre class="out"><code class="nohighlight">명령(add/find/quit): add
-이름: 철수
-번호: 010-1111-2222
-명령(add/find/quit): find
-이름: 철수
-010-1111-2222
-명령(add/find/quit): find
-이름: 영희
+<pre class="out"><code class="nohighlight">010-1111-2222
 없는 이름입니다.
-명령(add/find/quit): quit
 등록된 사람 수: 1</code></pre>
     <p><strong>한 문장으로:</strong> 명령을 계속 입력받아 <code>add</code>는 저장, <code>find</code>는 조회, <code>quit</code>는 종료하는 전화번호부 프로그램이에요.</p>
     <p><strong>먼저 알아 둘 두 가지</strong></p>
@@ -1325,7 +1317,7 @@ print('등록된 사람 수:', len(book))           # '등록된 사람 수:' �
         </tbody>
       </table>
     </div>
-    <p>위 정답 출력은 이 8단계를 한 화면에 이어 적은 것이라 <code>add</code>, <code>철수</code>처럼 <strong>내가 친 글자</strong>가 섞여 보여요. 프로그램이 직접 찍는 줄은 <code style="white-space:nowrap">010-1111-2222</code>, <code>없는 이름입니다.</code>, <code>등록된 사람 수: 1</code> 세 줄뿐이에요.</p>
+    <p>정답은 프로그램이 직접 찍는 세 줄이에요. <code>add</code>는 저장만 하고 아무것도 찍지 않고, <code>find 철수</code>는 번호를, <code>find 영희</code>는 안내 문구를, <code>quit</code> 뒤의 마지막 줄은 등록된 사람 수를 찍어요. <code>add</code>, <code>철수</code> 같은 글자는 내가 입력한 것이라 정답에 들어가지 않아요.</p>
     <p><strong>명령을 넣을 때마다</strong></p>
     <div class="table-scroll">
       <table>
