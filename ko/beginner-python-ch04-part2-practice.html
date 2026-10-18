@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>실습 문제 14개 — 초급·중급·고급으로 튜플·딕셔너리·세트 코드 읽고 결과 예측하기 - Tigermorning</title>
-<meta name="description" content="왕초보를 위한 Python 4장 후반부(튜플·딕셔너리·세트) 범위로 만든 초급 4·중급 6·고급 4 코드 읽기 실습 14문제와 정답·해설">
+<meta name="description" content="왕초보를 위한 Python 4장 후반부(튜플·딕셔너리·세트) 범위로 만든 초급 5·중급 5·고급 4 코드 읽기 실습 14문제와 정답·해설">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=JetBrains+Mono:wght@400;600&family=Nanum+Gothic+Coding:wght@400;700&display=swap">
@@ -396,8 +396,8 @@ main, .problem, .p-body, .sol-body, .level { min-width: 0; }
     <p class="lead">코드를 짜지 않고 <b>완성된 코드를 읽고 실행 결과를 예측</b>하는 문제집. 문제마다 <b>힌트 보기</b>와 <b>정답·해설 보기</b>가 따로 접혀 있으니, 먼저 힌트를 보고 그래도 안 풀리면 정답·해설을 여세요. 교재의 공식 연습 문제가 아니라 4.3 ~ 4.5절 내용으로 만든 문제예요.</p>
     <div class="counts">
       <span class="count all">14문제</span>
-      <span class="count basic">초급 4</span>
-      <span class="count mid">중급 6</span>
+      <span class="count basic">초급 5</span>
+      <span class="count mid">중급 5</span>
       <span class="count adv">고급 4</span>
     </div>
   </header>
@@ -406,26 +406,26 @@ main, .problem, .p-body, .sol-body, .level { min-width: 0; }
     <div class="grp-basic"><h2>초급</h2>
       <ol>
         <li><a href="#b1"><span class="n">1</span>자료형 맞히기 — (5)와 (5,), {}와 set()</a></li>
-        <li><a href="#b2"><span class="n">2</span>맞바꾸기와 튜플의 불변</a></li>
-        <li><a href="#b3"><span class="n">3</span>딕셔너리 추가·수정·삭제와 in</a></li>
-        <li><a href="#b4"><span class="n">4</span>set()으로 중복 지우기</a></li>
+        <li><a href="#b2"><span class="n">2</span>set()으로 중복 지우기</a></li>
+        <li><a href="#b3"><span class="n">3</span>세트의 교집합·합집합·차집합</a></li>
+        <li><a href="#b4"><span class="n">4</span>딕셔너리 추가·수정·삭제와 in</a></li>
+        <li><a href="#b5"><span class="n">5</span>맞바꾸기와 튜플의 불변</a></li>
       </ol>
     </div>
     <div class="grp-mid"><h2>중급</h2>
       <ol>
-        <li><a href="#m1"><span class="n">1</span>*nums와 튜플 반환</a></li>
-        <li><a href="#m2"><span class="n">2</span>딕셔너리로 글자 세기</a></li>
-        <li><a href="#m3"><span class="n">3</span>세트의 교집합·합집합·차집합</a></li>
-        <li><a href="#m4"><span class="n">4</span>세트로 6의 배수 찾기</a></li>
-        <li><a href="#m5"><span class="n">5</span>함수로 단어 세기</a></li>
-        <li><a href="#m6"><span class="n">6</span>튜플로 최솟값·최댓값 돌려주기</a></li>
+        <li><a href="#m1"><span class="n">1</span>items()로 최고 점수 찾기</a></li>
+        <li><a href="#m2"><span class="n">2</span>세트로 6의 배수 찾기</a></li>
+        <li><a href="#m3"><span class="n">3</span>딕셔너리로 글자 세기</a></li>
+        <li><a href="#m4"><span class="n">4</span>딕셔너리 키가 될 수 있는 값</a></li>
+        <li><a href="#m5"><span class="n">5</span>*nums와 튜플 반환</a></li>
       </ol>
     </div>
     <div class="grp-adv"><h2>고급</h2>
       <ol>
-        <li><a href="#a1"><span class="n">1</span>items()로 최고 점수 찾기</a></li>
-        <li><a href="#a2"><span class="n">2</span>순서 지키며 중복 지우기 — set + list</a></li>
-        <li><a href="#a3"><span class="n">3</span>딕셔너리 키가 될 수 있는 값</a></li>
+        <li><a href="#a1"><span class="n">1</span>순서 지키며 중복 지우기 — set + list</a></li>
+        <li><a href="#a2"><span class="n">2</span>튜플로 최솟값·최댓값 돌려주기</a></li>
+        <li><a href="#a3"><span class="n">3</span>함수로 단어 세기</a></li>
         <li><a href="#a4"><span class="n">4</span>전화번호부 — while + 딕셔너리</a></li>
       </ol>
     </div>
@@ -511,128 +511,7 @@ print(type({}), type({5}), type(set()), type({5: 'a'}))  # {}, {5}, set(), {5: '
       </article>
 
       <article class="problem" id="b2">
-        <div class="p-head"><span class="p-id">초급 2</span><span class="p-type">읽기</span><h3>맞바꾸기와 튜플의 불변</h3></div>
-        <div class="p-body">
-<p>임시 변수 없이 값을 맞바꾸고, 튜플의 원소를 바꿔 보는 코드예요.</p>
-<pre><code class="language-python">x, y = 3, 7                 # x 에 3, y 에 7 을 한 번에 담아 주세요
-x, y = y, x                 # x 와 y 에 담긴 값을 서로 바꿔 주세요
-print(x, y)                 # x 와 y 를 화면에 보여 주세요
-t = (1, 2, 3)               # t 에 (1, 2, 3) 튜플을 담아 주세요
-try:                        # 아래를 시도해 주세요
-    t[0] = 9                # t 의 0번 자리에 9 를 담아 주세요
-except TypeError as e:      # TypeError 가 나면 그 오류를 e 라고 부르며
-    print('TypeError:', e)  # 'TypeError:' 와 e 를 화면에 보여 주세요
-print(t)                    # t 를 화면에 보여 주세요</code></pre>
-    <p>이 코드를 실행하면 무엇이 출력될까요?</p>
-    <div class="table-scroll">
-      <table>
-        <thead><tr><th>출력</th><th>예측</th></tr></thead>
-        <tbody>
-          <tr><td>첫 번째 줄</td><td>?</td></tr>
-          <tr><td>두 번째 줄</td><td>?</td></tr>
-          <tr><td>세 번째 줄</td><td>?</td></tr>
-        </tbody>
-      </table>
-    </div>
-        </div>
-        <details class="hint"><summary>힌트 보기</summary>
-          <div class="sol-body">
-            <p><code>x, y = y, x</code>는 오른쪽의 <code>(y, x)</code> 튜플을 먼저 만들어요. 튜플의 원소를 바꾸려 하면 어떤 오류가 날까요?</p>
-          </div>
-        </details>
-        <div class="memo"><label for="memo-b2">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b2"></textarea></div>
-        <details class="sol"><summary>정답·해설 보기</summary>
-          <div class="sol-body">
-<pre class="out"><code class="nohighlight">7 3
-TypeError: 'tuple' object does not support item assignment
-(1, 2, 3)</code></pre>
-    <p><strong>한 문장으로:</strong> 튜플로 두 값을 한 번에 맞바꾸고, 튜플의 원소를 바꾸려 하면 오류가 나는 것을 확인하는 코드예요.</p>
-    <p><strong>줄마다 바뀌는 값</strong></p>
-    <div class="table-scroll">
-      <table>
-        <thead><tr><th>실행</th><th>결과·상태</th></tr></thead>
-        <tbody>
-          <tr><td><code style="white-space:nowrap">x, y = 3, 7</code></td><td>x=3, y=7</td></tr>
-          <tr><td><code style="white-space:nowrap">x, y = y, x</code></td><td>오른쪽 <code>(y, x)</code> = <code>(7, 3)</code>을 먼저 만든 뒤 풀어 담아요 → x=7, y=3</td></tr>
-          <tr><td><code style="white-space:nowrap">print(x, y)</code></td><td>7 3</td></tr>
-          <tr><td><code style="white-space:nowrap">t[0] = 9</code></td><td>TypeError (튜플은 칸에 값을 넣는 것을 지원하지 않음)</td></tr>
-          <tr><td><code style="white-space:nowrap">print(t)</code></td><td>(1, 2, 3) — 오류가 나서 바뀌지 않았어요</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p>맞바꿀 때 임시 변수가 필요 없는 것은, 오른쪽에서 새 값 쌍이 먼저 완성된 뒤에 왼쪽에 담기기 때문이에요.</p>
-    <p><code>x, y = y, x</code>는 오른쪽에 <code>(y, x)</code> 튜플을 만들어 왼쪽에 풀어 담아요. 튜플은 불변이라 원소 대입이 TypeError를 일으키고, 튜플은 그대로 남아요. 오류 문구 <code>'tuple' object does not support item assignment</code>는 "튜플은 칸에 값을 넣는 것(<code>t[0] = 9</code>)을 지원하지 않는다"는 뜻이에요.</p>
-    <p><strong>핵심 한 줄:</strong> <code>x, y = y, x</code>는 맞바꾸기이고, 튜플의 원소는 바꿀 수 없어요.</p>
-          </div>
-        </details>
-      </article>
-
-      <article class="problem" id="b3">
-        <div class="p-head"><span class="p-id">초급 3</span><span class="p-type">읽기</span><h3>딕셔너리 추가·수정·삭제와 in</h3></div>
-        <div class="p-body">
-<p>딕셔너리에 쌍을 추가·수정·삭제하고, 키·값·쌍을 꺼내 보는 코드예요.</p>
-<pre><code class="language-python">stock = {'apple': 3, 'banana': 5}           # stock 에 apple 과 banana 가 든 딕셔너리를 담아 주세요
-stock['mango'] = 2                          # stock 의 'mango' 자리에 2 를 담아 주세요
-stock['apple'] = 10                         # stock 의 'apple' 자리에 10 을 담아 주세요
-del stock['banana']                         # stock 의 'banana' 쌍을 지워 주세요
-print(stock)                                # stock 을 화면에 보여 주세요
-print('mango' in stock, 'banana' in stock)  # 'mango' 와 'banana' 가 stock 의 키에 있나요?
-print(list(stock.keys()))                   # stock 의 키들을 리스트로 화면에 보여 주세요
-print(list(stock.values()))                 # stock 의 값들을 리스트로 화면에 보여 주세요
-print(list(stock.items()))                  # stock 의 (키, 값) 쌍들을 리스트로 화면에 보여 주세요</code></pre>
-    <p>이 코드를 실행하면 무엇이 출력될까요?</p>
-    <div class="table-scroll">
-      <table>
-        <thead><tr><th>출력</th><th>예측</th></tr></thead>
-        <tbody>
-          <tr><td>첫 번째 줄</td><td>?</td></tr>
-          <tr><td>두 번째 줄</td><td>?</td></tr>
-          <tr><td>세 번째 줄</td><td>?</td></tr>
-          <tr><td>네 번째 줄</td><td>?</td></tr>
-          <tr><td>다섯 번째 줄</td><td>?</td></tr>
-        </tbody>
-      </table>
-    </div>
-        </div>
-        <details class="hint"><summary>힌트 보기</summary>
-          <div class="sol-body">
-            <p>없는 키에 담으면 추가, 있는 키에 담으면 수정이에요. <code>in</code>은 값이 아니라 키가 있는지 봐요.</p>
-          </div>
-        </details>
-        <div class="memo"><label for="memo-b3">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b3"></textarea></div>
-        <details class="sol"><summary>정답·해설 보기</summary>
-          <div class="sol-body">
-<pre class="out"><code class="nohighlight">{'apple': 10, 'mango': 2}
-True False
-['apple', 'mango']
-[10, 2]
-[('apple', 10), ('mango', 2)]</code></pre>
-    <p><strong>한 문장으로:</strong> 딕셔너리에 쌍을 더하고 고치고 지운 뒤, 키 확인과 키·값·쌍 꺼내기를 해 보는 코드예요.</p>
-    <p><strong>줄마다 바뀌는 stock</strong></p>
-    <div class="table-scroll">
-      <table>
-        <thead><tr><th>실행</th><th>결과·상태</th></tr></thead>
-        <tbody>
-          <tr><td><code style="white-space:nowrap">stock = {'apple': 3, 'banana': 5}</code></td><td>{'apple': 3, 'banana': 5}</td></tr>
-          <tr><td><code style="white-space:nowrap">stock['mango'] = 2</code></td><td>없는 키라서 <strong>추가</strong> → {'apple': 3, 'banana': 5, 'mango': 2}</td></tr>
-          <tr><td><code style="white-space:nowrap">stock['apple'] = 10</code></td><td>있는 키라서 <strong>수정</strong> → {'apple': 10, 'banana': 5, 'mango': 2}</td></tr>
-          <tr><td><code style="white-space:nowrap">del stock['banana']</code></td><td>쌍을 <strong>삭제</strong> → {'apple': 10, 'mango': 2}</td></tr>
-          <tr><td><code style="white-space:nowrap">'mango' in stock, 'banana' in stock</code></td><td>True, False (키가 있나 없나)</td></tr>
-          <tr><td><code style="white-space:nowrap">list(stock.keys())</code></td><td>['apple', 'mango'] — 키들</td></tr>
-          <tr><td><code style="white-space:nowrap">list(stock.values())</code></td><td>[10, 2] — 값들</td></tr>
-          <tr><td><code style="white-space:nowrap">list(stock.items())</code></td><td>[('apple', 10), ('mango', 2)] — (키, 값) 쌍들</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p>추가와 수정은 같은 모양(<code>stock[키] = 값</code>)이고, 키가 없으면 추가·있으면 수정이에요.</p>
-    <p>없는 키에 대입하면 추가, 있는 키에 대입하면 수정이에요. <code>in</code>은 값이 아니라 키가 있는지를 확인해요. <code>items()</code>는 (키, 값) 튜플의 모음이에요.</p>
-    <p><strong>핵심 한 줄:</strong> 대입은 없으면 추가·있으면 수정이고, <code>in</code>은 키를 확인해요.</p>
-          </div>
-        </details>
-      </article>
-
-      <article class="problem" id="b4">
-        <div class="p-head"><span class="p-id">초급 4</span><span class="p-type">읽기</span><h3>set()으로 중복 지우기</h3></div>
+        <div class="p-head"><span class="p-id">초급 2</span><span class="p-type">읽기</span><h3>set()으로 중복 지우기</h3></div>
         <div class="p-body">
 <p>리스트의 중복을 세트로 지우고 개수를 세어 봐요.</p>
 <pre><code class="language-python">nums = [3, 1, 3, 2, 1, 3]      # nums 에 [3, 1, 3, 2, 1, 3] 리스트를 담아 주세요
@@ -655,7 +534,7 @@ print(sorted(unique))          # unique 를 정렬해서 화면에 보여 주세
             <p>세트는 같은 값을 하나만 가져요. <code>len()</code>은 원소 개수를 세고, 세트는 순서가 없어 <code>sorted()</code>로 정렬해요.</p>
           </div>
         </details>
-        <div class="memo"><label for="memo-b4">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b4"></textarea></div>
+        <div class="memo"><label for="memo-b2">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b2"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
 <pre class="out"><code class="nohighlight">6 3
@@ -691,138 +570,9 @@ print(sorted(unique))          # unique 를 정렬해서 화면에 보여 주세
           </div>
         </details>
       </article>
-    </section>
 
-    <section class="level mid" data-level="mid">
-      <div class="level-head">
-        <span class="tag">중급</span>
-        <h2>개념 합치기 — 함수·반복문과 함께</h2>
-        <p>튜플·딕셔너리·세트에 함수, <code>for</code>, <code>*인자</code>를 섞은 코드를 읽어요.</p>
-      </div>
-
-      <article class="problem" id="m1">
-        <div class="p-head"><span class="p-id">중급 1</span><span class="p-type">읽기</span><h3>*nums와 튜플 반환</h3></div>
-        <div class="p-body">
-<p>남는 인자를 모두 받는 함수 <code>total</code>을 세 번 불러요.</p>
-<pre><code class="language-python">def total(*nums):         # 남는 인자를 모두 nums 로 받는 total 이라는 동작을 만들어 주세요
-    s = 0                 # s 에 0 을 담아 주세요
-    for n in nums:        # nums 의 원소를 하나씩 n 이라고 부르며 아래를 반복해 주세요
-        s += n            # s 에 n 을 더해 다시 담아 주세요
-    return s, len(nums)   # s 와 nums 의 길이를 결과로 돌려주세요
-result = total(4, 8, 15)  # result 에 total 에 4, 8, 15 를 넣은 결과를 담아 주세요
-s, count = total(1, 2)    # total 에 1, 2 를 넣은 결과를 s 와 count 에 나눠 담아 주세요
-print(result)             # result 를 화면에 보여 주세요
-print(s, count)           # s 와 count 를 화면에 보여 주세요
-print(total())            # total 에 아무것도 넣지 않은 결과를 화면에 보여 주세요</code></pre>
-    <p>이 코드를 실행하면 무엇이 출력될까요?</p>
-    <div class="table-scroll">
-      <table>
-        <thead><tr><th>출력</th><th>예측</th></tr></thead>
-        <tbody>
-          <tr><td>첫 번째 줄</td><td>?</td></tr>
-          <tr><td>두 번째 줄</td><td>?</td></tr>
-          <tr><td>세 번째 줄</td><td>?</td></tr>
-        </tbody>
-      </table>
-    </div>
-        </div>
-        <details class="hint"><summary>힌트 보기</summary>
-          <div class="sol-body">
-            <p><code>*nums</code>는 남는 인자를 튜플로 모아요. 인자가 없으면 <code>nums</code>는 빈 튜플이에요.</p>
-          </div>
-        </details>
-        <div class="memo"><label for="memo-m1">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m1"></textarea></div>
-        <details class="sol"><summary>정답·해설 보기</summary>
-          <div class="sol-body">
-<pre class="out"><code class="nohighlight">(27, 3)
-3 2
-(0, 0)</code></pre>
-    <p><strong>한 문장으로:</strong> 숫자를 몇 개든 받아 합계와 개수를 튜플로 돌려주는 함수 <code>total</code>을 세 번 불러 보는 코드예요.</p>
-    <p><code>*nums</code>는 "넘겨받은 값을 몇 개든 전부 모아 <code>nums</code>라는 튜플에 담아라"는 뜻이에요.</p>
-    <div class="table-scroll">
-      <table>
-        <thead><tr><th>부르는 줄</th><th><code>nums</code>에 담기는 것</th><th>돌려주는 것 (합계, 개수)</th></tr></thead>
-        <tbody>
-          <tr><td><code style="white-space:nowrap">total(4, 8, 15)</code></td><td><code>(4, 8, 15)</code></td><td><code>(27, 3)</code></td></tr>
-          <tr><td><code style="white-space:nowrap">total(1, 2)</code></td><td><code>(1, 2)</code></td><td><code>(3, 2)</code></td></tr>
-          <tr><td><code style="white-space:nowrap">total()</code></td><td><code>()</code> (빈 튜플)</td><td><code>(0, 0)</code></td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p>함수 안에서는 <code>s</code>가 <code>0</code>에서 시작해 <code>for</code>가 값을 하나씩 더하고, <code>return s, len(nums)</code>의 쉼표가 합계와 개수를 <strong>튜플 하나</strong>로 묶어 돌려줘요. <code>total(4, 8, 15)</code>는 <code>s</code>가 <code>0</code> → <code>4</code> → <code>12</code> → <code>27</code>이 되고 값이 세 개라 <code>(27, 3)</code>이에요.</p>
-    <p>받는 쪽은 두 가지예요. <code>result = total(4, 8, 15)</code>는 튜플 <code>(27, 3)</code>을 통째로 담고, <code>s, count = total(1, 2)</code>는 돌려받은 <code>(3, 2)</code>를 <code>s</code>(<code>3</code>)와 <code>count</code>(<code>2</code>)로 풀어 담아요. 값을 주지 않은 <code>total()</code>은 <code>nums</code>가 비어서 <code>for</code>가 한 번도 돌지 않으니 <code>s</code>는 처음 값 <code>0</code>이고, 개수도 <code>0</code>이에요.</p>
-    <p><strong>핵심 한 줄:</strong> <code>*nums</code>는 튜플로 모으고, <code>return a, b</code>는 튜플 하나를 돌려줘요.</p>
-          </div>
-        </details>
-      </article>
-
-      <article class="problem" id="m2">
-        <div class="p-head"><span class="p-id">중급 2</span><span class="p-type">읽기</span><h3>딕셔너리로 글자 세기</h3></div>
-        <div class="p-body">
-<p>글자별로 몇 번 나오는지 딕셔너리로 세는 코드예요.</p>
-<pre><code class="language-python">word = 'banana'         # word 에 'banana' 를 담아 주세요
-count = {}              # count 에 빈 딕셔너리를 담아 주세요
-for ch in word:         # word 의 글자를 하나씩 ch 라고 부르며 아래를 반복해 주세요
-    if ch in count:     # 만약 ch 가 count 의 키에 있으면
-        count[ch] += 1  # count 의 ch 자리에 1 을 더해 다시 담아 주세요
-    else:               # 아니면
-        count[ch] = 1   # count 의 ch 자리에 1 을 담아 주세요
-print(count)            # count 를 화면에 보여 주세요</code></pre>
-    <p>이 코드를 실행하면 무엇이 출력될까요?</p>
-    <div class="table-scroll">
-      <table>
-        <thead><tr><th>출력</th><th>예측</th></tr></thead>
-        <tbody>
-          <tr><td>첫 번째 줄</td><td>?</td></tr>
-        </tbody>
-      </table>
-    </div>
-        </div>
-        <details class="hint"><summary>힌트 보기</summary>
-          <div class="sol-body">
-            <p><code>count</code>에 글자가 없으면 1로 만들고, 있으면 1을 더해요. <code>'banana'</code>를 글자 하나씩 따라가 보세요.</p>
-          </div>
-        </details>
-        <div class="memo"><label for="memo-m2">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m2"></textarea></div>
-        <details class="sol"><summary>정답·해설 보기</summary>
-          <div class="sol-body">
-<pre class="out"><code class="nohighlight">{'b': 1, 'a': 3, 'n': 2}</code></pre>
-    <p><strong>한 문장으로:</strong> <code>'banana'</code>의 글자를 하나씩 보면서 "글자: 횟수" 짝을 <code>count</code>라는 딕셔너리에 쌓아 가는 코드예요.</p>
-    <p><strong>쌓여 가는 모습</strong> — 첫 반복에서 <code>b</code>는 <code>count</code>에 없으니 <code>else</code>로 가요.</p>
-    <div class="table-scroll">
-      <table>
-        <thead><tr><th>반복</th><th><code>ch</code></th><th><code>ch in count</code>?</th><th>실행되는 줄</th><th>그 뒤 <code>count</code></th></tr></thead>
-        <tbody>
-          <tr><td>1</td><td><code>'b'</code></td><td>아니오</td><td><code>count['b'] = 1</code></td><td><code>{'b': 1}</code></td></tr>
-          <tr><td>2</td><td><code>'a'</code></td><td>아니오</td><td><code>count['a'] = 1</code></td><td><code>{'b': 1, 'a': 1}</code></td></tr>
-          <tr><td>3</td><td><code>'n'</code></td><td>아니오</td><td><code>count['n'] = 1</code></td><td><code>{'b': 1, 'a': 1, 'n': 1}</code></td></tr>
-          <tr><td>4</td><td><code>'a'</code></td><td>예</td><td><code>count['a'] += 1</code></td><td><code>{'b': 1, 'a': 2, 'n': 1}</code></td></tr>
-          <tr><td>5</td><td><code>'n'</code></td><td>예</td><td><code>count['n'] += 1</code></td><td><code>{'b': 1, 'a': 2, 'n': 2}</code></td></tr>
-          <tr><td>6</td><td><code>'a'</code></td><td>예</td><td><code>count['a'] += 1</code></td><td><code>{'b': 1, 'a': 3, 'n': 2}</code></td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p><strong>왜 답이 딕셔너리 모양으로 나오나</strong> — <code>print(count)</code>는 <code>count</code>에 든 것을 그대로 보여 주는데, <code>count</code>가 처음부터 딕셔너리였기 때문이에요.</p>
-    <ol>
-      <li><code>count = {}</code>에서 <code>count</code>는 <strong>딕셔너리</strong>로 정해져요.</li>
-      <li><code>count[ch] = 1</code>과 <code>count[ch] += 1</code>은 모두 "키 <code>ch</code>에 값을 담는" 일이고, 딕셔너리에서는 이것이 <code>키: 값</code> 짝 하나를 만드는 일이에요.</li>
-      <li>짝이 쌓이면 <code>{'b': 1, 'a': 3, 'n': 2}</code>처럼 중괄호 안에 <code>키: 값</code>이 나열돼요.</li>
-      <li><code>print</code>는 그 모양을 바꾸지 않고 그대로 찍어요.</li>
-    </ol>
-    <p>글자(키)마다 횟수(값)를 짝지어 적어야 해서 딕셔너리를 써요. 딕셔너리는 이름표(키)로 값을 찾는 자료형이라, "<code>a</code>의 횟수는?"을 <code>count['a']</code>로 바로 물을 수 있어요.</p>
-    <p>※ 빈 것을 만들 때는 <strong>모양</strong>이 자료형을 정해요.</p>
-<pre><code class="language-python">a = {}      # dict    중괄호, 비어 있음 -> 딕셔너리
-b = []      # list    대괄호 -> 리스트
-c = ()      # tuple   소괄호 -> 튜플
-d = set()   # set     set() -> 빈 세트
-e = 0       # int     숫자 -> 정수</code></pre>
-    <p><strong>핵심 한 줄:</strong> 빈 딕셔너리로 시작해, 글자를 볼 때마다 처음이면 <code>글자: 1</code>로 적고 이미 있으면 그 글자의 값을 1 올려요.</p>
-      </div>
-        </details>
-      </article>
-
-      <article class="problem" id="m3">
-        <div class="p-head"><span class="p-id">중급 3</span><span class="p-type">읽기</span><h3>세트의 교집합·합집합·차집합</h3></div>
+      <article class="problem" id="b3">
+        <div class="p-head"><span class="p-id">초급 3</span><span class="p-type">읽기</span><h3>세트의 교집합·합집합·차집합</h3></div>
         <div class="p-body">
 <p>두 세트로 교집합·합집합·차집합을 구해 봐요.</p>
 <pre><code class="language-python">math = {'철수', '영희', '민수'}                   # math 에 수학반 학생 세트를 담아 주세요
@@ -847,7 +597,7 @@ print(sorted(math - art))                   # math 에서 art 를 뺀 차집합�
             <p><code>&amp;</code>는 둘 다 있는 것, <code>|</code>는 하나라도 있는 것, <code>-</code>는 앞에만 있는 것이에요.</p>
           </div>
         </details>
-        <div class="memo"><label for="memo-m3">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m3"></textarea></div>
+        <div class="memo"><label for="memo-b3">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b3"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
 <pre class="out"><code class="nohighlight">['민수', '영희']
@@ -885,8 +635,188 @@ print(sorted(math - art))                   # math 에서 art 를 뺀 차집합�
         </details>
       </article>
 
-      <article class="problem" id="m4">
-        <div class="p-head"><span class="p-id">중급 4</span><span class="p-type">읽기</span><h3>세트로 6의 배수 찾기</h3></div>
+      <article class="problem" id="b4">
+        <div class="p-head"><span class="p-id">초급 4</span><span class="p-type">읽기</span><h3>딕셔너리 추가·수정·삭제와 in</h3></div>
+        <div class="p-body">
+<p>딕셔너리에 쌍을 추가·수정·삭제하고, 키·값·쌍을 꺼내 보는 코드예요.</p>
+<pre><code class="language-python">stock = {'apple': 3, 'banana': 5}           # stock 에 apple 과 banana 가 든 딕셔너리를 담아 주세요
+stock['mango'] = 2                          # stock 의 'mango' 자리에 2 를 담아 주세요
+stock['apple'] = 10                         # stock 의 'apple' 자리에 10 을 담아 주세요
+del stock['banana']                         # stock 의 'banana' 쌍을 지워 주세요
+print(stock)                                # stock 을 화면에 보여 주세요
+print('mango' in stock, 'banana' in stock)  # 'mango' 와 'banana' 가 stock 의 키에 있나요?
+print(list(stock.keys()))                   # stock 의 키들을 리스트로 화면에 보여 주세요
+print(list(stock.values()))                 # stock 의 값들을 리스트로 화면에 보여 주세요
+print(list(stock.items()))                  # stock 의 (키, 값) 쌍들을 리스트로 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 무엇이 출력될까요?</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>출력</th><th>예측</th></tr></thead>
+        <tbody>
+          <tr><td>첫 번째 줄</td><td>?</td></tr>
+          <tr><td>두 번째 줄</td><td>?</td></tr>
+          <tr><td>세 번째 줄</td><td>?</td></tr>
+          <tr><td>네 번째 줄</td><td>?</td></tr>
+          <tr><td>다섯 번째 줄</td><td>?</td></tr>
+        </tbody>
+      </table>
+    </div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <p>없는 키에 담으면 추가, 있는 키에 담으면 수정이에요. <code>in</code>은 값이 아니라 키가 있는지 봐요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-b4">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b4"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">{'apple': 10, 'mango': 2}
+True False
+['apple', 'mango']
+[10, 2]
+[('apple', 10), ('mango', 2)]</code></pre>
+    <p><strong>한 문장으로:</strong> 딕셔너리에 쌍을 더하고 고치고 지운 뒤, 키 확인과 키·값·쌍 꺼내기를 해 보는 코드예요.</p>
+    <p><strong>줄마다 바뀌는 stock</strong></p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>실행</th><th>결과·상태</th></tr></thead>
+        <tbody>
+          <tr><td><code style="white-space:nowrap">stock = {'apple': 3, 'banana': 5}</code></td><td>{'apple': 3, 'banana': 5}</td></tr>
+          <tr><td><code style="white-space:nowrap">stock['mango'] = 2</code></td><td>없는 키라서 <strong>추가</strong> → {'apple': 3, 'banana': 5, 'mango': 2}</td></tr>
+          <tr><td><code style="white-space:nowrap">stock['apple'] = 10</code></td><td>있는 키라서 <strong>수정</strong> → {'apple': 10, 'banana': 5, 'mango': 2}</td></tr>
+          <tr><td><code style="white-space:nowrap">del stock['banana']</code></td><td>쌍을 <strong>삭제</strong> → {'apple': 10, 'mango': 2}</td></tr>
+          <tr><td><code style="white-space:nowrap">'mango' in stock, 'banana' in stock</code></td><td>True, False (키가 있나 없나)</td></tr>
+          <tr><td><code style="white-space:nowrap">list(stock.keys())</code></td><td>['apple', 'mango'] — 키들</td></tr>
+          <tr><td><code style="white-space:nowrap">list(stock.values())</code></td><td>[10, 2] — 값들</td></tr>
+          <tr><td><code style="white-space:nowrap">list(stock.items())</code></td><td>[('apple', 10), ('mango', 2)] — (키, 값) 쌍들</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>추가와 수정은 같은 모양(<code>stock[키] = 값</code>)이고, 키가 없으면 추가·있으면 수정이에요.</p>
+    <p>없는 키에 대입하면 추가, 있는 키에 대입하면 수정이에요. <code>in</code>은 값이 아니라 키가 있는지를 확인해요. <code>items()</code>는 (키, 값) 튜플의 모음이에요.</p>
+    <p><strong>핵심 한 줄:</strong> 대입은 없으면 추가·있으면 수정이고, <code>in</code>은 키를 확인해요.</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="b5">
+        <div class="p-head"><span class="p-id">초급 5</span><span class="p-type">읽기</span><h3>맞바꾸기와 튜플의 불변</h3></div>
+        <div class="p-body">
+<p>임시 변수 없이 값을 맞바꾸고, 튜플의 원소를 바꿔 보는 코드예요.</p>
+<pre><code class="language-python">x, y = 3, 7                 # x 에 3, y 에 7 을 한 번에 담아 주세요
+x, y = y, x                 # x 와 y 에 담긴 값을 서로 바꿔 주세요
+print(x, y)                 # x 와 y 를 화면에 보여 주세요
+t = (1, 2, 3)               # t 에 (1, 2, 3) 튜플을 담아 주세요
+try:                        # 아래를 시도해 주세요
+    t[0] = 9                # t 의 0번 자리에 9 를 담아 주세요
+except TypeError as e:      # TypeError 가 나면 그 오류를 e 라고 부르며
+    print('TypeError:', e)  # 'TypeError:' 와 e 를 화면에 보여 주세요
+print(t)                    # t 를 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 무엇이 출력될까요?</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>출력</th><th>예측</th></tr></thead>
+        <tbody>
+          <tr><td>첫 번째 줄</td><td>?</td></tr>
+          <tr><td>두 번째 줄</td><td>?</td></tr>
+          <tr><td>세 번째 줄</td><td>?</td></tr>
+        </tbody>
+      </table>
+    </div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <p><code>x, y = y, x</code>는 오른쪽의 <code>(y, x)</code> 튜플을 먼저 만들어요. 튜플의 원소를 바꾸려 하면 어떤 오류가 날까요?</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-b5">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b5"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">7 3
+TypeError: 'tuple' object does not support item assignment
+(1, 2, 3)</code></pre>
+    <p><strong>한 문장으로:</strong> 튜플로 두 값을 한 번에 맞바꾸고, 튜플의 원소를 바꾸려 하면 오류가 나는 것을 확인하는 코드예요.</p>
+    <p><strong>줄마다 바뀌는 값</strong></p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>실행</th><th>결과·상태</th></tr></thead>
+        <tbody>
+          <tr><td><code style="white-space:nowrap">x, y = 3, 7</code></td><td>x=3, y=7</td></tr>
+          <tr><td><code style="white-space:nowrap">x, y = y, x</code></td><td>오른쪽 <code>(y, x)</code> = <code>(7, 3)</code>을 먼저 만든 뒤 풀어 담아요 → x=7, y=3</td></tr>
+          <tr><td><code style="white-space:nowrap">print(x, y)</code></td><td>7 3</td></tr>
+          <tr><td><code style="white-space:nowrap">t[0] = 9</code></td><td>TypeError (튜플은 칸에 값을 넣는 것을 지원하지 않음)</td></tr>
+          <tr><td><code style="white-space:nowrap">print(t)</code></td><td>(1, 2, 3) — 오류가 나서 바뀌지 않았어요</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>맞바꿀 때 임시 변수가 필요 없는 것은, 오른쪽에서 새 값 쌍이 먼저 완성된 뒤에 왼쪽에 담기기 때문이에요.</p>
+    <p><code>x, y = y, x</code>는 오른쪽에 <code>(y, x)</code> 튜플을 만들어 왼쪽에 풀어 담아요. 튜플은 불변이라 원소 대입이 TypeError를 일으키고, 튜플은 그대로 남아요. 오류 문구 <code>'tuple' object does not support item assignment</code>는 "튜플은 칸에 값을 넣는 것(<code>t[0] = 9</code>)을 지원하지 않는다"는 뜻이에요.</p>
+    <p><strong>핵심 한 줄:</strong> <code>x, y = y, x</code>는 맞바꾸기이고, 튜플의 원소는 바꿀 수 없어요.</p>
+          </div>
+        </details>
+      </article>
+    </section>
+
+    <section class="level mid" data-level="mid">
+      <div class="level-head">
+        <span class="tag">중급</span>
+        <h2>개념 합치기 — 함수·반복문과 함께</h2>
+        <p>튜플·딕셔너리·세트에 반복문(<code>for</code>), 조건(<code>if</code>), <code>*인자</code>를 섞은 코드를 읽어요.</p>
+      </div>
+
+      <article class="problem" id="m1">
+        <div class="p-head"><span class="p-id">중급 1</span><span class="p-type">읽기</span><h3>items()로 최고 점수 찾기</h3></div>
+        <div class="p-body">
+<p>딕셔너리에서 가장 높은 점수의 이름과 점수를 찾는 코드예요.</p>
+<pre><code class="language-python">scores = {'철수': 82, '영희': 95, '민수': 78}  # scores 에 이름과 점수가 짝지어진 딕셔너리를 담아 주세요
+best_name = None                         # best_name 에 None 을 담아 주세요
+best_score = -1                          # best_score 에 -1 을 담아 주세요
+for name, score in scores.items():       # scores 의 (키, 값) 쌍을 하나씩 name 과 score 라고 부르며 아래를 반복해 주세요
+    if score &gt; best_score:               # 만약 score 가 best_score 보다 크면
+        best_name = name                 # best_name 에 name 을 담아 주세요
+        best_score = score               # best_score 에 score 를 담아 주세요
+print(best_name, best_score)             # best_name 과 best_score 를 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 무엇이 출력될까요?</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>출력</th><th>예측</th></tr></thead>
+        <tbody>
+          <tr><td>첫 번째 줄</td><td>?</td></tr>
+        </tbody>
+      </table>
+    </div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <p><code>items()</code>는 (키, 값) 쌍을 하나씩 내줘요. <code>best_score</code>는 <code>-1</code>에서 시작해서 첫 반복에서 반드시 바뀌어요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-m1">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m1"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">영희 95</code></pre>
+    <p><strong>한 문장으로:</strong> 딕셔너리의 (이름, 점수) 쌍을 하나씩 보며 지금까지의 최고 점수를 갱신해, 가장 높은 점수의 이름과 점수를 찾는 코드예요.</p>
+    <p><strong>쌍을 하나씩 보며 갱신</strong></p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>꺼낸 (name, score)</th><th>비교</th><th>best_name</th><th>best_score</th></tr></thead>
+        <tbody>
+          <tr><td>시작</td><td>-</td><td>None</td><td>-1</td></tr>
+          <tr><td>철수, 82</td><td>82 &gt; -1 → 예, 갱신</td><td>철수</td><td>82</td></tr>
+          <tr><td>영희, 95</td><td>95 &gt; 82 → 예, 갱신</td><td>영희</td><td>95</td></tr>
+          <tr><td>민수, 78</td><td>78 &gt; 95 → 아니오</td><td>영희</td><td>95</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>시작값 <code>-1</code>은 어떤 점수보다 작아서 철수의 82가 첫 반복에서 반드시 앞서요. 이후 영희 95만 그 82를 넘고, 민수 78은 넘지 못해요.</p>
+    <p><code>items()</code>가 (키, 값) 튜플을 내주고 <code>for name, score in ...</code>가 그것을 풀어 담아요. 지금까지의 최고 점수보다 크면 이름과 점수를 바꿔요. 시작값 <code>-1</code>은 어떤 점수보다 작아서 첫 반복에서 반드시 바뀌어요. <code>None</code>은 "아직 아무것도 없음"을 나타내는 값이에요.</p>
+    <p><strong>핵심 한 줄:</strong> <code>for 이름, 점수 in 딕셔너리.items()</code>로 쌍을 풀어 담아요.</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="m2">
+        <div class="p-head"><span class="p-id">중급 2</span><span class="p-type">읽기</span><h3>세트로 6의 배수 찾기</h3></div>
         <div class="p-body">
 <p>2의 배수 세트와 3의 배수 세트를 만들어 겹치는 수를 구해요.</p>
 <pre><code class="language-python">evens = set()                  # evens 에 빈 세트를 담아 주세요
@@ -912,7 +842,7 @@ print(sorted(evens &amp; threes))  # evens 와 threes 의 교집합을 정렬해
             <p><code>n % 2 == 0</code>은 2의 배수예요. 두 조건을 모두 만족하는 수는 교집합이에요.</p>
           </div>
         </details>
-        <div class="memo"><label for="memo-m4">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m4"></textarea></div>
+        <div class="memo"><label for="memo-m2">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m2"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
 <pre class="out"><code class="nohighlight">[6, 12, 18]</code></pre>
@@ -941,21 +871,82 @@ e = 0       # int     숫자 -> 정수</code></pre>
         </details>
       </article>
 
-      <article class="problem" id="m5">
-        <div class="p-head"><span class="p-id">중급 5</span><span class="p-type">읽기</span><h3>함수로 단어 세기</h3></div>
+      <article class="problem" id="m3">
+        <div class="p-head"><span class="p-id">중급 3</span><span class="p-type">읽기</span><h3>딕셔너리로 글자 세기</h3></div>
         <div class="p-body">
-<p>단어별 등장 횟수를 딕셔너리로 돌려주는 함수를 불러, 단어를 사전순으로 한 줄씩 찍어요.</p>
-<pre><code class="language-python">def word_count(text):                      # text 를 받는 word_count 라는 동작을 만들어 주세요
-    counts = {}                            # counts 에 빈 딕셔너리를 담아 주세요
-    for w in text.split():                 # text 를 공백으로 자른 단어를 하나씩 w 라고 부르며 아래를 반복해 주세요
-        if w in counts:                    # 만약 w 가 counts 의 키에 있으면
-            counts[w] += 1                 # counts 의 w 자리에 1 을 더해 다시 담아 주세요
-        else:                              # 아니면
-            counts[w] = 1                  # counts 의 w 자리에 1 을 담아 주세요
-    return counts                          # counts 를 결과로 돌려주세요
-result = word_count('to be or not to be')  # result 에 word_count 에 'to be or not to be' 를 넣은 결과를 담아 주세요
-for w in sorted(result):                   # result 의 키를 정렬한 것을 하나씩 w 라고 부르며 아래를 반복해 주세요
-    print(w, result[w])                    # w 와 result 의 w 자리에 담긴 것을 화면에 보여 주세요</code></pre>
+<p>글자별로 몇 번 나오는지 딕셔너리로 세는 코드예요.</p>
+<pre><code class="language-python">word = 'banana'         # word 에 'banana' 를 담아 주세요
+count = {}              # count 에 빈 딕셔너리를 담아 주세요
+for ch in word:         # word 의 글자를 하나씩 ch 라고 부르며 아래를 반복해 주세요
+    if ch in count:     # 만약 ch 가 count 의 키에 있으면
+        count[ch] += 1  # count 의 ch 자리에 1 을 더해 다시 담아 주세요
+    else:               # 아니면
+        count[ch] = 1   # count 의 ch 자리에 1 을 담아 주세요
+print(count)            # count 를 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 무엇이 출력될까요?</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>출력</th><th>예측</th></tr></thead>
+        <tbody>
+          <tr><td>첫 번째 줄</td><td>?</td></tr>
+        </tbody>
+      </table>
+    </div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <p><code>count</code>에 글자가 없으면 1로 만들고, 있으면 1을 더해요. <code>'banana'</code>를 글자 하나씩 따라가 보세요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-m3">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m3"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">{'b': 1, 'a': 3, 'n': 2}</code></pre>
+    <p><strong>한 문장으로:</strong> <code>'banana'</code>의 글자를 하나씩 보면서 "글자: 횟수" 짝을 <code>count</code>라는 딕셔너리에 쌓아 가는 코드예요.</p>
+    <p><strong>쌓여 가는 모습</strong> — 첫 반복에서 <code>b</code>는 <code>count</code>에 없으니 <code>else</code>로 가요.</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>반복</th><th><code>ch</code></th><th><code>ch in count</code>?</th><th>실행되는 줄</th><th>그 뒤 <code>count</code></th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td><code>'b'</code></td><td>아니오</td><td><code>count['b'] = 1</code></td><td><code>{'b': 1}</code></td></tr>
+          <tr><td>2</td><td><code>'a'</code></td><td>아니오</td><td><code>count['a'] = 1</code></td><td><code>{'b': 1, 'a': 1}</code></td></tr>
+          <tr><td>3</td><td><code>'n'</code></td><td>아니오</td><td><code>count['n'] = 1</code></td><td><code>{'b': 1, 'a': 1, 'n': 1}</code></td></tr>
+          <tr><td>4</td><td><code>'a'</code></td><td>예</td><td><code>count['a'] += 1</code></td><td><code>{'b': 1, 'a': 2, 'n': 1}</code></td></tr>
+          <tr><td>5</td><td><code>'n'</code></td><td>예</td><td><code>count['n'] += 1</code></td><td><code>{'b': 1, 'a': 2, 'n': 2}</code></td></tr>
+          <tr><td>6</td><td><code>'a'</code></td><td>예</td><td><code>count['a'] += 1</code></td><td><code>{'b': 1, 'a': 3, 'n': 2}</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>왜 답이 딕셔너리 모양으로 나오나</strong> — <code>print(count)</code>는 <code>count</code>에 든 것을 그대로 보여 주는데, <code>count</code>가 처음부터 딕셔너리였기 때문이에요.</p>
+    <ol>
+      <li><code>count = {}</code>에서 <code>count</code>는 <strong>딕셔너리</strong>로 정해져요.</li>
+      <li><code>count[ch] = 1</code>과 <code>count[ch] += 1</code>은 모두 "키 <code>ch</code>에 값을 담는" 일이고, 딕셔너리에서는 이것이 <code>키: 값</code> 짝 하나를 만드는 일이에요.</li>
+      <li>짝이 쌓이면 <code>{'b': 1, 'a': 3, 'n': 2}</code>처럼 중괄호 안에 <code>키: 값</code>이 나열돼요.</li>
+      <li><code>print</code>는 그 모양을 바꾸지 않고 그대로 찍어요.</li>
+    </ol>
+    <p>글자(키)마다 횟수(값)를 짝지어 적어야 해서 딕셔너리를 써요. 딕셔너리는 이름표(키)로 값을 찾는 자료형이라, "<code>a</code>의 횟수는?"을 <code>count['a']</code>로 바로 물을 수 있어요.</p>
+    <p>※ 빈 것을 만들 때는 <strong>모양</strong>이 자료형을 정해요.</p>
+<pre><code class="language-python">a = {}      # dict    중괄호, 비어 있음 -> 딕셔너리
+b = []      # list    대괄호 -> 리스트
+c = ()      # tuple   소괄호 -> 튜플
+d = set()   # set     set() -> 빈 세트
+e = 0       # int     숫자 -> 정수</code></pre>
+    <p><strong>핵심 한 줄:</strong> 빈 딕셔너리로 시작해, 글자를 볼 때마다 처음이면 <code>글자: 1</code>로 적고 이미 있으면 그 글자의 값을 1 올려요.</p>
+      </div>
+        </details>
+      </article>
+
+      <article class="problem" id="m4">
+        <div class="p-head"><span class="p-id">중급 4</span><span class="p-type">읽기</span><h3>딕셔너리 키가 될 수 있는 값</h3></div>
+        <div class="p-body">
+<p>튜플과 리스트를 딕셔너리의 키로 써 봐요.</p>
+<pre><code class="language-python">grid = {(0, 0): 'start', (2, 3): 'goal'}  # grid 에 좌표와 이름이 짝지어진 딕셔너리를 담아 주세요
+print(grid[(2, 3)])                       # grid 의 (2, 3) 자리에 담긴 것을 화면에 보여 주세요
+print((0, 0) in grid)                     # (0, 0) 이 grid 의 키에 있나요?
+try:                                      # 아래를 시도해 주세요
+    bad = {[0, 0]: 'start'}               # bad 에 [0, 0] 을 키로 쓴 딕셔너리를 담아 주세요
+except TypeError as e:                    # TypeError 가 나면 그 오류를 e 라고 부르며
+    print('TypeError:', e)                # 'TypeError:' 와 e 를 화면에 보여 주세요</code></pre>
     <p>이 코드를 실행하면 무엇이 출력될까요?</p>
     <div class="table-scroll">
       <table>
@@ -964,53 +955,165 @@ for w in sorted(result):                   # result 의 키를 정렬한 것을 
           <tr><td>첫 번째 줄</td><td>?</td></tr>
           <tr><td>두 번째 줄</td><td>?</td></tr>
           <tr><td>세 번째 줄</td><td>?</td></tr>
-          <tr><td>네 번째 줄</td><td>?</td></tr>
         </tbody>
       </table>
     </div>
         </div>
         <details class="hint"><summary>힌트 보기</summary>
           <div class="sol-body">
-            <p><code>split()</code>은 공백으로 잘라 단어 리스트를 만들어요. 세는 방식은 글자 세기와 같고, 함수는 딕셔너리를 <code>return</code>해요.</p>
+            <p>딕셔너리의 키로는 바뀌지 않는 값만 쓸 수 있어요. 튜플과 리스트 중 어느 쪽이 바뀌지 않을까요?</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-m4">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m4"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">goal
+True
+TypeError: unhashable type: 'list'</code></pre>
+    <p><strong>한 문장으로:</strong> 튜플은 딕셔너리의 키로 쓸 수 있고 리스트는 쓸 수 없다는 것을 보여 주는 코드예요.</p>
+    <p><strong>키로 쓴 값</strong></p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>식</th><th>결과</th></tr></thead>
+        <tbody>
+          <tr><td><code style="white-space:nowrap">grid[(2, 3)]</code></td><td>'goal' — (2, 3) 키의 값</td></tr>
+          <tr><td><code style="white-space:nowrap">(0, 0) in grid</code></td><td>True — 튜플 (0, 0)이 키로 있음</td></tr>
+          <tr><td><code style="white-space:nowrap">{[0, 0]: 'start'}</code></td><td>TypeError: unhashable type: 'list' — 리스트는 키로 쓸 수 없음</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>튜플은 바뀌지 않는 값이라 키가 되고, 리스트는 바뀔 수 있는 값이라 키가 될 수 없어요. 좌표처럼 값 여러 개를 한 덩어리로 키에 쓰려면 튜플을 써요.</p>
+    <p>딕셔너리의 키는 바뀌지 않는 값이어야 해요. 튜플은 불변이라 키로 쓸 수 있고, 리스트는 가변이라 TypeError가 나요. 좌표처럼 "값 여러 개가 한 쌍"인 키가 필요할 때 튜플을 써요. 오류 문구 <code>unhashable type: 'list'</code>는 "리스트는 키로 쓸 수 없는 종류"라는 뜻이에요.</p>
+    <p><strong>핵심 한 줄:</strong> 바뀌지 않는 값(튜플)만 키가 될 수 있어요.</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="m5">
+        <div class="p-head"><span class="p-id">중급 5</span><span class="p-type">읽기</span><h3>*nums와 튜플 반환</h3></div>
+        <div class="p-body">
+<p>남는 인자를 모두 받는 함수 <code>total</code>을 세 번 불러요.</p>
+<pre><code class="language-python">def total(*nums):         # 남는 인자를 모두 nums 로 받는 total 이라는 동작을 만들어 주세요
+    s = 0                 # s 에 0 을 담아 주세요
+    for n in nums:        # nums 의 원소를 하나씩 n 이라고 부르며 아래를 반복해 주세요
+        s += n            # s 에 n 을 더해 다시 담아 주세요
+    return s, len(nums)   # s 와 nums 의 길이를 결과로 돌려주세요
+result = total(4, 8, 15)  # result 에 total 에 4, 8, 15 를 넣은 결과를 담아 주세요
+s, count = total(1, 2)    # total 에 1, 2 를 넣은 결과를 s 와 count 에 나눠 담아 주세요
+print(result)             # result 를 화면에 보여 주세요
+print(s, count)           # s 와 count 를 화면에 보여 주세요
+print(total())            # total 에 아무것도 넣지 않은 결과를 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 무엇이 출력될까요?</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>출력</th><th>예측</th></tr></thead>
+        <tbody>
+          <tr><td>첫 번째 줄</td><td>?</td></tr>
+          <tr><td>두 번째 줄</td><td>?</td></tr>
+          <tr><td>세 번째 줄</td><td>?</td></tr>
+        </tbody>
+      </table>
+    </div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <p><code>*nums</code>는 남는 인자를 튜플로 모아요. 인자가 없으면 <code>nums</code>는 빈 튜플이에요.</p>
           </div>
         </details>
         <div class="memo"><label for="memo-m5">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m5"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
-<pre class="out"><code class="nohighlight">be 2
-not 1
-or 1
-to 2</code></pre>
-    <p><strong>한 문장으로:</strong> 문자열의 단어별 등장 횟수를 딕셔너리로 세는 함수를 만들고, 단어를 사전순으로 한 줄씩 찍는 코드예요.</p>
-    <p><strong>word_count 안에서 쌓이는 counts</strong></p>
+<pre class="out"><code class="nohighlight">(27, 3)
+3 2
+(0, 0)</code></pre>
+    <p><strong>한 문장으로:</strong> 숫자를 몇 개든 받아 합계와 개수를 튜플로 돌려주는 함수 <code>total</code>을 세 번 불러 보는 코드예요.</p>
+    <p><code>*nums</code>는 "넘겨받은 값을 몇 개든 전부 모아 <code>nums</code>라는 튜플에 담아라"는 뜻이에요.</p>
     <div class="table-scroll">
       <table>
-        <thead><tr><th>꺼낸 단어</th><th><code>w in counts</code>?</th><th>counts</th></tr></thead>
+        <thead><tr><th>부르는 줄</th><th><code>nums</code>에 담기는 것</th><th>돌려주는 것 (합계, 개수)</th></tr></thead>
         <tbody>
-          <tr><td><code style="white-space:nowrap">to</code></td><td>없음 → 1로 시작</td><td>{'to': 1}</td></tr>
-          <tr><td><code style="white-space:nowrap">be</code></td><td>없음 → 1로 시작</td><td>{'to': 1, 'be': 1}</td></tr>
-          <tr><td><code style="white-space:nowrap">or</code></td><td>없음 → 1로 시작</td><td>{'to': 1, 'be': 1, 'or': 1}</td></tr>
-          <tr><td><code style="white-space:nowrap">not</code></td><td>없음 → 1로 시작</td><td>{'to': 1, 'be': 1, 'or': 1, 'not': 1}</td></tr>
-          <tr><td><code style="white-space:nowrap">to</code></td><td>있음 → 1 올림</td><td>{'to': 2, 'be': 1, 'or': 1, 'not': 1}</td></tr>
-          <tr><td><code style="white-space:nowrap">be</code></td><td>있음 → 1 올림</td><td>{'to': 2, 'be': 2, 'or': 1, 'not': 1}</td></tr>
+          <tr><td><code style="white-space:nowrap">total(4, 8, 15)</code></td><td><code>(4, 8, 15)</code></td><td><code>(27, 3)</code></td></tr>
+          <tr><td><code style="white-space:nowrap">total(1, 2)</code></td><td><code>(1, 2)</code></td><td><code>(3, 2)</code></td></tr>
+          <tr><td><code style="white-space:nowrap">total()</code></td><td><code>()</code> (빈 튜플)</td><td><code>(0, 0)</code></td></tr>
         </tbody>
       </table>
     </div>
-    <p>함수는 <code>{'to': 2, 'be': 2, 'or': 1, 'not': 1}</code>를 돌려줘요. 아래 <code>for w in sorted(result)</code>는 그 딕셔너리를 통째로 찍지 않고, 키를 사전순으로 정렬해 한 줄에 하나씩 <code>단어 횟수</code>로 찍어요. 그래서 출력이 <code>be 2</code>, <code>not 1</code>, <code>or 1</code>, <code>to 2</code> 순서로 나와요.</p>
-    <p><code>split()</code>이 단어 리스트를 만들고, 문제 6과 같은 방식으로 세요. 함수가 딕셔너리를 <code>return</code>해요. <code>sorted(딕셔너리)</code>는 키를 정렬한 리스트를 돌려주니 사전순으로 돌 수 있어요.</p>
+    <p>함수 안에서는 <code>s</code>가 <code>0</code>에서 시작해 <code>for</code>가 값을 하나씩 더하고, <code>return s, len(nums)</code>의 쉼표가 합계와 개수를 <strong>튜플 하나</strong>로 묶어 돌려줘요. <code>total(4, 8, 15)</code>는 <code>s</code>가 <code>0</code> → <code>4</code> → <code>12</code> → <code>27</code>이 되고 값이 세 개라 <code>(27, 3)</code>이에요.</p>
+    <p>받는 쪽은 두 가지예요. <code>result = total(4, 8, 15)</code>는 튜플 <code>(27, 3)</code>을 통째로 담고, <code>s, count = total(1, 2)</code>는 돌려받은 <code>(3, 2)</code>를 <code>s</code>(<code>3</code>)와 <code>count</code>(<code>2</code>)로 풀어 담아요. 값을 주지 않은 <code>total()</code>은 <code>nums</code>가 비어서 <code>for</code>가 한 번도 돌지 않으니 <code>s</code>는 처음 값 <code>0</code>이고, 개수도 <code>0</code>이에요.</p>
+    <p><strong>핵심 한 줄:</strong> <code>*nums</code>는 튜플로 모으고, <code>return a, b</code>는 튜플 하나를 돌려줘요.</p>
+          </div>
+        </details>
+      </article>
+    </section>
+
+    <section class="level adv" data-level="adv">
+      <div class="level-head">
+        <span class="tag">고급</span>
+        <h2>판단과 종합 — 무엇을 골라 쓸까</h2>
+        <p>함수와 반복·조건을 합쳐 튜플·딕셔너리·세트를 골라 쓰는 코드를 읽어요(순서 유지, 값 돌려주기, 입력 반복).</p>
+      </div>
+
+      <article class="problem" id="a1">
+        <div class="p-head"><span class="p-id">고급 1</span><span class="p-type">읽기</span><h3>순서 지키며 중복 지우기 — set + list</h3></div>
+        <div class="p-body">
+<p>처음 나온 순서를 지키면서 중복을 지우는 코드예요.</p>
+<pre><code class="language-python">names = ['민수', '영희', '민수', '철수', '영희', '지현']  # names 에 이름 여섯 개의 리스트를 담아 주세요
+seen = set()                                  # seen 에 빈 세트를 담아 주세요
+unique = []                                   # unique 에 빈 리스트를 담아 주세요
+for n in names:                               # names 의 원소를 하나씩 n 이라고 부르며 아래를 반복해 주세요
+    if n not in seen:                         # 만약 n 이 seen 에 없으면
+        seen.add(n)                           # seen 에 n 을 더해 주세요
+        unique.append(n)                      # unique 의 맨 뒤에 n 을 붙여 주세요
+print(unique)                                 # unique 를 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 무엇이 출력될까요?</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>출력</th><th>예측</th></tr></thead>
+        <tbody>
+          <tr><td>첫 번째 줄</td><td>?</td></tr>
+        </tbody>
+      </table>
+    </div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <p><code>seen</code>은 이미 본 이름을 기억하고, <code>unique</code>는 순서를 지켜요. 처음 보는 이름만 두 곳에 넣어요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-a1">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a1"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">['민수', '영희', '철수', '지현']</code></pre>
+    <p><strong>한 문장으로:</strong> 처음 나온 순서를 지키면서 중복을 지우려고, 본 이름은 세트에 적어 두고 순서는 리스트에 쌓는 코드예요.</p>
+    <p><strong>이름을 하나씩 보며</strong></p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>꺼낸 이름</th><th><code>n not in seen</code></th><th>unique</th></tr></thead>
+        <tbody>
+          <tr><td>민수</td><td>처음 봄 → 둘 다에 넣음</td><td>['민수']</td></tr>
+          <tr><td>영희</td><td>처음 봄 → 둘 다에 넣음</td><td>['민수', '영희']</td></tr>
+          <tr><td>민수</td><td>이미 봄 → 건너뜀</td><td>['민수', '영희']</td></tr>
+          <tr><td>철수</td><td>처음 봄 → 둘 다에 넣음</td><td>['민수', '영희', '철수']</td></tr>
+          <tr><td>영희</td><td>이미 봄 → 건너뜀</td><td>['민수', '영희', '철수']</td></tr>
+          <tr><td>지현</td><td>처음 봄 → 둘 다에 넣음</td><td>['민수', '영희', '철수', '지현']</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><code>seen</code>(세트)은 "이미 봤나?"를 빠르게 확인하는 용도이고, 순서는 <code>unique</code>(리스트)가 지켜요. <code>set(names)</code>만 쓰면 순서가 보장되지 않아요.</p>
+    <p>세트 <code>seen</code>은 "이미 본 이름인지" 확인하는 데만 쓰고, 순서는 리스트 <code>unique</code>가 맡아요. 처음 보는 이름일 때만 두 곳에 모두 넣어요. 세트는 순서가 없고 리스트는 중복을 막지 못하는 약점을 서로 보완한 거예요.</p>
     <p>※ 빈 것을 만들 때는 <strong>모양</strong>이 자료형을 정해요.</p>
 <pre><code class="language-python">a = {}      # dict    중괄호, 비어 있음 -> 딕셔너리
 b = []      # list    대괄호 -> 리스트
 c = ()      # tuple   소괄호 -> 튜플
 d = set()   # set     set() -> 빈 세트
 e = 0       # int     숫자 -> 정수</code></pre>
-    <p><strong>핵심 한 줄:</strong> <code>split()</code>으로 자르고, 딕셔너리에 세어 <code>return</code>해요.</p>
+    <p><strong>핵심 한 줄:</strong> 순서는 리스트가, 중복 확인은 세트가 맡아요.</p>
           </div>
         </details>
       </article>
 
-      <article class="problem" id="m6">
-        <div class="p-head"><span class="p-id">중급 6</span><span class="p-type">읽기</span><h3>튜플로 최솟값·최댓값 돌려주기</h3></div>
+      <article class="problem" id="a2">
+        <div class="p-head"><span class="p-id">고급 2</span><span class="p-type">읽기</span><h3>튜플로 최솟값·최댓값 돌려주기</h3></div>
         <div class="p-body">
 <p>최솟값과 최댓값을 튜플로 돌려주는 함수를 불러요.</p>
 <pre><code class="language-python">def min_max(nums):                 # nums 를 받는 min_max 라는 동작을 만들어 주세요
@@ -1041,7 +1144,7 @@ print(min_max([4]))                # min_max 에 [4] 를 넣은 결과를 화면
             <p><code>low</code>와 <code>high</code>는 첫 원소에서 시작해요. 원소가 하나뿐이면 둘이 같아요.</p>
           </div>
         </details>
-        <div class="memo"><label for="memo-m6">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m6"></textarea></div>
+        <div class="memo"><label for="memo-a2">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a2"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
 <pre class="out"><code class="nohighlight">1 9
@@ -1080,136 +1183,22 @@ print(min_max([4]))                # min_max 에 [4] 를 넣은 결과를 화면
           </div>
         </details>
       </article>
-    </section>
-
-    <section class="level adv" data-level="adv">
-      <div class="level-head">
-        <span class="tag">고급</span>
-        <h2>판단과 종합 — 무엇을 골라 쓸까</h2>
-        <p>순서 유지, 키가 될 수 있는 값, 입력 반복처럼 튜플·딕셔너리·세트 중 알맞은 것을 골라 쓰는 코드를 읽어요.</p>
-      </div>
-
-      <article class="problem" id="a1">
-        <div class="p-head"><span class="p-id">고급 1</span><span class="p-type">읽기</span><h3>items()로 최고 점수 찾기</h3></div>
-        <div class="p-body">
-<p>딕셔너리에서 가장 높은 점수의 이름과 점수를 찾는 코드예요.</p>
-<pre><code class="language-python">scores = {'철수': 82, '영희': 95, '민수': 78}  # scores 에 이름과 점수가 짝지어진 딕셔너리를 담아 주세요
-best_name = None                         # best_name 에 None 을 담아 주세요
-best_score = -1                          # best_score 에 -1 을 담아 주세요
-for name, score in scores.items():       # scores 의 (키, 값) 쌍을 하나씩 name 과 score 라고 부르며 아래를 반복해 주세요
-    if score &gt; best_score:               # 만약 score 가 best_score 보다 크면
-        best_name = name                 # best_name 에 name 을 담아 주세요
-        best_score = score               # best_score 에 score 를 담아 주세요
-print(best_name, best_score)             # best_name 과 best_score 를 화면에 보여 주세요</code></pre>
-    <p>이 코드를 실행하면 무엇이 출력될까요?</p>
-    <div class="table-scroll">
-      <table>
-        <thead><tr><th>출력</th><th>예측</th></tr></thead>
-        <tbody>
-          <tr><td>첫 번째 줄</td><td>?</td></tr>
-        </tbody>
-      </table>
-    </div>
-        </div>
-        <details class="hint"><summary>힌트 보기</summary>
-          <div class="sol-body">
-            <p><code>items()</code>는 (키, 값) 쌍을 하나씩 내줘요. <code>best_score</code>는 <code>-1</code>에서 시작해서 첫 반복에서 반드시 바뀌어요.</p>
-          </div>
-        </details>
-        <div class="memo"><label for="memo-a1">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a1"></textarea></div>
-        <details class="sol"><summary>정답·해설 보기</summary>
-          <div class="sol-body">
-<pre class="out"><code class="nohighlight">영희 95</code></pre>
-    <p><strong>한 문장으로:</strong> 딕셔너리의 (이름, 점수) 쌍을 하나씩 보며 지금까지의 최고 점수를 갱신해, 가장 높은 점수의 이름과 점수를 찾는 코드예요.</p>
-    <p><strong>쌍을 하나씩 보며 갱신</strong></p>
-    <div class="table-scroll">
-      <table>
-        <thead><tr><th>꺼낸 (name, score)</th><th>비교</th><th>best_name</th><th>best_score</th></tr></thead>
-        <tbody>
-          <tr><td>시작</td><td>-</td><td>None</td><td>-1</td></tr>
-          <tr><td>철수, 82</td><td>82 &gt; -1 → 예, 갱신</td><td>철수</td><td>82</td></tr>
-          <tr><td>영희, 95</td><td>95 &gt; 82 → 예, 갱신</td><td>영희</td><td>95</td></tr>
-          <tr><td>민수, 78</td><td>78 &gt; 95 → 아니오</td><td>영희</td><td>95</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p>시작값 <code>-1</code>은 어떤 점수보다 작아서 철수의 82가 첫 반복에서 반드시 앞서요. 이후 영희 95만 그 82를 넘고, 민수 78은 넘지 못해요.</p>
-    <p><code>items()</code>가 (키, 값) 튜플을 내주고 <code>for name, score in ...</code>가 그것을 풀어 담아요. 지금까지의 최고 점수보다 크면 이름과 점수를 바꿔요. 시작값 <code>-1</code>은 어떤 점수보다 작아서 첫 반복에서 반드시 바뀌어요. <code>None</code>은 "아직 아무것도 없음"을 나타내는 값이에요.</p>
-    <p><strong>핵심 한 줄:</strong> <code>for 이름, 점수 in 딕셔너리.items()</code>로 쌍을 풀어 담아요.</p>
-          </div>
-        </details>
-      </article>
-
-      <article class="problem" id="a2">
-        <div class="p-head"><span class="p-id">고급 2</span><span class="p-type">읽기</span><h3>순서 지키며 중복 지우기 — set + list</h3></div>
-        <div class="p-body">
-<p>처음 나온 순서를 지키면서 중복을 지우는 코드예요.</p>
-<pre><code class="language-python">names = ['민수', '영희', '민수', '철수', '영희', '지현']  # names 에 이름 여섯 개의 리스트를 담아 주세요
-seen = set()                                  # seen 에 빈 세트를 담아 주세요
-unique = []                                   # unique 에 빈 리스트를 담아 주세요
-for n in names:                               # names 의 원소를 하나씩 n 이라고 부르며 아래를 반복해 주세요
-    if n not in seen:                         # 만약 n 이 seen 에 없으면
-        seen.add(n)                           # seen 에 n 을 더해 주세요
-        unique.append(n)                      # unique 의 맨 뒤에 n 을 붙여 주세요
-print(unique)                                 # unique 를 화면에 보여 주세요</code></pre>
-    <p>이 코드를 실행하면 무엇이 출력될까요?</p>
-    <div class="table-scroll">
-      <table>
-        <thead><tr><th>출력</th><th>예측</th></tr></thead>
-        <tbody>
-          <tr><td>첫 번째 줄</td><td>?</td></tr>
-        </tbody>
-      </table>
-    </div>
-        </div>
-        <details class="hint"><summary>힌트 보기</summary>
-          <div class="sol-body">
-            <p><code>seen</code>은 이미 본 이름을 기억하고, <code>unique</code>는 순서를 지켜요. 처음 보는 이름만 두 곳에 넣어요.</p>
-          </div>
-        </details>
-        <div class="memo"><label for="memo-a2">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a2"></textarea></div>
-        <details class="sol"><summary>정답·해설 보기</summary>
-          <div class="sol-body">
-<pre class="out"><code class="nohighlight">['민수', '영희', '철수', '지현']</code></pre>
-    <p><strong>한 문장으로:</strong> 처음 나온 순서를 지키면서 중복을 지우려고, 본 이름은 세트에 적어 두고 순서는 리스트에 쌓는 코드예요.</p>
-    <p><strong>이름을 하나씩 보며</strong></p>
-    <div class="table-scroll">
-      <table>
-        <thead><tr><th>꺼낸 이름</th><th><code>n not in seen</code></th><th>unique</th></tr></thead>
-        <tbody>
-          <tr><td>민수</td><td>처음 봄 → 둘 다에 넣음</td><td>['민수']</td></tr>
-          <tr><td>영희</td><td>처음 봄 → 둘 다에 넣음</td><td>['민수', '영희']</td></tr>
-          <tr><td>민수</td><td>이미 봄 → 건너뜀</td><td>['민수', '영희']</td></tr>
-          <tr><td>철수</td><td>처음 봄 → 둘 다에 넣음</td><td>['민수', '영희', '철수']</td></tr>
-          <tr><td>영희</td><td>이미 봄 → 건너뜀</td><td>['민수', '영희', '철수']</td></tr>
-          <tr><td>지현</td><td>처음 봄 → 둘 다에 넣음</td><td>['민수', '영희', '철수', '지현']</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p><code>seen</code>(세트)은 "이미 봤나?"를 빠르게 확인하는 용도이고, 순서는 <code>unique</code>(리스트)가 지켜요. <code>set(names)</code>만 쓰면 순서가 보장되지 않아요.</p>
-    <p>세트 <code>seen</code>은 "이미 본 이름인지" 확인하는 데만 쓰고, 순서는 리스트 <code>unique</code>가 맡아요. 처음 보는 이름일 때만 두 곳에 모두 넣어요. 세트는 순서가 없고 리스트는 중복을 막지 못하는 약점을 서로 보완한 거예요.</p>
-    <p>※ 빈 것을 만들 때는 <strong>모양</strong>이 자료형을 정해요.</p>
-<pre><code class="language-python">a = {}      # dict    중괄호, 비어 있음 -> 딕셔너리
-b = []      # list    대괄호 -> 리스트
-c = ()      # tuple   소괄호 -> 튜플
-d = set()   # set     set() -> 빈 세트
-e = 0       # int     숫자 -> 정수</code></pre>
-    <p><strong>핵심 한 줄:</strong> 순서는 리스트가, 중복 확인은 세트가 맡아요.</p>
-          </div>
-        </details>
-      </article>
 
       <article class="problem" id="a3">
-        <div class="p-head"><span class="p-id">고급 3</span><span class="p-type">읽기</span><h3>딕셔너리 키가 될 수 있는 값</h3></div>
+        <div class="p-head"><span class="p-id">고급 3</span><span class="p-type">읽기</span><h3>함수로 단어 세기</h3></div>
         <div class="p-body">
-<p>튜플과 리스트를 딕셔너리의 키로 써 봐요.</p>
-<pre><code class="language-python">grid = {(0, 0): 'start', (2, 3): 'goal'}  # grid 에 좌표와 이름이 짝지어진 딕셔너리를 담아 주세요
-print(grid[(2, 3)])                       # grid 의 (2, 3) 자리에 담긴 것을 화면에 보여 주세요
-print((0, 0) in grid)                     # (0, 0) 이 grid 의 키에 있나요?
-try:                                      # 아래를 시도해 주세요
-    bad = {[0, 0]: 'start'}               # bad 에 [0, 0] 을 키로 쓴 딕셔너리를 담아 주세요
-except TypeError as e:                    # TypeError 가 나면 그 오류를 e 라고 부르며
-    print('TypeError:', e)                # 'TypeError:' 와 e 를 화면에 보여 주세요</code></pre>
+<p>단어별 등장 횟수를 딕셔너리로 돌려주는 함수를 불러, 단어를 사전순으로 한 줄씩 찍어요.</p>
+<pre><code class="language-python">def word_count(text):                      # text 를 받는 word_count 라는 동작을 만들어 주세요
+    counts = {}                            # counts 에 빈 딕셔너리를 담아 주세요
+    for w in text.split():                 # text 를 공백으로 자른 단어를 하나씩 w 라고 부르며 아래를 반복해 주세요
+        if w in counts:                    # 만약 w 가 counts 의 키에 있으면
+            counts[w] += 1                 # counts 의 w 자리에 1 을 더해 다시 담아 주세요
+        else:                              # 아니면
+            counts[w] = 1                  # counts 의 w 자리에 1 을 담아 주세요
+    return counts                          # counts 를 결과로 돌려주세요
+result = word_count('to be or not to be')  # result 에 word_count 에 'to be or not to be' 를 넣은 결과를 담아 주세요
+for w in sorted(result):                   # result 의 키를 정렬한 것을 하나씩 w 라고 부르며 아래를 반복해 주세요
+    print(w, result[w])                    # w 와 result 의 w 자리에 담긴 것을 화면에 보여 주세요</code></pre>
     <p>이 코드를 실행하면 무엇이 출력될까요?</p>
     <div class="table-scroll">
       <table>
@@ -1218,36 +1207,47 @@ except TypeError as e:                    # TypeError 가 나면 그 오류를 e
           <tr><td>첫 번째 줄</td><td>?</td></tr>
           <tr><td>두 번째 줄</td><td>?</td></tr>
           <tr><td>세 번째 줄</td><td>?</td></tr>
+          <tr><td>네 번째 줄</td><td>?</td></tr>
         </tbody>
       </table>
     </div>
         </div>
         <details class="hint"><summary>힌트 보기</summary>
           <div class="sol-body">
-            <p>딕셔너리의 키로는 바뀌지 않는 값만 쓸 수 있어요. 튜플과 리스트 중 어느 쪽이 바뀌지 않을까요?</p>
+            <p><code>split()</code>은 공백으로 잘라 단어 리스트를 만들어요. 세는 방식은 글자 세기와 같고, 함수는 딕셔너리를 <code>return</code>해요.</p>
           </div>
         </details>
         <div class="memo"><label for="memo-a3">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a3"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
-<pre class="out"><code class="nohighlight">goal
-True
-TypeError: unhashable type: 'list'</code></pre>
-    <p><strong>한 문장으로:</strong> 튜플은 딕셔너리의 키로 쓸 수 있고 리스트는 쓸 수 없다는 것을 보여 주는 코드예요.</p>
-    <p><strong>키로 쓴 값</strong></p>
+<pre class="out"><code class="nohighlight">be 2
+not 1
+or 1
+to 2</code></pre>
+    <p><strong>한 문장으로:</strong> 문자열의 단어별 등장 횟수를 딕셔너리로 세는 함수를 만들고, 단어를 사전순으로 한 줄씩 찍는 코드예요.</p>
+    <p><strong>word_count 안에서 쌓이는 counts</strong></p>
     <div class="table-scroll">
       <table>
-        <thead><tr><th>식</th><th>결과</th></tr></thead>
+        <thead><tr><th>꺼낸 단어</th><th><code>w in counts</code>?</th><th>counts</th></tr></thead>
         <tbody>
-          <tr><td><code style="white-space:nowrap">grid[(2, 3)]</code></td><td>'goal' — (2, 3) 키의 값</td></tr>
-          <tr><td><code style="white-space:nowrap">(0, 0) in grid</code></td><td>True — 튜플 (0, 0)이 키로 있음</td></tr>
-          <tr><td><code style="white-space:nowrap">{[0, 0]: 'start'}</code></td><td>TypeError: unhashable type: 'list' — 리스트는 키로 쓸 수 없음</td></tr>
+          <tr><td><code style="white-space:nowrap">to</code></td><td>없음 → 1로 시작</td><td>{'to': 1}</td></tr>
+          <tr><td><code style="white-space:nowrap">be</code></td><td>없음 → 1로 시작</td><td>{'to': 1, 'be': 1}</td></tr>
+          <tr><td><code style="white-space:nowrap">or</code></td><td>없음 → 1로 시작</td><td>{'to': 1, 'be': 1, 'or': 1}</td></tr>
+          <tr><td><code style="white-space:nowrap">not</code></td><td>없음 → 1로 시작</td><td>{'to': 1, 'be': 1, 'or': 1, 'not': 1}</td></tr>
+          <tr><td><code style="white-space:nowrap">to</code></td><td>있음 → 1 올림</td><td>{'to': 2, 'be': 1, 'or': 1, 'not': 1}</td></tr>
+          <tr><td><code style="white-space:nowrap">be</code></td><td>있음 → 1 올림</td><td>{'to': 2, 'be': 2, 'or': 1, 'not': 1}</td></tr>
         </tbody>
       </table>
     </div>
-    <p>튜플은 바뀌지 않는 값이라 키가 되고, 리스트는 바뀔 수 있는 값이라 키가 될 수 없어요. 좌표처럼 값 여러 개를 한 덩어리로 키에 쓰려면 튜플을 써요.</p>
-    <p>딕셔너리의 키는 바뀌지 않는 값이어야 해요. 튜플은 불변이라 키로 쓸 수 있고, 리스트는 가변이라 TypeError가 나요. 좌표처럼 "값 여러 개가 한 쌍"인 키가 필요할 때 튜플을 써요. 오류 문구 <code>unhashable type: 'list'</code>는 "리스트는 키로 쓸 수 없는 종류"라는 뜻이에요.</p>
-    <p><strong>핵심 한 줄:</strong> 바뀌지 않는 값(튜플)만 키가 될 수 있어요.</p>
+    <p>함수는 <code>{'to': 2, 'be': 2, 'or': 1, 'not': 1}</code>를 돌려줘요. 아래 <code>for w in sorted(result)</code>는 그 딕셔너리를 통째로 찍지 않고, 키를 사전순으로 정렬해 한 줄에 하나씩 <code>단어 횟수</code>로 찍어요. 그래서 출력이 <code>be 2</code>, <code>not 1</code>, <code>or 1</code>, <code>to 2</code> 순서로 나와요.</p>
+    <p><code>split()</code>이 단어 리스트를 만들고, 문제 6과 같은 방식으로 세요. 함수가 딕셔너리를 <code>return</code>해요. <code>sorted(딕셔너리)</code>는 키를 정렬한 리스트를 돌려주니 사전순으로 돌 수 있어요.</p>
+    <p>※ 빈 것을 만들 때는 <strong>모양</strong>이 자료형을 정해요.</p>
+<pre><code class="language-python">a = {}      # dict    중괄호, 비어 있음 -> 딕셔너리
+b = []      # list    대괄호 -> 리스트
+c = ()      # tuple   소괄호 -> 튜플
+d = set()   # set     set() -> 빈 세트
+e = 0       # int     숫자 -> 정수</code></pre>
+    <p><strong>핵심 한 줄:</strong> <code>split()</code>으로 자르고, 딕셔너리에 세어 <code>return</code>해요.</p>
           </div>
         </details>
       </article>
