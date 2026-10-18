@@ -187,7 +187,7 @@ dict_items([('mom', 'Kim'), ('dad', 'Choi'), ('baby', 'Choi')])
 True
 False
 False</code></pre>
-<p class="code-note"><span class="table-note-mark">※</span> <code>in</code> 은 "있나?"만 묻고 <code>True</code> / <code>False</code> 로 답한다. 값을 꺼내는 것이 아니다. <code>'dad' in family</code> 는 <code>True</code>, 값 <code>'Choi'</code> 를 꺼내려면 <code>family['dad']</code> 를 쓴다. <code>'Kim' in family</code> 는 <code>'Kim'</code> 이 키가 아니라 값이라서 <code>False</code> 이고, 값에 있는지 보려면 <code>'Kim' in family.values()</code> 로 쓴다.</p>
+<p class="code-note"><span class="table-note-mark">※</span> 위 코드에서 <code>in</code> 을 쓴 세 줄(주석 앞에 ※)의 결과가 <code>True</code>, <code>False</code>, <code>False</code> 인 이유: <code>in</code> 은 "있나?"만 묻고 <code>True</code> / <code>False</code> 로 답한다. 값을 꺼내는 것이 아니다. <code>'dad' in family</code> 는 <code>True</code>, 값 <code>'Choi'</code> 를 꺼내려면 <code>family['dad']</code> 를 쓴다. <code>'Kim' in family</code> 는 <code>'Kim'</code> 이 키가 아니라 값이라서 <code>False</code> 이고, 값에 있는지 보려면 <code>'Kim' in family.values()</code> 로 쓴다.</p>
 <pre><code>d = {'a': 1, 'a': 2}                    # d 에 키 'a' 를 두 번 쓴 딕셔너리를 담아 주세요
 print(d)                                # d 를 화면에 보여 주세요
 family = {'mom': 'Kim', 'dad': 'Choi'}  # family 에 두 쌍이 든 딕셔너리를 담아 주세요
