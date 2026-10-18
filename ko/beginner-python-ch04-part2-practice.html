@@ -720,7 +720,21 @@ print(count)            # count 를 화면에 보여 주세요</code></pre>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
 <pre class="out"><code class="nohighlight">{'b': 1, 'a': 3, 'n': 2}</code></pre>
-    <p>글자를 키로, 나온 횟수를 값으로 해요. 처음 보는 글자(<code>ch in count</code>가 False)는 1로 만들고, 이미 있는 글자는 1을 더해요. 문자열도 반복문으로 한 글자씩 꺼낼 수 있어요.</p>
+    <p><code>for ch in word:</code>가 <code>word</code>('banana')에서 글자를 하나씩 꺼내 <code>ch</code>에 담아 줘요. <code>for 이름 in 묶음:</code>은 "묶음에서 하나씩 꺼내 이름에 담으며 아래를 반복해라"라는 문장이고, <code>ch</code>는 이 줄에서 만들어지는 내가 정한 이름이에요. 문자열은 글자의 묶음이라 글자가 하나씩 나와요.</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>반복</th><th><code>ch</code></th><th><code>ch in count</code>?</th><th>실행되는 줄</th><th>그 뒤 <code>count</code></th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td><code>'b'</code></td><td>아니오</td><td><code>count['b'] = 1</code></td><td><code>{'b': 1}</code></td></tr>
+          <tr><td>2</td><td><code>'a'</code></td><td>아니오</td><td><code>count['a'] = 1</code></td><td><code>{'b': 1, 'a': 1}</code></td></tr>
+          <tr><td>3</td><td><code>'n'</code></td><td>아니오</td><td><code>count['n'] = 1</code></td><td><code>{'b': 1, 'a': 1, 'n': 1}</code></td></tr>
+          <tr><td>4</td><td><code>'a'</code></td><td>예</td><td><code>count['a'] += 1</code></td><td><code>{'b': 1, 'a': 2, 'n': 1}</code></td></tr>
+          <tr><td>5</td><td><code>'n'</code></td><td>예</td><td><code>count['n'] += 1</code></td><td><code>{'b': 1, 'a': 2, 'n': 2}</code></td></tr>
+          <tr><td>6</td><td><code>'a'</code></td><td>예</td><td><code>count['a'] += 1</code></td><td><code>{'b': 1, 'a': 3, 'n': 2}</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><code>count[ch]</code>의 <code>ch</code>는 그때 꺼낸 글자 자리예요. <code>ch in count</code>는 값이 아니라 키에 그 글자가 있는지 묻고, 처음 보는 글자는 <code>1</code>로 시작하고 이미 있으면 <code>1</code>을 더해요.</p>
     <p><strong>핵심 한 줄:</strong> 처음 보면 1, 이미 있으면 +1 — 딕셔너리로 세요.</p>
           </div>
         </details>
