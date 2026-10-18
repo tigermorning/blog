@@ -671,7 +671,19 @@ print(total())            # total 에 아무것도 넣지 않은 결과를 화�
 <pre class="out"><code class="nohighlight">(27, 3)
 3 2
 (0, 0)</code></pre>
-    <p><code>*nums</code>가 인자를 튜플로 모으고, <code>return s, len(nums)</code>는 튜플 하나를 돌려줘요. 받는 쪽은 <code>result</code>처럼 통째로 받거나 <code>s, count</code>처럼 풀어 받을 수 있어요. 인자가 없으면 <code>nums</code>는 빈 튜플이라 합계 0, 개수 0이에요.</p>
+    <p><code>*nums</code>는 "넘겨받은 값을 몇 개든 전부 모아 <code>nums</code>라는 튜플에 담아라"는 뜻이에요.</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>부르는 줄</th><th><code>nums</code>에 담기는 것</th><th>돌려주는 것 (합계, 개수)</th></tr></thead>
+        <tbody>
+          <tr><td><code style="white-space:nowrap">total(4, 8, 15)</code></td><td><code>(4, 8, 15)</code></td><td><code>(27, 3)</code></td></tr>
+          <tr><td><code style="white-space:nowrap">total(1, 2)</code></td><td><code>(1, 2)</code></td><td><code>(3, 2)</code></td></tr>
+          <tr><td><code style="white-space:nowrap">total()</code></td><td><code>()</code> (빈 튜플)</td><td><code>(0, 0)</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>함수 안에서는 <code>s</code>가 <code>0</code>에서 시작해 <code>for</code>가 값을 하나씩 더하고, <code>return s, len(nums)</code>의 쉼표가 합계와 개수를 <strong>튜플 하나</strong>로 묶어 돌려줘요. <code>total(4, 8, 15)</code>는 <code>s</code>가 <code>0</code> → <code>4</code> → <code>12</code> → <code>27</code>이 되고 값이 세 개라 <code>(27, 3)</code>이에요.</p>
+    <p>받는 쪽은 두 가지예요. <code>result = total(4, 8, 15)</code>는 튜플 <code>(27, 3)</code>을 통째로 담고, <code>s, count = total(1, 2)</code>는 돌려받은 <code>(3, 2)</code>를 <code>s</code>(<code>3</code>)와 <code>count</code>(<code>2</code>)로 풀어 담아요. 값을 주지 않은 <code>total()</code>은 <code>nums</code>가 비어서 <code>for</code>가 한 번도 돌지 않으니 <code>s</code>는 처음 값 <code>0</code>이고, 개수도 <code>0</code>이에요.</p>
     <p><strong>핵심 한 줄:</strong> <code>*nums</code>는 튜플로 모으고, <code>return a, b</code>는 튜플 하나를 돌려줘요.</p>
           </div>
         </details>
