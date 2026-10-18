@@ -48,6 +48,22 @@ print(a + b, a - b, a * b, a / b)  # a + b, a - b, a * b, a / b 를 화면에 �
 8 -2 15 0.6</code></pre>
     <p><code>split()</code>이 입력을 쪼개 리스트로 만들고, <code>map(int, ...)</code>이 원소마다 <code>int()</code>를 적용해 정수로 바꿔요. 값 두 개를 변수 두 개에 한 번에 담는 것이 튜플 언패킹이에요. <code>/</code>는 정수끼리여도 결과가 소수(float)라서 <code>2.0</code>처럼 나와요.</p>
 
+    <details class="side-note">
+      <summary><span class="side-note-badge">보충 1</span><code>print</code> · <code>return</code> · <code>map</code> · <code>for</code> 한눈에 구분</summary>
+      <div class="table-scroll fill">
+        <table>
+          <thead><tr><th>항목</th><th>무엇</th><th>하는 일</th><th>결과로 남는 것</th></tr></thead>
+          <tbody>
+          <tr><td><code style="white-space:nowrap">print</code></td><td>이미 있는 함수</td><td>값을 화면에 보여 준다</td><td>없음 (<code>None</code>)</td></tr>
+          <tr><td><code style="white-space:nowrap">return</code></td><td><code>def</code> 함수 안의 키워드</td><td>계산한 값을 함수 밖으로 돌려준다</td><td>돌려준 값</td></tr>
+          <tr><td><code style="white-space:nowrap">map</code></td><td>이미 있는 함수</td><td>묶음의 원소마다 함수를 적용한다</td><td>바뀐 값들 (<code>list(...)</code>로 꺼냄)</td></tr>
+          <tr><td><code style="white-space:nowrap">for</code></td><td>반복하는 문장</td><td>묶음에서 하나씩 꺼내 아래 코드를 반복한다</td><td>없음 (결과는 직접 모아야 함)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><code>for</code> 와 <code>map</code> 은 같은 일의 두 방법이고, <code>map</code> 은 <code>return</code> 으로 값을 돌려주는 함수와 짝이다.</p>
+    </details>
+
     <h3 id="a2">4.3.2 내일의 날짜 구하기(1)</h3>
     <p><strong>문제:</strong> 연·월·일을 입력받아 <code>mm/dd/yyyy</code> 형식으로 출력하고, 다음 날도 같은 형식으로 출력해요. 윤년은 무시해요. <a href="https://wikidocs.net/116204" target="_blank" rel="noopener">원문 보기</a></p>
     <p class="run-tag">입력: 2018 10 2</p>
