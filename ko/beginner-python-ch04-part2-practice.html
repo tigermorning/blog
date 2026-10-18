@@ -529,7 +529,7 @@ print(t)                    # t 를 화면에 보여 주세요</code></pre>
 <pre class="out"><code class="nohighlight">7 3
 TypeError: 'tuple' object does not support item assignment
 (1, 2, 3)</code></pre>
-    <p><code>x, y = y, x</code>는 오른쪽에 <code>(y, x)</code> 튜플을 만들어 왼쪽에 풀어 담아요. 튜플은 불변이라 원소 대입이 TypeError를 일으키고, 튜플은 그대로 남아요.</p>
+    <p><code>x, y = y, x</code>는 오른쪽에 <code>(y, x)</code> 튜플을 만들어 왼쪽에 풀어 담아요. 튜플은 불변이라 원소 대입이 TypeError를 일으키고, 튜플은 그대로 남아요. 오류 문구 <code>'tuple' object does not support item assignment</code>는 "튜플은 칸에 값을 넣는 것(<code>t[0] = 9</code>)을 지원하지 않는다"는 뜻이에요.</p>
     <p><strong>핵심 한 줄:</strong> <code>x, y = y, x</code>는 맞바꾸기이고, 튜플의 원소는 바꿀 수 없어요.</p>
           </div>
         </details>
@@ -917,7 +917,7 @@ print(best_name, best_score)             # best_name 과 best_score 를 화면�
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
 <pre class="out"><code class="nohighlight">영희 95</code></pre>
-    <p><code>items()</code>가 (키, 값) 튜플을 내주고 <code>for name, score in ...</code>가 그것을 풀어 담아요. 지금까지의 최고 점수보다 크면 이름과 점수를 바꿔요. 시작값 <code>-1</code>은 어떤 점수보다 작아서 첫 반복에서 반드시 바뀌어요.</p>
+    <p><code>items()</code>가 (키, 값) 튜플을 내주고 <code>for name, score in ...</code>가 그것을 풀어 담아요. 지금까지의 최고 점수보다 크면 이름과 점수를 바꿔요. 시작값 <code>-1</code>은 어떤 점수보다 작아서 첫 반복에서 반드시 바뀌어요. <code>None</code>은 "아직 아무것도 없음"을 나타내는 값이에요.</p>
     <p><strong>핵심 한 줄:</strong> <code>for 이름, 점수 in 딕셔너리.items()</code>로 쌍을 풀어 담아요.</p>
           </div>
         </details>
@@ -994,7 +994,7 @@ except TypeError as e:                    # TypeError 가 나면 그 오류를 e
 <pre class="out"><code class="nohighlight">goal
 True
 TypeError: unhashable type: 'list'</code></pre>
-    <p>딕셔너리의 키는 바뀌지 않는 값이어야 해요. 튜플은 불변이라 키로 쓸 수 있고, 리스트는 가변이라 TypeError가 나요. 좌표처럼 "값 여러 개가 한 쌍"인 키가 필요할 때 튜플을 써요.</p>
+    <p>딕셔너리의 키는 바뀌지 않는 값이어야 해요. 튜플은 불변이라 키로 쓸 수 있고, 리스트는 가변이라 TypeError가 나요. 좌표처럼 "값 여러 개가 한 쌍"인 키가 필요할 때 튜플을 써요. 오류 문구 <code>unhashable type: 'list'</code>는 "리스트는 키로 쓸 수 없는 종류"라는 뜻이에요.</p>
     <p><strong>핵심 한 줄:</strong> 바뀌지 않는 값(튜플)만 키가 될 수 있어요.</p>
           </div>
         </details>
@@ -1051,7 +1051,7 @@ print('등록된 사람 수:', len(book))           # '등록된 사람 수:' �
 없는 이름입니다.
 명령(add/find/quit): quit
 등록된 사람 수: 1</code></pre>
-    <p>이름을 키, 번호를 값으로 하는 딕셔너리가 전화번호부 역할을 해요. <code>while True</code>로 명령을 계속 받다가 <code>quit</code>에서 <code>break</code>해요. 같은 이름으로 <code>add</code>를 다시 하면 번호가 덮어써져요. 위 결과는 <code>add 철수</code> → <code>find 철수</code> → <code>find 영희</code> → <code>quit</code> 순서로 입력했을 때예요.</p>
+    <p>이름을 키, 번호를 값으로 하는 딕셔너리가 전화번호부 역할을 해요. <code>while True</code>로 명령을 계속 받다가 <code>quit</code>에서 <code>break</code>해요. 같은 이름으로 <code>add</code>를 다시 하면 번호가 덮어써져요. 위 결과는 <code>add 철수</code> → <code>find 철수</code> → <code>find 영희</code> → <code>quit</code> 순서로 입력했을 때예요. 위 출력은 터미널에서 입력한 글자까지 함께 보이는 모양이에요.</p>
     <p><strong>핵심 한 줄:</strong> 딕셔너리 하나가 전화번호부 역할을 하고, <code>break</code>로 반복을 끝내요.</p>
           </div>
         </details>
