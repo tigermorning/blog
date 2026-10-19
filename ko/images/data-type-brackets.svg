@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 220" role="img" aria-labelledby="t d">
+  <title id="t">파이썬 자료형은 괄호 모양으로 구분한다</title>
+  <desc id="d">소괄호는 튜플, 대괄호는 리스트, 중괄호 안에 키: 값이 있으면 딕셔너리, 값만 있으면 세트</desc>
+  <rect width="800" height="220" rx="18" fill="#F3F6F5"/>
+  <g font-family="'JetBrains Mono','Consolas','Courier New',monospace" text-anchor="middle" font-weight="700">
+    <!-- tuple -->
+    <text x="52"  y="130" font-size="110" fill="#2B5B84">(</text>
+    <text x="148" y="130" font-size="110" fill="#2B5B84">)</text>
+    <text x="100" y="120" font-size="26"  fill="#4B5A56" font-weight="600">tuple</text>
+    <!-- list -->
+    <text x="252" y="130" font-size="110" fill="#2A7563">[</text>
+    <text x="348" y="130" font-size="110" fill="#2A7563">]</text>
+    <text x="300" y="120" font-size="26"  fill="#4B5A56" font-weight="600">list</text>
+    <!-- dict -->
+    <text x="452" y="130" font-size="110" fill="#18221F">{</text>
+    <text x="548" y="130" font-size="110" fill="#18221F">}</text>
+    <text x="500" y="120" font-size="26"  fill="#4B5A56" font-weight="600">k: v</text>
+    <!-- set -->
+    <text x="652" y="130" font-size="110" fill="#E0A800">{</text>
+    <text x="748" y="130" font-size="110" fill="#E0A800">}</text>
+    <text x="700" y="120" font-size="26"  fill="#4B5A56" font-weight="600">set</text>
+  </g>
+  <g font-family="'IBM Plex Sans KR','Malgun Gothic',sans-serif" font-size="18" fill="#4B5A56" text-anchor="middle">
+    <text x="100" y="185">소괄호 · 못 바꿈</text>
+    <text x="300" y="185">대괄호 · 순서 있음</text>
+    <text x="500" y="185">중괄호 · 키: 값 짝</text>
+    <text x="700" y="185">중괄호 · 값만</text>
+  </g>
+</svg>
