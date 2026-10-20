@@ -11,6 +11,7 @@
   <meta property="og:locale" content="ko_KR">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="flow-motion.css">
 </head>
 <body>
   <header class="site-header">
@@ -110,7 +111,7 @@
 
     <h2 id="flow"><span class="hl">전체 흐름</span> — 코드 폴더가 공개 주소가 되기까지</h2>
     <figure>
-    <svg viewBox="0 0 760 330" role="img" aria-label="코드 폴더가 빌드를 거쳐 컨테이너 이미지가 되고, 이미지는 Artifact Registry에 보관된다. 이미지와 설정이 리비전으로 기록되고, 리비전을 실행하는 인스턴스가 요청에 따라 켜지며, 서비스 주소가 붙는다. 요청이 없으면 인스턴스는 0개로 줄어든다.">
+    <svg class="flow-motion" viewBox="0 0 760 330" role="img" aria-label="코드 폴더가 빌드를 거쳐 컨테이너 이미지가 되고, 이미지는 Artifact Registry에 보관된다. 이미지와 설정이 리비전으로 기록되고, 리비전을 실행하는 인스턴스가 요청에 따라 켜지며, 서비스 주소가 붙는다. 요청이 없으면 인스턴스는 0개로 줄어든다.">
       <defs>
         <marker id="crs-arrow-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
           <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/>
@@ -373,6 +374,7 @@ uvicorn&gt;=0.30</code></pre>
     &copy; 2026 Tigermorning
   </footer>
   <script src="fit-title.js"></script>
+  <script src="flow-motion.js"></script>
   <script src="sidebar-loader.js"></script>
 </body>
 </html>
