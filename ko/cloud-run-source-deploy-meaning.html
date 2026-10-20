@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Cloud Run에 소스를 배포한다는 것 — 코드 폴더 하나가 공개 주소가 되기까지 (2) - Tigermorning</title>
+  <meta name="description" content="gcloud run deploy --source . 한 줄이 안에서 하는 일을 따라가요. 코드와 파이썬 버전과 라이브러리를 한 묶음으로 포장해 서버에 올리고 공개 주소를 붙이기까지의 다섯 단계와, 실제 배포 로그를 함께 봅니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Cloud Run에 소스를 배포한다는 것 — 코드 폴더 하나가 공개 주소가 되기까지 (2)">
+  <meta property="og:description" content="코드 폴더를 넘기면 Google이 환경까지 한 묶음으로 포장해 올려 줘요. 소스 배포의 의미와 단계마다 남는 흔적을 정리했어요.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/cloud-run-source-deploy-meaning.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">Cloud Run에 소스를 배포한다는 것</span> — 코드 폴더 하나가 공개 주소가 되기까지 (2)</h1>
+    <p class="post-date">2026. 10. 20.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <p class="one-liner">Cloud Run에 소스를 배포한다는 것은 코드 폴더를 Google에 넘기면, 코드와 파이썬 버전과 라이브러리를 한 묶음으로 포장해 서버에 올리고 공개 주소까지 붙여 주는 일이다.</p>
+
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>어디쯤인가</dt>
+        <dd>9단계 › AI 서비스로 내놓기 — 2번째 글 (전 2편, 이어서 늘어나요)</dd>
+        <dt>이런 게 궁금했다면</dt>
+        <dd>
+          <ul>
+            <li>내 컴퓨터에서는 잘 되는 앱을 "배포"하면, 정확히 무엇이 어디로 가는 걸까요?</li>
+            <li><code>gcloud run deploy --source .</code> 한 줄이 안에서 무슨 일을 하나요?</li>
+            <li>Vercel은 버튼만 누르면 된다는데, 왜 굳이 Cloud Run을 쓰나요?</li>
+          </ul>
+        </dd>
+        <dt>읽고 나면 할 수 있는 것</dt>
+        <dd>
+          <ul>
+            <li>소스 배포가 어떤 다섯 단계로 이뤄지는지 순서대로 설명할 수 있어요.</li>
+            <li>배포가 막혔을 때 어느 단계에서 끊겼는지 로그와 콘솔에서 찾아볼 순서를 알아요.</li>
+            <li>폴더에 두는 파일 네 개가 각각 무슨 일을 하는지 말할 수 있어요.</li>
+          </ul>
+        </dd>
+        <dt>모르면 이런 일이 생겨요</dt>
+        <dd>
+          <ul>
+            <li>내 컴퓨터에서는 되는데 서버에서만 안 되고, 어디를 봐야 할지 몰라요. <a class="suspect-jump" href="#suspect-works-local">언제 의심하나 ↓</a></li>
+            <li>파일 이름이나 위치 하나가 틀려서 빌드가 실패하거나 앱이 시작되지 않아요. <a class="suspect-jump" href="#suspect-build">언제 의심하나 ↓</a></li>
+            <li>터미널 메시지만 보고 멀쩡한 설정을 고쳐요. <a class="suspect-jump" href="#suspect-port">언제 의심하나 ↓</a></li>
+          </ul>
+        </dd>
+        <dt>어디에 쓰나</dt>
+        <dd>
+          <ul>
+            <li><strong>내 컴퓨터에서만 돌던 앱을 누군가에게 보여 주려는데 줄 주소가 없을 때.</strong> 컴퓨터를 끄면 함께 멈추는 앱은 "써 보세요"라고 말할 수 없어요.</li>
+            <li>코딩 에이전트에게 배포를 맡기기 전에, 어떤 명령이 무엇을 만드는지 읽고 승인해야 할 때</li>
+            <li>배포가 실패했을 때 원인을 에이전트에게 근거와 함께 건네야 할 때</li>
+          </ul>
+        </dd>
+      </dl>
+    </div>
+
+    <a class="post-nav" href="ai-service-design-before-code.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">AI 기능을 서비스로 설계한다는 것 — 코딩 에이전트에게 맡기기 전에 정할 것 (1)</span>
+    </a>
+
+    <p>내 컴퓨터에서만 돌던 앱을 동료에게 보여 주면 "나도 써 보게 주소 좀 줘"라는 말이 돌아와요. 그런데 줄 주소가 없어요. 앱은 내 컴퓨터 안에서만 돌아가고, 컴퓨터를 끄면 함께 멈춰요. <a href="ai-service-design-before-code.html">1편</a>에서 정한 설계(키는 서버에만, 데이터는 서버 밖에)도 일단 <strong>서버가 있어야</strong> 지킬 수 있어요. 이 글은 그 첫 단계, 코드를 서버에 올려 공개 주소를 만드는 일을 다뤄요. 서버를 직접 사지 않고 Google Cloud의 <strong>Cloud Run</strong><sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>을 쓰고, 오늘 제가 실제로 올린 아주 작은 앱의 로그를 따라가며 설명할게요.</p>
+
+    <h2 id="command"><span class="hl">명령 한 줄</span> — 폴더를 넘기면 서버가 돼요</h2>
+    <p>소스 배포는 터미널에서 <strong>gcloud</strong><sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>로 이 한 줄을 실행하는 것이 전부예요. 여기서 <strong>소스(source)</strong>는 내가 짠 코드가 든 폴더를 뜻해요.</p>
+    <p class="run-tag">실행: 로컬 터미널 <span class="run-tag-why">— 코드가 든 폴더(my-hello) 안에서 실행해요. 미리 gcloud 설치·로그인과 프로젝트 선택이 끝나 있어야 해요</span></p>
+<pre><code>gcloud run deploy hello --source . --region us-central1 --allow-unauthenticated</code></pre>
+    <table>
+      <thead><tr><th>부분</th><th>뜻</th></tr></thead>
+      <tbody>
+        <tr><td><code>gcloud run deploy hello</code></td><td><code>hello</code>라는 이름의 서비스를 Cloud Run에 배포해요</td></tr>
+        <tr><td><code>--source .</code></td><td>"지금 있는 폴더(<code>.</code>)의 코드를 올려라"예요. 이미지를 따로 만들어 올리는 게 아니라 <strong>폴더를 그대로</strong> 넘겨요</td></tr>
+        <tr><td><code>--region us-central1</code></td><td>서비스가 실행될 데이터센터 위치(리전<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>)예요</td></tr>
+        <tr><td><code>--allow-unauthenticated</code></td><td>로그인 없이 누구나 이 주소를 부를 수 있게 해요. 연습용 앱은 괜찮지만, 호출마다 AI 비용이 나가는 서비스라면 한도를 함께 걸어야 해요</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="analogy"><span class="hl">비유로 먼저</span> — 1편의 식당에서 포장 가게로</h2>
+    <p><a href="ai-service-design-before-code.html">1편</a>의 식당을 이어 쓸게요. 사장인 내가 요리사에게 가게를 맡기는 대신, 이번엔 <strong>본사에 레시피 폴더를 통째로 보내요.</strong> 본사는 레시피를 읽고 필요한 재료와 조리 도구를 알아서 맞춰 <strong>밀키트 상자</strong>로 포장하고, 그 상자를 가맹점에 보내 가게를 열어 주고, 가게 주소까지 붙여 줘요. 이게 소스 배포예요. 이미 포장한 상자를 내가 직접 만들어 보내는 방식도 있는데, 이건 아래에서 비교해요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>사장(나)이 본사에 — 레시피 폴더를 통째로 보냄</td><td>내가 Cloud Run에 — <code>--source .</code>로 코드 폴더를 넘김</td></tr>
+        <tr><td>본사의 자동 포장 라인이 레시피를 읽고 필요한 것을 알아서 맞춤</td><td>buildpacks<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>가 폴더를 보고 무엇을 설치할지 정해 이미지를 만듦</td></tr>
+        <tr><td>레시피 + 재료 + 조리 도구가 한 상자에 든 밀키트</td><td>컨테이너 이미지<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup> — 코드 + 파이썬 버전 + 라이브러리를 묶은 꾸러미</td></tr>
+        <tr><td>밀키트 상자가 쌓이는 창고</td><td>Artifact Registry — 만든 이미지를 보관하는 저장소</td></tr>
+        <tr><td>"메뉴 개정판 N호" — 어떤 상자를 쓰고 어떤 규칙으로 파는지까지 적은 기록</td><td>리비전<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup> — 이미지와 설정을 함께 적은 버전</td></tr>
+        <tr><td>지금 실제로 불을 켜고 조리 중인 주방</td><td>인스턴스<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup> — 리비전을 실행 중인 컨테이너</td></tr>
+        <tr><td>손님이 없으면 문을 닫고, 첫 손님이 오면 불을 켜느라 첫 주문이 늦음</td><td>인스턴스 0개로 줄었다가 켜지며 첫 응답이 느려지는 콜드 스타트<sup class="fn-ref"><a href="#fn8" id="fnref8">8</a></sup></td></tr>
+        <tr><td>가게 주소</td><td>서비스 URL — 배포하면 붙는 공개 주소</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 본사에 레시피 폴더만 보내면, 본사가 재료와 도구까지 한 상자로 포장해 가게를 열고 주소를 붙여 준다.</p>
+    <p>다만 여기서 비유가 끊기는 점이 있어요. 식당 상자는 한 번 포장하면 끝이지만, 배포는 <strong>할 때마다 새 상자와 새 개정판(리비전)이 쌓여요.</strong> 그래서 문제가 생기면 이전 개정판으로 되돌릴 수 있어요. 이건 아래에서 다시 볼게요.</p>
+
+    <h2 id="flow"><span class="hl">전체 흐름</span> — 코드 폴더가 공개 주소가 되기까지</h2>
+    <figure>
+    <svg viewBox="0 0 760 330" role="img" aria-label="코드 폴더가 빌드를 거쳐 컨테이너 이미지가 되고, 이미지는 Artifact Registry에 보관된다. 이미지와 설정이 리비전으로 기록되고, 리비전을 실행하는 인스턴스가 요청에 따라 켜지며, 서비스 주소가 붙는다. 요청이 없으면 인스턴스는 0개로 줄어든다.">
+      <defs>
+        <marker id="crs-arrow-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/>
+        </marker>
+        <marker id="crs-arrow-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/>
+        </marker>
+      </defs>
+      <!-- 1행 -->
+      <rect x="10" y="30" width="165" height="76" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="92" y="58" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">① 코드 폴더</text>
+      <text x="92" y="80" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">--source . 로 넘김</text>
+      <line x1="177" y1="68" x2="196" y2="68" stroke="var(--muted)" stroke-width="2" marker-end="url(#crs-arrow-m)"/>
+
+      <rect x="200" y="30" width="165" height="76" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="282" y="58" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">② 빌드</text>
+      <text x="282" y="80" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">Cloud Build + buildpacks</text>
+      <line x1="367" y1="68" x2="386" y2="68" stroke="var(--muted)" stroke-width="2" marker-end="url(#crs-arrow-m)"/>
+
+      <rect x="390" y="30" width="165" height="76" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="472" y="58" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">③ 이미지 보관</text>
+      <text x="472" y="80" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">Artifact Registry</text>
+      <line x1="557" y1="68" x2="576" y2="68" stroke="var(--muted)" stroke-width="2" marker-end="url(#crs-arrow-m)"/>
+
+      <rect x="580" y="30" width="170" height="76" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="665" y="58" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">④ 리비전 생성</text>
+      <text x="665" y="80" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">이미지 + 설정을 한 버전으로</text>
+      <path d="M665 108 V150 H472 V170" fill="none" stroke="var(--muted)" stroke-width="2" marker-end="url(#crs-arrow-m)"/>
+
+      <!-- 2행 -->
+      <rect x="390" y="174" width="165" height="76" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="472" y="202" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">⑤ 인스턴스</text>
+      <text x="472" y="224" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">요청이 오면 켜져서 처리</text>
+      <line x1="388" y1="212" x2="369" y2="212" stroke="var(--muted)" stroke-width="2" marker-end="url(#crs-arrow-m)"/>
+
+      <rect x="200" y="174" width="165" height="76" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="282" y="202" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">서비스 주소(URL)</text>
+      <text x="282" y="224" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">누구나 열 수 있는 공개 주소</text>
+
+      <!-- 인스턴스 0개 -->
+      <rect x="580" y="174" width="170" height="76" rx="8" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 4"/>
+      <text x="665" y="202" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">요청이 없으면</text>
+      <text x="665" y="224" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">인스턴스 0개 → 요금 없음</text>
+      <path d="M557 212 H576" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#crs-arrow-a)"/>
+
+      <!-- 되돌리기 -->
+      <path d="M665 252 V300 H282 V256" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#crs-arrow-a)"/>
+      <text x="470" y="294" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--accent)">문제가 생기면 이전 리비전으로 트래픽을 돌려요(롤백)</text>
+    </svg>
+    <figcaption>소스 배포가 안에서 하는 다섯 단계. 아래 표의 로그 줄이 이 순서대로 찍혀요.</figcaption>
+    </figure>
+    <p><strong>읽는 법:</strong> 윗줄은 왼쪽에서 오른쪽으로 읽어요. ④에서 아랫줄로 내려와 ⑤ 인스턴스가 켜지고, 왼쪽으로 가서 서비스 주소가 붙어요. 점선은 일이 아니라 <strong>상태나 선택</strong>이에요. 요청이 없으면 인스턴스가 0개로 줄고, 문제가 생기면 트래픽을 이전 리비전으로 돌려요.</p>
+
+    <h2 id="why-package"><span class="hl">왜 한 묶음으로 포장할까</span> — 서버에는 내 컴퓨터의 환경이 없어요</h2>
+    <p>내 컴퓨터에서 <code>main.py</code>가 도는 건 코드가 좋아서만이 아니에요. 그 컴퓨터에 파이썬이 깔려 있고, 코드가 쓰는 라이브러리도 이미 설치돼 있어서예요. 코드는 그 환경 위에서 돌고 있을 뿐이에요.</p>
+    <p>서버에는 그런 환경이 <strong>아무것도 없어요.</strong> 코드만 받으면 "어떤 파이썬으로, 어떤 라이브러리와 함께 돌려야 하는지"를 알 수 없어요. 서버마다 환경이 다르면 <strong>"내 컴퓨터에서는 되는데 서버에서는 안 된다"</strong>가 생기고요. 그래서 코드, 코드를 실행하는 파이썬(<strong>런타임</strong><sup class="fn-ref"><a href="#fn9" id="fnref9">9</a></sup>과 그 버전), 코드가 가져다 쓰는 라이브러리(<strong>의존성</strong><sup class="fn-ref"><a href="#fn10" id="fnref10">10</a></sup>)를 한 묶음으로 포장하면, 어디서 열어도 같은 환경으로 돌아요. Cloud Run은 그 묶음을 받아 그대로 실행만 해요.</p>
+    <p>이 포장이 실제로 쓰였다는 건 제 배포에서도 보여요. 제 컴퓨터의 파이썬은 3.14인데, 폴더의 <code>.python-version</code> 파일에는 3.13이라고 적어 뒀어요. 포장할 때 이 파일이 적용되니, 서버는 제 컴퓨터와 <strong>다른 버전</strong>으로 돌아요. 파일에 적지 않았다면 어느 버전이 쓰일지 제가 알 수 없었을 거예요.</p>
+
+    <h2 id="source-vs-image"><span class="hl">소스 배포와 이미지 배포</span> — 누가 포장하느냐의 차이</h2>
+    <table>
+      <thead><tr><th></th><th>소스 배포 (<code>--source .</code>)</th><th>이미지 배포</th></tr></thead>
+      <tbody>
+        <tr><td>내가 넘기는 것</td><td>코드 폴더</td><td>이미 만든 컨테이너 이미지</td></tr>
+        <tr><td>이미지는 누가 만드나</td><td>Google이 대신 만들어요(Cloud Build + buildpacks)</td><td>내가 직접 만들어 저장소에 올려 둬요</td></tr>
+        <tr><td>내가 챙길 것</td><td>buildpacks가 읽는 파일(<code>requirements.txt</code>, <code>Procfile</code>, <code>.python-version</code>)의 이름과 위치</td><td>이미지를 만드는 방법을 알아야 해요</td></tr>
+        <tr><td>어울리는 때</td><td>코드와 라이브러리만으로 충분한 작은 서비스</td><td>운영체제에 직접 설치해야 하는 프로그램이 필요할 때 등</td></tr>
+      </tbody>
+    </table>
+    <p>이 글에서는 앞쪽(소스 배포)만 다뤄요. 이미지를 직접 만드는 방법은 이 시리즈에서 다음에 다룰 때 이어 갈게요. 이미지와 컨테이너라는 말이 낯설다면 <a href="what-is-docker.html">도커(Docker)란 무엇인가</a>를 먼저 보고 와도 좋아요.</p>
+
+    <h2 id="steps"><span class="hl">단계마다 남는 흔적</span> — 제 배포 로그와 콘솔에서 찾을 곳</h2>
+    <p>제가 연습용 앱 <code>hello</code>를 처음 배포했을 때 터미널에 이런 줄이 순서대로 찍혔어요. 전체는 약 2분이 걸렸어요. 배포 명령 하나가 만든 흔적을 단계별로 찾아볼 수 있어요.</p>
+    <table>
+      <thead><tr><th>로그에 찍힌 줄</th><th>일어난 일</th><th>콘솔에서 찾을 곳</th></tr></thead>
+      <tbody>
+        <tr><td><code>Creating Container Repository…done</code></td><td>이미지를 보관할 저장소 <code>cloud-run-source-deploy</code>를 만들었어요. 이 프로젝트에서 처음 소스 배포를 할 때만 한 번 나와요</td><td>Artifact Registry › 저장소 목록</td></tr>
+        <tr><td><code>Uploading sources…done</code></td><td>폴더의 파일을 올렸어요</td><td>(터미널에서만 보여요)</td></tr>
+        <tr><td><code>Building Container…done</code></td><td>buildpacks가 폴더를 보고 파이썬과 라이브러리를 설치해 이미지로 만들었어요. 로그에서 가장 오래 걸린 줄이에요</td><td>Cloud Build › 기록(History). 리전을 <code>us-central1</code>로 맞춰야 보여요</td></tr>
+        <tr><td><code>Setting IAM Policy…done</code></td><td><code>--allow-unauthenticated</code> 때문에 "로그인 없이 호출 가능" 권한을 설정했어요</td><td>Cloud Run › 서비스 › 권한</td></tr>
+        <tr><td><code>Creating Revision…done</code></td><td>이미지와 설정을 묶어 첫 리비전(<code>hello-00001-…</code>)을 만들었어요</td><td>Cloud Run › 서비스 › 리비전 탭</td></tr>
+        <tr><td><code>Routing traffic…done</code> → <code>Service URL: …</code></td><td>들어오는 요청의 100%를 이 리비전으로 보내고 공개 주소를 발급했어요</td><td>같은 화면의 리비전 탭(트래픽 칸), 인스턴스 수는 측정항목 탭, 요청 기록은 로그 탭</td></tr>
+      </tbody>
+    </table>
+    <p>이 순서는 위 흐름도의 ②~⑤와 같아요. 배포가 막혔을 때 이 표가 <strong>어디서 끊겼는지 찾는 지도</strong>가 돼요. 빌드가 실패했다면 Cloud Build 기록을, 빌드는 됐는데 주소가 안 열리면 리비전과 로그 탭을 먼저 열어요.</p>
+    <p>다음은 처음 보는 말 몇 가지예요.</p>
+    <ul>
+      <li><strong>buildpacks</strong> — 폴더 안 파일을 보고 "이건 파이썬 앱이네" 하고 알아내, 파이썬과 라이브러리를 설치해 이미지로 묶는 도구예요. 그래서 파일 이름이 정확해야 해요.</li>
+      <li><strong>리비전</strong> — 배포할 때마다 남는 버전이에요. 이미지뿐 아니라 환경변수, 요청 타임아웃, 인스턴스 수 같은 <strong>설정도 함께</strong> 기록돼요. 그래서 코드를 다시 빌드하지 않고 이전 리비전으로 되돌릴 수 있어요(롤백<sup class="fn-ref"><a href="#fn11" id="fnref11">11</a></sup>).</li>
+      <li><strong>인스턴스</strong> — 리비전을 지금 실행 중인 컨테이너예요. 요청이 많으면 늘고, 한동안 요청이 없으면 0개로 줄어 실행 요금이 나가지 않아요.</li>
+      <li><strong>콜드 스타트</strong> — 0개였다가 첫 요청이 와서 인스턴스를 새로 켜느라 첫 응답이 늦어지는 현상이에요. 그다음 요청부터는 빨라요.</li>
+    </ul>
+
+    <h2 id="files"><span class="hl">폴더에 두는 파일 네 개</span> — buildpacks가 읽는 것들</h2>
+    <p>연습용 <code>hello</code> 앱은 파일 네 개로 충분해요. 이 앱을 먼저 올리는 이유는, 처음부터 큰 서비스를 올리면 실패했을 때 원인이 <strong>배포 과정</strong>인지 <strong>코드</strong>인지 가리기 어렵기 때문이에요. 네 파일 모두 폴더 <strong>바로 아래</strong>에 둬요.</p>
+    <p class="run-tag">실행: <code>my-hello/main.py</code>로 저장 <span class="run-tag-why">— Cloud Run에서 앱이 시작될 때 이 파일을 읽어요</span></p>
+<pre><code>from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
+
+app = FastAPI()
+
+@app.get("/", response_class=HTMLResponse)
+def home():
+    return "&lt;h1&gt;안녕하세요, 첫 배포입니다&lt;/h1&gt;"
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}</code></pre>
+    <p><code>@app.get("/")</code>는 "누가 주소 <code>/</code>를 열면 아래 함수를 실행하라"는 표시예요. <code>/health</code>는 서비스가 살아 있는지 알려 주는 <strong>헬스 체크</strong><sup class="fn-ref"><a href="#fn12" id="fnref12">12</a></sup> 주소예요.</p>
+    <p class="run-tag">실행: <code>my-hello/requirements.txt</code>로 저장 <span class="run-tag-why">— buildpacks가 이 목록을 보고 라이브러리를 설치해요</span></p>
+<pre><code>fastapi&gt;=0.115
+uvicorn&gt;=0.30</code></pre>
+    <p><code>fastapi</code>는 앱의 틀이고, <code>uvicorn</code>은 그 앱을 실제로 켜서 요청을 받는 서버 프로그램이에요.</p>
+    <p class="run-tag">실행: <code>my-hello/Procfile</code>로 저장 <span class="run-tag-why">— 컨테이너가 켜질 때 이 줄의 명령으로 앱을 시작해요. 확장자 없이 대문자 P로 시작해요</span></p>
+<pre><code>web: uvicorn main:app --host 0.0.0.0 --port $PORT</code></pre>
+    <table>
+      <thead><tr><th>부분</th><th>뜻</th></tr></thead>
+      <tbody>
+        <tr><td><code>main:app</code></td><td><code>main.py</code> 파일 안의 <code>app</code>을 켜라는 뜻이에요(파일이름:앱이름). 둘 중 하나라도 바꾸면 앱을 못 찾아요</td></tr>
+        <tr><td><code>--host 0.0.0.0</code></td><td>컨테이너 밖에서 오는 요청도 받아요. <code>127.0.0.1</code>이면 컨테이너 안에서만 응답해서 바깥에서는 연결이 안 돼요</td></tr>
+        <tr><td><code>--port $PORT</code></td><td>포트를 숫자로 고정하지 않고, Cloud Run이 환경변수 <code>PORT</code>로 알려 주는 번호(기본 8080)를 써요</td></tr>
+      </tbody>
+    </table>
+    <p class="run-tag">실행: <code>my-hello/.python-version</code>으로 저장 <span class="run-tag-why">— buildpacks가 이 버전의 파이썬을 준비해요</span></p>
+<pre><code>3.13</code></pre>
+    <p>배포 전에는 Google 계정과 결제 정보(무료 체험), 프로젝트, gcloud 설치와 로그인이 필요하고, 소스 배포가 거치는 Cloud Run·Cloud Build·Artifact Registry 세 서비스의 API를 프로젝트에서 켜 둬야 해요. 먼저 내 컴퓨터에서 돌려 보고 싶다면 이렇게 해요.</p>
+    <p class="run-tag">실행: 로컬 터미널 <span class="run-tag-why">— my-hello 폴더 안에서 실행하고, 끝낼 때는 Ctrl+C예요</span></p>
+<pre><code>python -m uvicorn main:app --port 8080</code></pre>
+    <p>브라우저에서 <code>http://localhost:8080</code>을 열면 같은 화면이 나와요.</p>
+
+    <h2 id="vs-vercel"><span class="hl">왜 Vercel이 아니라 Cloud Run일까</span> — 런타임을 누가 정하느냐</h2>
+    <p>Vercel은 저장소를 연결하고 버튼을 누르면 주소가 생겨서 편해요. 화면(프론트엔드)만 있는 서비스라면 그렇게 올리면 돼요. 제가 배운 설명으로는 둘의 차이는 서버를 관리하느냐가 아니라 <strong>런타임과 의존성을 누가 정하느냐</strong>예요. 두 방식 모두 요청이 없으면 서버가 0개로 줄고, 요청이 늘면 알아서 늘려 주는 서버리스예요.</p>
+    <table>
+      <thead><tr><th></th><th>Vercel</th><th>Cloud Run (소스·이미지 배포)</th></tr></thead>
+      <tbody>
+        <tr><td>내가 올리는 것</td><td>코드</td><td>코드 + 런타임 + 의존성(+ 시스템 패키지)을 묶은 이미지</td></tr>
+        <tr><td>런타임·의존성</td><td>Vercel이 준비한 범위 안에서 골라요</td><td>내가 정해요(<code>.python-version</code>, <code>requirements.txt</code>)</td></tr>
+        <tr><td>요청 타임아웃<sup class="fn-ref"><a href="#fn13" id="fnref13">13</a></sup></td><td>무료 플랜 함수는 최대 5분</td><td>기본 5분, 최대 60분까지 늘릴 수 있어요</td></tr>
+        <tr><td>배포 과정</td><td>빌드·버전·서버 수를 알아서 처리하고 과정을 보여 주지 않아요</td><td>이미지·리비전·인스턴스·트래픽·로그를 하나씩 보고 다뤄요</td></tr>
+      </tbody>
+    </table>
+    <p>AI 서비스에서 이 차이가 중요한 이유는 <strong>시간과 도구</strong>예요. 여러 문서를 읽고 정리하는 에이전트 작업은 5분을 넘기기 쉽고, 플랫폼이 준비해 두지 않은 프로그램이 필요할 때도 많아요. 실무에서는 <strong>프론트엔드는 Vercel에 두고 백엔드만 컨테이너로 올리는</strong> 구성도 흔해요. Cloud Run이 Vercel보다 낫다는 말이 아니에요. 대신 런타임과 의존성을 내가 정하니, 이미지에 빠진 게 있으면 원인도 내가 찾아야 해요. 이 두 서비스를 어떻게 나눠 쓰는지는 <a href="deploying-and-free-hosting.html">배포, 무료 호스팅, 집 컴퓨터를 서버로</a>와 <a href="my-harness-platform-and-provider.html">어디서 돌리고 무엇에 연결할까</a>에서도 이어 볼 수 있어요.</p>
+
+    <h2 id="why-see"><span class="hl">AI가 대신 배포해 주는 시대에</span> — 왜 단계를 눈으로 볼까요</h2>
+    <p>코딩 에이전트에게 "배포해 줘"라고 말하면 명령을 대신 실행해 주기도 해요. 그래도 단계를 알아야 하는 이유는, 손으로 매번 하기 위해서가 아니라 <strong>맡긴 결과를 검증하고 사고가 났을 때 원인을 찾으려면 지도가 머릿속에 있어야 해서</strong>예요.</p>
+    <ul>
+      <li><strong>실패했을 때 원인이 어디 있는지 알아요.</strong> 키 없이 배포하면 터미널은 "컨테이너가 포트에서 시작하지 못했다"고 하는데, 진짜 원인은 앱이 시작하자마자 "키가 없다"는 오류를 남기고 스스로 꺼진 것이에요. 메시지는 결과고 원인은 앞선 로그에 있어요. 이걸 모르면 에이전트가 멀쩡한 포트 설정을 고치자고 해도 알아채지 못해요.</li>
+      <li><strong>위험한 지름길을 걸러요.</strong> 서비스 계정 키 파일을 만들거나 프로젝트 전체에 편집 권한을 주는 명령은 문제를 빨리 풀어 주기 때문에 에이전트가 지름길로 내놓기 쉬워요. 실행 전에 "이 명령이 무엇을 만들고, 바꾸고, 지우고, 공개하는가"를 읽는 일은 사람 몫이에요. 저도 오늘 배포 전에 "저장소가 새로 생기고 로그인 없는 공개 주소가 붙는다"를 읽고 승인했어요.</li>
+      <li><strong>에이전트에게 근거를 건네요.</strong> "안 돼요"만 말하면 에이전트는 짐작으로 고치기 시작하고 멀쩡한 곳을 바꾸기도 해요. 증상, 시각, 서비스와 리비전, 내가 찾은 로그 줄을 건네려면 그 부품이 무엇인지 알아야 해요.</li>
+      <li><strong>되돌리는 수단을 알아요.</strong> 리비전과 트래픽이 롤백 수단이에요. 모르면 문제가 생길 때 코드를 고쳐 다시 빌드할 생각만 하게 돼요.</li>
+      <li><strong>다른 곳에서도 써요.</strong> 이미지·리비전·인스턴스·트래픽·로그는 AWS나 Azure 같은 다른 클라우드에도 거의 같은 이름으로 있어요. 반대로 다 숨겨 주는 곳은 편하지만 그 과정을 보여 주지 않아요.</li>
+    </ul>
+
+    <h2 id="choice"><span class="hl">나쁜 선택 vs 좋은 선택</span> — 요리사에게 가게를 열어 달라고 할 때</h2>
+    <p>식당으로 치면 사장이 요리사에게 "가게 문 열어 줘"라고 맡기는 장면이에요. 아래는 상황을 가정한 예시예요.</p>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">"이 앱 Cloud Run에 올려 줘"라고만 맡기고, 끝났다는 메시지만 보고 넘어간다 → 에이전트가 로그인 없는 공개 접근을 켜고 저장소를 만들었는데 모르고 지나간다. 폴더 안에 비밀 파일이 있어도 알아채지 못한다. 실패하면 터미널 메시지만 보고 멀쩡한 설정을 고친다</td>
+          <td class="choice-good">실행 전에 "이 명령이 무엇을 만들고 공개하는지"를 설명하게 하고, 서비스 이름·리전·공개 여부를 확인한 뒤 승인한다. 끝나면 콘솔에서 빌드·이미지·리비전·로그의 흔적을 직접 찾아본다 → 무엇이 생겼는지 알고, 실패해도 원인을 로그에서 찾는다</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 배포 설정을 정할 때 다시 보는 값</h2>
+    <p>배포 설정을 정할 때 다시 보게 되는 기본값과 상한을 모았어요. 제가 이 글을 쓴 <strong>2026년 10월에 배운 값</strong>이라 바뀔 수 있으니, 정할 때는 각 서비스의 공식 문서로 한 번 더 확인해요.</p>
+    <table>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
+      <tbody>
+        <tr><td>Cloud Run 요청 타임아웃</td><td>기본 5분 · 최대 60분</td><td>요청 하나가 이 시간을 넘으면 연결이 끊겨요. 오래 걸리는 AI 작업은 이 값을 넉넉히 정하거나 비동기로 바꿔요</td></tr>
+        <tr><td>Vercel 무료 플랜 함수 요청 타임아웃</td><td>최대 5분</td><td>여러 문서를 읽는 에이전트 작업이 5분을 넘기면 다른 방식을 찾아요</td></tr>
+        <tr><td>인스턴스 하나의 동시 처리 요청 수(동시성)</td><td>기본 80</td><td>요청이 이보다 많아지면 인스턴스가 늘어요. 늘어나는 수에는 상한을 걸어 둘 수 있어요</td></tr>
+        <tr><td>인스턴스 최대 개수(설정이 없을 때)</td><td>100개까지</td><td>호출마다 비용이 나가는 서비스라면 처음부터 작게 제한해요. 이 설정은 다음 글에서 다뤄요</td></tr>
+        <tr><td>요청이 없을 때의 인스턴스</td><td>0개</td><td>실행 요금이 안 나가는 대신 첫 요청에서 콜드 스타트가 생겨요</td></tr>
+        <tr><td>Google Cloud 무료 체험</td><td>가입 후 90일, 300달러 크레딧</td><td>기간이 끝난 뒤 직접 유료로 전환하지 않으면 자동 결제는 되지 않지만, 만들어 둔 서비스가 멈춰요</td></tr>
+        <tr><td>이미지 저장소의 무료 저장 공간</td><td>월 0.5GB</td><td>배포할 때마다 이미지가 쌓이니, 연습으로 쓴 서비스는 이미지(패키지)까지 지워요. 저장소 자체를 지우면 다른 서비스의 이미지도 사라져요</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 소스 배포가 막힐 때</h2>
+    <p>배포 문제는 터미널 메시지 한 줄로 먼저 보이는데, <strong>그 메시지가 원인을 말해 주지 않는 경우</strong>가 많아요. 아래 증상이 보이면 메시지를 고치려 들기 전에 이 자리를 열어 봐요.</p>
+    <p>증상이 아직 없어도, <strong>AI에게 이런 부탁을 한 직후</strong>라면 한 번 확인하고 넘어가요.</p>
+    <ul>
+      <li>"이 앱 Cloud Run에 올려 줘" — 올려진 것(저장소, 공개 접근)과 폴더 안 비밀 파일이 같이 올라가지 않았는지</li>
+      <li>"배포 실패했어, 고쳐 줘" — 에이전트가 로그를 읽었는지, 아니면 메시지만 보고 설정을 바꾸려는지</li>
+    </ul>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-build">
+          <td>배포 명령이 <strong>빌드 단계에서 실패해요</strong></td>
+          <td>Cloud Build › 기록의 빌드 로그예요. 빌드 로그는 서비스의 로그 탭이 아니라 여기에 따로 남아요</td>
+          <td>로그에서 오류 줄을 찾아 어느 파일·어느 패키지인지 봐요. <code>requirements.txt</code> 철자와 파일 위치(폴더 바로 아래)를 먼저 확인해요</td>
+        </tr>
+        <tr id="suspect-port">
+          <td>"컨테이너가 <strong>PORT에서 시작하지 못했다</strong>"는 메시지로 끝났는데 포트 설정은 멀쩡해요</td>
+          <td>터미널이 아니라 서비스의 로그 탭(심각도 오류 필터)이에요. 앱이 시작하자마자 남기고 꺼진 오류 줄을 찾아요. 예를 들어 필요한 키가 없어 스스로 종료한 경우예요</td>
+          <td>오류 줄이 가리키는 원인(환경변수 누락 등)을 고쳐요. 에이전트에게 맡길 때는 "로그를 근거로"와 "아직 고치지 마"를 같이 말해요</td>
+        </tr>
+        <tr id="suspect-url">
+          <td>배포는 성공했는데 <strong>주소를 열면 오류 화면이나 빈 화면</strong>이 나와요</td>
+          <td><code>Procfile</code>의 시작 명령 줄(<code>main:app</code>의 파일·앱 이름, <code>$PORT</code>)과 서비스의 로그 탭이에요</td>
+          <td>로그에서 요청 줄의 상태 코드를 읽고, <code>/health</code>로 앱이 응답하는지 먼저 확인해요</td>
+        </tr>
+        <tr id="suspect-works-local">
+          <td><strong>내 컴퓨터에서는 되는데 서버에서만 안 돼요</strong></td>
+          <td><code>requirements.txt</code>와 <code>.python-version</code>이에요. 목록에 없는 라이브러리는 내 컴퓨터에 우연히 깔려 있으면 통과하고, 서버에서 처음 터져요</td>
+          <td>새 가상환경을 만들어 <code>pip install -r requirements.txt</code>만 하고 앱을 실행해 봐요. 거기서 안 되면 목록이 빠진 거예요</td>
+        </tr>
+        <tr id="suspect-cold">
+          <td>한동안 안 쓰다 열었더니 <strong>첫 응답만 느려요</strong></td>
+          <td>Cloud Run › 서비스 › 측정항목 탭의 컨테이너 인스턴스 수 그래프예요</td>
+          <td>0에서 1로 올라오는 구간이 있으면 콜드 스타트예요. 고장이 아니고, 줄이는 방법은 요금과 맞바꾸는 설정이라 다음 글에서 다뤄요</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등</p>
+<pre><code>서비스 hello 배포가 실패했어. 실패한 리비전의 Cloud Run 로그를 읽고, 로그에 적힌 내용을 근거로 원인을 설명해 줘.
+원인이라고 본 로그 줄은 시각과 함께 그대로 보여 줘. 아직 아무것도 고치지 마.</code></pre>
+
+    <h2><span class="hl">함께 보기</span></h2>
+    <ul>
+      <li><a href="ai-service-design-before-code.html">AI 기능을 서비스로 설계한다는 것 — 코딩 에이전트에게 맡기기 전에 정할 것 (1)</a> — 이 글에서 올린 서버가 지켜야 할 설계(키 위치, 저장소, 소유자, 실패 처리)를 먼저 정하는 글이에요.</li>
+      <li><a href="what-is-docker.html">도커(Docker)란 무엇인가 — 이미지와 컨테이너, 상자에 뭘 담느냐</a> — 이 글의 "한 묶음"인 컨테이너 이미지가 무엇인지 따로 풀어요.</li>
+      <li><a href="deploying-and-free-hosting.html">배포, 무료 호스팅, 집 컴퓨터를 서버로</a> — 올리는 곳을 고르는 선택지를 넓게 훑어요.</li>
+      <li><a href="why-backend-needed.html">왜 화면 뒤에 서버가 필요할까</a> — 서버가 있어야 하는 이유를 처음부터 풀어요.</li>
+      <li><a href="langgraph-env-troubleshooting.html">.env가 안 읽혔던 네 겹의 이유 — 원격 주피터에서 API 키 넣기 (5)</a> — 키를 환경변수로 넣을 때 막히는 곳을 봐요.</li>
+    </ul>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">Cloud Run — Google Cloud가 제공하는 서비스로, 컨테이너 이미지를 받아 실행하고 공개 주소를 붙여 줘요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">gcloud — 콘솔 화면에서 누르던 일을 터미널 명령으로 하게 해 주는 Google Cloud의 명령줄 도구예요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">리전(region) — 서비스가 실제로 실행되는 데이터센터의 지역으로, 리전마다 요금이 달라요. <a href="#fnref3">↩</a></li>
+        <li id="fn4">buildpacks — 폴더 안 파일을 보고 무엇을 설치할지 스스로 정해 이미지를 만들어 주는 도구라서, 도커 파일을 따로 쓰지 않아도 돼요. <a href="#fnref4">↩</a></li>
+        <li id="fn5">컨테이너 이미지 — 코드와 파이썬 버전, 라이브러리를 한 묶음으로 포장한 꾸러미로, 플랫폼은 이 묶음을 그대로 실행해요. <a href="what-is-docker.html">도커란 무엇인가</a>에서 이미지와 컨테이너를 자세히 다뤘어요. <a href="#fnref5">↩</a></li>
+        <li id="fn6">리비전(revision) — 배포할 때마다 남는 버전으로, 어떤 이미지를 쓰는지와 환경변수·요청 타임아웃·인스턴스 수 같은 설정을 함께 기록해요. <a href="#fnref6">↩</a></li>
+        <li id="fn7">인스턴스 — 리비전의 이미지와 설정으로 지금 실행되면서 요청을 처리하는 컨테이너로, 요청이 없으면 0개로 줄어요. <a href="#fnref7">↩</a></li>
+        <li id="fn8">콜드 스타트(cold start) — 꺼져 있던 인스턴스를 새로 켜느라 첫 응답이 늦어지는 현상이에요. <a href="#fnref8">↩</a></li>
+        <li id="fn9">런타임(runtime) — 내 코드를 읽고 실제로 실행해 주는 프로그램으로, 파이썬 코드라면 파이썬과 그 버전을 뜻해요. <a href="#fnref9">↩</a></li>
+        <li id="fn10">의존성(dependencies) — 내 코드가 가져다 쓰는 라이브러리로, <code>requirements.txt</code>에 목록으로 적어요. <a href="#fnref10">↩</a></li>
+        <li id="fn11">롤백(rollback) — 새 버전에 문제가 생겼을 때 이전 버전으로 되돌리는 일이에요. <a href="#fnref11">↩</a></li>
+        <li id="fn12">헬스 체크(health check) — 서비스가 살아 있는지 확인하려고 만들어 두는 주소로, 보통 <code>/health</code>에서 짧은 응답을 돌려줘요. <a href="#fnref12">↩</a></li>
+        <li id="fn13">요청 타임아웃(request timeout) — 요청 하나를 처리할 수 있는 최대 시간으로, 넘으면 플랫폼이 연결을 끊어요. <a href="#fnref13">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <h3>"AI 서비스로 내놓기" 시리즈</h3>
+    <a class="post-nav" href="ai-service-design-before-code.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">AI 기능을 서비스로 설계한다는 것 — 코딩 에이전트에게 맡기기 전에 정할 것</span>
+    </a>
+    <p class="post-date">(2) Cloud Run에 소스를 배포한다는 것 — 코드 폴더 하나가 공개 주소가 되기까지 (이 글)</p>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
