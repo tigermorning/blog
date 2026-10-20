@@ -33,6 +33,7 @@
   --folder-7: #1f9e8f;
   --folder-8: #5a5fd4;
   --folder-9: #7a8a99;
+  --folder-10: #a1724a;
 
   /* 크레용으로 대충 문지른 결 — 알약·배지 배경에 soft-light로 얹는다.
      흰 스트로크라 어떤 폴더 색 위에서도 무난하게 먹힌다. */
@@ -873,7 +874,8 @@ body.list-page .site-header {
 .post-group:nth-of-type(7) { --folder-accent: var(--folder-6); }
 .post-group:nth-of-type(8) { --folder-accent: var(--folder-7); }
 .post-group:nth-of-type(9) { --folder-accent: var(--folder-8); }
-.post-group:nth-of-type(10) { --folder-accent: var(--folder-9); }
+.post-group:nth-of-type(10) { --folder-accent: var(--folder-10); }
+.post-group:nth-of-type(11) { --folder-accent: var(--folder-9); }
 
 .post-group-title {
   font-family: var(--font-heading);
@@ -1115,6 +1117,7 @@ body.list-page .site-header {
 .tree-group:has(> summary a[href="posts.html#vibe-coding"]) .tree-subgroup:nth-child(6) { --folder-accent: var(--folder-6); }
 .tree-group:has(> summary a[href="posts.html#vibe-coding"]) .tree-subgroup:nth-child(7) { --folder-accent: var(--folder-7); }
 .tree-group:has(> summary a[href="posts.html#vibe-coding"]) .tree-subgroup:nth-child(8) { --folder-accent: var(--folder-8); }
+.tree-group:has(> summary a[href="posts.html#vibe-coding"]) .tree-subgroup:nth-child(9) { --folder-accent: var(--folder-10); }
 /* 대분류 탭끼리는 색상환에서 멀리 떨어진 색을 줘서(초록·파랑·주황·보라) 붉은 계열로 뭉치지 않게 한다 */
 .tree-group:has(> summary a[href="posts.html#cat-field-work"]) { --folder-accent: var(--folder-2); }
 .tree-group:has(> summary a[href="posts.html#vibe-coding"]) { --folder-accent: var(--folder-1); }
