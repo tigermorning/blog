@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>모듈과 import 정리 - Tigermorning</title>
+  <meta name="description" content="위키독스 『왕초보를 위한 Python』 5.1 모듈이란부터 5.2 모듈 가져오기(import)까지, import 쓰는 법과 모듈 파일 만드는 법을 짧게 정리했습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="모듈과 import 정리">
+  <meta property="og:description" content="5.1 모듈이란부터 5.2 import까지, 문법 뜻만 짧게 정리한 글입니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/beginner-python-ch05-part1-notes.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">모듈과 import 정리</span> — 왕초보 Python 5장 모듈 (1)</h1>
+    <p class="post-date">2026. 10. 21.</p>
+    <p class="post-date">※ 이 글은 위키독스 <a href="https://wikidocs.net/book/2" target="_blank" rel="noopener">『왕초보를 위한 Python』</a> 5.1 ~ 5.2절(5장 모듈 앞부분)을 제 나름의 언어로 짧게 정리한 것입니다. 앞 내용은 <a href="beginner-python-ch04-part2-notes.html">4장 후반부 정리</a>에 있어요. 코드 실행 결과는 파이썬 3.12.10으로 실제로 돌려서 넣었어요.</p>
+
+    <p class="one-liner">모듈은 남이 만들어 둔 함수와 변수의 꾸러미이고, import 로 가져와서 쓰는 거예요.</p>
+
+    <h2><span class="hl">1. 모듈이란 (5.1)</span></h2>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>항목</th><th>내용</th></tr></thead>
+        <tbody>
+        <tr><td>모듈</td><td>함수와 변수를 모아 둔 파이썬 꾸러미. 남이 만들어 둔 부품을 가져다 쓴다</td></tr>
+        <tr><td>가져오기</td><td><code>import 모듈</code></td></tr>
+        <tr><td>안의 것 쓰기</td><td><code>모듈.이름</code> — 점으로 잇는다</td></tr>
+        <tr><td>대표 예</td><td><code>math</code>(수학 계산), <code>calendar</code>(달력), <code>tkinter</code>(창 만들기)</td></tr>
+        </tbody>
+      </table>
+    </div>
+<pre><code>import math          # math 모듈을 가져와 주세요
+print(math.sqrt(2))  # math 의 sqrt 로 2 의 제곱근을 화면에 보여 주세요
+print(math.sqrt(4))  # math 의 sqrt 로 4 의 제곱근을 화면에 보여 주세요
+print(math.pi)       # math 의 pi 를 화면에 보여 주세요
+print(type(math))    # math 의 자료형을 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">1.4142135623730951
+2.0
+3.141592653589793
+&lt;class 'module'&gt;</code></pre>
+    <p>※ <code>math.sqrt( )</code>처럼 괄호가 있으면 함수를 부르는 것이고, <code>math.pi</code>처럼 괄호가 없으면 모듈 안의 값을 꺼내는 거예요.</p>
+    <h3>calendar — 달력</h3>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>항목</th><th>내용</th></tr></thead>
+        <tbody>
+        <tr><td><code style="white-space:nowrap">calendar.prmonth(연, 월)</code></td><td>그 달 달력을 화면에 바로 출력한다 (돌려주는 값은 없음)</td></tr>
+        <tr><td><code style="white-space:nowrap">calendar.TextCalendar().formatmonth(연, 월)</code></td><td>같은 달력을 문자열로 돌려준다</td></tr>
+        </tbody>
+      </table>
+    </div>
+<pre><code>import calendar                     # calendar 모듈을 가져와 주세요
+calendar.prmonth(2013, 7)           # 2013년 7월 달력을 화면에 보여 주세요
+c = calendar.TextCalendar()         # c 에 글자 달력 도구를 담아 주세요
+m = c.formatmonth(2013, 7)          # m 에 2013년 7월 달력 문자열을 담아 주세요
+print(type(m), len(m.split('\n')))  # m 의 자료형과 줄 수를 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">     July 2013
+Mo Tu We Th Fr Sa Su
+ 1  2  3  4  5  6  7
+ 8  9 10 11 12 13 14
+15 16 17 18 19 20 21
+22 23 24 25 26 27 28
+29 30 31
+&lt;class 'str'&gt; 8</code></pre>
+    <h3>tkinter — 창 띄우기</h3>
+<pre><code>from tkinter import *                        # tkinter 의 이름을 전부 가져와 주세요
+widget = Label(None, text='I love Python!')  # widget 에 'I love Python!' 글자가 든 라벨을 담아 주세요
+widget.pack()                                # widget 을 창에 놓아 주세요
+widget.mainloop()                            # 창을 띄워 두고 기다려 주세요</code></pre>
+    <p>※ 실행하면 <code>I love Python!</code>이 적힌 작은 창이 떠요. 창이 뜨는 코드라 결과는 글로 적었어요. 대화형 셸에서는 앞의 세 줄만으로도 창이 뜨고, 파일로 실행할 때는 마지막 <code>mainloop()</code>가 있어야 창이 떠 있어요.</p>
+    <h2><span class="hl">2. 모듈 가져오기 (5.2)</span></h2>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>항목</th><th>내용</th></tr></thead>
+        <tbody>
+        <tr><td><code style="white-space:nowrap">import 모듈</code></td><td>모듈 전체를 가져온다. 쓸 때는 <code>모듈.이름</code></td></tr>
+        <tr><td><code style="white-space:nowrap">from 모듈 import 이름</code></td><td>필요한 이름만 가져온다. 쓸 때는 <code>이름</code> 만 쓴다. 쉼표로 여러 개 가능</td></tr>
+        <tr><td><code style="white-space:nowrap">from 모듈 import *</code></td><td>모듈의 이름을 전부 가져온다. 같은 이름의 내 변수를 덮어쓸 수 있다</td></tr>
+        </tbody>
+      </table>
+    </div>
+<pre><code>import math           # math 모듈을 가져와 주세요
+print(math.sqrt(16))  # math 의 sqrt 로 16 의 제곱근을 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">4.0</code></pre>
+<pre><code>from math import sqrt       # math 에서 sqrt 만 가져와 주세요
+print(sqrt(16))             # sqrt 로 16 의 제곱근을 화면에 보여 주세요
+try:                        # 다음 줄을 시도해 보고
+    print(math.pi)          # math 의 pi 를 화면에 보여 주세요
+except NameError as e:      # 이름이 없다는 오류가 나면
+    print('NameError:', e)  # 오류 내용을 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">4.0
+NameError: name 'math' is not defined</code></pre>
+    <h3>별표(*)는 내 이름을 덮어쓴다</h3>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>항목</th><th>내용</th></tr></thead>
+        <tbody>
+        <tr><td>덮어쓰기</td><td><code>from 모듈 import *</code> 가 실행되면 같은 이름의 내 변수는 모듈의 것으로 바뀐다</td></tr>
+        <tr><td>순서</td><td>나중에 대입한 쪽이 이긴다</td></tr>
+        </tbody>
+      </table>
+    </div>
+<pre><code>pi = '내가 만든 pi'  # pi 에 '내가 만든 pi' 를 담아 주세요
+print(pi)            # pi 를 화면에 보여 주세요
+from math import *   # math 의 이름을 전부 가져와 주세요
+print(pi)            # pi 를 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">내가 만든 pi
+3.141592653589793</code></pre>
+    <h3>지우기와 다시 읽기</h3>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>항목</th><th>내용</th></tr></thead>
+        <tbody>
+        <tr><td><code style="white-space:nowrap">del 모듈</code></td><td>불러온 모듈의 이름을 지운다 (파일이 지워지는 게 아니다)</td></tr>
+        <tr><td><code style="white-space:nowrap">reload(모듈)</code></td><td><code>from importlib import reload</code> 뒤에 쓴다. 한 번 가져온 모듈 코드를 다시 실행한다</td></tr>
+        </tbody>
+      </table>
+    </div>
+<pre><code>import math                 # math 모듈을 가져와 주세요
+del math                    # math 라는 이름을 지워 주세요
+try:                        # 다음 줄을 시도해 보고
+    print(math.pi)          # math 의 pi 를 화면에 보여 주세요
+except NameError as e:      # 이름이 없다는 오류가 나면
+    print('NameError:', e)  # 오류 내용을 화면에 보여 주세요
+import math                 # math 모듈을 다시 가져와 주세요
+print(math.pi)              # math 의 pi 를 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">NameError: name 'math' is not defined
+3.141592653589793</code></pre>
+    <p>※ <code>mymod.py</code></p>
+<pre><code>print('mymod 코드가 실행됨')
+value = 1</code></pre>
+<pre><code>import mymod                  # mymod 를 가져와 주세요
+import mymod                  # mymod 를 또 가져와 주세요
+from importlib import reload  # importlib 에서 reload 를 가져와 주세요
+reload(mymod)                 # mymod 를 다시 읽어 주세요</code></pre>
+<pre class="out"><code class="nohighlight">mymod 코드가 실행됨
+mymod 코드가 실행됨</code></pre>
+    <p>※ <code>import</code>는 같은 모듈을 두 번째부터 다시 실행하지 않아요. 모듈 파일을 고친 뒤 바뀐 코드를 반영할 때 <code>reload</code>를 써요.</p>
+    <h3>별칭 as</h3>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>항목</th><th>내용</th></tr></thead>
+        <tbody>
+        <tr><td><code style="white-space:nowrap">import 모듈 as 별칭</code></td><td>긴 모듈 이름을 짧게 부른다 (5.2.3의 <code>import tkinter as tk</code>)</td></tr>
+        <tr><td><code style="white-space:nowrap">from 모듈 import 이름 as 별칭</code></td><td>가져오는 이름에 다른 이름을 붙인다</td></tr>
+        <tr><td>별칭을 붙이면</td><td>원래 모듈 이름은 생기지 않는다</td></tr>
+        </tbody>
+      </table>
+    </div>
+<pre><code>import math as m               # math 를 m 이라는 이름으로 가져와 주세요
+from math import sqrt as root  # sqrt 를 root 라는 이름으로 가져와 주세요
+print(m.sqrt(9), root(9))      # m.sqrt(9) 와 root(9) 를 화면에 보여 주세요
+print(m.pi)                    # m 의 pi 를 화면에 보여 주세요
+try:                           # 다음 줄을 시도해 보고
+    print(math.pi)             # math 의 pi 를 화면에 보여 주세요
+except NameError as e:         # 이름이 없다는 오류가 나면
+    print('NameError:', e)     # 오류 내용을 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">3.0 3.0
+3.141592653589793
+NameError: name 'math' is not defined</code></pre>
+    <h3>dir()와 help()로 모듈 들여다보기 (5.2.1)</h3>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>항목</th><th>내용</th></tr></thead>
+        <tbody>
+        <tr><td><code style="white-space:nowrap">dir(모듈)</code></td><td>모듈 안에 있는 이름을 리스트로 돌려준다</td></tr>
+        <tr><td><code style="white-space:nowrap">help(대상)</code></td><td>함수·모듈의 사용법을 보여 준다</td></tr>
+        <tr><td><code style="white-space:nowrap">[x for x in dir(모듈) if '글자' in x]</code></td><td>이름에 글자가 든 것만 거른다 (리스트 컴프리헨션)</td></tr>
+        </tbody>
+      </table>
+    </div>
+<pre><code>import calendar                                      # calendar 모듈을 가져와 주세요
+names = [x for x in dir(calendar) if 'leap' in x]    # names 에 calendar 이름 중 leap 이 든 것을 모아 담아 주세요
+print(names)                                         # names 를 화면에 보여 주세요
+help(calendar.isleap)                                # calendar.isleap 의 사용법을 보여 주세요
+print(calendar.isleap(2024), calendar.isleap(2077))  # 2024 와 2077 이 윤년인지 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">['isleap', 'leapdays']
+Help on function isleap in module calendar:
+
+isleap(year)
+    Return True for leap years, False for non-leap years.
+
+True False</code></pre>
+    <h3>내가 만든 파일도 모듈 (5.2.4)</h3>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>항목</th><th>내용</th></tr></thead>
+        <tbody>
+        <tr><td>모듈 파일</td><td><code>.py</code> 파일 이름이 모듈 이름이다 (<code>tools.py</code> → <code>import tools</code>)</td></tr>
+        <tr><td>찾는 곳</td><td><code>sys.path</code> 목록의 폴더. 다른 폴더는 <code>sys.path.append("폴더")</code> 로 더한다</td></tr>
+        <tr><td><code style="white-space:nowrap">__name__</code></td><td>직접 실행하면 <code>'__main__'</code>, import 되면 모듈 이름</td></tr>
+        <tr><td><code style="white-space:nowrap">if __name__ == "__main__":</code></td><td>직접 실행할 때만 도는 구역. import 할 때는 건너뛴다</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>※ <code>tools.py</code></p>
+<pre><code>def double(x):                        # x 를 받는 double 이라는 동작을 만들어 주세요
+    return x * 2                      # x 의 두 배를 돌려주세요
+
+print('tools의 __name__:', __name__)  # '__name__' 을 화면에 보여 주세요
+if __name__ == '__main__':            # 만약 직접 실행한 것이면
+    print('직접 실행:', double(4))    # double(4) 를 화면에 보여 주세요</code></pre>
+    <p>※ <code>user.py</code></p>
+<pre><code>import tools            # tools 를 가져와 주세요
+print(tools.double(5))  # tools 의 double 로 5 의 두 배를 화면에 보여 주세요</code></pre>
+    <p>※ <code>python tools.py</code> 로 직접 실행하면</p>
+<pre class="out"><code class="nohighlight">tools의 __name__: __main__
+직접 실행: 8</code></pre>
+    <p>※ <code>python user.py</code> 로 tools 를 import 하면</p>
+<pre class="out"><code class="nohighlight">tools의 __name__: tools
+10</code></pre>
+    <p>※ <code>sys.path.append("../ch04")</code>의 상대 경로는 파일이 있는 폴더가 아니라 <strong>프로그램을 실행하는 위치</strong> 기준이에요. <code>ch05</code> 폴더에서 실행한 예예요.</p>
+    <p>※ <code>ch05/main.py</code></p>
+<pre><code>import sys                  # sys 를 가져와 주세요
+sys.path.append("../ch04")  # 모듈 찾는 길에 ../ch04 를 더해 주세요
+import tools                # tools 를 가져와 주세요
+print(tools.hello())        # tools 의 hello 를 불러 그 값을 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">hello</code></pre>
+    <p>※ 내 파일 이름이 표준 모듈과 같으면 내 파일이 먼저 읽혀요. 같은 폴더에 <code>calendar.py</code>(<code>print("내 calendar.py가 읽혔다")</code> 한 줄)가 있을 때 아래를 실행하면</p>
+<pre><code>import calendar          # calendar 를 가져와 주세요
+print(calendar.isleap)   # calendar 의 isleap 을 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">내 calendar.py가 읽혔다
+AttributeError: module 'calendar' has no attribute 'isleap'</code></pre>
+    <h2><span class="hl">3. 한눈에 정리</span></h2>
+    <div class="table-scroll fill">
+      <table>
+        <thead><tr><th>하고 싶은 일</th><th>쓰는 것</th></tr></thead>
+        <tbody>
+        <tr><td>전체 가져오기</td><td><code>import 모듈</code> → <code>모듈.이름</code></td></tr>
+        <tr><td>골라 가져오기</td><td><code>from 모듈 import 이름</code> → <code>이름</code></td></tr>
+        <tr><td>전부 가져오기</td><td><code>from 모듈 import *</code> → 내 이름을 덮어쓸 수 있다</td></tr>
+        <tr><td>별칭</td><td><code>import 모듈 as 별칭</code>, <code>from 모듈 import 이름 as 별칭</code></td></tr>
+        <tr><td>지우기·다시 읽기</td><td><code>del 모듈</code>, <code>reload(모듈)</code></td></tr>
+        <tr><td>살펴보기</td><td><code>dir(모듈)</code>, <code>help(함수)</code></td></tr>
+        <tr><td>내 모듈</td><td><code>.py</code> 파일 = 모듈. 직접 실행 구역은 <code>if __name__ == "__main__":</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2><span class="hl">함께 보기</span></h2>
+    <ul>
+      <li><a href="beginner-python-ch05-part1-answers.html">문제 해설 — 모듈 가져오기 연습 문제를 자세히 뜯어본다</a> — 이 정리를 교재 연습 문제 5.2.1~5.2.4에 적용해 보는 다음 글이에요.</li>
+      <li><a href="beginner-python-ch05-part1-practice.html">실습 문제 14개 — 초급·중급·고급으로 import·모듈 코드 읽고 결과 예측하기</a> — 정리한 내용을 직접 문제로 확인해요.</li>
+      <li><a href="beginner-python-ch04-part2-notes.html">4장 후반부 정리(4.3~4.5)</a> — 5장 전에 배운 튜플·딕셔너리·세트예요.</li>
+      <li><a href="https://wikidocs.net/book/2" target="_blank" rel="noopener">왕초보를 위한 Python (위키독스)</a> — 이 글이 다룬 원래 교재예요.</li>
+    </ul>
+
+    <a class="post-nav" href="beginner-python-ch05-part1-answers.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">문제 해설 — 모듈 가져오기 연습 문제를 자세히 뜯어본다</span>
+    </a>
+
+    <h3 id="series-list">"왕초보 Python 5장 모듈 (5.1~5.2)" 시리즈</h3>
+    <p class="post-date">(1) 모듈과 import 정리 (이 글)</p>
+    <a class="post-nav" href="beginner-python-ch05-part1-answers.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">문제 해설 — 모듈 가져오기 연습 문제를 자세히 뜯어본다</span>
+    </a>
+    <a class="post-nav" href="beginner-python-ch05-part1-practice.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">실습 문제 14개 — 초급·중급·고급으로 import·모듈 코드 읽고 결과 예측하기</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>

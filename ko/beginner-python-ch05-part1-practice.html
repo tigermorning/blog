@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>실습 문제 14개 — 초급·중급·고급으로 import·모듈 코드 읽고 결과 예측하기 - Tigermorning</title>
+<meta name="description" content="왕초보를 위한 Python 5장 모듈(5.1 모듈이란 ~ 5.2 모듈 가져오기) 범위로 만든 초급 5·중급 5·고급 4 코드 읽기 실습 14문제와 정답·해설">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=JetBrains+Mono:wght@400;600&family=Nanum+Gothic+Coding:wght@400;700&display=swap">
+<style>
+:root {
+  --ground: #F3F6F5;
+  --surface: #FFFFFF;
+  --sunken: #E8EEEC;
+  --ink: #18221F;
+  --ink-soft: #4B5A56;
+  --ink-faint: #7C8A86;
+  --line: #D3DCD9;
+  --accent: #2B5B84;
+  --accent-ink: #FFFFFF;
+  --memo: #FFF6D1;
+  --memo-line: #E3C75A;
+  --lv-basic: #2A7563;
+  --lv-basic-bg: #DDEFE9;
+  --lv-mid: #2B5B84;
+  --lv-mid-bg: #DCE8F3;
+  --lv-adv: #7A3E6E;
+  --lv-adv-bg: #F0E0EC;
+  --code-bg: #1C2724;
+  --code-ink: #DCE5E1;
+  --c-kw: #F2C94C;
+  --c-str: #9FD8A8;
+  --c-num: #F4A37A;
+  --c-com: #7F938D;
+  --c-fn: #8CC4F2;
+  --c-meta: #6F827C;
+  --font-display: "Hahmlet", "Noto Serif KR", "Batang", serif;
+  --font-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Nanum Gothic Coding", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #111816;
+    --surface: #18211F;
+    --sunken: #1F2A27;
+    --ink: #E2EAE7;
+    --ink-soft: #A7B5B0;
+    --ink-faint: #74847F;
+    --line: #2C3935;
+    --accent: #7FB2E0;
+    --accent-ink: #0E1A24;
+    --memo: #2A2717;
+    --memo-line: #8C7A33;
+    --lv-basic: #7ACCB5;
+    --lv-basic-bg: #1B322B;
+    --lv-mid: #8DBBE6;
+    --lv-mid-bg: #1C2B38;
+    --lv-adv: #D9A3CC;
+    --lv-adv-bg: #33222F;
+    --code-bg: #0B110F;
+    --code-ink: #D6E0DC;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #111816;
+  --surface: #18211F;
+  --sunken: #1F2A27;
+  --ink: #E2EAE7;
+  --ink-soft: #A7B5B0;
+  --ink-faint: #74847F;
+  --line: #2C3935;
+  --accent: #7FB2E0;
+  --accent-ink: #0E1A24;
+  --memo: #2A2717;
+  --memo-line: #8C7A33;
+  --lv-basic: #7ACCB5;
+  --lv-basic-bg: #1B322B;
+  --lv-mid: #8DBBE6;
+  --lv-mid-bg: #1C2B38;
+  --lv-adv: #D9A3CC;
+  --lv-adv-bg: #33222F;
+  --code-bg: #0B110F;
+  --code-ink: #D6E0DC;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15.5px;
+  line-height: 1.7;
+  padding-inline: 20px;
+  padding-block: 0 80px;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+.wrap {
+  max-width: 1100px;
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 48px;
+}
+
+/* ---------- header ---------- */
+.masthead {
+  grid-column: 1 / -1;
+  padding-block: 48px 8px;
+  display: grid;
+  gap: 14px;
+  max-width: 760px;
+}
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+}
+.eyebrow b { color: var(--ink-soft); font-weight: 600; }
+h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(30px, 5vw, 44px);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin: 0;
+  text-wrap: balance;
+}
+h1 .prompt { font-family: var(--font-mono); color: var(--accent); font-weight: 600; font-size: 0.7em; vertical-align: 0.12em; margin-right: 0.3em; }
+.lead { margin: 0; color: var(--ink-soft); max-width: 62ch; }
+.counts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.count {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}
+.count.basic { background: var(--lv-basic-bg); color: var(--lv-basic); }
+.count.mid { background: var(--lv-mid-bg); color: var(--lv-mid); }
+.count.adv { background: var(--lv-adv-bg); color: var(--lv-adv); }
+.count.all { background: var(--sunken); color: var(--ink-soft); }
+
+/* ---------- sidebar ---------- */
+.toc {
+  position: sticky;
+  top: 24px;
+  align-self: start;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  padding-block: 8px;
+  font-size: 13.5px;
+}
+.toc h2 {
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+  font-weight: 600;
+  margin: 18px 0 6px;
+}
+.toc h2:first-child { margin-top: 0; }
+.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; }
+.toc a {
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  gap: 6px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  padding: 3px 8px;
+  border-radius: 6px;
+  line-height: 1.45;
+}
+.toc a:hover { background: var(--sunken); color: var(--ink); }
+.toc a .n { font-family: var(--font-mono); font-size: 12px; color: var(--ink-faint); font-variant-numeric: tabular-nums; padding-top: 1px; }
+.toc .grp-basic h2 { color: var(--lv-basic); }
+.toc .grp-mid h2 { color: var(--lv-mid); }
+.toc .grp-adv h2 { color: var(--lv-adv); }
+
+main { min-width: 0; display: grid; gap: 56px; }
+
+/* ---------- toolbar ---------- */
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--ground);
+  padding-block: 12px;
+  margin-block: -12px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid var(--line);
+}
+.seg { display: flex; flex-wrap: wrap; gap: 4px; }
+.seg button, .ghost {
+  font: 500 13.5px/1 var(--font-body);
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid var(--line);
+  padding: 8px 13px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.seg button:hover, .ghost:hover { color: var(--ink); border-color: var(--ink-faint); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--ground); border-color: var(--ink); }
+
+/* ---------- intro blocks ---------- */
+.intro { display: grid; gap: 28px; }
+h2.sec {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 22px;
+  margin: 0 0 12px;
+  text-wrap: balance;
+}
+.howto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+.howto div {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: grid;
+  gap: 6px;
+  align-content: start;
+}
+.howto .k { font-family: var(--font-mono); font-size: 12.5px; font-weight: 600; color: var(--accent); }
+.howto ul, .p-body ul, .sol ul { margin: 0; padding-left: 1.1em; display: grid; gap: 3px; }
+.howto li { font-size: 14px; color: var(--ink-soft); }
+.note { font-size: 14px; color: var(--ink-soft); margin: 12px 0 0; }
+
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 8px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+th { font-size: 12px; letter-spacing: 0.05em; color: var(--ink-faint); font-weight: 600; background: var(--sunken); }
+td.src { color: var(--ink-faint); font-size: 13px; white-space: nowrap; }
+.table-scroll.fill td, .table-scroll.fill th { text-align: center; font-variant-numeric: tabular-nums; font-family: var(--font-mono); font-size: 13px; }
+.table-scroll.fill td:first-child, .table-scroll.fill th:first-child { text-align: left; }
+
+code { font-family: var(--font-mono); font-size: 0.88em; background: var(--sunken); padding: 1px 5px; border-radius: 4px; }
+pre { margin: 0; }
+pre code {
+  display: block;
+  background: var(--code-bg);
+  color: var(--code-ink);
+  padding: 14px 18px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  line-height: 1.65;
+  overflow-x: auto;
+  tab-size: 4;
+}
+pre.out code { background: var(--sunken); color: var(--ink); border: 1px dashed var(--line); }
+pre.out { position: relative; }
+pre.out::before {
+  content: "출력";
+  position: absolute; top: 6px; right: 10px;
+  font: 600 10.5px/1 var(--font-body); letter-spacing: 0.08em; color: var(--ink-faint);
+}
+.hljs-keyword, .hljs-literal { color: var(--c-kw); }
+.hljs-string { color: var(--c-str); }
+.hljs-number { color: var(--c-num); }
+.hljs-comment { color: var(--c-com); font-style: italic; }
+.hljs-built_in, .hljs-title { color: var(--c-fn); }
+.hljs-meta { color: var(--c-meta); }
+
+/* ---------- level sections ---------- */
+.level { display: grid; gap: 18px; }
+/* display:grid가 hidden 속성을 덮어쓰지 않게 — 난이도 필터가 이 속성으로 숨긴다 */
+[data-level][hidden] { display: none; }
+.level-head { display: grid; gap: 4px; padding-bottom: 4px; }
+.level-head .tag {
+  justify-self: start;
+  font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+  padding: 2px 10px; border-radius: 999px;
+}
+.level-head h2 { font-family: var(--font-display); font-weight: 700; font-size: 28px; margin: 0; text-wrap: balance; }
+.level-head p { margin: 0; color: var(--ink-soft); max-width: 62ch; }
+.level.basic { --lv: var(--lv-basic); --lv-bg: var(--lv-basic-bg); }
+.level.mid { --lv: var(--lv-mid); --lv-bg: var(--lv-mid-bg); }
+.level.adv { --lv: var(--lv-adv); --lv-bg: var(--lv-adv-bg); }
+.level-head .tag { background: var(--lv-bg); color: var(--lv); }
+
+/* ---------- problem ---------- */
+.problem {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 22px 24px;
+  display: grid;
+  gap: 14px;
+}
+.p-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px; }
+.p-id { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--lv); font-variant-numeric: tabular-nums; }
+.p-type {
+  font-size: 12px; font-weight: 600; letter-spacing: 0.02em;
+  color: var(--ink-soft); border: 1px solid var(--line); border-radius: 5px; padding: 0 7px;
+}
+.problem h3 { font-family: var(--font-display); font-weight: 500; font-size: 19px; margin: 0; flex-basis: 100%; line-height: 1.4; text-wrap: balance; }
+.p-body { display: grid; gap: 12px; max-width: 70ch; }
+.p-body p { margin: 0; }
+.p-body li, .sol li { padding-left: 2px; }
+.spec { font-size: 14px; color: var(--ink-soft); }
+
+.memo { display: grid; gap: 6px; }
+.memo label { font-size: 12.5px; font-weight: 600; color: var(--ink-soft); display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.memo label span { font-weight: 400; color: var(--ink-faint); }
+.memo textarea {
+  width: 100%;
+  min-height: 72px;
+  resize: vertical;
+  font: 13.5px/1.6 var(--font-mono);
+  color: var(--ink);
+  background: var(--memo);
+  border: 1px dashed var(--memo-line);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+details.sol { border-top: 1px solid var(--line); padding-top: 12px; }
+details.sol summary {
+  cursor: pointer;
+  list-style: none;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-weight: 600; font-size: 14px; color: var(--lv);
+  padding: 4px 0;
+}
+details.sol summary::-webkit-details-marker { display: none; }
+details.sol summary::before {
+  content: "";
+  width: 7px; height: 7px;
+  border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform .15s;
+}
+details.sol[open] summary::before { transform: rotate(45deg); }
+@media (prefers-reduced-motion: reduce) { details.sol summary::before { transition: none; } }
+.sol-body { display: grid; gap: 12px; padding-top: 10px; max-width: 70ch; }
+.sol-body p { margin: 0; }
+.sol-body h4 { margin: 4px 0 0; font-size: 13px; letter-spacing: 0.04em; color: var(--ink-faint); font-weight: 600; }
+.sol-body .real { background: var(--lv-bg); border-radius: 8px; padding: 10px 14px; font-size: 14.5px; }
+.sol-body .real b { color: var(--lv); }
+
+footer { grid-column: 1 / -1; color: var(--ink-faint); font-size: 13px; border-top: 1px solid var(--line); padding-top: 18px; }
+
+@media (max-width: 860px) {
+  .wrap { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .toc { display: none; }
+  .masthead { padding-top: 32px; }
+  .problem { padding: 18px 16px; }
+  pre code { font-size: 13px; padding: 12px 14px; }
+}
+body { margin: 0; }
+.backlink { font-family: var(--font-body); font-size: 13px; text-decoration: none; }
+.backlink:hover { text-decoration: underline; }
+
+details.hint { border-top: 1px solid var(--line); padding-top: 12px; }
+details.hint summary {
+  cursor: pointer; list-style: none;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-weight: 600; font-size: 14px; color: var(--ink-soft);
+  padding: 4px 0;
+}
+details.hint summary::-webkit-details-marker { display: none; }
+details.hint summary::before {
+  content: ""; width: 7px; height: 7px;
+  border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg); transition: transform .15s;
+}
+details.hint[open] summary::before { transform: rotate(45deg); }
+main, .problem, .p-body, .sol-body, .level { min-width: 0; }
+.p-body pre, .sol-body pre { max-width: 100%; overflow-x: auto; }
+.p-body p { margin: 0; }
+.p-body .table-scroll, .sol-body .table-scroll { overflow-x: auto; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="masthead">
+    <a class="backlink" href="posts.html#python-basics-books">← Tigermorning 블로그 · 파이썬 스터디 › 왕초보를 위한 Python</a>
+    <a class="backlink" href="beginner-python-ch05-part1-answers.html">← 이전 편: 5장 모듈 문제 해설</a>
+    <div class="eyebrow"><b>왕초보를 위한 Python</b> · 5장 모듈 · 5.1 – 5.2</div>
+    <h1><span class="prompt">&gt;&gt;&gt;</span>5장 모듈 코드 읽기 실습</h1>
+    <p class="lead">코드를 짜지 않고 <b>완성된 코드를 읽고 실행 결과를 예측</b>하는 문제집. 문제마다 <b>힌트 보기</b>와 <b>정답·해설 보기</b>가 따로 접혀 있으니, 먼저 힌트를 보고 그래도 안 풀리면 정답·해설을 여세요. 교재의 공식 연습 문제가 아니라 5.1 ~ 5.2절 내용으로 만든 문제예요. 여러 파일이 나오는 문제는 같은 폴더에 파일이 있다고 생각하고 읽어요.</p>
+    <div class="counts">
+      <span class="count all">14문제</span>
+      <span class="count basic">초급 5</span>
+      <span class="count mid">중급 5</span>
+      <span class="count adv">고급 4</span>
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="문제 목록">
+    <div class="grp-basic"><h2>초급</h2>
+      <ol>
+        <li><a href="#b1"><span class="n">1</span>import 두 가지로 제곱근 구하기</a></li>
+        <li><a href="#b2"><span class="n">2</span>가져오지 않은 이름 쓰기</a></li>
+        <li><a href="#b3"><span class="n">3</span>as로 별칭 붙이기</a></li>
+        <li><a href="#b4"><span class="n">4</span>dir()로 이름 찾기</a></li>
+        <li><a href="#b5"><span class="n">5</span>별표(*)로 가져오면</a></li>
+      </ol>
+    </div>
+    <div class="grp-mid"><h2>중급</h2>
+      <ol>
+        <li><a href="#m1"><span class="n">1</span>달력 함수 결과 풀어 읽기</a></li>
+        <li><a href="#m2"><span class="n">2</span>함수 하나와 math 함수 셋</a></li>
+        <li><a href="#m3"><span class="n">3</span>파일 두 개: import와 직접 실행</a></li>
+        <li><a href="#m4"><span class="n">4</span>import를 두 번 하면</a></li>
+        <li><a href="#m5"><span class="n">5</span>상대 경로는 어디서 실행하느냐에 따라</a></li>
+      </ol>
+    </div>
+    <div class="grp-adv"><h2>고급</h2>
+      <ol>
+        <li><a href="#a1"><span class="n">1</span>복사된 값과 reload</a></li>
+        <li><a href="#a2"><span class="n">2</span>두 모듈의 sqrt가 겹칠 때</a></li>
+        <li><a href="#a3"><span class="n">3</span>모듈을 가져다 쓰는 파일</a></li>
+        <li><a href="#a4"><span class="n">4</span>내 파일 이름이 모듈 이름과 같을 때</a></li>
+      </ol>
+    </div>
+  </nav>
+
+  <main>
+    <div class="toolbar">
+      <div class="seg" role="group" aria-label="난이도 필터">
+        <button type="button" id="f-all" data-filter="all" aria-pressed="true">전체</button>
+        <button type="button" id="f-basic" data-filter="basic" aria-pressed="false">초급</button>
+        <button type="button" id="f-mid" data-filter="mid" aria-pressed="false">중급</button>
+        <button type="button" id="f-adv" data-filter="adv" aria-pressed="false">고급</button>
+      </div>
+      <button type="button" class="ghost" id="toggle-sol">정답·해설 모두 펼치기</button>
+    </div>
+
+    <section class="level basic" data-level="basic">
+      <div class="level-head">
+        <span class="tag">초급</span>
+        <h2>5장 기본기 — 개념 하나씩</h2>
+        <p>import 두 방식, 이름 범위, as, dir(), 별표를 한 문제에 한 가지씩 확인해요.</p>
+      </div>
+
+      <article class="problem" id="b1">
+        <div class="p-head"><span class="p-id">초급 1</span><span class="p-type">읽기</span><h3>import 두 가지로 제곱근 구하기</h3></div>
+        <div class="p-body">
+<p>모듈을 통째로 가져오는 방법과 필요한 이름만 가져오는 방법을 같이 써 봐요.</p>
+<pre><code class="language-python">import math            # math 모듈을 가져와 주세요
+print(math.sqrt(16))   # math 의 sqrt 로 16 의 제곱근을 화면에 보여 주세요
+from math import sqrt  # math 에서 sqrt 만 가져와 주세요
+print(sqrt(16))        # sqrt 로 16 의 제곱근을 화면에 보여 주세요
+print(math.pi)         # math 의 pi 를 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 무엇이 출력될까요?</p>
+    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr></tbody></table></div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <p><code>math.sqrt</code>는 모듈 이름을 붙여서, <code>sqrt</code>는 이름만으로 불러요. <code>pi</code>는 함수가 아니라 값이라 괄호가 없어요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-b1">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b1"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">4.0
+4.0
+3.141592653589793</code></pre>
+    <p><b>한 문장으로:</b> 같은 제곱근 함수를 두 가지 방법으로 가져와 부르는 코드예요.</p><div class="table-scroll"><table><thead><tr><th>줄</th><th>쓰는 모양</th><th>결과</th></tr></thead><tbody><tr><td>2번째 줄</td><td><code>math.sqrt(16)</code> — 모듈 이름을 앞에 붙임</td><td><code>4.0</code> (제곱근은 항상 실수)</td></tr><tr><td>4번째 줄</td><td><code>sqrt(16)</code> — 이름만 씀</td><td><code>4.0</code></td></tr><tr><td>5번째 줄</td><td><code>math.pi</code> — 모듈의 변수</td><td><code>3.141592653589793</code></td></tr></tbody></table></div>    <p><code>import math</code>는 <b>모듈 전체</b>를 가져와서 <code>math.이름</code>으로 쓰고, <code>from math import sqrt</code>는 <b>이름 하나만</b> 가져와서 <code>sqrt</code>로 써요. 5번째 줄은 첫 줄에서 <code>math</code>를 가져왔기 때문에 쓸 수 있어요.</p>    <p><b>핵심 한 줄:</b> <code>import 모듈</code>은 <code>모듈.이름</code>, <code>from 모듈 import 이름</code>은 <code>이름</code>으로 써요.</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="b2">
+        <div class="p-head"><span class="p-id">초급 2</span><span class="p-type">읽기</span><h3>가져오지 않은 이름 쓰기</h3></div>
+        <div class="p-body">
+<p><code>from … import</code>로는 이름 하나만 가져와요. 그러면 모듈 이름은 어떻게 될까요?</p>
+<pre><code class="language-python">from math import sqrt       # math 에서 sqrt 만 가져와 주세요
+print(sqrt(9))              # sqrt 로 9 의 제곱근을 화면에 보여 주세요
+try:                        # 다음을 시도해 보세요
+    print(math.pi)          # math 의 pi 를 화면에 보여 주세요
+except NameError as e:      # NameError 가 나면 e 에 담아 주세요
+    print('NameError:', e)  # NameError: 와 e 를 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 무엇이 출력될까요?</p>
+    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr></tbody></table></div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <p><code>from math import sqrt</code>는 <code>sqrt</code>라는 이름만 만들어요. <code>math</code>라는 이름이 있는지 생각해 보세요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-b2">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b2"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">3.0
+NameError: name 'math' is not defined</code></pre>
+    <p><b>한 문장으로:</b> <code>from math import sqrt</code>만 했는데 <code>math.pi</code>를 쓰면 <code>NameError</code>가 나는 것을 확인하는 코드예요.</p><div class="table-scroll"><table><thead><tr><th>줄</th><th>일어나는 일</th></tr></thead><tbody><tr><td>2번째 줄</td><td><code>sqrt</code>는 가져왔으니 <code>3.0</code>이 나와요</td></tr><tr><td>4번째 줄</td><td><code>math</code>라는 이름은 만들어진 적이 없어서 <code>NameError</code>가 나요</td></tr><tr><td>5번째 줄</td><td><code>except</code>로 넘어와 <code>NameError:</code> 와 오류 문구를 찍어요</td></tr></tbody></table></div>    <p>고치려면 <code>import math</code>를 더하거나, <code>math.pi</code> 대신 <code>from math import pi</code>로 <code>pi</code>를 가져와요.</p>    <p><b>핵심 한 줄:</b> <code>from 모듈 import 이름</code>은 그 이름만 만들고, 모듈 이름은 만들지 않아요.</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="b3">
+        <div class="p-head"><span class="p-id">초급 3</span><span class="p-type">읽기</span><h3>as로 별칭 붙이기</h3></div>
+        <div class="p-body">
+<p>이름 뒤에 <code>as 새이름</code>을 붙이면 다른 이름으로 가져와요.</p>
+<pre><code class="language-python">import math as m               # math 모듈을 m 이라는 이름으로 가져와 주세요
+from math import sqrt as root  # sqrt 를 root 라는 이름으로 가져와 주세요
+print(m.sqrt(9), root(9))      # m.sqrt(9) 와 root(9) 를 화면에 보여 주세요
+print(m.pi)                    # m 의 pi 를 화면에 보여 주세요
+try:                           # 다음을 시도해 보세요
+    print(math.pi)             # math 의 pi 를 화면에 보여 주세요
+except NameError as e:         # NameError 가 나면 e 에 담아 주세요
+    print('NameError:', e)     # NameError: 와 e 를 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 무엇이 출력될까요?</p>
+    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr></tbody></table></div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <p><code>as</code>를 쓰면 <b>새 이름만</b> 만들어져요. 원래 이름 <code>math</code>는 어떻게 될까요?</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-b3">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b3"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">3.0 3.0
+3.141592653589793
+NameError: name 'math' is not defined</code></pre>
+    <p><b>한 문장으로:</b> 별칭으로 가져오면 별칭만 쓸 수 있고 원래 이름은 만들어지지 않는 것을 보여 주는 코드예요.</p><div class="table-scroll"><table><thead><tr><th>줄</th><th>일어나는 일</th><th>결과</th></tr></thead><tbody><tr><td>3번째 줄</td><td><code>m.sqrt</code>와 <code>root</code>는 같은 <code>sqrt</code> 함수</td><td><code>3.0 3.0</code></td></tr><tr><td>4번째 줄</td><td>별칭 <code>m</code> 뒤에 점을 찍어 변수를 꺼냄</td><td><code>3.141592653589793</code></td></tr><tr><td>6번째 줄</td><td><code>math</code>라는 이름은 만들어지지 않아 오류</td><td><code>NameError: name 'math' is not defined</code></td></tr></tbody></table></div>    <p><b>핵심 한 줄:</b> <code>import math as m</code> 뒤에는 <code>m</code>만 쓸 수 있고 <code>math</code>는 쓸 수 없어요.</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="b4">
+        <div class="p-head"><span class="p-id">초급 4</span><span class="p-type">읽기</span><h3>dir()로 이름 찾기</h3></div>
+        <div class="p-body">
+<p>모듈 안에 어떤 이름이 있는지 <code>dir()</code>로 찾고, 찾은 함수를 불러 봐요.</p>
+<pre><code class="language-python">import calendar                                      # calendar 모듈을 가져와 주세요
+names = [x for x in dir(calendar) if 'leap' in x]    # names 에 calendar 의 이름 중 leap 이 든 것의 리스트를 담아 주세요
+print(names)                                         # names 를 화면에 보여 주세요
+print(calendar.isleap(2024), calendar.isleap(2077))  # 2024 와 2077 이 윤년인지 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 무엇이 출력될까요?</p>
+    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr></tbody></table></div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <p><code>dir(calendar)</code>는 모듈 안의 이름들을 리스트로 줘요. 그중 <code>leap</code>이 든 것만 걸러요. 윤년은 4로 나누어떨어지는 해가 기본이에요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-b4">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b4"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">['isleap', 'leapdays']
+True False</code></pre>
+    <p><b>한 문장으로:</b> <code>dir()</code>로 모듈 속 이름을 찾아 거르고, 찾은 <code>isleap</code>으로 윤년을 확인하는 코드예요.</p><div class="table-scroll"><table><thead><tr><th>줄</th><th>일어나는 일</th><th>결과</th></tr></thead><tbody><tr><td>3번째 줄</td><td>이름에 <code>leap</code>이 든 것만 모은 리스트</td><td><code>['isleap', 'leapdays']</code></td></tr><tr><td>4번째 줄</td><td>2024는 4로 나누어떨어짐, 2077은 아님</td><td><code>True False</code></td></tr></tbody></table></div>    <p>이 글의 파이썬 3.12 기준이에요. 모르는 모듈은 <code>dir()</code>로 이름을 찾고 <code>help()</code>로 사용법을 읽어요.</p>    <p><b>핵심 한 줄:</b> <code>dir(모듈)</code>로 이름을 찾고, <code>모듈.이름(…)</code>으로 불러요.</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="b5">
+        <div class="p-head"><span class="p-id">초급 5</span><span class="p-type">읽기</span><h3>별표(*)로 가져오면</h3></div>
+        <div class="p-body">
+<p><code>from 모듈 import *</code>는 모듈의 이름을 전부 가져와요. 내 변수와 이름이 같으면 어떻게 될까요?</p>
+<pre><code class="language-python">pi = '내가 만든 pi'  # pi 에 '내가 만든 pi' 를 담아 주세요
+print(pi)            # pi 를 화면에 보여 주세요
+from math import *   # math 의 이름을 전부 가져와 주세요
+print(pi)            # pi 를 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 무엇이 출력될까요?</p>
+    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr></tbody></table></div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <p>같은 이름에는 <b>나중에 담은 값</b>이 남아요. <code>math</code>에도 <code>pi</code>가 있어요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-b5">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b5"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">내가 만든 pi
+3.141592653589793</code></pre>
+    <p><b>한 문장으로:</b> <code>import *</code>가 내 변수를 모듈의 값으로 덮어쓰는 것을 보여 주는 코드예요.</p><div class="table-scroll"><table><thead><tr><th>줄</th><th>pi가 가리키는 값</th></tr></thead><tbody><tr><td>2번째 줄 출력</td><td><code>내가 만든 pi</code></td></tr><tr><td>3번째 줄 실행 뒤</td><td><code>math</code>의 <code>pi</code>로 바뀜</td></tr><tr><td>4번째 줄 출력</td><td><code>3.141592653589793</code></td></tr></tbody></table></div>    <p>어떤 이름이 들어올지 모를 때는 <code>import *</code> 대신 <code>import 모듈</code>을 쓰는 것이 안전해요.</p>    <p><b>핵심 한 줄:</b> <code>import *</code>는 같은 이름의 내 변수를 조용히 덮어써요.</p>
+          </div>
+        </details>
+      </article>
+    </section>
+
+    <section class="level mid" data-level="mid">
+      <div class="level-head">
+        <span class="tag">중급</span>
+        <h2>개념 합치기 — 함수·파일 둘 이상</h2>
+        <p>모듈의 함수를 내 함수와 함께 읽고, 파일이 둘 이상 나오는 import의 동작을 따라가요.</p>
+      </div>
+
+      <article class="problem" id="m1">
+        <div class="p-head"><span class="p-id">중급 1</span><span class="p-type">읽기</span><h3>달력 함수 결과 풀어 읽기</h3></div>
+        <div class="p-body">
+<p><code>calendar.monthrange</code>는 값 두 개를 튜플로 돌려줘요. 요일 튜플과 이어서 읽어 봐요.</p>
+<pre><code class="language-python">import calendar                                      # calendar 모듈을 가져와 주세요
+DAYS = ('월', '화', '수', '목', '금', '토', '일')    # DAYS 에 요일 이름 일곱 개의 튜플을 담아 주세요
+first, last = calendar.monthrange(2024, 2)           # first, last 에 2024년 2월의 monthrange 결과를 풀어 담아 주세요
+print(first, last)                                   # first 와 last 를 화면에 보여 주세요
+print(DAYS[first] + '요일부터', last, '일까지')      # DAYS[first] 요일부터 last 일까지를 화면에 보여 주세요
+print(calendar.isleap(2024), calendar.isleap(2100))  # 2024 와 2100 이 윤년인지 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 무엇이 출력될까요?</p>
+    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr></tbody></table></div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <p><code>monthrange(연, 월)</code>은 (그 달 1일의 요일 번호, 그 달의 마지막 날짜)를 줘요. 요일 번호는 월요일이 0이에요. 2100년은 100으로 나누어떨어지지만 400으로는 아니에요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-m1">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m1"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">3 29
+목요일부터 29 일까지
+True False</code></pre>
+    <p><b>한 문장으로:</b> 달력 모듈이 돌려준 튜플을 풀어 담아, 요일 튜플에서 이름을 꺼내는 코드예요.</p><div class="table-scroll"><table><thead><tr><th>단계</th><th>값</th></tr></thead><tbody><tr><td><code>calendar.monthrange(2024, 2)</code></td><td><code>(3, 29)</code> — 1일은 3번 요일, 마지막 날짜는 29</td></tr><tr><td><code>first, last = …</code></td><td><code>first = 3</code>, <code>last = 29</code></td></tr><tr><td><code>DAYS[first]</code></td><td><code>DAYS[3]</code> = <code>'목'</code> (월0·화1·수2·목3)</td></tr><tr><td><code>isleap(2024)</code>, <code>isleap(2100)</code></td><td><code>True</code> (4의 배수), <code>False</code> (100의 배수이고 400의 배수는 아님)</td></tr></tbody></table></div>    <p><b>핵심 한 줄:</b> 튜플로 돌려받은 값은 <code>a, b = …</code>로 풀어 담고, 번호는 튜플 인덱스로 이름으로 바꿔요.</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="m2">
+        <div class="p-head"><span class="p-id">중급 2</span><span class="p-type">읽기</span><h3>함수 하나와 math 함수 셋</h3></div>
+        <div class="p-body">
+<p>내가 만든 함수와 <code>math</code>의 함수를 함께 읽어요. <code>math</code>에는 <code>hypot</code>, <code>isqrt</code>, <code>gcd</code>가 있어요.</p>
+<pre><code class="language-python">import math                                                 # math 모듈을 가져와 주세요
+
+def hypotenuse(a, b):                                       # a, b 를 받는 함수 hypotenuse 를 정의해 주세요
+    return round(math.sqrt(a ** 2 + b ** 2), 2)             # a 제곱과 b 제곱의 합의 제곱근을 소수 둘째 자리까지 반올림해 돌려주세요
+
+print(hypotenuse(3, 4))                                     # hypotenuse(3, 4) 를 화면에 보여 주세요
+print(hypotenuse(10, 20))                                   # hypotenuse(10, 20) 을 화면에 보여 주세요
+print(math.hypot(5, 12), math.isqrt(30), math.gcd(12, 18))  # hypot(5, 12), isqrt(30), gcd(12, 18) 을 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 무엇이 출력될까요? (모르는 함수는 <code>help()</code>로 읽는다고 생각하고 힌트를 보세요)</p>
+    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr></tbody></table></div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <p><code>hypot(a, b)</code>는 빗변 길이, <code>isqrt(n)</code>은 제곱근의 정수 부분, <code>gcd(a, b)</code>는 최대공약수예요. <code>round(값, 2)</code>는 소수 둘째 자리까지 반올림해요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-m2">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m2"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">5.0
+22.36
+13.0 5 6</code></pre>
+    <p><b>한 문장으로:</b> 피타고라스 정리로 빗변을 구하는 함수를 만들고, <code>math</code>에 이미 있는 비슷한 함수들을 불러 보는 코드예요.</p><div class="table-scroll"><table><thead><tr><th>줄</th><th>계산</th><th>결과</th></tr></thead><tbody><tr><td><code>hypotenuse(3, 4)</code></td><td>√(9+16) = √25 = 5.0 → 반올림해도 5.0</td><td><code>5.0</code></td></tr><tr><td><code>hypotenuse(10, 20)</code></td><td>√500 = 22.3606… → 둘째 자리 반올림</td><td><code>22.36</code></td></tr><tr><td><code>math.hypot(5, 12)</code></td><td>√(25+144) = √169</td><td><code>13.0</code> (실수)</td></tr><tr><td><code>math.isqrt(30)</code></td><td>√30 = 5.47… 의 정수 부분</td><td><code>5</code> (정수)</td></tr><tr><td><code>math.gcd(12, 18)</code></td><td>12와 18의 최대공약수</td><td><code>6</code></td></tr></tbody></table></div>    <p><b>핵심 한 줄:</b> <code>math.sqrt</code>는 실수, <code>math.isqrt</code>는 정수를 돌려줘요.</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="m3">
+        <div class="p-head"><span class="p-id">중급 3</span><span class="p-type">읽기</span><h3>파일 두 개: import와 직접 실행</h3></div>
+        <div class="p-body">
+<p>같은 폴더에 파일이 두 개 있어요. <code>user.py</code>를 실행했을 때와 <code>tools.py</code>를 직접 실행했을 때를 구분해 읽어요.</p>
+<p><strong>tools.py</strong></p>
+<pre><code class="language-python">print('tools의 __name__:', __name__)  # tools의 __name__: 과 __name__ 을 화면에 보여 주세요
+
+def double(x):                        # x 를 받는 함수 double 을 정의해 주세요
+    return x * 2                      # x 의 두 배를 돌려주세요
+
+if __name__ == '__main__':            # 만약 __name__ 이 '__main__' 이면
+    print('직접 실행:', double(4))    # 직접 실행: 과 double(4) 를 화면에 보여 주세요</code></pre><p><strong>user.py</strong></p>
+<pre><code class="language-python">import tools            # tools 모듈을 가져와 주세요
+print(tools.double(5))  # tools 의 double 로 5 의 두 배를 화면에 보여 주세요</code></pre>
+    <p><code>user.py</code>를 실행하면 무엇이 출력될까요? 그리고 <code>tools.py</code>를 직접 실행하면 무엇이 출력될까요?</p>
+    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td><code>user.py</code> 실행 1번째 줄</td><td>?</td></tr><tr><td><code>user.py</code> 실행 2번째 줄</td><td>?</td></tr><tr><td><code>tools.py</code> 직접 실행 1번째 줄</td><td>?</td></tr><tr><td><code>tools.py</code> 직접 실행 2번째 줄</td><td>?</td></tr></tbody></table></div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <p><code>__name__</code>은 그 파일을 <b>직접 실행</b>하면 <code>'__main__'</code>, <b>import 되어 읽히면 모듈 이름</b>이에요. import 도 파일을 위에서부터 실행해요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-m3">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m3"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">tools의 __name__: tools
+10
+----------
+tools의 __name__: __main__
+직접 실행: 8</code></pre>
+    <p><b>한 문장으로:</b> 같은 파일이 import 될 때와 직접 실행될 때 <code>__name__</code>이 달라지는 것을 읽는 문제예요. (출력의 <code>----------</code> 줄은 구분선이고, 위쪽이 <code>user.py</code>, 아래쪽이 <code>tools.py</code> 직접 실행 결과예요.)</p><div class="table-scroll"><table><thead><tr><th>실행</th><th><code>tools.py</code> 안의 <code>__name__</code></th><th><code>if</code> 구역</th><th>출력</th></tr></thead><tbody><tr><td><code>python user.py</code></td><td><code>tools</code></td><td>건너뜀</td><td><code>tools의 __name__: tools</code> → <code>10</code></td></tr><tr><td><code>python tools.py</code></td><td><code>__main__</code></td><td>실행</td><td><code>tools의 __name__: __main__</code> → <code>직접 실행: 8</code></td></tr></tbody></table></div>    <p><code>user.py</code>에서 <code>import tools</code>를 하는 순간 <code>tools.py</code>가 위에서부터 실행돼서 첫 줄 <code>print</code>가 나와요. <code>def</code>는 함수를 만들어 둘 뿐이고, <code>if __name__ == '__main__':</code> 안은 직접 실행할 때만 돌아요.</p>    <p><b>핵심 한 줄:</b> import 해도 파일 맨 위 코드는 실행되고, <code>__main__</code> 구역만 건너뛰어요.</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="m4">
+        <div class="p-head"><span class="p-id">중급 4</span><span class="p-type">읽기</span><h3>import를 두 번 하면</h3></div>
+        <div class="p-body">
+<p>모듈 파일의 맨 위에 <code>print</code>가 있어요. 몇 번, 어느 자리에서 출력될까요?</p>
+<p><strong>mymod.py</strong></p>
+<pre><code class="language-python">print('mymod 코드가 실행됨')  # mymod 코드가 실행됨 을 화면에 보여 주세요
+value = 1                     # value 에 1 을 담아 주세요</code></pre><p><strong>main.py</strong></p>
+<pre><code class="language-python">print('시작')                 # 시작 을 화면에 보여 주세요
+import mymod                  # mymod 모듈을 가져와 주세요
+print('첫 import 뒤')         # 첫 import 뒤 를 화면에 보여 주세요
+import mymod                  # mymod 모듈을 가져와 주세요
+print('둘째 import 뒤')       # 둘째 import 뒤 를 화면에 보여 주세요
+from importlib import reload  # importlib 에서 reload 를 가져와 주세요
+reload(mymod)                 # mymod 모듈을 다시 읽어 주세요
+print('끝')                   # 끝 을 화면에 보여 주세요</code></pre>
+    <p><code>main.py</code>를 실행하면 무엇이 출력될까요?</p>
+    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr><tr><td>4번째 줄</td><td>?</td></tr><tr><td>5번째 줄</td><td>?</td></tr><tr><td>6번째 줄</td><td>?</td></tr></tbody></table></div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <p><code>import</code>는 이미 읽은 모듈이면 다시 실행하지 않아요. 다시 실행하는 것은 <code>reload</code>예요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-m4">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m4"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">시작
+mymod 코드가 실행됨
+첫 import 뒤
+둘째 import 뒤
+mymod 코드가 실행됨
+끝</code></pre>
+    <p><b>한 문장으로:</b> <code>import</code>는 모듈을 한 번만 실행하고, <code>reload</code>가 다시 실행하는 것을 읽는 코드예요.</p><div class="table-scroll"><table><thead><tr><th>실행되는 줄</th><th><code>mymod</code> 코드 실행?</th><th>출력</th></tr></thead><tbody><tr><td><code>print('시작')</code></td><td>아직 안 읽음</td><td><code>시작</code></td></tr><tr><td>첫 <code>import mymod</code></td><td><b>실행</b> (처음 읽음)</td><td><code>mymod 코드가 실행됨</code></td></tr><tr><td><code>print('첫 import 뒤')</code></td><td>-</td><td><code>첫 import 뒤</code></td></tr><tr><td>둘째 <code>import mymod</code></td><td>실행 안 함 (이미 읽음)</td><td>(출력 없음)</td></tr><tr><td><code>print('둘째 import 뒤')</code></td><td>-</td><td><code>둘째 import 뒤</code></td></tr><tr><td><code>reload(mymod)</code></td><td><b>다시 실행</b></td><td><code>mymod 코드가 실행됨</code></td></tr><tr><td><code>print('끝')</code></td><td>-</td><td><code>끝</code></td></tr></tbody></table></div>    <p><b>핵심 한 줄:</b> 모듈의 코드는 첫 import 때 한 번, <code>reload</code>할 때 다시 실행돼요.</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="m5">
+        <div class="p-head"><span class="p-id">중급 5</span><span class="p-type">읽기</span><h3>상대 경로는 어디서 실행하느냐에 따라</h3></div>
+        <div class="p-body">
+<p>폴더가 둘이에요. <code>ch05/main.py</code>가 <code>ch04/tools.py</code>를 불러 써요.</p>
+<p><strong>ch04/tools.py</strong></p>
+<pre><code class="language-python">def hello():        # 함수 hello 를 정의해 주세요
+    return 'hello'  # hello 를 돌려주세요</code></pre><p><strong>ch05/main.py</strong></p>
+<pre><code class="language-python">import sys                  # sys 모듈을 가져와 주세요
+sys.path.append("../ch04")  # sys.path 에 "../ch04" 를 더해 주세요
+import tools                # tools 모듈을 가져와 주세요
+print(tools.hello())        # tools 의 hello 를 불러 결과를 화면에 보여 주세요</code></pre>
+    <p><code>ch05</code> 폴더 안에서 <code>python main.py</code>로 실행하면 무엇이 출력될까요? 프로젝트 폴더(<code>ch04</code>와 <code>ch05</code>가 함께 있는 폴더)에서 <code>python ch05/main.py</code>로 실행하면 어떨까요?</p>
+    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td><code>ch05</code>에서 실행 1번째 줄</td><td>?</td></tr><tr><td>프로젝트 폴더에서 실행 1번째 줄</td><td>?</td></tr></tbody></table></div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <p><code>"../ch04"</code>는 <b>파일이 있는 폴더가 아니라 프로그램을 실행하는 위치</b> 기준이에요. 실행하는 위치에서 <code>../ch04</code>가 있는지 생각해 보세요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-m5">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m5"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">hello
+----------
+ModuleNotFoundError: No module named 'tools'</code></pre>
+    <p><b>한 문장으로:</b> <code>sys.path.append</code>의 상대 경로가 실행하는 위치를 기준으로 풀리는 것을 읽는 문제예요. (출력의 <code>----------</code> 줄 위쪽이 <code>ch05</code>에서 실행한 결과, 아래쪽이 프로젝트 폴더에서 실행한 결과예요.)</p><div class="table-scroll"><table><thead><tr><th>실행 위치</th><th><code>../ch04</code>가 가리키는 곳</th><th>결과</th></tr></thead><tbody><tr><td><code>ch05</code> 폴더 안</td><td><code>ch05</code>의 한 단계 위 → <code>ch04</code> 있음</td><td><code>hello</code></td></tr><tr><td>프로젝트 폴더</td><td>프로젝트 폴더의 한 단계 위 → <code>ch04</code> 없음</td><td><code>ModuleNotFoundError</code></td></tr></tbody></table></div>    <p><code>ModuleNotFoundError</code>는 파이썬이 <code>sys.path</code>의 폴더들에서 <code>tools</code>를 찾지 못했다는 뜻이에요. 위 결과의 마지막 줄만 옮겼어요.</p>    <p><b>핵심 한 줄:</b> 상대 경로는 파일 위치가 아니라 실행 위치 기준이에요.</p>
+          </div>
+        </details>
+      </article>
+    </section>
+
+    <section class="level adv" data-level="adv">
+      <div class="level-head">
+        <span class="tag">고급</span>
+        <h2>실행 순서 추적 — 이름이 가리키는 값</h2>
+        <p>무엇이 언제 실행되는지, 이름이 어떤 값을 가리키는지 추적해야 풀리는 함정 문제예요.</p>
+      </div>
+
+      <article class="problem" id="a1">
+        <div class="p-head"><span class="p-id">고급 1</span><span class="p-type">읽기</span><h3>복사된 값과 reload</h3></div>
+        <div class="p-body">
+<p><code>from … import</code>로 가져온 변수는 모듈 변수와 같을까요? <code>reload</code> 뒤에는 어떻게 될까요? 출력은 모두 여섯 줄이에요.</p>
+<p><strong>counter.py</strong></p>
+<pre><code class="language-python">print('counter 로딩')  # counter 로딩 을 화면에 보여 주세요
+count = 0              # count 에 0 을 담아 주세요
+
+
+def up():              # 함수 up 을 정의해 주세요
+    global count       # 모듈의 count 를 쓰겠다고 알려 주세요
+    count += 1         # count 에 1 을 더해 주세요
+    return count       # count 를 돌려주세요</code></pre><p><strong>main.py</strong></p>
+<pre><code class="language-python">import counter                 # counter 모듈을 가져와 주세요
+from counter import up, count  # counter 에서 up 과 count 를 가져와 주세요
+up()                           # up 을 불러 주세요
+up()                           # up 을 불러 주세요
+print(count)                   # count 를 화면에 보여 주세요
+print(counter.count)           # counter 의 count 를 화면에 보여 주세요
+import counter                 # counter 모듈을 가져와 주세요
+from importlib import reload   # importlib 에서 reload 를 가져와 주세요
+reload(counter)                # counter 모듈을 다시 읽어 주세요
+print(counter.count)           # counter 의 count 를 화면에 보여 주세요
+print(up())                    # up 의 결과를 화면에 보여 주세요</code></pre>
+    <p><code>main.py</code>를 실행하면 무엇이 출력될까요?</p>
+    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr><tr><td>4번째 줄</td><td>?</td></tr><tr><td>5번째 줄</td><td>?</td></tr><tr><td>6번째 줄</td><td>?</td></tr></tbody></table></div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <p><code>from counter import count</code>는 그 순간의 값을 <b>내 이름에 묶어요.</b> 이후 모듈의 <code>count</code>가 바뀌어도 내 <code>count</code>는 따라가지 않아요. <code>reload</code>는 모듈 코드를 처음부터 다시 실행해요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-a1">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a1"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">counter 로딩
+0
+2
+counter 로딩
+0
+1</code></pre>
+    <p><b>한 문장으로:</b> 가져온 변수는 값이 복사되어 따로 놀고, <code>reload</code>는 모듈 변수를 다시 0으로 되돌리는 것을 추적하는 문제예요.</p><div class="table-scroll"><table><thead><tr><th>실행되는 줄</th><th>내 <code>count</code></th><th><code>counter.count</code></th><th>출력</th></tr></thead><tbody><tr><td><code>import counter</code></td><td>-</td><td>0</td><td><code>counter 로딩</code></td></tr><tr><td><code>from counter import up, count</code></td><td>0 (복사)</td><td>0</td><td>(없음)</td></tr><tr><td><code>up()</code> 두 번</td><td>0 (그대로)</td><td>2</td><td>(없음)</td></tr><tr><td><code>print(count)</code></td><td>0</td><td>2</td><td><code>0</code></td></tr><tr><td><code>print(counter.count)</code></td><td>0</td><td>2</td><td><code>2</code></td></tr><tr><td>둘째 <code>import counter</code></td><td>0</td><td>2</td><td>(이미 읽음, 출력 없음)</td></tr><tr><td><code>reload(counter)</code></td><td>0</td><td><code>count = 0</code>을 다시 실행 → 0</td><td><code>counter 로딩</code></td></tr><tr><td><code>print(counter.count)</code></td><td>0</td><td>0</td><td><code>0</code></td></tr><tr><td><code>print(up())</code></td><td>0</td><td>1</td><td><code>1</code></td></tr></tbody></table></div>    <p>처음 가져온 <code>up</code>은 같은 모듈 공간의 <code>count</code>를 올리므로, <code>reload</code>로 0이 된 값에서 1이 돼요. 그래서 마지막 줄이 <code>1</code>이에요. 변하는 값은 <code>from … import</code>로 가져오지 말고 <code>모듈.이름</code>으로 읽어요.</p>    <p><b>핵심 한 줄:</b> <code>from 모듈 import 변수</code>는 그 순간의 값을 복사한 것이라, 모듈 안에서 바뀌어도 따라가지 않아요.</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="a2">
+        <div class="p-head"><span class="p-id">고급 2</span><span class="p-type">읽기</span><h3>두 모듈의 sqrt가 겹칠 때</h3></div>
+        <div class="p-body">
+<p><code>cmath</code>는 복소수(제곱해서 -4가 되는 수 같은 것)를 다루는 모듈이고, 거기에도 <code>sqrt</code>가 있어요. 두 코드는 가져오는 순서만 달라요. 출력은 코드 A 한 줄, 코드 B 한 줄이에요.</p>
+<p><strong>코드 A</strong></p>
+<pre><code class="language-python">from math import *   # math 의 이름을 전부 가져와 주세요
+from cmath import *  # cmath 의 이름을 전부 가져와 주세요
+print(sqrt(-4))      # sqrt 로 -4 의 제곱근을 화면에 보여 주세요</code></pre>
+<p><strong>코드 B</strong></p>
+<pre><code class="language-python">from cmath import *          # cmath 의 이름을 전부 가져와 주세요
+from math import *           # math 의 이름을 전부 가져와 주세요
+try:                         # 다음을 시도해 보세요
+    print(sqrt(-4))          # sqrt 로 -4 의 제곱근을 화면에 보여 주세요
+except ValueError as e:      # ValueError 가 나면 e 에 담아 주세요
+    print('ValueError:', e)  # ValueError: 와 e 를 화면에 보여 주세요</code></pre>
+    <p>코드 A와 코드 B를 각각 실행하면 무엇이 출력될까요?</p>
+    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr></tbody></table></div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <p>같은 이름은 <b>나중에 가져온 쪽</b>이 이겨요. <code>math.sqrt</code>는 음수를 받지 못하고, <code>cmath.sqrt</code>는 복소수를 돌려줘요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-a2">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a2"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">2j
+ValueError: math domain error</code></pre>
+    <p><b>한 문장으로:</b> 별표로 가져온 두 모듈의 이름이 겹치면 나중 것이 이겨서, 가져오는 순서가 결과를 바꾸는 것을 읽는 문제예요. (첫 줄이 코드 A, 둘째 줄이 코드 B)</p><div class="table-scroll"><table><thead><tr><th>코드</th><th><code>sqrt</code>가 가리키는 것</th><th>결과</th></tr></thead><tbody><tr><td>A (math → cmath)</td><td>나중에 가져온 <code>cmath.sqrt</code></td><td><code>2j</code> (복소수 2j)</td></tr><tr><td>B (cmath → math)</td><td>나중에 가져온 <code>math.sqrt</code></td><td><code>ValueError: math domain error</code></td></tr></tbody></table></div>    <p>둘 다 쓰려면 <code>import math, cmath</code>로 이름을 붙여 쓰거나, <code>from math import sqrt as real_sqrt</code>처럼 <code>as</code>로 겹치지 않게 가져와요.</p>    <p><b>핵심 한 줄:</b> <code>import *</code>를 여러 개 쓰면 마지막에 가져온 모듈이 같은 이름을 차지해요.</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="a3">
+        <div class="p-head"><span class="p-id">고급 3</span><span class="p-type">읽기</span><h3>모듈을 가져다 쓰는 파일</h3></div>
+        <div class="p-body">
+<p><code>park.py</code>는 기구 목록과 함수를 갖고 있고, <code>group.py</code>가 그것을 가져다 써요. <code>group.py</code>를 실행하고 키를 <code>130 150</code>으로 입력했어요. (입력한 <code>130 150</code>도 화면에 보이는 줄이라서 출력 줄로 세요.)</p>
+<p><strong>park.py</strong></p>
+<pre><code class="language-python">print('park 읽는 중')                             # park 읽는 중 을 화면에 보여 주세요
+
+rides = [                                         # rides 에 다음 리스트를 담아 주세요
+    ('와일드 윙', 110, None),
+    ('드림보트', 120, None),
+    ('플라이벤처', 140, 195),
+    ('툼 오브 호러', None, None),
+]
+
+
+def allowedrides(height):                         # height 를 받는 함수 allowedrides 를 정의해 주세요
+    result = []                                   # result 에 빈 리스트를 담아 주세요
+    for name, cmmin, cmmax in rides:              # rides 에서 name, cmmin, cmmax 를 하나씩 꺼내 주세요
+        if cmmin is not None and height &lt; cmmin:  # 만약 cmmin 이 있고 height 가 cmmin 보다 작으면
+            continue                              # 다음 차례로 넘어가 주세요
+        if cmmax is not None and height &gt; cmmax:  # 만약 cmmax 가 있고 height 가 cmmax 보다 크면
+            continue                              # 다음 차례로 넘어가 주세요
+        result.append(name)                       # result 뒤에 name 을 붙여 주세요
+    return result                                 # result 를 돌려주세요
+
+
+if __name__ == "__main__":                        # 만약 __name__ 이 "__main__" 이면
+    height = int(input())                         # height 에 입력을 정수로 바꿔 담아 주세요
+    for name in allowedrides(height):             # allowedrides(height) 에서 name 을 하나씩 꺼내 주세요
+        print(name)                               # name 을 화면에 보여 주세요</code></pre><p><strong>group.py</strong></p>
+<pre><code class="language-python">import park                                  # park 모듈을 가져와 주세요
+
+heights = list(map(int, input().split()))    # heights 에 입력을 공백으로 쪼개 정수 리스트로 만들어 담아 주세요
+common = set(park.allowedrides(heights[0]))  # common 에 첫 사람이 탈 수 있는 기구의 세트를 담아 주세요
+for h in heights[1:]:                        # heights 의 둘째부터 h 로 하나씩 꺼내 주세요
+    common &amp;= set(park.allowedrides(h))      # common 과 h 가 탈 수 있는 기구 세트의 교집합을 common 에 담아 주세요
+
+print(len(heights), '명')                    # heights 의 개수와 명 을 화면에 보여 주세요
+for name in park.allowedrides(heights[0]):   # 첫 사람이 탈 수 있는 기구에서 name 을 하나씩 꺼내 주세요
+    if name in common:                       # 만약 name 이 common 안에 있으면
+        print(name)                          # name 을 화면에 보여 주세요</code></pre>
+    <p><code>group.py</code>를 실행하고 <code>130 150</code>을 입력하면 화면에 무엇이 나올까요? 입력 줄도 화면에 보이는 한 줄로 세요.</p>
+    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr><tr><td>4번째 줄</td><td>?</td></tr><tr><td>5번째 줄</td><td>?</td></tr><tr><td>6번째 줄</td><td>?</td></tr></tbody></table></div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <p><code>import park</code>가 <code>park.py</code>를 읽을 때 맨 위의 <code>print</code>는 실행되지만 <code>__main__</code> 구역은 실행되지 않아요. 130은 140 이상이 아니라 플라이벤처를 못 타요. 두 사람의 교집합을 구해요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-a3">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a3"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">park 읽는 중
+130 150
+2 명
+와일드 윙
+드림보트
+툼 오브 호러</code></pre>
+    <p><b>한 문장으로:</b> <code>import park</code>는 입력을 기다리지 않고 맨 위 코드만 실행하며, 두 사람이 모두 탈 수 있는 기구를 교집합으로 구하는 코드예요.</p><div class="table-scroll"><table><thead><tr><th>단계</th><th>내용</th><th>값</th></tr></thead><tbody><tr><td><code>import park</code></td><td><code>park.py</code> 맨 위 <code>print</code> 실행, <code>__main__</code> 구역은 건너뜀</td><td><code>park 읽는 중</code> 출력</td></tr><tr><td>입력</td><td><code>130 150</code></td><td><code>[130, 150]</code></td></tr><tr><td><code>allowedrides(130)</code></td><td>와일드 윙(110↑)·드림보트(120↑)·툼 오브 호러. 플라이벤처는 140 미만이라 제외</td><td><code>[와일드 윙, 드림보트, 툼 오브 호러]</code></td></tr><tr><td><code>allowedrides(150)</code></td><td>네 개 모두 (플라이벤처는 140~195)</td><td>네 개 전부</td></tr><tr><td>교집합 <code>common</code></td><td>둘 다에 있는 것</td><td>와일드 윙, 드림보트, 툼 오브 호러</td></tr><tr><td>출력</td><td><code>park</code> 목록 순서를 따라가며 <code>common</code>에 든 것만</td><td><code>2 명</code> 다음에 이름 셋</td></tr></tbody></table></div>    <p>화면에 보이는 순서는 <code>park 읽는 중</code>(import 할 때) → <code>130 150</code>(내가 친 입력) → <code>2 명</code> → 이름 셋이에요. <code>park 읽는 중</code>이 입력보다 먼저 나오는 까닭은 <code>import park</code>가 입력을 받는 줄보다 위에 있기 때문이에요.</p>    <p><b>핵심 한 줄:</b> import 한 파일의 맨 위 코드는 실행되고, <code>if __name__ == "__main__":</code> 안은 실행되지 않아요.</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="a4">
+        <div class="p-head"><span class="p-id">고급 4</span><span class="p-type">읽기</span><h3>내 파일 이름이 모듈 이름과 같을 때</h3></div>
+        <div class="p-body">
+<p>같은 폴더에 <code>calendar.py</code>라는 내 파일이 있어요. 표준 <code>calendar</code> 모듈과 이름이 같아요. <code>main.py</code>를 실행해요. 출력은 마지막 오류 줄을 포함해 모두 네 줄이에요.</p>
+<p><strong>calendar.py</strong></p>
+<pre><code class="language-python">print('내 calendar.py가 읽혔다')  # 내 calendar.py가 읽혔다 를 화면에 보여 주세요</code></pre><p><strong>main.py</strong></p>
+<pre><code class="language-python">print('시작')                 # 시작 을 화면에 보여 주세요
+import calendar               # calendar 모듈을 가져와 주세요
+print('가져옴')               # 가져옴 을 화면에 보여 주세요
+print(calendar.isleap(2024))  # calendar 의 isleap 으로 2024 가 윤년인지 화면에 보여 주세요</code></pre>
+    <p><code>main.py</code>를 실행하면 어디까지 출력되고, 어떻게 끝날까요?</p>
+    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr><tr><td>4번째 줄</td><td>?</td></tr></tbody></table></div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <p>파이썬은 내가 실행한 파일이 있는 폴더를 <b>가장 먼저</b> 뒤져서 모듈을 찾아요. <code>import calendar</code>가 읽은 것은 어느 파일일까요?</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-a4">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a4"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">시작
+내 calendar.py가 읽혔다
+가져옴
+AttributeError: module 'calendar' has no attribute 'isleap'</code></pre>
+    <p><b>한 문장으로:</b> 내가 만든 파일 이름이 표준 모듈과 같으면 내 파일이 먼저 읽혀서, 진짜 모듈의 함수를 못 찾는 것을 추적하는 문제예요. (마지막 줄은 오류 메시지의 마지막 줄만 옮긴 거예요.)</p><div class="table-scroll"><table><thead><tr><th>줄</th><th>일어나는 일</th><th>출력</th></tr></thead><tbody><tr><td><code>print('시작')</code></td><td>일반 출력</td><td><code>시작</code></td></tr><tr><td><code>import calendar</code></td><td>같은 폴더의 내 <code>calendar.py</code>가 먼저 읽힘 → 그 안의 <code>print</code> 실행</td><td><code>내 calendar.py가 읽혔다</code></td></tr><tr><td><code>print('가져옴')</code></td><td><code>import</code>는 성공 (파일이 있으니까)</td><td><code>가져옴</code></td></tr><tr><td><code>calendar.isleap(2024)</code></td><td>내 파일에는 <code>isleap</code>이 없음 → <code>AttributeError</code>로 종료</td><td>마지막 오류 줄</td></tr></tbody></table></div>    <p><b>핵심 한 줄:</b> 모듈 이름과 같은 파일 이름은 피해요. 같으면 내 파일이 진짜 모듈을 가려요.</p>
+          </div>
+        </details>
+      </article>
+    </section>
+
+  </main>
+
+  <footer>같은 시리즈: <a href="beginner-python-ch05-part1-notes.html">(1) 5장 모듈 정리</a> · <a href="beginner-python-ch05-part1-answers.html">(2) 문제 해설</a> · (3) 이 글 · 교재: <a href="https://wikidocs.net/book/2">왕초보를 위한 Python</a> (위키독스)</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>
+(function () {
+  if (window.hljs) {
+    hljs.configure({ ignoreUnescapedHTML: true });
+    document.querySelectorAll('pre code:not(.nohighlight)').forEach(function (el) {
+      if (!hljs.getLanguage('python-repl') && el.classList.contains('language-python-repl')) {
+        el.classList.replace('language-python-repl', 'language-python');
+      }
+      hljs.highlightElement(el);
+    });
+  }
+
+  // 메모: 이 브라우저에만 저장
+  var store = null;
+  try { store = window.localStorage; store.getItem('x'); } catch (e) { store = null; }
+  document.querySelectorAll('.memo textarea').forEach(function (ta) {
+    var key = 'py-ch05a:' + ta.id;
+    try { var v = store && store.getItem(key); if (v) ta.value = v; } catch (e) {}
+    ta.addEventListener('input', function () {
+      try { store && store.setItem(key, ta.value); } catch (e) {}
+    });
+  });
+
+  // 난이도 필터
+  var buttons = document.querySelectorAll('.seg button');
+  var sections = document.querySelectorAll('[data-level]');
+  buttons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var f = btn.dataset.filter;
+      buttons.forEach(function (b) { b.setAttribute('aria-pressed', String(b === btn)); });
+      var picked = null;
+      sections.forEach(function (s) {
+        var lv = s.dataset.level;
+        s.hidden = !(f === 'all' || lv === f);
+        if (lv === f) picked = s;
+      });
+      // 고른 난이도의 첫머리로 옮긴다. 전체면 맨 위로.
+      if (picked) picked.scrollIntoView({ block: 'start' });
+      else window.scrollTo({ top: 0 });
+    });
+  });
+
+  // 목차 링크를 누르면 필터 해제
+  document.querySelectorAll('.toc a').forEach(function (a) {
+    a.addEventListener('click', function () {
+      var target = document.querySelector(a.getAttribute('href'));
+      var sec = target && target.closest('[data-level]');
+      if (sec && sec.hidden) document.getElementById('f-all').click();
+    });
+  });
+
+  // 해설 모두 펼치기 / 접기
+  var toggle = document.getElementById('toggle-sol');
+  toggle.addEventListener('click', function () {
+    var all = document.querySelectorAll('details.sol');
+    var open = toggle.dataset.open === '1';
+    all.forEach(function (d) { d.open = !open; });
+    toggle.dataset.open = open ? '0' : '1';
+    toggle.textContent = open ? '정답·해설 모두 펼치기' : '정답·해설 모두 접기';
+  });
+})();
+</script>
+</body>
+</html>
