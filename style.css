@@ -1859,3 +1859,15 @@ sup.table-note-mark {
   font-size: 0.75em;
   line-height: 0;
 }
+
+/* 파이썬 스터디: 정리 글 아래에 해설·실습을 접어 넣는다 */
+.py-post-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  list-style: none;
+}
+.py-post-summary::-webkit-details-marker { display: none; }
+.py-post-summary a { flex: 1 1 auto; }
+.py-post-children { margin-top: 0.3rem; padding-left: 1.4rem; }
