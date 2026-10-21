@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>배포한 AI 서비스가 말없이 틀리는 순간 — 타임아웃, 인스턴스, 비용, 로그 (3) - Tigermorning</title>
+  <meta name="description" content="Cloud Run에 올린 AI 서비스를 운영해 보며 요청 타임아웃, 사라지는 대화와 콜드 스타트, 비용이 새는 곳, 로그에서 원인을 찾는 순서를 직접 확인한 기록이에요. 서버 기록은 정상인데 손님은 답을 못 받는 순간이 가장 무섭다는 이야기도 함께 해요.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="배포한 AI 서비스가 말없이 틀리는 순간 — 타임아웃, 인스턴스, 비용, 로그 (3)">
+  <meta property="og:description" content="서버 기록은 200인데 화면에는 '답을 받지 못했어요'가 떠요. Cloud Run에서 AI 서비스를 운영하며 겪은 일을 정리했어요.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/cloud-run-operating-ai-service.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="flow-motion.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">배포한 AI 서비스가 말없이 틀리는 순간</span> — 타임아웃, 인스턴스, 비용, 로그 (3)</h1>
+    <p class="post-date">2026. 10. 21.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <p class="one-liner">AI 서비스를 운영한다는 것은 서버가 정상이라고 말해도 손님이 답을 못 받을 수 있다는 것을 알고, 타임아웃과 인스턴스 수와 비용 한도를 실제로 걸린 시간과 로그를 근거로 정하는 일이다.</p>
+
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>어디쯤인가</dt>
+        <dd>9단계 › AI 서비스로 내놓기 — 3번째 글 (전 3편, 이어서 늘어나요)</dd>
+        <dt>이런 게 궁금했다면</dt>
+        <dd>
+          <ul>
+            <li>요청 타임아웃을 줄이면 답이 끊기고, 끊기면 사용자에게는 어떻게 보이나요?</li>
+            <li>배포할 때마다 대화가 사라지는 이유는 뭔가요?</li>
+            <li>인스턴스를 2개로 제한하면 비용도 막히나요?</li>
+            <li>오류가 났을 때 터미널 메시지와 로그 중 어디를 믿어야 하나요?</li>
+          </ul>
+        </dd>
+        <dt>읽고 나면 할 수 있는 것</dt>
+        <dd>
+          <ul>
+            <li>서버 기록과 사용자 화면이 서로 다른 말을 할 수 있다는 것을 사례로 말할 수 있어요.</li>
+            <li>최대 인스턴스가 막는 것과 못 막는 것, 총액을 막는 장치를 구분할 수 있어요.</li>
+            <li>터미널 메시지는 결과이고 원인은 앞선 로그에 있다는 것을 설명할 수 있어요.</li>
+          </ul>
+        </dd>
+        <dt>어디에 쓰나</dt>
+        <dd>
+          <ul>
+            <li><strong>2편에서 올린 서비스를 다른 사람이 써 보게 하기 전에.</strong> 주소를 아는 누구나 내 비용으로 서비스를 쓸 수 있어요.</li>
+          </ul>
+        </dd>
+      </dl>
+    </div>
+
+    <a class="post-nav" href="cloud-run-source-deploy-meaning.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">Cloud Run에 소스를 배포한다는 것 — 코드 폴더 하나가 공개 주소가 되기까지 (2)</span>
+    </a>
+
+    <p>2편에서 AI 친구 서비스를 Cloud Run에 올려 공개 주소를 만들었어요. 올렸다고 끝이 아니에요. 주소를 아는 누구나 이 서비스를 쓸 수 있고, 요청 하나하나에 내 키로 LLM 비용이 나가요. 이 글은 올린 서비스를 <strong>일부러 괴롭혀 보며</strong> 운영할 때 정해야 할 값을 직접 확인한 기록이에요. 확인하지 못한 것은 그렇게 적었어요. 비유는 1·2편의 식당을 이어 써요. 손님 한 명의 주문이 요청이고, 주방이 인스턴스<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>예요.</p>
+
+    <h2 id="timeout"><span class="hl">답이 끊긴다</span> — 요청 타임아웃</h2>
+    <p>이 서비스는 답을 만드는 대로 조금씩 보내는 스트리밍으로 보내요. 그런데 대화 요청은 답을 다 보낸 뒤에도 끝나지 않아요. 같은 요청 안에서 방금 대화를 <strong>기억으로 정리해 저장</strong>하기 때문이에요. Cloud Run은 요청이 <strong>요청 타임아웃</strong><sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>(기본 300초)을 넘으면 연결을 끊어요. 끊기는 곳이 두 군데예요.</p>
+    <ul>
+      <li><strong>답을 보내는 중</strong>: "내일 서울은 맑다가"에서 멈춰, 뒤에 오던 비 소식이 사라져요.</li>
+      <li><strong>기억 정리 중</strong>: 답은 멀쩡한데 방금 말한 일정이 저장되지 않아요.</li>
+    </ul>
+    <p>제 서비스에서 요청 하나는 약 5초(답 4초, 기억 정리 1초)가 걸렸어요. 타임아웃을 줄여 봤어요.</p>
+    <p class="run-tag">실행: 로컬 터미널 <span class="run-tag-why">— 서비스 설정만 바꾸고 새 리비전이 하나 생겨요. 실습이 끝나면 300초로 되돌려요</span></p>
+<pre><code>gcloud run services update friend-agent --region us-central1 --timeout 1</code></pre>
+    <p>3초로 줄였을 때는 이유를 알 수 없지만 끊기지 않았고(4초짜리 요청이 정상 종료), 1초로 줄이자 화면에 <strong>"(답을 받지 못했어요)"</strong>와 "응답이 끝까지 오지 않았어요" 안내가 떴어요. 여기서 가장 중요한 것을 봤어요. <strong>그 요청의 서버 기록은 200(정상)이었어요.</strong> 서버 로그만 봤다면 아무 일도 없었는데 사용자는 답을 못 받았어요. 이 앱은 스트림 종료 신호가 없으면 안내를 붙이게 만들어져 있어서 알 수 있었지만, 그런 확인이 없다면 사용자는 잘린 답을 그대로 믿어요. <strong>끊김보다 "정상처럼 보이는 틀린 결과"가 진짜 위험이에요.</strong></p>
+    <p>타임아웃은 짐작이 아니라 실제 걸린 시간으로 정해요. 콘솔 측정항목은 50번째·99번째 <strong>백분위수</strong><sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>를 보여 줘요. 평균이 아니라 <strong>느린 쪽보다 넉넉하게</strong> 잡아요.</p>
+
+    <h2 id="instances"><span class="hl">대화가 사라진다</span> — 인스턴스와 콜드 스타트</h2>
+    <p>인스턴스는 지금 켜져 있는 주방 하나예요. 공개 주소라 누구나 부를 수 있으니 <strong>최대 인스턴스</strong>에 상한을 걸어요.</p>
+    <p class="run-tag">실행: 로컬 터미널 <span class="run-tag-why">— 새 리비전이 생기고 그 순간 서버 메모리의 캐릭터와 대화가 사라져요</span></p>
+<pre><code>gcloud run services update friend-agent --region us-central1 --min-instances 0 --max-instances 2</code></pre>
+    <p>실행해도 화면은 그대로였는데, <strong>새로고침하자 캐릭터가 사라졌어요.</strong> 이 앱은 캐릭터와 대화를 <strong>인스턴스 메모리</strong>에만 두는데, 새 리비전은 새 주방에서 시작하니 이전 장부가 이어지지 않아요. 열려 있는 화면은 받아 둔 내용을 보여 줄 뿐이라, 서버에 다시 물어보는 순간(새로고침)에야 드러나요. <strong>사라진 줄 모르고 있다가 한꺼번에 드러나는 것</strong>이 더 위험해요. 남겨야 할 데이터는 컨테이너 밖 데이터베이스에 둬야 해요.</p>
+    <p>최소 인스턴스를 0으로 두면 한가할 때 주방이 꺼지고, 다음 요청 때 새로 켜느라 첫 답이 늦어져요. 이것이 <strong>콜드 스타트</strong>예요. 15분 쉬었다 말을 걸었을 때는 못 봤고, 1시간 넘게 쉰 뒤에는 요청이 <strong>15.56초</strong> 걸렸어요(평소 2~5초). 같은 시각 로그에 "앱을 시작합니다."가 찍혀 있어서 콜드 스타트로 보지만, 로그로 추정한 것이고 인스턴스 수 그래프로 직접 확인한 것은 아니에요.</p>
+
+    <h2 id="cost"><span class="hl">돈은 어디서 나가나</span> — 최대 인스턴스는 상한이 아니에요</h2>
+    <p>최대 인스턴스를 2로 걸면 비용도 막힌다고 생각하기 쉬워요. 주방 하나는 <strong>동시성</strong><sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>(기본 80)만큼 주문을 한꺼번에 받아서, 주방 2개면 동시에 160건을 처리해요. 최대 인스턴스는 <strong>한 번에 처리하는 양(속도)</strong>만 제한할 뿐, 시간이 흐르며 <strong>쌓이는 호출 수는 막지 못해요.</strong></p>
+    <table>
+      <thead><tr><th>설정</th><th>막는 것</th><th>막지 못하는 것</th></tr></thead>
+      <tbody>
+        <tr><td>Cloud Run 최대 인스턴스</td><td>한 번에 처리하는 요청 수</td><td>쌓이는 호출 수</td></tr>
+        <tr><td>LLM 제공사의 월 사용 한도</td><td>한 달 LLM 비용 총액</td><td>Cloud Run 요금</td></tr>
+        <tr><td>Google Cloud 예산 알림</td><td>없음(알려 주기만 해요)</td><td>지출 자체</td></tr>
+      </tbody>
+    </table>
+    <p><strong>총액을 막는 것은 LLM 제공사의 월 사용 한도</strong>예요. 내 키로 운영한다면 배포 전에 월 한도를 작게 걸고 한도의 절반쯤에서 알림이 오게 하는 것이 첫 작업이에요. 돈은 대부분 LLM 쪽에서 나가요. 메시지 하나에 LLM을 세 번(도구 고르기, 답하기, 기억 정리) 불러요. 사용자가 자기 키를 넣는 방식은 요청 본문에 키가 실려 오니, 요청 본문 전체를 로그에 남기면 키가 그대로 새는 점을 조심해야 해요.</p>
+
+    <h2 id="logs"><span class="hl">로그로 원인 찾기</span> — 터미널 메시지는 결과일 뿐이에요</h2>
+    <p>Cloud Run 로그 탭에는 남기는 주체가 다른 세 종류가 섞여 나와요. <strong>요청 로그</strong>(Cloud Run이 요청마다 자동으로, 접수대 기록), <strong>컨테이너 로그</strong>(내 앱이 직접, 주방장 메모), <strong>시스템 로그</strong>(플랫폼이 주방을 켜고 끌 때, 관리실 기록)예요.</p>
+    <p>일부러 실패하는 배포를 만들었어요. 이 앱은 <code>LLM_PROVIDER</code> 값이 지원하는 것이 아니면 오류를 남기고 시작하지 않아요.</p>
+    <p class="run-tag">실행: 로컬 터미널 <span class="run-tag-why">— 실패하는 것이 정상이에요. 실패한 리비전은 트래픽을 받지 않아 서비스는 이전 리비전으로 계속 답해요</span></p>
+<pre><code>gcloud run services update friend-agent --region us-central1 --update-env-vars LLM_PROVIDER=unknown</code></pre>
+    <p>터미널은 "컨테이너가 포트 8080을 열지 못했다. 포트 설정이 틀렸거나 타임아웃이 짧을 수 있다"고 말했어요. 이것만 보면 <strong>포트나 타임아웃 설정</strong>을 의심하기 쉬워요. 그런데 로그를 시간순으로 모으니 순서가 보였어요. 새 인스턴스가 켜지고 → 앱이 <strong>"LLM_PROVIDER 값 'unknown' 를 알 수 없어 앱을 시작하지 않습니다"라는 ERROR를 남기고 꺼지고</strong> → 플랫폼이 시작 실패를 기록하고 → 터미널에는 마지막 결과만 나왔어요. <strong>터미널 메시지는 결과이고, 원인은 앞선 컨테이너 로그의 ERROR 줄에 있었어요.</strong> 환경변수를 지워 되돌렸고, 실패하는 동안에도 서비스는 이전 리비전으로 계속 답했어요.</p>
+    <p>원인을 코딩 에이전트와 고칠 때도 짐작이 아니라 <strong>근거</strong>(증상, 시간 범위, 리비전, 찾은 로그 줄)를 건네요.</p>
+
+    <h2 id="not-done"><span class="hl">해 보지 못한 것</span></h2>
+    <ul>
+      <li>월 사용 한도와 알림은 회사 계정에 있어서 직접 걸어 보지 못했어요.</li>
+      <li>부하 테스트와 사용자 키 방식으로 바꾸기는 하지 않았어요.</li>
+      <li>타임아웃 3초에서 안 끊긴 이유는 확인하지 못했어요.</li>
+    </ul>
+
+    <h2><span class="hl">함께 보기</span></h2>
+    <ul>
+      <li><a href="cloud-run-source-deploy-meaning.html">Cloud Run에 소스를 배포한다는 것 (2)</a> — 이 글에서 괴롭혀 본 서비스를 올리는 과정이에요.</li>
+      <li><a href="ai-service-design-before-code.html">AI 기능을 서비스로 설계한다는 것 (1)</a> — 키 위치와 실패 처리를 먼저 정하는 글이에요.</li>
+    </ul>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">인스턴스 — 리비전의 이미지와 설정으로 지금 실행되면서 요청을 처리하는 컨테이너로, 요청이 없으면 0개로 줄어요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">요청 타임아웃(request timeout) — 요청 하나를 처리할 수 있는 최대 시간으로, 넘으면 플랫폼이 연결을 끊어요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">백분위수(percentile) — 값을 작은 순서로 줄 세웠을 때 그 위치의 값이에요. 50번째는 보통, 99번째는 느린 쪽의 기준이에요. <a href="#fnref3">↩</a></li>
+        <li id="fn4">동시성(concurrency) — 인스턴스 하나가 동시에 처리하는 요청 수예요. Cloud Run 기본값은 80이에요. <a href="#fnref4">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <h3>"AI 서비스로 내놓기" 시리즈</h3>
+    <a class="post-nav" href="ai-service-design-before-code.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">AI 기능을 서비스로 설계한다는 것 — 코딩 에이전트에게 맡기기 전에 정할 것</span>
+    </a>
+    <a class="post-nav" href="cloud-run-source-deploy-meaning.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">Cloud Run에 소스를 배포한다는 것 — 코드 폴더 하나가 공개 주소가 되기까지</span>
+    </a>
+    <p class="post-date">(3) 배포한 AI 서비스가 말없이 틀리는 순간 — 타임아웃, 인스턴스, 비용, 로그 (이 글)</p>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="flow-motion.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
