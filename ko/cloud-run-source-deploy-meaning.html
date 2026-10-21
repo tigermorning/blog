@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>Cloud Run에 소스를 배포한다는 것 — 코드 폴더 하나가 공개 주소가 되기까지 (2) - Tigermorning</title>
-  <meta name="description" content="gcloud run deploy --source . 한 줄이 안에서 하는 일을 따라가요. 코드와 파이썬 버전과 라이브러리를 한 묶음으로 포장해 서버에 올리고 공개 주소를 붙이기까지의 다섯 단계와, 실제 배포 로그를 함께 봅니다.">
+  <meta name="description" content="gcloud run deploy --source . 한 줄이 안에서 하는 일을 따라가요. 코드와 파이썬 버전과 라이브러리를 한 묶음으로 포장해 서버에 올리고 공개 주소를 붙이기까지의 다섯 단계와 실제 배포 로그, 그리고 리비전 사이로 트래픽을 나누는 실험과 키가 서버로 따라가지 않는 이유까지 함께 봅니다.">
   <meta property="og:type" content="article">
   <meta property="og:title" content="Cloud Run에 소스를 배포한다는 것 — 코드 폴더 하나가 공개 주소가 되기까지 (2)">
-  <meta property="og:description" content="코드 폴더를 넘기면 Google이 환경까지 한 묶음으로 포장해 올려 줘요. 소스 배포의 의미와 단계마다 남는 흔적을 정리했어요.">
+  <meta property="og:description" content="코드 폴더를 넘기면 Google이 환경까지 한 묶음으로 포장해 올려 줘요. 소스 배포의 의미와 단계마다 남는 흔적, 트래픽 분할 실험, 키를 서버에 연결하는 법을 정리했어요.">
   <meta property="og:url" content="https://tigermorning.github.io/blog/ko/cloud-run-source-deploy-meaning.html">
   <meta property="og:locale" content="ko_KR">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -41,6 +41,8 @@
             <li>내 컴퓨터에서는 잘 되는 앱을 "배포"하면, 정확히 무엇이 어디로 가는 걸까요?</li>
             <li><code>gcloud run deploy --source .</code> 한 줄이 안에서 무슨 일을 하나요?</li>
             <li>Vercel은 버튼만 누르면 된다는데, 왜 굳이 Cloud Run을 쓰나요?</li>
+            <li>새 버전을 모두에게 보여 주기 전에 일부에게만 먼저 보여 줄 수 있나요?</li>
+            <li>내 컴퓨터의 <code>.env</code>에 있는 키는 서버에서 어떻게 쓰이나요?</li>
           </ul>
         </dd>
         <dt>읽고 나면 할 수 있는 것</dt>
@@ -49,6 +51,8 @@
             <li>소스 배포가 어떤 다섯 단계로 이뤄지는지 순서대로 설명할 수 있어요.</li>
             <li>배포가 막혔을 때 어느 단계에서 끊겼는지 로그와 콘솔에서 찾아볼 순서를 알아요.</li>
             <li>폴더에 두는 파일 네 개가 각각 무슨 일을 하는지 말할 수 있어요.</li>
+            <li>설정만 바꿔 리비전을 만들고, 트래픽을 비율로 나눈 결과가 왜 정확히 반반이 아닌지 설명할 수 있어요.</li>
+            <li>키가 서버로 따라가지 않는 이유와, 키를 이름으로만 연결하는 방법을 말할 수 있어요.</li>
           </ul>
         </dd>
         <dt>모르면 이런 일이 생겨요</dt>
@@ -57,6 +61,8 @@
             <li>내 컴퓨터에서는 되는데 서버에서만 안 되고, 어디를 봐야 할지 몰라요. <a class="suspect-jump" href="#suspect-works-local">언제 의심하나 ↓</a></li>
             <li>파일 이름이나 위치 하나가 틀려서 빌드가 실패하거나 앱이 시작되지 않아요. <a class="suspect-jump" href="#suspect-build">언제 의심하나 ↓</a></li>
             <li>터미널 메시지만 보고 멀쩡한 설정을 고쳐요. <a class="suspect-jump" href="#suspect-port">언제 의심하나 ↓</a></li>
+            <li>키 값을 환경변수에 그대로 넣어 설정 화면과 기록에 키가 남아요. <a class="suspect-jump" href="#suspect-secret">언제 의심하나 ↓</a></li>
+            <li>트래픽을 나눠 놓고 한 화면에서 서로 다른 버전의 값을 봐요. <a class="suspect-jump" href="#suspect-split">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -257,12 +263,178 @@ uvicorn&gt;=0.30</code></pre>
     <h2 id="why-see"><span class="hl">AI가 대신 배포해 주는 시대에</span> — 왜 단계를 눈으로 볼까요</h2>
     <p>코딩 에이전트에게 "배포해 줘"라고 말하면 명령을 대신 실행해 주기도 해요. 그래도 단계를 알아야 하는 이유는, 손으로 매번 하기 위해서가 아니라 <strong>맡긴 결과를 검증하고 사고가 났을 때 원인을 찾으려면 지도가 머릿속에 있어야 해서</strong>예요.</p>
     <ul>
-      <li><strong>실패했을 때 원인이 어디 있는지 알아요.</strong> 키 없이 배포하면 터미널은 "컨테이너가 포트에서 시작하지 못했다"고 하는데, 진짜 원인은 앱이 시작하자마자 "키가 없다"는 오류를 남기고 스스로 꺼진 것이에요. 메시지는 결과고 원인은 앞선 로그에 있어요. 이걸 모르면 에이전트가 멀쩡한 포트 설정을 고치자고 해도 알아채지 못해요.</li>
+      <li><strong>실패했을 때 원인이 어디 있는지 알아요.</strong> 키 없이 배포하면 터미널은 "컨테이너가 포트에서 시작하지 못했다"고 하는데, 진짜 원인은 앱이 시작하자마자 "키가 없다"는 오류를 남기고 스스로 꺼진 것이에요. 메시지는 결과고 원인은 앞선 로그에 있어요. 이걸 모르면 에이전트가 멀쩡한 포트 설정을 고치자고 해도 알아채지 못해요. 자세한 과정은 아래 <a href="#secret">키는 서버로 따라가지 않아요</a>에서 봐요.</li>
       <li><strong>위험한 지름길을 걸러요.</strong> 서비스 계정 키 파일을 만들거나 프로젝트 전체에 편집 권한을 주는 명령은 문제를 빨리 풀어 주기 때문에 에이전트가 지름길로 내놓기 쉬워요. 실행 전에 "이 명령이 무엇을 만들고, 바꾸고, 지우고, 공개하는가"를 읽는 일은 사람 몫이에요. 저도 오늘 배포 전에 "저장소가 새로 생기고 로그인 없는 공개 주소가 붙는다"를 읽고 승인했어요.</li>
       <li><strong>에이전트에게 근거를 건네요.</strong> "안 돼요"만 말하면 에이전트는 짐작으로 고치기 시작하고 멀쩡한 곳을 바꾸기도 해요. 증상, 시각, 서비스와 리비전, 내가 찾은 로그 줄을 건네려면 그 부품이 무엇인지 알아야 해요.</li>
       <li><strong>되돌리는 수단을 알아요.</strong> 리비전과 트래픽이 롤백 수단이에요. 모르면 문제가 생길 때 코드를 고쳐 다시 빌드할 생각만 하게 돼요.</li>
       <li><strong>다른 곳에서도 써요.</strong> 이미지·리비전·인스턴스·트래픽·로그는 AWS나 Azure 같은 다른 클라우드에도 거의 같은 이름으로 있어요. 반대로 다 숨겨 주는 곳은 편하지만 그 과정을 보여 주지 않아요.</li>
     </ul>
+
+    <h2 id="traffic"><span class="hl">리비전 사이로 트래픽 나누기</span> — 새 버전을 일부에게만 먼저 보여 줘요</h2>
+    <p>리비전은 한 번 만들면 바뀌지 않아서, 서비스에는 리비전이 여러 개 함께 남아 있어요. 요청을 어느 리비전이 받을지는 <strong>트래픽 설정</strong>이 정해요. 이 설정으로 요청을 비율로 나누는 일을 <strong>트래픽 분할</strong><sup class="fn-ref"><a href="#fn14" id="fnref14">14</a></sup>이라고 해요. 새 버전을 모두에게 한꺼번에 보여 주지 않고 일부에게만 먼저 보여 주면, 문제가 있어도 영향이 작게 끝나요.</p>
+
+    <h3>설정만 바꿔서도 새 리비전이 생겨요</h3>
+    <p>리비전은 <strong>이미지와 설정을 함께</strong> 기록한 버전이라고 했죠. 그렇다면 이미지는 그대로 두고 설정만 바꿔도 새 리비전이 생겨야 해요. 앱이 시작할 때 읽는 설정값(<strong>환경변수</strong>) 하나를 읽어서 화면의 문구와 색을 바꾸도록 만들어 두고, 이 값만 바꿔 리비전을 하나 더 만들어 봤어요.</p>
+    <p class="run-tag">실행: 로컬 터미널 <span class="run-tag-why">— 다시 빌드하지 않고 설정(환경변수)만 바꿔 새 리비전을 만들어요. 서비스는 이미 배포돼 있어야 해요</span></p>
+<pre><code>gcloud run services update hello --region us-central1 --update-env-vars STAGE=second --tag second --no-traffic</code></pre>
+    <table>
+      <thead><tr><th>부분</th><th>뜻</th></tr></thead>
+      <tbody>
+        <tr><td><code>--update-env-vars STAGE=second</code></td><td>환경변수 <code>STAGE</code>의 값을 <code>second</code>로 바꿔요. 나머지 설정은 그대로예요</td></tr>
+        <tr><td><code>--tag second</code></td><td>이 리비전에만 닿는 <strong>전용 주소</strong>(<code>second---서비스주소</code> 꼴)를 붙여요. 일반 주소와 따로 열어 볼 수 있어요</td></tr>
+        <tr><td><code>--no-traffic</code></td><td>일반 주소의 트래픽은 이 리비전으로 보내지 않아요. 확인한 뒤에 옮기려는 거예요</td></tr>
+      </tbody>
+    </table>
+    <p>결과로 <code>has been deployed and is serving 0 percent of traffic</code>이 찍혔어요. 로그에는 <code>Creating Revision…done</code>만 나오고 <code>Building Container</code>는 나오지 않았어요. <strong>이미지는 그대로이고 설정만 달라진 새 리비전</strong>이 만들어진 거예요. 전용 주소로 열면 일반 주소와 다른 화면이 나와서, 같은 서비스 안에 화면이 다른 리비전 두 개를 동시에 놓고 볼 수 있었어요.</p>
+
+    <h3>비율로 나누고, 실제로 세어 보기</h3>
+    <figure>
+    <svg class="flow-motion" viewBox="0 0 760 250" role="img" aria-label="들어오는 요청이 두 리비전으로 나뉜다. 한 리비전에 50퍼센트, 다른 리비전에 50퍼센트를 보내도록 설정하면, 요청 하나하나가 따로 어느 쪽으로 갈지 정해진다.">
+      <defs>
+        <marker id="trf-arrow-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <rect x="10" y="88" width="170" height="76" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="95" y="116" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">들어오는 요청</text>
+      <text x="95" y="138" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">한 번에 하나씩</text>
+
+      <rect x="360" y="20" width="390" height="76" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="555" y="48" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">리비전 A</text>
+      <text x="555" y="70" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">비율 50% — 첫 번째 화면</text>
+
+      <rect x="360" y="156" width="390" height="76" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="555" y="184" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">리비전 B</text>
+      <text x="555" y="206" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">비율 50% — 두 번째 화면</text>
+
+      <path d="M182 112 C 270 112 280 58 356 58" fill="none" stroke="var(--muted)" stroke-width="2" marker-end="url(#trf-arrow-m)"/>
+      <path d="M182 140 C 270 140 280 194 356 194" fill="none" stroke="var(--muted)" stroke-width="2" marker-end="url(#trf-arrow-m)"/>
+      <text x="272" y="244" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--accent)">요청 하나하나가 따로 추첨돼요</text>
+    </svg>
+    <figcaption>같은 주소로 들어온 요청이 비율대로 두 리비전에 나뉘어요. 어느 쪽으로 갈지는 요청마다 따로 정해져요.</figcaption>
+    </figure>
+    <p class="run-tag">실행: 로컬 터미널 <span class="run-tag-why">— 값 전체를 큰따옴표로 감싸고, 쉼표 앞뒤에 공백을 넣지 않아요. PowerShell은 따옴표가 없으면 쉼표를 값 목록으로 읽어서 "정수가 아니다"라는 오류가 나요</span></p>
+<pre><code>gcloud run services update-traffic hello --region us-central1 --to-revisions "hello-00005-7t9=50,hello-00006-l7h=50"</code></pre>
+    <p>이 명령은 몇 번을 실행해도 <code>50% hello-00005-7t9</code>, <code>50% hello-00006-l7h</code>만 출력해요. 그건 <strong>설정</strong>이에요. 실제로 나뉘었는지는 <strong>주소로 요청을 여러 번 보내서</strong> 어느 화면이 나왔는지 세어 봐야 보여요. 직접 세어 봤어요.</p>
+    <table>
+      <thead><tr><th>실험</th><th>설정</th><th>요청 수</th><th>결과</th></tr></thead>
+      <tbody>
+        <tr><td>A</td><td>리비전 셋에 34 · 33 · 33</td><td>30번</td><td>10 · 12 · 8번</td></tr>
+        <tr><td>B</td><td>리비전 둘에 50 · 50</td><td>20번</td><td>11 · 9번</td></tr>
+      </tbody>
+    </table>
+    <p>기대한 값(10 · 10 · 10, 10 · 10)과 정확히 같지는 않지만 가까워요. 요청마다 <strong>독립적으로 추첨</strong>하기 때문에 이 정도 차이는 자연스럽고, 요청을 늘릴수록 비율에 가까워져요. 한 번만 보내면 어느 쪽으로 갔는지만 알 뿐 비율은 알 수 없어요.</p>
+    <p><strong>주의:</strong> 화면 하나를 여는 데에도 요청이 여러 개 들어가요. 화면 본문을 받는 요청과, 그 화면이 서버의 값을 가져오는 요청이 <strong>따로 추첨</strong>될 수 있어요. 실제로 화면은 한 리비전에서 왔는데 그 안에 보인 "응답한 리비전"은 다른 리비전의 이름인 적이 있었어요. 새 버전과 옛 버전이 화면과 값을 따로 만드는 서비스라면, 나누는 동안 이 어긋남이 생길 수 있어요.</p>
+
+    <h3>되돌리기와 정리</h3>
+    <table>
+      <thead><tr><th>하고 싶은 일</th><th>명령의 모양</th></tr></thead>
+      <tbody>
+        <tr><td>롤백 — 이전 리비전에 100%</td><td><code>update-traffic 서비스 --to-revisions 리비전이름=100</code></td></tr>
+        <tr><td>복구 — 최신 리비전에 100%</td><td><code>update-traffic 서비스 --to-latest</code></td></tr>
+      </tbody>
+    </table>
+    <p>한 가지 더, 트래픽을 직접 지정해 두면 그 뒤에 새로 배포한 리비전은 <strong>트래픽을 자동으로 받지 않아요.</strong> 새 리비전이 0%로 만들어져서 일반 주소에는 아직 옛 화면이 나올 수 있어요. 새 버전이 맞게 올라갔는지는 전용 주소(<code>--tag</code>)로 먼저 확인하고, 트래픽은 따로 옮겨요.</p>
+
+    <h2 id="secret"><span class="hl">키는 서버로 따라가지 않아요</span> — <code>.env</code>와 Secret Manager</h2>
+    <p>AI 서비스는 시작할 때 LLM 키를 확인해요. 내 컴퓨터에서는 키를 <code>.env</code> 파일에 적어 두면 앱이 그걸 읽어서 잘 돌아가요. 그런데 이 파일은 서버로 가지 않아요. 예제 AI 친구 앱(<strong>하루친구</strong>)으로 확인한 내용을 따라가 볼게요.</p>
+    <figure>
+    <svg class="flow-motion" viewBox="0 0 760 300" role="img" aria-label="위쪽 줄: 내 컴퓨터의 .env는 업로드에서 빠지고 Cloud Run 앱은 키가 없어 스스로 종료한다. 아래쪽 줄: Secret Manager의 시크릿에 읽기 권한을 하나만 주고 이름으로 연결하면 Cloud Run 앱이 시작에 성공한다.">
+      <defs>
+        <marker id="ksj-arrow-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/>
+        </marker>
+        <marker id="ksj-arrow-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/>
+        </marker>
+      </defs>
+      <text x="10" y="22" font-family="var(--font-heading)" font-size="13" fill="var(--muted)">키 없이 배포하면</text>
+      <rect x="10" y="32" width="215" height="76" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="117" y="60" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">① 내 컴퓨터</text>
+      <text x="117" y="82" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">.env 에 키가 있어요</text>
+      <line x1="227" y1="70" x2="266" y2="70" stroke="var(--muted)" stroke-width="2" marker-end="url(#ksj-arrow-m)"/>
+
+      <rect x="270" y="32" width="215" height="76" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="377" y="60" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">② 업로드</text>
+      <text x="377" y="82" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">.env 는 빠지고 코드만 가요</text>
+      <line x1="487" y1="70" x2="526" y2="70" stroke="var(--muted)" stroke-width="2" marker-end="url(#ksj-arrow-m)"/>
+
+      <rect x="530" y="32" width="220" height="76" rx="8" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 4"/>
+      <text x="640" y="60" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">③ Cloud Run 앱</text>
+      <text x="640" y="82" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">키가 없어 스스로 종료해요</text>
+
+      <text x="10" y="164" font-family="var(--font-heading)" font-size="13" fill="var(--muted)">키를 이름으로 연결하면</text>
+      <rect x="10" y="174" width="215" height="76" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="117" y="202" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">Secret Manager</text>
+      <text x="117" y="224" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">llm-api-key (값은 안 보여요)</text>
+      <line x1="227" y1="212" x2="266" y2="212" stroke="var(--muted)" stroke-width="2" marker-end="url(#ksj-arrow-m)"/>
+
+      <rect x="270" y="174" width="215" height="76" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="377" y="202" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">읽기 권한 1개</text>
+      <text x="377" y="224" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">그 시크릿 하나만</text>
+      <line x1="487" y1="212" x2="526" y2="212" stroke="var(--accent)" stroke-width="2" marker-end="url(#ksj-arrow-a)"/>
+
+      <rect x="530" y="174" width="220" height="76" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="640" y="202" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">Cloud Run 앱</text>
+      <text x="640" y="224" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">이름으로 읽어 시작에 성공해요</text>
+    </svg>
+    <figcaption>위: 키 없이 배포하면 앱이 시작에서 멈춰요. 아래: 키를 이름으로만 연결하면 시작해요.</figcaption>
+    </figure>
+
+    <h3>키 없이 배포하면 — 같은 실패에 메시지가 둘</h3>
+    <p><code>.env</code>는 <code>.gitignore</code>와 <code>.gcloudignore</code>에 적혀 있어서 GitHub에도, 소스 배포 업로드에도 빠져요. 그래서 키 없이 배포하면 빌드는 되는데 마지막 단계에서 실패해요. 터미널과 로그가 말하는 내용은 달라요.</p>
+    <table>
+      <thead><tr><th></th><th>내용</th><th>성격</th></tr></thead>
+      <tbody>
+        <tr><td>터미널</td><td><code>container failed to start and listen on the port … PORT=8080</code></td><td>결과(증상)</td></tr>
+        <tr><td>로그</td><td><code>LLM_API_KEY 환경변수가 없어 앱을 시작하지 않습니다</code></td><td><strong>원인</strong></td></tr>
+      </tbody>
+    </table>
+    <p class="run-tag">출력: 서비스의 로그 탭 <span class="run-tag-why">— 직접 입력하는 게 아니라 실패한 리비전의 로그에서 읽는 줄이에요</span></p>
+<pre><code>06:41:41  Starting new instance.
+06:41:46  ERROR  LLM_API_KEY 환경변수가 없어 앱을 시작하지 않습니다.
+06:41:47  Container called exit(1).
+06:41:47  STARTUP TCP probe failed … on port 8080. The instance was not started.</code></pre>
+    <p>순서가 중요해요. <strong>앱이 먼저 꺼지고, 그 결과로 포트가 안 열린 거예요.</strong> 포트 메시지만 보고 포트를 고쳤다면 같은 실패가 반복됐을 거예요. 같은 구조의 앱이 앞서 멀쩡히 올라갔다는 것도 포트 설정이 원인이 아니라는 단서예요. 이 앱은 키가 없으면 일부러 시작하자마자 꺼지게 만들었어요. 그러면 실패한 리비전은 트래픽을 받지 않으니, 키 없는 서비스가 열려서 사용자에게 오류를 돌려주는 일이 없어요.</p>
+
+    <h3>키를 이름으로만 연결하기</h3>
+    <p>서버에 키를 전달하는 곳이 <strong>Secret Manager</strong><sup class="fn-ref"><a href="#fn15" id="fnref15">15</a></sup>예요. 키 값은 이곳에 한 번 넣어 두고, 서비스에는 값이 아니라 <strong>이름</strong>만 알려 줘요.</p>
+    <table>
+      <thead><tr><th>순서</th><th>한 일</th><th>누가</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>콘솔의 Secret Manager에서 <code>llm-api-key</code>라는 이름으로 시크릿을 만들고 키 값을 넣어요</td><td>내가 직접. 명령이나 대화로 넣으면 키가 그 기록에 남아요</td></tr>
+        <tr><td>2</td><td>서비스가 실행될 때 쓰는 계정(서비스 계정<sup class="fn-ref"><a href="#fn16" id="fnref16">16</a></sup>)에 <strong>이 시크릿 하나</strong>만 읽을 수 있는 권한(<code>secretAccessor</code>)을 줘요</td><td>명령 실행</td></tr>
+        <tr><td>3</td><td>서비스의 <code>LLM_API_KEY</code>가 이 시크릿의 최신 버전을 가리키게 설정해요</td><td>명령 실행</td></tr>
+      </tbody>
+    </table>
+    <p class="run-tag">실행: 로컬 터미널 <span class="run-tag-why">— 설정만 바꾸므로 다시 빌드하는 deploy 대신 update를 써요. 시크릿과 권한(1, 2번)이 먼저 있어야 해요</span></p>
+<pre><code>gcloud run services update friend-agent --region us-central1 --update-secrets LLM_API_KEY=llm-api-key:latest</code></pre>
+    <p>연결하자 새 리비전이 만들어져 트래픽 100%를 받았고, 로그에는 <code>STARTUP TCP probe succeeded after 1 attempt</code>가 찍혔어요. 서비스 설정에는 키 값 대신 <code>LLM_API_KEY → llm-api-key : latest</code>만 남았어요.</p>
+    <p>"번거로우니 <code>--update-env-vars LLM_API_KEY=키값</code>으로 바로 넣자"는 유혹도 있어요. 앱은 어느 쪽이든 잘 도는데, 키가 <strong>어디에 남는지</strong>가 달라요.</p>
+    <table>
+      <thead><tr><th></th><th>환경변수에 값을 넣기</th><th>시크릿을 이름으로 연결하기</th></tr></thead>
+      <tbody>
+        <tr><td>넣는 것</td><td>값 그 자체</td><td>시크릿의 이름</td></tr>
+        <tr><td>서비스 설정 화면</td><td>키 값이 그대로 보여요</td><td>이름만 보여요</td></tr>
+        <tr><td>리비전 기록</td><td>예전 키가 남아요</td><td>이름만 남아요</td></tr>
+        <tr><td>명령·대화 기록</td><td>명령에 키가 들어가요</td><td>이름만 오가요</td></tr>
+        <tr><td>키를 읽을 수 있는 쪽</td><td>프로젝트를 볼 수 있는 모든 사람</td><td>읽기 권한을 받은 계정만</td></tr>
+      </tbody>
+    </table>
+    <p>한계도 하나 있어요. 권한을 준 기본 서비스 계정은 같은 프로젝트의 다른 서비스도 함께 쓰는 계정이라, 그 서비스들도 이 시크릿을 읽을 수 있어요.</p>
+
+    <h3>서버에서도 같은 화면, 시간은 얼마나 걸릴까</h3>
+    <p>하루친구에는 한 번의 답이 어떻게 만들어졌는지 보여 주는 개발용 패널이 있어요. 같은 조건(새로 켠 서버, 첫 턴, 같은 날씨 질문, 도구 1개)으로 내 컴퓨터와 Cloud Run에서 한 번씩 쟀어요.</p>
+    <table>
+      <thead><tr><th>구간</th><th>내 컴퓨터</th><th>Cloud Run</th></tr></thead>
+      <tbody>
+        <tr><td>도구 선택</td><td>1.7초</td><td>1.4초</td></tr>
+        <tr><td>첫 글자</td><td>4.4초</td><td>2.6초</td></tr>
+        <tr><td>답 전체</td><td>4.8초</td><td>2.9초</td></tr>
+        <tr><td>요청 전체</td><td><strong>5.7초</strong></td><td><strong>3.8초</strong></td></tr>
+      </tbody>
+    </table>
+    <p>서버가 더 빨랐지만 <strong>각각 한 번만 쟀고, 모델이 답하는 시간은 매번 달라서</strong> 서버가 더 빠르다고 말할 수는 없어요. 도구를 둘 쓴 내 컴퓨터의 한 턴은 7.2초였어요. 요청 타임아웃을 정할 때는 여러 번 재서 <strong>느린 쪽</strong>을 기준으로 삼는 것이 안전해요.</p>
 
     <h2 id="choice"><span class="hl">나쁜 선택 vs 좋은 선택</span> — 요리사에게 가게를 열어 달라고 할 때</h2>
     <p>식당으로 치면 사장이 요리사에게 "가게 문 열어 줘"라고 맡기는 장면이에요. 아래는 상황을 가정한 예시예요.</p>
@@ -287,6 +459,8 @@ uvicorn&gt;=0.30</code></pre>
         <tr><td>인스턴스 최대 개수(설정이 없을 때)</td><td>100개까지</td><td>호출마다 비용이 나가는 서비스라면 처음부터 작게 제한해요. 이 설정은 다음 글에서 다뤄요</td></tr>
         <tr><td>요청이 없을 때의 인스턴스</td><td>0개</td><td>실행 요금이 안 나가는 대신 첫 요청에서 콜드 스타트가 생겨요</td></tr>
         <tr><td>Google Cloud 무료 체험</td><td>가입 후 90일, 300달러 크레딧</td><td>기간이 끝난 뒤 직접 유료로 전환하지 않으면 자동 결제는 되지 않지만, 만들어 둔 서비스가 멈춰요</td></tr>
+        <tr><td>트래픽 분할 실험(리비전 둘에 50 · 50)</td><td>20번 중 11 · 9번</td><td>요청마다 따로 추첨해서 정확히 반반이 되지 않아요. 한 번에 보면 알 수 없고 여러 번 세어야 비율이 보여요</td></tr>
+        <tr><td>예제 앱의 한 번 답(날씨 질문, 도구 1개, 첫 턴)</td><td>내 컴퓨터 5.7초 · Cloud Run 3.8초</td><td>각각 한 번만 쟀어요. 도구를 둘 쓴 한 턴은 7.2초였어요. 타임아웃은 느린 쪽을 기준으로 정해요</td></tr>
         <tr><td>이미지 저장소의 무료 저장 공간</td><td>월 0.5GB</td><td>배포할 때마다 이미지가 쌓이니, 연습으로 쓴 서비스는 이미지(패키지)까지 지워요. 저장소 자체를 지우면 다른 서비스의 이미지도 사라져요</td></tr>
       </tbody>
     </table>
@@ -310,6 +484,16 @@ uvicorn&gt;=0.30</code></pre>
           <td>"컨테이너가 <strong>PORT에서 시작하지 못했다</strong>"는 메시지로 끝났는데 포트 설정은 멀쩡해요</td>
           <td>터미널이 아니라 서비스의 로그 탭(심각도 오류 필터)이에요. 앱이 시작하자마자 남기고 꺼진 오류 줄을 찾아요. 예를 들어 필요한 키가 없어 스스로 종료한 경우예요</td>
           <td>오류 줄이 가리키는 원인(환경변수 누락 등)을 고쳐요. 에이전트에게 맡길 때는 "로그를 근거로"와 "아직 고치지 마"를 같이 말해요</td>
+        </tr>
+        <tr id="suspect-secret">
+          <td>서버에서 <strong>키를 못 읽어요</strong>, 또는 키 값이 서비스 설정 화면에 그대로 보여요</td>
+          <td>서비스의 리비전 상세 › 컨테이너 › 변수 및 보안 비밀(Variables &amp; Secrets)이에요. <code>.env</code>는 서버로 가지 않으니 서버의 키는 따로 연결해야 해요</td>
+          <td><code>LLM_API_KEY</code> 옆에 값 대신 시크릿 이름과 <code>latest</code>가 보이면 맞게 연결된 거예요. 값이 보이면 환경변수에 직접 넣은 거예요</td>
+        </tr>
+        <tr id="suspect-split">
+          <td>트래픽을 나눠 놨는데 <strong>한 화면에서 버전이 섞여 보이거나 값이 비어 보여요</strong></td>
+          <td>트래픽 설정(Cloud Run › 서비스 › 리비전 탭)과, 화면이 값을 가져오는 요청이 어느 리비전으로 갔는지예요</td>
+          <td>화면과 값을 따로 요청하는 구조면 요청마다 다른 리비전이 답할 수 있어요. 나누는 동안만 생기는 현상인지 보고, 전용 주소(<code>--tag</code>)로 리비전 하나만 먼저 열어 확인해요</td>
         </tr>
         <tr id="suspect-url">
           <td>배포는 성공했는데 <strong>주소를 열면 오류 화면이나 빈 화면</strong>이 나와요</td>
@@ -356,6 +540,9 @@ uvicorn&gt;=0.30</code></pre>
         <li id="fn11">롤백(rollback) — 새 버전에 문제가 생겼을 때 이전 버전으로 되돌리는 일이에요. <a href="#fnref11">↩</a></li>
         <li id="fn12">헬스 체크(health check) — 서비스가 살아 있는지 확인하려고 만들어 두는 주소로, 보통 <code>/health</code>에서 짧은 응답을 돌려줘요. <a href="#fnref12">↩</a></li>
         <li id="fn13">요청 타임아웃(request timeout) — 요청 하나를 처리할 수 있는 최대 시간으로, 넘으면 플랫폼이 연결을 끊어요. <a href="#fnref13">↩</a></li>
+        <li id="fn14">트래픽 분할(traffic splitting) — 들어오는 요청을 비율로 나눠 여러 리비전에 보내는 설정으로, 새 버전을 일부에게만 먼저 보여 주는 카나리 배포의 바탕이에요. <a href="#fnref14">↩</a></li>
+        <li id="fn15">Secret Manager — API 키 같은 비밀 값을 암호화해 보관하고, 권한을 받은 계정만 읽게 해 주는 Google Cloud의 서비스예요. 서비스 설정에는 값이 아니라 이름만 연결해요. <a href="#fnref15">↩</a></li>
+        <li id="fn16">서비스 계정(service account) — 사람이 아니라 프로그램이 쓰는 Google Cloud 계정이에요. 서비스가 실행되는 동안 이 계정의 권한으로 다른 서비스(예: 시크릿)를 읽어요. <a href="#fnref16">↩</a></li>
       </ol>
     </section>
 
