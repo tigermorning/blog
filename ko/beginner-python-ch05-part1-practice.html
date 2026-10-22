@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>실습 문제 14개 — 초급·중급·고급으로 import·모듈 코드 읽고 결과 예측하기 - Tigermorning</title>
-<meta name="description" content="왕초보를 위한 Python 5장 모듈(5.1 모듈이란 ~ 5.2 모듈 가져오기) 범위로 만든 초급 5·중급 5·고급 4 코드 읽기 실습 14문제와 정답·해설">
+<meta name="description" content="왕초보를 위한 Python 5장 모듈(5.1 모듈이란 ~ 5.2 모듈 가져오기) 범위로 만든 초급 4·중급 6·고급 4 코드 읽기 실습 14문제와 정답·해설">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=JetBrains+Mono:wght@400;600&family=Nanum+Gothic+Coding:wght@400;700&display=swap">
@@ -397,8 +397,8 @@ main, .problem, .p-body, .sol-body, .level { min-width: 0; }
     <p class="lead">코드를 짜지 않고 <b>완성된 코드를 읽고 실행 결과를 예측</b>하는 문제집. 문제마다 <b>힌트 보기</b>와 <b>정답·해설 보기</b>가 따로 접혀 있으니, 먼저 힌트를 보고 그래도 안 풀리면 정답·해설을 여세요. 교재의 공식 연습 문제가 아니라 5.1 ~ 5.2절 내용으로 만든 문제예요. 여러 파일이 나오는 문제는 같은 폴더에 파일이 있다고 생각하고 읽어요.</p>
     <div class="counts">
       <span class="count all">14문제</span>
-      <span class="count basic">초급 5</span>
-      <span class="count mid">중급 5</span>
+      <span class="count basic">초급 4</span>
+      <span class="count mid">중급 6</span>
       <span class="count adv">고급 4</span>
     </div>
   </header>
@@ -409,25 +409,25 @@ main, .problem, .p-body, .sol-body, .level { min-width: 0; }
         <li><a href="#b1"><span class="n">1</span>import 두 가지로 제곱근 구하기</a></li>
         <li><a href="#b2"><span class="n">2</span>가져오지 않은 이름 쓰기</a></li>
         <li><a href="#b3"><span class="n">3</span>as로 별칭 붙이기</a></li>
-        <li><a href="#b4"><span class="n">4</span>dir()로 이름 찾기</a></li>
-        <li><a href="#b5"><span class="n">5</span>별표(*)로 가져오면</a></li>
+        <li><a href="#b4"><span class="n">4</span>별표(*)로 가져오면</a></li>
       </ol>
     </div>
     <div class="grp-mid"><h2>중급</h2>
       <ol>
-        <li><a href="#m1"><span class="n">1</span>달력 함수 결과 풀어 읽기</a></li>
+        <li><a href="#m1"><span class="n">1</span>dir()로 이름 찾기</a></li>
         <li><a href="#m2"><span class="n">2</span>함수 하나와 math 함수 셋</a></li>
-        <li><a href="#m3"><span class="n">3</span>파일 두 개: import와 직접 실행</a></li>
-        <li><a href="#m4"><span class="n">4</span>import를 두 번 하면</a></li>
-        <li><a href="#m5"><span class="n">5</span>상대 경로는 어디서 실행하느냐에 따라</a></li>
+        <li><a href="#m3"><span class="n">3</span>내 파일 이름이 모듈 이름과 같을 때</a></li>
+        <li><a href="#m4"><span class="n">4</span>두 모듈의 sqrt가 겹칠 때</a></li>
+        <li><a href="#m5"><span class="n">5</span>달력 함수 결과 풀어 읽기</a></li>
+        <li><a href="#m6"><span class="n">6</span>import를 두 번 하면</a></li>
       </ol>
     </div>
     <div class="grp-adv"><h2>고급</h2>
       <ol>
-        <li><a href="#a1"><span class="n">1</span>복사된 값과 reload</a></li>
-        <li><a href="#a2"><span class="n">2</span>두 모듈의 sqrt가 겹칠 때</a></li>
+        <li><a href="#a1"><span class="n">1</span>파일 두 개: import와 직접 실행</a></li>
+        <li><a href="#a2"><span class="n">2</span>상대 경로는 어디서 실행하느냐에 따라</a></li>
         <li><a href="#a3"><span class="n">3</span>모듈을 가져다 쓰는 파일</a></li>
-        <li><a href="#a4"><span class="n">4</span>내 파일 이름이 모듈 이름과 같을 때</a></li>
+        <li><a href="#a4"><span class="n">4</span>복사된 값과 reload</a></li>
       </ol>
     </div>
   </nav>
@@ -447,7 +447,7 @@ main, .problem, .p-body, .sol-body, .level { min-width: 0; }
       <div class="level-head">
         <span class="tag">초급</span>
         <h2>5장 기본기 — 개념 하나씩</h2>
-        <p>import 두 방식, 이름 범위, as, dir(), 별표를 한 문제에 한 가지씩 확인해요.</p>
+        <p>import 두 방식, 이름 범위, as, 별표를 한 문제에 한 가지씩 확인해요.</p>
       </div>
 
       <article class="problem" id="b1">
@@ -538,33 +538,7 @@ NameError: name 'math' is not defined</code></pre>
       </article>
 
       <article class="problem" id="b4">
-        <div class="p-head"><span class="p-id">초급 4</span><span class="p-type">읽기</span><h3>dir()로 이름 찾기</h3></div>
-        <div class="p-body">
-<p>모듈 안에 어떤 이름이 있는지 <code>dir()</code>로 찾고, 찾은 함수를 불러 봐요.</p>
-<pre><code class="language-python">import calendar                                      # calendar 모듈을 가져와 주세요
-names = [x for x in dir(calendar) if 'leap' in x]    # names 에 calendar 의 이름 중 leap 이 든 것의 리스트를 담아 주세요
-print(names)                                         # names 를 화면에 보여 주세요
-print(calendar.isleap(2024), calendar.isleap(2077))  # 2024 와 2077 이 윤년인지 화면에 보여 주세요</code></pre>
-    <p>이 코드를 실행하면 무엇이 출력될까요?</p>
-    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr></tbody></table></div>
-        </div>
-        <details class="hint"><summary>힌트 보기</summary>
-          <div class="sol-body">
-            <p><code>dir(calendar)</code>는 모듈 안의 이름들을 리스트로 줘요. 그중 <code>leap</code>이 든 것만 걸러요. 윤년은 4로 나누어떨어지는 해가 기본이에요.</p>
-          </div>
-        </details>
-        <div class="memo"><label for="memo-b4">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b4"></textarea></div>
-        <details class="sol"><summary>정답·해설 보기</summary>
-          <div class="sol-body">
-<pre class="out"><code class="nohighlight">['isleap', 'leapdays']
-True False</code></pre>
-    <p><b>한 문장으로:</b> <code>dir()</code>로 모듈 속 이름을 찾아 거르고, 찾은 <code>isleap</code>으로 윤년을 확인하는 코드예요.</p><div class="table-scroll"><table><thead><tr><th>줄</th><th>일어나는 일</th><th>결과</th></tr></thead><tbody><tr><td>3번째 줄</td><td>이름에 <code>leap</code>이 든 것만 모은 리스트</td><td><code>['isleap', 'leapdays']</code></td></tr><tr><td>4번째 줄</td><td>2024는 4로 나누어떨어짐, 2077은 아님</td><td><code>True False</code></td></tr></tbody></table></div>    <p>이 글의 파이썬 3.12 기준이에요. 모르는 모듈은 <code>dir()</code>로 이름을 찾고 <code>help()</code>로 사용법을 읽어요.</p>    <p><b>핵심 한 줄:</b> <code>dir(모듈)</code>로 이름을 찾고, <code>모듈.이름(…)</code>으로 불러요.</p>
-          </div>
-        </details>
-      </article>
-
-      <article class="problem" id="b5">
-        <div class="p-head"><span class="p-id">초급 5</span><span class="p-type">읽기</span><h3>별표(*)로 가져오면</h3></div>
+        <div class="p-head"><span class="p-id">초급 4</span><span class="p-type">읽기</span><h3>별표(*)로 가져오면</h3></div>
         <div class="p-body">
 <p><code>from 모듈 import *</code>는 모듈의 이름을 전부 가져와요. 내 변수와 이름이 같으면 어떻게 될까요?</p>
 <pre><code class="language-python">pi = '내가 만든 pi'  # pi 에 '내가 만든 pi' 를 담아 주세요
@@ -579,7 +553,7 @@ print(pi)            # pi 를 화면에 보여 주세요</code></pre>
             <p>같은 이름에는 <b>나중에 담은 값</b>이 남아요. <code>math</code>에도 <code>pi</code>가 있어요.</p>
           </div>
         </details>
-        <div class="memo"><label for="memo-b5">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b5"></textarea></div>
+        <div class="memo"><label for="memo-b4">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b4"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
 <pre class="out"><code class="nohighlight">내가 만든 pi
@@ -593,35 +567,32 @@ print(pi)            # pi 를 화면에 보여 주세요</code></pre>
     <section class="level mid" data-level="mid">
       <div class="level-head">
         <span class="tag">중급</span>
-        <h2>개념 합치기 — 함수·파일 둘 이상</h2>
-        <p>모듈의 함수를 내 함수와 함께 읽고, 파일이 둘 이상 나오는 import의 동작을 따라가요.</p>
+        <h2>개념 이어 쓰기 — 이름 찾기부터 모듈 동작까지</h2>
+        <p>dir()로 이름 찾기, 내 함수와 모듈 함수 함께 읽기, 이름이 겹칠 때와 모듈이 한 번만 실행되는 것을 따라가요.</p>
       </div>
 
       <article class="problem" id="m1">
-        <div class="p-head"><span class="p-id">중급 1</span><span class="p-type">읽기</span><h3>달력 함수 결과 풀어 읽기</h3></div>
+        <div class="p-head"><span class="p-id">중급 1</span><span class="p-type">읽기</span><h3>dir()로 이름 찾기</h3></div>
         <div class="p-body">
-<p><code>calendar.monthrange</code>는 값 두 개를 튜플로 돌려줘요. 요일 튜플과 이어서 읽어 봐요.</p>
+<p>모듈 안에 어떤 이름이 있는지 <code>dir()</code>로 찾고, 찾은 함수를 불러 봐요.</p>
 <pre><code class="language-python">import calendar                                      # calendar 모듈을 가져와 주세요
-DAYS = ('월', '화', '수', '목', '금', '토', '일')    # DAYS 에 요일 이름 일곱 개의 튜플을 담아 주세요
-first, last = calendar.monthrange(2024, 2)           # first, last 에 2024년 2월의 monthrange 결과를 풀어 담아 주세요
-print(first, last)                                   # first 와 last 를 화면에 보여 주세요
-print(DAYS[first] + '요일부터', last, '일까지')      # DAYS[first] 요일부터 last 일까지를 화면에 보여 주세요
-print(calendar.isleap(2024), calendar.isleap(2100))  # 2024 와 2100 이 윤년인지 화면에 보여 주세요</code></pre>
+names = [x for x in dir(calendar) if 'leap' in x]    # names 에 calendar 의 이름 중 leap 이 든 것의 리스트를 담아 주세요
+print(names)                                         # names 를 화면에 보여 주세요
+print(calendar.isleap(2024), calendar.isleap(2077))  # 2024 와 2077 이 윤년인지 화면에 보여 주세요</code></pre>
     <p>이 코드를 실행하면 무엇이 출력될까요?</p>
-    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr></tbody></table></div>
+    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr></tbody></table></div>
         </div>
         <details class="hint"><summary>힌트 보기</summary>
           <div class="sol-body">
-            <p><code>monthrange(연, 월)</code>은 (그 달 1일의 요일 번호, 그 달의 마지막 날짜)를 줘요. 요일 번호는 월요일이 0이에요. 2100년은 100으로 나누어떨어지지만 400으로는 아니에요.</p>
+            <p><code>dir(calendar)</code>는 모듈 안의 이름들을 리스트로 줘요. 그중 <code>leap</code>이 든 것만 걸러요. 윤년은 4로 나누어떨어지는 해가 기본이에요.</p>
           </div>
         </details>
         <div class="memo"><label for="memo-m1">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m1"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
-<pre class="out"><code class="nohighlight">3 29
-목요일부터 29 일까지
+<pre class="out"><code class="nohighlight">['isleap', 'leapdays']
 True False</code></pre>
-    <p><b>한 문장으로:</b> 달력 모듈이 돌려준 튜플을 풀어 담아, 요일 튜플에서 이름을 꺼내는 코드예요.</p><div class="table-scroll"><table><thead><tr><th>단계</th><th>값</th></tr></thead><tbody><tr><td><code>calendar.monthrange(2024, 2)</code></td><td><code>(3, 29)</code> — 1일은 3번 요일, 마지막 날짜는 29</td></tr><tr><td><code>first, last = …</code></td><td><code>first = 3</code>, <code>last = 29</code></td></tr><tr><td><code>DAYS[first]</code></td><td><code>DAYS[3]</code> = <code>'목'</code> (월0·화1·수2·목3)</td></tr><tr><td><code>isleap(2024)</code>, <code>isleap(2100)</code></td><td><code>True</code> (4의 배수), <code>False</code> (100의 배수이고 400의 배수는 아님)</td></tr></tbody></table></div>    <p><b>핵심 한 줄:</b> 튜플로 돌려받은 값은 <code>a, b = …</code>로 풀어 담고, 번호는 튜플 인덱스로 이름으로 바꿔요.</p>
+    <p><b>한 문장으로:</b> <code>dir()</code>로 모듈 속 이름을 찾아 거르고, 찾은 <code>isleap</code>으로 윤년을 확인하는 코드예요.</p><div class="table-scroll"><table><thead><tr><th>줄</th><th>일어나는 일</th><th>결과</th></tr></thead><tbody><tr><td>3번째 줄</td><td>이름에 <code>leap</code>이 든 것만 모은 리스트</td><td><code>['isleap', 'leapdays']</code></td></tr><tr><td>4번째 줄</td><td>2024는 4로 나누어떨어짐, 2077은 아님</td><td><code>True False</code></td></tr></tbody></table></div>    <p>이 글의 파이썬 3.12 기준이에요. 모르는 모듈은 <code>dir()</code>로 이름을 찾고 <code>help()</code>로 사용법을 읽어요.</p>    <p><b>핵심 한 줄:</b> <code>dir(모듈)</code>로 이름을 찾고, <code>모듈.이름(…)</code>으로 불러요.</p>
           </div>
         </details>
       </article>
@@ -658,163 +629,37 @@ print(math.hypot(5, 12), math.isqrt(30), math.gcd(12, 18))  # hypot(5, 12), isqr
       </article>
 
       <article class="problem" id="m3">
-        <div class="p-head"><span class="p-id">중급 3</span><span class="p-type">읽기</span><h3>파일 두 개: import와 직접 실행</h3></div>
+        <div class="p-head"><span class="p-id">중급 3</span><span class="p-type">읽기</span><h3>내 파일 이름이 모듈 이름과 같을 때</h3></div>
         <div class="p-body">
-<p>같은 폴더에 파일이 두 개 있어요. <code>user.py</code>를 실행했을 때와 <code>tools.py</code>를 직접 실행했을 때를 구분해 읽어요.</p>
-<p><strong>tools.py</strong></p>
-<pre><code class="language-python">print('tools의 __name__:', __name__)  # tools의 __name__: 과 __name__ 을 화면에 보여 주세요
-
-def double(x):                        # x 를 받는 함수 double 을 정의해 주세요
-    return x * 2                      # x 의 두 배를 돌려주세요
-
-if __name__ == '__main__':            # 만약 __name__ 이 '__main__' 이면
-    print('직접 실행:', double(4))    # 직접 실행: 과 double(4) 를 화면에 보여 주세요</code></pre><p><strong>user.py</strong></p>
-<pre><code class="language-python">import tools            # tools 모듈을 가져와 주세요
-print(tools.double(5))  # tools 의 double 로 5 의 두 배를 화면에 보여 주세요</code></pre>
-    <p><code>user.py</code>를 실행하면 무엇이 출력될까요? 그리고 <code>tools.py</code>를 직접 실행하면 무엇이 출력될까요?</p>
-    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td><code>user.py</code> 실행 1번째 줄</td><td>?</td></tr><tr><td><code>user.py</code> 실행 2번째 줄</td><td>?</td></tr><tr><td><code>tools.py</code> 직접 실행 1번째 줄</td><td>?</td></tr><tr><td><code>tools.py</code> 직접 실행 2번째 줄</td><td>?</td></tr></tbody></table></div>
+<p>같은 폴더에 <code>calendar.py</code>라는 내 파일이 있어요. 표준 <code>calendar</code> 모듈과 이름이 같아요. <code>main.py</code>를 실행해요. 출력은 마지막 오류 줄을 포함해 모두 네 줄이에요.</p>
+<p><strong>calendar.py</strong></p>
+<pre><code class="language-python">print('내 calendar.py가 읽혔다')  # 내 calendar.py가 읽혔다 를 화면에 보여 주세요</code></pre><p><strong>main.py</strong></p>
+<pre><code class="language-python">print('시작')                 # 시작 을 화면에 보여 주세요
+import calendar               # calendar 모듈을 가져와 주세요
+print('가져옴')               # 가져옴 을 화면에 보여 주세요
+print(calendar.isleap(2024))  # calendar 의 isleap 으로 2024 가 윤년인지 화면에 보여 주세요</code></pre>
+    <p><code>main.py</code>를 실행하면 어디까지 출력되고, 어떻게 끝날까요?</p>
+    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr><tr><td>4번째 줄</td><td>?</td></tr></tbody></table></div>
         </div>
         <details class="hint"><summary>힌트 보기</summary>
           <div class="sol-body">
-            <p><code>__name__</code>은 그 파일을 <b>직접 실행</b>하면 <code>'__main__'</code>, <b>import 되어 읽히면 모듈 이름</b>이에요. import 도 파일을 위에서부터 실행해요.</p>
+            <p>파이썬은 내가 실행한 파일이 있는 폴더를 <b>가장 먼저</b> 뒤져서 모듈을 찾아요. <code>import calendar</code>가 읽은 것은 어느 파일일까요?</p>
           </div>
         </details>
         <div class="memo"><label for="memo-m3">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m3"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
-<pre class="out"><code class="nohighlight">tools의 __name__: tools
-10
-----------
-tools의 __name__: __main__
-직접 실행: 8</code></pre>
-    <p><b>한 문장으로:</b> 같은 파일이 import 될 때와 직접 실행될 때 <code>__name__</code>이 달라지는 것을 읽는 문제예요. (출력의 <code>----------</code> 줄은 구분선이고, 위쪽이 <code>user.py</code>, 아래쪽이 <code>tools.py</code> 직접 실행 결과예요.)</p><div class="table-scroll"><table><thead><tr><th>실행</th><th><code>tools.py</code> 안의 <code>__name__</code></th><th><code>if</code> 구역</th><th>출력</th></tr></thead><tbody><tr><td><code>python user.py</code></td><td><code>tools</code></td><td>건너뜀</td><td><code>tools의 __name__: tools</code> → <code>10</code></td></tr><tr><td><code>python tools.py</code></td><td><code>__main__</code></td><td>실행</td><td><code>tools의 __name__: __main__</code> → <code>직접 실행: 8</code></td></tr></tbody></table></div>    <p><code>user.py</code>에서 <code>import tools</code>를 하는 순간 <code>tools.py</code>가 위에서부터 실행돼서 첫 줄 <code>print</code>가 나와요. <code>def</code>는 함수를 만들어 둘 뿐이고, <code>if __name__ == '__main__':</code> 안은 직접 실행할 때만 돌아요.</p>    <p><b>핵심 한 줄:</b> import 해도 파일 맨 위 코드는 실행되고, <code>__main__</code> 구역만 건너뛰어요.</p>
+<pre class="out"><code class="nohighlight">시작
+내 calendar.py가 읽혔다
+가져옴
+AttributeError: module 'calendar' has no attribute 'isleap'</code></pre>
+    <p><b>한 문장으로:</b> 내가 만든 파일 이름이 표준 모듈과 같으면 내 파일이 먼저 읽혀서, 진짜 모듈의 함수를 못 찾는 것을 추적하는 문제예요. (마지막 줄은 오류 메시지의 앞부분만 옮긴 거예요. 파이썬 3.14에서 실행하면 뒤에 파일 이름을 바꾸라는 안내가 더 붙어요.)</p><div class="table-scroll"><table><thead><tr><th>줄</th><th>일어나는 일</th><th>출력</th></tr></thead><tbody><tr><td><code>print('시작')</code></td><td>일반 출력</td><td><code>시작</code></td></tr><tr><td><code>import calendar</code></td><td>같은 폴더의 내 <code>calendar.py</code>가 먼저 읽힘 → 그 안의 <code>print</code> 실행</td><td><code>내 calendar.py가 읽혔다</code></td></tr><tr><td><code>print('가져옴')</code></td><td><code>import</code>는 성공 (파일이 있으니까)</td><td><code>가져옴</code></td></tr><tr><td><code>calendar.isleap(2024)</code></td><td>내 파일에는 <code>isleap</code>이 없음 → <code>AttributeError</code>로 종료</td><td>마지막 오류 줄</td></tr></tbody></table></div>    <p><b>핵심 한 줄:</b> 모듈 이름과 같은 파일 이름은 피해요. 같으면 내 파일이 진짜 모듈을 가려요.</p>
           </div>
         </details>
       </article>
 
       <article class="problem" id="m4">
-        <div class="p-head"><span class="p-id">중급 4</span><span class="p-type">읽기</span><h3>import를 두 번 하면</h3></div>
-        <div class="p-body">
-<p>모듈 파일의 맨 위에 <code>print</code>가 있어요. 몇 번, 어느 자리에서 출력될까요?</p>
-<p><strong>mymod.py</strong></p>
-<pre><code class="language-python">print('mymod 코드가 실행됨')  # mymod 코드가 실행됨 을 화면에 보여 주세요
-value = 1                     # value 에 1 을 담아 주세요</code></pre><p><strong>main.py</strong></p>
-<pre><code class="language-python">print('시작')                 # 시작 을 화면에 보여 주세요
-import mymod                  # mymod 모듈을 가져와 주세요
-print('첫 import 뒤')         # 첫 import 뒤 를 화면에 보여 주세요
-import mymod                  # mymod 모듈을 가져와 주세요
-print('둘째 import 뒤')       # 둘째 import 뒤 를 화면에 보여 주세요
-from importlib import reload  # importlib 에서 reload 를 가져와 주세요
-reload(mymod)                 # mymod 모듈을 다시 읽어 주세요
-print('끝')                   # 끝 을 화면에 보여 주세요</code></pre>
-    <p><code>main.py</code>를 실행하면 무엇이 출력될까요?</p>
-    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr><tr><td>4번째 줄</td><td>?</td></tr><tr><td>5번째 줄</td><td>?</td></tr><tr><td>6번째 줄</td><td>?</td></tr></tbody></table></div>
-        </div>
-        <details class="hint"><summary>힌트 보기</summary>
-          <div class="sol-body">
-            <p><code>import</code>는 이미 읽은 모듈이면 다시 실행하지 않아요. 다시 실행하는 것은 <code>reload</code>예요.</p>
-          </div>
-        </details>
-        <div class="memo"><label for="memo-m4">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m4"></textarea></div>
-        <details class="sol"><summary>정답·해설 보기</summary>
-          <div class="sol-body">
-<pre class="out"><code class="nohighlight">시작
-mymod 코드가 실행됨
-첫 import 뒤
-둘째 import 뒤
-mymod 코드가 실행됨
-끝</code></pre>
-    <p><b>한 문장으로:</b> <code>import</code>는 모듈을 한 번만 실행하고, <code>reload</code>가 다시 실행하는 것을 읽는 코드예요.</p><div class="table-scroll"><table><thead><tr><th>실행되는 줄</th><th><code>mymod</code> 코드 실행?</th><th>출력</th></tr></thead><tbody><tr><td><code>print('시작')</code></td><td>아직 안 읽음</td><td><code>시작</code></td></tr><tr><td>첫 <code>import mymod</code></td><td><b>실행</b> (처음 읽음)</td><td><code>mymod 코드가 실행됨</code></td></tr><tr><td><code>print('첫 import 뒤')</code></td><td>-</td><td><code>첫 import 뒤</code></td></tr><tr><td>둘째 <code>import mymod</code></td><td>실행 안 함 (이미 읽음)</td><td>(출력 없음)</td></tr><tr><td><code>print('둘째 import 뒤')</code></td><td>-</td><td><code>둘째 import 뒤</code></td></tr><tr><td><code>reload(mymod)</code></td><td><b>다시 실행</b></td><td><code>mymod 코드가 실행됨</code></td></tr><tr><td><code>print('끝')</code></td><td>-</td><td><code>끝</code></td></tr></tbody></table></div>    <p><b>핵심 한 줄:</b> 모듈의 코드는 첫 import 때 한 번, <code>reload</code>할 때 다시 실행돼요.</p>
-          </div>
-        </details>
-      </article>
-
-      <article class="problem" id="m5">
-        <div class="p-head"><span class="p-id">중급 5</span><span class="p-type">읽기</span><h3>상대 경로는 어디서 실행하느냐에 따라</h3></div>
-        <div class="p-body">
-<p>폴더가 둘이에요. <code>ch05/main.py</code>가 <code>ch04/tools.py</code>를 불러 써요.</p>
-<p><strong>ch04/tools.py</strong></p>
-<pre><code class="language-python">def hello():        # 함수 hello 를 정의해 주세요
-    return 'hello'  # hello 를 돌려주세요</code></pre><p><strong>ch05/main.py</strong></p>
-<pre><code class="language-python">import sys                  # sys 모듈을 가져와 주세요
-sys.path.append("../ch04")  # sys.path 에 "../ch04" 를 더해 주세요
-import tools                # tools 모듈을 가져와 주세요
-print(tools.hello())        # tools 의 hello 를 불러 결과를 화면에 보여 주세요</code></pre>
-    <p><code>ch05</code> 폴더 안에서 <code>python main.py</code>로 실행하면 무엇이 출력될까요? 프로젝트 폴더(<code>ch04</code>와 <code>ch05</code>가 함께 있는 폴더)에서 <code>python ch05/main.py</code>로 실행하면 어떨까요?</p>
-    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td><code>ch05</code>에서 실행 1번째 줄</td><td>?</td></tr><tr><td>프로젝트 폴더에서 실행 1번째 줄</td><td>?</td></tr></tbody></table></div>
-        </div>
-        <details class="hint"><summary>힌트 보기</summary>
-          <div class="sol-body">
-            <p><code>"../ch04"</code>는 <b>파일이 있는 폴더가 아니라 프로그램을 실행하는 위치</b> 기준이에요. 실행하는 위치에서 <code>../ch04</code>가 있는지 생각해 보세요.</p>
-          </div>
-        </details>
-        <div class="memo"><label for="memo-m5">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m5"></textarea></div>
-        <details class="sol"><summary>정답·해설 보기</summary>
-          <div class="sol-body">
-<pre class="out"><code class="nohighlight">hello
-----------
-ModuleNotFoundError: No module named 'tools'</code></pre>
-    <p><b>한 문장으로:</b> <code>sys.path.append</code>의 상대 경로가 실행하는 위치를 기준으로 풀리는 것을 읽는 문제예요. (출력의 <code>----------</code> 줄 위쪽이 <code>ch05</code>에서 실행한 결과, 아래쪽이 프로젝트 폴더에서 실행한 결과예요.)</p><div class="table-scroll"><table><thead><tr><th>실행 위치</th><th><code>../ch04</code>가 가리키는 곳</th><th>결과</th></tr></thead><tbody><tr><td><code>ch05</code> 폴더 안</td><td><code>ch05</code>의 한 단계 위 → <code>ch04</code> 있음</td><td><code>hello</code></td></tr><tr><td>프로젝트 폴더</td><td>프로젝트 폴더의 한 단계 위 → <code>ch04</code> 없음</td><td><code>ModuleNotFoundError</code></td></tr></tbody></table></div>    <p><code>ModuleNotFoundError</code>는 파이썬이 <code>sys.path</code>의 폴더들에서 <code>tools</code>를 찾지 못했다는 뜻이에요. 위 결과의 마지막 줄만 옮겼어요.</p>    <p><b>핵심 한 줄:</b> 상대 경로는 파일 위치가 아니라 실행 위치 기준이에요.</p>
-          </div>
-        </details>
-      </article>
-    </section>
-
-    <section class="level adv" data-level="adv">
-      <div class="level-head">
-        <span class="tag">고급</span>
-        <h2>실행 순서 추적 — 이름이 가리키는 값</h2>
-        <p>무엇이 언제 실행되는지, 이름이 어떤 값을 가리키는지 추적해야 풀리는 함정 문제예요.</p>
-      </div>
-
-      <article class="problem" id="a1">
-        <div class="p-head"><span class="p-id">고급 1</span><span class="p-type">읽기</span><h3>복사된 값과 reload</h3></div>
-        <div class="p-body">
-<p><code>from … import</code>로 가져온 변수는 모듈 변수와 같을까요? <code>reload</code> 뒤에는 어떻게 될까요? 출력은 모두 여섯 줄이에요.</p>
-<p><strong>counter.py</strong></p>
-<pre><code class="language-python">print('counter 로딩')  # counter 로딩 을 화면에 보여 주세요
-count = 0              # count 에 0 을 담아 주세요
-
-
-def up():              # 함수 up 을 정의해 주세요
-    global count       # 모듈의 count 를 쓰겠다고 알려 주세요
-    count += 1         # count 에 1 을 더해 주세요
-    return count       # count 를 돌려주세요</code></pre><p><strong>main.py</strong></p>
-<pre><code class="language-python">import counter                 # counter 모듈을 가져와 주세요
-from counter import up, count  # counter 에서 up 과 count 를 가져와 주세요
-up()                           # up 을 불러 주세요
-up()                           # up 을 불러 주세요
-print(count)                   # count 를 화면에 보여 주세요
-print(counter.count)           # counter 의 count 를 화면에 보여 주세요
-import counter                 # counter 모듈을 가져와 주세요
-from importlib import reload   # importlib 에서 reload 를 가져와 주세요
-reload(counter)                # counter 모듈을 다시 읽어 주세요
-print(counter.count)           # counter 의 count 를 화면에 보여 주세요
-print(up())                    # up 의 결과를 화면에 보여 주세요</code></pre>
-    <p><code>main.py</code>를 실행하면 무엇이 출력될까요?</p>
-    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr><tr><td>4번째 줄</td><td>?</td></tr><tr><td>5번째 줄</td><td>?</td></tr><tr><td>6번째 줄</td><td>?</td></tr></tbody></table></div>
-        </div>
-        <details class="hint"><summary>힌트 보기</summary>
-          <div class="sol-body">
-            <p><code>from counter import count</code>는 그 순간의 값을 <b>내 이름에 묶어요.</b> 이후 모듈의 <code>count</code>가 바뀌어도 내 <code>count</code>는 따라가지 않아요. <code>reload</code>는 모듈 코드를 처음부터 다시 실행해요.</p>
-          </div>
-        </details>
-        <div class="memo"><label for="memo-a1">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a1"></textarea></div>
-        <details class="sol"><summary>정답·해설 보기</summary>
-          <div class="sol-body">
-<pre class="out"><code class="nohighlight">counter 로딩
-0
-2
-counter 로딩
-0
-1</code></pre>
-    <p><b>한 문장으로:</b> 가져온 변수는 값이 복사되어 따로 놀고, <code>reload</code>는 모듈 변수를 다시 0으로 되돌리는 것을 추적하는 문제예요.</p><div class="table-scroll"><table><thead><tr><th>실행되는 줄</th><th>내 <code>count</code></th><th><code>counter.count</code></th><th>출력</th></tr></thead><tbody><tr><td><code>import counter</code></td><td>-</td><td>0</td><td><code>counter 로딩</code></td></tr><tr><td><code>from counter import up, count</code></td><td>0 (복사)</td><td>0</td><td>(없음)</td></tr><tr><td><code>up()</code> 두 번</td><td>0 (그대로)</td><td>2</td><td>(없음)</td></tr><tr><td><code>print(count)</code></td><td>0</td><td>2</td><td><code>0</code></td></tr><tr><td><code>print(counter.count)</code></td><td>0</td><td>2</td><td><code>2</code></td></tr><tr><td>둘째 <code>import counter</code></td><td>0</td><td>2</td><td>(이미 읽음, 출력 없음)</td></tr><tr><td><code>reload(counter)</code></td><td>0</td><td><code>count = 0</code>을 다시 실행 → 0</td><td><code>counter 로딩</code></td></tr><tr><td><code>print(counter.count)</code></td><td>0</td><td>0</td><td><code>0</code></td></tr><tr><td><code>print(up())</code></td><td>0</td><td>1</td><td><code>1</code></td></tr></tbody></table></div>    <p>처음 가져온 <code>up</code>은 같은 모듈 공간의 <code>count</code>를 올리므로, <code>reload</code>로 0이 된 값에서 1이 돼요. 그래서 마지막 줄이 <code>1</code>이에요. 변하는 값은 <code>from … import</code>로 가져오지 말고 <code>모듈.이름</code>으로 읽어요.</p>    <p><b>핵심 한 줄:</b> <code>from 모듈 import 변수</code>는 그 순간의 값을 복사한 것이라, 모듈 안에서 바뀌어도 따라가지 않아요.</p>
-          </div>
-        </details>
-      </article>
-
-      <article class="problem" id="a2">
-        <div class="p-head"><span class="p-id">고급 2</span><span class="p-type">읽기</span><h3>두 모듈의 sqrt가 겹칠 때</h3></div>
+        <div class="p-head"><span class="p-id">중급 4</span><span class="p-type">읽기</span><h3>두 모듈의 sqrt가 겹칠 때</h3></div>
         <div class="p-body">
 <p><code>cmath</code>는 복소수(제곱해서 -4가 되는 수 같은 것)를 다루는 모듈이고, 거기에도 <code>sqrt</code>가 있어요. 두 코드는 가져오는 순서만 달라요. 출력은 코드 A 한 줄, 코드 B 한 줄이에요.</p>
 <p><strong>코드 A</strong></p>
@@ -836,12 +681,151 @@ except ValueError as e:      # ValueError 가 나면 e 에 담아 주세요
             <p>같은 이름은 <b>나중에 가져온 쪽</b>이 이겨요. <code>math.sqrt</code>는 음수를 받지 못하고, <code>cmath.sqrt</code>는 복소수를 돌려줘요.</p>
           </div>
         </details>
-        <div class="memo"><label for="memo-a2">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a2"></textarea></div>
+        <div class="memo"><label for="memo-m4">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m4"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
 <pre class="out"><code class="nohighlight">2j
 ValueError: math domain error</code></pre>
-    <p><b>한 문장으로:</b> 별표로 가져온 두 모듈의 이름이 겹치면 나중 것이 이겨서, 가져오는 순서가 결과를 바꾸는 것을 읽는 문제예요. (첫 줄이 코드 A, 둘째 줄이 코드 B)</p><div class="table-scroll"><table><thead><tr><th>코드</th><th><code>sqrt</code>가 가리키는 것</th><th>결과</th></tr></thead><tbody><tr><td>A (math → cmath)</td><td>나중에 가져온 <code>cmath.sqrt</code></td><td><code>2j</code> (복소수 2j)</td></tr><tr><td>B (cmath → math)</td><td>나중에 가져온 <code>math.sqrt</code></td><td><code>ValueError: math domain error</code></td></tr></tbody></table></div>    <p>둘 다 쓰려면 <code>import math, cmath</code>로 이름을 붙여 쓰거나, <code>from math import sqrt as real_sqrt</code>처럼 <code>as</code>로 겹치지 않게 가져와요.</p>    <p><b>핵심 한 줄:</b> <code>import *</code>를 여러 개 쓰면 마지막에 가져온 모듈이 같은 이름을 차지해요.</p>
+    <p><b>한 문장으로:</b> 별표로 가져온 두 모듈의 이름이 겹치면 나중 것이 이겨서, 가져오는 순서가 결과를 바꾸는 것을 읽는 문제예요. (첫 줄이 코드 A, 둘째 줄이 코드 B. 코드 B의 <code>ValueError</code> 뒤 문구는 파이썬 버전에 따라 달라요. 이 글은 3.12에서 돌린 결과이고, 3.14에서는 <code>expected a nonnegative input, got -4.0</code>로 나와요. 어느 쪽이든 <code>ValueError</code>가 나는지를 보세요.)</p><div class="table-scroll"><table><thead><tr><th>코드</th><th><code>sqrt</code>가 가리키는 것</th><th>결과</th></tr></thead><tbody><tr><td>A (math → cmath)</td><td>나중에 가져온 <code>cmath.sqrt</code></td><td><code>2j</code> (복소수 2j)</td></tr><tr><td>B (cmath → math)</td><td>나중에 가져온 <code>math.sqrt</code></td><td><code>ValueError: math domain error</code></td></tr></tbody></table></div>    <p>둘 다 쓰려면 <code>import math, cmath</code>로 이름을 붙여 쓰거나, <code>from math import sqrt as real_sqrt</code>처럼 <code>as</code>로 겹치지 않게 가져와요.</p>    <p><b>핵심 한 줄:</b> <code>import *</code>를 여러 개 쓰면 마지막에 가져온 모듈이 같은 이름을 차지해요.</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="m5">
+        <div class="p-head"><span class="p-id">중급 5</span><span class="p-type">읽기</span><h3>달력 함수 결과 풀어 읽기</h3></div>
+        <div class="p-body">
+<p><code>calendar.monthrange</code>는 값 두 개를 튜플로 돌려줘요. 요일 튜플과 이어서 읽어 봐요.</p>
+<pre><code class="language-python">import calendar                                      # calendar 모듈을 가져와 주세요
+DAYS = ('월', '화', '수', '목', '금', '토', '일')    # DAYS 에 요일 이름 일곱 개의 튜플을 담아 주세요
+first, last = calendar.monthrange(2024, 2)           # first, last 에 2024년 2월의 monthrange 결과를 풀어 담아 주세요
+print(first, last)                                   # first 와 last 를 화면에 보여 주세요
+print(DAYS[first] + '요일부터', last, '일까지')      # DAYS[first] 요일부터 last 일까지를 화면에 보여 주세요
+print(calendar.isleap(2024), calendar.isleap(2100))  # 2024 와 2100 이 윤년인지 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 무엇이 출력될까요?</p>
+    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr></tbody></table></div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <p><code>monthrange(연, 월)</code>은 (그 달 1일의 요일 번호, 그 달의 마지막 날짜)를 줘요. 요일 번호는 월요일이 0이에요. 2100년은 100으로 나누어떨어지지만 400으로는 아니에요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-m5">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m5"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">3 29
+목요일부터 29 일까지
+True False</code></pre>
+    <p><b>한 문장으로:</b> 달력 모듈이 돌려준 튜플을 풀어 담아, 요일 튜플에서 이름을 꺼내는 코드예요.</p><div class="table-scroll"><table><thead><tr><th>단계</th><th>값</th></tr></thead><tbody><tr><td><code>calendar.monthrange(2024, 2)</code></td><td><code>(3, 29)</code> — 1일은 3번 요일, 마지막 날짜는 29</td></tr><tr><td><code>first, last = …</code></td><td><code>first = 3</code>, <code>last = 29</code></td></tr><tr><td><code>DAYS[first]</code></td><td><code>DAYS[3]</code> = <code>'목'</code> (월0·화1·수2·목3)</td></tr><tr><td><code>isleap(2024)</code>, <code>isleap(2100)</code></td><td><code>True</code> (4의 배수), <code>False</code> (100의 배수이고 400의 배수는 아님)</td></tr></tbody></table></div>    <p><b>핵심 한 줄:</b> 튜플로 돌려받은 값은 <code>a, b = …</code>로 풀어 담고, 번호는 튜플 인덱스로 이름으로 바꿔요.</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="m6">
+        <div class="p-head"><span class="p-id">중급 6</span><span class="p-type">읽기</span><h3>import를 두 번 하면</h3></div>
+        <div class="p-body">
+<p>모듈 파일의 맨 위에 <code>print</code>가 있어요. 몇 번, 어느 자리에서 출력될까요?</p>
+<p><strong>mymod.py</strong></p>
+<pre><code class="language-python">print('mymod 코드가 실행됨')  # mymod 코드가 실행됨 을 화면에 보여 주세요
+value = 1                     # value 에 1 을 담아 주세요</code></pre><p><strong>main.py</strong></p>
+<pre><code class="language-python">print('시작')                 # 시작 을 화면에 보여 주세요
+import mymod                  # mymod 모듈을 가져와 주세요
+print('첫 import 뒤')         # 첫 import 뒤 를 화면에 보여 주세요
+import mymod                  # mymod 모듈을 가져와 주세요
+print('둘째 import 뒤')       # 둘째 import 뒤 를 화면에 보여 주세요
+from importlib import reload  # importlib 에서 reload 를 가져와 주세요
+reload(mymod)                 # mymod 모듈을 다시 읽어 주세요
+print('끝')                   # 끝 을 화면에 보여 주세요</code></pre>
+    <p><code>main.py</code>를 실행하면 무엇이 출력될까요?</p>
+    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr><tr><td>4번째 줄</td><td>?</td></tr><tr><td>5번째 줄</td><td>?</td></tr><tr><td>6번째 줄</td><td>?</td></tr></tbody></table></div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <p><code>import</code>는 이미 읽은 모듈이면 다시 실행하지 않아요. 다시 실행하는 것은 <code>reload</code>예요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-m6">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m6"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">시작
+mymod 코드가 실행됨
+첫 import 뒤
+둘째 import 뒤
+mymod 코드가 실행됨
+끝</code></pre>
+    <p><b>한 문장으로:</b> <code>import</code>는 모듈을 한 번만 실행하고, <code>reload</code>가 다시 실행하는 것을 읽는 코드예요.</p><div class="table-scroll"><table><thead><tr><th>실행되는 줄</th><th><code>mymod</code> 코드 실행?</th><th>출력</th></tr></thead><tbody><tr><td><code>print('시작')</code></td><td>아직 안 읽음</td><td><code>시작</code></td></tr><tr><td>첫 <code>import mymod</code></td><td><b>실행</b> (처음 읽음)</td><td><code>mymod 코드가 실행됨</code></td></tr><tr><td><code>print('첫 import 뒤')</code></td><td>-</td><td><code>첫 import 뒤</code></td></tr><tr><td>둘째 <code>import mymod</code></td><td>실행 안 함 (이미 읽음)</td><td>(출력 없음)</td></tr><tr><td><code>print('둘째 import 뒤')</code></td><td>-</td><td><code>둘째 import 뒤</code></td></tr><tr><td><code>reload(mymod)</code></td><td><b>다시 실행</b></td><td><code>mymod 코드가 실행됨</code></td></tr><tr><td><code>print('끝')</code></td><td>-</td><td><code>끝</code></td></tr></tbody></table></div>    <p><b>핵심 한 줄:</b> 모듈의 코드는 첫 import 때 한 번, <code>reload</code>할 때 다시 실행돼요.</p>
+          </div>
+        </details>
+      </article>
+    </section>
+
+    <section class="level adv" data-level="adv">
+      <div class="level-head">
+        <span class="tag">고급</span>
+        <h2>실행 순서 추적 — 이름이 가리키는 값</h2>
+        <p>무엇이 언제 실행되는지, 이름이 어떤 값을 가리키는지, 파일과 실행 위치가 얽히면 어떻게 되는지 추적해야 풀리는 문제예요.</p>
+      </div>
+
+      <article class="problem" id="a1">
+        <div class="p-head"><span class="p-id">고급 1</span><span class="p-type">읽기</span><h3>파일 두 개: import와 직접 실행</h3></div>
+        <div class="p-body">
+<p>같은 폴더에 파일이 두 개 있어요. <code>user.py</code>를 실행했을 때와 <code>tools.py</code>를 직접 실행했을 때를 구분해 읽어요.</p>
+<p><strong>tools.py</strong></p>
+<pre><code class="language-python">print('tools의 __name__:', __name__)  # tools의 __name__: 과 __name__ 을 화면에 보여 주세요
+
+def double(x):                        # x 를 받는 함수 double 을 정의해 주세요
+    return x * 2                      # x 의 두 배를 돌려주세요
+
+if __name__ == '__main__':            # 만약 __name__ 이 '__main__' 이면
+    print('직접 실행:', double(4))    # 직접 실행: 과 double(4) 를 화면에 보여 주세요</code></pre><p><strong>user.py</strong></p>
+<pre><code class="language-python">import tools            # tools 모듈을 가져와 주세요
+print(tools.double(5))  # tools 의 double 로 5 의 두 배를 화면에 보여 주세요</code></pre>
+    <p><code>user.py</code>를 실행하면 무엇이 출력될까요? 그리고 <code>tools.py</code>를 직접 실행하면 무엇이 출력될까요?</p>
+    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td><code>user.py</code> 실행 1번째 줄</td><td>?</td></tr><tr><td><code>user.py</code> 실행 2번째 줄</td><td>?</td></tr><tr><td><code>tools.py</code> 직접 실행 1번째 줄</td><td>?</td></tr><tr><td><code>tools.py</code> 직접 실행 2번째 줄</td><td>?</td></tr></tbody></table></div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <p><code>__name__</code>은 그 파일을 <b>직접 실행</b>하면 <code>'__main__'</code>, <b>import 되어 읽히면 모듈 이름</b>이에요. import 도 파일을 위에서부터 실행해요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-a1">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a1"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">tools의 __name__: tools
+10
+----------
+tools의 __name__: __main__
+직접 실행: 8</code></pre>
+    <p><b>한 문장으로:</b> 같은 파일이 import 될 때와 직접 실행될 때 <code>__name__</code>이 달라지는 것을 읽는 문제예요. (출력의 <code>----------</code> 줄은 구분선이고, 위쪽이 <code>user.py</code>, 아래쪽이 <code>tools.py</code> 직접 실행 결과예요.)</p><div class="table-scroll"><table><thead><tr><th>실행</th><th><code>tools.py</code> 안의 <code>__name__</code></th><th><code>if</code> 구역</th><th>출력</th></tr></thead><tbody><tr><td><code>python user.py</code></td><td><code>tools</code></td><td>건너뜀</td><td><code>tools의 __name__: tools</code> → <code>10</code></td></tr><tr><td><code>python tools.py</code></td><td><code>__main__</code></td><td>실행</td><td><code>tools의 __name__: __main__</code> → <code>직접 실행: 8</code></td></tr></tbody></table></div>    <p><code>user.py</code>에서 <code>import tools</code>를 하는 순간 <code>tools.py</code>가 위에서부터 실행돼서 첫 줄 <code>print</code>가 나와요. <code>def</code>는 함수를 만들어 둘 뿐이고, <code>if __name__ == '__main__':</code> 안은 직접 실행할 때만 돌아요.</p>    <p><b>핵심 한 줄:</b> import 해도 파일 맨 위 코드는 실행되고, <code>__main__</code> 구역만 건너뛰어요.</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="a2">
+        <div class="p-head"><span class="p-id">고급 2</span><span class="p-type">읽기</span><h3>상대 경로는 어디서 실행하느냐에 따라</h3></div>
+        <div class="p-body">
+<p>폴더가 둘이에요. <code>ch05/main.py</code>가 <code>ch04/tools.py</code>를 불러 써요.</p>
+<p><strong>ch04/tools.py</strong></p>
+<pre><code class="language-python">def hello():        # 함수 hello 를 정의해 주세요
+    return 'hello'  # hello 를 돌려주세요</code></pre><p><strong>ch05/main.py</strong></p>
+<pre><code class="language-python">import sys                  # sys 모듈을 가져와 주세요
+sys.path.append("../ch04")  # sys.path 에 "../ch04" 를 더해 주세요
+import tools                # tools 모듈을 가져와 주세요
+print(tools.hello())        # tools 의 hello 를 불러 결과를 화면에 보여 주세요</code></pre>
+    <p><code>ch05</code> 폴더 안에서 <code>python main.py</code>로 실행하면 무엇이 출력될까요? 프로젝트 폴더(<code>ch04</code>와 <code>ch05</code>가 함께 있는 폴더)에서 <code>python ch05/main.py</code>로 실행하면 어떨까요?</p>
+    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td><code>ch05</code>에서 실행 1번째 줄</td><td>?</td></tr><tr><td>프로젝트 폴더에서 실행 1번째 줄</td><td>?</td></tr></tbody></table></div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <p><code>"../ch04"</code>는 <b>파일이 있는 폴더가 아니라 프로그램을 실행하는 위치</b> 기준이에요. 실행하는 위치에서 <code>../ch04</code>가 있는지 생각해 보세요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-a2">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a2"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">hello
+----------
+ModuleNotFoundError: No module named 'tools'</code></pre>
+    <p><b>한 문장으로:</b> <code>sys.path.append</code>의 상대 경로가 실행하는 위치를 기준으로 풀리는 것을 읽는 문제예요. (출력의 <code>----------</code> 줄 위쪽이 <code>ch05</code>에서 실행한 결과, 아래쪽이 프로젝트 폴더에서 실행한 결과예요.)</p><div class="table-scroll"><table><thead><tr><th>실행 위치</th><th><code>../ch04</code>가 가리키는 곳</th><th>결과</th></tr></thead><tbody><tr><td><code>ch05</code> 폴더 안</td><td><code>ch05</code>의 한 단계 위 → <code>ch04</code> 있음</td><td><code>hello</code></td></tr><tr><td>프로젝트 폴더</td><td>프로젝트 폴더의 한 단계 위 → <code>ch04</code> 없음</td><td><code>ModuleNotFoundError</code></td></tr></tbody></table></div>    <p><code>ModuleNotFoundError</code>는 파이썬이 <code>sys.path</code>의 폴더들에서 <code>tools</code>를 찾지 못했다는 뜻이에요. 위 결과의 마지막 줄만 옮겼어요.</p>    <p><b>핵심 한 줄:</b> 상대 경로는 파일 위치가 아니라 실행 위치 기준이에요.</p>
           </div>
         </details>
       </article>
@@ -910,31 +894,47 @@ for name in park.allowedrides(heights[0]):   # 첫 사람이 탈 수 있는 기�
       </article>
 
       <article class="problem" id="a4">
-        <div class="p-head"><span class="p-id">고급 4</span><span class="p-type">읽기</span><h3>내 파일 이름이 모듈 이름과 같을 때</h3></div>
+        <div class="p-head"><span class="p-id">고급 4</span><span class="p-type">읽기</span><h3>복사된 값과 reload</h3></div>
         <div class="p-body">
-<p>같은 폴더에 <code>calendar.py</code>라는 내 파일이 있어요. 표준 <code>calendar</code> 모듈과 이름이 같아요. <code>main.py</code>를 실행해요. 출력은 마지막 오류 줄을 포함해 모두 네 줄이에요.</p>
-<p><strong>calendar.py</strong></p>
-<pre><code class="language-python">print('내 calendar.py가 읽혔다')  # 내 calendar.py가 읽혔다 를 화면에 보여 주세요</code></pre><p><strong>main.py</strong></p>
-<pre><code class="language-python">print('시작')                 # 시작 을 화면에 보여 주세요
-import calendar               # calendar 모듈을 가져와 주세요
-print('가져옴')               # 가져옴 을 화면에 보여 주세요
-print(calendar.isleap(2024))  # calendar 의 isleap 으로 2024 가 윤년인지 화면에 보여 주세요</code></pre>
-    <p><code>main.py</code>를 실행하면 어디까지 출력되고, 어떻게 끝날까요?</p>
-    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr><tr><td>4번째 줄</td><td>?</td></tr></tbody></table></div>
+<p><code>from … import</code>로 가져온 변수는 모듈 변수와 같을까요? <code>reload</code> 뒤에는 어떻게 될까요? 출력은 모두 여섯 줄이에요.</p>
+<p><strong>counter.py</strong></p>
+<pre><code class="language-python">print('counter 로딩')  # counter 로딩 을 화면에 보여 주세요
+count = 0              # count 에 0 을 담아 주세요
+
+
+def up():              # 함수 up 을 정의해 주세요
+    global count       # 모듈의 count 를 쓰겠다고 알려 주세요
+    count += 1         # count 에 1 을 더해 주세요
+    return count       # count 를 돌려주세요</code></pre><p><strong>main.py</strong></p>
+<pre><code class="language-python">import counter                 # counter 모듈을 가져와 주세요
+from counter import up, count  # counter 에서 up 과 count 를 가져와 주세요
+up()                           # up 을 불러 주세요
+up()                           # up 을 불러 주세요
+print(count)                   # count 를 화면에 보여 주세요
+print(counter.count)           # counter 의 count 를 화면에 보여 주세요
+import counter                 # counter 모듈을 가져와 주세요
+from importlib import reload   # importlib 에서 reload 를 가져와 주세요
+reload(counter)                # counter 모듈을 다시 읽어 주세요
+print(counter.count)           # counter 의 count 를 화면에 보여 주세요
+print(up())                    # up 의 결과를 화면에 보여 주세요</code></pre>
+    <p><code>main.py</code>를 실행하면 무엇이 출력될까요?</p>
+    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr><tr><td>4번째 줄</td><td>?</td></tr><tr><td>5번째 줄</td><td>?</td></tr><tr><td>6번째 줄</td><td>?</td></tr></tbody></table></div>
         </div>
         <details class="hint"><summary>힌트 보기</summary>
           <div class="sol-body">
-            <p>파이썬은 내가 실행한 파일이 있는 폴더를 <b>가장 먼저</b> 뒤져서 모듈을 찾아요. <code>import calendar</code>가 읽은 것은 어느 파일일까요?</p>
+            <p><code>from counter import count</code>는 그 순간의 값을 <b>내 이름에 묶어요.</b> 이후 모듈의 <code>count</code>가 바뀌어도 내 <code>count</code>는 따라가지 않아요. <code>reload</code>는 모듈 코드를 처음부터 다시 실행해요.</p>
           </div>
         </details>
         <div class="memo"><label for="memo-a4">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a4"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
-<pre class="out"><code class="nohighlight">시작
-내 calendar.py가 읽혔다
-가져옴
-AttributeError: module 'calendar' has no attribute 'isleap'</code></pre>
-    <p><b>한 문장으로:</b> 내가 만든 파일 이름이 표준 모듈과 같으면 내 파일이 먼저 읽혀서, 진짜 모듈의 함수를 못 찾는 것을 추적하는 문제예요. (마지막 줄은 오류 메시지의 마지막 줄만 옮긴 거예요.)</p><div class="table-scroll"><table><thead><tr><th>줄</th><th>일어나는 일</th><th>출력</th></tr></thead><tbody><tr><td><code>print('시작')</code></td><td>일반 출력</td><td><code>시작</code></td></tr><tr><td><code>import calendar</code></td><td>같은 폴더의 내 <code>calendar.py</code>가 먼저 읽힘 → 그 안의 <code>print</code> 실행</td><td><code>내 calendar.py가 읽혔다</code></td></tr><tr><td><code>print('가져옴')</code></td><td><code>import</code>는 성공 (파일이 있으니까)</td><td><code>가져옴</code></td></tr><tr><td><code>calendar.isleap(2024)</code></td><td>내 파일에는 <code>isleap</code>이 없음 → <code>AttributeError</code>로 종료</td><td>마지막 오류 줄</td></tr></tbody></table></div>    <p><b>핵심 한 줄:</b> 모듈 이름과 같은 파일 이름은 피해요. 같으면 내 파일이 진짜 모듈을 가려요.</p>
+<pre class="out"><code class="nohighlight">counter 로딩
+0
+2
+counter 로딩
+0
+1</code></pre>
+    <p><b>한 문장으로:</b> 가져온 변수는 값이 복사되어 따로 놀고, <code>reload</code>는 모듈 변수를 다시 0으로 되돌리는 것을 추적하는 문제예요.</p><div class="table-scroll"><table><thead><tr><th>실행되는 줄</th><th>내 <code>count</code></th><th><code>counter.count</code></th><th>출력</th></tr></thead><tbody><tr><td><code>import counter</code></td><td>-</td><td>0</td><td><code>counter 로딩</code></td></tr><tr><td><code>from counter import up, count</code></td><td>0 (복사)</td><td>0</td><td>(없음)</td></tr><tr><td><code>up()</code> 두 번</td><td>0 (그대로)</td><td>2</td><td>(없음)</td></tr><tr><td><code>print(count)</code></td><td>0</td><td>2</td><td><code>0</code></td></tr><tr><td><code>print(counter.count)</code></td><td>0</td><td>2</td><td><code>2</code></td></tr><tr><td>둘째 <code>import counter</code></td><td>0</td><td>2</td><td>(이미 읽음, 출력 없음)</td></tr><tr><td><code>reload(counter)</code></td><td>0</td><td><code>count = 0</code>을 다시 실행 → 0</td><td><code>counter 로딩</code></td></tr><tr><td><code>print(counter.count)</code></td><td>0</td><td>0</td><td><code>0</code></td></tr><tr><td><code>print(up())</code></td><td>0</td><td>1</td><td><code>1</code></td></tr></tbody></table></div>    <p>처음 가져온 <code>up</code>은 같은 모듈 공간의 <code>count</code>를 올리므로, <code>reload</code>로 0이 된 값에서 1이 돼요. 그래서 마지막 줄이 <code>1</code>이에요. 변하는 값은 <code>from … import</code>로 가져오지 말고 <code>모듈.이름</code>으로 읽어요.</p>    <p><b>핵심 한 줄:</b> <code>from 모듈 import 변수</code>는 그 순간의 값을 복사한 것이라, 모듈 안에서 바뀌어도 따라가지 않아요.</p>
           </div>
         </details>
       </article>
