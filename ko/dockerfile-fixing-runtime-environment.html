@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>로컬에서는 되는데 서버에서만 안 되는 이유 — Dockerfile로 실행 환경 정하기 (4) - Tigermorning</title>
+  <meta name="description" content="내 컴퓨터에서는 사진 속 글자 읽기가 되는데 staging 서버에서만 실패하는 이유를 로그에서 찾고, Dockerfile 한 파일로 실행 환경을 정해 로컬 컨테이너·staging·production에서 같은 결과를 낸 과정을 직접 잰 숫자와 함께 기록했어요. 레이어 캐시가 53초를 2초로 줄인 장면과, 캐시가 안 깨져서 당황했던 실패도 담았어요.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="로컬에서는 되는데 서버에서만 안 되는 이유 — Dockerfile로 실행 환경 정하기 (4)">
+  <meta property="og:description" content="코드는 같은데 서버에서만 실패한다면 원인은 실행 환경에 있어요. Dockerfile 한 파일로 환경을 정하고 직접 확인한 기록이에요.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/dockerfile-fixing-runtime-environment.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="flow-motion.css">
+  <style>
+    /* 이 글의 모션 그림(svg.dm): 화면에 보일 때만(dm-on) 재생하고, 모션 줄임 설정이면 멈춘다 */
+    svg.dm .dm-line { stroke-dasharray: 5 5; }
+    svg.dm.dm-on .dm-march { animation: dm-march 0.9s linear infinite; }
+    svg.dm.dm-on .dm-blink { animation: dm-blink 2.4s ease-in-out var(--d, 0s) infinite; }
+    svg.dm.dm-on .dm-fade { animation: dm-fade 5s ease-in-out infinite; }
+    svg.dm.dm-on .dm-drop { animation: dm-drop 9s ease-out var(--d, 0s) infinite both; }
+    @keyframes dm-march { to { stroke-dashoffset: -10; } }
+    @keyframes dm-blink { 0%, 100% { fill-opacity: .06; } 50% { fill-opacity: .30; } }
+    @keyframes dm-fade { 0%, 30% { opacity: 1; } 50%, 85% { opacity: .12; } 100% { opacity: 1; } }
+    @keyframes dm-drop {
+      0% { opacity: 0; transform: translateY(-18px); }
+      8%, 88% { opacity: 1; transform: translateY(0); }
+      96%, 100% { opacity: 0; transform: translateY(0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      svg.dm .dm-march, svg.dm .dm-blink, svg.dm .dm-fade, svg.dm .dm-drop { animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">로컬에서는 되는데 서버에서만 안 되는 이유</span> — Dockerfile로 실행 환경 정하기 (4)</h1>
+    <p class="post-date">2026. 10. 26.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <p class="one-liner">Dockerfile은 앱이 돌 실행 환경을 처음부터 끝까지 직접 적은 파일이라서, 코드만 보고 환경을 짐작하는 buildpacks가 놓치는 시스템 패키지까지 서버에 똑같이 깔 수 있다.</p>
+
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>어디쯤인가</dt>
+        <dd>9단계 › AI 서비스로 내놓기 — 4번째 글 (전 4편, 이어서 늘어나요)</dd>
+        <dt>이런 게 궁금했다면</dt>
+        <dd>
+          <ul>
+            <li>"내 컴퓨터에서는 되는데 서버에서는 안 돼요." 코드가 똑같은데 왜 이런 일이 생기나요?</li>
+            <li>Dockerfile이 뭐고, 한 줄 한 줄이 무슨 일을 하나요?</li>
+            <li>코딩 에이전트가 써 준 Dockerfile이 맞는지, 초보자가 어떻게 확인하나요?</li>
+            <li>같은 Dockerfile로 만들면 늘 똑같은 이미지가 나오나요?</li>
+          </ul>
+        </dd>
+        <dt>읽고 나면 할 수 있는 것</dt>
+        <dd>
+          <ul>
+            <li>서버에서만 실패할 때 화면 안내가 아니라 로그의 오류 줄에서 원인을 찾고, 코드 문제인지 환경 문제인지 가를 수 있어요.</li>
+            <li>Dockerfile을 줄마다 읽고, 다섯 가지 기준으로 에이전트가 쓴 파일을 검토할 수 있어요.</li>
+            <li>다시 빌드할 때 어느 줄부터 새로 만들어지는지 보고, 줄 순서를 정할 수 있어요.</li>
+          </ul>
+        </dd>
+        <dt>모르면 이런 일이 생겨요</dt>
+        <dd>
+          <ul>
+            <li>내 컴퓨터에만 설치한 프로그램이 서버에 없는데, 테스트도 통과하고 배포도 성공이라 문제없다고 믿어요. 사용자가 그 기능을 눌러 보는 순간에야 터져요. <a class="suspect-jump" href="#suspect-missing">언제 의심하나 ↓</a></li>
+            <li>코드를 한 줄 고칠 때마다 24초짜리 설치를 처음부터 다시 하게 돼요. <a class="suspect-jump" href="#suspect-slow">언제 의심하나 ↓</a></li>
+            <li><code>FROM python:latest</code> 같은 줄은 빌드할 때마다 다른 버전을 받아 와서, 어제 되던 배포가 오늘 깨질 수 있어요.</li>
+          </ul>
+        </dd>
+        <dt>어디에 쓰나</dt>
+        <dd>
+          <ul>
+            <li><strong>소스 배포로 올린 서비스에, 서버에 따로 깔아야 하는 프로그램이 필요한 기능을 붙일 때.</strong> 사진 속 글자 읽기(tesseract), PDF 읽기, 영상·소리 파일 변환 같은 기능은 라이브러리 목록만으로는 안 돌아요.</li>
+            <li>코딩 에이전트가 Dockerfile을 써 왔을 때 무엇을 확인하고 승인할지 정하는 기준으로 써요.</li>
+          </ul>
+        </dd>
+      </dl>
+    </div>
+
+    <a class="post-nav" href="cloud-run-operating-ai-service.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">배포한 AI 서비스가 말없이 틀리는 순간 — 타임아웃, 인스턴스, 비용, 로그 (3)</span>
+    </a>
+
+    <p>앞의 세 편에서는 AI 친구 서비스를 올렸어요. 이번에는 <strong>도장판 앱</strong>(할 일 칸에 도장을 찍는 작은 웹 앱)으로 직접 해 봤어요. 이 앱에 <strong>손으로 쓴 메모를 사진으로 찍어 올리면 글자를 읽어 칸 이름 후보로 보여 주는 기능</strong>(OCR<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>)을 연습용으로 붙였어요. 앱 기능으로 정한 것이 아니라 이 글의 실습용이에요. 내 컴퓨터에서 켜 보면 잘 돼요. 그런데 staging(운영 서버에 올리기 전에 먼저 확인하는 시험용 서버)에서 같은 사진을 보내면 "프로그램이 서버에 없습니다"가 떠요. <strong>코드는 한 글자도 다르지 않은데</strong> 서버에서만 실패해요. 이 글은 그 원인을 찾고, 실행 환경을 Dockerfile<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>로 직접 정해 고친 기록이에요. 이미지와 컨테이너가 낯설다면 <a href="what-is-docker.html">도커(Docker)란 무엇인가</a>를 먼저 보고 와도 좋아요. 비유는 <a href="ai-service-design-before-code.html">1편</a>부터 쓰던 식당을 이어 써요.</p>
+
+    <h2 id="analogy"><span class="hl">비유로 먼저</span> — 사장 집 주방에만 있던 특수 칼</h2>
+    <p><a href="cloud-run-source-deploy-meaning.html">2편</a>에서 사장인 내가 본사에 레시피 폴더를 보내면, 본사의 자동 포장 라인이 레시피를 읽고 필요한 재료와 도구를 챙겨 밀키트 상자를 만들어 줬어요. 그런데 이번 메뉴는 <strong>사장 집 주방에 있는 특수 칼</strong>이 있어야 만들어져요. 사장은 집에서 연습할 때 그 칼을 써 와서 몰랐지만, 레시피에는 "특수 칼 필요"라는 말이 어디에도 없어요. 포장 라인은 레시피에 적힌 것만 챙기니, 상자에는 칼이 빠져요. 가맹점에서 주문이 들어오고 나서야 "칼이 없어요"가 터지고요. 해결은 간단해요. 사장이 <strong>상자 조립 설명서</strong>를 직접 써서, 특수 칼까지 설명서에 적어 보내면 돼요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>사장 집 주방에만 있던 특수 칼</td><td>내 컴퓨터에만 설치해 둔 tesseract 프로그램</td></tr>
+        <tr><td>레시피를 읽고 필요한 것을 알아서 챙기는 자동 포장 라인</td><td>buildpacks<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup> — 코드에 적힌 파이썬 버전과 라이브러리만 챙겨요</td></tr>
+        <tr><td>"특수 칼 필요"가 레시피 어디에도 안 적혀 있음</td><td>시스템 패키지<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>는 코드만 봐서는 알 수 없음</td></tr>
+        <tr><td>사장이 직접 쓰는 상자 조립 설명서</td><td>Dockerfile — 실행 환경을 위에서 아래로 적은 파일</td></tr>
+        <tr><td>설명서 첫 줄 "이 기본 상자에서 시작해요"</td><td><code>FROM</code> 줄의 베이스 이미지<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup></td></tr>
+        <tr><td>설명서대로 다 담아 봉한 밀키트 상자(봉한 뒤에는 안 바뀜)</td><td>이미지 — <a href="what-is-docker.html">도커란 무엇인가</a>에서 다룬 그것</td></tr>
+        <tr><td>상자를 뜯어 불을 켠 주방 하나</td><td>컨테이너 — 이미지를 실행한 것</td></tr>
+        <tr><td>설명서 단계마다 보관해 두는 중간 완성 상자</td><td>레이어<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup>와 레이어 캐시 — 안 바뀐 단계는 다시 안 만듦</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 특수 칼처럼 레시피에 안 적힌 것은 포장 라인이 챙기지 못하니, 설명서(Dockerfile)에 직접 적어야 어느 가게에서 열어도 같은 주방이 된다.</p>
+    <p>다만 여기서 비유가 끊기는 점이 있어요. 밀키트는 뜯으면 없어지지만, 이미지는 그대로 남아 있고 같은 이미지로 컨테이너를 몇 개든 띄울 수 있어요. 컨테이너를 지워도 이미지는 안 지워져요. 아래에서 직접 확인해요.</p>
+
+    <h2 id="relation"><span class="hl">Dockerfile · 이미지 · 컨테이너</span> — 셋의 관계를 한 장으로</h2>
+    <p>이 글에서 가장 헷갈리는 것이 이 셋의 관계예요. 한 줄로 먼저 말하면 이래요. <strong>Dockerfile은 글자로 쓴 설명서, 이미지는 그 설명서대로 만들어 봉한 결과물, 컨테이너는 그 결과물을 실행한 것</strong>이에요. 아래 그림에서 개수에 주목해 보세요. 같은 Dockerfile로 빌드를 두 번 하면 이미지가 두 개 생기고, 이미지 하나로 컨테이너를 여러 개 띄울 수 있어요.</p>
+    <figure>
+    <svg class="dm" viewBox="0 0 760 345" role="img" aria-label="Dockerfile 하나에서 docker build를 두 번 하면 이미지 두 개가 만들어지고, 이미지 A로는 docker run으로 컨테이너 1과 2가, 이미지 B로는 컨테이너 3이 만들어진다. 컨테이너를 지워도 이미지는 남고, 이미지를 지워도 Dockerfile은 남는다.">
+      <defs>
+        <marker id="dmr-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <!-- Dockerfile -->
+      <rect x="20" y="100" width="170" height="140" rx="8" fill="none" stroke="var(--ink)" stroke-width="2"/>
+      <text x="105" y="124" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">Dockerfile</text>
+      <text x="36" y="150" font-family="var(--font-body)" font-size="11" fill="var(--muted)">FROM python:3.13…</text>
+      <text x="36" y="168" font-family="var(--font-body)" font-size="11" fill="var(--muted)">RUN apt-get … tesseract</text>
+      <text x="36" y="186" font-family="var(--font-body)" font-size="11" fill="var(--muted)">COPY . .</text>
+      <text x="105" y="220" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">글자로 쓴 설명서</text>
+      <text x="105" y="262" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">내 폴더 · GitHub 저장소</text>
+
+      <!-- build 화살표 -->
+      <line class="dm-line dm-march" x1="192" y1="150" x2="298" y2="97" stroke="var(--muted)" stroke-width="2" marker-end="url(#dmr-m)"/>
+      <line class="dm-line dm-march" x1="192" y1="190" x2="298" y2="223" stroke="var(--muted)" stroke-width="2" marker-end="url(#dmr-m)"/>
+      <text x="245" y="172" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">docker build</text>
+
+      <!-- 이미지 -->
+      <text x="385" y="40" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">같은 Dockerfile, 따로 빌드 → ID가 다른 이미지</text>
+      <rect x="300" y="60" width="170" height="74" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="385" y="86" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">이미지 A</text>
+      <text x="385" y="105" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">ID e0fefead…</text>
+      <text x="385" y="122" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">봉한 상자 · 안 바뀜</text>
+      <rect x="300" y="188" width="170" height="74" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="385" y="214" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">이미지 B</text>
+      <text x="385" y="233" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">ID 87e1e70b…</text>
+      <text x="385" y="250" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">봉한 상자 · 안 바뀜</text>
+
+      <!-- run 화살표 -->
+      <line class="dm-line dm-march" x1="472" y1="88" x2="588" y2="62" stroke="var(--muted)" stroke-width="2" marker-end="url(#dmr-m)"/>
+      <line class="dm-line dm-march" x1="472" y1="108" x2="588" y2="130" stroke="var(--muted)" stroke-width="2" marker-end="url(#dmr-m)"/>
+      <line class="dm-line dm-march" x1="472" y1="225" x2="588" y2="225" stroke="var(--muted)" stroke-width="2" marker-end="url(#dmr-m)"/>
+      <text x="530" y="180" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">docker run</text>
+
+      <!-- 컨테이너 -->
+      <rect class="dm-blink" style="--d:0s" x="590" y="36" width="160" height="52" rx="8" fill="var(--accent)" fill-opacity=".06" stroke="var(--ink)" stroke-width="2"/>
+      <text x="670" y="58" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">컨테이너 1</text>
+      <text x="670" y="76" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">실행 중 · 파일 따로</text>
+      <rect class="dm-blink" style="--d:0.8s" x="590" y="104" width="160" height="52" rx="8" fill="var(--accent)" fill-opacity=".06" stroke="var(--ink)" stroke-width="2"/>
+      <text x="670" y="126" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">컨테이너 2</text>
+      <text x="670" y="144" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">실행 중 · 파일 따로</text>
+      <rect class="dm-blink" style="--d:1.6s" x="590" y="199" width="160" height="52" rx="8" fill="var(--accent)" fill-opacity=".06" stroke="var(--ink)" stroke-width="2"/>
+      <text x="670" y="221" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">컨테이너 3</text>
+      <text x="670" y="239" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">실행 중 · 파일 따로</text>
+
+      <!-- 아래 요약 -->
+      <text x="380" y="302" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">Dockerfile 하나 → (build 할 때마다) 이미지 하나 → (run 할 때마다) 컨테이너 하나</text>
+      <text x="380" y="324" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">컨테이너를 지워도 이미지는 남고, 이미지를 지워도 Dockerfile은 남아요</text>
+    </svg>
+    <figcaption>같은 Dockerfile에서 이미지 두 개, 이미지에서 컨테이너 세 개. 화살표 위의 명령이 "만드는" 명령이에요.</figcaption>
+    </figure>
+    <p><strong>읽는 법:</strong> 왼쪽에서 오른쪽으로 읽어요. 점선 화살표는 <strong>명령을 실행하면 만들어지는 방향</strong>이에요. 깜박이는 칸은 지금 돌고 있는 컨테이너고, 이미지와 Dockerfile은 깜박이지 않아요. 돌고 있는 것은 컨테이너뿐이라는 뜻이에요.</p>
+    <table>
+      <thead><tr><th></th><th>Dockerfile</th><th>이미지</th><th>컨테이너</th></tr></thead>
+      <tbody>
+        <tr><td>정체</td><td>글자로 쓴 설명서(텍스트 파일)</td><td>설명서대로 만들어 봉한 결과물</td><td>이미지를 실행한 것</td></tr>
+        <tr><td>어디에 있나</td><td>내 폴더, GitHub 저장소 맨 위 폴더</td><td>내 컴퓨터(<code>docker images</code>), 배포하면 Artifact Registry</td><td>내 컴퓨터(<code>docker ps</code>), 배포하면 Cloud Run의 인스턴스</td></tr>
+        <tr><td>바뀌나</td><td>내가 고치면 바뀜</td><td>만든 뒤에는 <strong>안 바뀜</strong>(고치려면 다시 빌드해서 새 이미지)</td><td>실행 중 파일이 바뀜, 지우면 사라짐</td></tr>
+        <tr><td>만드는 방법</td><td>편집기로 씀</td><td><code>docker build</code></td><td><code>docker run</code></td></tr>
+        <tr><td>지우는 방법</td><td>파일 삭제</td><td><code>docker rmi</code></td><td><code>docker rm</code></td></tr>
+        <tr><td>몇 개 생기나</td><td>하나를 계속 고쳐 씀</td><td>build 할 때마다 하나 (캐시를 안 쓰면 매번 다른 ID)</td><td>run 할 때마다 하나</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> Dockerfile은 레시피, 이미지는 레시피대로 만든 밀키트 상자, 컨테이너는 그 상자를 뜯어 불에 올린 주방이에요. 상자를 고치고 싶으면 레시피를 고쳐서 상자를 새로 만들어야 해요.</p>
+
+    <h2 id="flow"><span class="hl">전체 흐름</span> — Dockerfile을 써서 production까지</h2>
+    <figure>
+    <svg class="flow-motion" viewBox="0 0 760 330" role="img" aria-label="Dockerfile을 쓰고, 로컬에서 이미지를 만들어 컨테이너로 실행해 확인한 뒤, staging 브랜치로 PR을 보내 CI를 통과시키고, staging에 배포되어 확인한다. 이어서 main으로 PR을 보내 승인하고 production에 배포한다. 빌드는 staging과 production에서 각각 따로 한 번씩 일어나 이미지가 두 개 만들어진다.">
+      <defs>
+        <marker id="df-arrow-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/>
+        </marker>
+        <marker id="df-arrow-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/>
+        </marker>
+      </defs>
+      <!-- 1행 -->
+      <rect x="10" y="30" width="165" height="76" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="92" y="58" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">① Dockerfile 쓰기</text>
+      <text x="92" y="80" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">내가 검토 기준으로 확인</text>
+      <line x1="177" y1="68" x2="196" y2="68" stroke="var(--muted)" stroke-width="2" marker-end="url(#df-arrow-m)"/>
+
+      <rect x="200" y="30" width="165" height="76" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="282" y="58" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">② 로컬에서 실행</text>
+      <text x="282" y="80" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">build 후 run으로 확인</text>
+      <line x1="367" y1="68" x2="386" y2="68" stroke="var(--muted)" stroke-width="2" marker-end="url(#df-arrow-m)"/>
+
+      <rect x="390" y="30" width="165" height="76" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="472" y="58" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">③ staging PR</text>
+      <text x="472" y="80" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">CI 통과 후 머지</text>
+      <line x1="557" y1="68" x2="576" y2="68" stroke="var(--muted)" stroke-width="2" marker-end="url(#df-arrow-m)"/>
+
+      <rect x="580" y="30" width="170" height="76" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="665" y="58" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">④ staging 배포</text>
+      <text x="665" y="80" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">Dockerfile로 이미지 빌드</text>
+      <line x1="665" y1="108" x2="665" y2="170" stroke="var(--muted)" stroke-width="2" marker-end="url(#df-arrow-m)"/>
+
+      <!-- 2행 -->
+      <rect x="580" y="174" width="170" height="76" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="665" y="202" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">⑤ staging 확인</text>
+      <text x="665" y="224" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">같은 사진을 다시 보냄</text>
+      <line x1="578" y1="212" x2="559" y2="212" stroke="var(--muted)" stroke-width="2" marker-end="url(#df-arrow-m)"/>
+
+      <rect x="390" y="174" width="165" height="76" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="472" y="202" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">⑥ main PR</text>
+      <text x="472" y="224" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">머지 후 배포 승인</text>
+      <line x1="388" y1="212" x2="369" y2="212" stroke="var(--muted)" stroke-width="2" marker-end="url(#df-arrow-m)"/>
+
+      <rect x="200" y="174" width="165" height="76" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="282" y="202" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">⑦ production 배포</text>
+      <text x="282" y="224" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">Dockerfile로 이미지 빌드</text>
+      <path d="M198 212 H179" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#df-arrow-a)"/>
+
+      <!-- 한계 -->
+      <rect x="10" y="174" width="165" height="76" rx="8" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 4"/>
+      <text x="92" y="202" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">빌드는 두 번</text>
+      <text x="92" y="224" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">④와 ⑦의 이미지는 별개</text>
+
+      <text x="380" y="292" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">①~⑤에서 환경을 확인한 뒤에야 ⑥으로 올라가요</text>
+    </svg>
+    <figcaption>Dockerfile을 쓴 뒤 production에 올라가기까지의 일곱 단계.</figcaption>
+    </figure>
+    <p><strong>읽는 법:</strong> 윗줄은 왼쪽에서 오른쪽으로, ④에서 아랫줄로 내려와 오른쪽에서 왼쪽으로 읽어요. 강조색 테두리는 Dockerfile이 쓰이는 단계(① 쓰기, ④·⑦ 빌드)고, 맨 왼쪽 점선 상자는 이 구조의 한계예요. 배포 흐름 자체는 2편에서 만든 그대로고, 바뀐 것은 빌드할 때 buildpacks 대신 Dockerfile이 쓰인다는 점뿐이에요.</p>
+
+    <h2 id="symptom"><span class="hl">서버에서만 실패한다</span> — 화면은 결과이고 원인은 로그에 있어요</h2>
+    <p>OCR을 켜는 스위치는 환경변수<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup> <code>OCR_ENABLED</code>예요. 기본값이 꺼짐이고, 꺼져 있을 때 사진을 보내면 서버가 "꺼져 있습니다"(404)로 거절해요. 사진을 읽는 코드는 <code>pytesseract</code>라는 파이썬 라이브러리를 쓰는데, 이 라이브러리는 직접 글자를 읽지 않아요. 운영체제에 설치된 <code>tesseract</code> 프로그램을 불러 쓰는 래퍼(wrapper)<sup class="fn-ref"><a href="#fn8" id="fnref8">8</a></sup>예요. 그래서 <code>requirements.txt</code>로 라이브러리를 설치하는 것만으로는 부족하고, tesseract 프로그램과 한국어 글자 데이터를 시스템 패키지로 따로 깔아야 해요.</p>
+    <p>먼저 내 컴퓨터에서 확인했어요. 프로그램을 깔기 전에 서버를 켜고 사진을 보내면 <strong>500 "사진에서 글자를 읽는 프로그램이 서버에 없습니다."</strong>가 나와요. tesseract를 설치하고(설치 후 <code>tesseract --list-langs</code>에 <code>kor</code>가 보이면 한국어 데이터까지 된 거예요) 같은 사진을 보내면 <strong>200</strong>과 함께 6줄이 읽혀요. 여기까지가 "내 컴퓨터에서는 된다"예요.</p>
+    <p>이제 staging에서 같은 기능을 켜 봤어요. 서비스 환경변수를 하나 더하는 명령이에요.</p>
+    <p class="run-tag">실행: 로컬 터미널 <span class="run-tag-why">— staging 서비스에만 환경변수를 하나 더하고 새 리비전이 하나 생겨요. production은 건드리지 않아요</span></p>
+<pre><code>gcloud run services update 서비스이름-staging --region us-central1 --update-env-vars OCR_ENABLED=true</code></pre>
+    <p>실행하기 전에 두 가지를 확인해요. 서비스 이름이 staging 것인지, 그리고 옵션이 <code>--update-env-vars</code>(기존 값은 두고 추가)인지예요. <code>--set-env-vars</code>를 쓰면 기존 환경변수가 통째로 바뀌어서 다른 값이 사라져요.</p>
+    <p>켠 뒤 같은 사진을 보내니 <strong>500 "사진에서 글자를 읽는 프로그램이 서버에 없습니다."</strong>가 나왔어요. 이 안내는 <strong>결과</strong>만 말해 줘요. 원인은 Cloud Run 로그에서 찾았어요. 로그 탭에서 심각도를 오류로 거르고 보니, 같은 시각에 두 줄이 있었어요.</p>
+    <ul>
+      <li><strong>요청 로그</strong>: <code>POST …/api/ocr</code>, 상태 코드 500 (Cloud Run이 요청마다 자동으로 남기는 접수대 기록)</li>
+      <li><strong>컨테이너 로그</strong>: "tesseract 프로그램을 찾을 수 없습니다. 실행 환경에 tesseract 가 설치되어 있지 않습니다." (앱이 직접 남긴 줄. <strong>원인은 여기</strong>)</li>
+    </ul>
+    <p>여기서 짚을 것이 둘 있어요.</p>
+    <ul>
+      <li><strong>서비스는 정상으로 시작했어요.</strong> 앱은 시작할 때 tesseract를 확인하지 않고, 사진 요청이 들어와 프로그램을 부르는 순간에야 없다는 것을 알게 돼요. 그래서 배포는 성공으로 끝났고 다른 기능은 멀쩡해요. <a href="cloud-run-operating-ai-service.html">3편</a>의 "서버 기록은 정상인데 사용자는 실패"와 같은 종류예요.</li>
+      <li><strong>CI가 못 잡는 이유도 같은 곳에 있어요.</strong> 테스트가 도는 GitHub 러너(자동 실행 서버)와 staging 이미지는 서로 다른 환경이라, 러너에서 통과했다고 staging에 tesseract가 있다는 뜻은 아니에요. 이 앱에서 CI가 돌린 테스트는 기존 칸 열림 일정 테스트라서 OCR을 아예 건드리지 않았고, 그래서 테스트 통과가 OCR이 서버에서 되는지는 알려 주지 못했어요.</li>
+    </ul>
+    <p>왜 빠졌는지도 빌드 로그에서 보였어요. buildpacks는 <code>.python-version</code>을 읽고 파이썬 3.13을, <code>requirements.txt</code>를 읽고 라이브러리를 준비했어요. 하지만 tesseract는 저장소 어디에도 적혀 있지 않아요. 내 컴퓨터에 설치한 기록은 내 컴퓨터에만 남고 저장소로 들어오지 않았으니까요. 환경을 내가 정하려면 이미지를 만드는 방법 자체를 적어 저장소에 넣어야 하고, 그 파일이 Dockerfile이에요.</p>
+    <figure>
+    <svg class="dm" viewBox="0 0 760 300" role="img" aria-label="내 컴퓨터, buildpacks로 만든 이미지, Dockerfile로 만든 이미지에 파이썬과 라이브러리는 모두 있다. tesseract는 내 컴퓨터와 Dockerfile 이미지에는 있고 buildpacks 이미지에는 없어서, 결과가 200, 500, 200으로 갈린다.">
+      <!-- 열 머리 -->
+      <rect x="20" y="14" width="220" height="40" rx="8" fill="none" stroke="var(--ink)" stroke-width="2"/>
+      <text x="130" y="39" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">내 컴퓨터</text>
+      <rect x="270" y="14" width="220" height="40" rx="8" fill="none" stroke="var(--ink)" stroke-width="2"/>
+      <text x="380" y="39" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">buildpacks로 만든 이미지</text>
+      <rect x="520" y="14" width="220" height="40" rx="8" fill="none" stroke="var(--ink)" stroke-width="2"/>
+      <text x="630" y="39" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">Dockerfile로 만든 이미지</text>
+      <!-- 1행 파이썬 -->
+      <rect x="20" y="64" width="220" height="34" rx="6" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="130" y="86" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">파이썬 ✓</text>
+      <rect x="270" y="64" width="220" height="34" rx="6" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="380" y="86" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">파이썬 ✓</text>
+      <rect x="520" y="64" width="220" height="34" rx="6" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="630" y="86" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">파이썬 ✓</text>
+      <!-- 2행 라이브러리 -->
+      <rect x="20" y="104" width="220" height="34" rx="6" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="130" y="126" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">라이브러리(requirements.txt) ✓</text>
+      <rect x="270" y="104" width="220" height="34" rx="6" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="380" y="126" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">라이브러리(requirements.txt) ✓</text>
+      <rect x="520" y="104" width="220" height="34" rx="6" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="630" y="126" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">라이브러리(requirements.txt) ✓</text>
+      <!-- 3행 tesseract -->
+      <rect x="20" y="144" width="220" height="56" rx="6" fill="none" stroke="var(--ink)" stroke-width="2"/>
+      <text x="130" y="166" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">tesseract + 한국어 ✓</text>
+      <text x="130" y="186" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">내가 직접 설치했어요</text>
+      <rect class="dm-blink" style="--d:0s" x="270" y="144" width="220" height="56" rx="6" fill="var(--accent)" fill-opacity=".06" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 4"/>
+      <text x="380" y="166" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">tesseract + 한국어 ✕</text>
+      <text x="380" y="186" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">코드에 안 적혀서 빠졌어요</text>
+      <rect class="dm-blink" style="--d:1.2s" x="520" y="144" width="220" height="56" rx="6" fill="var(--accent)" fill-opacity=".06" stroke="var(--accent)" stroke-width="2"/>
+      <text x="630" y="166" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">tesseract + 한국어 ✓</text>
+      <text x="630" y="186" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">Dockerfile에 적었어요</text>
+      <!-- 결과 -->
+      <rect x="20" y="212" width="220" height="62" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="130" y="234" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">POST /api/ocr</text>
+      <text x="130" y="260" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">→ 200 (6줄)</text>
+      <rect x="270" y="212" width="220" height="62" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="380" y="234" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">POST /api/ocr</text>
+      <text x="380" y="260" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">→ 500 프로그램 없음</text>
+      <rect x="520" y="212" width="220" height="62" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="630" y="234" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">POST /api/ocr</text>
+      <text x="630" y="260" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">→ 200 (6줄)</text>
+      <text x="380" y="292" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">코드는 세 곳 모두 똑같아요. 다른 것은 tesseract가 있느냐뿐이에요</text>
+    </svg>
+    <figcaption>같은 코드인데 tesseract 한 칸 때문에 결과가 갈려요. 깜박이는 칸이 차이가 나는 곳이에요.</figcaption>
+    </figure>
+    <p><strong>읽는 법:</strong> 세로로 한 칸씩 비교해요. 첫째, 둘째 줄(파이썬, 라이브러리)은 세 곳이 같아서 문제가 없어요. 셋째 줄만 buildpacks 이미지에서 빠져 있고, 그 때문에 맨 아래 결과가 500이 돼요.</p>
+
+    <h2 id="image-container"><span class="hl">이미지와 컨테이너</span> — 직접 띄워 보면 바로 보여요</h2>
+    <p>이미지는 운영체제 기본 파일, 프로그램, 라이브러리, 코드, 시작 명령까지 실행에 필요한 것을 묶어 둔 파일이고, 한 번 만들면 내용이 바뀌지 않아요. 컨테이너는 그 이미지를 실행한 것이에요. 2편의 리비전과 인스턴스<sup class="fn-ref"><a href="#fn9" id="fnref9">9</a></sup>가 이 구조예요. 말로만 두지 않고 Docker Desktop에서 공식 파이썬 이미지로 직접 해 봤어요.</p>
+    <p class="run-tag">실행: 로컬 터미널 <span class="run-tag-why">— Docker Desktop을 켠 상태에서. 처음 실행할 때 이미지를 내려받아요(이 이미지는 183MB)</span></p>
+<pre><code># --rm: 컨테이너가 멈추면(안에서 돌던 명령이 끝나면) 자동으로 지운다
+docker run --rm python:3.13-slim-bookworm python --version
+docker run --rm python:3.13-slim-bookworm sh -c "command -v tesseract || echo 'tesseract 없음'"</code></pre>
+    <p>첫 줄은 <strong>Python 3.13.17</strong>이 나왔어요. 컨테이너 안의 파이썬은 내 컴퓨터의 파이썬(3.14)이 아니라 이미지 안의 것이에요. 둘째 줄은 <strong>"tesseract 없음"</strong>이에요. 공식 파이썬 이미지에도 tesseract는 없으니, 그 위에 설치하는 줄을 Dockerfile에 넣어야 해요.</p>
+    <p>컨테이너끼리는 파일을 나누지 않는다는 것도 확인했어요.</p>
+    <p class="run-tag">실행: 로컬 터미널 <span class="run-tag-why">— 컨테이너 note-a는 일부러 남겨 두고, 마지막에 지워요</span></p>
+<pre><code>docker run --name note-a python:3.13-slim-bookworm sh -c "echo 메모 > /tmp/note.txt &amp;&amp; cat /tmp/note.txt"
+docker run --rm python:3.13-slim-bookworm sh -c "cat /tmp/note.txt || echo '파일 없음'"
+docker rm note-a</code></pre>
+    <p>첫 컨테이너는 "메모"를 출력했고, 같은 이미지로 띄운 둘째 컨테이너는 <strong>"파일 없음"</strong>이었어요. 파일은 첫 컨테이너 안에서만 생긴 변경이고 이미지는 바뀌지 않았기 때문이에요. 컨테이너를 지운 뒤에도 이미지 목록에는 그대로 남아 있었어요(<code>docker ps -a</code>로 끝난 컨테이너 포함 목록, <code>docker images</code>로 이미지 목록). 컨테이너 안에서 일을 마치고 끝난 컨테이너는 상태가 <code>Exited (0)</code>로 보이고, 괄호의 0은 문제없이 끝났다는 종료 코드예요.</p>
+    <figure>
+    <svg class="dm" viewBox="0 0 760 300" role="img" aria-label="이미지 하나에서 컨테이너 1과 2가 만들어진다. 컨테이너 1 안에서 note.txt를 만들어도 컨테이너 2에는 없다. 컨테이너 3은 지워져도 이미지는 그대로 남는다.">
+      <defs>
+        <marker id="dmb-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <rect x="20" y="95" width="180" height="110" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="110" y="128" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">이미지</text>
+      <text x="110" y="152" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">python 3.13 + tesseract</text>
+      <text x="110" y="174" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">만든 뒤에는 안 바뀜</text>
+      <line class="dm-line dm-march" x1="202" y1="125" x2="298" y2="50" stroke="var(--muted)" stroke-width="2" marker-end="url(#dmb-m)"/>
+      <line class="dm-line dm-march" x1="202" y1="150" x2="298" y2="140" stroke="var(--muted)" stroke-width="2" marker-end="url(#dmb-m)"/>
+      <line class="dm-line dm-march" x1="202" y1="178" x2="298" y2="232" stroke="var(--muted)" stroke-width="2" marker-end="url(#dmb-m)"/>
+      <rect x="300" y="16" width="250" height="64" rx="8" fill="none" stroke="var(--ink)" stroke-width="2"/>
+      <text x="425" y="40" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">컨테이너 1</text>
+      <text x="425" y="62" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">note.txt를 만들었어요 → 있음</text>
+      <rect x="300" y="108" width="250" height="64" rx="8" fill="none" stroke="var(--ink)" stroke-width="2"/>
+      <text x="425" y="132" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">컨테이너 2</text>
+      <text x="425" y="154" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">같은 이미지, note.txt → 없음</text>
+      <g class="dm-fade">
+        <rect x="300" y="200" width="250" height="64" rx="8" fill="none" stroke="var(--ink)" stroke-width="2" stroke-dasharray="6 4"/>
+        <text x="425" y="224" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">컨테이너 3 (지움)</text>
+        <text x="425" y="246" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">docker rm 으로 지워요</text>
+      </g>
+      <text x="580" y="52" font-family="var(--font-body)" font-size="12" fill="var(--ink)">같은 이미지로 컨테이너를</text>
+      <text x="580" y="72" font-family="var(--font-body)" font-size="12" fill="var(--ink)">몇 개든 띄울 수 있어요</text>
+      <text x="580" y="140" font-family="var(--font-body)" font-size="12" fill="var(--ink)">파일은 컨테이너마다</text>
+      <text x="580" y="160" font-family="var(--font-body)" font-size="12" fill="var(--ink)">따로예요</text>
+      <text x="580" y="232" font-family="var(--font-body)" font-size="12" fill="var(--accent)">컨테이너를 지워도</text>
+      <text x="580" y="252" font-family="var(--font-body)" font-size="12" fill="var(--accent)">이미지는 남아요</text>
+    </svg>
+    <figcaption>컨테이너 안의 파일은 그 컨테이너 것이에요. 컨테이너 3이 희미해졌다 돌아오는 것은 "지워도 이미지는 그대로"를 보여 줘요.</figcaption>
+    </figure>
+    <p>컨테이너마다 네트워크도 따로예요. 안쪽에서 8000번 포트<sup class="fn-ref"><a href="#fn10" id="fnref10">10</a></sup>로 기다려도 내 컴퓨터의 8000번과는 이어져 있지 않아요. 둘을 잇는 것이 <code>docker run</code>의 <code>-p 바깥:안쪽</code>이에요.</p>
+    <p class="run-tag">실행: 로컬 터미널 <span class="run-tag-why">— 내 컴퓨터의 9000, 9001번 포트를 잠깐 써요. 끝나면 지워요</span></p>
+<pre><code>docker run -d --name web-a -p 9000:8000 python:3.13-slim-bookworm python -m http.server 8000
+docker run -d --name web-b -p 9001:8000 python:3.13-slim-bookworm python -m http.server 8000
+docker ps
+docker run -d --name web-c -p 9000:8000 python:3.13-slim-bookworm python -m http.server 8000
+docker rm -f web-a web-b web-c</code></pre>
+    <p><code>docker ps</code>(돌고 있는 것만 보여 줘요)에는 두 컨테이너가 <code>Up</code> 상태로, 포트 칸에 <code>0.0.0.0:9000-&gt;8000/tcp</code>처럼 보였어요. 브라우저로 <code>localhost:9000</code>과 <code>localhost:9001</code>은 열렸고(상태 200), <code>localhost:8000</code>은 <strong>열리지 않았어요.</strong> 브라우저는 컨테이너 밖에서 오는 손님이라 <strong>앞 숫자(바깥 포트)</strong>로 들어가고, 뒤 숫자는 컨테이너 안쪽 번호예요. 이미 쓰는 9000번으로 하나 더 띄우려 하면 <code>Bind for 0.0.0.0:9000 failed: port is already allocated</code> 오류가 나요. 여러 개를 띄울 때는 안쪽 포트는 같게 두고 바깥 포트만 바꿔요.</p>
+    <figure>
+    <svg class="dm" viewBox="0 0 760 300" role="img" aria-label="브라우저는 내 컴퓨터의 9000번과 9001번 포트로 접속하고, Docker가 각각 컨테이너 web-a와 web-b 안쪽의 8000번으로 전달한다. 내 컴퓨터의 8000번은 어느 컨테이너와도 이어져 있지 않아 열리지 않는다.">
+      <defs>
+        <marker id="dmc-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <rect x="10" y="118" width="120" height="64" rx="8" fill="none" stroke="var(--ink)" stroke-width="2"/>
+      <text x="70" y="146" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">브라우저</text>
+      <text x="70" y="166" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">localhost:포트</text>
+      <rect x="170" y="14" width="580" height="272" rx="12" fill="none" stroke="var(--border)" stroke-width="2" stroke-dasharray="6 4"/>
+      <text x="190" y="38" font-family="var(--font-heading)" font-size="14" fill="var(--muted)">내 컴퓨터</text>
+      <rect x="196" y="58" width="130" height="52" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="261" y="80" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">포트 9000</text>
+      <text x="261" y="99" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">-p 9000:8000 의 앞</text>
+      <rect x="196" y="130" width="130" height="52" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="261" y="152" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">포트 9001</text>
+      <text x="261" y="171" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">-p 9001:8000 의 앞</text>
+      <rect x="196" y="206" width="130" height="52" rx="8" fill="none" stroke="var(--border)" stroke-width="2" stroke-dasharray="6 4"/>
+      <text x="261" y="228" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--muted)">포트 8000</text>
+      <text x="261" y="247" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">연결 안 됨</text>
+      <rect x="470" y="50" width="250" height="64" rx="8" fill="none" stroke="var(--ink)" stroke-width="2"/>
+      <text x="595" y="74" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">컨테이너 web-a</text>
+      <text x="595" y="96" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">안쪽 포트 8000</text>
+      <rect x="470" y="122" width="250" height="64" rx="8" fill="none" stroke="var(--ink)" stroke-width="2"/>
+      <text x="595" y="146" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">컨테이너 web-b</text>
+      <text x="595" y="168" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">안쪽 포트 8000</text>
+      <line class="dm-line dm-march" x1="132" y1="140" x2="194" y2="86" stroke="var(--muted)" stroke-width="2" marker-end="url(#dmc-m)"/>
+      <line class="dm-line dm-march" x1="132" y1="152" x2="194" y2="156" stroke="var(--muted)" stroke-width="2" marker-end="url(#dmc-m)"/>
+      <line class="dm-line" x1="132" y1="168" x2="194" y2="226" stroke="var(--muted)" stroke-width="2" opacity=".5"/>
+      <line class="dm-line dm-march" x1="328" y1="84" x2="468" y2="84" stroke="var(--accent)" stroke-width="2" marker-end="url(#dmc-m)"/>
+      <line class="dm-line dm-march" x1="328" y1="156" x2="468" y2="156" stroke="var(--accent)" stroke-width="2" marker-end="url(#dmc-m)"/>
+      <text x="398" y="74" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">Docker가 전달</text>
+      <text x="530" y="236" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">localhost:8000 은 열리지 않아요</text>
+    </svg>
+    <figcaption>브라우저는 컨테이너 바깥에서 오는 손님이라 바깥 포트(앞 숫자)로 들어가요. 안쪽 8000은 컨테이너만 아는 번호예요.</figcaption>
+    </figure>
+
+    <h2 id="lifecycle"><span class="hl">컨테이너는 실행 직후 사라질까</span> — 아니요, 지우거나 <code>--rm</code>을 줬을 때만이에요</h2>
+    <p>"컨테이너는 실행하면 바로 사라진다"고 오해하기 쉬워요. 짧은 명령(<code>python --version</code>)은 순식간에 끝나서 그렇게 보이지만, 컨테이너는 <strong>시작 명령(컨테이너 안에서 처음 실행한 프로그램)이 끝나면 같이 멈출 뿐</strong>이고 저절로 지워지지는 않아요. <code>--rm</code>을 줬을 때만 멈추는 순간 자동으로 지워져요. 1회용 컨테이너로 직접 재 봤어요.</p>
+    <table>
+      <thead><tr><th>한 일</th><th>결과</th></tr></thead>
+      <tbody>
+        <tr><td><code>docker run --rm 이미지 python --version</code></td><td>"Python 3.13.17"을 출력한 뒤 <code>docker ps -a</code>가 <strong>빈 목록</strong>. 명령이 끝나 컨테이너가 멈추는 순간 <code>--rm</code>이 실제로 지웠어요</td></tr>
+        <tr><td><code>docker run --name life1 이미지 python --version</code> (<code>--rm</code> 없이)</td><td><code>Exited (0)</code> 상태로 <strong>남음</strong>. 끝났지만 지워지지는 않았어요</td></tr>
+        <tr><td><code>docker run -d --name life2 이미지 sleep 300</code> (계속 도는 명령)</td><td><code>Up</code> — 돌고 있어요</td></tr>
+        <tr><td>돌고 있는 <code>life2</code> 안에 파일을 만든 뒤 <code>docker stop</code></td><td><code>Exited (137)</code>로 멈춤</td></tr>
+        <tr><td>멈춘 <code>life2</code>를 <code>docker start</code>로 다시 켜고 파일 확인</td><td><strong>파일이 그대로 있음</strong> ("hi")</td></tr>
+        <tr><td>컨테이너가 남아 있는데 <code>docker rmi 이미지</code></td><td><strong>오류</strong>: <code>conflict: unable to delete … container … is using its referenced image</code></td></tr>
+        <tr><td><code>docker rm -f</code>로 컨테이너를 지우고, 같은 이미지로 새 컨테이너를 띄워 파일 확인</td><td><strong>파일 없음</strong></td></tr>
+        <tr><td>컨테이너를 모두 지운 뒤 <code>docker rmi 이미지</code></td><td>지워짐 (<code>Untagged</code>, <code>Deleted</code>)</td></tr>
+      </tbody>
+    </table>
+    <figure>
+    <svg class="dm" viewBox="0 0 760 310" role="img" aria-label="컨테이너의 상태 변화. docker run으로 실행 중(Up)이 되고, 시작 명령이 끝나거나 docker stop을 하면 멈춤(Exited)이 되며, docker start로 다시 실행 중이 된다. docker rm을 하면 삭제된다. --rm 옵션을 주면 컨테이너가 멈추는 순간 자동으로 삭제된다.">
+      <defs>
+        <marker id="dmg-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/>
+        </marker>
+        <marker id="dmg-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/>
+        </marker>
+      </defs>
+      <!-- 상태 -->
+      <rect class="dm-blink" style="--d:0s" x="130" y="70" width="150" height="76" rx="8" fill="var(--accent)" fill-opacity=".06" stroke="var(--accent)" stroke-width="2"/>
+      <text x="205" y="102" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">실행 중</text>
+      <text x="205" y="124" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">Up</text>
+      <rect x="360" y="70" width="150" height="76" rx="8" fill="none" stroke="var(--ink)" stroke-width="2"/>
+      <text x="435" y="102" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">멈춤</text>
+      <text x="435" y="124" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">Exited</text>
+      <rect x="590" y="70" width="150" height="76" rx="8" fill="none" stroke="var(--border)" stroke-width="2" stroke-dasharray="6 4"/>
+      <text x="665" y="102" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--muted)">삭제됨</text>
+      <text x="665" y="124" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">목록에서 사라짐</text>
+      <!-- 화살표 -->
+      <line class="dm-line dm-march" x1="20" y1="108" x2="128" y2="108" stroke="var(--muted)" stroke-width="2" marker-end="url(#dmg-m)"/>
+      <text x="74" y="96" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">docker run</text>
+      <line class="dm-line dm-march" x1="282" y1="100" x2="358" y2="100" stroke="var(--muted)" stroke-width="2" marker-end="url(#dmg-m)"/>
+      <text x="320" y="62" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">명령이 끝나면</text>
+      <text x="320" y="78" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">또는 docker stop</text>
+      <line class="dm-line dm-march" x1="512" y1="108" x2="588" y2="108" stroke="var(--muted)" stroke-width="2" marker-end="url(#dmg-m)"/>
+      <text x="550" y="96" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">docker rm</text>
+      <path class="dm-line dm-march" d="M435 148 V186 H205 V150" fill="none" stroke="var(--muted)" stroke-width="2" marker-end="url(#dmg-m)"/>
+      <text x="320" y="206" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">docker start (다시 켜기)</text>
+      <path class="dm-line dm-march" d="M205 68 V36 H665 V68" fill="none" stroke="var(--accent)" stroke-width="2" marker-end="url(#dmg-a)"/>
+      <text x="435" y="28" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">--rm 이면 멈추는 순간 자동 삭제</text>
+      <!-- 상태별 정보 -->
+      <text x="205" y="244" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">docker ps 에 보여요</text>
+      <text x="205" y="264" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">안의 파일: 있음</text>
+      <text x="435" y="244" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">docker ps -a 에만 보여요</text>
+      <text x="435" y="264" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">안의 파일: 남아 있음</text>
+      <text x="665" y="244" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">안의 파일: 사라짐</text>
+      <text x="665" y="264" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">이미지는 그대로</text>
+    </svg>
+    <figcaption>컨테이너가 지나가는 상태. 지우는 화살표(docker rm)를 거쳐야 사라져요.</figcaption>
+    </figure>
+    <p><strong>읽는 법:</strong> 왼쪽에서 오른쪽으로 읽고, 아래로 돌아가는 화살표는 멈춘 컨테이너를 다시 켜는 길이에요. 맨 위의 긴 화살표는 <code>--rm</code>을 줬을 때만 타는 지름길이에요. 깜박이는 칸은 지금 돌고 있는 상태예요.</p>
+    <p>정리하면 이래요.</p>
+    <ul>
+      <li><strong>끝났다고 사라지지 않아요.</strong> <code>--rm</code>이 없으면 <code>Exited</code>로 남고, <code>docker ps</code>는 돌고 있는 것만 보여 주니 <code>docker ps -a</code>로 봐야 보여요.</li>
+      <li><strong>컨테이너 안의 파일은 컨테이너가 있는 동안 남아요.</strong> 멈췄다 다시 켜도 그대로예요. 컨테이너를 <strong>지우면</strong> 사라지고, 같은 이미지로 새로 띄우면 처음 상태예요.</li>
+      <li><strong>이미지는 컨테이너가 남아 있는 한 못 지워요.</strong> 멈춘 컨테이너도 이미지를 쓰고 있다고 봐요. 컨테이너를 먼저 지워야 이미지를 지울 수 있어요.</li>
+      <li><strong>서버에서도 같은 구조예요.</strong> Cloud Run에서 새 리비전을 배포하면 새 컨테이너로 시작하니, 컨테이너 안에만 둔 데이터는 사라져요. 남겨야 할 데이터는 컨테이너 밖(데이터베이스 등)에 둬요.</li>
+    </ul>
+    <p><code>Exited (137)</code>은 멈추라는 요청을 1초 안에 못 받아 강제로 끝낸 것으로 보이는데, 숫자의 정확한 뜻은 확인하지 못했어요.</p>
+
+    <h2 id="read-dockerfile"><span class="hl">Dockerfile 한 줄씩 읽기</span> — 위에서 아래로 쌓이는 이미지</h2>
+    <p>Dockerfile에는 베이스 이미지, 설치할 시스템 패키지와 라이브러리, 코드를 둘 곳, 실행할 사용자와 시작 명령을 적어요. 코딩 에이전트에게 쓰게 해도 돼요. 다만 에이전트는 요청받은 대로 파일을 쓸 뿐, 파이썬 버전을 고정할지, root로 실행할지 같은 판단을 대신 정해 주지 않아요. 그래서 무엇을 넣을지는 요청문에 직접 적어요. 이 앱에서 쓴 파일이에요.</p>
+    <p class="run-tag">실행: 프로젝트에 Dockerfile로 저장 <span class="run-tag-why">— 저장소 맨 위 폴더에 이 이름 그대로 두면 Cloud Run 소스 배포가 읽어요</span></p>
+<pre><code>FROM python:3.13-slim-bookworm
+
+RUN apt-get update \
+    &amp;&amp; apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-kor \
+    &amp;&amp; rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+RUN useradd --create-home appuser
+USER appuser
+
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}"]</code></pre>
+    <table>
+      <thead><tr><th>줄</th><th>하는 일</th></tr></thead>
+      <tbody>
+        <tr><td><code>FROM python:3.13-slim-bookworm</code></td><td>공식 파이썬 3.13 이미지(Debian bookworm 기반의 작은 버전)에서 시작해요</td></tr>
+        <tr><td><code>RUN apt-get ... tesseract-ocr tesseract-ocr-kor</code></td><td>시스템 패키지 tesseract와 한국어 데이터를 설치하고, 마지막에 내려받은 패키지 목록을 지워 이미지 크기를 줄여요</td></tr>
+        <tr><td><code>WORKDIR /app</code></td><td>이후 명령을 실행하고 파일을 둘 폴더예요</td></tr>
+        <tr><td><code>COPY requirements.txt .</code> 와 <code>RUN pip install</code></td><td>라이브러리 목록만 먼저 복사해 설치해요</td></tr>
+        <tr><td><code>COPY . .</code></td><td>나머지 코드를 복사해요. <code>.dockerignore</code>에 적힌 파일은 빠져요</td></tr>
+        <tr><td><code>RUN useradd</code> 와 <code>USER appuser</code></td><td>root 권한이 없는 일반 사용자(non-root)<sup class="fn-ref"><a href="#fn11" id="fnref11">11</a></sup> appuser를 만들어 그 사용자로 실행해요</td></tr>
+        <tr><td><code>CMD [...]</code></td><td>컨테이너가 시작할 때 실행할 명령이에요. <code>${PORT:-8080}</code>은 PORT 값이 있으면 그 값, 없으면 8080이에요</td></tr>
+      </tbody>
+    </table>
+    <p>이 파일로 빌드하면 줄이 하나씩 쌓이는 모습이 로그에 그대로 찍혀요. <code>docker history 이미지이름</code>으로 쌓인 레이어도 볼 수 있어요. 줄 하나가 만든 파일 변경 묶음이 레이어(layer)예요.</p>
+    <figure>
+    <svg class="dm" viewBox="0 0 760 350" role="img" aria-label="Dockerfile의 줄이 아래부터 위로 레이어 하나씩 쌓인다. 가장 아래는 183MB 베이스 이미지, 그 위의 tesseract 설치가 94.9MB로 가장 크고 24.1초로 가장 오래 걸리며, pip install이 52.5MB, 우리 코드 복사는 152kB뿐이다.">
+      <defs>
+        <marker id="dmd-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <line x1="34" y1="318" x2="34" y2="44" stroke="var(--muted)" stroke-width="2" marker-end="url(#dmd-m)"/>
+      <text x="34" y="338" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">먼저</text>
+      <text x="34" y="30" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">나중</text>
+      <text x="478" y="16" text-anchor="end" font-family="var(--font-body)" font-size="11" fill="var(--muted)">크기</text>
+      <text x="510" y="16" font-family="var(--font-body)" font-size="11" fill="var(--muted)">시간</text>
+      <g class="dm-drop" style="--d:0s">
+        <rect x="70" y="290" width="420" height="36" rx="6" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="84" y="313" font-family="var(--font-body)" font-size="12" fill="var(--ink)">FROM python:3.13-slim-bookworm</text>
+        <text x="478" y="313" text-anchor="end" font-family="var(--font-body)" font-size="12" fill="var(--ink)">183MB</text>
+        <text x="510" y="313" font-family="var(--font-body)" font-size="12" fill="var(--muted)">이미 있음</text>
+      </g>
+      <g class="dm-drop" style="--d:0.8s">
+        <rect x="70" y="246" width="420" height="36" rx="6" fill="var(--accent)" fill-opacity=".10" stroke="var(--accent)" stroke-width="2"/>
+        <text x="84" y="269" font-family="var(--font-body)" font-size="12" fill="var(--ink)">RUN apt-get … tesseract-ocr</text>
+        <text x="478" y="269" text-anchor="end" font-family="var(--font-heading)" font-size="12" fill="var(--accent)">94.9MB</text>
+        <text x="510" y="269" font-family="var(--font-heading)" font-size="12" fill="var(--accent)">24.1초</text>
+        <text x="585" y="269" font-family="var(--font-body)" font-size="12" fill="var(--accent)">← 가장 크고 오래 걸려요</text>
+      </g>
+      <g class="dm-drop" style="--d:1.6s">
+        <rect x="70" y="202" width="420" height="36" rx="6" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="84" y="225" font-family="var(--font-body)" font-size="12" fill="var(--ink)">WORKDIR /app</text>
+        <text x="478" y="225" text-anchor="end" font-family="var(--font-body)" font-size="12" fill="var(--ink)">8kB</text>
+        <text x="510" y="225" font-family="var(--font-body)" font-size="12" fill="var(--muted)">0.1초</text>
+      </g>
+      <g class="dm-drop" style="--d:2.4s">
+        <rect x="70" y="158" width="420" height="36" rx="6" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="84" y="181" font-family="var(--font-body)" font-size="12" fill="var(--ink)">COPY requirements.txt</text>
+        <text x="478" y="181" text-anchor="end" font-family="var(--font-body)" font-size="12" fill="var(--ink)">12kB</text>
+        <text x="510" y="181" font-family="var(--font-body)" font-size="12" fill="var(--muted)">0.1초</text>
+      </g>
+      <g class="dm-drop" style="--d:3.2s">
+        <rect x="70" y="114" width="420" height="36" rx="6" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        <text x="84" y="137" font-family="var(--font-body)" font-size="12" fill="var(--ink)">RUN pip install</text>
+        <text x="478" y="137" text-anchor="end" font-family="var(--font-body)" font-size="12" fill="var(--ink)">52.5MB</text>
+        <text x="510" y="137" font-family="var(--font-body)" font-size="12" fill="var(--ink)">9.9초</text>
+        <text x="585" y="137" font-family="var(--font-body)" font-size="12" fill="var(--ink)">← 그다음으로 커요</text>
+      </g>
+      <g class="dm-drop" style="--d:4s">
+        <rect x="70" y="70" width="420" height="36" rx="6" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="84" y="93" font-family="var(--font-body)" font-size="12" fill="var(--ink)">COPY . .</text>
+        <text x="478" y="93" text-anchor="end" font-family="var(--font-body)" font-size="12" fill="var(--ink)">152kB</text>
+        <text x="510" y="93" font-family="var(--font-body)" font-size="12" fill="var(--muted)">0.2초</text>
+        <text x="585" y="93" font-family="var(--font-body)" font-size="12" fill="var(--ink)">← 우리 코드는 152kB뿐</text>
+      </g>
+      <g class="dm-drop" style="--d:4.8s">
+        <rect x="70" y="26" width="420" height="36" rx="6" fill="none" stroke="var(--border)" stroke-width="2"/>
+        <text x="84" y="49" font-family="var(--font-body)" font-size="12" fill="var(--ink)">RUN useradd · USER · CMD</text>
+        <text x="478" y="49" text-anchor="end" font-family="var(--font-body)" font-size="12" fill="var(--ink)">약 70kB</text>
+        <text x="510" y="49" font-family="var(--font-body)" font-size="12" fill="var(--muted)">0.6초</text>
+      </g>
+    </svg>
+    <figcaption>Dockerfile의 줄이 아래부터 위로 레이어 하나씩 쌓여요. 빨간 칸이 크기와 시간을 가장 많이 쓰는 줄이에요.</figcaption>
+    </figure>
+    <p><strong>읽는 법:</strong> 아래 칸이 먼저 쌓이고 위 칸이 나중에 쌓여요. 같은 줄 오른쪽의 숫자는 그 레이어의 크기와 만드는 데 걸린 시간이에요. 칸이 하나씩 떨어져 쌓이는 모습은 빌드가 위에서 아래로 진행되는 순서(Dockerfile의 위쪽 줄부터)와 같아요.</p>
+    <table>
+      <thead><tr><th>쌓인 순서</th><th>Dockerfile 줄</th><th>레이어 크기</th><th>걸린 시간</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><code>FROM python:3.13-slim-bookworm</code></td><td>(기존 이미지 183MB)</td><td>이미 있어서 즉시</td></tr>
+        <tr><td>2</td><td><code>RUN apt-get ... tesseract</code></td><td><strong>94.9MB</strong></td><td><strong>24.1초</strong></td></tr>
+        <tr><td>3</td><td><code>WORKDIR /app</code></td><td>8.19kB</td><td>0.1초</td></tr>
+        <tr><td>4</td><td><code>COPY requirements.txt .</code></td><td>12.3kB</td><td>0.1초</td></tr>
+        <tr><td>5</td><td><code>RUN pip install</code></td><td>52.5MB</td><td>9.9초</td></tr>
+        <tr><td>6</td><td><code>COPY . .</code></td><td><strong>152kB</strong></td><td>0.2초</td></tr>
+        <tr><td>7</td><td><code>RUN useradd</code></td><td>69.6kB</td><td>0.6초</td></tr>
+        <tr><td>8~9</td><td><code>USER</code>, <code>CMD</code></td><td>0B</td><td>—</td></tr>
+      </tbody>
+    </table>
+    <p>크기가 있는 것은 파일을 실제로 설치하는 줄이고, <code>USER</code>나 <code>CMD</code>처럼 설정만 하는 줄은 0B예요. 서버에 없던 tesseract 설치 레이어가 가장 크고(94.9MB), 가장 오래 걸려요(24.1초). 우리 코드와 <code>index.html</code>은 152kB밖에 안 돼요. 이 숫자들이 줄 순서를 정하는 근거가 돼요. 오래 걸리고 잘 안 바뀌는 설치를 위에, 자주 바뀌는 코드 복사를 아래에 두는 거예요. <code>requirements.txt</code>만 먼저 복사하는 것도 같은 이유예요.</p>
+    <p>한 가지 더, <code>Procfile</code>과 <code>.python-version</code>은 buildpacks가 시작 명령과 파이썬 버전을 정할 때 쓰던 파일이에요. 저장소에 Dockerfile이 생기면 시작 명령은 <code>CMD</code> 줄이, 파이썬 버전은 <code>FROM</code> 줄이 정해요. 두 파일을 지우지 않아도 되지만 값이 다르면 헷갈리니 같은 버전인지 한 번 확인해요.</p>
+
+    <h2 id="checklist"><span class="hl">에이전트가 쓴 파일 검토하기</span> — 다섯 가지 기준</h2>
+    <p>에이전트가 쓴 파일이든 직접 쓴 파일이든 아래 다섯 가지를 확인해요. 줄 순서나 표현이 조금 달라도 괜찮고, 표의 각 줄이 하는 일이 들어 있는지를 봐요. 하나라도 걸리면 그 부분만 고쳐 달라고 다시 요청해요.</p>
+    <table>
+      <thead><tr><th>확인할 것</th><th>이유</th></tr></thead>
+      <tbody>
+        <tr><td>베이스 이미지와 파이썬 버전이 고정되어 있는가 (<code>python:latest</code>가 아닌가)</td><td>고정하지 않으면 빌드할 때마다 다른 버전이 들어와 결과가 달라질 수 있어요</td></tr>
+        <tr><td>tesseract와 한국어 데이터를 설치하는 줄이 있는가</td><td>서버에 없던 바로 그것이에요</td></tr>
+        <tr><td><code>.dockerignore</code>에 <code>.env</code>가 들어 있는가</td><td>빠지면 <code>COPY . .</code>이 API 키가 든 파일을 이미지에 넣어요</td></tr>
+        <tr><td>실행 명령이 <code>PORT</code> 환경변수를 쓰는가</td><td>Cloud Run은 정해 준 포트로 요청을 보내므로, 다른 포트를 리슨(포트를 열고 요청을 기다리는 것)하면 시작에 실패해요</td></tr>
+        <tr><td>non-root 사용자로 실행하는가</td><td>앱에 문제가 생겨도 컨테이너 안에서 할 수 있는 일이 줄어요</td></tr>
+      </tbody>
+    </table>
+    <p>예를 들어 에이전트가 <code>FROM python:latest</code>로 시작하고, 마지막 줄을 포트 8000으로 고정한 <code>CMD</code>로 쓰고, <code>USER</code> 줄을 빼 왔다면 세 가지가 걸려요. 버전이 고정되지 않았고, 포트가 <code>PORT</code>와 어긋나 시작에 실패할 수 있고, root로 실행돼요. 세 줄 모두 고쳐 달라고 해요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등</p>
+<pre><code>저장소 루트에 서비스용 Dockerfile 과 .dockerignore 를 만들어 줘.
+- 베이스 이미지는 python:3.13-slim-bookworm 으로 고정
+- 시스템 패키지 tesseract-ocr 과 tesseract-ocr-kor 설치, 설치 뒤 패키지 목록 캐시는 지우기
+- requirements.txt 를 코드보다 먼저 복사해서 라이브러리 설치
+- root 가 아닌 사용자로 실행
+- 시작 명령은 PORT 환경변수의 포트로 uvicorn app.main:app 실행(없으면 8080)
+- .dockerignore 에 .env, .venv, .git, node_modules, tests 등 이미지에 필요 없는 파일
+다 쓰면 줄마다 무엇을 하는지 설명해 줘.</code></pre>
+
+    <h2 id="local-run"><span class="hl">로컬에서 이미지를 만들고 컨테이너로 실행하기</span> — 서버에 올리기 전 확인</h2>
+    <p>서버에 올리기 전에 내 컴퓨터에서 Dockerfile로 이미지를 만들어 컨테이너로 돌려 봤어요. 이번에는 내 컴퓨터에 설치한 tesseract가 아니라 <strong>이미지 안에 설치된</strong> tesseract가 사진을 읽어요.</p>
+    <p class="run-tag">실행: 로컬 터미널 <span class="run-tag-why">— Docker Desktop을 켜 둔 상태에서, 저장소 맨 위 폴더에서 실행해요. 첫 빌드는 tesseract를 내려받느라 시간이 걸려요</span></p>
+<pre><code># -t: 이미지 이름과 태그
+docker build -t routine-stamp:local .
+
+# -p: 내 컴퓨터 8080 포트를 컨테이너 8080 포트에 연결, -e: 환경변수 전달
+docker run --rm -p 8080:8080 -e OCR_ENABLED=true routine-stamp:local</code></pre>
+    <p>첫 빌드는 <strong>53초</strong>가 걸렸고 이미지는 <strong>385MB</strong>였어요. 컨테이너를 띄우고 같은 사진을 보내니 <strong>200</strong>, 앞에서 내 컴퓨터의 tesseract가 읽은 것과 <strong>같은 6줄</strong>이 나왔어요. 그리고 이미지 안을 직접 들여다봤어요. 이미 돌고 있는 컨테이너 안에서 명령을 실행하는 것이 <code>docker exec</code>예요.</p>
+    <p class="run-tag">실행: 로컬 터미널 <span class="run-tag-why">— 읽기만 하는 확인 명령이라 이미지는 바뀌지 않아요</span></p>
+<pre><code>docker exec 컨테이너이름 ls -a /app
+docker exec 컨테이너이름 whoami
+docker image ls routine-stamp:local</code></pre>
+    <p><code>/app</code>에는 <code>app</code>, <code>index.html</code>, <code>requirements.txt</code>, <code>Procfile</code>이 있고 <code>node_modules</code>, <code>tests</code>, <code>package.json</code>은 <strong>없었어요</strong>(<code>.dockerignore</code>가 뺀 것으로 보여요). 실행 사용자는 <code>appuser</code>였어요. 컨테이너 안 <code>tesseract --list-langs</code>에는 <code>eng</code>, <code>kor</code>, <code>osd</code>가 나왔어요. 이 확인에서 한계도 하나 있어요. 이 폴더에는 <code>.env</code> 파일이 애초에 없어서, <code>.dockerignore</code>의 <code>.env</code> 줄이 실제로 막았는지는 이번에 증명하지 못했어요. 확인하려면 임시 <code>.env</code>를 만들어 다시 빌드해 봐야 해요.</p>
+    <p>API 키는 이미지에 넣지 않고 <strong>실행할 때</strong> 건네는 것이 원칙이에요. 로컬에서는 <code>--env-file .env</code>로 내 컴퓨터의 <code>.env</code> 값을 컨테이너 환경변수로 넘기고, <code>.env</code> 파일 자체는 <code>.dockerignore</code> 덕분에 이미지에 들어가지 않아요. 이미지는 저장소에 올라가 여러 곳에서 내려받아 실행되는 파일이라, 안에 든 값은 이미지를 받은 누구나 꺼내 볼 수 있기 때문이에요. 이 앱은 키가 필요 없어서 이 부분은 직접 실행해 보지 않았어요. 또 <code>--env-file</code>은 값을 감싼 따옴표를 지워 주지 않으니, <code>.env</code>의 값은 따옴표 없이 적어요.</p>
+    <p>그리고 로컬에서 만든 이 이미지는 서버에 올리지 않아요. 서버용 이미지는 배포 과정에서 같은 Dockerfile로 다시 만들어요. 내 컴퓨터와 서버의 CPU 아키텍처<sup class="fn-ref"><a href="#fn12" id="fnref12">12</a></sup>가 다를 수 있고, 내 컴퓨터에서 만든 이미지는 누가 언제 어떤 코드로 만들었는지 기록이 남지 않기 때문이에요.</p>
+
+    <h2 id="cache"><span class="hl">레이어 캐시</span> — 같은 빌드가 53초에서 2초로</h2>
+    <p>빌드할 때 Docker는 위에서부터 내려오며 내용이 바뀌지 않은 줄은 이전 빌드의 레이어를 다시 쓰고(레이어 캐시), 처음 바뀐 줄부터 아래를 새로 만들어요. 같은 폴더를 네 번 빌드하며 직접 재 봤어요.</p>
+    <table>
+      <thead><tr><th>빌드</th><th>바꾼 것</th><th>tesseract 설치</th><th>pip install</th><th>코드 복사</th><th>시간</th></tr></thead>
+      <tbody>
+        <tr><td>1차</td><td>처음</td><td>새로 실행</td><td>새로 실행</td><td>새로 실행</td><td><strong>53초</strong></td></tr>
+        <tr><td>2차</td><td>아무것도 안 바꿈</td><td>CACHED</td><td>CACHED</td><td>CACHED</td><td><strong>2.1초</strong></td></tr>
+        <tr><td>3차</td><td><code>README.md</code>에 빈 줄</td><td>CACHED</td><td>CACHED</td><td><strong>CACHED</strong></td><td>2.2초</td></tr>
+        <tr><td>4차</td><td><code>app/__init__.py</code>에 빈 줄</td><td>CACHED</td><td>CACHED</td><td><strong>새로 실행</strong></td><td><strong>3.5초</strong></td></tr>
+      </tbody>
+    </table>
+    <figure>
+    <svg class="dm" viewBox="0 0 760 345" role="img" aria-label="세 번의 빌드에서 Dockerfile의 줄이 새로 만들어지는지 재사용되는지 비교한다. 처음 빌드는 모든 줄을 새로 만들고, 아무것도 안 바꾼 빌드는 모두 재사용하며, 코드 파일을 바꾼 빌드는 COPY . . 줄부터 아래만 새로 만든다.">
+      <!-- 열 머리 -->
+      <rect x="210" y="10" width="160" height="44" rx="8" fill="none" stroke="var(--ink)" stroke-width="2"/>
+      <text x="290" y="29" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">처음</text>
+      <text x="290" y="46" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">53초</text>
+      <rect x="382" y="10" width="160" height="44" rx="8" fill="none" stroke="var(--ink)" stroke-width="2"/>
+      <text x="462" y="29" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">아무것도 안 바꿈</text>
+      <text x="462" y="46" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">2.1초</text>
+      <rect x="554" y="10" width="160" height="44" rx="8" fill="none" stroke="var(--ink)" stroke-width="2"/>
+      <text x="634" y="29" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">코드 파일을 바꿈</text>
+      <text x="634" y="46" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">3.5초</text>
+      <!-- 행 이름 -->
+      <text x="198" y="85" text-anchor="end" font-family="var(--font-body)" font-size="12" fill="var(--ink)">FROM python:3.13…</text>
+      <text x="198" y="121" text-anchor="end" font-family="var(--font-body)" font-size="12" fill="var(--ink)">RUN apt-get … tesseract</text>
+      <text x="198" y="157" text-anchor="end" font-family="var(--font-body)" font-size="12" fill="var(--ink)">WORKDIR /app</text>
+      <text x="198" y="193" text-anchor="end" font-family="var(--font-body)" font-size="12" fill="var(--ink)">COPY requirements.txt</text>
+      <text x="198" y="229" text-anchor="end" font-family="var(--font-body)" font-size="12" fill="var(--ink)">RUN pip install</text>
+      <text x="198" y="265" text-anchor="end" font-family="var(--font-body)" font-size="12" fill="var(--ink)">COPY . .</text>
+      <text x="198" y="301" text-anchor="end" font-family="var(--font-body)" font-size="12" fill="var(--ink)">RUN useradd</text>
+      <!-- 1열: 처음 -->
+      <rect x="210" y="66" width="160" height="30" rx="6" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="290" y="85" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">이미 있음</text>
+      <rect class="dm-blink" style="--d:0s" x="210" y="102" width="160" height="30" rx="6" fill="var(--accent)" fill-opacity=".06" stroke="var(--accent)" stroke-width="2"/>
+      <text x="290" y="121" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">새로 실행</text>
+      <rect class="dm-blink" style="--d:0.2s" x="210" y="138" width="160" height="30" rx="6" fill="var(--accent)" fill-opacity=".06" stroke="var(--accent)" stroke-width="2"/>
+      <text x="290" y="157" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">새로 실행</text>
+      <rect class="dm-blink" style="--d:0.4s" x="210" y="174" width="160" height="30" rx="6" fill="var(--accent)" fill-opacity=".06" stroke="var(--accent)" stroke-width="2"/>
+      <text x="290" y="193" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">새로 실행</text>
+      <rect class="dm-blink" style="--d:0.6s" x="210" y="210" width="160" height="30" rx="6" fill="var(--accent)" fill-opacity=".06" stroke="var(--accent)" stroke-width="2"/>
+      <text x="290" y="229" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">새로 실행</text>
+      <rect class="dm-blink" style="--d:0.8s" x="210" y="246" width="160" height="30" rx="6" fill="var(--accent)" fill-opacity=".06" stroke="var(--accent)" stroke-width="2"/>
+      <text x="290" y="265" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">새로 실행</text>
+      <rect class="dm-blink" style="--d:1s" x="210" y="282" width="160" height="30" rx="6" fill="var(--accent)" fill-opacity=".06" stroke="var(--accent)" stroke-width="2"/>
+      <text x="290" y="301" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">새로 실행</text>
+      <!-- 2열: 안 바꿈 (모두 재사용) -->
+      <rect x="382" y="66" width="160" height="30" rx="6" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="462" y="85" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">CACHED</text>
+      <rect x="382" y="102" width="160" height="30" rx="6" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="462" y="121" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">CACHED</text>
+      <rect x="382" y="138" width="160" height="30" rx="6" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="462" y="157" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">CACHED</text>
+      <rect x="382" y="174" width="160" height="30" rx="6" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="462" y="193" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">CACHED</text>
+      <rect x="382" y="210" width="160" height="30" rx="6" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="462" y="229" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">CACHED</text>
+      <rect x="382" y="246" width="160" height="30" rx="6" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="462" y="265" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">CACHED</text>
+      <rect x="382" y="282" width="160" height="30" rx="6" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="462" y="301" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">CACHED</text>
+      <!-- 3열: 코드 파일 바꿈 (COPY . . 부터 새로) -->
+      <rect x="554" y="66" width="160" height="30" rx="6" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="634" y="85" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">CACHED</text>
+      <rect x="554" y="102" width="160" height="30" rx="6" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="634" y="121" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">CACHED</text>
+      <rect x="554" y="138" width="160" height="30" rx="6" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="634" y="157" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">CACHED</text>
+      <rect x="554" y="174" width="160" height="30" rx="6" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="634" y="193" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">CACHED</text>
+      <rect x="554" y="210" width="160" height="30" rx="6" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="634" y="229" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">CACHED</text>
+      <rect class="dm-blink" style="--d:0s" x="554" y="246" width="160" height="30" rx="6" fill="var(--accent)" fill-opacity=".06" stroke="var(--accent)" stroke-width="2"/>
+      <text x="634" y="265" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">새로 실행</text>
+      <rect class="dm-blink" style="--d:0.3s" x="554" y="282" width="160" height="30" rx="6" fill="var(--accent)" fill-opacity=".06" stroke="var(--accent)" stroke-width="2"/>
+      <text x="634" y="301" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">새로 실행</text>
+      <line class="dm-line dm-march" x1="550" y1="243" x2="718" y2="243" stroke="var(--accent)" stroke-width="2"/>
+      <!-- 아래 요약 -->
+      <text x="290" y="334" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">처음부터 모두</text>
+      <text x="462" y="334" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">모두 재사용</text>
+      <text x="634" y="334" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">점선 아래만 새로</text>
+    </svg>
+    <figcaption>빨간 칸이 새로 만든 줄이에요. 코드 파일을 바꾼 세 번째 열은 점선 아래만 다시 만들어요. README만 바꾼 빌드는 두 번째 열과 같아서 그림에서 뺐어요.</figcaption>
+    </figure>
+    <p><strong>읽는 법:</strong> 세 열을 비교해요. 첫째 열은 처음이라 전부 새로 만들고, 둘째 열은 바뀐 것이 없어 전부 재사용해요. 셋째 열은 이미지에 들어가는 코드 파일을 바꿨기 때문에 점선 아래의 두 줄만 다시 만들어요. 위쪽 줄(tesseract 설치)을 바꾸면 그 아래가 전부 빨간 칸이 돼요. 이건 apt 줄을 바꿨을 때 아래 6단계가 모두 새로 실행된 것으로 직접 확인했어요.</p>
+    <p>2차는 바뀐 것이 없으니 모든 단계를 건너뛰고 2.1초에 끝났어요. 4차는 이미지에 들어가는 코드 파일을 바꿨더니 <strong><code>COPY . .</code>부터 아래만</strong> 다시 만들고(아래의 <code>useradd</code>도 함께 다시 실행돼요), 24초짜리 tesseract 설치와 <code>pip install</code>은 건너뛰어 3.5초에 끝났어요. 코드 한 줄을 고칠 때마다 설치를 처음부터 하지 않는 이유가 이 숫자예요.</p>
+    <p><strong>3차는 제가 예상과 달라 당황한 장면이에요.</strong> <code>README.md</code>를 바꿨는데 <code>COPY . .</code>까지 CACHED였어요. 원인은 제가 <code>.dockerignore</code>에 <code>README.md</code>를 넣어 둔 것이었어요. 이미지 안 <code>/app</code>에도 <code>README.md</code>가 없다는 것을 컨테이너에서 확인했어요. <strong><code>.dockerignore</code>에 적힌 파일은 빌드에 보내지 않으니, 바꿔도 Docker 눈에는 바뀐 것이 없어요.</strong> 그래서 이미지에 실제로 들어가는 파일(<code>app/__init__.py</code>)로 다시 확인했어요. 두 파일 모두 확인 뒤 <code>git checkout</code>으로 되돌렸어요.</p>
+    <p>이 캐시를 로컬 <code>docker build</code>에서 직접 본 것이고, 서버(Cloud Build)의 배포 빌드에서도 같은 캐시가 쓰이는지는 확인하지 못했어요.</p>
+
+    <h2 id="deploy"><span class="hl">같은 자동 배포로 올리기</span> — 고칠 곳은 한 군데예요</h2>
+    <p>Cloud Run의 소스 배포는 올라온 코드에 Dockerfile이 있으면 buildpacks 대신 그 Dockerfile로 이미지를 만들어요. 그래서 Dockerfile과 <code>.dockerignore</code>를 커밋해 staging 브랜치로 PR을 보내면 돼요. 배포 워크플로(GitHub Actions의 자동 배포 설정)는 <strong>한 군데</strong>만 고쳤어요. buildpacks로 배포한 서비스에는 Google이 관리하는 베이스 이미지를 최신 보안 패치로 자동으로 바꿔 주는 기능이 켜져 있는데, 이 기능은 Dockerfile로 만든 이미지에는 쓸 수 없어서 그대로 배포하면 <code>Missing required argument [--clear-base-image]</code> 오류로 멈춘다고 해요. 이 오류는 미리 옵션을 넣고 배포해서 <strong>직접 보지는 못했어요.</strong> 이제 베이스 이미지는 <code>FROM</code> 줄이 정하니, 배포 단계의 <code>flags:</code> 줄 끝에 <code>--clear-base-image</code>를 붙여 그 기능을 껐어요. 대신 베이스 이미지의 보안 패치는 <code>FROM</code> 줄을 바꾸고 다시 빌드할 때 들어와요.</p>
+    <p class="run-tag">실행: .github/workflows/deploy.yml 설정 파일에 붙여넣기 <span class="run-tag-why">— GitHub Actions가 이 파일을 읽어요. 다른 줄은 바꾸지 말고 flags: 줄 끝에 한 단어만 더해요</span></p>
+<pre><code>--clear-base-image</code></pre>
+    <p>올라가는 파일은 두 번 걸러져요. 소스 배포가 코드를 올릴 때 <code>.gcloudignore</code>에 적힌 파일을 빼고, 빌드할 때 <code>COPY . .</code>이 <code>.dockerignore</code>에 적힌 파일을 다시 빼요. 두 파일 모두 <code>.env</code>를 빼고 있는지 커밋 전에 확인해요. 이 앱은 Node 테스트용 <code>package.json</code>과 <code>node_modules</code>(25MB)도 서버에 필요 없어서 두 파일에서 뺐어요.</p>
+    <p class="run-tag">실행: 로컬 터미널 <span class="run-tag-why">— 새 브랜치에서 세 파일만 커밋하고 push한 뒤 PR을 만들어요. 커밋 대상에 .env가 없는지 먼저 확인해요</span></p>
+<pre><code>git switch -c add-dockerfile
+git add Dockerfile .dockerignore .github/workflows/deploy.yml
+git commit -m "Dockerfile로 실행 환경 정하기"
+git push -u origin add-dockerfile
+gh pr create --base staging --title "Dockerfile 추가" --body "tesseract와 한국어 데이터를 포함한 실행 환경"</code></pre>
+    <p>CI가 통과하고 머지하자 staging 배포가 돌았어요. 두 군데서 확인했어요.</p>
+    <ul>
+      <li><strong>GitHub</strong>의 Actions 탭: 배포 워크플로가 성공(<code>test</code>와 <code>deploy</code>)했는지 봐요.</li>
+      <li><strong>Google Cloud</strong>의 Cloud Build 기록: 가장 최근 빌드 로그에 <code>Step 1/11 : FROM python:3.13-slim-bookworm</code>과 <code>Step 2/11 : RUN apt-get … tesseract-ocr tesseract-ocr-kor</code>가 찍혀 있었어요. 처음 배포 때 찍혔던 <code>google.python.runtime</code>(buildpacks의 파이썬 단계)은 <strong>0건</strong>이었어요. 이번 빌드는 buildpacks가 아니라 <strong>Dockerfile로</strong> 진행됐다는 증거예요.</li>
+    </ul>
+    <p>이어서 staging에 같은 사진을 보냈어요. 앞에서 staging에 직접 넣어 둔 <code>OCR_ENABLED=true</code>는 자동 배포가 기존 환경변수를 지우지 않고 합치는 방식이라 그대로 남아 있었어요. 결과는 <strong>200, 로컬 컨테이너와 같은 6줄</strong>이에요. 서버 코드는 한 줄도 안 바꿨는데, Dockerfile 하나로 500이 200이 됐어요.</p>
+    <p>staging에서 확인했으니 production으로 갔어요. staging에서 main으로 PR을 보내 CI를 통과시키고 머지했더니, production 배포는 <strong>승인 대기</strong>에서 멈췄어요. production 환경에 승인자를 지정해 둔 설정이에요. GitHub의 Actions 화면에서 배포를 승인하자 배포가 진행되어 성공했어요. production에는 <code>OCR_ENABLED</code>가 아직 없어서 처음에는 기능이 꺼진 채 시작했고(<code>/health</code>가 <code>ocr_enabled: false</code>), 환경변수를 더해 켜자 같은 사진이 <strong>같은 6줄</strong>로 읽혔어요. 내 컴퓨터, 로컬 컨테이너, staging, production에서 같은 결과가 나온 거예요.</p>
+
+    <h2 id="two-builds"><span class="hl">같은 Dockerfile이면 같은 이미지일까</span> — 그렇지 않아요</h2>
+    <p>그런데 staging과 production은 같은 Dockerfile로 이미지를 <strong>따로</strong> 만들었어요. 같은 파일이면 같은 이미지가 나오는지 캐시 없이 두 번 빌드해 비교했어요.</p>
+    <p class="run-tag">실행: 로컬 터미널 <span class="run-tag-why">— 캐시를 안 쓰니 tesseract를 두 번 내려받고 한 번에 50초쯤 걸려요. 끝나면 두 이미지를 지워요</span></p>
+<pre><code>docker build --no-cache -t routine-stamp:try-a .
+docker build --no-cache -t routine-stamp:try-b .
+docker image inspect --format "{{.Id}}" routine-stamp:try-a routine-stamp:try-b
+docker run --rm --entrypoint pip routine-stamp:try-a freeze
+docker rmi routine-stamp:try-a routine-stamp:try-b</code></pre>
+    <p>결과는 이랬어요. 두 빌드는 48초, 49초가 걸렸고 <strong>이미지 ID는 서로 달랐어요.</strong> 하지만 이미지 안의 파이썬 패키지 18개는 두 이미지에서 <strong>한 줄도 다르지 않았고</strong>, tesseract 패키지 버전(<code>tesseract-ocr 5.3.0-2</code>, 한국어 데이터 <code>1:4.1.0-2</code>)도 같았어요. 이미지 ID는 이미지 내용 전체로 계산한 값이라 작은 차이만 있어도 달라지고, 두 이미지의 생성 시각은 약 49초 차이가 났어요. 그 시각 차이가 ID가 다른 직접 원인인지까지는 제가 확인하지 못했어요. 두 빌드 사이가 1분도 안 돼서 패키지가 같았지만, 며칠 간격으로 빌드하면 그 사이 새로 나온 버전이 들어가 목록까지 달라질 수 있어요. 이건 직접 확인한 것이 아니에요.</p>
+    <p>그래서 오늘의 마무리는 이래요. 실행 환경은 Dockerfile 한 파일에 적혔고 네 곳에서 같은 결과가 나왔지만, <strong>staging에서 확인한 이미지와 production에 나간 이미지는 같은 파일로 따로 만든 별개의 이미지</strong>예요. 확인한 것과 나간 것이 같다고 말하려면 이미지를 한 번만 만들어 두 환경에 보내야 하는데, 이 글에서는 거기까지 가지 않았어요. 지금 production에서 도는 이미지가 어느 커밋으로 만든 것인지 이름만 보고 알기 어렵다는 점, 이미지 크기가 385MB라 배포할 때마다 쌓이는 저장 공간을 아직 관리하지 않았다는 점도 남은 숙제예요.</p>
+
+    <h2 id="where"><span class="hl">Dockerfile은 어디에 저장되나</span> — 단계마다 다른 곳에 있어요</h2>
+    <p>소스 배포는 GCP(Cloud Run)의 기능이고, GitHub는 코드를 보관하고 배포를 자동으로 시키는 쪽이에요. 같은 Dockerfile이 단계마다 다른 곳에 있어요.</p>
+    <figure>
+    <svg class="flow-motion" viewBox="0 0 760 330" role="img" aria-label="내 컴퓨터에서 Dockerfile을 쓰고, GitHub 저장소의 맨 위 폴더에 올리면 원본이 된다. GitHub Actions 서버가 코드를 내려받아 GCP의 임시 저장소에 zip으로 올리고, Cloud Build가 Dockerfile로 이미지를 빌드해 Artifact Registry에 저장하며, Cloud Run이 그 이미지를 컨테이너로 실행한다.">
+      <defs>
+        <marker id="ws-arrow-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/>
+        </marker>
+        <marker id="ws-arrow-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/>
+        </marker>
+      </defs>
+      <!-- 1행 -->
+      <rect x="10" y="30" width="165" height="76" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="92" y="58" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">① 내 컴퓨터</text>
+      <text x="92" y="80" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">Dockerfile을 씀</text>
+      <line x1="177" y1="68" x2="196" y2="68" stroke="var(--muted)" stroke-width="2" marker-end="url(#ws-arrow-m)"/>
+
+      <rect x="200" y="30" width="165" height="76" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="282" y="58" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">② GitHub 저장소</text>
+      <text x="282" y="80" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">맨 위 폴더 · 원본</text>
+      <line x1="367" y1="68" x2="386" y2="68" stroke="var(--muted)" stroke-width="2" marker-end="url(#ws-arrow-m)"/>
+
+      <rect x="390" y="30" width="165" height="76" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="472" y="58" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">③ Actions 서버</text>
+      <text x="472" y="80" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">코드를 내려받음</text>
+      <line x1="557" y1="68" x2="576" y2="68" stroke="var(--muted)" stroke-width="2" marker-end="url(#ws-arrow-m)"/>
+
+      <rect x="580" y="30" width="170" height="76" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="665" y="58" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">④ GCP 임시 보관</text>
+      <text x="665" y="80" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">폴더가 zip으로 올라감</text>
+      <line x1="665" y1="108" x2="665" y2="170" stroke="var(--muted)" stroke-width="2" marker-end="url(#ws-arrow-m)"/>
+
+      <!-- 2행 -->
+      <rect x="580" y="174" width="170" height="76" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text x="665" y="202" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">⑤ Cloud Build</text>
+      <text x="665" y="224" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">Dockerfile로 이미지 빌드</text>
+      <line x1="578" y1="212" x2="559" y2="212" stroke="var(--muted)" stroke-width="2" marker-end="url(#ws-arrow-m)"/>
+
+      <rect x="390" y="174" width="165" height="76" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="472" y="202" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">⑥ Artifact Registry</text>
+      <text x="472" y="224" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">이미지로 저장</text>
+      <line x1="388" y1="212" x2="369" y2="212" stroke="var(--muted)" stroke-width="2" marker-end="url(#ws-arrow-m)"/>
+
+      <rect x="200" y="174" width="165" height="76" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="282" y="202" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">⑦ Cloud Run</text>
+      <text x="282" y="224" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">이미지를 컨테이너로 실행</text>
+
+      <!-- 설명 -->
+      <rect x="10" y="174" width="165" height="76" rx="8" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 4"/>
+      <text x="92" y="202" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">원본은 ②</text>
+      <text x="92" y="224" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">나머지는 배포 때 복사본</text>
+      <path d="M198 212 H179" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#ws-arrow-a)"/>
+
+      <text x="380" y="292" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">소스 배포는 GCP의 기능이고, GitHub는 코드를 보관하고 배포를 자동으로 시켜요</text>
+    </svg>
+    <figcaption>Dockerfile이 지나가는 곳. 원본은 ② GitHub 저장소 한 곳이에요.</figcaption>
+    </figure>
+    <table>
+      <thead><tr><th>단계</th><th>어디에</th></tr></thead>
+      <tbody>
+        <tr><td>① 작성할 때</td><td>내 컴퓨터의 프로젝트 폴더</td></tr>
+        <tr><td>② 커밋·push 뒤</td><td><strong>GitHub 저장소의 맨 위 폴더</strong> (<code>README.md</code>, <code>index.html</code>과 같은 위치). 원본이에요</td></tr>
+        <tr><td>③ 배포하는 순간</td><td>GCP의 임시 저장소(Cloud Storage)에 폴더가 zip으로 올라가요</td></tr>
+        <tr><td>④ 빌드 중</td><td>Cloud Build의 작업 폴더. 빌드 로그에 <code>inflating: /workspace/Dockerfile</code>이 찍혀요</td></tr>
+        <tr><td>⑤ 빌드 결과</td><td><strong>Artifact Registry</strong>에 이미지로 저장돼요 (Dockerfile 파일이 아니라 결과물이에요)</td></tr>
+        <tr><td>⑥ 이미지 안</td><td><code>COPY . .</code> 때문에 <code>/app/Dockerfile</code> 사본도 같이 들어 있어요</td></tr>
+      </tbody>
+    </table>
+    <p>Dockerfile은 반드시 <strong>저장소 맨 위 폴더에 <code>Dockerfile</code>이라는 이름</strong>으로 두어야 소스 배포가 찾아요. 다른 폴더에 두거나 이름을 바꾸면 buildpacks로 빌드되어 tesseract가 다시 빠질 수 있어요. 이 부분은 직접 시험해 보지 않았어요.</p>
+
+    <h2 id="choice"><span class="hl">나쁜 선택 vs 좋은 선택</span> — 요리사에게 "서버에서 안 돼, 고쳐 줘"라고 할 때</h2>
+    <p>식당으로 치면 사장이 요리사에게 "가맹점에서는 특수 칼 요리가 안 돼, 고쳐 줘"라고 맡기는 장면이에요. 아래는 상황을 가정한 예시예요.</p>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">화면 안내만 보고 "OCR 코드 고쳐 줘"라고 맡기고, 에이전트가 써 온 Dockerfile을 줄을 읽지 않고 승인한다 → 파일이 <code>FROM python:latest</code>에 포트 8000 고정, <code>USER</code> 줄 없음이어도 모르고 배포한다. 어느 날 파이썬 버전이 바뀌어 배포가 깨지고, 포트가 어긋나 컨테이너가 시작하지 못하고, root로 실행되는 이미지가 나간다</td>
+          <td class="choice-good">"로그의 오류 줄을 근거로 원인을 설명해 줘, 아직 고치지 마"로 원인부터 확인하고, 환경 문제임을 안 뒤 Dockerfile을 쓰게 한다. 다섯 가지 기준으로 한 줄씩 검토하고, 로컬에서 이미지를 만들어 필요한 프로그램이 있는지, 사용자가 appuser인지 확인한 뒤 staging에 올린다 → 무엇이 들어 있는지 알고 올리니, 같은 문제가 다시 생겨도 어디부터 볼지 안다</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — Dockerfile을 쓰고 검토할 때 다시 보는 값</h2>
+    <p>Dockerfile을 쓰고 검토할 때 다시 보게 되는 버전과 기본값, 크기를 모았어요. 이 글을 쓴 <strong>2026년 10월 기준</strong>이고, 이미지 크기와 빌드 시간은 서비스와 컴퓨터마다 달라질 수 있어요.</p>
+    <table>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
+      <tbody>
+        <tr><td>이 글의 베이스 이미지 태그</td><td><code>python:3.13-slim-bookworm</code></td><td>파이썬 3.13, Debian bookworm 기반의 작은 버전이에요. <code>latest</code> 대신 버전이 적힌 태그를 써야 빌드마다 결과가 같아요</td></tr>
+        <tr><td>이 베이스 이미지 자체의 크기</td><td>183MB</td><td>아무것도 더하기 전의 출발점 크기예요. 여기에 얹는 만큼 커져요</td></tr>
+        <tr><td>tesseract와 한국어 데이터를 설치하는 레이어</td><td>94.9MB</td><td>OCR 하나를 더하면 이미지가 이만큼 늘어요. 파일을 설치하는 줄은 크기가 있고 설정만 하는 줄은 0B예요</td></tr>
+        <tr><td>이 앱의 최종 이미지 크기</td><td>385MB</td><td>이 앱의 값이라 다른 서비스는 달라요. 배포마다 쌓이니 저장 공간 관리를 생각해요</td></tr>
+        <tr><td>Cloud Run이 요청을 보내는 포트(<code>PORT</code>의 기본값)</td><td>8080</td><td>코드에 번호를 박지 말고 <code>PORT</code>를 읽게 해요. 다른 포트에서 기다리면 시작에 실패해요</td></tr>
+        <tr><td>Docker Desktop 유료 구독이 필요한 회사 규모</td><td>직원 250명 이상 등</td><td>회사 컴퓨터에 설치한다면 확인해요. 개인 컴퓨터와 교육 목적은 무료예요</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — Dockerfile로 환경을 정할 때</h2>
+    <p>환경 문제는 코드를 아무리 읽어도 안 보이고, <strong>증상이 엉뚱한 곳을 가리키는 경우</strong>가 많아요. 아래 증상이 보이면 코드를 고치려 들기 전에 이 자리를 열어 봐요.</p>
+    <p>증상이 아직 없어도, <strong>AI에게 이런 부탁을 한 직후</strong>라면 한 번 확인하고 넘어가요.</p>
+    <ul>
+      <li>"Dockerfile 써 줘" — 베이스 이미지 버전 고정, <code>.env</code> 제외, <code>PORT</code> 사용, non-root가 다 들어 있는지</li>
+      <li>"이 기능 서버에 올려 줘" — 기능에 시스템 프로그램이 필요한지, Dockerfile에 그 설치 줄이 있는지</li>
+    </ul>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-missing">
+          <td>기능을 켰더니 화면에 <strong>"프로그램이 서버에 없다"</strong> 같은 안내가 뜨는데, 배포는 성공이고 다른 기능은 멀쩡해요</td>
+          <td>Cloud Run 서비스의 로그 탭(심각도 오류)이에요. 사진을 보낸 시각 근처의 오류 줄과 요청이 500인 줄을 봐요. 범인은 배포 설정이 아니라 이미지 안에 빠진 프로그램이에요</td>
+          <td>오류 줄의 프로그램 이름이 Dockerfile의 <code>apt-get install</code> 줄에 있는지 봐요. 없으면 그 줄을 더하고 다시 배포해요. 에이전트에게는 "로그를 근거로 설명해 줘, 아직 고치지 마"로 맡겨요</td>
+        </tr>
+        <tr id="suspect-slow">
+          <td>코드를 한 줄만 고쳤는데 <strong>빌드가 매번 오래 걸려요</strong> (설치 단계가 매번 새로 도는 것 같아요)</td>
+          <td>Dockerfile에서 <code>COPY . .</code>이 <code>RUN pip install</code>보다 <strong>위에</strong> 있는지, 그리고 <code>requirements.txt</code>만 먼저 복사하는 줄이 있는지 봐요</td>
+          <td>같은 빌드를 두 번 실행해 로그에 <code>CACHED</code>가 붙는지 봐요. 안 바꾸고 다시 빌드했는데도 설치 단계가 새로 돌면 순서 문제예요</td>
+        </tr>
+        <tr id="suspect-cache-ignored">
+          <td>파일을 바꿨는데 <strong>새 이미지에 반영이 안 돼요</strong> (<code>COPY . .</code>도 CACHED)</td>
+          <td><code>.dockerignore</code>예요. 거기 적힌 파일은 빌드에 보내지 않아서 바꿔도 Docker 눈에는 바뀐 것이 없어요</td>
+          <td>컨테이너에서 <code>docker exec 컨테이너이름 ls /app</code>으로 그 파일이 이미지 안에 있는지 봐요. 없으면 <code>.dockerignore</code>에서 뺄지 정해요</td>
+        </tr>
+        <tr id="suspect-env">
+          <td>이미지 안에서 <strong><code>.env</code> 파일이 보여요</strong>, 또는 키 값이 이미지에 들어갔을까 불안해요</td>
+          <td><code>.dockerignore</code>의 <code>.env</code> 줄과 <code>.gcloudignore</code>예요. <code>COPY . .</code> 줄이 폴더 전체를 복사하니, 빼지 않은 파일은 모두 이미지로 들어가요</td>
+          <td><code>docker run --rm 이미지 ls -a /app</code>으로 파일 목록을 봐요. <code>.env</code>가 보이면 <code>.dockerignore</code>를 고쳐 다시 빌드하고, 그 이미지는 다른 곳에 올리지 말고 지워요. 키를 이미 올렸다면 키를 새로 발급받는 것까지 생각해요</td>
+        </tr>
+        <tr id="suspect-clear">
+          <td>Dockerfile을 커밋했는데 <strong>배포가 <code>--clear-base-image</code> 오류로 멈춰요</strong>, 또는 빌드 로그에 설치 단계가 안 보여요</td>
+          <td>배포 설정 파일의 <code>flags:</code> 줄 끝과, Dockerfile이 저장소 맨 위 폴더에 <code>Dockerfile</code>이라는 이름으로 있는지예요. 오류 문구는 안내받은 것이고 저는 미리 옵션을 넣고 배포해서 직접 보지는 못했어요</td>
+          <td><code>flags:</code> 줄에 <code>--clear-base-image</code>가 있는지, GitHub 저장소 메인 화면의 파일 목록에 <code>Dockerfile</code>이 있는지 봐요. 빌드 로그에 <code>Step 1/…: FROM</code>이 찍혔는지가 Dockerfile로 빌드됐다는 증거예요</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등</p>
+<pre><code>staging 서비스에서 OCR 기능이 실패했어. 최근 Cloud Run 로그의 오류 줄을 읽고,
+로그에 적힌 내용을 근거로 원인을 설명해 줘. 원인이라고 본 로그 줄은 시각과 함께 그대로 보여 줘.
+아직 아무것도 고치지 마.</code></pre>
+
+    <h2 id="not-done"><span class="hl">확인 범위와 해 보지 못한 것</span></h2>
+    <ul>
+      <li>이 글의 숫자(53초, 2.1초, 385MB, 94.9MB 등)는 한 컴퓨터에서 한 번씩 잰 값이에요. 다시 하면 달라질 수 있어요.</li>
+      <li>Cloud Build(서버 쪽 빌드)에서도 레이어 캐시가 쓰이는지는 확인하지 못했어요.</li>
+      <li><code>.dockerignore</code>의 <code>.env</code> 줄이 실제로 키 파일을 막는지는 이 폴더에 <code>.env</code>가 없어서 증명하지 못했어요.</li>
+      <li>이미지를 한 번만 만들어 두 환경에 보내는 방법, 이미지 태그와 저장 공간 정리는 다루지 않았어요. 이 시리즈에서 다음에 이어 가요.</li>
+      <li>OCR 기능은 이 글의 실습용이에요. 도장판 앱에 이 기능을 실제로 넣을지는 앱의 기획 문서를 다시 잡은 뒤에 정해요.</li>
+    </ul>
+
+    <h2><span class="hl">함께 보기</span></h2>
+    <ul>
+      <li><a href="cloud-run-source-deploy-meaning.html">Cloud Run에 소스를 배포한다는 것 — 코드 폴더 하나가 공개 주소가 되기까지 (2)</a> — 이 글의 출발점인 소스 배포와 buildpacks가 무엇인지 풀어요.</li>
+      <li><a href="cloud-run-operating-ai-service.html">배포한 AI 서비스가 말없이 틀리는 순간 (3)</a> — 서버 기록은 정상인데 사용자는 실패하는 순간과 로그로 원인을 찾는 순서를 봐요.</li>
+      <li><a href="what-is-docker.html">도커(Docker)란 무엇인가 — 이미지와 컨테이너, 상자에 뭘 담느냐</a> — 이미지와 컨테이너를 따로 풀어요.</li>
+      <li><a href="ai-service-design-before-code.html">AI 기능을 서비스로 설계한다는 것 (1)</a> — 키를 어디에 두고 실패를 어떻게 다룰지 먼저 정하는 글이에요.</li>
+    </ul>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">OCR(광학 문자 인식) — 이미지 속 글자를 텍스트로 바꾸는 기술이에요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">Dockerfile — 이미지를 어떻게 만들지 위에서 아래로 한 줄씩 적은 파일로, 실행 환경을 코드처럼 저장소에 남겨요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">buildpacks — 폴더 안 파일을 보고 무엇을 설치할지 스스로 정해 이미지를 만드는 도구로, <a href="cloud-run-source-deploy-meaning.html">2편</a>에서 소스 배포가 쓰는 도구로 다뤘어요. <a href="#fnref3">↩</a></li>
+        <li id="fn4">시스템 패키지 — 파이썬 라이브러리가 아니라 운영체제에 따로 설치하는 프로그램으로, Debian 계열에서는 apt로 설치해요. <a href="#fnref4">↩</a></li>
+        <li id="fn5">베이스 이미지(base image) — Dockerfile이 출발점으로 삼는 이미지로, <code>FROM</code> 줄에 적어요. <a href="#fnref5">↩</a></li>
+        <li id="fn6">레이어(layer) — Dockerfile의 줄 하나가 만든 파일 변경을 묶은 단위로, 바뀌지 않은 레이어는 다음 빌드에서 다시 써요. <a href="#fnref6">↩</a></li>
+        <li id="fn7">환경변수 — 코드 밖에서 앱에 건네는 설정 값으로, 같은 코드를 환경마다 다르게 동작시키는 데 써요. <a href="#fnref7">↩</a></li>
+        <li id="fn8">래퍼(wrapper) 라이브러리 — 자기가 일을 하지 않고 다른 프로그램을 대신 불러 주는 라이브러리예요. <a href="#fnref8">↩</a></li>
+        <li id="fn9">리비전과 인스턴스 — 리비전은 이미지와 설정을 함께 적은 버전이고 인스턴스는 그 리비전으로 실행 중인 컨테이너로, <a href="cloud-run-source-deploy-meaning.html">2편</a>에서 다뤘어요. <a href="#fnref9">↩</a></li>
+        <li id="fn10">포트(port) — 한 컴퓨터에서 여러 프로그램이 네트워크를 함께 쓸 때 들어온 연결을 어느 프로그램에 줄지 정하는 번호예요. <a href="#fnref10">↩</a></li>
+        <li id="fn11">non-root 사용자 — 운영체제 전체를 바꿀 수 있는 최고 권한(root)이 없는 일반 사용자예요. <a href="#fnref11">↩</a></li>
+        <li id="fn12">CPU 아키텍처 — amd64나 arm64처럼 CPU가 실행할 수 있는 명령의 형식이에요. <a href="#fnref12">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <h3>"AI 서비스로 내놓기" 시리즈</h3>
+    <a class="post-nav" href="ai-service-design-before-code.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">AI 기능을 서비스로 설계한다는 것 — 코딩 에이전트에게 맡기기 전에 정할 것</span>
+    </a>
+    <a class="post-nav" href="cloud-run-source-deploy-meaning.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">Cloud Run에 소스를 배포한다는 것 — 코드 폴더 하나가 공개 주소가 되기까지</span>
+    </a>
+    <a class="post-nav" href="cloud-run-operating-ai-service.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">배포한 AI 서비스가 말없이 틀리는 순간 — 타임아웃, 인스턴스, 비용, 로그</span>
+    </a>
+    <p class="post-date">(4) 로컬에서는 되는데 서버에서만 안 되는 이유 — Dockerfile로 실행 환경 정하기 (이 글)</p>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="flow-motion.js"></script>
+  <script>
+    /* svg.dm: 화면에 30% 이상 보일 때만 dm-on 을 켜서 모션을 재생한다 */
+    (function () {
+      var svgs = document.querySelectorAll('svg.dm');
+      if (!svgs.length) return;
+      if (!('IntersectionObserver' in window)) { svgs.forEach(function (s) { s.classList.add('dm-on'); }); return; }
+      var io = new IntersectionObserver(function (es) {
+        es.forEach(function (e) { e.target.classList.toggle('dm-on', e.isIntersecting); });
+      }, { threshold: 0.3 });
+      svgs.forEach(function (s) { io.observe(s); });
+    })();
+  </script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>

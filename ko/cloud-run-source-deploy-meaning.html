@@ -186,7 +186,7 @@
         <tr><td>어울리는 때</td><td>코드와 라이브러리만으로 충분한 작은 서비스</td><td>운영체제에 직접 설치해야 하는 프로그램이 필요할 때 등</td></tr>
       </tbody>
     </table>
-    <p>이 글에서는 앞쪽(소스 배포)만 다뤄요. 이미지를 직접 만드는 방법은 이 시리즈에서 다음에 다룰 때 이어 갈게요. 이미지와 컨테이너라는 말이 낯설다면 <a href="what-is-docker.html">도커(Docker)란 무엇인가</a>를 먼저 보고 와도 좋아요.</p>
+    <p>이 글에서는 앞쪽(소스 배포)만 다뤄요. 이미지를 직접 만드는 방법은 <a href="dockerfile-fixing-runtime-environment.html">4편 로컬에서는 되는데 서버에서만 안 되는 이유 — Dockerfile로 실행 환경 정하기</a>에서 이어 가요. 이미지와 컨테이너라는 말이 낯설다면 <a href="what-is-docker.html">도커(Docker)란 무엇인가</a>를 먼저 보고 와도 좋아요.</p>
 
     <h2 id="steps"><span class="hl">단계마다 남는 흔적</span> — 제 배포 로그와 콘솔에서 찾을 곳</h2>
     <p>제가 연습용 앱 <code>hello</code>를 처음 배포했을 때 터미널에 이런 줄이 순서대로 찍혔어요. 전체는 약 2분이 걸렸어요. 배포 명령 하나가 만든 흔적을 단계별로 찾아볼 수 있어요.</p>
@@ -557,6 +557,10 @@ uvicorn&gt;=0.30</code></pre>
     <a class="post-nav" href="cloud-run-operating-ai-service.html">
       <span class="post-nav-label">(3)</span>
       <span class="post-nav-title">배포한 AI 서비스가 말없이 틀리는 순간 — 타임아웃, 인스턴스, 비용, 로그</span>
+    </a>
+    <a class="post-nav" href="dockerfile-fixing-runtime-environment.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">로컬에서는 되는데 서버에서만 안 되는 이유 — Dockerfile로 실행 환경 정하기</span>
     </a>
   </main>
   </div>
