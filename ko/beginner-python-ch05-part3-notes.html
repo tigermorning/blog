@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>날짜와 시간·ast 정리 — datetime, timedelta, 추상 구문 트리 - Tigermorning</title>
+  <meta name="description" content="위키독스 『왕초보를 위한 Python』 5.3.6 날짜와 시간 다루기와 5.3.9 [심화] ast를 짧게 정리했습니다. datetime, timedelta, strftime, strptime 쓰는 법.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="날짜와 시간·ast 정리 — datetime, timedelta, 추상 구문 트리">
+  <meta property="og:description" content="datetime과 ast를 문법 뜻만 짧게 정리한 글입니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/beginner-python-ch05-part3-notes.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">날짜와 시간·ast 정리</span> — 왕초보 Python 5장 모듈 (5.3 ②)</h1>
+    <p class="post-date">2026. 10. 26.</p>
+    <p class="post-date">※ 이 글은 위키독스 <a href="https://wikidocs.net/book/2" target="_blank" rel="noopener">『왕초보를 위한 Python』</a> 5.3.6절(날짜와 시간 다루기)과 5.3.9절([심화] ast)을 제 나름의 언어로 짧게 정리한 것입니다. 앞 내용은 <a href="beginner-python-ch05-part2-notes.html">5.3 ~ 5.3.4 정리</a>에 있어요. 코드 실행 결과는 파이썬 3.14.7로 실제로 돌려서 넣었어요.</p>
+
+    <p class="one-liner">날짜는 datetime 으로 만들고, 빼면 기간(timedelta)이 되고, strftime·strptime 으로 글자와 오가요.</p>
+
+<h2><span class="hl">1. 날짜와 시간 — datetime (5.3.6)</span></h2>
+<div class="table-scroll fill"><table><thead><tr><th>하고 싶은 일</th><th>쓰는 것</th></tr></thead><tbody><tr><td>날짜·시간 만들기</td><td><code>datetime(연, 월, 일, 시, 분, 초)</code> — 시·분·초는 생략하면 0</td></tr><tr><td>지금 시각</td><td><code>datetime.now()</code></td></tr><tr><td>두 시각의 차이</td><td><code>datetime</code> 두 개를 빼면 <code>timedelta</code>(기간)가 나온다</td></tr><tr><td>날짜 → 글자</td><td><code>날짜.strftime('형식')</code></td></tr><tr><td>글자 → 날짜</td><td><code>datetime.strptime('글자', '형식')</code></td></tr><tr><td>날짜에 기간 더하고 빼기</td><td><code>날짜 + timedelta(days=7)</code>, <code>날짜 - timedelta(hours=36)</code></td></tr></tbody></table></div>
+<p>※ <code>datetime</code> 모듈 안에 같은 이름의 <code>datetime</code>이 있어서 보통 <code>from datetime import datetime, timedelta</code>로 가져와요.</p>
+<h3>만들기와 차이 계산</h3>
+<pre><code>from datetime import datetime                        # datetime 모듈에서 datetime 을 가져와 주세요
+d1 = datetime(2024, 2, 27, 12, 30)                   # d1 에 2024년 2월 27일 12시 30분을 담아 주세요
+d2 = datetime(2024, 2, 27)                           # d2 에 2024년 2월 27일(시각은 0시)을 담아 주세요
+print(d1)                                            # d1 을 화면에 보여 주세요
+print(d2)                                            # d2 를 화면에 보여 주세요
+print(datetime(2024, 3, 5) - d2)                     # 2024년 3월 5일에서 d2 를 뺀 기간을 화면에 보여 주세요
+print(datetime(2023, 3, 5) - datetime(2023, 2, 27))  # 2023년 3월 5일에서 2023년 2월 27일을 뺀 기간을 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">2024-02-27 12:30:00
+2024-02-27 00:00:00
+7 days, 0:00:00
+6 days, 0:00:00</code></pre>
+<p>※ 교재 예제는 <code>datetime(2024, 2, 27)</code>과 <code>datetime(2024, 3, 5)</code>의 차이 옆에 <code>6 days, 0:00:00</code>이라고 적어 두었는데, 직접 돌리면 <b>7 days</b>가 나와요. 2024년은 윤년이라 2월이 29일까지 있어서 하루가 더 끼기 때문이고, 윤년이 아닌 2023년은 6 days 예요.</p>
+<h3>글자로 바꾸기와 읽어 오기</h3>
+<div class="table-scroll fill"><table><thead><tr><th>형식 글자</th><th>뜻</th><th>예 (2024-02-27 00:53:38)</th></tr></thead><tbody><tr><td><code>%Y</code></td><td>네 자리 연도</td><td><code>2024</code></td></tr><tr><td><code>%m</code></td><td>두 자리 월</td><td><code>02</code></td></tr><tr><td><code>%d</code></td><td>두 자리 일</td><td><code>27</code></td></tr><tr><td><code>%H</code> <code>%M</code> <code>%S</code></td><td>24시간제 시·분·초</td><td><code>00</code> <code>53</code> <code>38</code></td></tr><tr><td><code>%B</code></td><td>월 이름(영어)</td><td><code>February</code></td></tr></tbody></table></div>
+<pre><code>from datetime import datetime                            # datetime 모듈에서 datetime 을 가져와 주세요
+d = datetime(2024, 2, 27, 0, 53, 38)                     # d 에 2024년 2월 27일 0시 53분 38초를 담아 주세요
+print(d.strftime('%Y-%m-%d %H:%M:%S'))                   # d 를 '연-월-일 시:분:초' 글자로 바꿔 화면에 보여 주세요
+print(d.strftime('%B %d, %Y'))                           # d 를 '월이름 일, 연' 글자로 바꿔 화면에 보여 주세요
+e = datetime.strptime('27 February, 2024', '%d %B, %Y')  # e 에 '27 February, 2024' 글자를 날짜로 읽어 담아 주세요
+print(e)                                                 # e 를 화면에 보여 주세요
+print(type(e))                                           # e 의 자료형을 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">2024-02-27 00:53:38
+February 27, 2024
+2024-02-27 00:00:00
+&lt;class 'datetime.datetime'&gt;</code></pre>
+<p>※ <code>strftime</code>은 날짜를 글자로, <code>strptime</code>은 글자를 날짜로 바꾸는 서로 반대 방향이에요. 두 함수 모두 <b>같은 형식 글자</b>를 쓰니, 읽을 글자의 모양에 맞춰 형식을 적어요. <code>%B</code>는 컴퓨터의 언어 설정에 따라 이름이 달라질 수 있어서, 이 글은 영어 이름이 나오는 환경에서 돌렸어요.</p>
+<p>※ 현재 시각은 실행할 때마다 달라서 값 대신 모양만 확인했어요.</p>
+<pre><code>from datetime import datetime                       # datetime 모듈에서 datetime 을 가져와 주세요
+now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # now 에 지금 시각을 '연-월-일 시:분:초' 글자로 담아 주세요
+print(len(now))                                     # now 의 글자 수를 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">19</code></pre>
+<h3>기간 더하고 빼기 — timedelta</h3>
+<pre><code>from datetime import datetime, timedelta  # datetime 모듈에서 datetime 과 timedelta 를 가져와 주세요
+d = datetime(2024, 2, 27, 12, 0)          # d 에 2024년 2월 27일 12시를 담아 주세요
+print(d + timedelta(days=7))              # d 에 7일을 더해 화면에 보여 주세요
+print(d - timedelta(hours=36))            # d 에서 36시간을 빼 화면에 보여 주세요
+print(d + timedelta(days=1, hours=3))     # d 에 1일 3시간을 더해 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">2024-03-05 12:00:00
+2024-02-26 00:00:00
+2024-02-28 15:00:00</code></pre>
+<p>※ <code>timedelta</code>의 이름 붙인 값은 <code>days</code>, <code>hours</code>, <code>minutes</code>, <code>seconds</code> 등이에요. 월과 연은 길이가 달라서 <code>timedelta</code>에 없어요. 달력이 알아서 맞춰 주니 윤년도 따로 계산하지 않아도 돼요.</p>
+<h3>시간대(time zone)</h3>
+<p>교재는 서울 시각을 얻으려고 <code>pytz</code>를 써요. <code>pytz</code>는 파이썬에 들어 있지 않아 따로 설치해야 하는 외부 모듈이에요(이 컴퓨터에서는 <code>import pytz</code>가 <code>ModuleNotFoundError</code>로 실패했어요). 파이썬에 처음부터 들어 있는 <code>zoneinfo</code>로도 시간대를 붙일 수 있어요.</p>
+<pre><code>from datetime import datetime                                    # datetime 모듈에서 datetime 을 가져와 주세요
+from zoneinfo import ZoneInfo                                    # zoneinfo 모듈에서 ZoneInfo 를 가져와 주세요
+d = datetime(2024, 2, 27, 12, 0, tzinfo=ZoneInfo('Asia/Seoul'))  # d 에 서울 시간대의 2024년 2월 27일 12시를 담아 주세요
+print(d)                                                         # d 를 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">2024-02-27 12:00:00+09:00</code></pre>
+<p>※ 끝의 <code>+09:00</code>은 세계 표준시보다 9시간 빠르다는 뜻이에요.</p>
+<h2><span class="hl">2. [심화] 파이썬이 식을 읽는 모양 — ast (5.3.9)</span></h2>
+<p>※ 교재의 목차에는 5.3.7 다음이 바로 5.3.9이고 5.3.8은 보이지 않았어요. 이 글은 목차에 있는 절을 따라 정리했어요.</p>
+<div class="table-scroll fill"><table><thead><tr><th>항목</th><th>내용</th></tr></thead><tbody><tr><td><code>ast</code></td><td>추상 구문 트리(Abstract Syntax Tree). 파이썬이 코드를 어떻게 나누어 이해하는지 들여다보는 모듈</td></tr><tr><td><code>ast.parse(식, mode='eval')</code></td><td>식 하나를 트리로 만든다. 맨 위에는 <code>Expression</code>이 오고, 실제 식은 <code>.body</code>에 들어 있다</td></tr><tr><td><code>ast.dump(트리, indent=2)</code></td><td>트리를 들여쓰기해서 글자로 보여 준다</td></tr><tr><td><code>BinOp</code></td><td>이항 연산. <code>left</code>(왼쪽), <code>op</code>(연산자), <code>right</code>(오른쪽)로 이뤄진다</td></tr><tr><td><code>Constant</code></td><td>숫자·글자 같은 값 그 자체 (<code>value=8</code>)</td></tr></tbody></table></div>
+<pre><code>import ast                                         # ast 모듈을 가져와 주세요
+tree = ast.parse('8 // 2 * (2 + 2)', mode='eval')  # tree 에 식 '8 // 2 * (2 + 2)' 를 트리로 만들어 담아 주세요
+print(ast.dump(tree, indent=2))                    # tree 를 들여쓰기해서 화면에 보여 주세요
+print(eval(compile(tree, '&lt;ast&gt;', 'eval')))        # tree 를 계산한 값을 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">Expression(
+  body=BinOp(
+    left=BinOp(
+      left=Constant(value=8),
+      op=FloorDiv(),
+      right=Constant(value=2)),
+    op=Mult(),
+    right=BinOp(
+      left=Constant(value=2),
+      op=Add(),
+      right=Constant(value=2))))
+16</code></pre>
+<p>※ 맨 바깥 <code>BinOp</code>가 곱셈(<code>Mult</code>)이고, 왼쪽에 <code>8 // 2</code>, 오른쪽에 <code>2 + 2</code>가 매달려 있어요. 안쪽에 있는 것부터 계산돼서 <code>(8 // 2) × (2 + 2) = 4 × 4 = 16</code>이에요. 트리 그대로 계산하는 마지막 줄은 <code>compile()</code>과 <code>eval()</code> 두 함수를 이어 쓴 것인데, 지금은 "트리도 계산할 수 있다" 정도만 알면 돼요. 교재도 이 내용을 몰라도 파이썬을 쓰는 데 지장이 없다고 해요.</p>
+<h2><span class="hl">3. 한눈에 정리</span></h2>
+<div class="table-scroll fill"><table><thead><tr><th>하고 싶은 일</th><th>쓰는 것</th></tr></thead><tbody><tr><td>날짜 만들기</td><td><code>datetime(2024, 2, 27)</code></td></tr><tr><td>날짜 차이</td><td><code>날짜2 - 날짜1</code> → <code>timedelta</code> (윤년 반영)</td></tr><tr><td>날짜 → 글자</td><td><code>날짜.strftime('%Y-%m-%d')</code></td></tr><tr><td>글자 → 날짜</td><td><code>datetime.strptime('2024-02-27', '%Y-%m-%d')</code></td></tr><tr><td>내일·일주일 뒤</td><td><code>날짜 + timedelta(days=1)</code>, <code>timedelta(days=7)</code></td></tr><tr><td>식의 구조 보기</td><td><code>ast.dump(ast.parse(식, mode='eval'), indent=2)</code></td></tr></tbody></table></div>
+
+    <h2><span class="hl">함께 보기</span></h2>
+    <ul>
+      <li><a href="beginner-python-ch05-part3-answers.html">문제 해설 — 두음법칙 끝말 잇기·datetime으로 내일 날짜 구하기</a> — 5.3.5 끝말 잇기 (2)와 5.3.7 내일의 날짜 구하기 (2)를 풀어요.</li>
+      <li><a href="beginner-python-ch05-part3-practice.html">실습 문제 12개 — 초급·중급·고급으로 datetime·두음법칙·ast 코드 읽고 결과 예측하기</a> — 정리한 내용을 직접 문제로 확인해요.</li>
+      <li><a href="beginner-python-ch05-part2-notes.html">여러 가지 모듈 정리 — sys·os·re, random, string, 시저 암호</a> — 앞 범위(5.3 ~ 5.3.4)예요.</li>
+      <li><a href="https://wikidocs.net/232103" target="_blank" rel="noopener">5.3.6 날짜와 시간 다루기 (위키독스)</a> — 이 글이 다룬 원래 교재예요.</li>
+    </ul>
+
+    <a class="post-nav" href="beginner-python-ch05-part3-answers.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">문제 해설 — 두음법칙 끝말 잇기·datetime으로 내일 날짜 구하기</span>
+    </a>
+
+    <h3 id="series-list">"왕초보 Python 5장 모듈 (5.3 여러 가지 모듈 ②)" 시리즈</h3>
+    <p class="post-date">(1) 날짜와 시간·ast 정리 — datetime, timedelta, 추상 구문 트리 (이 글)</p>
+    <a class="post-nav" href="beginner-python-ch05-part3-answers.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">문제 해설 — 두음법칙 끝말 잇기·datetime으로 내일 날짜 구하기</span>
+    </a>
+    <a class="post-nav" href="beginner-python-ch05-part3-practice.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">실습 문제 12개 — 초급·중급·고급으로 datetime·두음법칙·ast 코드 읽고 결과 예측하기</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
