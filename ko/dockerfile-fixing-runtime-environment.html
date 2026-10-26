@@ -705,7 +705,7 @@ docker image ls routine-stamp:local</code></pre>
     </svg>
     <figcaption>빨간 칸이 새로 만든 줄이에요. 코드 파일을 바꾼 세 번째 열은 점선 아래만 다시 만들어요. README만 바꾼 빌드는 두 번째 열과 같아서 그림에서 뺐어요.</figcaption>
     </figure>
-    <p><strong>읽는 법:</strong> 세 열을 비교해요. 첫째 열은 처음이라 전부 새로 만들고, 둘째 열은 바뀐 것이 없어 전부 재사용해요. 셋째 열은 이미지에 들어가는 코드 파일을 바꿨기 때문에 점선 아래의 두 줄만 다시 만들어요. 위쪽 줄(tesseract 설치)을 바꾸면 그 아래가 전부 빨간 칸이 돼요. 이건 apt 줄을 바꿨을 때 아래 6단계가 모두 새로 실행된 것으로 직접 확인했어요.</p>
+    <p><strong>읽는 법:</strong> 세 열을 비교해요. 첫째 열은 처음이라 전부 새로 만들고, 둘째 열은 바뀐 것이 없어 전부 재사용해요. 셋째 열은 이미지에 들어가는 코드 파일을 바꿨기 때문에 점선 아래의 두 줄만 다시 만들어요. Dockerfile 파일은 위에서 아래로 한 줄씩 실행돼요(그림 4는 쌓이는 모습이라 거꾸로, 아래가 먼저이고 위가 나중이에요). 어느 줄을 바꾸면 그 줄과 그 뒤에 실행되는 줄은 모두 다시 실행되고(빨간 칸), 그 앞 줄은 지난 결과를 그대로 써요(재사용). 예를 들어 tesseract 를 설치하는 apt 줄(7단계 중 2번째)을 바꾸면 2~7번, 6단계가 모두 새로 실행돼요.</p>
     <p>2차는 바뀐 것이 없으니 모든 단계를 건너뛰고 2.1초에 끝났어요. 4차는 이미지에 들어가는 코드 파일을 바꿨더니 <strong><code>COPY . .</code>부터 아래만</strong> 다시 만들고(아래의 <code>useradd</code>도 함께 다시 실행돼요), 24초짜리 tesseract 설치와 <code>pip install</code>은 건너뛰어 3.5초에 끝났어요. 코드 한 줄을 고칠 때마다 설치를 처음부터 하지 않는 이유가 이 숫자예요.</p>
     <p><strong>3차는 제가 예상과 달라 당황한 장면이에요.</strong> <code>README.md</code>를 바꿨는데 <code>COPY . .</code>까지 CACHED였어요. 원인은 제가 <code>.dockerignore</code>에 <code>README.md</code>를 넣어 둔 것이었어요. 이미지 안 <code>/app</code>에도 <code>README.md</code>가 없다는 것을 컨테이너에서 확인했어요. <strong><code>.dockerignore</code>에 적힌 파일은 빌드에 보내지 않으니, 바꿔도 Docker 눈에는 바뀐 것이 없어요.</strong> 그래서 이미지에 실제로 들어가는 파일(<code>app/__init__.py</code>)로 다시 확인했어요. 두 파일 모두 확인 뒤 <code>git checkout</code>으로 되돌렸어요.</p>
     <p>이 캐시를 로컬 <code>docker build</code>에서 직접 본 것이고, 서버(Cloud Build)의 배포 빌드에서도 같은 캐시가 쓰이는지는 확인하지 못했어요.</p>
