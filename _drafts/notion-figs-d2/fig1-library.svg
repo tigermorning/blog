@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 322" width="760" height="322">
+<defs>
+<marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a8177"/></marker>
+<marker id="ahT" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f9e8f"/></marker>
+</defs>
+<style>
+text { font-family: 'Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR',sans-serif; fill:#3b3630; }
+.t { font-size:15px; } .s { font-size:12.5px; } .b { font-weight:700; } .h { font-size:18px; font-weight:700; }
+.m { font-family:Consolas,'Cascadia Mono',monospace; }
+.march { stroke-dasharray:6 6; animation: march .9s linear infinite; }
+@keyframes march { to { stroke-dashoffset:-12; } }
+.blink { animation: blink 2.4s ease-in-out infinite; }
+@keyframes blink { 0%,100% { opacity:1; } 50% { opacity:.35; } }
+</style>
+<rect width="760" height="322" fill="#fffdf9"/>
+<text x="380" y="26" text-anchor="middle" class="h">「이 버전 이거나 더 새 버전이면 아무거나(&gt;=, 이상)」로 적으면</text><text x="380" y="50" text-anchor="middle" class="h">빌드할 때마다 그 순간의 최신을 받는다</text><g class=""><rect x="30" y="66" width="700" height="44" rx="9" fill="#f4f1ec" stroke="#8a8177" stroke-width="2"/><text x="380.0" y="93.0" text-anchor="middle" class="t m">requirements.txt   fastapi&gt;=0.115   pillow&gt;=10.4   (실제 파일)</text></g><text x="150" y="134" text-anchor="middle" class="t b">월요일</text><text x="150" y="154" text-anchor="middle" class="s">staging에서 빌드·시험</text><text x="380" y="134" text-anchor="middle" class="t b">화요일</text><text x="380" y="154" text-anchor="middle" class="s">라이브러리 새 버전 발표</text><text x="610" y="134" text-anchor="middle" class="t b">수요일</text><text x="610" y="154" text-anchor="middle" class="s">main 머지 → 다시 빌드</text><g class=""><rect x="60" y="164" width="180" height="86" rx="9" fill="#dff3f0" stroke="#1f9e8f" stroke-width="2.5"/><text x="150.0" y="193.0" text-anchor="middle" class="t b">staging 상자</text><text x="150.0" y="212.0" text-anchor="middle" class="s m">fastapi 0.162</text><text x="150.0" y="231.0" text-anchor="middle" class="s">(오늘 빌드 로그 값)</text></g><g class=""><rect x="290" y="164" width="180" height="86" rx="9" fill="#f4f1ec" stroke="#8a8177" stroke-width="2" stroke-dasharray="5 4"/><text x="380.0" y="202.5" text-anchor="middle" class="t b">새 버전 0.163 발표</text><text x="380.0" y="221.5" text-anchor="middle" class="s">(예시: 노드의 설명)</text></g><g class="blink"><rect x="520" y="164" width="180" height="86" rx="9" fill="#fbefd5" stroke="#e8a33d" stroke-width="2.5"/><text x="610.0" y="193.0" text-anchor="middle" class="t b">production 상자</text><text x="610.0" y="212.0" text-anchor="middle" class="s m">fastapi 0.163</text><text x="610.0" y="231.0" text-anchor="middle" class="s">← 시험 안 한 새 재료</text></g><line x1="245" y1="207" x2="285" y2="207" stroke="#8a8177" stroke-width="2.4" class="march" marker-end="url(#ah)"/><line x1="475" y1="207" x2="515" y2="207" stroke="#8a8177" stroke-width="2.4" class="march" marker-end="url(#ah)"/><text x="380" y="280" text-anchor="middle" class="s b">시험한 상자(staging) ≠ 내보낸 상자(production)  →  staging에서 한 확인이 production에 대해 아무것도 보장하지 못한다</text><text x="380" y="304" text-anchor="middle" class="s">※ 0.163은 노드가 든 가상의 예시이고 이 프로젝트에서 실제로 일어난 사고가 아닙니다. 0.162는 오늘 빌드 로그의 fastapi-0.162.0.</text>
+</svg>

@@ -896,7 +896,7 @@ docker rmi routine-stamp:try-a routine-stamp:try-b</code></pre>
       <li>이 글의 숫자(53초, 2.1초, 385MB, 94.9MB 등)는 한 컴퓨터에서 한 번씩 잰 값이에요. 다시 하면 달라질 수 있어요.</li>
       <li>Cloud Build(서버 쪽 빌드)에서도 레이어 캐시가 쓰이는지는 확인하지 못했어요.</li>
       <li><code>.dockerignore</code>의 <code>.env</code> 줄이 실제로 키 파일을 막는지는 이 폴더에 <code>.env</code>가 없어서 증명하지 못했어요.</li>
-      <li>이미지를 한 번만 만들어 두 환경에 보내는 방법, 이미지 태그와 저장 공간 정리는 다루지 않았어요. 이 시리즈에서 다음에 이어 가요.</li>
+      <li>이미지를 한 번만 만들어 두 환경에 보내는 방법, 이미지 태그와 저장 공간 정리는 다루지 않았어요. 다음 편 <a href="build-once-promote-image.html">시험한 이미지와 내보낸 이미지가 같다는 증거 (5)</a>에서 이어 가요.</li>
       <li>OCR 기능은 이 글의 실습용이에요. 도장판 앱에 이 기능을 실제로 넣을지는 앱의 기획 문서를 다시 잡은 뒤에 정해요.</li>
     </ul>
 
@@ -941,6 +941,10 @@ docker rmi routine-stamp:try-a routine-stamp:try-b</code></pre>
       <span class="post-nav-title">배포한 AI 서비스가 말없이 틀리는 순간 — 타임아웃, 인스턴스, 비용, 로그</span>
     </a>
     <p class="post-date">(4) 로컬에서는 되는데 서버에서만 안 되는 이유 — Dockerfile로 실행 환경 정하기 (이 글)</p>
+    <a class="post-nav" href="build-once-promote-image.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">시험한 이미지와 내보낸 이미지가 같다는 증거 — 이미지를 한 번만 만들어 그대로 보내기</span>
+    </a>
   </main>
   </div>
 

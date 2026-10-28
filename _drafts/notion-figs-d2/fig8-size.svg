@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 282" width="760" height="282">
+<defs>
+<marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a8177"/></marker>
+<marker id="ahT" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f9e8f"/></marker>
+</defs>
+<style>
+text { font-family: 'Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR',sans-serif; fill:#3b3630; }
+.t { font-size:15px; } .s { font-size:12.5px; } .b { font-weight:700; } .h { font-size:18px; font-weight:700; }
+.m { font-family:Consolas,'Cascadia Mono',monospace; }
+.march { stroke-dasharray:6 6; animation: march .9s linear infinite; }
+@keyframes march { to { stroke-dashoffset:-12; } }
+.blink { animation: blink 2.4s ease-in-out infinite; }
+@keyframes blink { 0%,100% { opacity:1; } 50% { opacity:.35; } }
+
+.bar1 { transform-box: fill-box; transform-origin: left; animation: grow1 6s ease-out infinite; }
+.bar2 { transform-box: fill-box; transform-origin: left; animation: grow2 6s ease-out infinite; }
+@keyframes grow1 { 0% { transform: scaleX(0); } 20%,90% { transform: scaleX(1); } 100% { transform: scaleX(0); } }
+@keyframes grow2 { 0%,10% { transform: scaleX(0); } 45%,90% { transform: scaleX(1); } 100% { transform: scaleX(0); } }
+</style>
+<rect width="760" height="282" fill="#fffdf9"/>
+<text x="380" y="28" text-anchor="middle" class="h">FROM 한 줄만 바꿨더니 이미지가 약 3.8배</text><text x="24" y="70" text-anchor="start" class="t b">slim 기반</text><rect class="bar1" x="130" y="52" width="164" height="30" rx="6" fill="#1f9e8f"/><text x="306" y="73" text-anchor="start" class="t b">431MB</text><text x="24" y="130" text-anchor="start" class="t b">전체판 기반</text><rect class="bar2" x="130" y="112" width="620" height="30" rx="6" fill="#e8a33d"/><text x="560" y="133" text-anchor="middle" class="t b">1.63GB</text><text x="380" y="190" text-anchor="middle" class="s b">코드·설치 목록은 같고 FROM python:3.13-slim-bookworm → python:3.13-bookworm 한 줄만 다름 (+약 1.2GB)</text><text x="380" y="222" text-anchor="middle" class="s">※ 위는 로컬 크기(압축 풀린 값). AR에는 압축해서 저장: slim 기반 이미지가 약 106MiB(111,483,083바이트)였다.</text><text x="380" y="244" text-anchor="middle" class="s">전체판 베이스만 내려받은 양이 약 383MB(압축) → 이미지 하나가 무료 0.5GB의 약 77% 이상일 것으로 추정</text><text x="380" y="264" text-anchor="middle" class="s">(push해 보지 않아 실제 압축 크기는 모름)</text>
+</svg>

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 720" width="760" height="720">
+<defs>
+<marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a8177"/></marker>
+<marker id="ahT" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f9e8f"/></marker>
+<marker id="ahA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e8a33d"/></marker>
+</defs>
+<style>
+text { font-family: 'Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR',sans-serif; fill:#3b3630; }
+.t { font-size:24px; } .s { font-size:20px; } .b { font-weight:700; } .h { font-size:28px; font-weight:700; }
+.m { font-family:Consolas,'Cascadia Mono',monospace; font-size:23px; }
+.march { stroke-dasharray:8 8; animation: march .75s linear infinite; }
+@keyframes march { to { stroke-dashoffset:-16; } }
+.hl0 { animation: hl 7.5s ease-in-out 0.0s infinite; }.hl1 { animation: hl 7.5s ease-in-out 1.2s infinite; }.hl2 { animation: hl 7.5s ease-in-out 2.4s infinite; }.hl3 { animation: hl 7.5s ease-in-out 3.5999999999999996s infinite; }
+@keyframes hl { 0%,14% { opacity:1; } 18%,86% { opacity:.38; } 100% { opacity:1; } }
+.swap1 { animation: swap1 7.5s ease-in-out infinite; }
+.swap2 { animation: swap2 7.5s ease-in-out infinite; }
+@keyframes swap1 { 0%,30% { opacity:1; } 38%,92% { opacity:0; } 100% { opacity:1; } }
+@keyframes swap2 { 0%,30% { opacity:0; } 38%,92% { opacity:1; } 100% { opacity:0; } }
+</style>
+<rect width="760" height="720" fill="#fffdf9"/>
+<text x="380" y="46" text-anchor="middle" class="h">화면의 v 값은 이렇게 생긴다</text><g class="hl0"><rect x="60" y="78" width="640" height="108" rx="14" fill="#f4f1ec" stroke="#8a8177" stroke-width="3"/><text x="380" y="114" text-anchor="middle" class="t b">① index.html에 미리 적어 둔 자리 표시</text><text x="380" y="160" text-anchor="middle" class="m b">var v='__COMMIT__'</text></g><line x1="380" y1="190" x2="380" y2="226" stroke="#e8a33d" stroke-width="4" class="march" marker-end="url(#ahA)"/><g class="hl1"><rect x="60" y="232" width="640" height="132" rx="14" fill="#fbefd5" stroke="#e8a33d" stroke-width="3"/><text x="380" y="270" text-anchor="middle" class="t b">② 배포할 때 sed가 글자를 바꾼다</text><text x="380" y="308" text-anchor="middle" class="t">__COMMIT__ → 커밋 앞 7자리</text><text x="380" y="346" text-anchor="middle" class="s">(글자 교체 명령 = sed)</text></g><line x1="380" y1="368" x2="380" y2="404" stroke="#1f9e8f" stroke-width="4" class="march" marker-end="url(#ahT)"/><g class="hl2"><rect x="60" y="410" width="640" height="108" rx="14" fill="#dff3f0" stroke="#1f9e8f" stroke-width="3"/><text x="380" y="446" text-anchor="middle" class="t b">③ 이미지 안에 들어간 파일</text><g class="swap1"><text x="380" y="494" text-anchor="middle" class="m b">var v='__COMMIT__'</text></g><g class="swap2"><text x="380" y="494" text-anchor="middle" class="m b">var v='92d2c86'</text></g></g><line x1="380" y1="522" x2="380" y2="558" stroke="#1f9e8f" stroke-width="4" class="march" marker-end="url(#ahT)"/><g class="hl3"><rect x="60" y="564" width="640" height="132" rx="14" fill="#ffffff" stroke="#1f9e8f" stroke-width="4"/><rect x="60" y="564" width="640" height="40" rx="14" fill="#dff3f0" stroke="#1f9e8f" stroke-width="4"/><text x="380" y="592" text-anchor="middle" class="t b">④ 앱 화면 (구석)</text><rect x="256" y="624" width="248" height="56" rx="12" fill="#dff3f0" stroke="#1f9e8f" stroke-width="3"/><text x="380" y="662" text-anchor="middle" class="m b">v 92d2c86</text></g>
+</svg>

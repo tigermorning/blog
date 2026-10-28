@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 326" width="760" height="326">
+<defs>
+<marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a8177"/></marker>
+<marker id="ahT" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f9e8f"/></marker>
+</defs>
+<style>
+text { font-family: 'Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR',sans-serif; fill:#3b3630; }
+.t { font-size:15px; } .s { font-size:12.5px; } .b { font-weight:700; } .h { font-size:18px; font-weight:700; }
+.m { font-family:Consolas,'Cascadia Mono',monospace; }
+.march { stroke-dasharray:6 6; animation: march .9s linear infinite; }
+@keyframes march { to { stroke-dashoffset:-12; } }
+.blink { animation: blink 2.4s ease-in-out infinite; }
+@keyframes blink { 0%,100% { opacity:1; } 50% { opacity:.35; } }
+
+.sticker { animation: slide 6s ease-in-out infinite; }
+@keyframes slide { 0%,20% { transform: translateX(0); } 45%,70% { transform: translateX(300px); } 95%,100% { transform: translateX(0); } }
+</style>
+<rect width="760" height="326" fill="#fffdf9"/>
+<text x="380" y="28" text-anchor="middle" class="h">태그는 스티커(옮겨 붙는다), 다이제스트는 지문(상자에서 안 떨어진다)</text><g class=""><rect x="70" y="74" width="250" height="150" rx="9" fill="#dff3f0" stroke="#1f9e8f" stroke-width="2.5"/><text x="195.0" y="135.0" text-anchor="middle" class="t b">상자 A</text><text x="195.0" y="154.0" text-anchor="middle" class="s">지문(다이제스트)</text><text x="195.0" y="173.0" text-anchor="middle" class="s m">sha256:64c25be3bf9d…</text></g><g class=""><rect x="370" y="74" width="250" height="150" rx="9" fill="#dff3f0" stroke="#1f9e8f" stroke-width="2.5"/><text x="495.0" y="135.0" text-anchor="middle" class="t b">상자 B</text><text x="495.0" y="154.0" text-anchor="middle" class="s">지문(다이제스트)</text><text x="495.0" y="173.0" text-anchor="middle" class="s m">sha256:5d64baf7278c…</text></g><g class="sticker"><rect x="100" y="186" width="190" height="30" rx="15" fill="#fbefd5" stroke="#e8a33d" stroke-width="2"/><text x="195" y="206" text-anchor="middle" class="s b m">태그: 같은 이름표</text></g><text x="195" y="250" text-anchor="middle" class="s">내용이 같아야 지문이 같다 → 지문은 바뀔 수 없다</text><text x="495" y="250" text-anchor="middle" class="s">태그는 다른 상자로 옮겨 붙일 수 있다</text><text x="380" y="290" text-anchor="middle" class="s b">그래서 사람이 찾을 땐 태그(커밋 SHA), 실제로 무엇이 실행 중인지는 지문(다이제스트)으로 확인한다</text><text x="380" y="312" text-anchor="middle" class="s">※ 오늘 AR의 이미지는 태그가 모두 달랐음(커밋 SHA). 같은 태그가 옮겨 가는 장면은 개념 설명용입니다.</text>
+</svg>

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 584" width="760" height="584">
+<defs>
+<marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a8177"/></marker>
+<marker id="ahT" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f9e8f"/></marker>
+<marker id="ahA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e8a33d"/></marker>
+</defs>
+<style>
+text { font-family: 'Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR',sans-serif; fill:#3b3630; }
+.t { font-size:24px; } .s { font-size:20px; } .b { font-weight:700; } .h { font-size:28px; font-weight:700; }
+.m { font-family:Consolas,'Cascadia Mono',monospace; font-size:23px; }
+.march { stroke-dasharray:8 8; animation: march .75s linear infinite; }
+@keyframes march { to { stroke-dashoffset:-16; } }
+
+.copy { animation: copy 6s ease-in-out infinite; }
+@keyframes copy {
+  0%,10% { transform: translate(0,0); opacity:1; }
+  42% { transform: translate(425px,-15px); opacity:1; }
+  78% { transform: translate(425px,-15px); opacity:1; }
+  90%,100% { transform: translate(425px,-15px); opacity:0; }
+}
+.tagshow { animation: tagshow 6s ease-in-out infinite; }
+@keyframes tagshow { 0%,41% { opacity:0; } 46%,88% { opacity:1; } 96%,100% { opacity:0; } }
+.dig { animation: dig 6s ease-in-out infinite; }
+@keyframes dig { 0%,52% { opacity:0; transform: scale(.85); } 62%,88% { opacity:1; transform: scale(1); } 96%,100% { opacity:0; } }
+.dig { transform-box: fill-box; transform-origin: center; }
+.pulse { animation: pulse 6s ease-in-out infinite; }
+@keyframes pulse { 0%,40% { opacity:1; } 50%,80% { opacity:.55; } 90%,100% { opacity:1; } }
+</style>
+<rect width="760" height="584" fill="#fffdf9"/>
+<text x="380" y="44" text-anchor="middle" class="h">SHA·태그·다이제스트는 이렇게 다르다</text><rect x="24" y="100" width="270" height="220" rx="14" fill="#f4f1ec" stroke="#8a8177" stroke-width="3"/><text x="159" y="142" text-anchor="middle" class="t b">커밋 (코드)</text><text x="159" y="182" text-anchor="middle" class="s">커밋 SHA</text><text x="159" y="226" text-anchor="middle" class="m b">92d2c86647dd…</text><text x="159" y="270" text-anchor="middle" class="s">코드의 지문</text><text x="159" y="298" text-anchor="middle" class="s">git이 자동으로 만든다</text><rect x="430" y="84" width="306" height="380" rx="14" fill="#dff3f0" stroke="#1f9e8f" stroke-width="3.5"/><text x="583" y="124" text-anchor="middle" class="t b">이미지 (상자)</text><rect x="450" y="142" width="266" height="104" rx="14" fill="#ffffff" stroke="#e8a33d" stroke-width="3" stroke-dasharray="8 6"/><text x="583" y="172" text-anchor="middle" class="s b">태그 (이름표)</text><rect x="450" y="290" width="266" height="154" rx="14" fill="#ffffff" stroke="#1f9e8f" stroke-width="3" stroke-dasharray="8 6"/><text x="583" y="318" text-anchor="middle" class="s b">다이제스트 (지문)</text><text x="583" y="426" text-anchor="middle" class="s">내용에서 자동 계산</text><g class="copy"><rect x="40" y="194" width="236" height="42" rx="21" fill="#fbefd5" stroke="#e8a33d" stroke-width="3"/><text x="158" y="223" text-anchor="middle" class="m b">92d2c86647dd…</text></g><line x1="296" y1="210" x2="426" y2="168" stroke="#e8a33d" stroke-width="3.5" class="march" marker-end="url(#ahA)"/><text x="361" y="176" text-anchor="middle" class="s b">복사</text><g class="dig"><rect x="465" y="338" width="236" height="46" rx="23" fill="#dff3f0" stroke="#1f9e8f" stroke-width="3"/><text x="583" y="369" text-anchor="middle" class="m b">61e4310e0460…</text></g><text x="380" y="512" text-anchor="middle" class="t b">태그 = SHA를 복사한 이름표 → 글자가 같다</text><text x="380" y="552" text-anchor="middle" class="t b">다이제스트 = 이미지 내용에서 따로 계산 → 글자가 다르다</text>
+</svg>
