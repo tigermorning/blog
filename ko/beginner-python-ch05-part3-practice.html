@@ -394,7 +394,7 @@ main, .problem, .p-body, .sol-body, .level { min-width: 0; }
     <a class="backlink" href="beginner-python-ch05-part3-answers.html">← 이전 편: 문제 해설 — 두음법칙 끝말 잇기·datetime으로 내일 날짜 구하기</a>
     <div class="eyebrow"><b>왕초보를 위한 Python</b> · 5장 모듈 · 5.3.5 – 5.3.9</div>
     <h1><span class="prompt">&gt;&gt;&gt;</span>5.3 여러 가지 모듈 ② 코드 읽기 실습</h1>
-    <p class="lead">코드를 짜지 않고 <b>완성된 코드를 읽고 실행 결과를 예측</b>하는 문제집. 문제마다 <b>힌트 보기</b>와 <b>정답·해설 보기</b>가 따로 접혀 있으니, 먼저 힌트를 보고 그래도 안 풀리면 정답·해설을 여세요. 교재의 공식 연습 문제가 아니라 5.3.5 ~ 5.3.9절 내용으로 만든 문제예요. 입력이 있는 문제는 입력한 줄도 출력에 함께 보여요.</p>
+    <p class="lead">코드를 짜지 않고 <b>완성된 코드를 읽고 실행 결과를 예측</b>하는 문제집. 문제마다 <b>힌트 보기</b>와 <b>정답·해설 보기</b>가 따로 접혀 있으니, 먼저 힌트를 보고 그래도 안 풀리면 정답·해설을 여세요. 교재의 공식 연습 문제가 아니라 5.3.5 ~ 5.3.9절 내용으로 만든 문제예요. 날짜를 계산하는 법보다 <b>모듈을 쓰는 방법</b>(import, 이름, 값의 성질, 형식)을 이해하는 데 맞췄어요. 입력이 있는 문제는 입력한 줄도 출력에 함께 보여요.</p>
     <div class="counts">
       <span class="count all">12문제</span>
       <span class="count basic">초급 5</span><span class="count mid">중급 4</span><span class="count adv">고급 3</span>
@@ -402,9 +402,9 @@ main, .problem, .p-body, .sol-body, .level { min-width: 0; }
   </header>
 
   <nav class="toc" aria-label="문제 목록">
-<div class="grp-basic"><h2>초급</h2><ol><li><a href="#b1"><span class="n">1</span>날짜 만들기</a></li><li><a href="#b2"><span class="n">2</span>날짜 차이와 윤년</a></li><li><a href="#b3"><span class="n">3</span>날짜를 글자로 — strftime</a></li><li><a href="#b4"><span class="n">4</span>글자를 날짜로 — strptime</a></li><li><a href="#b5"><span class="n">5</span>timedelta로 더하고 빼기</a></li></ol></div>
-<div class="grp-mid"><h2>중급</h2><ol><li><a href="#m1"><span class="n">1</span>윤년 경계의 다음 날</a></li><li><a href="#m2"><span class="n">2</span>남은 날과 걸린 시간</a></li><li><a href="#m3"><span class="n">3</span>두음법칙으로 이을 수 있나</a></li><li><a href="#m4"><span class="n">4</span>날짜 글자 모양 바꾸기</a></li></ol></div>
-<div class="grp-adv"><h2>고급</h2><ol><li><a href="#a1"><span class="n">1</span>식의 트리 읽기</a></li><li><a href="#a2"><span class="n">2</span>며칠 뒤인지 입력받아 계산</a></li><li><a href="#a3"><span class="n">3</span>한글 글자 쪼개기</a></li></ol></div>
+<div class="grp-basic"><h2>초급</h2><ol><li><a href="#b1"><span class="n">1</span>모듈과 그 안의 이름</a></li><li><a href="#b2"><span class="n">2</span>같은 이름을 다시 가져오면</a></li><li><a href="#b3"><span class="n">3</span>timedelta 안의 값 꺼내기</a></li><li><a href="#b4"><span class="n">4</span>형식 글자와 그대로 찍히는 글자 — strftime</a></li><li><a href="#b5"><span class="n">5</span>ast 트리 처음 열어 보기</a></li></ol></div>
+<div class="grp-mid"><h2>중급</h2><ol><li><a href="#m1"><span class="n">1</span>같은 글자, 다른 형식 — strptime</a></li><li><a href="#m2"><span class="n">2</span>datetime 값은 바뀌지 않는다</a></li><li><a href="#m3"><span class="n">3</span>두음법칙으로 이을 수 있나</a></li><li><a href="#m4"><span class="n">4</span>시각을 줄 세우고 간격 재기</a></li></ol></div>
+<div class="grp-adv"><h2>고급</h2><ol><li><a href="#a1"><span class="n">1</span>괄호와 우선순위가 트리에 보이는 모습</a></li><li><a href="#a2"><span class="n">2</span>같은 순간, 다른 시간대</a></li><li><a href="#a3"><span class="n">3</span>한글 글자 쪼개기</a></li></ol></div>
   </nav>
 
   <main>
@@ -419,160 +419,159 @@ main, .problem, .p-body, .sol-body, .level { min-width: 0; }
     <section class="level basic" data-level="basic">
       <div class="level-head">
         <span class="tag">초급</span>
-        <h2>5.3.6 기본기 — datetime 하나씩</h2>
-        <p>datetime 만들기, 날짜 차이, strftime, strptime, timedelta 를 한 문제에 한 가지씩 확인해요.</p>
+        <h2>5.3.6 · 5.3.9 기본기 — 모듈 가져오기와 값 꺼내기</h2>
+        <p>import 두 방식과 이름 덮어쓰기, timedelta 안의 값, 형식 글자, ast 트리의 첫걸음을 한 문제에 한 가지씩 확인해요.</p>
       </div>
 
       <article class="problem" id="b1">
-        <div class="p-head"><span class="p-id">초급 1</span><span class="p-type">읽기</span><h3>날짜 만들기</h3></div>
+        <div class="p-head"><span class="p-id">초급 1</span><span class="p-type">읽기</span><h3>모듈과 그 안의 이름</h3></div>
         <div class="p-body">
-<p><code>datetime(연, 월, 일, 시, 분)</code>으로 날짜·시각을 만들어요. 시·분·초를 생략하면 어떻게 보일까요?</p>
-<pre><code class="language-python">from datetime import datetime  # datetime 모듈에서 datetime 을 가져와 주세요
+<p><code>import datetime</code>은 모듈을 통째로 가져와요. 모듈 안에 있는 것은 <code>모듈이름.이름</code>으로 꺼내 써요. 모듈 안에는 이름이 같은 <code>datetime</code>이 따로 들어 있어요.</p>
+<pre><code class="language-python">import datetime                    # datetime 모듈을 통째로 가져와 주세요
 
-d1 = datetime(2024, 2, 27, 12, 30)  # d1 에 2024년 2월 27일 12시 30분을 담아 주세요
-d2 = datetime(2024, 2, 27)          # d2 에 2024년 2월 27일을 담아 주세요
-print(d1)                           # d1 을 화면에 보여 주세요
-print(d2)                           # d2 를 화면에 보여 주세요
-print(type(d1))                     # d1 의 자료형을 화면에 보여 주세요</code></pre>
+print(type(datetime))              # datetime 의 자료형을 화면에 보여 주세요
+d = datetime.datetime(2025, 7, 4)  # d 에 datetime 모듈 안의 datetime 으로 2025년 7월 4일을 담아 주세요
+print(d)                           # d 를 화면에 보여 주세요
+print(type(datetime.datetime))     # datetime 모듈 안의 datetime 의 자료형을 화면에 보여 주세요
+print(type(d))                     # d 의 자료형을 화면에 보여 주세요</code></pre>
     <p>이 코드를 실행하면 무엇이 출력될까요?</p>
-    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr></tbody></table></div>
+    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr><tr><td>4번째 줄</td><td>?</td></tr></tbody></table></div>
         </div>
         <details class="hint"><summary>힌트 보기</summary>
           <div class="sol-body">
-            <p>생략한 시·분·초는 0으로 채워져요. 출력 모양은 "연-월-일 시:분:초"예요.</p>
+            <p><code>import</code>로 가져온 <code>datetime</code>은 모듈이에요. 그 안의 <code>datetime</code>은 날짜 값을 만드는 틀(클래스)이고, 틀로 만든 <code>d</code>는 날짜 값이에요.</p>
           </div>
         </details>
         <div class="memo"><label for="memo-b1">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b1"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
-<pre class="out"><code class="nohighlight">2024-02-27 12:30:00
-2024-02-27 00:00:00
+<pre class="out"><code class="nohighlight">&lt;class 'module'&gt;
+2025-07-04 00:00:00
+&lt;class 'type'&gt;
 &lt;class 'datetime.datetime'&gt;</code></pre>
-    <p><b>한 문장으로:</b> <code>datetime</code> 객체를 출력하면 시·분·초까지 항상 "연-월-일 시:분:초" 모양으로 나와요.</p><div class="table-scroll"><table><thead><tr><th>줄</th><th>일어나는 일</th></tr></thead><tbody><tr><td>5번째 줄</td><td>12시 30분, 초는 생략해 00</td></tr><tr><td>6번째 줄</td><td>시각을 생략하면 자정(<code>00:00:00</code>)</td></tr><tr><td>7번째 줄</td><td>자료형 이름은 모듈 이름까지 붙은 <code>datetime.datetime</code></td></tr></tbody></table></div>    <p><code>from datetime import datetime</code>은 "datetime 모듈에서 datetime 이라는 이름을 가져와요"라는 뜻이에요. 앞의 것은 모듈, 뒤의 것은 그 안의 자료형이라 이름이 같아 헷갈려요.</p>    <p><b>핵심 한 줄:</b> <code>datetime(연, 월, 일, …)</code>으로 만들고 안 쓴 시·분·초는 0이에요.</p>
+    <p><b>한 문장으로:</b> <code>import 모듈</code>로 가져오면 앞의 <code>datetime</code>은 모듈이고, 그 안의 <code>datetime</code>은 날짜 값을 만드는 틀이에요.</p><div class="table-scroll"><table><thead><tr><th>줄</th><th>일어나는 일</th></tr></thead><tbody><tr><td>3번째 줄</td><td>모듈의 자료형은 <code>module</code></td></tr><tr><td>5번째 줄</td><td>시각을 안 적어서 자정 <code>00:00:00</code></td></tr><tr><td>6번째 줄</td><td>틀(클래스) 자체의 자료형은 <code>type</code>이라고 나와요</td></tr><tr><td>7번째 줄</td><td>틀로 만든 값 <code>d</code>의 자료형은 <code>datetime.datetime</code>(모듈 이름.틀 이름)</td></tr></tbody></table></div>    <p><code>datetime.datetime(…)</code>은 "datetime 모듈 안의 datetime 틀로 값을 만들어요"라는 뜻이에요. 앞의 것이 모듈, 뒤의 것이 틀이라 이름이 같아도 하는 일이 달라요. 틀(클래스)이 정확히 무엇인지는 지금은 "값을 만드는 틀" 정도로만 알아 두세요.</p>    <p><b>핵심 한 줄:</b> <code>import 모듈</code>로 가져오면 모듈 안의 것은 <code>모듈.이름</code>으로 꺼내요.</p>
           </div>
         </details>
       </article>
 
       <article class="problem" id="b2">
-        <div class="p-head"><span class="p-id">초급 2</span><span class="p-type">읽기</span><h3>날짜 차이와 윤년</h3></div>
+        <div class="p-head"><span class="p-id">초급 2</span><span class="p-type">읽기</span><h3>같은 이름을 다시 가져오면</h3></div>
         <div class="p-body">
-<p>같은 "2월 27일 ~ 3월 5일"인데 해가 달라요. 두 차이는 같을까요?</p>
-<pre><code class="language-python">from datetime import datetime  # datetime 모듈에서 datetime 을 가져와 주세요
+<p><code>hasattr(대상, '이름')</code>은 대상 안에 그 이름이 있으면 <code>True</code>, 없으면 <code>False</code>를 돌려줘요. 이름을 다시 가져오면 어떻게 될까요?</p>
+<pre><code class="language-python">import datetime                        # datetime 모듈을 가져와 주세요
+print(hasattr(datetime, 'timedelta'))  # datetime 안에 timedelta 가 있는지 화면에 보여 주세요
 
-a = datetime(2024, 2, 27)  # a 에 2024년 2월 27일을 담아 주세요
-b = datetime(2024, 3, 5)   # b 에 2024년 3월 5일을 담아 주세요
-print(b - a)               # b 에서 a 를 뺀 기간을 화면에 보여 주세요
-c = datetime(2023, 2, 27)  # c 에 2023년 2월 27일을 담아 주세요
-d = datetime(2023, 3, 5)   # d 에 2023년 3월 5일을 담아 주세요
-print(d - c)               # d 에서 c 를 뺀 기간을 화면에 보여 주세요
-print(type(b - a))         # b - a 의 자료형을 화면에 보여 주세요</code></pre>
+from datetime import datetime          # datetime 모듈에서 datetime 을 가져와 주세요
+print(hasattr(datetime, 'timedelta'))  # datetime 안에 timedelta 가 있는지 화면에 보여 주세요
+print(hasattr(datetime, 'strptime'))   # datetime 안에 strptime 이 있는지 화면에 보여 주세요</code></pre>
     <p>이 코드를 실행하면 무엇이 출력될까요?</p>
     <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr></tbody></table></div>
         </div>
         <details class="hint"><summary>힌트 보기</summary>
           <div class="sol-body">
-            <p>2024년과 2023년 중 2월이 29일까지 있는 해는 어느 쪽일까요?</p>
+            <p>네 번째 줄 뒤에 <code>datetime</code>이라는 이름이 가리키는 것이 무엇인지 생각해 보세요. <code>timedelta</code>는 모듈 안에 따로 있고, <code>strptime</code>은 날짜 틀이 가진 기능이에요.</p>
           </div>
         </details>
         <div class="memo"><label for="memo-b2">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b2"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
-<pre class="out"><code class="nohighlight">7 days, 0:00:00
-6 days, 0:00:00
-&lt;class 'datetime.timedelta'&gt;</code></pre>
-    <p><b>한 문장으로:</b> <code>datetime</code> 두 개를 빼면 기간(<code>timedelta</code>)이 나오고, 윤년의 2월 29일이 자동으로 센 값에 들어가요.</p><div class="table-scroll"><table><thead><tr><th>줄</th><th>일어나는 일</th></tr></thead><tbody><tr><td>5번째 줄</td><td>윤년인 2024년은 2월 27일 → 29일(2일), 3월 1일 → 5일(5일)로 <code>7 days</code></td></tr><tr><td>8번째 줄</td><td>2023년은 2월이 28일까지라 <code>6 days</code></td></tr><tr><td>9번째 줄</td><td>기간 자료형 <code>timedelta</code></td></tr></tbody></table></div>    <p>기간은 "7 days, 0:00:00"처럼 "일수, 시:분:초" 모양으로 나와요. 교재 5.3.6의 같은 예제 주석에는 6 days 로 적혀 있지만, 실제로 돌리면 2024년은 7 days 예요.</p>    <p><b>핵심 한 줄:</b> <code>datetime</code> 두 개를 빼면 <code>timedelta</code>가 되고 윤년이 반영돼요.</p>
+<pre class="out"><code class="nohighlight">True
+False
+True</code></pre>
+    <p><b>한 문장으로:</b> <code>from datetime import datetime</code>을 하면 <code>datetime</code>이라는 이름이 모듈에서 날짜 틀로 바뀌어서, 모듈 안의 것은 더 이상 그 이름으로 찾을 수 없어요.</p><div class="table-scroll"><table><thead><tr><th>줄</th><th>일어나는 일</th></tr></thead><tbody><tr><td>2번째 줄</td><td>아직은 <code>datetime</code>이 모듈이고, 모듈 안에 <code>timedelta</code>가 있어 <code>True</code></td></tr><tr><td>5번째 줄</td><td>이제 <code>datetime</code>은 날짜 틀이에요. 틀 안에는 <code>timedelta</code>가 없어 <code>False</code></td></tr><tr><td>6번째 줄</td><td>날짜 틀은 <code>strptime</code> 기능을 가지고 있어 <code>True</code></td></tr></tbody></table></div>    <p>같은 이름을 다시 가져오면 먼저 가져온 것이 가려져요. 한 파일에서는 <code>import datetime</code>과 <code>from datetime import datetime</code> 중 한 가지 방식만 쓰는 편이 안전해요. 모듈 이름과 안의 이름이 같은 경우에만 이런 일이 생기는 건 아니에요. 어떤 이름이든 나중에 가져온 것이 앞의 것을 가려요.</p>    <p><b>핵심 한 줄:</b> 같은 이름을 다시 가져오면 앞에 가져온 것이 가려져요.</p>
           </div>
         </details>
       </article>
 
       <article class="problem" id="b3">
-        <div class="p-head"><span class="p-id">초급 3</span><span class="p-type">읽기</span><h3>날짜를 글자로 — strftime</h3></div>
+        <div class="p-head"><span class="p-id">초급 3</span><span class="p-type">읽기</span><h3>timedelta 안의 값 꺼내기</h3></div>
         <div class="p-body">
-<p>형식 글자를 바꿔 같은 날짜를 여러 모양으로 찍어요.</p>
-<pre><code class="language-python">from datetime import datetime  # datetime 모듈에서 datetime 을 가져와 주세요
+<p><code>timedelta</code>는 기간을 담는 값이에요. 기간 안에서 일수, 초 같은 부분을 따로 꺼낼 수 있어요.</p>
+<pre><code class="language-python">from datetime import timedelta              # datetime 모듈에서 timedelta 를 가져와 주세요
 
-d = datetime(2024, 2, 27, 0, 53, 38)    # d 에 2024년 2월 27일 0시 53분 38초를 담아 주세요
-print(d.strftime('%Y-%m-%d %H:%M:%S'))  # d 를 '연-월-일 시:분:초' 글자로 바꿔 화면에 보여 주세요
-print(d.strftime('%B %d, %Y'))          # d 를 '월이름 일, 연' 글자로 바꿔 화면에 보여 주세요
-print(d.strftime('%m/%d/%Y'))           # d 를 '월/일/연' 글자로 바꿔 화면에 보여 주세요
-print(d.strftime('%d.%m'))              # d 를 '일.월' 글자로 바꿔 화면에 보여 주세요</code></pre>
+t = timedelta(days=1, hours=2, minutes=30)  # t 에 1일 2시간 30분의 기간을 담아 주세요
+print(t)                                    # t 를 화면에 보여 주세요
+print(t.days)                               # t 의 days 를 화면에 보여 주세요
+print(t.seconds)                            # t 의 seconds 를 화면에 보여 주세요
+print(t.total_seconds())                    # t 전체를 초로 바꾼 값을 화면에 보여 주세요</code></pre>
     <p>이 코드를 실행하면 무엇이 출력될까요?</p>
     <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr><tr><td>4번째 줄</td><td>?</td></tr></tbody></table></div>
         </div>
         <details class="hint"><summary>힌트 보기</summary>
           <div class="sol-body">
-            <p><code>%Y</code> 연도, <code>%m</code> 월, <code>%d</code> 일, <code>%H</code> 시, <code>%M</code> 분, <code>%S</code> 초, <code>%B</code> 월 이름이에요. 형식 글자 사이의 <code>-</code>, <code>:</code>, <code>/</code>는 그대로 찍혀요.</p>
+            <p><code>t.seconds</code>는 "일을 뺀 나머지 시간"을 초로 센 값이에요. 2시간 30분은 몇 초일까요? <code>total_seconds()</code>는 기간 전체를 초로 센 값이에요.</p>
           </div>
         </details>
         <div class="memo"><label for="memo-b3">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b3"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
-<pre class="out"><code class="nohighlight">2024-02-27 00:53:38
-February 27, 2024
-02/27/2024
-27.02</code></pre>
-    <p><b>한 문장으로:</b> <code>strftime</code>은 형식 글자만 날짜 값으로 바꾸고 나머지 글자는 그대로 두어서, 형식을 바꾸면 같은 날짜가 다른 모양이 돼요.</p><div class="table-scroll"><table><thead><tr><th>줄</th><th>일어나는 일</th></tr></thead><tbody><tr><td>4번째 줄</td><td><code>2024-02-27 00:53:38</code></td></tr><tr><td>5번째 줄</td><td>월 이름 February, 일 27, 연도 2024</td></tr><tr><td>6번째 줄</td><td>월이 먼저 오는 미국식 날짜</td></tr><tr><td>7번째 줄</td><td>일이 먼저 오고 점으로 이은 모양</td></tr></tbody></table></div>    <p><code>%m</code>과 <code>%d</code>는 한 자리 수를 두 자리로 채워요(2월 → <code>02</code>). <code>%B</code>의 월 이름은 컴퓨터의 언어 설정에 따라 영어가 아닐 수 있어요.</p>    <p><b>핵심 한 줄:</b> <code>strftime('형식')</code>은 형식 글자만 값으로 바꾸고 나머지는 그대로 둬요.</p>
+<pre class="out"><code class="nohighlight">1 day, 2:30:00
+1
+9000
+95400.0</code></pre>
+    <p><b>한 문장으로:</b> <code>timedelta</code>는 일·초 부분으로 나뉘어 저장돼서 <code>days</code>와 <code>seconds</code>로 따로 꺼낼 수 있고, 전체 초는 <code>total_seconds()</code>로 구해요.</p><div class="table-scroll"><table><thead><tr><th>줄</th><th>일어나는 일</th></tr></thead><tbody><tr><td>4번째 줄</td><td>하루면 <code>1 day</code>(단수), 나머지는 시:분:초 <code>2:30:00</code></td></tr><tr><td>5번째 줄</td><td>일 부분은 <code>1</code></td></tr><tr><td>6번째 줄</td><td>일을 뺀 2시간 30분 = 9000초. 하루(86400초)까지 합친 값이 아니에요</td></tr><tr><td>7번째 줄</td><td>86400 + 9000 = 95400, 소수점이 붙은 <code>95400.0</code></td></tr></tbody></table></div>    <p><code>seconds</code>를 "전체 초"로 오해하기 쉬워요. 전체 초가 필요하면 <code>total_seconds()</code>를 쓰고, 이 값을 3600으로 나누면 시간 단위가 돼요.</p>    <p><b>핵심 한 줄:</b> 기간 안의 일 부분은 <code>.days</code>, 일을 뺀 초는 <code>.seconds</code>, 전체 초는 <code>.total_seconds()</code>예요.</p>
           </div>
         </details>
       </article>
 
       <article class="problem" id="b4">
-        <div class="p-head"><span class="p-id">초급 4</span><span class="p-type">읽기</span><h3>글자를 날짜로 — strptime</h3></div>
+        <div class="p-head"><span class="p-id">초급 4</span><span class="p-type">읽기</span><h3>형식 글자와 그대로 찍히는 글자</h3></div>
         <div class="p-body">
-<p><code>strptime</code>은 글자를 읽어서 날짜로 만들어요. 읽을 글자의 모양과 형식이 맞아야 해요.</p>
-<pre><code class="language-python">from datetime import datetime  # datetime 모듈에서 datetime 을 가져와 주세요
+<p><code>strftime</code>의 형식에서 <code>%</code> 뒤의 글자는 값으로 바뀌고, 그 밖의 글자는 적은 그대로 나와요.</p>
+<pre><code class="language-python">from datetime import datetime          # datetime 모듈에서 datetime 을 가져와 주세요
 
-text = '27 February, 2024'                # text 에 '27 February, 2024' 를 담아 주세요
-d = datetime.strptime(text, '%d %B, %Y')  # d 에 text 를 '일 월이름, 연' 모양으로 읽어 날짜로 만들어 담아 주세요
-print(d)                                  # d 를 화면에 보여 주세요
-print(type(text), type(d))                # text 와 d 의 자료형을 화면에 보여 주세요
-print(d.strftime('%Y/%m/%d'))             # d 를 '연/월/일' 글자로 바꿔 화면에 보여 주세요</code></pre>
-    <p>이 코드를 실행하면 무엇이 출력될까요?</p>
-    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr></tbody></table></div>
-        </div>
-        <details class="hint"><summary>힌트 보기</summary>
-          <div class="sol-body">
-            <p><code>text</code>는 글자(<code>str</code>), <code>d</code>는 날짜 값이에요. 출력할 때 시·분·초는 어떻게 보일까요?</p>
-          </div>
-        </details>
-        <div class="memo"><label for="memo-b4">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b4"></textarea></div>
-        <details class="sol"><summary>정답·해설 보기</summary>
-          <div class="sol-body">
-<pre class="out"><code class="nohighlight">2024-02-27 00:00:00
-&lt;class 'str'&gt; &lt;class 'datetime.datetime'&gt;
-2024/02/27</code></pre>
-    <p><b>한 문장으로:</b> <code>strptime</code>이 글자를 날짜로 읽어서, 읽은 뒤에는 글자가 아니라 날짜 값이에요. 시각이 없던 글자라 자정으로 채워져요.</p><div class="table-scroll"><table><thead><tr><th>줄</th><th>일어나는 일</th></tr></thead><tbody><tr><td>5번째 줄</td><td>시각이 없던 글자라 <code>00:00:00</code></td></tr><tr><td>6번째 줄</td><td>원래 글자는 <code>str</code>, 읽은 결과는 <code>datetime.datetime</code></td></tr><tr><td>7번째 줄</td><td>날짜를 다시 글자로 바꾼 모양</td></tr></tbody></table></div>    <p>글자와 형식이 어긋나면 <code>ValueError</code>가 나요. 예를 들어 위 글자를 <code>'%Y-%m-%d'</code> 형식으로 읽으면 오류예요.</p>    <p><b>핵심 한 줄:</b> <code>strptime(글자, 형식)</code>은 글자를 날짜로 읽어요.</p>
-          </div>
-        </details>
-      </article>
-
-      <article class="problem" id="b5">
-        <div class="p-head"><span class="p-id">초급 5</span><span class="p-type">읽기</span><h3>timedelta로 더하고 빼기</h3></div>
-        <div class="p-body">
-<p>시각에 일·시간·분을 더하고 빼요. 날짜가 바뀌는 곳을 눈여겨보세요.</p>
-<pre><code class="language-python">from datetime import datetime, timedelta  # datetime 모듈에서 datetime 과 timedelta 를 가져와 주세요
-
-d = datetime(2024, 2, 27, 12, 0)  # d 에 2024년 2월 27일 12시를 담아 주세요
-print(d + timedelta(days=7))      # d 에 7일을 더해 화면에 보여 주세요
-print(d - timedelta(days=1))      # d 에서 1일을 빼 화면에 보여 주세요
-print(d - timedelta(hours=36))    # d 에서 36시간을 빼 화면에 보여 주세요
-print(d + timedelta(minutes=90))  # d 에 90분을 더해 화면에 보여 주세요</code></pre>
+d = datetime(2025, 7, 4, 15, 8, 9)     # d 에 2025년 7월 4일 15시 8분 9초를 담아 주세요
+print(d.strftime('%y%m%d'))            # d 를 '두 자리 연도, 월, 일' 글자로 바꿔 화면에 보여 주세요
+print(d.strftime('%H:%M'))             # d 를 '시:분' 글자로 바꿔 화면에 보여 주세요
+print(d.strftime('%d/%m/%Y'))          # d 를 '일/월/연' 글자로 바꿔 화면에 보여 주세요
+print(d.strftime('Year %Y, hour %H'))  # d 를 'Year 연도, hour 시' 글자로 바꿔 화면에 보여 주세요</code></pre>
     <p>이 코드를 실행하면 무엇이 출력될까요?</p>
     <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr><tr><td>4번째 줄</td><td>?</td></tr></tbody></table></div>
         </div>
         <details class="hint"><summary>힌트 보기</summary>
           <div class="sol-body">
-            <p>36시간은 1일 12시간이에요. 2024년 2월은 29일까지 있어요.</p>
+            <p><code>%y</code>는 두 자리 연도, <code>%Y</code>는 네 자리 연도예요. <code>%m</code>은 월, <code>%d</code>는 일이고 두 자리로 채워져요. <code>Year</code>와 <code>hour</code>에는 <code>%</code>가 안 붙어 있어요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-b4">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b4"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">250704
+15:08
+04/07/2025
+Year 2025, hour 15</code></pre>
+    <p><b>한 문장으로:</b> <code>strftime</code>은 형식 글자(<code>%</code> + 글자)만 날짜 값으로 바꾸고 나머지는 그대로 두어서, 형식을 어떻게 적느냐에 따라 같은 날짜가 전혀 다르게 보여요.</p><div class="table-scroll"><table><thead><tr><th>줄</th><th>일어나는 일</th></tr></thead><tbody><tr><td>4번째 줄</td><td><code>%y</code> 25, <code>%m</code> 07, <code>%d</code> 04를 이은 <code>250704</code></td></tr><tr><td>5번째 줄</td><td>시와 분 사이의 <code>:</code>는 그대로 찍혀 <code>15:08</code></td></tr><tr><td>6번째 줄</td><td>일이 먼저 오는 순서라 <code>04/07/2025</code>(7월 4일)</td></tr><tr><td>7번째 줄</td><td><code>Year</code>, <code>hour</code>은 형식 글자가 아니라 그대로, <code>%Y</code>·<code>%H</code>만 값으로 바뀜</td></tr></tbody></table></div>    <p><code>04/07/2025</code>처럼 숫자만 있는 날짜는 나라마다 읽는 순서가 달라서 4월 7일로도 읽힐 수 있어요. 그래서 날짜를 글자로 주고받을 때는 형식을 정해 두는 게 중요해요.</p>    <p><b>핵심 한 줄:</b> <code>strftime('형식')</code>은 <code>%</code> 글자만 값으로 바꾸고 나머지는 그대로 둬요.</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="b5">
+        <div class="p-head"><span class="p-id">초급 5</span><span class="p-type">읽기</span><h3>ast 트리 처음 열어 보기</h3></div>
+        <div class="p-body">
+<p><code>ast.parse(식, mode='eval')</code>로 만든 트리의 맨 위는 <code>Expression</code>이고, 실제 식은 <code>.body</code>에 들어 있어요. 값 두 개와 연산자 하나로 된 식은 <code>BinOp</code>(이항 연산)라고 불러요.</p>
+<pre><code class="language-python">import ast                                          # ast 모듈을 가져와 주세요
+
+tree = ast.parse('3 + 4', mode='eval')              # tree 에 식 '3 + 4' 를 트리로 만들어 담아 주세요
+print(type(tree))                                   # tree 의 자료형을 화면에 보여 주세요
+print(type(tree.body))                              # tree 의 body(실제 식) 의 자료형을 화면에 보여 주세요
+print(tree.body.left.value, tree.body.right.value)  # tree.body 의 왼쪽 값과 오른쪽 값을 화면에 보여 주세요
+print(ast.dump(tree.body.op))                       # tree.body 의 연산자를 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 무엇이 출력될까요?</p>
+    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr><tr><td>4번째 줄</td><td>?</td></tr></tbody></table></div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+            <p>맨 위 노드는 <code>Expression</code>, 그 안의 식은 <code>BinOp</code>예요. <code>BinOp</code>는 <code>left</code>, <code>op</code>, <code>right</code> 세 칸으로 이뤄져요.</p>
           </div>
         </details>
         <div class="memo"><label for="memo-b5">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b5"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
-<pre class="out"><code class="nohighlight">2024-03-05 12:00:00
-2024-02-26 12:00:00
-2024-02-26 00:00:00
-2024-02-27 13:30:00</code></pre>
-    <p><b>한 문장으로:</b> <code>timedelta</code>를 더하고 빼면 날짜와 시각이 함께 움직이고, 달이 바뀌는 것도 알아서 계산돼요.</p><div class="table-scroll"><table><thead><tr><th>줄</th><th>일어나는 일</th></tr></thead><tbody><tr><td>4번째 줄</td><td>2월 27일 + 7일. 29일까지 2일, 3월 5일(<code>2024-03-05 12:00:00</code>)</td></tr><tr><td>5번째 줄</td><td>하루 전은 2월 26일 12시</td></tr><tr><td>6번째 줄</td><td>하루 12시간 전이라 2월 26일 0시</td></tr><tr><td>7번째 줄</td><td>1시간 30분 뒤라 13시 30분</td></tr></tbody></table></div>    <p><code>timedelta</code>는 <code>days</code>, <code>hours</code>, <code>minutes</code>, <code>seconds</code>를 같이 쓸 수 있어요(<code>timedelta(days=1, hours=3)</code>).</p>    <p><b>핵심 한 줄:</b> <code>날짜 ± timedelta(…)</code>로 기간을 더하고 빼요.</p>
+<pre class="out"><code class="nohighlight">&lt;class 'ast.Expression'&gt;
+&lt;class 'ast.BinOp'&gt;
+3 4
+Add()</code></pre>
+    <p><b>한 문장으로:</b> <code>ast.parse</code>로 만든 트리를 열면 식이 "왼쪽, 연산자, 오른쪽"으로 나뉘어 있어요.</p><div class="table-scroll"><table><thead><tr><th>줄</th><th>일어나는 일</th></tr></thead><tbody><tr><td>4번째 줄</td><td>맨 위 노드의 자료형은 <code>ast.Expression</code></td></tr><tr><td>5번째 줄</td><td><code>.body</code>는 실제 식 <code>3 + 4</code>이고 자료형은 <code>ast.BinOp</code></td></tr><tr><td>6번째 줄</td><td><code>Constant</code>의 <code>value</code>를 읽어 왼쪽 <code>3</code>, 오른쪽 <code>4</code></td></tr><tr><td>7번째 줄</td><td>연산자 노드를 글자로 보면 <code>Add()</code>(덧셈)</td></tr></tbody></table></div>    <p>트리 안의 노드는 모두 <code>ast.Expression</code>, <code>ast.BinOp</code>처럼 <code>ast</code> 모듈이 만든 자료형이에요. 노드마다 가진 칸이 달라서, 무엇을 꺼낼 수 있는지는 노드의 종류가 정해요.</p>    <p><b>핵심 한 줄:</b> <code>ast.parse(식, mode='eval')</code>의 <code>.body</code>가 식의 맨 위 노드예요.</p>
           </div>
         </details>
       </article>
@@ -583,67 +582,69 @@ print(d + timedelta(minutes=90))  # d 에 90분을 더해 화면에 보여 주�
       <div class="level-head">
         <span class="tag">중급</span>
         <h2>초급 이어 쓰기 — 한 걸음 더</h2>
-        <p>윤년 경계, 기간 계산, 두음법칙 판정, 날짜 모양 바꾸기예요.</p>
+        <p>형식이 의미를 정하는 strptime, 날짜 값이 바뀌지 않는 성질, 두음법칙 판정, 시각 비교와 간격 재기예요.</p>
       </div>
 
       <article class="problem" id="m1">
-        <div class="p-head"><span class="p-id">중급 1</span><span class="p-type">읽기</span><h3>윤년 경계의 다음 날</h3></div>
+        <div class="p-head"><span class="p-id">중급 1</span><span class="p-type">읽기</span><h3>같은 글자, 다른 형식</h3></div>
         <div class="p-body">
-<p>2월 28일의 다음 날을 세 해에 대해 구해요. 세 번째 해는 100의 배수라서 함정이에요.</p>
-<pre><code class="language-python">from datetime import datetime, timedelta  # datetime 모듈에서 datetime 과 timedelta 를 가져와 주세요
+<p><code>strptime</code>은 글자를 정해 준 형식대로 읽기만 해요. 같은 글자 <code>'03/04/05'</code>를 형식 세 가지로 읽어 봐요.</p>
+<pre><code class="language-python">from datetime import datetime                     # datetime 모듈에서 datetime 을 가져와 주세요
 
-for y in (2024, 2023, 2100):                    # 연도들을 하나씩 y 라고 부르며 아래를 반복해 주세요
-    d = datetime(y, 2, 28) + timedelta(days=1)  # d 에 y 년 2월 28일의 하루 뒤를 담아 주세요
-    print(d.strftime('%m/%d/%Y'))               # d 를 '월/일/연' 글자로 바꿔 화면에 보여 주세요</code></pre>
+text = '03/04/05'                                 # text 에 '03/04/05' 를 담아 주세요
+for fmt in ('%y/%m/%d', '%d/%m/%y', '%m/%d/%y'):  # 형식 세 개를 하나씩 fmt 라고 부르며 아래를 반복해 주세요
+    d = datetime.strptime(text, fmt)              # d 에 text 를 fmt 모양으로 읽어 날짜로 만들어 담아 주세요
+    print(d.year, d.month, d.day)                 # d 의 연, 월, 일을 화면에 보여 주세요</code></pre>
     <p>이 코드를 실행하면 무엇이 출력될까요?</p>
     <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr></tbody></table></div>
         </div>
         <details class="hint"><summary>힌트 보기</summary>
           <div class="sol-body">
-            <p>윤년은 4의 배수이고, 100의 배수는 윤년이 아니에요. 단 400의 배수는 윤년이에요.</p>
+            <p><code>%y</code>는 두 자리 연도(03이면 2003)예요. 형식에서 <code>%y</code>·<code>%m</code>·<code>%d</code>가 놓인 순서대로 글자의 앞·가운데·뒤 두 자리를 읽어요.</p>
           </div>
         </details>
         <div class="memo"><label for="memo-m1">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m1"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
-<pre class="out"><code class="nohighlight">02/29/2024
-03/01/2023
-03/01/2100</code></pre>
-    <p><b>한 문장으로:</b> <code>datetime</code>이 윤년 규칙(4의 배수, 단 100의 배수는 제외, 400의 배수는 다시 포함)을 알아서 적용해요.</p><div class="table-scroll"><table><thead><tr><th>줄</th><th>일어나는 일</th></tr></thead><tbody><tr><td>3번째 줄</td><td>연도 세 개를 차례로 돌아요</td></tr><tr><td>4번째 줄</td><td>2024는 윤년이라 2월 29일, 2023은 평년이라 3월 1일, 2100은 400의 배수가 아니라 평년이라 3월 1일</td></tr></tbody></table></div>    <p>직접 만든 달력 계산은 "4의 배수는 윤년"까지만 구현하고 100의 배수를 놓치기 쉬워요. 날짜 계산은 직접 짜기보다 <code>datetime</code>을 믿는 편이 안전해요.</p>    <p><b>핵심 한 줄:</b> 윤년 규칙은 <code>datetime</code>이 알아서 적용해요.</p>
+<pre class="out"><code class="nohighlight">2003 4 5
+2005 4 3
+2005 3 4</code></pre>
+    <p><b>한 문장으로:</b> <code>strptime</code>은 글자가 무슨 뜻인지 짐작하지 않고 형식에 적힌 순서대로 읽기만 해서, 같은 글자도 형식에 따라 다른 날짜가 돼요.</p><div class="table-scroll"><table><thead><tr><th>줄</th><th>일어나는 일</th></tr></thead><tbody><tr><td>4번째 줄</td><td>형식 세 개를 차례로 돌아요</td></tr><tr><td>6번째 줄(1번째 반복)</td><td><code>%y/%m/%d</code>: 연 03, 월 04, 일 05 → <code>2003 4 5</code></td></tr><tr><td>6번째 줄(2번째 반복)</td><td><code>%d/%m/%y</code>: 일 03, 월 04, 연 05 → <code>2005 4 3</code></td></tr><tr><td>6번째 줄(3번째 반복)</td><td><code>%m/%d/%y</code>: 월 03, 일 04, 연 05 → <code>2005 3 4</code></td></tr></tbody></table></div>    <p>글자의 모양과 형식이 어긋나면 <code>ValueError</code>가 나요. 예를 들어 <code>'2025.07.04'</code>를 <code>'%Y-%m-%d'</code> 형식으로 읽으면 오류예요. 형식이 맞기만 하면 오류 없이 읽히기 때문에, 의도한 순서의 형식을 적었는지 직접 확인해야 해요.</p>    <p><b>핵심 한 줄:</b> <code>strptime(글자, 형식)</code>은 형식이 읽는 순서를 정해요. 글자가 알아서 해석되지 않아요.</p>
           </div>
         </details>
       </article>
 
       <article class="problem" id="m2">
-        <div class="p-head"><span class="p-id">중급 2</span><span class="p-type">읽기</span><h3>남은 날과 걸린 시간</h3></div>
+        <div class="p-head"><span class="p-id">중급 2</span><span class="p-type">읽기</span><h3>datetime 값은 바뀌지 않는다</h3></div>
         <div class="p-body">
-<p>두 시각을 빼서 기간을 구하고, 그 기간을 다시 더해서 원래 시각으로 돌아가요.</p>
-<pre><code class="language-python">from datetime import datetime  # datetime 모듈에서 datetime 을 가져와 주세요
+<p>날짜를 계산한 뒤에 원래 날짜는 어떻게 될까요? 계산 결과를 어디에 담는지에 주목하세요.</p>
+<pre><code class="language-python">from datetime import datetime, timedelta   # datetime 모듈에서 datetime 과 timedelta 를 가져와 주세요
 
-today = datetime(2024, 10, 26)  # today 에 2024년 10월 26일을 담아 주세요
-xmas = datetime(2024, 12, 25)   # xmas 에 2024년 12월 25일을 담아 주세요
-left = xmas - today             # left 에 xmas 에서 today 를 뺀 기간을 담아 주세요
-print(left)                     # left 를 화면에 보여 주세요
-print(today + left)             # today 에 left 를 더해 화면에 보여 주세요
-
-start = datetime(2024, 3, 1, 9, 30)  # start 에 2024년 3월 1일 9시 30분을 담아 주세요
-end = datetime(2024, 3, 1, 18, 0)    # end 에 2024년 3월 1일 18시를 담아 주세요
-print(end - start)                   # end 에서 start 를 뺀 기간을 화면에 보여 주세요</code></pre>
+d = datetime(2025, 7, 4, 9, 0)             # d 에 2025년 7월 4일 9시를 담아 주세요
+d + timedelta(hours=5)                     # d 에 5시간을 더해 주세요
+e = d + timedelta(hours=5)                 # e 에 d 의 5시간 뒤를 담아 주세요
+print(d)                                   # d 를 화면에 보여 주세요
+print(e)                                   # e 를 화면에 보여 주세요
+print(e &gt; d, e - d == timedelta(hours=5))  # e 가 d 보다 나중인지, e - d 가 5시간인지 화면에 보여 주세요
+print(d.replace(hour=20))                  # d 의 시만 20 으로 바꾼 날짜를 화면에 보여 주세요
+print(d)                                   # d 를 화면에 보여 주세요</code></pre>
     <p>이 코드를 실행하면 무엇이 출력될까요?</p>
-    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr></tbody></table></div>
+    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr><tr><td>4번째 줄</td><td>?</td></tr><tr><td>5번째 줄</td><td>?</td></tr></tbody></table></div>
         </div>
         <details class="hint"><summary>힌트 보기</summary>
           <div class="sol-body">
-            <p>10월 26일 → 11월 26일이 31일, 11월 26일 → 12월 25일이 29일이에요. 같은 날 안의 시각 차이는 "일" 없이 시:분:초로만 나와요.</p>
+            <p><code>d + timedelta(…)</code>는 새 값을 만들어 줄 뿐 <code>d</code>를 고치지 않아요. 새 값을 이름에 담지 않으면 어디에도 남지 않아요. <code>replace</code>도 마찬가지예요.</p>
           </div>
         </details>
         <div class="memo"><label for="memo-m2">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m2"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
-<pre class="out"><code class="nohighlight">60 days, 0:00:00
-2024-12-25 00:00:00
-8:30:00</code></pre>
-    <p><b>한 문장으로:</b> <code>timedelta</code>는 "더하면 원래 값으로 돌아가는 기간"이라서, 빼서 얻은 기간을 시작점에 더하면 끝점이 돼요.</p><div class="table-scroll"><table><thead><tr><th>줄</th><th>일어나는 일</th></tr></thead><tbody><tr><td>6번째 줄</td><td>31일 + 29일 = 60일</td></tr><tr><td>7번째 줄</td><td>시작에 기간을 더하니 끝 날짜 12월 25일</td></tr><tr><td>11번째 줄</td><td>9시 30분에서 18시까지 8시간 30분. 일 부분이 0이면 <code>days</code>는 생략돼요</td></tr></tbody></table></div>    <p>기간이 1일 미만이면 <code>8:30:00</code>처럼 시:분:초만 나오고, 1일 이상이면 <code>60 days, 0:00:00</code>처럼 일수가 앞에 붙어요.</p>    <p><b>핵심 한 줄:</b> 빼서 얻은 <code>timedelta</code>를 시작점에 더하면 끝점이 돼요.</p>
+<pre class="out"><code class="nohighlight">2025-07-04 09:00:00
+2025-07-04 14:00:00
+True True
+2025-07-04 20:00:00
+2025-07-04 09:00:00</code></pre>
+    <p><b>한 문장으로:</b> <code>datetime</code> 값은 한 번 만들면 바뀌지 않고, 더하거나 <code>replace</code>를 하면 원래 값은 그대로 둔 채 새 값을 돌려줘요.</p><div class="table-scroll"><table><thead><tr><th>줄</th><th>일어나는 일</th></tr></thead><tbody><tr><td>4번째 줄</td><td>5시간 뒤를 계산하지만 어디에도 담지 않아서 사라져요(출력도 없어요)</td></tr><tr><td>6번째 줄</td><td><code>d</code>는 그대로 9시</td></tr><tr><td>7번째 줄</td><td><code>e</code>에 담은 새 값은 5시간 뒤인 14시</td></tr><tr><td>8번째 줄</td><td>나중 시각이 더 크다고 비교되고(<code>True</code>), 두 시각의 차이는 <code>timedelta(hours=5)</code>와 같아 <code>True</code></td></tr><tr><td>9번째 줄</td><td>시만 20으로 바뀐 새 값이 나와요</td></tr><tr><td>10번째 줄</td><td><code>replace</code>를 해도 <code>d</code>는 그대로 9시</td></tr></tbody></table></div>    <p>4번째 줄처럼 계산만 하고 담지 않는 식은 오류가 아니라서 눈에 잘 안 띄어요. 파이썬 파일로 실행하면 아무 일도 일어나지 않아요. 계산 결과는 <code>d = d + timedelta(…)</code>처럼 이름에 다시 담아야 남아요.</p>    <p><b>핵심 한 줄:</b> <code>datetime</code>은 바뀌지 않는 값이라 계산하면 새 값이 나와요. 새 값은 이름에 담아야 남아요.</p>
           </div>
         </details>
       </article>
@@ -685,32 +686,37 @@ True</code></pre>
       </article>
 
       <article class="problem" id="m4">
-        <div class="p-head"><span class="p-id">중급 4</span><span class="p-type">읽기</span><h3>날짜 글자 모양 바꾸기</h3></div>
+        <div class="p-head"><span class="p-id">중급 4</span><span class="p-type">읽기</span><h3>시각을 줄 세우고 간격 재기</h3></div>
         <div class="p-body">
-<p><code>'2024-03-05'</code> 모양의 글자를 날짜로 읽은 뒤 여러 모양으로 다시 찍어요.</p>
-<pre><code class="language-python">from datetime import datetime, timedelta  # datetime 모듈에서 datetime 과 timedelta 를 가져와 주세요
+<p><code>datetime</code> 값끼리는 크기를 비교하고 줄 세울 수 있어요. 이른 시각이 더 작은 값이에요.</p>
+<pre><code class="language-python">from datetime import datetime                                 # datetime 모듈에서 datetime 을 가져와 주세요
 
-raw = '2024-03-05'                      # raw 에 '2024-03-05' 를 담아 주세요
-d = datetime.strptime(raw, '%Y-%m-%d')  # d 에 raw 를 '연-월-일' 모양으로 읽어 날짜로 만들어 담아 주세요
-print(d.strftime('%d %B, %Y'))          # d 를 '일 월이름, 연' 글자로 바꿔 화면에 보여 주세요
-later = d + timedelta(days=30)          # later 에 d 의 30일 뒤를 담아 주세요
-print(later)                            # later 를 화면에 보여 주세요
-print(later.strftime('%Y-%m-%d'))       # later 를 '연-월-일' 글자로 바꿔 화면에 보여 주세요</code></pre>
+a = datetime(2025, 7, 4, 9, 30)                               # a 에 2025년 7월 4일 9시 30분을 담아 주세요
+b = datetime(2025, 7, 4, 8, 15)                               # b 에 2025년 7월 4일 8시 15분을 담아 주세요
+c = datetime(2025, 7, 4, 11, 0)                               # c 에 2025년 7월 4일 11시를 담아 주세요
+logs = [a, b, c]                                              # logs 에 a, b, c 를 담은 리스트를 담아 주세요
+logs.sort()                                                   # logs 를 작은 값부터 정렬해 주세요
+print(logs[0].strftime('%H:%M'), logs[-1].strftime('%H:%M'))  # logs 의 첫 값과 마지막 값을 '시:분' 글자로 바꿔 화면에 보여 주세요
+gap = logs[-1] - logs[0]                                      # gap 에 logs 의 마지막 값에서 첫 값을 뺀 기간을 담아 주세요
+print(gap)                                                    # gap 을 화면에 보여 주세요
+print(gap.total_seconds() / 3600)                             # gap 을 초로 센 값을 3600 으로 나눠 화면에 보여 주세요
+print(max(logs) - min(logs) == gap)                           # logs 의 가장 큰 값에서 가장 작은 값을 뺀 기간이 gap 과 같은지 화면에 보여 주세요</code></pre>
     <p>이 코드를 실행하면 무엇이 출력될까요?</p>
-    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr></tbody></table></div>
+    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr><tr><td>4번째 줄</td><td>?</td></tr></tbody></table></div>
         </div>
         <details class="hint"><summary>힌트 보기</summary>
           <div class="sol-body">
-            <p>읽을 때 쓴 형식과 찍을 때 쓰는 형식은 서로 달라도 돼요. 3월은 31일까지 있어요.</p>
+            <p>정렬하면 이른 시각이 앞에 와요. <code>logs[-1]</code>은 마지막 값이에요. 3600초가 1시간이에요.</p>
           </div>
         </details>
         <div class="memo"><label for="memo-m4">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m4"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
-<pre class="out"><code class="nohighlight">05 March, 2024
-2024-04-04 00:00:00
-2024-04-04</code></pre>
-    <p><b>한 문장으로:</b> <code>strptime</code>으로 읽고 <code>strftime</code>으로 찍으면 글자 모양을 바꿀 수 있고, 가운데에서 날짜 계산도 할 수 있어요.</p><div class="table-scroll"><table><thead><tr><th>줄</th><th>일어나는 일</th></tr></thead><tbody><tr><td>5번째 줄</td><td><code>05 March, 2024</code>. <code>%d</code>는 두 자리</td></tr><tr><td>7번째 줄</td><td>3월 5일 + 30일 = 4월 4일. 시각은 <code>00:00:00</code></td></tr><tr><td>8번째 줄</td><td>시각을 빼고 날짜만 글자로</td></tr></tbody></table></div>    <p><code>print(later)</code>는 시각까지 보이고, <code>strftime</code>으로 형식을 정하면 필요한 부분만 찍을 수 있어요.</p>    <p><b>핵심 한 줄:</b> 읽고(<code>strptime</code>) 계산하고(<code>timedelta</code>) 찍어요(<code>strftime</code>).</p>
+<pre class="out"><code class="nohighlight">08:15 11:00
+2:45:00
+2.75
+True</code></pre>
+    <p><b>한 문장으로:</b> <code>datetime</code> 값은 숫자처럼 비교·정렬하고 <code>max</code>·<code>min</code>도 쓸 수 있으며, 빼면 <code>timedelta</code>가 나와요.</p><div class="table-scroll"><table><thead><tr><th>줄</th><th>일어나는 일</th></tr></thead><tbody><tr><td>7번째 줄</td><td>이른 시각부터 정렬: 8:15, 9:30, 11:00</td></tr><tr><td>8번째 줄</td><td>첫 값 <code>08:15</code>, 마지막 값 <code>11:00</code></td></tr><tr><td>10번째 줄</td><td>11:00 − 8:15 = 2시간 45분, 하루 미만이라 시:분:초만 나와요</td></tr><tr><td>11번째 줄</td><td>2시간 45분 = 9900초, 3600으로 나누면 <code>2.75</code>시간</td></tr><tr><td>12번째 줄</td><td>가장 늦은 시각과 가장 이른 시각의 차이는 곧 <code>gap</code>이라 <code>True</code></td></tr></tbody></table></div>    <p><code>sort()</code>와 <code>max()</code>·<code>min()</code>이 <code>datetime</code>에도 그대로 되는 건 <code>datetime</code>이 크기 비교를 할 수 있는 값이라서예요. 시각 기록을 정렬하거나 가장 이른·늦은 것을 찾을 때 써요.</p>    <p><b>핵심 한 줄:</b> <code>datetime</code>끼리는 비교·정렬되고, 빼면 <code>timedelta</code>, 그 <code>total_seconds()</code>를 나누면 원하는 단위가 돼요.</p>
           </div>
         </details>
       </article>
@@ -720,70 +726,73 @@ print(later.strftime('%Y-%m-%d'))       # later 를 '연-월-일' 글자로 바�
     <section class="level adv" data-level="adv">
       <div class="level-head">
         <span class="tag">고급</span>
-        <h2>읽고 추리하기 — 트리·입력·한글 쪼개기</h2>
-        <p>ast 트리, 입력받은 날짜 계산, 한글 글자 쪼개기를 읽어요.</p>
+        <h2>읽고 추리하기 — 트리·시간대·한글 쪼개기</h2>
+        <p>ast 트리의 우선순위, 시간대가 붙은 날짜, 한글 글자 쪼개기를 읽어요.</p>
       </div>
 
       <article class="problem" id="a1">
-        <div class="p-head"><span class="p-id">고급 1</span><span class="p-type">읽기</span><h3>식의 트리 읽기</h3></div>
+        <div class="p-head"><span class="p-id">고급 1</span><span class="p-type">읽기</span><h3>괄호와 우선순위가 트리에 보이는 모습</h3></div>
         <div class="p-body">
-<p><code>ast</code>로 만든 트리에서 가지를 하나씩 따라가요. <code>ast.dump(노드)</code>는 노드를 글자로 보여 줘요.</p>
-<pre><code class="language-python">import ast  # ast 모듈을 가져와 주세요
+<p><code>type(x).__name__</code>은 <code>x</code>가 어떤 종류의 노드인지 이름(글자)으로 알려 줘요. 맨 나중에 계산되는 연산이 트리의 맨 위에 와요.</p>
+<pre><code class="language-python">import ast                                                # ast 모듈을 가져와 주세요
 
-tree = ast.parse('1 + 2 * 3', mode='eval')          # tree 에 식 '1 + 2 * 3' 을 트리로 만들어 담아 주세요
-top = tree.body                                     # top 에 tree 의 body(실제 식) 를 담아 주세요
-print(ast.dump(top.op))                             # top 의 연산자를 화면에 보여 주세요
-print(ast.dump(top.right.op))                       # top 의 오른쪽 식의 연산자를 화면에 보여 주세요
-print(top.left.value)                               # top 의 왼쪽 값을 화면에 보여 주세요
-print(top.right.left.value, top.right.right.value)  # top 의 오른쪽 식의 왼쪽 값과 오른쪽 값을 화면에 보여 주세요</code></pre>
+tree = ast.parse('(1 + 2) * 3 - 4', mode='eval')          # tree 에 식 '(1 + 2) * 3 - 4' 를 트리로 만들어 담아 주세요
+top = tree.body                                           # top 에 tree 의 body(실제 식) 를 담아 주세요
+print(type(top.op).__name__)                              # top 의 연산자 종류 이름을 화면에 보여 주세요
+print(type(top.left).__name__, type(top.right).__name__)  # top 의 왼쪽 가지와 오른쪽 가지의 종류 이름을 화면에 보여 주세요
+print(type(top.left.op).__name__)                         # top 의 왼쪽 가지의 연산자 종류 이름을 화면에 보여 주세요
+print(eval(compile(tree, '&lt;ast&gt;', 'eval')))               # tree 를 계산한 값을 화면에 보여 주세요</code></pre>
     <p>이 코드를 실행하면 무엇이 출력될까요?</p>
     <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr><tr><td>4번째 줄</td><td>?</td></tr></tbody></table></div>
         </div>
         <details class="hint"><summary>힌트 보기</summary>
           <div class="sol-body">
-            <p>곱셈이 덧셈보다 먼저 계산돼요. 먼저 계산되는 쪽이 트리에서는 더 안쪽에 있어요.</p>
+            <p>괄호가 먼저, 그다음 곱셈, 마지막이 뺄셈이에요. 가장 나중에 계산되는 연산이 맨 위, 먼저 계산되는 것일수록 안쪽에 있어요. 숫자 하나는 <code>Constant</code>예요.</p>
           </div>
         </details>
         <div class="memo"><label for="memo-a1">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a1"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
-<pre class="out"><code class="nohighlight">Add()
-Mult()
-1
-2 3</code></pre>
-    <p><b>한 문장으로:</b> <code>1 + 2 * 3</code>은 맨 위가 덧셈이고 그 오른쪽에 곱셈 묶음이 있는 트리라서, 먼저 계산되는 <code>2 * 3</code>이 더 안쪽이에요.</p><div class="table-scroll"><table><thead><tr><th>줄</th><th>일어나는 일</th></tr></thead><tbody><tr><td>5번째 줄</td><td>맨 위 연산은 덧셈 <code>Add()</code></td></tr><tr><td>6번째 줄</td><td>오른쪽 묶음의 연산은 곱셈 <code>Mult()</code></td></tr><tr><td>7번째 줄</td><td>맨 위의 왼쪽은 값 <code>1</code></td></tr><tr><td>8번째 줄</td><td>곱셈 묶음의 왼쪽 값과 오른쪽 값은 <code>2</code>와 <code>3</code></td></tr></tbody></table></div>    <p><code>1 + 2 * 3</code>을 소리 내어 읽으면 왼쪽에서 오른쪽 순서인데, 트리는 계산 순서를 깊이로 보여 줘요. <code>(1 + 2) * 3</code>이라면 맨 위가 곱셈으로 바뀌어요.</p>    <p><b>핵심 한 줄:</b> 먼저 계산되는 식은 트리에서 더 안쪽에 있어요.</p>
+<pre class="out"><code class="nohighlight">Sub
+BinOp Constant
+Mult
+5</code></pre>
+    <p><b>한 문장으로:</b> <code>(1 + 2) * 3 - 4</code>는 맨 위가 뺄셈이고, 그 왼쪽에 곱셈 묶음, 오른쪽에 숫자 4가 달려 있어요.</p><div class="table-scroll"><table><thead><tr><th>줄</th><th>일어나는 일</th></tr></thead><tbody><tr><td>5번째 줄</td><td>맨 나중에 계산되는 뺄셈 <code>Sub</code>가 맨 위</td></tr><tr><td>6번째 줄</td><td>왼쪽은 <code>(1 + 2) * 3</code>이라 <code>BinOp</code>, 오른쪽은 값 <code>4</code>라 <code>Constant</code></td></tr><tr><td>7번째 줄</td><td>왼쪽 가지의 연산자는 곱셈 <code>Mult</code>(괄호 속 덧셈은 그 아래 한 단계 더 안쪽)</td></tr><tr><td>8번째 줄</td><td>(1 + 2) × 3 − 4 = 9 − 4 = <code>5</code></td></tr></tbody></table></div>    <p>괄호는 트리에 노드로 남지 않고, 가지의 깊이로만 드러나요. 괄호를 빼서 <code>1 + 2 * 3 - 4</code>로 바꾸면 곱셈이 먼저 계산되도록 트리의 모양이 달라지고, 값도 <code>3</code>으로 바뀌어요.</p>    <p><b>핵심 한 줄:</b> 먼저 계산되는 식이 트리에서 더 안쪽이고, 맨 위 노드는 맨 나중에 계산되는 연산이에요.</p>
           </div>
         </details>
       </article>
 
       <article class="problem" id="a2">
-        <div class="p-head"><span class="p-id">고급 2</span><span class="p-type">읽기</span><h3>며칠 뒤인지 입력받아 계산</h3></div>
+        <div class="p-head"><span class="p-id">고급 2</span><span class="p-type">읽기</span><h3>같은 순간, 다른 시간대</h3></div>
         <div class="p-body">
-<p>시작 날짜와 일수를 입력받아 며칠 뒤의 날짜를 구해요. 입력한 줄이 그대로 먼저 보여요. 입력: <code>2024 10 26</code>, <code>100</code></p>
-<pre><code class="language-python">from datetime import datetime, timedelta  # datetime 모듈에서 datetime 과 timedelta 를 가져와 주세요
+<p><code>zoneinfo</code>는 파이썬에 처음부터 들어 있는 시간대 모듈이에요(교재가 쓰는 <code>pytz</code>는 따로 설치해야 해요). <code>astimezone(시간대)</code>는 <b>같은 순간</b>을 다른 시간대의 시계 모양으로 바꿔 줘요.</p>
+<pre><code class="language-python">from datetime import datetime                                       # datetime 모듈에서 datetime 을 가져와 주세요
+from zoneinfo import ZoneInfo                                       # zoneinfo 모듈에서 ZoneInfo 를 가져와 주세요
 
-year, month, day = map(int, input().split())  # 입력한 한 줄을 공백으로 잘라 각각 정수로 바꿔 year, month, day 에 담아 주세요
-n = int(input())                              # 입력한 한 줄을 정수로 바꿔 n 에 담아 주세요
-start = datetime(year, month, day)            # start 에 입력한 날짜를 담아 주세요
-end = start + timedelta(days=n)               # end 에 start 의 n일 뒤를 담아 주세요
-print(end.strftime('%Y-%m-%d'))               # end 를 '연-월-일' 글자로 바꿔 화면에 보여 주세요
-print(end - start)                            # end 에서 start 를 뺀 기간을 화면에 보여 주세요</code></pre>
+seoul = datetime(2025, 7, 4, 12, 0, tzinfo=ZoneInfo('Asia/Seoul'))  # seoul 에 서울 시간대의 2025년 7월 4일 12시를 담아 주세요
+utc = seoul.astimezone(ZoneInfo('UTC'))                             # utc 에 seoul 과 같은 순간을 세계 표준시(UTC) 모양으로 바꿔 담아 주세요
+print(seoul)                                                        # seoul 을 화면에 보여 주세요
+print(utc)                                                          # utc 를 화면에 보여 주세요
+print(seoul.utcoffset())                                            # seoul 이 세계 표준시와 얼마나 차이 나는지 화면에 보여 주세요
+print(seoul == utc)                                                 # seoul 과 utc 가 같은 순간인지 화면에 보여 주세요
+print(seoul.hour, utc.hour)                                         # seoul 과 utc 의 시를 화면에 보여 주세요</code></pre>
     <p>이 코드를 실행하면 무엇이 출력될까요?</p>
-    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr><tr><td>4번째 줄</td><td>?</td></tr></tbody></table></div>
+    <div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr><tr><td>4번째 줄</td><td>?</td></tr><tr><td>5번째 줄</td><td>?</td></tr></tbody></table></div>
         </div>
         <details class="hint"><summary>힌트 보기</summary>
           <div class="sol-body">
-            <p>10월 26일에서 시작해 달마다 남은 날을 빼 가며 100일을 채워 보세요. 10월은 5일, 11월은 30일, 12월은 31일이 남아요.</p>
+            <p>서울은 세계 표준시(UTC)보다 9시간 빨라요. 끝의 <code>+09:00</code>이 그 차이예요. 같은 순간이면 시계에 적힌 시각이 달라도 같은 값으로 취급돼요.</p>
           </div>
         </details>
         <div class="memo"><label for="memo-a2">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a2"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
-<pre class="out"><code class="nohighlight">2024 10 26
-100
-2025-02-03
-100 days, 0:00:00</code></pre>
-    <p><b>한 문장으로:</b> <code>datetime</code>이 달 길이와 해 넘김을 알아서 처리하므로, 더한 일수가 그대로 기간으로 돌아와요.</p><div class="table-scroll"><table><thead><tr><th>줄</th><th>일어나는 일</th></tr></thead><tbody><tr><td>3번째 줄</td><td>첫 입력 <code>2024 10 26</code>이 보이고, 세 수로 나뉨</td></tr><tr><td>4번째 줄</td><td>둘째 입력 <code>100</code>이 보임</td></tr><tr><td>7번째 줄</td><td>10월 5일 + 11월 30일 + 12월 31일 = 66일, 남은 34일은 다음 해 1월 31일 + 2월 3일, 결과 2025년 2월 3일</td></tr><tr><td>8번째 줄</td><td>더한 기간이 그대로 <code>100 days</code></td></tr></tbody></table></div>    <p>첫 두 줄은 출력이 아니라 입력한 값이 화면에 보이는 모습이에요. 이 문제집은 입력이 있는 코드에서 입력한 줄도 함께 적어요.</p>    <p><b>핵심 한 줄:</b> 일수 계산은 <code>timedelta(days=n)</code>으로 맡겨요.</p>
+<pre class="out"><code class="nohighlight">2025-07-04 12:00:00+09:00
+2025-07-04 03:00:00+00:00
+9:00:00
+True
+12 3</code></pre>
+    <p><b>한 문장으로:</b> <code>astimezone</code>은 순간은 그대로 두고 시계에 적힌 시각만 시간대에 맞게 바꿔서, 서울 12시와 UTC 3시는 같은 순간이에요.</p><div class="table-scroll"><table><thead><tr><th>줄</th><th>일어나는 일</th></tr></thead><tbody><tr><td>6번째 줄</td><td>서울 시각 12시, 끝에 <code>+09:00</code></td></tr><tr><td>7번째 줄</td><td>같은 순간을 UTC로 바꾸면 9시간 앞선 3시, 끝에 <code>+00:00</code></td></tr><tr><td>8번째 줄</td><td>세계 표준시와의 차이는 기간(<code>timedelta</code>) <code>9:00:00</code></td></tr><tr><td>9번째 줄</td><td>시각 표기는 다르지만 같은 순간이라 <code>True</code></td></tr><tr><td>10번째 줄</td><td><code>.hour</code>는 시계에 적힌 시를 읽어서 <code>12</code>와 <code>3</code></td></tr></tbody></table></div>    <p><code>==</code>는 시계에 적힌 숫자가 아니라 "같은 순간인가"를 비교해요. 시간대가 붙은 날짜끼리는 이렇게 비교되지만, 시간대가 붙은 날짜와 안 붙은 날짜는 <code>==</code>가 <code>False</code>이고, 크기 비교(<code>&lt;</code>)나 빼기는 <code>TypeError</code>가 나요.</p>    <p><b>핵심 한 줄:</b> 시간대가 붙은 날짜는 같은 순간을 시간대마다 다른 시계 모양으로 보여 줘요.</p>
           </div>
         </details>
       </article>
@@ -855,7 +864,7 @@ for ch in '량녀라차':              # 글자들을 하나씩 ch 라고 부르
   var store = null;
   try { store = window.localStorage; store.getItem('x'); } catch (e) { store = null; }
   document.querySelectorAll('.memo textarea').forEach(function (ta) {
-    var key = 'py-ch05c:' + ta.id;
+    var key = 'py-ch05c2:' + ta.id;
     try { var v = store && store.getItem(key); if (v) ta.value = v; } catch (e) {}
     ta.addEventListener('input', function () {
       try { store && store.setItem(key, ta.value); } catch (e) {}
