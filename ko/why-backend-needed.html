@@ -91,16 +91,34 @@
         <tr><td>늘 자리를 지키는 상담원</td><td><strong>서버(server)</strong></td><td>어딘가의 컴퓨터에서 24시간 대기, 전화(요청)가 오면 받아서 답(응답)을 줌</td></tr>
       </tbody>
     </table>
-    <p>제 노트북은 상담원이 될 수 없어요. 밤에는 잠을 자야 하고, 카페에 가면 전화선(인터넷 연결)도 끊기니까요. 그래서 화면을 진짜로 세상에 열어두려면, <strong>절대 안 꺼지는 상담원 자리</strong>를 어딘가에 따로 마련해야 해요. 그 자리가 바로 서버이고, 그 서버 안에서 도는 프로그램을 우리는 흔히 백엔드라고 불러요.</p>
-    <p>재밌는 건, 서버가 필요한지 아닌지는 미리 예측할 수 있다는 거예요. 버튼을 누르면 색이 바뀌는 애니메이션은 제 컴퓨터 안에서 다 처리되니 서버가 필요 없어요. 반면 회원가입·로그인, 남이 쓴 글 보기, 새로고침해도 남아있는 저장, 카드 결제는 전부 <strong>다른 사람과 정보를 주고받거나 오래 보관해야</strong> 하니 서버가 꼭 필요해요. "이 기능, 내 컴퓨터를 벗어나야 하나?"라고 물어보면 답이 나와요.</p>
+    <p><strong>핵심 한 줄:</strong> 화면을 세상에 열어 두려면 절대 안 꺼지는 상담원 자리가 어딘가에 따로 있어야 하고, 그 자리가 서버예요. 그 서버 안에서 도는 프로그램을 흔히 백엔드라고 불러요.</p>
+    <p>서버가 필요한지는 미리 가늠할 수 있어요. "이 기능, 내 컴퓨터를 벗어나야 하나?"라고 물어보면 답이 나와요.</p>
+    <ul>
+      <li><strong>서버 필요 없음</strong> — 내 컴퓨터 안에서 끝나는 일이에요. 예를 들어 버튼을 누르면 색이 바뀌는 애니메이션이요.</li>
+      <li><strong>서버 필수</strong> — 회원가입·로그인, 남이 쓴 글 보기, 새로고침해도 남아 있는 저장, 카드 결제는 전부 <strong>다른 사람과 정보를 주고받거나 오래 보관해야</strong> 해요.</li>
+    </ul>
 
     <h2><span class="hl">상담원 한 명으로는 부족해질 때</span> — 확장과 CDN</h2>
-    <p>상담원이 한 명이면 전화가 몰릴 때 다 못 받겠죠. 그래서 서비스가 커지면 상담원을 여러 명 세우고, 전화가 오면 비어있는 사람에게 자동으로 연결해줘요. 이 "누구한테 연결할지 정하는 역할"을 <strong>로드 밸런서(load balancer)</strong>라고 불러요. 서버를 여러 대로 늘리는 방식을 <strong>수평 확장(horizontal scaling)</strong>이라고 해요.</p>
-    <p>비슷한 문제가 하나 더 있어요. 서버가 미국에 딱 한 대만 있으면, 한국에서 접속하는 사람은 지구 반 바퀴를 돌아 응답을 받아야 해서 느려요. 그래서 <strong>CDN(Content Delivery Network)</strong>이라는 게 있는데, 자주 쓰이는 데이터의 복사본을 전 세계 여러 곳에 미리 뿌려두는 서비스예요. 사용자는 자기랑 가장 가까운 복사본에서 답을 받아서 훨씬 빨라져요.</p>
+    <p>상담원이 한 명이면 전화가 몰릴 때 다 못 받겠죠. 서비스가 커지면 생기는 문제가 둘이고, 풀어 주는 방법도 각각 있어요.</p>
+    <table>
+      <thead><tr><th>생기는 문제</th><th>콜센터로 보면</th><th>풀어 주는 방법</th></tr></thead>
+      <tbody>
+        <tr><td>요청이 몰려 서버 한 대로는 다 못 받아요</td><td>상담원을 여러 명 세우고, 전화가 오면 비어 있는 사람에게 자동으로 연결해 줘요</td><td>서버를 여러 대로 늘리는 <strong>수평 확장(horizontal scaling)</strong>, 그리고 "누구한테 연결할지 정하는 역할"인 <strong>로드 밸런서(load balancer)</strong></td></tr>
+        <tr><td>서버가 미국에 한 대뿐이면 한국에서 접속하는 사람은 지구 반 바퀴를 돌아 응답을 받아 느려요</td><td>자주 찾는 자료의 복사본을 전 세계 여러 지점에 미리 비치해 둬요</td><td><strong>CDN(Content Delivery Network)</strong> — 자주 쓰이는 데이터의 복사본을 전 세계 여러 곳에 미리 뿌려 두는 서비스예요. 사용자는 가장 가까운 복사본에서 답을 받아 훨씬 빨라져요</td></tr>
+      </tbody>
+    </table>
 
     <h2><span class="hl">이 모든 게 시작된 곳</span> — 인터넷의 아주 짧은 역사</h2>
-    <p>이 구조가 왜 이렇게 생겼는지는 역사를 보면 이해가 쉬워요. 1969년, 미국 국방부 프로젝트로 <strong>ARPANET</strong>이라는 네트워크가 처음 컴퓨터 몇 대를 연결했어요. 원래 목적은 한 곳이 고장 나도 다른 경로로 정보가 전달되게 하는 것이었죠. 1970~80년대에 이 여러 네트워크들이 서로 통신할 수 있는 공통 규칙, <strong>TCP/IP</strong>가 자리를 잡으면서 "네트워크들의 네트워크", 즉 진짜 인터넷이 됐어요.</p>
-    <p>1989~91년에는 스위스 CERN의 <strong>팀 버너스리(Tim Berners-Lee)</strong>가 문서끼리 링크로 연결되는 <strong>월드와이드웹(Web)</strong>과, 그 문서를 주고받는 규칙인 <strong>HTTP</strong>를 만들었어요. 지금 우리가 브라우저 주소창에 뭔가를 치는 순간마다 쓰는 바로 그 기술이에요. 2000년대 이후로는 AWS·Google Cloud 같은 <strong>클라우드</strong> 회사들이 등장해서, 예전엔 직접 사야 했던 서버를 이제는 빌려 쓸 수 있게 됐어요. 제가 지금 배우는 "서버를 몇 분 만에 띄운다"는 감각은, 이 클라우드 시대가 있어서 가능한 거였어요.</p>
+    <p>이 구조가 왜 이렇게 생겼는지는 역사를 보면 이해가 쉬워요.</p>
+    <table>
+      <thead><tr><th>언제</th><th>무슨 일</th><th>뜻</th></tr></thead>
+      <tbody>
+        <tr><td>1969년</td><td>미국 국방부 프로젝트로 <strong>ARPANET</strong>이 처음 컴퓨터 몇 대를 연결했어요</td><td>원래 목적은 한 곳이 고장 나도 다른 경로로 정보가 전달되게 하는 것이었어요</td></tr>
+        <tr><td>1970~80년대</td><td>여러 네트워크가 서로 통신할 공통 규칙 <strong>TCP/IP</strong>가 자리를 잡았어요</td><td>"네트워크들의 네트워크", 즉 진짜 인터넷이 됐어요</td></tr>
+        <tr><td>1989~91년</td><td>스위스 CERN의 <strong>팀 버너스리(Tim Berners-Lee)</strong>가 문서끼리 링크로 연결되는 <strong>월드와이드웹(Web)</strong>과, 문서를 주고받는 규칙 <strong>HTTP</strong>를 만들었어요</td><td>지금 우리가 브라우저 주소창에 뭔가를 치는 순간마다 쓰는 바로 그 기술이에요</td></tr>
+        <tr><td>2000년대 이후</td><td>AWS·Google Cloud 같은 <strong>클라우드</strong> 회사들이 등장했어요</td><td>예전엔 직접 사야 했던 서버를 빌려 쓸 수 있게 됐어요. "서버를 몇 분 만에 띄운다"는 감각은 이 시대가 있어서 가능해요</td></tr>
+      </tbody>
+    </table>
     <p>정리하면, 화면이 안 열렸던 이유는 간단했어요. 제 화면은 손님(클라이언트)만 있고 상담원(서버)이 없는 상태였던 거예요. 다음 글에서는 이 서버에 어떻게 <strong>주소(도메인)</strong>가 붙고, 그 주소를 타고 요청이 실제로 어떤 길을 지나가는지 — 네트워크의 기본기를 하나씩 따라가볼게요.</p>
 
     <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 내 컴퓨터에서는 되는데 남이 쓰면 안 될 때</h2>
@@ -161,6 +179,18 @@
     <a class="post-nav" href="connecting-frontend-backend.html">
       <span class="post-nav-label">(6)</span>
       <span class="post-nav-title">AI로 프론트-백엔드 연결하기</span>
+    </a>
+    <a class="post-nav" href="what-is-proxy-server.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">프록시 서버란 무엇인가 — API 키를 대신 들어주는 서버</span>
+    </a>
+    <a class="post-nav" href="what-is-cors.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">CORS란 무엇인가 — 다른 주소끼리 대화할 때 브라우저가 하는 검문</span>
+    </a>
+    <a class="post-nav" href="what-is-docker.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">도커(Docker)란 무엇인가 — 이미지와 컨테이너, 상자에 뭘 담느냐</span>
     </a>
   </main>
   </div>

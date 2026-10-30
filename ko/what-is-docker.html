@@ -45,7 +45,7 @@
         <dt>읽고 나면 할 수 있는 것</dt>
         <dd>
           <ul>
-            <li>이미지와 컨테이너가 왜 다른 것인지 밀키트 비유로 설명할 수 있어요 — 냉장고에 든 상자와, 뜯어서 불에 올린 상태예요.</li>
+            <li>이미지(프로그램과 환경을 묶어 둔 정지 상태의 파일)와 컨테이너(그걸 실행해 실제로 돌고 있는 상태)가 왜 다른 것인지 설명할 수 있어요.</li>
             <li>환경을 고정해 준다는 도구들이 각각 무엇까지 고정하는지 구분할 수 있어요 — 패키지 목록만 / 실행기 버전만 / 운영체제 통째로 / 프로그램과 라이브러리 전부요.</li>
             <li>명령 몇 개로 받아둔 이미지와 지금 도는 컨테이너를 따로 확인할 수 있어요.</li>
           </ul>
@@ -55,7 +55,7 @@
           <ul>
             <li>볼륨 없이 띄우고 데이터를 쌓다가 컨테이너를 지우면 통째로 사라져요. "지우면 흔적이 안 남는다"는 장점이 그대로 위험이 되는 지점이에요. <a class="suspect-jump" href="#suspect-no-volume">언제 의심하나 ↓</a></li>
             <li>"도커 = 배포 도구"로만 알면 데이터베이스나 실험 환경 같은 다른 자리를 놓쳐요. 뭘 담느냐가 역할을 정해요.</li>
-            <li>가상 머신보다 가볍다고 자원을 안 쓰는 건 아니에요. 특히 윈도우·맥에서는 내부적으로 리눅스 환경을 하나 띄워 두고 써서 그 몫이 추가로 나가요. <a class="suspect-jump" href="#suspect-docker-memory">언제 의심하나 ↓</a></li>
+            <li>가상 머신(운영체제를 통째로 하나 더 띄우는 방식)보다 가볍다고 자원을 안 쓰는 건 아니에요. 특히 윈도우·맥에서는 내부적으로 리눅스 환경을 하나 띄워 두고 써서 그 몫이 추가로 나가요. <a class="suspect-jump" href="#suspect-docker-memory">언제 의심하나 ↓</a></li>
             <li>AI 실습이 메모리 부족으로 실패하는 주된 이유는 도커가 아니라 모델 크기예요. 두 문제를 섞으면 엉뚱한 데서 답을 찾아요. <a class="suspect-jump" href="#suspect-model-too-big">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
@@ -99,7 +99,7 @@
       </tbody>
     </table>
     <p><strong>핵심 한 줄:</strong> 도커가 고정하는 건 "요리"가 아니라 <strong>부엌 조건</strong>이에요 — 무엇을 만드느냐가 아니라, 어디서 만들어도 같아지게 하는 쪽이에요.</p>
-    <p>다만 여기서 비유가 끊기는 점이 둘 있어요. 하나는 <strong>밀키트는 먹으면 없어지지만 컨테이너는 도는 동안 결과물이 쌓인다</strong>는 거예요 — 데이터베이스라면 저장된 데이터가 그 안에 생기죠. 그래서 아래에서 볼 "볼륨"이 필요해요. 다른 하나는 <strong>컨테이너가 부엌 설비를 아예 안 쓰는 건 아니라는</strong> 거예요. 불과 가스는 그 집 것을 써요 — 도커도 컴퓨터의 핵심 부분(커널<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>)은 빌려 씁니다. 이게 뒤에 나올 "가상 머신과의 차이"의 뿌리예요.</p>
+    <p>다만 여기서 비유가 끊기는 점이 둘 있어요. 하나는 <strong>밀키트는 먹으면 없어지지만 컨테이너는 도는 동안 결과물이 쌓인다</strong>는 거예요 — 데이터베이스라면 저장된 데이터가 그 안에 생기죠. 그래서 아래에서 볼 "볼륨"이 필요해요. 다른 하나는 <strong>컨테이너가 부엌 설비를 아예 안 쓰는 건 아니라는</strong> 거예요. 불과 가스는 그 집 것을 써요 — 도커도 컴퓨터의 핵심 부분(커널<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>)은 빌려 써요. 이게 뒤에 나올 "가상 머신과의 차이"의 뿌리예요.</p>
 
     <h3>또 하나의 비유 — 옛날 CD 이미지와 가상 드라이브</h3>
     <p>대화에서 이런 비유도 나왔어요. 예전에 CD를 통째로 파일 하나로 떠 놓은 <strong>이미지 파일(.iso)</strong>을 가상 드라이브에 "꽂아서" 실물 CD 없이 실행하던 프로그램들이 있었죠. 그 파일은 그냥 있을 땐 아무것도 안 해요. <strong>꽂아야 비로소 돌아가요.</strong></p>
@@ -237,10 +237,14 @@ CMD ["python", "main.py"]</pre>
     <p>초보자가 도커에서 가장 크게 다치는 자리가 여기예요. <strong>"컨테이너 안의 것은 언제든 사라질 수 있다"</strong>를 기본값으로 놓고, 남아야 하는 건 반드시 볼륨으로 빼세요.</p>
 
     <h2><span class="hl">자원이 부족할 때</span></h2>
-    <p>같은 대화에서 이런 이야기도 나왔어요 — 책 실습을 하는데 절반 이상이 메모리 부족으로 실패해서, 모델을 점점 작은 것으로 낮추다 보니 품질이 떨어지더라는 거예요.</p>
-    <p>여기서 두 가지를 갈라 두면 좋아요.</p>
-    <p><strong>도커 자체는 가상 머신보다 가볍지만 공짜는 아니에요.</strong> 위 그림 ②에서 층이 하나 적다는 게 "자원을 안 쓴다"는 뜻은 아니에요. 컨테이너 안에서 도는 프로그램은 결국 내 컴퓨터의 메모리와 CPU를 씁니다. 특히 윈도우·맥에서는 도커가 내부적으로 리눅스 환경을 하나 띄워 두고 쓰기 때문에, 그 몫이 추가로 나가요.</p>
-    <p><strong>하지만 AI 실습이 메모리 부족으로 실패하는 주된 이유는 도커가 아니라 모델 크기예요.</strong> 모델이 메모리에 들어가는지를 계산하는 법은 <a href="kv-cache-and-vram-budget.html">KV 캐시와 VRAM — 내 컴퓨터에 들어갈지 계산하기</a>에, 크기를 줄이면서 품질을 덜 잃는 방법은 <a href="quantization-why-it-still-works.html">양자화 — 정밀도를 깎아도 왜 멀쩡할까</a>에 정리해 뒀어요. 그리고 "내 컴퓨터에서 돌리느냐 API로 부르느냐"를 아예 다른 축으로 놓고 보는 관점이 <a href="three-ways-to-run-an-llm.html">로컬이냐 API냐는 틀린 질문 — 세 갈래와 품질 격차</a>예요.</p>
+    <p>같은 대화에서 이런 이야기도 나왔어요 — 책 실습을 하는데 절반 이상이 메모리 부족으로 실패해서, 모델을 점점 작은 것으로 낮추다 보니 품질이 떨어지더라는 거예요. 여기서 두 가지를 갈라 두면 좋아요.</p>
+    <table>
+      <thead><tr><th>구분</th><th>실제로는</th><th>더 보려면</th></tr></thead>
+      <tbody>
+        <tr><td><strong>도커 자체의 자원</strong> — 가상 머신보다 가볍지만 공짜는 아니에요</td><td>위 그림 ②에서 층이 하나 적다는 건 "자원을 안 쓴다"는 뜻이 아니에요. 컨테이너 안에서 도는 프로그램은 결국 내 컴퓨터의 메모리와 CPU를 써요. 특히 윈도우·맥에서는 도커가 내부적으로 리눅스 환경을 하나 띄워 두고 쓰기 때문에, 그 몫이 추가로 나가요</td><td>아래 <a href="#suspect-docker-memory">이럴 때 의심하세요</a>의 셋째 줄</td></tr>
+        <tr><td><strong>AI 실습의 메모리 부족</strong> — 주된 이유는 도커가 아니라 모델 크기예요</td><td>모델이 메모리에 들어가는지 계산하는 법, 크기를 줄이면서 품질을 덜 잃는 방법, "내 컴퓨터에서 돌리느냐 API로 부르느냐"를 다른 축으로 놓고 보는 관점이 각각 따로 있어요</td><td><a href="kv-cache-and-vram-budget.html">KV 캐시와 VRAM — 내 컴퓨터에 들어갈지 계산하기</a>, <a href="quantization-why-it-still-works.html">양자화 — 정밀도를 깎아도 왜 멀쩡할까</a>, <a href="three-ways-to-run-an-llm.html">로컬이냐 API냐는 틀린 질문 — 세 갈래와 품질 격차</a></td></tr>
+      </tbody>
+    </table>
     <p>정리하면 — <strong>도커는 "환경이 달라서 안 되는 문제"를 푸는 도구지, "내 컴퓨터가 작아서 안 되는 문제"를 푸는 도구가 아니에요.</strong> 두 문제를 섞으면 엉뚱한 데서 답을 찾게 돼요.</p>
 
     <h2><span class="hl">직접 해보기</span></h2>
@@ -307,6 +311,42 @@ docker ps, docker volume ls, docker stats처럼 상태를 보는 명령만 실�
         <li id="fn6">볼륨 — 컨테이너를 지워도 남아야 하는 데이터를 컨테이너 바깥에 따로 저장해 두는 자리예요. <a href="#fnref6">↩</a></li>
       </ol>
     </section>
+
+<h3>"화면 뒤에서 일어나는 일들" 시리즈</h3>
+    <a class="post-nav" href="why-backend-needed.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">왜 화면 뒤에 서버가 필요할까</span>
+    </a>
+    <a class="post-nav" href="domain-http-and-packets.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">도메인·포트·HTTPS — 주소가 화면이 되기까지</span>
+    </a>
+    <a class="post-nav" href="what-backend-actually-does.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">백엔드가 실제로 하는 일</span>
+    </a>
+    <a class="post-nav" href="ai-code-security-basics.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">AI가 짠 백엔드 코드에서 반드시 확인할 것들</span>
+    </a>
+    <a class="post-nav" href="deploying-and-free-hosting.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">배포, 무료 호스팅, 그리고 집 컴퓨터를 서버로 쓰기</span>
+    </a>
+    <a class="post-nav" href="connecting-frontend-backend.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">AI로 프론트-백엔드 연결하기</span>
+    </a>
+    <a class="post-nav" href="what-is-proxy-server.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">프록시 서버란 무엇인가 — API 키를 대신 들어주는 서버</span>
+    </a>
+    <a class="post-nav" href="what-is-cors.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">CORS란 무엇인가 — 다른 주소끼리 대화할 때 브라우저가 하는 검문</span>
+    </a>
+    <p class="post-date">(9) 도커(Docker)란 무엇인가 — 이미지와 컨테이너, 상자에 뭘 담느냐 (이 글)</p>
+
 
     <a class="post-nav" href="why-database-needed.html">
       <span class="post-nav-label">다음 시리즈 →</span>

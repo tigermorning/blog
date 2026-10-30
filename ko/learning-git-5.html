@@ -44,17 +44,17 @@
         <dt>읽고 나면 할 수 있는 것</dt>
         <dd>
           <ul>
-            <li>순서만 관리하는 큐 파일로 자동 발행을 만듭니다. 날짜 대신 줄 세우기라, 하루가 밀려도 뒤 날짜를 고칠 필요가 없어요.</li>
-            <li>"하루 3개"를 지키는 방법을 압니다. 한 번 실행에 딱 한 편만 처리하게 만들면, 큐에 아무리 쌓여 있어도 하루 3번을 안 넘어요.</li>
-            <li>실행 시각을 UTC 기준으로 환산해 적습니다. 한국시간 09시를 표현하려면 9시간을 빼서 UTC 00시로요.</li>
+            <li>순서만 관리하는 큐 파일로 자동 발행을 만들 수 있어요. 날짜 대신 줄 세우기라, 하루가 밀려도 뒤 날짜를 고칠 필요가 없어요.</li>
+            <li>"하루 3개"를 지키는 방법을 알 수 있어요. 한 번 실행에 딱 한 편만 처리하게 만들면, 큐에 아무리 쌓여 있어도 하루 3번을 안 넘어요.</li>
+            <li>실행 시각을 UTC 기준으로 환산해 적을 수 있어요. 한국시간 09시를 표현하려면 9시간을 빼서 UTC 00시로요.</li>
           </ul>
         </dd>
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>cron 시각을 한국시간으로 적으면 엉뚱한 때 돌아갑니다. <a class="suspect-jump" href="#suspect-cron-utc">언제 의심하나 ↓</a></li>
+            <li>cron 시각을 한국시간으로 적으면 엉뚱한 때 돌아가요. <a class="suspect-jump" href="#suspect-cron-utc">언제 의심하나 ↓</a></li>
             <li>자동화는 저장소 쓰기 권한을 기본으로 못 가져서, 설정을 안 열어두면 마지막 push 단계에서 권한 오류가 나요. <a class="suspect-jump" href="#suspect-write-permission">언제 의심하나 ↓</a></li>
-            <li>이 시스템은 자기가 실행한 횟수만 셀 뿐 내가 직접 올린 글은 모릅니다. 자동 3개에 수동 2개면 그날 5개가 나가요 — 애초에 그걸 막으려고 만든 건데요. <a class="suspect-jump" href="#suspect-double-publish">언제 의심하나 ↓</a></li>
+            <li>이 시스템은 자기가 실행한 횟수만 셀 뿐 내가 직접 올린 글은 몰라요. 자동 3개에 수동 2개면 그날 5개가 나가요 — 애초에 그걸 막으려고 만든 건데요. <a class="suspect-jump" href="#suspect-double-publish">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -70,7 +70,7 @@
       </dl>
     </div>
 
-    <p>4편까지 만들고 나니, 새로운 고민이 생겼어요. 글을 여러 편 몰아서 써두고 한꺼번에 올리면, 나중에 애드센스 심사 같은 걸 받을 때 "이거 AI가 대량으로 찍어낸 거 아니야?"라고 보일 수 있다는 거였어요. 그래서 <strong>미리 써둔 글을 하루에 몇 개씩, 시간 간격을 두고 자동으로 발행</strong>해주는 시스템을 만들어봤어요.</p>
+    <p>4편까지 만들고 나니, 새로운 고민이 생겼어요. 글을 여러 편 몰아서 써두고 한꺼번에 올리면, 나중에 애드센스(구글의 블로그 광고 수익 프로그램) 심사 같은 걸 받을 때 "이거 AI가 대량으로 찍어낸 거 아니야?"라고 보일 수 있다는 거였어요. 그래서 <strong>미리 써둔 글을 하루에 몇 개씩, 시간 간격을 두고 자동으로 발행</strong>해주는 시스템을 만들어봤어요.</p>
 
     <a class="post-nav" href="learning-git-4.html">
       <span class="post-nav-label">← 이전 편</span>
@@ -103,11 +103,17 @@ ko/learning-git-6.html</code></pre>
 
     <h2>2. <span class="hl">GitHub Actions로 정해진 시간마다 실행하기</span></h2>
     <p>줄은 세워뒀는데, 정해진 시각에 그 줄의 맨 앞을 꺼내줄 누군가가 필요해요. 제 컴퓨터에 알람을 걸어둘 수도 있지만, 그러면 컴퓨터가 꺼져 있는 새벽에는 아무 일도 일어나지 않죠. 그래서 항상 켜져 있는 쪽, 그러니까 GitHub에 이 일을 맡기기로 했어요.</p>
-    <p><strong>GitHub Actions</strong>는 "정해진 조건이 되면 GitHub 서버가 대신 특정 작업을 실행해주는 기능"이에요. 제 컴퓨터나 Claude 세션이 꺼져 있어도 GitHub 쪽에서 알아서 실행해주니까 훨씬 안정적이에요.</p>
+    <p>그래서 쓴 게 <strong>GitHub Actions</strong>예요. 제 컴퓨터나 Claude 세션이 꺼져 있어도 GitHub 서버가 알아서 실행해주니까 훨씬 안정적이에요.</p>
 
     <h3>🔍 궁금하다면: 실제로 어떻게 설정할까?</h3>
-    <p>시키는 방법이 좀 특이했어요. 사이트 화면에서 버튼을 누르는 게 아니라, <strong>저장소 안에 파일을 하나 만들어두면</strong> 그게 곧 지시가 돼요. <code>.github/workflows/</code>라는 정해진 폴더 안에 <code>publish-drafts.yml</code> 같은 파일을 두면, GitHub이 그 파일을 읽고 "아, 이런 일을 이때 하라는 거구나" 하고 알아들어요. 이 파일 한 장을 <strong>워크플로(workflow, 작업 흐름)</strong>라고 불러요.</p>
-    <p>실행 시각은 그 안에 <code>cron</code>이라는 표기법으로 적어요. 이 이름은 시간을 뜻하는 그리스어 <em>chronos</em>에서 온 말인데, 오래전부터 컴퓨터에서 "정해진 시각마다 반복 실행"을 맡아온 기능 이름이 그대로 굳은 거예요.</p>
+    <p>시키는 방법이 좀 특이했어요. 사이트 화면에서 버튼을 누르는 게 아니라, <strong>저장소 안에 파일을 하나 만들어두면</strong> 그게 곧 지시가 돼요. 그 파일에 나오는 낱말 둘만 알면 돼요.</p>
+    <table>
+      <thead><tr><th>낱말</th><th>뜻</th></tr></thead>
+      <tbody>
+        <tr><td><strong>워크플로</strong>(workflow, 작업 흐름)</td><td><code>.github/workflows/</code>라는 정해진 폴더 안에 <code>publish-drafts.yml</code> 같은 이름으로 두는 파일 한 장이에요. GitHub이 그 파일을 읽고 "아, 이런 일을 이때 하라는 거구나" 하고 알아들어요</td></tr>
+        <tr><td><strong>cron</strong></td><td>실행 시각을 적는 표기법이에요. 시간을 뜻하는 그리스어 <em>chronos</em>에서 온 이름인데, 오래전부터 컴퓨터에서 "정해진 시각마다 반복 실행"을 맡아온 기능 이름이 그대로 굳은 거예요</td></tr>
+      </tbody>
+    </table>
     <p class="run-tag">실행: GitHub Actions 워크플로 파일(.yml)에 저장 <span class="run-tag-why">— .github/workflows/ 안에 저장하면 GitHub 서버가 실행</span></p>
     <pre><code>on:
   schedule:
@@ -116,18 +122,18 @@ ko/learning-git-6.html</code></pre>
     - cron: '0 12 * * *'   # 한국시간 21:00</code></pre>
     <p>GitHub 서버는 한국시간이 아니라 UTC(세계표준시) 기준이라서, 한국시간 09시를 표현하려면 9시간을 빼서 UTC 00시로 적어야 해요.</p>
 
-    <p>시간표는 정했으니, 이제 그 시각이 됐을 때 실제로 무슨 일을 할지가 남았어요. 여기서 "하루 3개"라는 목표를 지키는 방법이 의외로 간단했어요. 한 번 실행될 때 <strong>딱 한 편만</strong> 처리하게 만들면 되더라고요. 정해진 시각이 되면 작은 스크립트가 실행돼서 이런 일을 해요.</p>
+    <p>시간표는 정했으니, 이제 그 시각이 됐을 때 실제로 무슨 일을 할지가 남았어요. 여기서 "하루 3개"라는 목표를 지키는 방법이 의외로 간단했어요. 한 번 실행될 때 <strong>딱 한 편만</strong> 처리하게 만들면 되더라고요. 정해진 시각이 되면 작은 스크립트(자동으로 실행되는 짧은 프로그램)가 실행돼서 이런 일을 해요.</p>
     <ol>
       <li>큐 파일의 <strong>맨 위 한 줄</strong>만 읽기</li>
       <li>그 글 파일을 <code>_drafts</code>에서 진짜 위치(<code>ko/</code> 등)로 옮기기</li>
       <li>큐 파일에서 그 줄 삭제 (나머지는 자연스럽게 다음 차례로)</li>
-      <li>커밋하고 push</li>
-      <li>(덤으로) sitemap.xml에도 새 글 주소를 자동으로 추가</li>
+      <li><a href="learning-git-3.html">커밋하고 push</a></li>
+      <li>(덤으로) sitemap.xml(검색엔진에 사이트의 글 주소를 죽 적어 알려 주는 파일)에도 새 글 주소를 자동으로 추가</li>
     </ol>
     <p>한 번 실행에 딱 하나만 처리하기 때문에, 시간표대로만 돌면 아무리 큐에 글이 쌓여 있어도 하루 3개를 넘지 않아요.</p>
 
     <h2>3. <span class="hl">저장소 권한 설정, 그리고 하루 발행 개수 챙기기</span></h2>
-    <p>그런데 여기까지 만들고 돌려보니 한 번에 되지 않았어요. 위 4단계의 마지막이 "커밋하고 push"인데, 이건 사람이 아니라 GitHub Actions가 제 저장소에 직접 글을 쓰는 행위거든요. GitHub은 안전을 위해 자동화에게 기본적으로 <strong>읽기 권한만</strong> 주기 때문에, 쓰기 권한은 제가 따로 열어줘야 했어요.</p>
+    <p>그런데 여기까지 만들고 돌려보니 한 번에 되지 않았어요. 위 목록의 4번이 "커밋하고 push"인데, 이건 사람이 아니라 GitHub Actions가 제 저장소에 직접 글을 쓰는 행위거든요. GitHub은 안전을 위해 자동화에게 기본적으로 <strong>읽기 권한만</strong> 주기 때문에, 쓰기 권한은 제가 따로 열어줘야 했어요.</p>
     <ol>
       <li>저장소 <strong>Settings</strong> → 왼쪽 메뉴 <strong>Actions</strong> → <strong>General</strong></li>
       <li>맨 아래 <strong>Workflow permissions</strong> 항목에서 <strong>Read and write permissions</strong> 선택</li>

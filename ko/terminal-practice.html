@@ -38,7 +38,7 @@
         <dd>
           <ul>
             <li>명령어 목록은 봤는데, 실제로 뭘 어떻게 연습해야 하죠?</li>
-            <li>책에 나온 명령어가 제 컴퓨터에서는 "인식할 수 없다"고 나와요. 이 컴퓨터가 안 되는 건가요?</li>
+            <li>안내문에 나온 명령어가 제 컴퓨터에서는 "인식할 수 없다"고 나와요. 이 컴퓨터가 안 되는 건가요?</li>
             <li>터미널에서 파일을 잘못 지우면 휴지통에서 복구하면 되나요?</li>
           </ul>
         </dd>
@@ -78,30 +78,30 @@
 
     <hr>
 
-    <p>1~5교시가 개념을 이해하는 시간이었다면, 6~8교시는 그 개념을 손으로 직접 반복해보는 실습 시간이었어요. 그중 6교시는 터미널 명령어로 폴더를 직접 탐험하고 만들어보는 실습이에요. 사실 새로운 명령어는 거의 없어요 — <code>mkdir</code>과 <code>touch</code>(정확히는 <code>New-Item</code>)는 3편에서 이미 한 번 써봤고, 명령이 실제로 어떻게 처리되는지는 5편에서 파고들었어요. 오늘은 그걸 실제로 여러 번 반복해서 손에 익히는 시간이었어요.</p>
+    <p>앞의 1~5편이 개념을 이해하는 글이었다면, 이 글은 그 개념을 손으로 직접 반복해보는 실습이에요. 터미널 명령어로 폴더를 직접 탐험하고 만들어봐요. 사실 새로운 명령어는 거의 없어요 — <code>mkdir</code>과 <code>touch</code>(정확히는 <code>New-Item</code>)는 <a href="my-first-web-project.html">3편</a>에서 이미 한 번 써봤고, 명령이 실제로 어떻게 처리되는지는 <a href="terminal-shell-kernel-prompt.html">5편</a>에서 파고들었어요. 이번엔 그걸 여러 번 반복해서 손에 익혀요.</p>
 
     <h2><span class="hl">안전한 연습 폴더에서 시작하기</span></h2>
-    <p>실습에 들어가기 전에 안전 규칙부터 정하고 시작했어요 — <strong>삭제 명령은 실제 파일이 아니라 연습 폴더 안에서만 씁니다.</strong> 바탕화면의 진짜 파일 대신, 이번에 새로 만들 <code>terminal-practice</code>라는 연습 전용 폴더 안에서만 손을 대는 거예요.</p>
-    <p>이 규칙이 왜 필요한지는 3편의 실수를 떠올리면 바로 이해가 돼요. 그때 저는 <code>~</code>를 몰라서 폴더를 엉뚱한 곳에 만들었는데, 그건 폴더가 하나 잘못 생긴 것뿐이라 지우면 그만이었어요. 그런데 똑같은 착각을 <em>삭제</em> 명령에서 하면요? 터미널에는 휴지통이 없어서 되돌릴 수가 없어요. 그러니까 위치를 확실히 읽을 줄 알게 되기 전까지는, 실수해도 아무것도 잃지 않는 방에서만 연습하는 게 맞았어요. (이름에 공백이 들어가면 따옴표로 감싸는 것도 같은 이유예요. 안 감싸면 컴퓨터가 한 이름을 두 개로 잘라 읽거든요.)</p>
+    <p>실습에 들어가기 전에 안전 규칙부터 정하고 시작했어요 — <strong>삭제 명령은 실제 파일이 아니라 연습 폴더 안에서만 써요.</strong> 바탕화면의 진짜 파일 대신, 이번에 새로 만들 <code>terminal-practice</code>라는 연습 전용 폴더 안에서만 손을 대는 거예요.</p>
+    <p>이 규칙이 왜 필요한지는 <a href="my-first-web-project.html">3편</a>의 실수를 떠올리면 바로 이해가 돼요. 그때 저는 <code>~</code>를 몰라서 폴더를 엉뚱한 곳에 만들었는데, 그건 폴더가 하나 잘못 생긴 것뿐이라 지우면 그만이었어요. 그런데 똑같은 착각을 <em>삭제</em> 명령에서 하면요? 터미널에는 휴지통이 없어서 되돌릴 수가 없어요. 그러니까 위치를 확실히 읽을 줄 알게 되기 전까지는, 실수해도 아무것도 잃지 않는 방에서만 연습하는 게 맞았어요. (이름에 공백이 들어가면 따옴표로 감싸는 것도 같은 이유예요. 안 감싸면 컴퓨터가 한 이름을 두 개로 잘라 읽거든요.)</p>
     <p>오늘 쓸 명령어는 이 일곱 개예요.</p>
     <table>
       <thead>
         <tr><th>명령</th><th>하는 일</th></tr>
       </thead>
       <tbody>
-        <tr><td><code>pwd</code></td><td>지금 내가 있는 폴더의 전체 경로를 출력합니다.</td></tr>
-        <tr><td><code>ls</code></td><td>현재 폴더 안의 파일·폴더 이름을 보여줍니다.</td></tr>
-        <tr><td><code>cd 폴더이름</code></td><td>지정한 폴더로 이동합니다. <code>cd ..</code>는 한 단계 위로 갑니다.</td></tr>
-        <tr><td><code>mkdir 폴더이름</code></td><td>새 폴더를 만듭니다.</td></tr>
-        <tr><td><code>New-Item 파일이름</code></td><td>빈 파일을 만듭니다. (별명 <code>ni</code>)</td></tr>
-        <tr><td><code>rm 파일이름</code></td><td>기존 파일을 삭제합니다. (오늘 실습에서는 쓰지 않아요)</td></tr>
-        <tr><td><code>mv 원본 대상</code></td><td>파일·폴더를 이동하거나 이름을 바꿉니다. 실행 전 원본과 대상을 꼭 다시 읽어요.</td></tr>
+        <tr><td><code>pwd</code></td><td>지금 내가 있는 폴더의 전체 경로를 출력해요.</td></tr>
+        <tr><td><code>ls</code></td><td>현재 폴더 안의 파일·폴더 이름을 보여줘요.</td></tr>
+        <tr><td><code>cd 폴더이름</code></td><td>지정한 폴더로 이동해요. <code>cd ..</code>는 한 단계 위로 가요.</td></tr>
+        <tr><td><code>mkdir 폴더이름</code></td><td>새 폴더를 만들어요.</td></tr>
+        <tr><td><code>New-Item 파일이름</code></td><td>빈 파일을 만들어요. (별명 <code>ni</code>)</td></tr>
+        <tr><td><code>rm 파일이름</code></td><td>기존 파일을 삭제해요. (오늘 실습에서는 쓰지 않아요)</td></tr>
+        <tr><td><code>mv 원본 대상</code></td><td>파일·폴더를 이동하거나 이름을 바꿔요. 실행 전 원본과 대상을 꼭 다시 읽어요.</td></tr>
       </tbody>
     </table>
-    <p>수업 자료의 원래 명령어는 <code>touch</code>였는데, 3편에서 이미 겪었듯 PowerShell에는 <code>touch</code>가 없어서 <code>New-Item</code>(별명 <code>ni</code>)을 써요. 다행히 <code>pwd</code>, <code>ls</code>, <code>cd</code>, <code>mkdir</code>, <code>mv</code>, <code>rm</code>은 PowerShell에서도 이름이 그대로 통해요. 폴더 여러 개를 한 번에 만들 때는 <code>mkdir ideas, assets, archive</code>처럼 쉼표로 구분해요.</p>
+    <p>안내에 나온 원래 명령어는 <code>touch</code>였는데, <a href="my-first-web-project.html">3편</a>에서 이미 겪었듯 PowerShell에는 <code>touch</code>가 없어서 <code>New-Item</code>(별명 <code>ni</code>)을 써요. 다행히 <code>pwd</code>, <code>ls</code>, <code>cd</code>, <code>mkdir</code>, <code>mv</code>, <code>rm</code>은 PowerShell에서도 이름이 그대로 통해요. 폴더 여러 개를 한 번에 만들 때는 <code>mkdir ideas, assets, archive</code>처럼 쉼표로 구분해요.</p>
 
     <h2><span class="hl">1~2단계</span> — 연습 공간을 만들고 파일을 옮겨보기</h2>
-    <p>가장 먼저 할 일은 폴더를 만드는 게 아니라 <strong>지금 내가 어디 서 있는지 확인하는 것</strong>이에요. 3편에서 이 단계를 건너뛰었다가 폴더가 엉뚱한 데 생겼으니까요. 위치를 확인하고, 거기가 맞으면 그때 연습 폴더를 만들어요.</p>
+    <p>가장 먼저 할 일은 폴더를 만드는 게 아니라 <strong>지금 내가 어디 서 있는지 확인하는 것</strong>이에요. <a href="my-first-web-project.html">3편</a>에서 이 단계를 건너뛰었다가 폴더가 엉뚱한 데 생겼으니까요. 위치를 확인하고, 거기가 맞으면 그때 연습 폴더를 만들어요.</p>
     <p class="run-tag">실행: 로컬 터미널</p>
     <pre><code>pwd
 ls
@@ -119,7 +119,7 @@ mv ideas/landing-page.txt assets/images/landing-page.txt
 ls assets/images
 cd ..
 pwd</code></pre>
-    <p>빈 메모 파일을 하나 만든 뒤 이미지 폴더로 옮겨봤어요. <code>mv</code> 다음의 <code>ls assets/images</code> 출력에 <code>landing-page.txt</code>가 실제로 보일 때만 성공이에요. <strong>명령을 쳤다는 사실이 아니라, 그 다음 출력으로 확인하는 것</strong>이 중요해요 — 이건 4편에서 다뤘던 "판단" 단계와 똑같은 습관이에요.</p>
+    <p>빈 메모 파일을 하나 만든 뒤 이미지 폴더로 옮겨봤어요. <code>mv</code> 다음의 <code>ls assets/images</code> 출력에 <code>landing-page.txt</code>가 실제로 보일 때만 성공이에요. <strong>명령을 쳤다는 사실이 아니라, 그 다음 출력으로 확인하는 것</strong>이 중요해요 — 이건 <a href="vibe-coding-loop.html">4편</a>에서 다뤘던 "판단" 단계와 똑같은 습관이에요.</p>
 
     <h2><span class="hl">3단계</span> — 길을 잃었을 때 돌아오기, 그리고 명령어의 정체</h2>
     <p>2단계를 하면서 실제로 불편한 게 하나 생겼어요. <code>cd</code>로 폴더를 몇 번 들어갔다 나왔더니, 지금 제가 어느 층에 있는지 헷갈리기 시작한 거예요. 화면에는 마지막 명령의 결과만 남아 있어서 눈으로는 알 수가 없었어요. 그래서 3단계는 <strong>일부러 깊이 들어갔다가 되돌아 나오는</strong> 연습이에요.</p>
@@ -132,21 +132,23 @@ ls</code></pre>
     <p><code>cd ..</code>는 "한 단계 위 폴더로 가라"는 명령이에요. 화면에 스쳐 지나가는 이름만 믿지 말고, 이동할 때마다 <code>pwd</code>와 <code>ls</code>를 번갈아 확인하는 습관을 들이면 좋아요. 지금 위치가 불안하면 일단 <code>pwd</code>부터 실행하고, <code>mv</code>는 원본·대상 경로를 한 글자씩 눈으로 확인한 뒤에 실행해요. 실제로 중요한 파일에는 이 연습이 끝난 뒤에나 적용해요.</p>
 
     <p>실습을 하다가 걸리는 게 하나 있었어요. <code>touch</code>는 PowerShell에서 안 통했는데, 왜 <code>pwd</code>랑 <code>ls</code>는 똑같은 유닉스 명령어인데도 멀쩡히 통했을까요? 이상해서 찾아봤더니 답이 나왔어요.</p>
-    <p>5편에서 <code>Get-Location</code>이 PowerShell의 내장 <strong>cmdlet</strong>(커맨드릿, PowerShell에 처음부터 들어 있는 진짜 명령어)이라는 걸 다뤘는데, 사실 오늘 쓴 <code>pwd</code>, <code>ls</code>, <code>cd</code>, <code>mkdir</code>, <code>mv</code>, <code>rm</code>은 하나도 진짜 이름이 아니었어요. 전부 그 cmdlet들에 붙여둔 <strong>별명(alias)</strong>이었어요. PowerShell을 만든 쪽에서 유닉스에 익숙한 사람들이 헤매지 않도록 미리 짧은 이름을 달아둔 거예요.</p>
+    <p><a href="terminal-shell-kernel-prompt.html">5편</a>에서 <code>Get-Location</code>이 PowerShell의 내장 <strong>cmdlet</strong>(커맨드릿, PowerShell에 처음부터 들어 있는 진짜 명령어)이라는 걸 다뤘는데, 사실 오늘 다룬 <code>pwd</code>, <code>ls</code>, <code>cd</code>, <code>mkdir</code>, <code>mv</code>, <code>rm</code>은 하나도 진짜 이름이 아니었어요. 그 cmdlet들에 붙여둔 <strong>별명(alias)</strong>이었어요(<code>mkdir</code>만 엄밀히는 별명이 아니라 <code>New-Item</code>을 감싼 함수예요). PowerShell을 만든 쪽에서 유닉스에 익숙한 사람들이 헤매지 않도록 미리 짧은 이름을 달아둔 거예요.</p>
     <ul>
       <li><code>pwd</code> → <code>Get-Location</code></li>
       <li><code>ls</code> → <code>Get-ChildItem</code></li>
       <li><code>cd</code> → <code>Set-Location</code></li>
-      <li><code>mkdir</code> → <code>New-Item</code>(폴더 만들기)</li>
+      <li><code>mkdir</code> → <code>New-Item</code>(폴더 만들기, 함수로 감싸 둠)</li>
       <li><code>mv</code> → <code>Move-Item</code></li>
       <li><code>rm</code> → <code>Remove-Item</code></li>
     </ul>
-    <p>이걸 직접 확인해볼 수도 있어요. 5편에서 <code>node</code>가 어디 있는지 찾을 때 썼던 <code>Get-Command</code>를 여기에 그대로 쓰면 돼요. <code>Get-Command ls</code>를 입력하면 "Alias, ls -&gt; Get-ChildItem"처럼 <strong>별명과 진짜 이름이 한 줄에</strong> 나와요. <code>touch</code>가 안 통했던 이유도 이걸로 설명이 되더라고요 — 그건 별명 목록에 아예 없는 이름이었던 거예요. 없는 이름이라 못 알아들은 것뿐이지, PowerShell이 빈 파일을 못 만드는 게 아니었고요.</p>
+    <p>이걸 직접 확인해볼 수도 있어요. <a href="terminal-shell-kernel-prompt.html">5편</a>에서 <code>node</code>가 어디 있는지 찾을 때 썼던 <code>Get-Command</code>를 여기에 그대로 쓰면 돼요. <code>Get-Command ls</code>를 입력하면 "Alias, ls -&gt; Get-ChildItem"처럼 <strong>별명과 진짜 이름이 한 줄에</strong> 나와요. <code>touch</code>가 안 통했던 이유도 이걸로 설명이 되더라고요 — 그건 별명 목록에 아예 없는 이름이었던 거예요. 없는 이름이라 못 알아들은 것뿐이지, PowerShell이 빈 파일을 못 만드는 게 아니었고요.</p>
 
     <h2><span class="hl">오늘 손에 남은 것</span></h2>
-    <p>새 개념은 거의 없는 시간이었는데도, 손으로 반복하고 나니 읽어서 아는 것과 다른 게 두 가지 남았어요.</p>
-    <p>하나는 <strong>순서</strong>예요. 3편에서는 명령을 먼저 치고 결과가 이상해서 뒤늦게 <code>pwd</code>를 봤어요. 오늘은 반대로 했어요 — 움직이기 전에 <code>pwd</code>, 옮기고 나서 <code>ls</code>. 명령어 목록을 외운 것보다, 위험한 명령 앞뒤를 확인으로 감싸는 이 순서가 실제로 손에 남은 것 같아요.</p>
-    <p>다른 하나는 <strong>이름은 껍데기일 수 있다</strong>는 감각이에요. 제가 <code>ls</code>라고 친 것이 사실은 <code>Get-ChildItem</code>이었다는 걸 알고 나니, 명령어가 안 통할 때 "이 컴퓨터는 안 되나 보다"라고 포기하는 대신 "이 환경에서는 이걸 뭐라고 부르지?"를 먼저 묻게 됐어요. 3편의 <code>touch</code>도, 오늘의 <code>ls</code>도 결국 같은 이야기였어요.</p>
+    <p>새 개념은 거의 없는 실습이었는데도, 손으로 반복하고 나니 읽어서 아는 것과 다른 게 두 가지 남았어요.</p>
+    <ul>
+      <li><strong>순서</strong>: <a href="my-first-web-project.html">3편</a>에서는 명령을 먼저 치고 결과가 이상해서 뒤늦게 <code>pwd</code>를 봤어요. 이번엔 반대로 했어요 — 움직이기 전에 <code>pwd</code>, 옮기고 나서 <code>ls</code>. 명령어 목록을 외운 것보다, 위험한 명령 앞뒤를 확인으로 감싸는 이 순서가 손에 남았어요.</li>
+      <li><strong>이름은 껍데기일 수 있다는 감각</strong>: 제가 <code>ls</code>라고 친 것이 사실은 <code>Get-ChildItem</code>이었다는 걸 알고 나니, 명령어가 안 통할 때 "이 컴퓨터는 안 되나 보다"라고 포기하는 대신 "이 환경에서는 이걸 뭐라고 부르지?"를 먼저 묻게 됐어요. <a href="my-first-web-project.html">3편</a>의 <code>touch</code>도, 이번의 <code>ls</code>도 결국 같은 이야기였어요.</li>
+    </ul>
 
     <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 폴더를 옮기고 지우는 명령 앞뒤에서</h2>
     <p>이 편의 실수는 대부분 <strong>에러 없이</strong> 지나가요. 명령이 멀쩡히 끝났는데 파일이 엉뚱한 데 가 있거나, 지우고 나서야 위치가 틀린 걸 알게 되죠. 그래서 증상을 기다리기보다, 명령이 끝난 직후의 출력과 명령을 치기 직전의 경로를 봐야 해요.</p>
@@ -164,7 +166,7 @@ ls</code></pre>
           <td>옮긴 폴더에 <code>ls</code>를 쳐서 파일 이름이 보이는지 봐요. 안 보이면 그 한 칸 위에서 <code>ls</code>로 낯선 파일을 찾아 <code>mv 낯선이름 원래이름.txt</code>로 되돌린 뒤, 폴더 철자를 고쳐 다시 옮겨요</td>
         </tr>
         <tr id="suspect-other-name">
-          <td>책이나 AI가 알려 준 <code>touch</code>, <code>which</code> 같은 명령이 <strong>인식할 수 없다는 빨간 에러</strong>로 끝나요. 따로 설치하는 프로그램도 아닌데요</td>
+          <td>안내문이나 AI가 알려 준 <code>touch</code>, <code>which</code> 같은 명령이 <strong>인식할 수 없다는 빨간 에러</strong>로 끝나요. 따로 설치하는 프로그램도 아닌데요</td>
           <td>컴퓨터가 아니라 <strong>이 환경에서 그 일을 부르는 이름</strong>이에요. 에러 난 이름으로 <code>Get-Command 이름</code>을 쳐서 PowerShell이 아는 이름인지 봐요</td>
           <td>못 찾으면 없는 이름이라, 하려는 일을 적어 AI에게 "Windows PowerShell에서는 이걸 뭐라고 불러?"라고 물어요. 이름이 아니라 문법이 달라서 막히는 경우는 <a href="terminal-shell-kernel-prompt.html#suspect-wrong-shell">5편의 이 줄</a>에 있어요</td>
         </tr>
@@ -179,7 +181,7 @@ ls</code></pre>
 
     <hr>
 
-    <p><strong>참고한 자료</strong>: 실습 절차와 안전 규칙(연습 폴더 사용, 삭제 명령 자제)은 오늘 수업 자료를 바탕으로 정리했어요. PowerShell 별명(alias) 대응 관계는 수업 자료에는 없는 내용이라, 제 윈도우 환경에 맞춰 AI와 함께 직접 확인한 것이에요. 다음 실습(7편)에서는 이 폴더 정리를 Claude Code에게 맡기고, 결과를 검토하는 방법을 다뤄볼게요.</p>
+    <p><strong>참고한 자료</strong>: 실습 절차와 안전 규칙(연습 폴더 사용, 삭제 명령 자제)은 제 나름으로 정리했고, PowerShell 별명(alias) 대응 관계는 제 윈도우 환경에 맞춰 AI와 함께 직접 확인한 것이에요. 다음 실습(<a href="ai-folder-cleanup.html">7편</a>)에서는 이 폴더 정리를 Claude Code에게 맡기고, 결과를 검토하는 방법을 다뤄볼게요.</p>
 
     <h3>"바이브 코딩으로 웹 만들기" 시리즈</h3>
     <a class="post-nav" href="ai-agent-dev-environment.html">

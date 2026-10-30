@@ -38,7 +38,7 @@
         <dd>
           <ul>
             <li>cd ~/Documents 에서 ~ 이 물결 표시가 뭔가요? 그냥 빼고 쳐도 되나요?</li>
-            <li>책에 나온 touch index.html 을 쳤는데 윈도우에서는 안 된다고 나와요.</li>
+            <li>안내문에 나온 touch index.html 을 쳤는데 윈도우에서는 안 된다고 나와요.</li>
             <li>AI가 HTML을 만들어 줬는데, 코드를 모르는 제가 뭘 어떻게 확인해야 하죠?</li>
           </ul>
         </dd>
@@ -78,10 +78,10 @@
 
     <hr>
 
-    <p>오늘 수업은 "바이브 코딩으로 웹 만들기"였고, 1·2교시가 작업대를 차리고 확인하는 시간이었다면, 3교시는 그 작업대 위에 처음으로 산출물을 올려보는 시간이었어요. 이번 교시에서 처음 만든 건 <code>my-first-web</code> 폴더와 <code>index.html</code> 파일이었는데, 이 뒤로도 실습이 계속 이어져요. 그중 이 간단한 첫 단계에서도 실수를 하나 했고, 그 실수 덕분에 오히려 제대로 이해하게 된 게 있어서 그 얘기부터 해볼게요.</p>
+    <p><a href="ai-agent-dev-environment.html">1편</a>과 <a href="ai-agent-dev-environment-check.html">2편</a>이 작업대를 차리고 확인하는 글이었다면, 이 글은 그 작업대 위에 처음으로 산출물을 올려보는 글이에요. 처음 만든 건 <code>my-first-web</code> 폴더와 <code>index.html</code> 파일이었는데, 이 간단한 첫 단계에서도 실수를 하나 했고, 그 실수 덕분에 오히려 제대로 이해하게 된 게 있어서 그 얘기부터 해볼게요.</p>
 
     <h2><span class="hl">폴더 위치와 touch 명령, 첫 걸음에서 두 번 헛디뎠어요</span></h2>
-    <p>수업 자료에는 "프로젝트를 모아둘 위치에서 실행하세요. 예를 들어 문서 폴더 아래에 만들고 싶다면 먼저 <code>cd ~/Documents</code>로 이동합니다"라고 적혀 있었어요. 저는 이 <code>~</code>가 뭔지 모른 채로 그냥 건너뛰고 바로 <code>mkdir my-first-web</code>을 쳤어요.</p>
+    <p>따라 한 설치 안내에는 "프로젝트를 모아둘 위치에서 실행하세요. 예를 들어 문서 폴더 아래에 만들고 싶다면 먼저 <code>cd ~/Documents</code>로 이동합니다"라고 적혀 있었어요. 저는 이 <code>~</code>가 뭔지 모른 채로 그냥 건너뛰고 바로 <code>mkdir my-first-web</code>을 쳤어요.</p>
     <p>결과는 폴더가 제 계정의 가장 바깥(<code>C:\Users\user</code>) 바로 밑에 만들어진 거였어요. 문서 폴더 안에 만들고 싶었는데, 그게 아니었죠. 알고 보니 <strong><code>~</code>는 "내 홈 폴더"를 가리키는 줄임 기호</strong>였어요. 그러니까 <code>cd ~/Documents</code>는 "내 홈 폴더 안의 Documents 폴더로 이동해라"라는 뜻이고, 이 단계를 건너뛰면 지금 서 있는 곳(이 경우 홈 폴더 바로 밑)에 그냥 만들어지는 거였어요.</p>
     <p>결국 잘못 만든 폴더는 지우고, 이렇게 다시 했어요.</p>
     <p class="run-tag">실행: 로컬 터미널</p>
@@ -90,12 +90,17 @@ mkdir my-first-web
 cd my-first-web
 pwd</code></pre>
     <p><code>pwd</code>는 "지금 내가 어느 폴더에 서 있는지"를 알려주는 명령어예요. 컴퓨터의 모든 프로그램은 "지금 나는 어디 서 있다"는 책갈피를 하나씩 들고 있는데, <code>cd</code>는 그 책갈피를 옮기는 것이고 <code>pwd</code>는 "지금 책갈피가 어디 꽂혀 있어?"라고 물어보는 것이었어요. 결과가 <code>C:\Users\user\Documents\my-first-web</code>로 나와야 제대로 된 위치라는 뜻이에요.</p>
-    <p>위치는 이제 맞았으니, 그 안에 첫 파일을 만들 차례였어요. 그런데 여기서 또 한 번 헛디뎠어요. 수업 자료의 다음 명령은 <code>touch index.html</code>이었어요. 저는 <strong>PowerShell</strong>을 쓰고 있어서 이 명령어가 그대로 안 통했어요. (PowerShell은 윈도우에 기본으로 들어 있는, 명령어를 글자로 쳐서 컴퓨터에 시키는 창이에요. 이 창의 정체가 정확히 뭔지는 5편에서 따로 파고들어요.)</p>
-    <p><code>touch</code>는 원래 유닉스·리눅스·맥 계열 명령어예요(맥이 이걸 갖고 있는 건 macOS 자체가 유닉스 기반이라서예요). 원래 뜻은 "이 파일을 건드려서 마지막 수정 시간만 업데이트해라"인데, 파일이 아예 없는 상태에서 쓰면 일단 파일을 새로 만들고 나서 시간을 찍어줘요. 그래서 실무에서는 "빈 파일 빨리 만들기" 용도로 많이 써요.</p>
-    <p>그런데 PowerShell은 유닉스 계열이 아니라서 이 단어 자체를 몰라요. 수업 자료에도 다행히 대안이 적혀 있었어요 — <strong>Windows PowerShell에서는 <code>New-Item index.html</code></strong>을 쓰면 돼요. 정확히 같은 결과(빈 <code>index.html</code> 파일 하나)가 만들어져요.</p>
+    <p>위치는 이제 맞았으니, 그 안에 첫 파일을 만들 차례였어요. 그런데 여기서 또 한 번 헛디뎠어요. 안내의 다음 명령은 <code>touch index.html</code>이었어요. 저는 <strong>PowerShell</strong>을 쓰고 있어서 이 명령어가 그대로 안 통했어요. (PowerShell은 윈도우에 기본으로 들어 있는, 명령어를 글자로 쳐서 컴퓨터에 시키는 창이에요. 이 창의 정체가 정확히 뭔지는 <a href="terminal-shell-kernel-prompt.html">5편</a>에서 따로 파고들어요.)</p>
+    <table>
+      <thead><tr><th>명령</th><th>뜻</th><th>어디서 통하나</th></tr></thead>
+      <tbody>
+        <tr><td><code>touch index.html</code></td><td>원래 뜻은 "이 파일을 건드려서 마지막 수정 시간만 업데이트해라"인데, 파일이 아예 없으면 새로 만들고 시간을 찍어줘요. 그래서 "빈 파일 빨리 만들기" 용도로 많이 써요.</td><td>유닉스·리눅스·맥 계열(맥이 이걸 갖고 있는 건 macOS 자체가 유닉스 기반이라서예요). PowerShell은 유닉스 계열이 아니라 이 단어 자체를 몰라요.</td></tr>
+        <tr><td><code>New-Item index.html</code></td><td>정확히 같은 결과, 빈 <code>index.html</code> 파일 하나가 만들어져요.</td><td>Windows PowerShell — 안내에도 다행히 이 대안이 적혀 있었어요.</td></tr>
+      </tbody>
+    </table>
 
     <h2><span class="hl">AI에게 첫 파일 생성을 맡기고, 결과를 검토·확인하기</span></h2>
-    <p>빈 파일은 만들어졌지만, 안이 텅 비어 있어서 브라우저로 열어봤자 아무것도 안 나와요. 이제 이 안을 채울 차례예요. 여기서부터가 "바이브 코딩"인데, 제가 HTML을 한 글자도 모르는 상태에서 <strong>내용을 말로 설명하고 코드는 AI에게 맡기는</strong> 방식이에요. <code>my-first-web</code> 폴더 안에서 <code>claude</code>를 실행하고(1편에서 설치한 Claude Code예요. 터미널 안에서 대화하듯 지시하면 파일을 직접 만들고 고쳐줘요), 이렇게 부탁했어요.</p>
+    <p>빈 파일은 만들어졌지만, 안이 텅 비어 있어서 브라우저로 열어봤자 아무것도 안 나와요. 이제 이 안을 채울 차례예요. 여기서부터가 "바이브 코딩"인데, 제가 HTML을 한 글자도 모르는 상태에서 <strong>내용을 말로 설명하고 코드는 AI에게 맡기는</strong> 방식이에요. <code>my-first-web</code> 폴더 안에서 <code>claude</code>를 실행하고(<a href="ai-agent-dev-environment.html">1편</a>에서 설치한 Claude Code예요. 터미널 안에서 대화하듯 지시하면 파일을 직접 만들고 고쳐줘요), 이렇게 부탁했어요.</p>
     <blockquote>
       <p>index.html 파일에 브라우저에서 바로 열 수 있는 첫 화면을 만들어줘.<br>
       조건:<br>
@@ -103,7 +108,7 @@ pwd</code></pre>
       - 큰 제목에는 [내 이름 또는 역할]을 넣어줘.<br>
       - 본문에는 [내 도메인]에서 AI를 활용해 보고 싶은 일을 한 문장으로 넣어줘.</p>
     </blockquote>
-    <p>여기서 중요한 문장이 하나 있었어요. <strong>"이 요청은 코드를 대신 써 달라는 요청이지만, 책임까지 넘기는 요청은 아니다"</strong>라는 거예요. 이게 정확히 1편에서 이해한 "루프"예요 — 자연어로 지시했다고 끝나는 게 아니라, AI가 만든 결과를 제가 직접 읽고 판단하는 단계가 반드시 따라와요.</p>
+    <p>여기서 중요한 문장이 하나 있었어요. <strong>"이 요청은 코드를 대신 써 달라는 요청이지만, 책임까지 넘기는 요청은 아니다"</strong>라는 거예요. 이게 정확히 <a href="ai-agent-dev-environment.html">1편</a>에서 이해한 "루프"예요 — 자연어로 지시했다고 끝나는 게 아니라, AI가 만든 결과를 제가 직접 읽고 판단하는 단계가 반드시 따라와요.</p>
 
     <p>제 도메인(영상 자막·SDH 감수)에 맞춰서 이런 결과를 받았어요.</p>
     <p class="run-tag">실행: 로컬 파일 + 브라우저 <span class="run-tag-why">— VS Code Live Server 등</span></p>
@@ -143,9 +148,9 @@ pwd</code></pre>
         <tr><td>데이터베이스</td><td>냉장고</td><td>재료를 저장해두는 곳 — 회원 정보, 게시글, 주문 내역처럼 계속 저장·조회해야 하는 데이터</td></tr>
       </tbody>
     </table>
-    <p>오늘 제가 만든 <code>index.html</code>은 이 세 부분 중 <strong>프론트엔드(홀)</strong>에만 해당돼요. 화면에 글자가 보이게 만든 것뿐이라, 주문을 처리하거나(백엔드) 정보를 저장하는(데이터베이스) 기능은 아직 하나도 없어요. 1편에서 제 블로그를 "정적(static) 사이트"라고 했던 것도 같은 이야기예요 — 주방(백엔드)과 냉장고(데이터베이스)가 없어도, 이미 완성된 메뉴판(프론트엔드)만 보여주는 식당은 얼마든지 운영할 수 있는 것과 같아요.</p>
+    <p>오늘 제가 만든 <code>index.html</code>은 이 세 부분 중 <strong>프론트엔드(홀)</strong>에만 해당돼요. 화면에 글자가 보이게 만든 것뿐이라, 주문을 처리하거나(백엔드) 정보를 저장하는(데이터베이스) 기능은 아직 하나도 없어요. <a href="ai-agent-dev-environment.html">1편</a>에서 제 블로그를 "정적(static) 사이트"라고 했던 것도 같은 이야기예요 — 주방(백엔드)과 냉장고(데이터베이스)가 없어도, 이미 완성된 메뉴판(프론트엔드)만 보여주는 식당은 얼마든지 운영할 수 있는 것과 같아요.</p>
 
-    <p>폴더 위치를 착각했던 것부터 시작해서, 결국 진짜 파일 하나를 만들고 브라우저로 확인하는 것까지 왔어요. 작은 파일 하나지만, 1·2편에서 이해한 것들(작업대, 도구, 텍스트 파일, 루프)이 실제로 처음 쓰인 순간이었어요. 3교시 실습은 여기서 끝이 아니라 계속 이어지는데, 그 다음 내용은 이어서 정리할게요.</p>
+    <p>폴더 위치를 착각했던 것부터 시작해서, 결국 진짜 파일 하나를 만들고 브라우저로 확인하는 것까지 왔어요. 작은 파일 하나지만, 1·2편에서 이해한 것들(작업대, 도구, 텍스트 파일, 루프)이 실제로 처음 쓰인 순간이었어요. 이어지는 내용은 <a href="vibe-coding-loop.html">4편</a>에서 정리할게요.</p>
 
     <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 첫 폴더와 첫 파일을 만든 직후</h2>
     <p>첫 프로젝트의 실수는 에러보다 <strong>"분명 만들었는데 없다", "되긴 됐는데 내 것 같지 않다"</strong>로 먼저 만나요. 명령어도 AI도 시킨 대로 움직였는데, 시킨 <strong>자리</strong>나 <strong>내용</strong>이 내 생각과 달랐던 거예요. 그래서 대부분 빨간 글씨 없이 조용히 지나가요.</p>
@@ -158,7 +163,7 @@ pwd</code></pre>
           <td><code>pwd</code>로 나온 경로를 파일 탐색기 위쪽 주소창에 붙여 넣고 Enter를 누르면, 폴더가 실제로 생긴 자리가 열려요. 문서 폴더가 아니면 <code>cd</code>로 문서 폴더에 먼저 들어간 뒤 다시 만들어요. 탐색기의 '문서'가 OneDrive 안에 있는 컴퓨터도 있어서, 이름만 보지 말고 주소창 경로까지 맞춰 봐요</td>
         </tr>
         <tr id="suspect-touch-not-found">
-          <td>수업 자료나 AI가 알려 준 <code>touch index.html</code>을 쳤더니 <strong>'touch'를 인식할 수 없다는 빨간 에러</strong>가 나요</td>
+          <td>안내문이나 AI가 알려 준 <code>touch index.html</code>을 쳤더니 <strong>'touch'를 인식할 수 없다는 빨간 에러</strong>가 나요</td>
           <td>철자가 아니라 <strong>지금 쓰는 창의 종류</strong>예요. 줄 맨 앞이 <code>PS</code>로 시작하면 PowerShell이라, 맥·리눅스용 명령어가 그대로 안 통해요</td>
           <td><code>New-Item index.html</code>로 바꿔 쳐요. AI에게 명령어를 물을 때는 "윈도우 PowerShell에서 칠 거야"를 같이 적어요. 창의 정체는 <a href="terminal-shell-kernel-prompt.html">5편</a>에서 풀어요</td>
         </tr>
