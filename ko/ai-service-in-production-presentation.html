@@ -113,38 +113,6 @@
     </svg>
     </figure>
 
-    <h2 id="walk"><span class="hl">지도 따라 읽기</span> — 한 칸씩</h2>
-    <div style="border-left:6px solid var(--muted);padding:.3rem 0 .3rem 1rem;margin:1rem 0;">
-      <p style="margin:.2rem 0;"><strong>출발 · 설계</strong> <span style="color:var(--muted);font-size:.9rem;">노드 63</span></p>
-      <p style="margin:.2rem 0;">코드를 짜기 전에, 누구에게 어디서 어떻게 쓰게 할지 정해서 문서(PRD) 한 장으로 남겨요.</p>
-      <p style="margin:.2rem 0;color:var(--muted);">직접 해 보니 — 코드 없이 프로토타입(시제품)으로 먼저 확인한 뒤, 구조 그림과 PRD 한 장으로 정리했어요. <a href="ai-service-design-before-code.html">자세히</a></p>
-    </div>
-    <div style="border-left:6px solid var(--folder-1);padding:.3rem 0 .3rem 1rem;margin:1rem 0;">
-      <p style="margin:.2rem 0;"><strong>1·2칸 · 합치기와 테스트 (CI/CD)</strong> <span style="color:var(--muted);font-size:.9rem;">노드 66·67</span></p>
-      <p style="margin:.2rem 0;">CI는 합쳐 달라는 요청(PR)이 올라올 때마다 테스트를 자동으로 돌려 깨진 코드를 찾아 주고, CD는 코드가 main에 합쳐지면 새 버전을 자동으로 배포해요. 열쇠 파일 없이 일회용 신분증(WIF)으로 Google Cloud에 들어가요.</p>
-      <p style="margin:.2rem 0;color:var(--muted);">직접 해 보니 — 일부러 고장 낸 변경(PR #5)은 새 버전(00003)이 시작하지 못해서 사용자에게 나가지 않았어요. 도장판에서 일부러 깨뜨린 변경(PR #9)은 테스트 9개 중 3개가 실패했어요. <a href="github-actions-auto-deploy.html">자세히</a></p>
-    </div>
-    <div style="border-left:6px solid var(--folder-2);padding:.3rem 0 .3rem 1rem;margin:1rem 0;">
-      <p style="margin:.2rem 0;"><strong>3칸 · 이미지 만들기 (Docker)</strong> <span style="color:var(--muted);font-size:.9rem;">노드 68·69</span></p>
-      <p style="margin:.2rem 0;">실행 환경을 설명서(Dockerfile)에 적어 이미지(코드와 실행 환경을 담은 꾸러미)를 만들어요. 한 번 만든 이미지를 시험 서버와 실제 서비스에 그대로 써요.</p>
-      <p style="margin:.2rem 0;color:var(--muted);">직접 해 보니 — 서버에 필요한 프로그램이 없어 같은 사진에 500 오류가 났는데, Dockerfile로 환경을 정하자 200으로 바뀌었어요. 같은 이미지인지는 sha256 지문으로 확인했어요. <a href="dockerfile-fixing-runtime-environment.html">자세히</a></p>
-    </div>
-    <div style="border-left:6px solid var(--folder-1);padding:.3rem 0 .3rem 1rem;margin:1rem 0;">
-      <p style="margin:.2rem 0;"><strong>4칸 · 시험 서버 (staging)</strong> <span style="color:var(--muted);font-size:.9rem;">노드 67·69</span></p>
-      <p style="margin:.2rem 0;">실제 서비스와 같은 방식으로 도는 시험용 서비스에 먼저 올려서 확인해요. 실제 서비스(production)에는 사람이 승인해야 나가요.</p>
-      <p style="margin:.2rem 0;color:var(--muted);">직접 해 보니 — staging을 main으로 올리자 테스트는 통과했지만, 실제 서비스 배포는 «승인 대기»에서 멈춰 사람이 누르기 전에는 바뀌지 않았어요. <a href="ci-tests-and-staging.html">자세히</a></p>
-    </div>
-    <div style="border-left:6px solid var(--folder-4);padding:.3rem 0 .3rem 1rem;margin:1rem 0;">
-      <p style="margin:.2rem 0;"><strong>5칸 · 전환 (배포 전략)</strong> <span style="color:var(--muted);font-size:.9rem;">노드 70·71</span></p>
-      <p style="margin:.2rem 0;">새 버전을 요청 0%로 먼저 올려 두고, 준비가 됐는지 확인한 뒤에만 사용자의 요청을 옮겨요.</p>
-      <p style="margin:.2rem 0;color:var(--muted);">직접 해 보니 — 노드 70에서는 서버 두 벌 앞의 Nginx로 방향을 바꿔 봤어요(서버가 멈췄을 때 연결 대기를 60초→1초로 줄이자 137건 중 19건 실패 → 284건 중 0건). 노드 71의 실험은 아래 «확장»에 있어요. <a href="load-balancer-zero-downtime.html">자세히</a></p>
-    </div>
-    <div style="border-left:6px solid var(--muted);padding:.3rem 0 .3rem 1rem;margin:1rem 0;">
-      <p style="margin:.2rem 0;"><strong>도착 · Cloud Run</strong> <span style="color:var(--muted);font-size:.9rem;">노드 64·65</span></p>
-      <p style="margin:.2rem 0;">코드 폴더를 올리면 공개 주소를 붙여 실행해 주는 구글 서비스예요. 서버 기록이 정상이어도 사용자가 답을 못 받을 수 있어서, 타임아웃과 로그를 봐요.</p>
-      <p style="margin:.2rem 0;color:var(--muted);">직접 해 보니 — 명령 한 줄로 약 2분 만에 공개 주소가 생겼어요. 타임아웃을 1초로 줄이자 서버 기록은 200(정상)인데 화면은 «답을 받지 못했어요»가 떠서, 실제 걸린 시간(요청 하나 약 5초)보다 넉넉하게 정했어요. <a href="cloud-run-source-deploy-meaning.html">자세히</a></p>
-    </div>
-
     <h2 id="nodes"><span class="hl">이 글이 묶은 노드</span></h2>
     <p id="cue" class="cue">▼ 각 주제 구역에 마우스를 대 보세요</p>
     <style>
@@ -183,6 +151,38 @@
       <div class="tp" data-g="3" hidden style="--c:var(--folder-1)"><p class="tp-title">CI/CD <span>노드 66·67 · 10.22~23</span></p><p><strong>하는 일</strong> <strong>CI</strong>는 합쳐 달라는 요청(PR)이 올라올 때마다 서버가 테스트를 자동으로 돌려 깨진 코드를 찾아 줘요. <strong>CD</strong>는 코드가 main에 합쳐지면 새 버전을 서비스에 자동으로 올려요. 코드를 합치는 건 사람이 해요.</p><p><strong>직접 확인한 것</strong> 내 앱(도장판)에서 일부러 깨뜨린 변경(PR #9)은 테스트 9개 중 3개가 실패했어요. 테스트가 실패하면 합치기를 막는 규칙(브랜치 보호)은 연습용 템플릿 저장소에서만 걸어 봤고, 거기서 main에 직접 올리는 것(push)이 GH006으로 거절됐어요. 도장판 main에는 이 규칙이 없어요.</p><p><strong>자세한 글</strong> <a href="github-actions-auto-deploy.html">노드 66 · 코드를 머지하면 서비스가 저절로 바뀌는 길</a> · <a href="ci-tests-and-staging.html">노드 67 · 합치기 전에 테스트하고 내보내기 전에 먼저 본다</a></p></div>
       <div class="tp" data-g="4" hidden style="--c:var(--folder-2)"><p class="tp-title">Docker <span>노드 68·69 · 10.26~27</span></p><p><strong>하는 일</strong> 설명서(Dockerfile)로 이미지(코드와 실행 환경을 담은 꾸러미)를 <strong>한 번만</strong> 만들어요. 시험 서버에서 확인한 그 이미지를 실제 서비스에 그대로 보내요. 다시 만들면 내용이 달라질 수 있어서예요.</p><p><strong>직접 확인한 것</strong> 이미지의 sha256 지문으로 «같은 이미지인가»를 확인했고, 롤백은 24초, 복구는 36초가 걸렸어요.</p><p><strong>자세한 글</strong> <a href="dockerfile-fixing-runtime-environment.html">노드 68 · 로컬에서는 되는데 서버에서만 안 되는 이유</a> · <a href="build-once-promote-image.html">노드 69 · 시험한 이미지와 내보낸 이미지가 같다는 증거</a></p></div>
       <div class="tp" data-g="5" hidden style="--c:var(--folder-4)"><p class="tp-title">배포 전략 <span>노드 70·71 · 10.28~29</span></p><p><strong>하는 일</strong> 새 버전을 요청 0%로 먼저 올려 두고, 준비가 됐는지 확인한 뒤에만 요청을 옮겨요.</p><p><strong>직접 확인한 것</strong> 기본 확인 방식에서는 요청 389건 중 71건이 실패했고, /health 확인 방식에서는 283건 중 0건이 실패했어요. (아래 «내 예시»)</p><p><strong>자세한 글</strong> <a href="load-balancer-zero-downtime.html">노드 70 · 새 버전으로 바뀌는 몇 초 동안</a> · <a href="cloud-run-zero-downtime-deploy.html">노드 71 · 배포하는 동안 사용자는 오류를 봤을까</a></p></div>
+    </div>
+
+    <h2 id="walk"><span class="hl">지도 따라 읽기</span> — 한 칸씩</h2>
+    <div style="border-left:6px solid var(--muted);padding:.3rem 0 .3rem 1rem;margin:1rem 0;">
+      <p style="margin:.2rem 0;"><strong>출발 · 설계</strong> <span style="color:var(--muted);font-size:.9rem;">노드 63</span></p>
+      <p style="margin:.2rem 0;">코드를 짜기 전에, 누구에게 어디서 어떻게 쓰게 할지 정해서 문서(PRD) 한 장으로 남겨요.</p>
+      <p style="margin:.2rem 0;color:var(--muted);">직접 해 보니 — 코드 없이 프로토타입(시제품)으로 먼저 확인한 뒤, 구조 그림과 PRD 한 장으로 정리했어요. <a href="ai-service-design-before-code.html">자세히</a></p>
+    </div>
+    <div style="border-left:6px solid var(--folder-1);padding:.3rem 0 .3rem 1rem;margin:1rem 0;">
+      <p style="margin:.2rem 0;"><strong>1·2칸 · 합치기와 테스트 (CI/CD)</strong> <span style="color:var(--muted);font-size:.9rem;">노드 66·67</span></p>
+      <p style="margin:.2rem 0;">CI는 합쳐 달라는 요청(PR)이 올라올 때마다 테스트를 자동으로 돌려 깨진 코드를 찾아 주고, CD는 코드가 main에 합쳐지면 새 버전을 자동으로 배포해요. 열쇠 파일 없이 일회용 신분증(WIF)으로 Google Cloud에 들어가요.</p>
+      <p style="margin:.2rem 0;color:var(--muted);">직접 해 보니 — 일부러 고장 낸 변경(PR #5)은 새 버전(00003)이 시작하지 못해서 사용자에게 나가지 않았어요. 도장판에서 일부러 깨뜨린 변경(PR #9)은 테스트 9개 중 3개가 실패했어요. <a href="github-actions-auto-deploy.html">자세히</a></p>
+    </div>
+    <div style="border-left:6px solid var(--folder-2);padding:.3rem 0 .3rem 1rem;margin:1rem 0;">
+      <p style="margin:.2rem 0;"><strong>3칸 · 이미지 만들기 (Docker)</strong> <span style="color:var(--muted);font-size:.9rem;">노드 68·69</span></p>
+      <p style="margin:.2rem 0;">실행 환경을 설명서(Dockerfile)에 적어 이미지(코드와 실행 환경을 담은 꾸러미)를 만들어요. 한 번 만든 이미지를 시험 서버와 실제 서비스에 그대로 써요.</p>
+      <p style="margin:.2rem 0;color:var(--muted);">직접 해 보니 — 서버에 필요한 프로그램이 없어 같은 사진에 500 오류가 났는데, Dockerfile로 환경을 정하자 200으로 바뀌었어요. 같은 이미지인지는 sha256 지문으로 확인했어요. <a href="dockerfile-fixing-runtime-environment.html">자세히</a></p>
+    </div>
+    <div style="border-left:6px solid var(--folder-1);padding:.3rem 0 .3rem 1rem;margin:1rem 0;">
+      <p style="margin:.2rem 0;"><strong>4칸 · 시험 서버 (staging)</strong> <span style="color:var(--muted);font-size:.9rem;">노드 67·69</span></p>
+      <p style="margin:.2rem 0;">실제 서비스와 같은 방식으로 도는 시험용 서비스에 먼저 올려서 확인해요. 실제 서비스(production)에는 사람이 승인해야 나가요.</p>
+      <p style="margin:.2rem 0;color:var(--muted);">직접 해 보니 — staging을 main으로 올리자 테스트는 통과했지만, 실제 서비스 배포는 «승인 대기»에서 멈춰 사람이 누르기 전에는 바뀌지 않았어요. <a href="ci-tests-and-staging.html">자세히</a></p>
+    </div>
+    <div style="border-left:6px solid var(--folder-4);padding:.3rem 0 .3rem 1rem;margin:1rem 0;">
+      <p style="margin:.2rem 0;"><strong>5칸 · 전환 (배포 전략)</strong> <span style="color:var(--muted);font-size:.9rem;">노드 70·71</span></p>
+      <p style="margin:.2rem 0;">새 버전을 요청 0%로 먼저 올려 두고, 준비가 됐는지 확인한 뒤에만 사용자의 요청을 옮겨요.</p>
+      <p style="margin:.2rem 0;color:var(--muted);">직접 해 보니 — 노드 70에서는 서버 두 벌 앞의 Nginx로 방향을 바꿔 봤어요(서버가 멈췄을 때 연결 대기를 60초→1초로 줄이자 137건 중 19건 실패 → 284건 중 0건). 노드 71의 실험은 아래 «확장»에 있어요. <a href="load-balancer-zero-downtime.html">자세히</a></p>
+    </div>
+    <div style="border-left:6px solid var(--muted);padding:.3rem 0 .3rem 1rem;margin:1rem 0;">
+      <p style="margin:.2rem 0;"><strong>도착 · Cloud Run</strong> <span style="color:var(--muted);font-size:.9rem;">노드 64·65</span></p>
+      <p style="margin:.2rem 0;">코드 폴더를 올리면 공개 주소를 붙여 실행해 주는 구글 서비스예요. 서버 기록이 정상이어도 사용자가 답을 못 받을 수 있어서, 타임아웃과 로그를 봐요.</p>
+      <p style="margin:.2rem 0;color:var(--muted);">직접 해 보니 — 명령 한 줄로 약 2분 만에 공개 주소가 생겼어요. 타임아웃을 1초로 줄이자 서버 기록은 200(정상)인데 화면은 «답을 받지 못했어요»가 떠서, 실제 걸린 시간(요청 하나 약 5초)보다 넉넉하게 정했어요. <a href="cloud-run-source-deploy-meaning.html">자세히</a></p>
     </div>
 
     <h2 id="example"><span class="hl">확장</span> — 배포는 "성공"인데 요청 71건이 실패한 이유</h2>
