@@ -2,11 +2,11 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>AI 서비스 인 프로덕션 모듈 요약 — 63~71번 노드 아홉 날을 다섯 장면으로 - Tigermorning</title>
-  <meta name="description" content="프로덕트 설계부터 서비스 배포 전략까지 아홉 날의 학습을 다섯 장면과 세 질문으로 정리했어요.">
+  <title>AI 서비스 인 프로덕션 모듈 요약 — 63~71번 노드 아홉 날을 다섯 주제로 - Tigermorning</title>
+  <meta name="description" content="프로덕트 설계부터 서비스 배포 전략까지 아홉 날의 학습을 다섯 주제와 세 질문으로 정리했어요.">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="AI 서비스 인 프로덕션 모듈 요약 — 63~71번 노드 아홉 날을 다섯 장면으로">
-  <meta property="og:description" content="아홉 날의 학습을 다섯 장면으로 줄이고, 배포는 성공인데 요청 71건이 실패한 실험을 보여 줘요.">
+  <meta property="og:title" content="AI 서비스 인 프로덕션 모듈 요약 — 63~71번 노드 아홉 날을 다섯 주제로">
+  <meta property="og:description" content="아홉 날의 학습을 다섯 주제로 줄이고, 배포는 성공인데 요청 71건이 실패한 실험을 보여 줘요.">
   <meta property="og:url" content="https://tigermorning.github.io/blog/ko/ai-service-in-production-presentation.html">
   <meta property="og:locale" content="ko_KR">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -23,30 +23,13 @@
   <div id="sidebar-mount"></div>
 
   <main>
-    <h1><span class="hl">AI 서비스 인 프로덕션 모듈 요약</span> — 63~71번 노드 아홉 날을 다섯 장면으로</h1>
+    <h1><span class="hl">AI 서비스 인 프로덕션 모듈 요약</span> — 63~71번 노드 아홉 날을 다섯 주제로</h1>
     <p class="post-date">2026. 10. 30.</p>
     <p class="post-date">※ 이 글은 모두의연구소(모두연) 학습 자료를 제 나름의 말로 다시 정리한 글이에요.</p>
 
 
     <p class="one-liner">AI 서비스를 사용자에게 내보내는 일은 «무엇이 나갔는지, 사용자는 괜찮았는지, 되돌릴 수 있는지»를 숫자로 말할 수 있게 만드는 일이에요.</p>
 
-    <h2 id="nodes"><span class="hl">이 글이 묶은 노드</span> — 모두연 63~71번, 아홉 날</h2>
-    <p>노드 이름은 학습 사이트 목록에 적힌 이름이에요.</p>
-    <table>
-      <thead><tr><th>노드</th><th>날짜</th><th>학습 사이트의 이름</th><th>주제</th><th>이 노드를 정리한 블로그 글</th></tr></thead>
-      <tbody>
-        <tr><td>63</td><td>10.19</td><td>프로덕트 설계</td><td>설계</td><td><a href="ai-service-design-before-code.html">AI 기능을 서비스로 설계한다는 것</a></td></tr>
-        <tr><td>64</td><td>10.20</td><td>GCP Cloud Run 배포</td><td>Cloud Run</td><td><a href="cloud-run-source-deploy-meaning.html">Cloud Run에 소스를 배포한다는 것</a></td></tr>
-        <tr><td>65</td><td>10.21</td><td>GCP Cloud Run 배포</td><td>Cloud Run</td><td><a href="cloud-run-operating-ai-service.html">배포한 AI 서비스가 말없이 틀리는 순간</a></td></tr>
-        <tr><td>66</td><td>10.22</td><td>CI/CD</td><td>CI/CD</td><td><a href="github-actions-auto-deploy.html">코드를 머지하면 서비스가 저절로 바뀌는 길</a></td></tr>
-        <tr><td>67</td><td>10.23</td><td>CI/CD</td><td>CI/CD</td><td><a href="ci-tests-and-staging.html">합치기 전에 테스트하고 내보내기 전에 먼저 본다</a></td></tr>
-        <tr><td>68</td><td>10.26</td><td>Docker</td><td>Docker</td><td><a href="dockerfile-fixing-runtime-environment.html">로컬에서는 되는데 서버에서만 안 되는 이유</a></td></tr>
-        <tr><td>69</td><td>10.27</td><td>Docker</td><td>Docker</td><td><a href="build-once-promote-image.html">시험한 이미지와 내보낸 이미지가 같다는 증거</a></td></tr>
-        <tr><td>70</td><td>10.28</td><td>서비스 배포 전략</td><td>배포 전략</td><td><a href="load-balancer-zero-downtime.html">새 버전으로 바뀌는 몇 초 동안</a></td></tr>
-        <tr><td>71</td><td>10.29</td><td>서비스 배포 전략</td><td>배포 전략</td><td><a href="cloud-run-zero-downtime-deploy.html">배포하는 동안 사용자는 오류를 봤을까</a></td></tr>
-              <tr><td>72</td><td>10.30</td><td>Mini Wrap up!</td><td>(정리 시간)</td><td><a href="ai-service-in-production-wrap-up.html">아홉 개 노드를 한 번에 — AI 서비스를 프로덕션에 올리기까지 돌아보기</a>와 이 글</td></tr>
-      </tbody>
-    </table>
 
     <h2 id="flow"><span class="hl">한 장 그림</span> — 전체 지도</h2>
     <figure>
@@ -130,20 +113,67 @@
     </svg>
     </figure>
 
-    <h2 id="organize"><span class="hl">정리</span> — 다섯 장면, 한 문장씩</h2>
+    <h2 id="nodes"><span class="hl">이 글이 묶은 노드</span> — 모두연 63~71번</h2>
+    <figure>
+    <svg viewBox="0 0 760 108" role="img" aria-label="모두연 노드 63번부터 72번까지 날짜와 주제: 설계 63, Cloud Run 64와 65, CI/CD 66과 67, Docker 68과 69, 배포 전략 70과 71, 72는 Mini Wrap up" style="width:100%;height:auto;">
+      <rect x="8" y="8" width="68" height="58" rx="10" fill="var(--muted)" fill-opacity=".16" stroke="var(--muted)" stroke-width="2"/>
+      <text x="42" y="34" text-anchor="middle" font-family="var(--font-heading)" font-size="18" fill="var(--ink)">63</text>
+      <text x="42" y="54" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">10.19</text>
+      <rect x="83" y="8" width="68" height="58" rx="10" fill="var(--muted)" fill-opacity=".16" stroke="var(--muted)" stroke-width="2"/>
+      <text x="117" y="34" text-anchor="middle" font-family="var(--font-heading)" font-size="18" fill="var(--ink)">64</text>
+      <text x="117" y="54" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">10.20</text>
+      <rect x="158" y="8" width="68" height="58" rx="10" fill="var(--muted)" fill-opacity=".16" stroke="var(--muted)" stroke-width="2"/>
+      <text x="192" y="34" text-anchor="middle" font-family="var(--font-heading)" font-size="18" fill="var(--ink)">65</text>
+      <text x="192" y="54" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">10.21</text>
+      <rect x="233" y="8" width="68" height="58" rx="10" fill="var(--folder-1)" fill-opacity=".16" stroke="var(--folder-1)" stroke-width="2"/>
+      <text x="267" y="34" text-anchor="middle" font-family="var(--font-heading)" font-size="18" fill="var(--ink)">66</text>
+      <text x="267" y="54" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">10.22</text>
+      <rect x="308" y="8" width="68" height="58" rx="10" fill="var(--folder-1)" fill-opacity=".16" stroke="var(--folder-1)" stroke-width="2"/>
+      <text x="342" y="34" text-anchor="middle" font-family="var(--font-heading)" font-size="18" fill="var(--ink)">67</text>
+      <text x="342" y="54" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">10.23</text>
+      <rect x="383" y="8" width="68" height="58" rx="10" fill="var(--folder-2)" fill-opacity=".16" stroke="var(--folder-2)" stroke-width="2"/>
+      <text x="417" y="34" text-anchor="middle" font-family="var(--font-heading)" font-size="18" fill="var(--ink)">68</text>
+      <text x="417" y="54" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">10.26</text>
+      <rect x="458" y="8" width="68" height="58" rx="10" fill="var(--folder-2)" fill-opacity=".16" stroke="var(--folder-2)" stroke-width="2"/>
+      <text x="492" y="34" text-anchor="middle" font-family="var(--font-heading)" font-size="18" fill="var(--ink)">69</text>
+      <text x="492" y="54" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">10.27</text>
+      <rect x="533" y="8" width="68" height="58" rx="10" fill="var(--folder-4)" fill-opacity=".16" stroke="var(--folder-4)" stroke-width="2"/>
+      <text x="567" y="34" text-anchor="middle" font-family="var(--font-heading)" font-size="18" fill="var(--ink)">70</text>
+      <text x="567" y="54" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">10.28</text>
+      <rect x="608" y="8" width="68" height="58" rx="10" fill="var(--folder-4)" fill-opacity=".16" stroke="var(--folder-4)" stroke-width="2"/>
+      <text x="642" y="34" text-anchor="middle" font-family="var(--font-heading)" font-size="18" fill="var(--ink)">71</text>
+      <text x="642" y="54" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">10.29</text>
+      <rect x="683" y="8" width="68" height="58" rx="10" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="4 4"/>
+      <text x="717" y="34" text-anchor="middle" font-family="var(--font-heading)" font-size="18" fill="var(--ink)">72</text>
+      <text x="717" y="54" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">10.30</text>
+      <rect x="8" y="74" width="68" height="6" rx="3" fill="var(--muted)"/>
+      <text x="42.0" y="98" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">설계</text>
+      <rect x="83" y="74" width="143" height="6" rx="3" fill="var(--muted)"/>
+      <text x="154.5" y="98" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">Cloud Run</text>
+      <rect x="233" y="74" width="143" height="6" rx="3" fill="var(--folder-1)"/>
+      <text x="304.5" y="98" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">CI/CD</text>
+      <rect x="383" y="74" width="143" height="6" rx="3" fill="var(--folder-2)"/>
+      <text x="454.5" y="98" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">Docker</text>
+      <rect x="533" y="74" width="143" height="6" rx="3" fill="var(--folder-4)"/>
+      <text x="604.5" y="98" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">배포 전략</text>
+      <text x="717.0" y="98" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">Mini Wrap up!</text>
+    </svg>
+    </figure>
+
+    <h2 id="organize"><span class="hl">정리</span> — 다섯 주제, 한 문장씩</h2>
     <table>
       <thead><tr><th>주제 (배운 순서)</th><th>한 문장</th><th>제가 본 것</th><th>자세한 글(노드)</th></tr></thead>
       <tbody>
-        <tr><td>설계<br>10.19</td><td>코드를 짜기 전에 «누가, 어디서, 어떻게 쓰는지»를 사람이 먼저 정해 문서(PRD) 한 장으로 남겨요.</td><td>코드 없이 프로토타입(시제품)으로 먼저 확인한 뒤, 구조 그림과 PRD 한 장으로 정리했어요.</td><td><a href="ai-service-design-before-code.html">노드 63</a></td></tr>
-        <tr><td>Cloud Run (코드를 올리면 공개 주소를 붙여 주는 구글 서비스)<br>10.20~21</td><td>코드 폴더를 올리면 공개 주소가 생겨요. 서버가 정상이라고 해도 손님이 답을 못 받을 수 있어서 타임아웃과 로그를 봐요.</td><td>새 버전과 옛 버전 사이로 요청을 옮겨 보고, API 키를 Secret Manager에 연결하고, 로그 세 종류를 찾아 읽었어요.</td><td><a href="cloud-run-source-deploy-meaning.html">노드 64</a> <a href="cloud-run-operating-ai-service.html">노드 65</a></td></tr>
-        <tr><td>CI/CD<br>10.22~23</td><td>코드를 합치면 서비스가 저절로 바뀌고, 합치기 전에 테스트가 깨진 코드를 막아요.</td><td>내 앱(도장판)에서 일부러 깨뜨린 PR #9는 테스트 9개 중 3개가 실패했어요. 연습용 템플릿 저장소에서는 main에 직접 push하는 것이 GH006으로 거절됐어요.</td><td><a href="github-actions-auto-deploy.html">노드 66</a> <a href="ci-tests-and-staging.html">노드 67</a></td></tr>
-        <tr><td>Docker<br>10.26~27</td><td>실행 환경을 Dockerfile (실행 환경을 한 줄씩 적은 파일)이라는 파일에 적고, 시험한 이미지를 다시 만들지 않고 그대로 내보내요.</td><td>이미지의 sha256 지문으로 «같은 이미지인가»를 확인했고, 롤백은 24초, 복구는 36초가 걸렸어요.</td><td><a href="dockerfile-fixing-runtime-environment.html">노드 68</a> <a href="build-once-promote-image.html">노드 69</a></td></tr>
-        <tr><td>배포 전략<br>10.28~29</td><td>새 버전을 요청 0%로 먼저 올려 두고, 준비가 됐는지 확인한 뒤에만 요청을 옮겨요.</td><td>기본 확인 방식에서는 요청 389건 중 71건이 실패했고, /health 확인 방식에서는 283건 중 0건이 실패했어요.</td><td><a href="load-balancer-zero-downtime.html">노드 70</a> <a href="cloud-run-zero-downtime-deploy.html">노드 71</a></td></tr>
+        <tr><td style="border-left:6px solid var(--muted)">설계<br>10.19</td><td>코드를 짜기 전에 «누가, 어디서, 어떻게 쓰는지»를 사람이 먼저 정해 문서(PRD) 한 장으로 남겨요.</td><td>코드 없이 프로토타입(시제품)으로 먼저 확인한 뒤, 구조 그림과 PRD 한 장으로 정리했어요.</td><td><a href="ai-service-design-before-code.html">노드 63</a></td></tr>
+        <tr><td style="border-left:6px solid var(--muted)">Cloud Run (코드를 올리면 공개 주소를 붙여 주는 구글 서비스)<br>10.20~21</td><td>코드 폴더를 올리면 공개 주소가 생겨요. 서버가 정상이라고 해도 손님이 답을 못 받을 수 있어서 타임아웃과 로그를 봐요.</td><td>새 버전과 옛 버전 사이로 요청을 옮겨 보고, API 키를 Secret Manager에 연결하고, 로그 세 종류를 찾아 읽었어요.</td><td><a href="cloud-run-source-deploy-meaning.html">노드 64</a> <a href="cloud-run-operating-ai-service.html">노드 65</a></td></tr>
+        <tr><td style="border-left:6px solid var(--folder-1)">CI/CD<br>10.22~23</td><td>코드를 합치면 서비스가 저절로 바뀌고, 합치기 전에 테스트가 깨진 코드를 막아요.</td><td>내 앱(도장판)에서 일부러 깨뜨린 PR #9는 테스트 9개 중 3개가 실패했어요. 연습용 템플릿 저장소에서는 main에 직접 push하는 것이 GH006으로 거절됐어요.</td><td><a href="github-actions-auto-deploy.html">노드 66</a> <a href="ci-tests-and-staging.html">노드 67</a></td></tr>
+        <tr><td style="border-left:6px solid var(--folder-2)">Docker<br>10.26~27</td><td>실행 환경을 Dockerfile (실행 환경을 한 줄씩 적은 파일)이라는 파일에 적고, 시험한 이미지를 다시 만들지 않고 그대로 내보내요.</td><td>이미지의 sha256 지문으로 «같은 이미지인가»를 확인했고, 롤백은 24초, 복구는 36초가 걸렸어요.</td><td><a href="dockerfile-fixing-runtime-environment.html">노드 68</a> <a href="build-once-promote-image.html">노드 69</a></td></tr>
+        <tr><td style="border-left:6px solid var(--folder-4)">배포 전략<br>10.28~29</td><td>새 버전을 요청 0%로 먼저 올려 두고, 준비가 됐는지 확인한 뒤에만 요청을 옮겨요.</td><td>기본 확인 방식에서는 요청 389건 중 71건이 실패했고, /health 확인 방식에서는 283건 중 0건이 실패했어요.</td><td><a href="load-balancer-zero-downtime.html">노드 70</a> <a href="cloud-run-zero-downtime-deploy.html">노드 71</a></td></tr>
       </tbody>
     </table>
 
     <h2 id="example"><span class="hl">내 예시</span> — 배포는 "성공"인데 요청 71건이 실패한 이야기</h2>
-    <p>다섯 장면 중 한 가지는 실험으로 깊게 보여 드릴게요. 새 버전이 시작하는 데 30초가 걸리는 예제 앱을 일부러 배포했어요. 배포하는 동안 같은 주소에 0.2초마다 요청을 보내 실패한 건수를 세었어요.</p>
+    <p>다섯 주제 중 한 가지는 실험으로 깊게 보여 드릴게요. 새 버전이 시작하는 데 30초가 걸리는 예제 앱을 일부러 배포했어요. 배포하는 동안 같은 주소에 0.2초마다 요청을 보내 실패한 건수를 세었어요.</p>
     <p>Cloud Run에는 새 버전이 요청을 받을 준비가 됐는지 확인하는 검사, <strong>스타트업 프로브</strong>가 있어요. 기본 프로브는 «문이 열렸는가(포트가 열렸는가)»만 봐요. 그래서 앱이 아직 준비 중인데도 통과시켜요. 제가 /health 주소로 «진짜 준비됐는가»를 묻도록 바꾸자 결과가 달라졌어요.</p>
     <figure>
     <svg viewBox="0 0 760 170" role="img" aria-label="기본 프로브는 요청 389건 중 71건이 실패했고, /health 프로브는 요청 283건 중 0건이 실패했다는 막대 그림" style="width:100%;height:auto;">
@@ -174,40 +204,34 @@
       </tbody>
     </table>
     <p>여기에 <strong>제가 세운 가정</strong>을 더해요. «배포마다 29초 동안 모든 요청이 실패하고, 하루에 한 번 배포한다»고 해 볼게요. 이건 실제 측정이 아니라 단순하게 만든 가정이에요. 실제 측정에서는 전체 389건 중 71건(약 18%)이 실패했어요.</p>
-    <table>
-      <thead><tr><th>배포 횟수</th><th>1년에 잃는 시간</th><th>99.9% 허용량(8.76시간)과 비교</th></tr></thead>
-      <tbody>
-        <tr><td>하루 1번</td><td>29초 × 365 = 10,585초 ≈ 2.9시간</td><td>약 34%를 배포가 써요</td></tr>
-        <tr><td>하루 3번</td><td>약 8.8시간</td><td>허용량을 거의 다 써서, 다른 사고가 나면 바로 목표를 넘어요</td></tr>
-      </tbody>
-    </table>
+    <figure>
+    <svg viewBox="0 0 760 140" role="img" aria-label="배포마다 29초 실패한다고 가정하면, 하루 1번 배포는 1년 허용 정지 시간 8.76시간의 약 34퍼센트를, 하루 3번 배포는 거의 전부를 쓴다" style="width:100%;height:auto;">
+      <text x="120" y="18" text-anchor="start" font-family="var(--font-body)" font-size="12" fill="var(--muted)">99.9% 목표의 1년 허용 정지 시간 = 8.76시간</text>
+      <text x="8" y="56" text-anchor="start" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">하루 1번 배포</text>
+      <rect x="120" y="32" width="620" height="34" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <rect x="120" y="32" width="205.3" height="34" rx="8" fill="var(--accent)" fill-opacity="0.55"/>
+      <text x="132" y="54" text-anchor="start" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">2.9시간</text>
+      <text x="335.2511415525114" y="54" text-anchor="start" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">약 34%</text>
+      <text x="8" y="106" text-anchor="start" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">하루 3번 배포</text>
+      <rect x="120" y="82" width="620" height="34" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <rect x="120" y="82" width="620.0" height="34" rx="8" fill="var(--accent)" fill-opacity="0.9"/>
+      <text x="132" y="104" text-anchor="start" font-family="var(--font-heading)" font-size="13" fill="#fff">약 8.8시간</text>
+      <text x="730" y="104" text-anchor="end" font-family="var(--font-heading)" font-size="13" fill="#fff">거의 전부</text>
+    </svg>
+    </figure>
     <p><strong>제가 얻은 해석:</strong> 배포 한 번의 실패가 작아 보여도 횟수를 곱하면 가용성 예산을 크게 써요. 그래서 /health 프로브는 «배포가 43초 늦어지는 대가»로 실패를 줄이는 선택이에요. 이번 측정에서는 실패가 0건이었어요.</p>
 
     <h2 id="apply"><span class="hl">활용</span> — 내 앱(도장판)에 세 질문을 대 보기</h2>
-    <p>제 앱 도장판은 도장을 모을수록 칸이 하나씩 열리는 루틴 앱이에요. 세 질문을 이 앱에 대 보면, 이미 갖춘 것과 아직 비어 있는 것이 보여요. 아래 «다음에 할 일»은 아직 하지 않았어요.</p>
-
-    <p><strong>무엇이 나갔나 — 지금 서비스에 올라간 코드가 어떤 것인지 말할 수 있나?</strong></p>
-    <ul>
-      <li><strong>지금은:</strong> 화면 아래에 코드 버전 번호(커밋) 일곱 자리를 띄워서, 올라간 코드를 바로 알 수 있어요.</li>
-      <li><strong>비어 있는 곳:</strong> GitHub Pages가 저장소 전체를 공개해서, 시험 파일(tests 폴더)까지 누구나 볼 수 있어요.</li>
-      <li><strong>다음에 할 일:</strong> 공개할 파일만 남기도록 공개 범위를 정리해요.</li>
-    </ul>
-
-    <p><strong>사용자는 괜찮았나 — 배포한 뒤 사용자가 오류나 이상한 답을 받지 않았다고 말할 수 있나?</strong></p>
-    <ul>
-      <li><strong>지금은:</strong> 칸이 열리는 일정을 시험하는 테스트 9개가 있고, 서비스가 살아 있는지(/health)를 확인해요.</li>
-      <li><strong>비어 있는 곳:</strong> 서비스가 살아 있다는 것까지만 알아요. 도우미가 엉뚱한 답을 하는지는 사람이 직접 물어봐야 알아요.</li>
-      <li><strong>다음에 할 일:</strong> 배포가 끝나면 대표 질문 몇 개를 자동으로 보내고, 도우미가 정해 둔 규칙을 어긴 횟수를 세는 프로그램을 만들어요.</li>
-    </ul>
-
-    <p><strong>되돌릴 수 있나 — 문제가 생기면 바로 이전 상태로 돌릴 수 있나?</strong></p>
-    <ul>
-      <li><strong>지금은:</strong> 되돌리는 요청(Revert PR)과, 버튼 한 번으로 이전 버전으로 돌리는 롤백 자동화가 있어요. 롤백은 24초가 걸렸어요.</li>
-      <li><strong>비어 있는 곳:</strong> main 브랜치(서비스가 되는 코드 줄기)에 보호 규칙이 없어서, 테스트가 실패해도 코드를 합칠 수 있어요.</li>
-      <li><strong>다음에 할 일:</strong> 테스트를 통과해야만 합칠 수 있게 main에 필수 검사를 걸어요.</li>
-    </ul>
-
-    <p><strong>정리하면</strong> 비어 있는 곳은 «사용자는 괜찮았나»에 몰려 있어요. 서비스가 떠 있는지는 기계가 확인해 주지만, 답이 맞는지는 아직 사람이 확인하고 있어요. 다음에 자동화할 일 첫 번째가 이거예요.</p>
+    <p>제 앱 도장판은 도장을 모을수록 칸이 하나씩 열리는 루틴 앱이에요. 세 질문을 대 보면, 이미 갖춘 것과 비어 있는 것이 보여요. «다음에 할 일»은 아직 하지 않았어요.</p>
+    <table>
+      <thead><tr><th></th><th>무엇이 나갔나</th><th>사용자는 괜찮았나</th><th>되돌릴 수 있나</th></tr></thead>
+      <tbody>
+        <tr><td><strong style="color:var(--folder-2)">✔ 지금은</strong></td><td>화면 아래에 코드 버전 번호(커밋) 일곱 자리가 보여요.</td><td>칸이 열리는 일정을 시험하는 테스트 9개가 있고, 서비스가 살아 있는지(/health) 확인해요.</td><td>되돌리는 요청(Revert PR)과 버튼 한 번 롤백이 있어요. 롤백은 24초 걸렸어요.</td></tr>
+        <tr><td><strong style="color:var(--accent)">✖ 비어 있는 곳</strong></td><td>GitHub Pages가 저장소 전체를 공개해서 시험 파일(tests 폴더)까지 보여요.</td><td>살아 있다는 것까지만 알아요. 도우미가 엉뚱한 답을 하는지는 사람이 물어봐야 알아요.</td><td>main 브랜치(서비스가 되는 코드 줄기)에 보호 규칙이 없어서, 테스트가 실패해도 합칠 수 있어요.</td></tr>
+        <tr><td><strong style="color:var(--folder-1)">➜ 다음에 할 일</strong></td><td>공개할 파일만 남기도록 공개 범위를 정리해요.</td><td>배포 뒤 대표 질문 몇 개를 자동으로 보내, 규칙을 어긴 횟수를 세요.</td><td>테스트를 통과해야만 합치도록 main에 필수 검사를 걸어요.</td></tr>
+      </tbody>
+    </table>
+    <p><strong>정리하면</strong> 비어 있는 곳은 «사용자는 괜찮았나»에 몰려 있어요. 서비스가 떠 있는지는 기계가 확인하지만, 답이 맞는지는 아직 사람이 확인해요. 가장 먼저 자동화할 곳이에요.</p>
 
     <h2 id="not-done"><span class="hl">알아 둘 점</span></h2>
     <ul>
