@@ -207,17 +207,32 @@
     </figure>
 
     <h2 id="apply"><span class="hl">활용</span> — 내 앱(도장판)에 세 질문을 대 보기</h2>
-    <p>제 앱 도장판은 도장을 모을수록 칸이 하나씩 열리는 루틴 앱이에요. 세 질문을 대 보면, 이미 갖춘 것과 비어 있는 것이 보여요. «다음에 할 일»은 아직 하지 않았어요.</p>
+    <p>도장판은 오늘 할 일 칸 세 개에 도장을 찍는 루틴 앱이에요. 도장이 쌓이면 칸이 하나씩 열려요.</p>
+    <figure style="margin:1rem 0;text-align:center;">
+      <img src="images/routine-stamp-board.jpg" alt="도장판 화면: 오늘 날짜와 일어나기, 아침 먹기, 몸 움직이기 세 칸이 있고 눌러서 도장을 찍는다" style="max-width:320px;width:100%;height:auto;border-radius:14px;border:3px solid var(--border);">
+      <figcaption>도장판 화면 (공개 체험판)</figcaption>
+    </figure>
+    <p>이 앱의 배포 기록은 GitHub에 그대로 남아 있어요. 세 질문을 이 화면에 대 보면 이래요.</p>
+    <figure style="margin:1rem 0;">
+      <div style="position:relative;max-width:560px;margin:0 auto;">
+        <img src="images/routine-stamp-actions.jpg" alt="도장판 저장소의 GitHub Actions 실행 목록: deploy #19의 커밋 1a816a4, ci #22 통과, rollback #3 수동 실행" style="width:100%;height:auto;border-radius:12px;border:3px solid var(--border);display:block;">
+        <span style="position:absolute;right:2%;top:14%;transform:translateY(-50%);display:inline-block;width:1.5rem;height:1.5rem;line-height:1.5rem;border-radius:50%;background:var(--accent);color:#fff;text-align:center;font-weight:700;font-size:.85rem;box-shadow:0 0 0 3px #fff;">1</span><span style="position:absolute;right:2%;top:48%;transform:translateY(-50%);display:inline-block;width:1.5rem;height:1.5rem;line-height:1.5rem;border-radius:50%;background:var(--accent);color:#fff;text-align:center;font-weight:700;font-size:.85rem;box-shadow:0 0 0 3px #fff;">2</span><span style="position:absolute;right:2%;top:63%;transform:translateY(-50%);display:inline-block;width:1.5rem;height:1.5rem;line-height:1.5rem;border-radius:50%;background:var(--accent);color:#fff;text-align:center;font-weight:700;font-size:.85rem;box-shadow:0 0 0 3px #fff;">3</span>
+      </div>
+      <figcaption>도장판 저장소의 GitHub 실행 기록 (공개 화면)</figcaption>
+    </figure>
+    <ul style="list-style:none;padding-left:0;">
+      <li style="margin:.5rem 0;"><span style="display:inline-block;width:1.5rem;height:1.5rem;line-height:1.5rem;border-radius:50%;background:var(--accent);color:#fff;text-align:center;font-weight:700;font-size:.85rem;">1</span> <strong>무엇이 나갔나</strong> — 배포 실행(<code>deploy #19</code>)마다 코드 버전 번호(커밋 <code>1a816a4</code>)가 남아요.</li>
+      <li style="margin:.5rem 0;"><span style="display:inline-block;width:1.5rem;height:1.5rem;line-height:1.5rem;border-radius:50%;background:var(--accent);color:#fff;text-align:center;font-weight:700;font-size:.85rem;">2</span> <strong>사용자는 괜찮았나</strong> — 합쳐 달라는 요청(PR)마다 테스트(<code>ci</code>)가 자동으로 돌고, 통과는 초록 체크, 실패는 빨간 ×로 보여요.</li>
+      <li style="margin:.5rem 0;"><span style="display:inline-block;width:1.5rem;height:1.5rem;line-height:1.5rem;border-radius:50%;background:var(--accent);color:#fff;text-align:center;font-weight:700;font-size:.85rem;">3</span> <strong>되돌릴 수 있나</strong> — <code>rollback</code>을 버튼으로 직접 실행해 이전 버전으로 돌려요(#3, 38초).</li>
+    </ul>
     <table>
       <thead><tr><th></th><th>무엇이 나갔나</th><th>사용자는 괜찮았나</th><th>되돌릴 수 있나</th></tr></thead>
       <tbody>
-        <tr><td><strong style="color:var(--folder-2)">✔ 지금은</strong></td><td>화면 아래에 코드 버전 번호(커밋) 일곱 자리가 보여요.</td><td>칸이 열리는 일정을 시험하는 테스트 9개가 있고, 서비스가 살아 있는지(/health) 확인해요.</td><td>되돌리는 요청(Revert PR)과 버튼 한 번 롤백이 있어요. 롤백은 24초 걸렸어요.</td></tr>
         <tr><td><strong style="color:var(--accent)">✖ 비어 있는 곳</strong></td><td>GitHub Pages가 저장소 전체를 공개해서 시험 파일(tests 폴더)까지 보여요.</td><td>살아 있다는 것까지만 알아요. 도우미가 엉뚱한 답을 하는지는 사람이 물어봐야 알아요.</td><td>main 브랜치(서비스가 되는 코드 줄기)에 보호 규칙이 없어서, 테스트가 실패해도 합칠 수 있어요.</td></tr>
         <tr><td><strong style="color:var(--folder-1)">➜ 다음에 할 일</strong></td><td>공개할 파일만 남기도록 공개 범위를 정리해요.</td><td>배포 뒤 대표 질문 몇 개를 자동으로 보내, 규칙을 어긴 횟수를 세요.</td><td>테스트를 통과해야만 합치도록 main에 필수 검사를 걸어요.</td></tr>
       </tbody>
     </table>
     <p><strong>정리하면</strong> 비어 있는 곳은 «사용자는 괜찮았나»에 몰려 있어요. 서비스가 떠 있는지는 기계가 확인하지만, 답이 맞는지는 아직 사람이 확인해요. 가장 먼저 자동화할 곳이에요.</p>
-
   </main>
   </div>
 
