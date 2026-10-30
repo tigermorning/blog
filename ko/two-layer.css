@@ -1,0 +1,14 @@
+/* 두 층 구조: 윗층(BEFORE→AFTER, 목차) / 아랫층(자세히 보기). 노드 71 글에서 시범 후 모듈 글에 공통 적용 */
+.ba{display:flex;gap:1rem;flex-wrap:wrap;margin:1rem 0;}
+.ba>div{flex:1 1 240px;border-radius:14px;padding:.8rem 1.1rem;border:3px solid var(--border);}
+.ba .ba-tag{font-size:.85rem;font-weight:700;margin:0;}
+.ba .ba-big{font-size:2rem;font-weight:700;line-height:1.2;margin:.2rem 0;}
+.ba .ba-sub{font-size:.9rem;color:var(--muted);margin:0;}
+.ba .before{border-color:var(--accent);} .ba .before .ba-big{color:var(--accent);}
+.ba .after{border-color:var(--folder-2);} .ba .after .ba-big{color:var(--folder-2);}
+.ba>div.ba-arrow{align-self:center;flex:0 0 auto;border:0;padding:0;font-size:1.6rem;color:var(--muted);}
+.deep-toc{border:3px dashed var(--border);border-radius:14px;padding:.6rem 1.1rem;margin:1rem 0;}
+.deep-toc p{margin:.3rem 0;}
+details.deep{margin:.4rem 0 1.2rem;}
+details.deep>summary{cursor:pointer;color:var(--muted);font-weight:700;padding:.3rem 0;}
+.deep-one{background:rgba(0,0,0,.03);border-left:5px solid var(--folder-1);padding:.4rem .9rem;border-radius:0 10px 10px 0;}

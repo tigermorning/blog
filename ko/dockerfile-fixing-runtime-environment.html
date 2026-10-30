@@ -11,6 +11,7 @@
   <meta property="og:locale" content="ko_KR">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="two-layer.css">
   <link rel="stylesheet" href="flow-motion.css">
   <style>
     /* 이 글의 모션 그림(svg.dm): 화면에 보일 때만(dm-on) 재생하고, 모션 줄임 설정이면 멈춘다 */
@@ -87,6 +88,16 @@
           </ul>
         </dd>
       </dl>
+    </div>
+    <div class="ba" aria-label="서버에서 사진을 보냈을 때 Dockerfile을 쓰기 전과 후의 결과 비교">
+      <div class="before"><p class="ba-tag">BEFORE · 서버에 프로그램이 없을 때</p><p class="ba-big">같은 사진인데 500 오류</p><p class="ba-sub">코드는 한 글자도 다르지 않은데 서버에서만 실패해요</p></div>
+      <div class="ba-arrow" aria-hidden="true">→</div>
+      <div class="after"><p class="ba-tag">AFTER · Dockerfile로 환경을 정한 뒤</p><p class="ba-big">500이 200으로, 같은 6줄</p><p class="ba-sub">서버 코드는 한 줄도 안 바꿨고, 대신 이미지 크기는 385MB예요</p></div>
+    </div>
+    <div class="deep-toc">
+      <p><strong>이 글의 길</strong> — 위쪽은 핵심, 아래쪽은 접혀 있는 «자세히 보기»예요. <button type="button" id="deep-all" style="cursor:pointer">모두 펼치기</button></p>
+      <p><strong>핵심</strong> <a href="#analogy">비유로 먼저</a> · <a href="#relation">Dockerfile · 이미지 · 컨테이너</a> · <a href="#flow">전체 흐름</a> · <a href="#symptom">서버에서만 실패한다</a> · <a href="#checklist">에이전트가 쓴 파일 검토하기</a> · <a href="#cache">레이어 캐시</a> · <a href="#two-builds">같은 Dockerfile이면 같은 이미지일까</a> · <a href="#choice">나쁜 선택 vs 좋은 선택</a> · <a href="#numbers">이 글에 나온 숫자</a> · <a href="#suspect">이럴 때 의심하세요</a> · <a href="#not-done">확인 범위와 해 보지 못한 것</a></p>
+      <p><strong>자세히</strong> <a href="#image-container">이미지와 컨테이너</a> · <a href="#lifecycle">컨테이너는 실행 직후 사라질까</a> · <a href="#read-dockerfile">Dockerfile 한 줄씩 읽기</a> · <a href="#local-run">로컬에서 이미지를 만들고 실행하기</a> · <a href="#deploy">같은 자동 배포로 올리기</a> · <a href="#where">Dockerfile은 어디에 저장되나</a></p>
     </div>
 
     <a class="post-nav" href="ci-tests-and-staging.html">
@@ -245,6 +256,7 @@
     <p><strong>읽는 법:</strong> 윗줄은 왼쪽에서 오른쪽으로, ④에서 아랫줄로 내려와 오른쪽에서 왼쪽으로 읽어요. 강조색 테두리는 Dockerfile이 쓰이는 단계(① 쓰기, ④·⑦ 빌드)고, 맨 왼쪽 점선 상자는 이 구조의 한계예요. 배포 흐름 자체는 2편에서 만든 그대로고, 바뀐 것은 빌드할 때 buildpacks 대신 Dockerfile이 쓰인다는 점뿐이에요.</p>
 
     <h2 id="symptom"><span class="hl">서버에서만 실패한다</span> — 화면은 결과이고 원인은 로그에 있어요</h2>
+    <p class="deep-one"><strong>한 줄 정리</strong> 화면의 안내는 결과만 말해 주고, 원인은 로그의 오류 줄에서 찾아요.</p>
     <p>OCR을 켜는 스위치는 환경변수<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup> <code>OCR_ENABLED</code>예요. 기본값이 꺼짐이고, 꺼져 있을 때 사진을 보내면 서버가 "꺼져 있습니다"(404)로 거절해요. 사진을 읽는 코드는 <code>pytesseract</code>라는 파이썬 라이브러리를 쓰는데, 이 라이브러리는 직접 글자를 읽지 않아요. 운영체제에 설치된 <code>tesseract</code> 프로그램을 불러 쓰는 래퍼(wrapper)<sup class="fn-ref"><a href="#fn8" id="fnref8">8</a></sup>예요. 그래서 <code>requirements.txt</code>로 라이브러리를 설치하는 것만으로는 부족해요. tesseract 프로그램과 한국어 글자 데이터를 시스템 패키지(운영체제에 까는 프로그램 묶음)로 따로 깔아야 해요.</p>
     <p>먼저 내 컴퓨터에서 확인했어요. 프로그램을 깔기 전에 서버를 켜고 사진을 보내면 <strong>500 "사진에서 글자를 읽는 프로그램이 서버에 없습니다."</strong>가 나와요. tesseract를 설치하고(설치 후 <code>tesseract --list-langs</code>에 <code>kor</code>가 보이면 한국어 데이터까지 된 거예요) 같은 사진을 보내면 <strong>200</strong>과 함께 6줄이 읽혀요. 여기까지가 "내 컴퓨터에서는 된다"예요.</p>
     <p>이제 staging에서 같은 기능을 켜 봤어요. 서비스 환경변수를 하나 더하는 명령이에요.</p>
@@ -311,7 +323,7 @@
     </figure>
     <p><strong>읽는 법:</strong> 세로로 한 칸씩 비교해요. 첫째, 둘째 줄(파이썬, 라이브러리)은 세 곳이 같아서 문제가 없어요. 셋째 줄만 buildpacks 이미지에서 빠져 있고, 그 때문에 맨 아래 결과가 500이 돼요.</p>
 
-    <h2 id="image-container"><span class="hl">이미지와 컨테이너</span> — 직접 띄워 보면 바로 보여요</h2>
+    <h2 id="image-container"><span class="hl">이미지와 컨테이너</span> — 직접 띄워 보면 바로 보여요</h2><details class="deep"><summary>▼ 자세히 보기</summary>
     <p>이미지는 운영체제 기본 파일, 프로그램, 라이브러리, 코드, 시작 명령까지 실행에 필요한 것을 묶어 둔 파일이고, 한 번 만들면 내용이 바뀌지 않아요. 컨테이너는 그 이미지를 실행한 것이에요. 2편의 리비전과 인스턴스<sup class="fn-ref"><a href="#fn9" id="fnref9">9</a></sup>가 이 구조예요. 말로만 두지 않고 Docker Desktop에서 공식 파이썬 이미지로 직접 해 봤어요.</p>
     <p class="run-tag">실행: 로컬 터미널 <span class="run-tag-why">— Docker Desktop을 켠 상태에서. 처음 실행할 때 이미지를 내려받아요(이 이미지는 183MB)</span></p>
 <pre><code># --rm: 컨테이너가 멈추면(안에서 돌던 명령이 끝나면) 자동으로 지운다
@@ -404,7 +416,9 @@ docker rm -f web-a web-b web-c</code></pre>
     <figcaption>브라우저는 컨테이너 바깥에서 오는 손님이라 바깥 포트(앞 숫자)로 들어가요. 안쪽 8000은 컨테이너만 아는 번호예요.</figcaption>
     </figure>
 
-    <h2 id="lifecycle"><span class="hl">컨테이너는 실행 직후 사라질까</span> — 아니요, 지우거나 <code>--rm</code>을 줬을 때만이에요</h2>
+    </details>
+
+    <h2 id="lifecycle"><span class="hl">컨테이너는 실행 직후 사라질까</span> — 아니요, 지우거나 <code>--rm</code>을 줬을 때만이에요</h2><details class="deep"><summary>▼ 자세히 보기</summary>
     <p>"컨테이너는 실행하면 바로 사라진다"고 오해하기 쉬워요. 짧은 명령(<code>python --version</code>)은 순식간에 끝나서 그렇게 보이지만, 컨테이너는 <strong>시작 명령(컨테이너 안에서 처음 실행한 프로그램)이 끝나면 같이 멈출 뿐</strong>이고 저절로 지워지지는 않아요. <code>--rm</code>을 줬을 때만 멈추는 순간 자동으로 지워져요. 1회용 컨테이너로 직접 재 봤어요.</p>
     <table>
       <thead><tr><th>한 일</th><th>결과</th></tr></thead>
@@ -471,7 +485,9 @@ docker rm -f web-a web-b web-c</code></pre>
     </ul>
     <p><code>Exited (137)</code>은 멈추라는 요청을 1초 안에 못 받아 강제로 끝낸 것으로 보이는데, 숫자의 정확한 뜻은 확인하지 못했어요.</p>
 
-    <h2 id="read-dockerfile"><span class="hl">Dockerfile 한 줄씩 읽기</span> — 위에서 아래로 쌓이는 이미지</h2>
+    </details>
+
+    <h2 id="read-dockerfile"><span class="hl">Dockerfile 한 줄씩 읽기</span> — 위에서 아래로 쌓이는 이미지</h2><details class="deep"><summary>▼ 자세히 보기</summary>
     <p>Dockerfile에는 베이스 이미지, 설치할 시스템 패키지와 라이브러리, 코드를 둘 곳, 실행할 사용자와 시작 명령을 적어요. 코딩 에이전트에게 쓰게 해도 돼요. 다만 에이전트는 요청받은 대로 파일을 쓸 뿐, 파이썬 버전을 고정할지, root로 실행할지 같은 판단을 대신 정해 주지 않아요. 그래서 무엇을 넣을지는 요청문에 직접 적어요. 이 앱에서 쓴 파일이에요.</p>
     <p class="run-tag">실행: 프로젝트에 Dockerfile로 저장 <span class="run-tag-why">— 저장소 맨 위 폴더에 이 이름 그대로 두면 Cloud Run 소스 배포가 읽어요</span></p>
 <pre><code>FROM python:3.13-slim-bookworm
@@ -581,6 +597,8 @@ CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}"]</co
     <p>크기가 있는 것은 파일을 실제로 설치하는 줄이고, <code>USER</code>나 <code>CMD</code>처럼 설정만 하는 줄은 0B예요. 서버에 없던 tesseract 설치 레이어가 가장 크고(94.9MB), 가장 오래 걸려요(24.1초). 우리 코드와 <code>index.html</code>은 152kB밖에 안 돼요. 이 숫자들이 줄 순서를 정하는 근거가 돼요. 오래 걸리고 잘 안 바뀌는 설치를 위에, 자주 바뀌는 코드 복사를 아래에 두는 거예요. <code>requirements.txt</code>만 먼저 복사하는 것도 같은 이유예요.</p>
     <p>한 가지 더, <code>Procfile</code>과 <code>.python-version</code>은 buildpacks가 시작 명령과 파이썬 버전을 정할 때 쓰던 파일이에요. 저장소에 Dockerfile이 생기면 시작 명령은 <code>CMD</code> 줄이, 파이썬 버전은 <code>FROM</code> 줄이 정해요. 두 파일을 지우지 않아도 되지만 값이 다르면 헷갈리니 같은 버전인지 한 번 확인해요.</p>
 
+    </details>
+
     <h2 id="checklist"><span class="hl">에이전트가 쓴 파일 검토하기</span> — 다섯 가지 기준</h2>
     <p>에이전트가 쓴 파일이든 직접 쓴 파일이든 아래 다섯 가지를 확인해요. 줄 순서나 표현이 조금 달라도 괜찮고, 표의 각 줄이 하는 일이 들어 있는지를 봐요. 하나라도 걸리면 그 부분만 고쳐 달라고 다시 요청해요.</p>
     <table>
@@ -616,7 +634,7 @@ CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}"]</co
 - .dockerignore 에 .env, .venv, .git, node_modules, tests 등 이미지에 필요 없는 파일
 다 쓰면 줄마다 무엇을 하는지 설명해 줘.</code></pre>
 
-    <h2 id="local-run"><span class="hl">로컬에서 이미지를 만들고 컨테이너로 실행하기</span> — 서버에 올리기 전 확인</h2>
+    <h2 id="local-run"><span class="hl">로컬에서 이미지를 만들고 컨테이너로 실행하기</span> — 서버에 올리기 전 확인</h2><details class="deep"><summary>▼ 자세히 보기</summary>
     <p>서버에 올리기 전에 내 컴퓨터에서 Dockerfile로 이미지를 만들어 컨테이너로 돌려 봤어요. 이번에는 내 컴퓨터에 설치한 tesseract가 아니라 <strong>이미지 안에 설치된</strong> tesseract가 사진을 읽어요.</p>
     <p class="run-tag">실행: 로컬 터미널 <span class="run-tag-why">— Docker Desktop을 켜 둔 상태에서, 저장소 맨 위 폴더에서 실행해요. 첫 빌드는 tesseract를 내려받느라 시간이 걸려요</span></p>
 <pre><code># -t: 이미지 이름과 태그
@@ -632,6 +650,8 @@ docker image ls routine-stamp:local</code></pre>
     <p><code>/app</code>에는 <code>app</code>, <code>index.html</code>, <code>requirements.txt</code>, <code>Procfile</code>이 있고 <code>node_modules</code>, <code>tests</code>, <code>package.json</code>은 <strong>없었어요</strong>(<code>.dockerignore</code>가 뺀 것으로 보여요). 실행 사용자는 <code>appuser</code>였어요. 컨테이너 안 <code>tesseract --list-langs</code>에는 <code>eng</code>, <code>kor</code>, <code>osd</code>가 나왔어요. 이 확인에서 한계도 하나 있어요. 이 폴더에는 <code>.env</code> 파일이 애초에 없어서, <code>.dockerignore</code>의 <code>.env</code> 줄이 실제로 막았는지는 이번에 증명하지 못했어요. 확인하려면 임시 <code>.env</code>를 만들어 다시 빌드해 봐야 해요.</p>
     <p>API 키는 이미지에 넣지 않고 <strong>실행할 때</strong> 건네는 것이 원칙이에요. 로컬에서는 <code>--env-file .env</code>로 내 컴퓨터의 <code>.env</code> 값을 컨테이너 환경변수로 넘기고, <code>.env</code> 파일 자체는 <code>.dockerignore</code> 덕분에 이미지에 들어가지 않아요. 이미지는 저장소에 올라가 여러 곳에서 내려받아 실행되는 파일이라, 안에 든 값은 이미지를 받은 누구나 꺼내 볼 수 있기 때문이에요. 이 앱은 키가 필요 없어서 이 부분은 직접 실행해 보지 않았어요. 또 <code>--env-file</code>은 값을 감싼 따옴표를 지워 주지 않으니, <code>.env</code>의 값은 따옴표 없이 적어요.</p>
     <p>그리고 로컬에서 만든 이 이미지는 서버에 올리지 않아요. 서버용 이미지는 배포 과정에서 같은 Dockerfile로 다시 만들어요. 내 컴퓨터와 서버의 CPU 아키텍처<sup class="fn-ref"><a href="#fn12" id="fnref12">12</a></sup>가 다를 수 있고, 내 컴퓨터에서 만든 이미지는 누가 언제 어떤 코드로 만들었는지 기록이 남지 않기 때문이에요.</p>
+
+    </details>
 
     <h2 id="cache"><span class="hl">레이어 캐시</span> — 같은 빌드가 53초에서 2초로</h2>
     <p>빌드할 때 Docker는 위에서부터 내려오며 내용이 바뀌지 않은 줄은 이전 빌드의 레이어를 다시 쓰고(레이어 캐시), 처음 바뀐 줄부터 아래를 새로 만들어요. 같은 폴더를 네 번 빌드하며 직접 재 봤어요.</p>
@@ -722,7 +742,7 @@ docker image ls routine-stamp:local</code></pre>
     <p><strong>3차는 제가 예상과 달라 당황한 장면이에요.</strong> <code>README.md</code>를 바꿨는데 <code>COPY . .</code>까지 CACHED였어요. 원인은 제가 <code>.dockerignore</code>에 <code>README.md</code>를 넣어 둔 것이었어요. 이미지 안 <code>/app</code>에도 <code>README.md</code>가 없다는 것을 컨테이너에서 확인했어요. <strong><code>.dockerignore</code>에 적힌 파일은 빌드에 보내지 않으니, 바꿔도 Docker 눈에는 바뀐 것이 없어요.</strong> 그래서 이미지에 실제로 들어가는 파일(<code>app/__init__.py</code>)로 다시 확인했어요. 두 파일 모두 확인 뒤 <code>git checkout</code>으로 되돌렸어요.</p>
     <p>이 캐시를 로컬 <code>docker build</code>에서 직접 본 것이고, 서버(Cloud Build)의 배포 빌드에서도 같은 캐시가 쓰이는지는 확인하지 못했어요.</p>
 
-    <h2 id="deploy"><span class="hl">같은 자동 배포로 올리기</span> — 고칠 곳은 한 군데예요</h2>
+    <h2 id="deploy"><span class="hl">같은 자동 배포로 올리기</span> — 고칠 곳은 한 군데예요</h2><details class="deep"><summary>▼ 자세히 보기</summary>
     <p>Cloud Run의 소스 배포는 올라온 코드에 Dockerfile이 있으면 buildpacks 대신 그 Dockerfile로 이미지를 만들어요. 그래서 Dockerfile과 <code>.dockerignore</code>를 커밋해 staging 브랜치로 PR을 보내면 돼요. 배포 워크플로(GitHub Actions의 자동 배포 설정)는 <strong>한 군데</strong>만 고쳤어요. buildpacks로 배포한 서비스에는 기능이 하나 켜져 있어요. Google이 관리하는 베이스 이미지를 최신 보안 패치로 자동으로 바꿔 주는 기능이에요. 이 기능은 Dockerfile로 만든 이미지에는 쓸 수 없어요. 그래서 그대로 배포하면 <code>Missing required argument [--clear-base-image]</code> 오류로 멈춘다고 해요. 이 오류는 미리 옵션을 넣고 배포해서 <strong>직접 보지는 못했어요.</strong> 이제 베이스 이미지는 <code>FROM</code> 줄이 정하니, 배포 단계의 <code>flags:</code> 줄 끝에 <code>--clear-base-image</code>를 붙여 그 기능을 껐어요. 대신 베이스 이미지의 보안 패치는 <code>FROM</code> 줄을 바꾸고 다시 빌드할 때 들어와요.</p>
     <p class="run-tag">실행: .github/workflows/deploy.yml 설정 파일에 붙여넣기 <span class="run-tag-why">— GitHub Actions가 이 파일을 읽어요. 다른 줄은 바꾸지 말고 flags: 줄 끝에 한 단어만 더해요</span></p>
 <pre><code>--clear-base-image</code></pre>
@@ -741,7 +761,10 @@ gh pr create --base staging --title "Dockerfile 추가" --body "tesseract와 한
     <p>이어서 staging에 같은 사진을 보냈어요. 앞에서 staging에 직접 넣어 둔 <code>OCR_ENABLED=true</code>는 자동 배포가 기존 환경변수를 지우지 않고 합치는 방식이라 그대로 남아 있었어요. 결과는 <strong>200, 로컬 컨테이너와 같은 6줄</strong>이에요. 서버 코드는 한 줄도 안 바꿨는데, Dockerfile 하나로 500이 200이 됐어요.</p>
     <p>staging에서 확인했으니 production으로 갔어요. staging에서 main으로 PR을 보내 CI를 통과시키고 머지했더니, production 배포는 <strong>승인 대기</strong>에서 멈췄어요. production 환경에 승인자를 지정해 둔 설정이에요. GitHub의 Actions 화면에서 배포를 승인하자 배포가 진행되어 성공했어요. production에는 <code>OCR_ENABLED</code>가 아직 없었어요. 그래서 처음에는 기능이 꺼진 채 시작했어요(<code>/health</code>가 <code>ocr_enabled: false</code>). 환경변수를 더해 켜자 같은 사진이 <strong>같은 6줄</strong>로 읽혔어요. 내 컴퓨터, 로컬 컨테이너, staging, production에서 같은 결과가 나온 거예요.</p>
 
+    </details>
+
     <h2 id="two-builds"><span class="hl">같은 Dockerfile이면 같은 이미지일까</span> — 그렇지 않아요</h2>
+    <p class="deep-one"><strong>한 줄 정리</strong> 같은 Dockerfile로 따로 만든 두 이미지는 이미지 ID가 달랐고, staging에서 확인한 이미지와 production에 나간 이미지는 별개의 이미지예요.</p>
     <p>그런데 staging과 production은 같은 Dockerfile로 이미지를 <strong>따로</strong> 만들었어요. 같은 파일이면 같은 이미지가 나오는지 캐시 없이 두 번 빌드해 비교했어요.</p>
     <p class="run-tag">실행: 로컬 터미널 <span class="run-tag-why">— 캐시를 안 쓰니 tesseract를 두 번 내려받고 한 번에 50초쯤 걸려요. 끝나면 두 이미지를 지워요</span></p>
 <pre><code>docker build --no-cache -t routine-stamp:try-a .
@@ -752,7 +775,7 @@ docker rmi routine-stamp:try-a routine-stamp:try-b</code></pre>
     <p>결과는 이랬어요. 두 빌드는 48초, 49초가 걸렸고 <strong>이미지 ID는 서로 달랐어요.</strong> 하지만 이미지 안의 파이썬 패키지 18개는 두 이미지에서 <strong>한 줄도 다르지 않았고</strong>, tesseract 패키지 버전(<code>tesseract-ocr 5.3.0-2</code>, 한국어 데이터 <code>1:4.1.0-2</code>)도 같았어요. 이미지 ID는 이미지 내용 전체로 계산한 값이라 작은 차이만 있어도 달라지고, 두 이미지의 생성 시각은 약 49초 차이가 났어요. 그 시각 차이가 ID가 다른 직접 원인인지까지는 제가 확인하지 못했어요. 두 빌드 사이가 1분도 안 돼서 패키지가 같았지만, 며칠 간격으로 빌드하면 그 사이 새로 나온 버전이 들어가 목록까지 달라질 수 있어요. 이건 직접 확인한 것이 아니에요.</p>
     <p>그래서 오늘의 마무리는 이래요. 실행 환경은 Dockerfile 한 파일에 적혔고 네 곳에서 같은 결과가 나왔지만, <strong>staging에서 확인한 이미지와 production에 나간 이미지는 같은 파일로 따로 만든 별개의 이미지</strong>예요. 확인한 것과 나간 것이 같다고 말하려면 이미지를 한 번만 만들어 두 환경에 보내야 해요. 이 글에서는 거기까지 가지 않았어요. 남은 숙제가 둘 더 있어요. 하나는 지금 production에서 도는 이미지가 어느 커밋으로 만든 것인지 이름만 보고 알기 어렵다는 점이에요. 다른 하나는 이미지 크기가 385MB라 배포할 때마다 쌓이는 저장 공간을 아직 관리하지 않았다는 점이에요.</p>
 
-    <h2 id="where"><span class="hl">Dockerfile은 어디에 저장되나</span> — 단계마다 다른 곳에 있어요</h2>
+    <h2 id="where"><span class="hl">Dockerfile은 어디에 저장되나</span> — 단계마다 다른 곳에 있어요</h2><details class="deep"><summary>▼ 자세히 보기</summary>
     <p>소스 배포는 GCP(Cloud Run)의 기능이고, GitHub는 코드를 보관하고 배포를 자동으로 시키는 쪽이에요. 같은 Dockerfile이 단계마다 다른 곳에 있어요.</p>
     <figure>
     <svg class="flow-motion" viewBox="0 0 760 330" role="img" aria-label="내 컴퓨터에서 Dockerfile을 쓰고, GitHub 저장소의 맨 위 폴더에 올리면 원본이 된다. GitHub Actions 서버가 코드를 내려받아 GCP의 임시 저장소에 zip으로 올리고, Cloud Build가 Dockerfile로 이미지를 빌드해 Artifact Registry에 저장하며, Cloud Run이 그 이미지를 컨테이너로 실행한다.">
@@ -822,6 +845,8 @@ docker rmi routine-stamp:try-a routine-stamp:try-b</code></pre>
       </tbody>
     </table>
     <p>Dockerfile은 반드시 <strong>저장소 맨 위 폴더에 <code>Dockerfile</code>이라는 이름</strong>으로 두어야 소스 배포가 찾아요. 다른 폴더에 두거나 이름을 바꾸면 buildpacks로 빌드되어 tesseract가 다시 빠질 수 있어요. 이 부분은 직접 시험해 보지 않았어요.</p>
+
+    </details>
 
     <h2 id="choice"><span class="hl">나쁜 선택 vs 좋은 선택</span> — 요리사에게 "서버에서 안 돼, 고쳐 줘"라고 할 때</h2>
     <p>식당으로 치면 사장이 요리사에게 "가맹점에서는 특수 칼 요리가 안 돼, 고쳐 줘"라고 맡기는 장면이에요. 아래는 상황을 가정한 예시예요.</p>
@@ -976,6 +1001,7 @@ docker rmi routine-stamp:try-a routine-stamp:try-b</code></pre>
   <footer class="site-footer">
     &copy; 2026 Tigermorning
   </footer>
+  <script src="two-layer.js"></script>
   <script src="fit-title.js"></script>
   <script src="flow-motion.js"></script>
   <script>

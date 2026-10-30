@@ -11,6 +11,7 @@
   <meta property="og:locale" content="ko_KR">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="two-layer.css">
   <link rel="stylesheet" href="flow-motion.css">
 </head>
 <body>
@@ -59,6 +60,11 @@
           </ul>
         </dd>
       </dl>
+    </div>
+    <div class="ba" aria-label="타임아웃을 1초로 줄였을 때 서버 기록과 사용자 화면이 다른 말을 한 사례와, 실제 걸린 시간으로 정하는 기준">
+      <div class="before"><p class="ba-tag">BEFORE · 타임아웃 1초로 줄였을 때</p><p class="ba-big">서버 기록은 200(정상)인데 화면은 "(답을 받지 못했어요)"</p><p class="ba-sub">서버 로그만 봤다면 아무 일도 없었던 거예요</p></div>
+      <div class="ba-arrow" aria-hidden="true">→</div>
+      <div class="after"><p class="ba-tag">AFTER · 실제 걸린 시간으로 정하기</p><p class="ba-big">요청 하나 약 5초(답 4초, 기억 정리 1초)</p><p class="ba-sub">평균 말고 느린 쪽보다 넉넉하게 잡아요</p></div>
     </div>
 
     <a class="post-nav" href="cloud-run-source-deploy-meaning.html">
@@ -183,6 +189,7 @@
   <footer class="site-footer">
     &copy; 2026 Tigermorning
   </footer>
+  <script src="two-layer.js"></script>
   <script src="fit-title.js"></script>
   <script src="flow-motion.js"></script>
   <script src="sidebar-loader.js"></script>

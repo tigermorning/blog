@@ -11,6 +11,7 @@
   <meta property="og:locale" content="ko_KR">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="two-layer.css">
 </head>
 <body>
   <header class="site-header">
@@ -68,21 +69,6 @@
         </dd>
       </dl>
     </div>
-    <style>
-      .ba{display:flex;gap:1rem;flex-wrap:wrap;margin:1rem 0;}
-      .ba>div{flex:1 1 240px;border-radius:14px;padding:.8rem 1.1rem;border:3px solid var(--border);}
-      .ba .ba-tag{font-size:.85rem;font-weight:700;margin:0;}
-      .ba .ba-big{font-size:2rem;font-weight:700;line-height:1.2;margin:.2rem 0;}
-      .ba .ba-sub{font-size:.9rem;color:var(--muted);margin:0;}
-      .ba .before{border-color:var(--accent);} .ba .before .ba-big{color:var(--accent);}
-      .ba .after{border-color:var(--folder-2);} .ba .after .ba-big{color:var(--folder-2);}
-      .ba>div.ba-arrow{align-self:center;flex:0 0 auto;border:0;padding:0;font-size:1.6rem;color:var(--muted);}
-      .deep-toc{border:3px dashed var(--border);border-radius:14px;padding:.6rem 1.1rem;margin:1rem 0;}
-      .deep-toc p{margin:.3rem 0;}
-      details.deep{margin:.4rem 0 1.2rem;}
-      details.deep>summary{cursor:pointer;color:var(--muted);font-weight:700;padding:.3rem 0;}
-      .deep-one{background:rgba(0,0,0,.03);border-left:5px solid var(--folder-1);padding:.4rem .9rem;border-radius:0 10px 10px 0;}
-    </style>
     <div class="ba" aria-label="기본 프로브와 /health 프로브로 배포했을 때 실패한 요청 수 비교">
       <div class="before"><p class="ba-tag">BEFORE · 기본 프로브 (포트만 확인)</p><p class="ba-big">389건 중 71건 실패</p><p class="ba-sub">준비 중인 앱에도 문이 열리면 통과시켜요</p></div>
       <div class="ba-arrow" aria-hidden="true">→</div>
@@ -627,26 +613,7 @@ gcloud run services update-traffic &lt;서비스 이름&gt; --to-latest</code></
   <footer class="site-footer">
     &copy; 2026 Tigermorning
   </footer>
-  <script>
-    (function () {
-      var all = document.querySelectorAll('details.deep');
-      function openFor(id) {
-        var t = id && document.getElementById(id);
-        if (!t) return;
-        var d = t.closest('details.deep');
-        if (!d) { d = t.nextElementSibling; while (d && d.tagName !== 'DETAILS' && d.tagName !== 'H2') d = d.nextElementSibling; if (d && d.tagName !== 'DETAILS') d = null; }
-        if (d) { d.open = true; t.scrollIntoView(); }
-      }
-      window.addEventListener('hashchange', function () { openFor(location.hash.slice(1)); });
-      openFor(location.hash.slice(1));
-      var b = document.getElementById('deep-all');
-      if (b) b.addEventListener('click', function () {
-        var open = b.textContent === '모두 펼치기';
-        all.forEach(function (d) { d.open = open; });
-        b.textContent = open ? '모두 접기' : '모두 펼치기';
-      });
-    })();
-  </script>
+  <script src="two-layer.js"></script>
   <script src="fit-title.js"></script>
   <script src="sidebar-loader.js"></script>
 </body>

@@ -11,6 +11,7 @@
   <meta property="og:locale" content="ko_KR">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="two-layer.css">
   <link rel="stylesheet" href="flow-motion.css">
   <style>
     /* 이 글의 모션 그림(svg.dm): 화면에 보일 때만(dm-on) 재생하고, 모션 줄임 설정이면 멈춘다 */
@@ -79,6 +80,17 @@
           </ul>
         </dd>
       </dl>
+    </div>
+
+    <div class="ba" aria-label="서버 하나가 멈췄을 때 연결 대기 시간 60초와 1초의 실패 요청 수 비교">
+      <div class="before"><p class="ba-tag">BEFORE · 연결 대기 60초 (기본값)</p><p class="ba-big">137건 중 19건 실패</p><p class="ba-sub">서버가 응답하지 않으면 60초가 지나야 실패로 보고 다른 서버로 넘겨요</p></div>
+      <div class="ba-arrow" aria-hidden="true">→</div>
+      <div class="after"><p class="ba-tag">AFTER · 연결 대기 1초 (proxy_connect_timeout 1s)</p><p class="ba-big">284건 중 0건 실패</p><p class="ba-sub">한 번씩 잰 값이라 "절반으로 줄인다"처럼 일반화하지 않아요</p></div>
+    </div>
+    <div class="deep-toc">
+      <p><strong>이 글의 길</strong> — 위쪽은 핵심, 아래쪽은 접혀 있는 «자세히 보기»예요. <button type="button" id="deep-all" style="cursor:pointer">모두 펼치기</button></p>
+      <p><strong>핵심</strong> <a href="#analogy">비유로 먼저</a> · <a href="#flow">전체 흐름</a> · <a href="#two-conditions">무엇이 문제인가</a> · <a href="#redundancy">서버를 어떻게 바꿔야 끊기지 않나</a> · <a href="#failure">서버나 Nginx가 멈추면</a> · <a href="#stateless">전환하니 대화가 사라진 이유</a> · <a href="#together">조각을 한 장에</a> · <a href="#lab">직접 해 본 실습</a> · <a href="#choice">나쁜 선택 vs 좋은 선택</a> · <a href="#numbers">이 글에 나온 숫자</a> · <a href="#suspect">이럴 때 의심하세요</a> · <a href="#not-done">확인 범위와 해 보지 못한 것</a> · <a href="#recap">다시 같은 문제가 생기면</a></p>
+      <p><strong>자세히</strong> <a href="#nginx">요청이 갈 곳은 누가 정하나</a> · <a href="#switch">방향 바꾸기와 비율 정하기</a> · <a href="#mine">내 프로젝트에서는</a> · <a href="#notes">잘 된 점 · 막힌 점 · 어떻게 풀었나</a></p>
     </div>
 
     <a class="post-nav" href="build-once-promote-image.html">
@@ -156,6 +168,7 @@
       </tbody>
     </table>
     <p>요청이 하나도 실패하지 않았는데도 사용자가 방금 나눈 대화가 사라졌다면, 사용자에게는 서비스가 끊긴 것과 똑같아요. 그래서 무중단이라고 하려면 위 표의 <strong>두 가지를 둘 다</strong> 만족해야 해요.</p>
+    <p class="deep-one"><strong>한 줄 정리</strong> 요청이 하나도 실패하지 않았어도 방금 나눈 대화가 사라졌다면 사용자에게는 서비스가 끊긴 것과 같아서, 두 조건을 둘 다 만족해야 무중단이에요.</p>
     <p>무중단의 정도는 <strong>가용성(availability)</strong><sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup>으로 말해요. 가용성이 낮을수록 1년 동안 서비스가 멈추는 시간이 길어요. 아래 값은 가용성별로 1년 중 멈추는 시간의 기준이에요.</p>
     <table>
       <thead><tr><th>가용성</th><th>1년에 멈추는 시간</th></tr></thead>
@@ -216,7 +229,7 @@
       <li>이전 버전을 언제 꺼야 하는지는 제가 읽은 자료가 정하지 않았어요. 구체적인 시간은 없어요.</li>
     </ul>
 
-    <h2 id="nginx"><span class="hl">요청이 갈 곳은 누가 정하나</span> — Nginx</h2>
+    <h2 id="nginx"><span class="hl">요청이 갈 곳은 누가 정하나</span> — Nginx</h2><details class="deep"><summary>▼ 자세히 보기</summary>
     <p>방향을 바꾸는 장치가 Nginx<sup class="fn-ref"><a href="#fn13" id="fnref13">13</a></sup>예요. Nginx는 웹 서버, 리버스 프록시<sup class="fn-ref"><a href="#fn14" id="fnref14">14</a></sup>, 로드밸런서 세 역할을 하는 프로그램이고, 이번 실습에서는 설정 파일 한 벌이 요청의 길을 정해요.</p>
 
     <h3>배포할 때와 요청이 올 때는 서로 다른 시간이에요</h3>
@@ -284,7 +297,9 @@ upstream active_app { ... }        ← 그 목록 안에서
     </table>
     <p>요청이 많아지면 비율은 비슷해져요(150건 측정에서 zone 있음 75% 대 25%, 없음 76% 대 24%). 차이는 요청을 몇 개 안 보냈을 때 같은 서버로만 가는 것처럼 보이는 데서 드러나요. 이 현상의 정확한 원인(일꾼마다 카운터가 따로라는 것)은 배운 설명과 이 측정의 모양이 맞아떨어진다고 본 것이고, Nginx 내부 코드로 확인한 것은 아니에요.</p>
 
-    <h2 id="switch"><span class="hl">방향을 바꾸는 방법과 비율 정하기</span> — reload와 weight</h2>
+    </details>
+
+    <h2 id="switch"><span class="hl">방향을 바꾸는 방법과 비율 정하기</span> — reload와 weight</h2><details class="deep"><summary>▼ 자세히 보기</summary>
 
     <h3>방향 바꾸기: reload</h3>
     <p>upstream의 server 줄을 <code>blue</code>에서 <code>green</code>으로 고쳐요. 그런 다음 <code>nginx -t</code>로 문법을 검사하고, <code>nginx -s reload</code>로 적용해요. reload<sup class="fn-ref"><a href="#fn17" id="fnref17">17</a></sup>는 Nginx를 다시 시작하지 않고 설정만 바꿔 끼워요. 아래 명령은 Nginx 컨테이너 안에서 설정을 검사하고 적용하는 순서를 보여 줘요. 따라 해 보려면 실습 환경이 필요하고, 읽기만 해도 돼요.</p>
@@ -322,6 +337,8 @@ docker exec bg-nginx nginx -s reload</code></pre>
       <li>기준 ② 카나리 배포는 작게 시작해서 단계적으로 올려요. 새 버전에 1%나 10%만 먼저 보낸다고 배웠어요. 도구마다 단계 예시는 달라요. Cloud Deploy 문서의 canary 예시는 25%, 50%, 75%이고, Argo Rollouts 문서의 예시는 10%와 20%예요. 하나로 정해진 표준은 아니고, 대체로 단계마다 지표를 확인하고 잠깐 멈춘 뒤 올려요(문서의 예시일 뿐 권고가 아니에요).</li>
       <li>99 : 1의 "99"와 가용성 99%의 "99"는 겹쳐 보이지만 서로 다른 말이에요. 가용성은 1년 중 쓸 수 있었던 시간의 비율이고, weight는 요청을 나눠 보내는 몫이에요. 다만 새 버전을 1%에만 먼저 보내면 문제가 있어도 영향받는 사용자가 적으니 배포 위험을 줄여 가용성을 지키는 데 간접적으로 도움이 돼요(이 연결은 제 해석이에요).</li>
     </ul>
+
+    </details>
 
     <h2 id="failure"><span class="hl">서버나 Nginx가 멈추면 요청은 어떻게 되나</span> — 고장을 누가 먼저 아는가</h2>
 
@@ -437,7 +454,7 @@ docker exec bg-nginx nginx -s reload</code></pre>
       </tbody>
     </table>
 
-    <h2 id="mine"><span class="hl">내 프로젝트에서는</span> — 이 일이 어디서 일어나고 있었나</h2>
+    <h2 id="mine"><span class="hl">내 프로젝트에서는</span> — 이 일이 어디서 일어나고 있었나</h2><details class="deep"><summary>▼ 자세히 보기</summary>
 
     <h3>배포 파이프라인의 마지막 칸</h3>
     <p>제 <code>deploy.yml</code>은 main에 push하면 위에서 아래로 자동 실행되는 다섯 칸이고, 마지막 칸 「Cloud Run 배포」 안에서 이전 버전이 새 버전으로 교체돼요. 이번 글은 이 교체가 사용자에게 안 끊기게 하는 원리예요.</p>
@@ -482,6 +499,8 @@ docker exec bg-nginx nginx -s reload</code></pre>
         <tr><td><code>docker network create bg-lab</code></td><td>컨테이너끼리 이름으로 찾는 네트워크 만들기</td></tr>
       </tbody>
     </table>
+
+    </details>
 
     <h2 id="lab"><span class="hl">직접 해 본 실습</span> — 전환, 롤백, 서버 하나 멈추기</h2>
 
@@ -534,7 +553,7 @@ docker exec bg-nginx nginx -s reload</code></pre>
       <li>하지 못한 것: Supabase 실습(계정과 키가 필요해요).</li>
     </ul>
 
-    <h2 id="notes"><span class="hl">잘 된 점 · 막힌 점 · 어떻게 풀었나</span></h2>
+    <h2 id="notes"><span class="hl">잘 된 점 · 막힌 점 · 어떻게 풀었나</span></h2><details class="deep"><summary>▼ 자세히 보기</summary>
 
     <h3>잘 된 점</h3>
     <table>
@@ -570,6 +589,8 @@ docker exec bg-nginx nginx -s reload</code></pre>
       <li><code>zone</code>은 worker process들이 "다음 차례"를 함께 세게 해서, 요청이 적을 때도 규칙대로 나뉘게 해요.</li>
       <li>DB를 붙이는 순간 코드만이 아니라 테이블 구조를 바꾸는 순서까지 신경 써야 해요.</li>
     </ul>
+
+    </details>
 
     <h2 id="choice"><span class="hl">나쁜 선택 vs 좋은 선택</span> — 에이전트에게 "새 버전으로 바꿔 줘"라고 할 때</h2>
     <p>식당으로 치면 사장이 요리사에게 "영업 중에 주방을 새로 바꿔 줘"라고 맡기는 장면이에요. 아래는 상황을 가정한 예시예요.</p>
@@ -738,6 +759,7 @@ docker exec bg-nginx nginx -s reload</code></pre>
   <footer class="site-footer">
     &copy; 2026 Tigermorning
   </footer>
+  <script src="two-layer.js"></script>
   <script src="fit-title.js"></script>
   <script src="flow-motion.js"></script>
   <script>

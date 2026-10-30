@@ -11,6 +11,7 @@
   <meta property="og:locale" content="ko_KR">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="two-layer.css">
   <link rel="stylesheet" href="flow-motion.css">
   <style>
     /* 이 글의 모션 그림(svg.dm): 화면에 보일 때만(dm-on) 재생하고, 모션 줄임 설정이면 멈춘다 */
@@ -79,6 +80,16 @@
           </ul>
         </dd>
       </dl>
+    </div>
+    <div class="ba" aria-label="내 컴퓨터에서는 통과하던 테스트가 서버에서 실패하던 상황과, 관문을 세운 뒤 합치기가 막히는 상황 비교">
+      <div class="before"><p class="ba-tag">BEFORE · 내 컴퓨터에서만 확인</p><p class="ba-big">08:00이 17:00으로 저장</p><p class="ba-sub">내 컴퓨터(한국 시간)에서는 11개가 모두 통과해요</p></div>
+      <div class="ba-arrow" aria-hidden="true">→</div>
+      <div class="after"><p class="ba-tag">AFTER · 관문 네 개를 세운 뒤</p><p class="ba-big">합치기 버튼이 회색으로 막힘</p><p class="ba-sub">관리자인 나에게도 같은 규칙을 적용했어요</p></div>
+    </div>
+    <div class="deep-toc">
+      <p><strong>이 글의 길</strong> — 위쪽은 핵심, 아래쪽은 접혀 있는 «자세히 보기»예요. <button type="button" id="deep-all" style="cursor:pointer">모두 펼치기</button></p>
+      <p><strong>핵심</strong> <a href="#analogy">비유로 먼저</a> · <a href="#flow">전체 흐름</a> · <a href="#accidents">막고 싶었던 사고</a> · <a href="#gate1">관문 1. 자동 테스트(CI)</a> · <a href="#real-case">실전 사례</a> · <a href="#choice">나쁜 선택 vs 좋은 선택</a> · <a href="#numbers">이 글에 나온 숫자</a> · <a href="#suspect">이럴 때 의심하세요</a> · <a href="#retro">돌아보기</a></p>
+      <p><strong>자세히</strong> <a href="#gate2">관문 2. 환경 분리</a> · <a href="#gate3">관문 3. 승인 대기</a> · <a href="#gate4">관문 4. 브랜치 보호</a> · <a href="#apply">내 앱(루틴 도장)에 적용하기</a></p>
     </div>
 
     <a class="post-nav" href="github-actions-auto-deploy.html">
@@ -207,20 +218,21 @@
     <figcaption>시간대 표시가 지워지면 같은 "8시"를 컴퓨터마다 다르게 읽어요. 한국과 UTC의 시차는 9시간이에요.</figcaption>
     </figure>
     <p>내 컴퓨터에서만 테스트했다면 못 잡았을 오류를 서버의 CI가 잡았어요. 같은 상황을 내 컴퓨터에서 <code>TZ=UTC</code>로 다시 돌려 보니 17:00으로 1개가 실패했고, CI 로그의 pytest 단계에서도 17:00이 찍혀 있었어요. PR #3은 원인을 읽는 것이 목적이어서 합치지 않고 닫았어요.</p>
+    <p class="deep-one"><strong>한 줄 정리</strong> 내 컴퓨터에서만 테스트했다면 못 잡았을 오류를 서버의 CI가 잡았어요.</p>
 
-    <h2 id="gate2"><span class="hl">관문 2. 환경 분리</span> — staging과 production</h2>
+    <h2 id="gate2"><span class="hl">관문 2. 환경 분리</span> — staging과 production</h2><details class="deep"><summary>▼ 자세히 보기</summary>
     <p>GitHub에 staging(연습용)과 production(진짜 서비스) 환경<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup>을 만들었어요. 환경마다 따로 값을 둬서(서비스 이름 변수와 환경 이름 변수) 같은 배포 파일이 환경에 맞게 움직여요. staging용 AI 키도 production과 따로 만들었어요. 서비스 실행 계정이 읽을 수 있는 시크릿(비밀 값)<sup class="fn-ref"><a href="#fn8" id="fnref8">8</a></sup>도 그 키 하나로 제한했어요. 설정 화면에는 production(보호 규칙 1개)과 staging이 있고 각각 변수가 2개씩 있어요.</p>
-    <p>배포 중 한 번 막혔어요. 빌드 단계에서 <code>PERMISSION_DENIED</code>(기본 계정을 빌드에 쓸 권한이 없음)가 났어요. 빌드에 쓸 계정을 환경 변수로 지정하고 배포 명령에 빌드 계정 옵션을 추가해서(PR #5) 풀었어요. staging으로 합치자 테스트(19초)와 배포(2분 17초)가 모두 초록불이었어요.</p>
+    <p>배포 중 한 번 막혔어요. 빌드 단계에서 <code>PERMISSION_DENIED</code>(기본 계정을 빌드에 쓸 권한이 없음)가 났어요. 빌드에 쓸 계정을 환경 변수로 지정하고 배포 명령에 빌드 계정 옵션을 추가해서(PR #5) 풀었어요. staging으로 합치자 테스트(19초)와 배포(2분 17초)가 모두 초록불이었어요.</p></details>
 
-    <h2 id="gate3"><span class="hl">관문 3. 승인 대기</span> — 사람이 누르기 전에는 안 나가요</h2>
+    <h2 id="gate3"><span class="hl">관문 3. 승인 대기</span> — 사람이 누르기 전에는 안 나가요</h2><details class="deep"><summary>▼ 자세히 보기</summary>
     <p>production 환경에는 「내 승인」이 있어야만 배포가 진행되도록 지정했어요. staging을 main으로 올리는 PR #6을 합치자, 테스트는 통과했지만 production 배포는 「승인 대기(Waiting)」에서 멈췄어요. 사람이 승인하기 전에는 진짜 서비스가 바뀌지 않는다는 것을 화면으로 확인했어요.</p>
-    <p>이 배포는 승인하지 않고 취소했어요. 확인해 보니 production 서비스의 설정(환경 값, 실행 계정, 시크릿 권한)이 설계와 맞지 않았어요. 맞지 않는 상태 그대로 승인을 눌러 진짜 서비스를 바꾸지 않으려는 판단이었어요.</p>
+    <p>이 배포는 승인하지 않고 취소했어요. 확인해 보니 production 서비스의 설정(환경 값, 실행 계정, 시크릿 권한)이 설계와 맞지 않았어요. 맞지 않는 상태 그대로 승인을 눌러 진짜 서비스를 바꾸지 않으려는 판단이었어요.</p></details>
 
-    <h2 id="gate4"><span class="hl">관문 4. 브랜치 보호</span> — 관리자인 나도 못 합쳐요</h2>
+    <h2 id="gate4"><span class="hl">관문 4. 브랜치 보호</span> — 관리자인 나도 못 합쳐요</h2><details class="deep"><summary>▼ 자세히 보기</summary>
     <p>main과 staging에 규칙을 걸었어요. 규칙은 세 가지예요. PR 없이는 합칠 수 없어요. <code>test</code>라는 검사가 통과해야만(필수 검사<sup class="fn-ref"><a href="#fn9" id="fnref9">9</a></sup>) 합칠 수 있어요. 관리자(나)에게도 똑같이 적용했어요. 조회 명령으로 규칙이 걸린 것을 확인했고, main에 직접 push(코드를 바로 올리기)를 시도하니 <code>GH006</code>(보호된 브랜치라 거절)으로 막혔어요. 이렇게 걸어 두는 것을 브랜치 보호<sup class="fn-ref"><a href="#fn10" id="fnref10">10</a></sup>라고 해요.</p>
-    <p>저장소에 미리 준비된 「일부러 망가뜨린 변경」 세 개(safety-exact-match, weather-keyword, reminder-timezone)도 차례로 PR로 올렸어요. 모두 test가 빨간불이 되었고 합치기 버튼이 회색으로 막혔어요. 합치기 방식 메뉴를 열어 봐도 「검사를 건너뛰고 합치기」 같은 항목이 없어요. 관리자에게도 규칙이 적용되도록 했기 때문이에요.</p>
+    <p>저장소에 미리 준비된 「일부러 망가뜨린 변경」 세 개(safety-exact-match, weather-keyword, reminder-timezone)도 차례로 PR로 올렸어요. 모두 test가 빨간불이 되었고 합치기 버튼이 회색으로 막혔어요. 합치기 방식 메뉴를 열어 봐도 「검사를 건너뛰고 합치기」 같은 항목이 없어요. 관리자에게도 규칙이 적용되도록 했기 때문이에요.</p></details>
 
-    <h2 id="apply"><span class="hl">내 앱(루틴 도장)에 적용하기</span> — 칸 열림 일정부터 테스트로</h2>
+    <h2 id="apply"><span class="hl">내 앱(루틴 도장)에 적용하기</span> — 칸 열림 일정부터 테스트로</h2><details class="deep"><summary>▼ 자세히 보기</summary>
     <p>도장판은 계획표 없이 도장을 찍는 앱이에요. 도장이 쌓이면 칸이 하나씩 열려요(도장 3일 → 4번째 칸, 28일 → 5번째, 60일 → 6번째). 이 「칸 열림 일정」은 잘못 바뀌어도 눈으로 알아채기 어려워서 첫 테스트 대상으로 골랐어요.</p>
     <ul>
       <li><code>tests/unlock.test.js</code>: 칸 열림 일정 9개 시나리오. <code>node:test</code>와 jsdom<sup class="fn-ref"><a href="#fn11" id="fnref11">11</a></sup>으로 index.html을 실제로 열어 확인해요.</li>
@@ -239,7 +251,7 @@
         <tr><td>승인 대기</td><td>사람이 누르기 전에는 배포 안 됨</td><td>production 배포를 Waiting 상태로 확인</td></tr>
         <tr><td>키 분리</td><td>환경마다 다른 키와 최소 권한</td><td>staging 전용 키, 읽기 권한을 그 키 하나로 제한</td></tr>
       </tbody>
-    </table>
+    </table></details>
 
     <h2 id="real-case"><span class="hl">실전 사례</span> — 테스트는 통과했는데 AI는 규칙을 어겼다</h2>
     <p>오늘 이 흐름을 내 앱의 실제 문제에 그대로 써 봤어요. 문제는 도우미(루틴 코치 챗)가 오후 4시에도 「아침 먹기」를 권한 것이었어요. 고친 것들을 PR로 하나씩 올려 CI를 통과시키고 합친 뒤 배포했어요. 배포할 때마다 서비스에는 새 리비전 번호가 붙어요.</p>
@@ -255,6 +267,7 @@
       </tbody>
     </table>
     <p>핵심은 네 번째 단계(00017)를 배포한 뒤예요. 테스트와 CI는 모두 통과했어요. 그런데 배포한 서비스에 같은 상황을 실제로 보내 보니 지난 칸을 또 권했어요. 테스트는 가짜 AI로 하기 때문이에요. 「프롬프트(AI에게 주는 지시문)<sup class="fn-ref"><a href="#fn12" id="fnref12">12</a></sup>에 규칙이 들어갔다」까지만 확인할 수 있어요. 그래서 서비스에 같은 요청을 여러 번 보내 세어 봤어요. 여섯 번째 단계에서 빠져나간 이유는, 한 문장 뒤쪽의 「내일의 루틴」이 앞쪽 권유를 가려서였어요. 서버의 검사는 답을 읽어요. 지난 칸을 권했으면 다시 쓰게 해요. 세 번 모두 어기면 정해 둔 답을 써요.</p>
+    <p class="deep-one"><strong>한 줄 정리</strong> 테스트는 가짜 AI로 하기 때문에 「프롬프트에 규칙이 들어갔다」까지만 확인할 수 있어요.</p>
     <figure>
     <svg class="dm" viewBox="0 0 760 200" role="img" aria-label="도우미의 답을 서버가 검사한다. 지난 칸을 권했으면 다시 쓰게 하고, 세 번 모두 어기면 정해 둔 답을 쓴다. 통과하면 사용자에게 보여 준다.">
       <defs>
@@ -451,6 +464,7 @@
   <footer class="site-footer">
     &copy; 2026 Tigermorning
   </footer>
+  <script src="two-layer.js"></script>
   <script src="fit-title.js"></script>
   <script src="flow-motion.js"></script>
   <script>

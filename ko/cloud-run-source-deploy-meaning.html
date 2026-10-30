@@ -11,6 +11,7 @@
   <meta property="og:locale" content="ko_KR">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="two-layer.css">
   <link rel="stylesheet" href="flow-motion.css">
 </head>
 <body>
@@ -75,6 +76,16 @@
         </dd>
       </dl>
     </div>
+    <div class="ba" aria-label="소스 배포 전에는 줄 주소가 없던 상태와 명령 한 줄로 공개 주소가 붙은 상태 비교">
+      <div class="before"><p class="ba-tag">BEFORE · 내 컴퓨터에서만 도는 앱</p><p class="ba-big">줄 주소가 없어요</p><p class="ba-sub">컴퓨터를 끄면 앱도 함께 멈춰요</p></div>
+      <div class="ba-arrow" aria-hidden="true">→</div>
+      <div class="after"><p class="ba-tag">AFTER · 소스 배포 (명령 한 줄)</p><p class="ba-big">약 2분 만에 공개 주소</p><p class="ba-sub">코드와 파이썬 버전과 라이브러리를 한 묶음으로 포장해 올려요</p></div>
+    </div>
+    <div class="deep-toc">
+      <p><strong>이 글의 길</strong> — 위쪽은 핵심, 아래쪽은 접혀 있는 «자세히 보기»예요. <button type="button" id="deep-all" style="cursor:pointer">모두 펼치기</button></p>
+      <p><strong>핵심</strong> <a href="#command">명령 한 줄</a> · <a href="#analogy">비유로 먼저</a> · <a href="#flow">전체 흐름</a> · <a href="#why-package">왜 한 묶음으로 포장할까</a> · <a href="#source-vs-image">소스 배포와 이미지 배포</a> · <a href="#steps">단계마다 남는 흔적</a> · <a href="#traffic">리비전 사이로 트래픽 나누기</a> · <a href="#secret">키는 서버로 따라가지 않아요</a> · <a href="#choice">나쁜 선택 vs 좋은 선택</a> · <a href="#numbers">이 글에 나온 숫자</a> · <a href="#suspect">이럴 때 의심하세요</a></p>
+      <p><strong>자세히</strong> <a href="#files">폴더에 두는 파일 네 개</a> · <a href="#vs-vercel">왜 Vercel이 아니라 Cloud Run일까</a> · <a href="#why-see">AI가 대신 배포해 주는 시대에</a></p>
+    </div>
 
     <a class="post-nav" href="ai-service-design-before-code.html">
       <span class="post-nav-label">← 이전 편</span>
@@ -98,6 +109,7 @@
     </table>
 
     <h2 id="analogy"><span class="hl">비유로 먼저</span> — 1편의 식당에서 포장 가게로</h2>
+    <p class="deep-one"><strong>한 줄 정리</strong> 본사에 레시피 폴더만 보내면, 본사가 재료와 도구까지 한 상자로 포장해 가게를 열고 주소를 붙여 줘요.</p>
     <p><a href="ai-service-design-before-code.html">1편</a>의 식당을 이어 쓸게요. 사장인 내가 요리사에게 가게를 맡기는 대신, 이번엔 <strong>본사에 레시피 폴더를 통째로 보내요.</strong> 본사는 레시피를 읽고 필요한 재료와 조리 도구를 알아서 맞춰 <strong>밀키트 상자</strong>로 포장하고, 그 상자를 가맹점에 보내 가게를 열어 주고, 가게 주소까지 붙여 줘요. 이게 소스 배포예요. 이미 포장한 상자를 내가 직접 만들어 보내는 방식도 있는데, 이건 아래에서 비교해요.</p>
     <table>
       <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
@@ -189,6 +201,7 @@
     <p>이 글에서는 앞쪽(소스 배포)만 다뤄요. 이미지를 직접 만드는 방법은 <a href="dockerfile-fixing-runtime-environment.html">6편 로컬에서는 되는데 서버에서만 안 되는 이유 — Dockerfile로 실행 환경 정하기</a>에서 이어 가요. 이미지와 컨테이너라는 말이 낯설다면 <a href="what-is-docker.html">도커(Docker)란 무엇인가</a>를 먼저 보고 와도 좋아요.</p>
 
     <h2 id="steps"><span class="hl">단계마다 남는 흔적</span> — 제 배포 로그와 콘솔에서 찾을 곳</h2>
+    <p class="deep-one"><strong>한 줄 정리</strong> 이 표는 배포가 막혔을 때 어디서 끊겼는지 찾는 지도가 돼요.</p>
     <p>제가 연습용 앱 <code>hello</code>를 처음 배포했을 때 터미널에 이런 줄이 순서대로 찍혔어요. 전체는 약 2분이 걸렸어요. 배포 명령 하나가 만든 흔적을 단계별로 찾아볼 수 있어요.</p>
     <table>
       <thead><tr><th>로그에 찍힌 줄</th><th>일어난 일</th><th>콘솔에서 찾을 곳</th></tr></thead>
@@ -210,7 +223,7 @@
       <li><strong>콜드 스타트</strong> — 0개였다가 첫 요청이 와서 인스턴스를 새로 켜느라 첫 응답이 늦어지는 현상이에요. 그다음 요청부터는 빨라요.</li>
     </ul>
 
-    <h2 id="files"><span class="hl">폴더에 두는 파일 네 개</span> — buildpacks가 읽는 것들</h2>
+    <h2 id="files"><span class="hl">폴더에 두는 파일 네 개</span> — buildpacks가 읽는 것들</h2><details class="deep"><summary>▼ 자세히 보기</summary>
     <p>연습용 <code>hello</code> 앱은 파일 네 개로 충분해요. 이 앱을 먼저 올리는 이유는, 처음부터 큰 서비스를 올리면 실패했을 때 원인이 <strong>배포 과정</strong>인지 <strong>코드</strong>인지 가리기 어렵기 때문이에요. 네 파일 모두 폴더 <strong>바로 아래</strong>에 둬요.</p>
     <p class="run-tag">실행: <code>my-hello/main.py</code>로 저장 <span class="run-tag-why">— Cloud Run에서 앱이 시작될 때 이 파일을 읽어요</span></p>
 <pre><code>from fastapi import FastAPI
@@ -245,9 +258,9 @@ uvicorn&gt;=0.30</code></pre>
     <p>배포 전에는 Google 계정과 결제 정보(무료 체험), 프로젝트, gcloud 설치와 로그인이 필요하고, 소스 배포가 거치는 Cloud Run·Cloud Build·Artifact Registry 세 서비스의 API를 프로젝트에서 켜 둬야 해요. 먼저 내 컴퓨터에서 돌려 보고 싶다면 이렇게 해요.</p>
     <p class="run-tag">실행: 로컬 터미널 <span class="run-tag-why">— my-hello 폴더 안에서 실행하고, 끝낼 때는 Ctrl+C예요</span></p>
 <pre><code>python -m uvicorn main:app --port 8080</code></pre>
-    <p>브라우저에서 <code>http://localhost:8080</code>을 열면 같은 화면이 나와요.</p>
+    <p>브라우저에서 <code>http://localhost:8080</code>을 열면 같은 화면이 나와요.</p></details>
 
-    <h2 id="vs-vercel"><span class="hl">왜 Vercel이 아니라 Cloud Run일까</span> — 런타임을 누가 정하느냐</h2>
+    <h2 id="vs-vercel"><span class="hl">왜 Vercel이 아니라 Cloud Run일까</span> — 런타임을 누가 정하느냐</h2><details class="deep"><summary>▼ 자세히 보기</summary>
     <p>Vercel은 저장소를 연결하고 버튼을 누르면 주소가 생겨서 편해요. 화면(프론트엔드)만 있는 서비스라면 그렇게 올리면 돼요. 제가 배운 설명으로는 둘의 차이는 서버를 관리하느냐가 아니라 <strong>런타임과 의존성을 누가 정하느냐</strong>예요. 두 방식 모두 요청이 없으면 서버가 0개로 줄고, 요청이 늘면 알아서 늘려 주는 서버리스예요.</p>
     <table>
       <thead><tr><th></th><th>Vercel</th><th>Cloud Run (소스·이미지 배포)</th></tr></thead>
@@ -258,9 +271,9 @@ uvicorn&gt;=0.30</code></pre>
         <tr><td>배포 과정</td><td>빌드·버전·서버 수를 알아서 처리하고 과정을 보여 주지 않아요</td><td>이미지·리비전·인스턴스·트래픽·로그를 하나씩 보고 다뤄요</td></tr>
       </tbody>
     </table>
-    <p>AI 서비스에서 이 차이가 중요한 이유는 <strong>시간과 도구</strong>예요. 여러 문서를 읽고 정리하는 에이전트 작업은 5분을 넘기기 쉽고, 플랫폼이 준비해 두지 않은 프로그램이 필요할 때도 많아요. 실무에서는 <strong>프론트엔드는 Vercel에 두고 백엔드만 컨테이너로 올리는</strong> 구성도 흔해요. Cloud Run이 Vercel보다 낫다는 말이 아니에요. 대신 런타임과 의존성을 내가 정하니, 이미지에 빠진 게 있으면 원인도 내가 찾아야 해요. 이 두 서비스를 어떻게 나눠 쓰는지는 <a href="deploying-and-free-hosting.html">배포, 무료 호스팅, 집 컴퓨터를 서버로</a>와 <a href="my-harness-platform-and-provider.html">어디서 돌리고 무엇에 연결할까</a>에서도 이어 볼 수 있어요.</p>
+    <p>AI 서비스에서 이 차이가 중요한 이유는 <strong>시간과 도구</strong>예요. 여러 문서를 읽고 정리하는 에이전트 작업은 5분을 넘기기 쉽고, 플랫폼이 준비해 두지 않은 프로그램이 필요할 때도 많아요. 실무에서는 <strong>프론트엔드는 Vercel에 두고 백엔드만 컨테이너로 올리는</strong> 구성도 흔해요. Cloud Run이 Vercel보다 낫다는 말이 아니에요. 대신 런타임과 의존성을 내가 정하니, 이미지에 빠진 게 있으면 원인도 내가 찾아야 해요. 이 두 서비스를 어떻게 나눠 쓰는지는 <a href="deploying-and-free-hosting.html">배포, 무료 호스팅, 집 컴퓨터를 서버로</a>와 <a href="my-harness-platform-and-provider.html">어디서 돌리고 무엇에 연결할까</a>에서도 이어 볼 수 있어요.</p></details>
 
-    <h2 id="why-see"><span class="hl">AI가 대신 배포해 주는 시대에</span> — 왜 단계를 눈으로 볼까요</h2>
+    <h2 id="why-see"><span class="hl">AI가 대신 배포해 주는 시대에</span> — 왜 단계를 눈으로 볼까요</h2><details class="deep"><summary>▼ 자세히 보기</summary>
     <p>코딩 에이전트에게 "배포해 줘"라고 말하면 명령을 대신 실행해 주기도 해요. 그래도 단계를 알아야 하는 이유는, 손으로 매번 하기 위해서가 아니라 <strong>맡긴 결과를 검증하고 사고가 났을 때 원인을 찾으려면 지도가 머릿속에 있어야 해서</strong>예요.</p>
     <ul>
       <li><strong>실패했을 때 원인이 어디 있는지 알아요.</strong> 키 없이 배포하면 터미널은 "컨테이너가 포트에서 시작하지 못했다"고 하는데, 진짜 원인은 앱이 시작하자마자 "키가 없다"는 오류를 남기고 스스로 꺼진 것이에요. 메시지는 결과고 원인은 앞선 로그에 있어요. 이걸 모르면 에이전트가 멀쩡한 포트 설정을 고치자고 해도 알아채지 못해요. 자세한 과정은 아래 <a href="#secret">키는 서버로 따라가지 않아요</a>에서 봐요.</li>
@@ -268,7 +281,7 @@ uvicorn&gt;=0.30</code></pre>
       <li><strong>에이전트에게 근거를 건네요.</strong> "안 돼요"만 말하면 에이전트는 짐작으로 고치기 시작하고 멀쩡한 곳을 바꾸기도 해요. 증상, 시각, 서비스와 리비전, 내가 찾은 로그 줄을 건네려면 그 부품이 무엇인지 알아야 해요.</li>
       <li><strong>되돌리는 수단을 알아요.</strong> 리비전과 트래픽이 롤백 수단이에요. 모르면 문제가 생길 때 코드를 고쳐 다시 빌드할 생각만 하게 돼요.</li>
       <li><strong>다른 곳에서도 써요.</strong> 이미지·리비전·인스턴스·트래픽·로그는 AWS나 Azure 같은 다른 클라우드에도 거의 같은 이름으로 있어요. 반대로 다 숨겨 주는 곳은 편하지만 그 과정을 보여 주지 않아요.</li>
-    </ul>
+    </ul></details>
 
     <h2 id="traffic"><span class="hl">리비전 사이로 트래픽 나누기</span> — 새 버전을 일부에게만 먼저 보여 줘요</h2>
     <p>리비전은 한 번 만들면 바뀌지 않아서, 서비스에는 리비전이 여러 개 함께 남아 있어요. 요청을 어느 리비전이 받을지는 <strong>트래픽 설정</strong>이 정해요. 이 설정으로 요청을 비율로 나누는 일을 <strong>트래픽 분할</strong><sup class="fn-ref"><a href="#fn14" id="fnref14">14</a></sup>이라고 해요. 새 버전을 모두에게 한꺼번에 보여 주지 않고 일부에게만 먼저 보여 주면, 문제가 있어도 영향이 작게 끝나요.</p>
@@ -597,6 +610,7 @@ uvicorn&gt;=0.30</code></pre>
   <footer class="site-footer">
     &copy; 2026 Tigermorning
   </footer>
+  <script src="two-layer.js"></script>
   <script src="fit-title.js"></script>
   <script src="flow-motion.js"></script>
   <script src="sidebar-loader.js"></script>
