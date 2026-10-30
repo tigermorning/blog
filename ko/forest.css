@@ -19,4 +19,29 @@
 .forest-panel{border:3px dashed var(--border);border-radius:14px;padding:.6rem 1rem;min-height:3rem;}
 .forest-panel p{margin:.25rem 0;}
 .forest-panel ol{margin:.3rem 0 .2rem 1.2rem;padding:0;}
-@media (prefers-reduced-motion:reduce){.forest-svg .dot{transition:none;}}
+/* 공부 사다리: 칸을 화살표로 잇는다 */
+.ladder-chips{margin-bottom:1rem;}
+.ladder-head{font-family:var(--font-heading);font-size:1.25rem;margin:.2rem 0 .6rem;}
+.ladder-steps{list-style:none;margin:0;padding:0;display:flex;align-items:stretch;gap:0;}
+.ladder-step{flex:1 1 0;min-width:0;animation:lstep .45s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--k) * 160ms);}
+.ladder-step a{display:flex;flex-direction:column;gap:.2rem;height:100%;box-sizing:border-box;padding:.7rem .75rem;border:2px solid var(--sc);border-top-width:7px;border-radius:12px;background:color-mix(in srgb,var(--sc) 9%,var(--bg));color:var(--ink);text-decoration:none;transition:transform .15s,background-color .15s;}
+.ladder-step a:hover{transform:translateY(-3px);background:color-mix(in srgb,var(--sc) 18%,var(--bg));}
+.ls-n{display:inline-flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:50%;background:var(--sc);color:#fff;font-weight:700;font-size:.95rem;}
+.ls-t{font-family:var(--font-subhead);font-size:1.05rem;line-height:1.3;word-break:keep-all;}
+.ls-tag{font-size:.85rem;color:var(--sc);font-weight:700;}
+.ls-post{font-size:.82rem;line-height:1.45;color:var(--muted);word-break:keep-all;}
+.ls-st{margin-top:auto;align-self:flex-start;font-size:.72rem;border:1.5px solid var(--sc);color:var(--sc);border-radius:999px;padding:0 .45rem;}
+.ladder-cond{flex:0 0 3.6rem;display:flex;align-items:center;justify-content:center;position:relative;animation:lstep .45s both;animation-delay:calc(var(--k,0) * 160ms);}
+.ladder-cond::before{content:'';position:absolute;left:.3rem;right:.6rem;top:50%;border-top:2.5px solid var(--muted);}
+.ladder-cond::after{content:'';position:absolute;right:.3rem;top:50%;transform:translateY(-50%);border:6px solid transparent;border-left:9px solid var(--muted);border-right:0;}
+.ladder-cond span{position:relative;top:-1.1rem;font-size:.7rem;line-height:1.2;color:var(--muted);text-align:center;word-break:keep-all;}
+.ladder-note{margin:.9rem 0 0;font-size:.9rem;color:var(--muted);}
+@keyframes lstep{from{opacity:0;transform:translateX(-10px);}to{opacity:1;transform:none;}}
+@media (max-width:700px){
+  .ladder-steps{flex-direction:column;}
+  .ladder-cond{flex:0 0 2.6rem;}
+  .ladder-cond::before{left:50%;right:auto;top:.2rem;bottom:.7rem;border-top:0;border-left:2.5px solid var(--muted);}
+  .ladder-cond::after{left:50%;right:auto;top:auto;bottom:.2rem;transform:translateX(-50%);border:6px solid transparent;border-top:9px solid var(--muted);border-bottom:0;}
+  .ladder-cond span{top:0;left:2.2rem;text-align:left;}
+}
+@media (prefers-reduced-motion:reduce){.forest-svg .dot{transition:none;}.ladder-step,.ladder-cond{animation:none;}}

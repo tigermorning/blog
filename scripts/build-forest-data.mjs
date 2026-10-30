@@ -15,6 +15,8 @@ while ((m = groupRe.exec(posts))) marks.push({ id: m[1], name: m[2].trim(), at: 
 const groups = [];
 const list = [];
 marks.forEach((g, gi) => {
+  // 지도는 1~9단계 글만 그린다(책장 묶음은 단계 순서와 이어지지 않아서 뺀다)
+  if (!/^\d단계 · /.test(g.name)) return;
   const body = posts.slice(g.end, gi + 1 < marks.length ? marks[gi + 1].at : posts.length);
   // 글마다 바로 앞에 나온 소분류에 붙인다(소분류가 없으면 그룹 자체)
   const heads = [...body.matchAll(/<summary class="post-subcategory-title" id="([^"]+)">([\s\S]*?)<\/summary>/g)]
@@ -45,11 +47,15 @@ for (const sec of secs) {
   const title = strip(h[1]);
   const lm = title.match(/^사다리\s*(\S+)\s*—\s*(.*)$/);
   if (!lm) continue;
-  const seen = [];
-  for (const x of sec.matchAll(/href="([a-z0-9-]+)\.html/g)) {
-    if (!seen.includes(x[1]) && list.some((p) => p.f === x[1])) seen.push(x[1]);
-  }
-  ladders.push({ mark: lm[1], name: lm[2], posts: seen });
+  // 칸: <a href="글.html" class="tm-node"> 안의 tm-title(하는 일)·tm-tag(용어), 칸 사이: tm-arrowcap(넘어가는 조건)
+  const steps = [...sec.matchAll(/<a href="([a-z0-9-]+)\.html" class="tm-node">[\s\S]*?class="tm-title"[^>]*>([^<]*)<\/text>\s*<text class="tm-tag"[^>]*>([^<]*)<\/text>/g)]
+    .map((x) => {
+      const p = list.find((q) => q.f === x[1]);
+      return { f: x[1], t: p ? p.t : x[1], stage: p ? groups[p.g].stage : 0, title: strip(x[2]).replace(/^[①-⑳]\s*/, ''), tag: strip(x[3]) };
+    });
+  const conds = [...sec.matchAll(/class="tm-arrowcap"[^>]*>([^<]*)</g)].map((x) => strip(x[1]));
+  const cap = sec.match(/<figcaption>([\s\S]*?)<\/figcaption>/);
+  ladders.push({ mark: lm[1], name: lm[2], steps, conds, note: cap ? strip(cap[1]) : '', posts: steps.map((x) => x.f) });
 }
 
 // 3) 주제 영역(큰 그림 데이터의 8영역)
