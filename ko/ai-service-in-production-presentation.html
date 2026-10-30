@@ -30,7 +30,7 @@
 
     <div style="border:2px solid var(--accent);border-radius:14px;padding:.7rem 1rem;margin:1rem 0;background:color-mix(in srgb,var(--accent) 6%,transparent);">
       <p style="margin:0 0 .3rem;font-weight:700;color:var(--accent);">한 줄 요약</p>
-      <p style="margin:.2rem 0;">시작은 명령 한 줄로 공개 주소를 받는 것이었어요(약 2분). 끝날 때는 변경 하나가 <strong>테스트 → 합치기 → 이미지 한 번 만들기 → 시험 서버 → 사람 승인 → 요청 옮기기</strong>를 거치는 배포 길을 만들었어요.</p>
+      <p style="margin:.2rem 0;">시작은 명령 한 줄로 공개 주소를 받는 것이었어요(약 2분). 끝날 때는 변경 하나가 <strong>테스트 → staging에 합치기 → 이미지 한 번 만들기 → 시험 서버 → main에 합치고 승인 → 요청 옮기기</strong>를 거치는 배포 길을 만들었어요.</p>
       <p style="margin:.2rem 0;">새 버전으로 바뀌는 동안 실패한 요청은 <strong>389건 중 71건 → 283건 중 0건</strong>이 됐어요(같은 예제 앱에서 준비 검사만 바꿔서).</p>
       <p style="margin:.2rem 0;"><strong>결론</strong> — «배포 성공»은 새 버전이 떴다는 뜻이지, 사용자가 제대로 된 답을 받는다는 뜻이 아니에요. 그래서 세 질문(어떤 버전이 나갔나 · 사용자에게 오류가 보였나 · 이전 버전으로 돌릴 수 있나)에 숫자로 답할 수 있게 만드는 것이 이 모듈의 일이에요.</p>
     </div>
@@ -38,7 +38,7 @@
 
     <h2 id="flow"><span class="hl">한 장 그림</span> — 전체 지도</h2>
     <figure>
-    <svg viewBox="0 0 760 306" role="img" aria-label="전체 지도: 설계에서 출발한 변경이 테스트, 합치기, 이미지 만들기, 시험 서버, 사람 승인, 요청 옮기기를 차례로 지나 실제 서비스(Cloud Run)에 도착한다. 아래 띠는 각 칸을 배운 노드다. 맨 아래에는 어떤 버전이 나갔나, 사용자에게 오류가 보였나, 이전 버전으로 돌릴 수 있나 세 질문이 있다" style="width:100%;height:auto;">
+    <svg viewBox="0 0 760 296" role="img" aria-label="전체 지도: 설계에서 출발한 변경이 테스트, 합치기, 이미지 만들기, 시험 서버, main에 합치고 승인, 요청 옮기기를 차례로 지나 실제 서비스(Cloud Run)에 도착한다. 칸 아래에는 누가 하는지가 있다: 테스트는 CI 자동, staging에 합치기는 사람, 이미지와 시험 서버는 CD 자동, main에 합치고 승인은 사람, 요청 옮기기는 CD 자동. 맨 아래에는 어떤 버전이 나갔나, 사용자에게 오류가 보였나, 이전 버전으로 돌릴 수 있나 세 질문이 있다" style="width:100%;height:auto;">
       <style>
         .hl{fill:var(--c);fill-opacity:0;stroke:var(--border);stroke-width:2;animation-duration:21s;animation-iteration-count:infinite;animation-timing-function:linear;}
         .pk{animation:k_pk 21s infinite ease-in-out;}
@@ -95,7 +95,7 @@
       <text x="415" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">시험 서버</text>
       <circle class="hl st5" cx="500" cy="90" r="26" style="--c:var(--folder-1)"/>
       <circle cx="500" cy="84" r="5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M490,102C490,92 510,92 510,102" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /><path d="M505,93L509,97L516,87" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
-      <text x="500" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">사람 승인</text>
+      <text x="500" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">합치고 승인</text>
       <circle class="hl st6" cx="585" cy="90" r="26" style="--c:var(--folder-4)"/>
       <path d="M570,81H580V99H570Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-dasharray="3 3" opacity=".6"/><path d="M590,81H600V99H590Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /><path d="M582,90H588M585,87L588,90L585,93" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
       <text x="585" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">요청 옮기기</text>
@@ -103,31 +103,26 @@
       <path d="M688,98H710A7,7 0 0 0 710,84A10,10 0 0 0 691,87A6,6 0 0 0 688,98Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
       <text x="700" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">실제 서비스</text>
       <text x="700" y="174" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">(Cloud Run)</text>
-      <rect x="119" y="170" width="167" height="6" rx="3" fill="var(--folder-1)"/>
-      <text x="202.5" y="192" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">CI/CD</text>
-      <text x="202.5" y="205" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">노드 66·67</text>
-      <rect x="291" y="170" width="78" height="6" rx="3" fill="var(--folder-2)"/>
-      <text x="330.0" y="192" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">Docker</text>
-      <text x="330.0" y="205" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">노드 68·69</text>
-      <rect x="374" y="170" width="41.0" height="6" rx="3" fill="var(--folder-1)"/><rect x="415.0" y="170" width="41.0" height="6" rx="3" fill="var(--folder-2)"/>
-      <text x="415.0" y="192" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">CI/CD + Docker</text>
-      <text x="415.0" y="205" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">노드 67·69</text>
-      <rect x="461" y="170" width="78" height="6" rx="3" fill="var(--folder-1)"/>
-      <text x="500.0" y="192" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">CI/CD</text>
-      <text x="500.0" y="205" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">노드 67</text>
-      <rect x="544" y="170" width="82" height="6" rx="3" fill="var(--folder-4)"/>
-      <text x="585.0" y="192" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">배포 전략</text>
-      <text x="585.0" y="205" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">노드 70·71</text>
+      <rect x="122" y="184" width="76" height="4" rx="2" fill="var(--folder-1)"/>
+      <text x="160.0" y="178" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--folder-1)">CI · 자동</text>
+      <rect x="207" y="184" width="76" height="4" rx="2" fill="var(--accent)"/>
+      <text x="245.0" y="178" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--accent)">사람 · staging에</text>
+      <rect x="292" y="184" width="161" height="4" rx="2" fill="var(--folder-1)"/>
+      <text x="372.5" y="178" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--folder-1)">CD · 자동</text>
+      <rect x="462" y="184" width="76" height="4" rx="2" fill="var(--accent)"/>
+      <text x="500.0" y="178" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--accent)">사람 · main에</text>
+      <rect x="547" y="184" width="76" height="4" rx="2" fill="var(--folder-1)"/>
+      <text x="585.0" y="178" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--folder-1)">CD · 자동</text>
       <g transform="translate(60,128)"><g class="pk"><rect x="-10" y="-16" width="20" height="18" rx="3" fill="var(--accent)"/><path d="M-10,-9H10M0,-16V-9" stroke="#fff" stroke-width="2"/></g></g>
-      <rect class="hl qs1" x="20" y="226" width="230" height="64" rx="12" style="--c:var(--accent)"/>
-      <path d="M46,250H61L70,258L61,266H46Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /><circle cx="52" cy="258" r="2" fill="var(--ink)"/>
-      <text x="82" y="263" text-anchor="start" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">어떤 버전이 나갔나</text>
-      <rect class="hl qs2" x="265" y="226" width="230" height="64" rx="12" style="--c:var(--accent)"/>
-      <circle cx="303" cy="258" r="12" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="299" cy="255" r="1.5" fill="var(--ink)"/><circle cx="307" cy="255" r="1.5" fill="var(--ink)"/><path d="M297,261Q303,267 309,261" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
-      <text x="327" y="263" text-anchor="start" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">사용자에게 오류가 보였나</text>
-      <rect class="hl qs3" x="510" y="226" width="230" height="64" rx="12" style="--c:var(--accent)"/>
-      <path d="M558,266C560,254 546,252 540,254" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /><path d="M545,248L539,254L546,258" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
-      <text x="572" y="263" text-anchor="start" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">이전 버전으로 돌릴 수 있나</text>
+      <rect class="hl qs1" x="20" y="218" width="230" height="64" rx="12" style="--c:var(--accent)"/>
+      <path d="M46,242H61L70,250L61,258H46Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /><circle cx="52" cy="250" r="2" fill="var(--ink)"/>
+      <text x="82" y="255" text-anchor="start" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">어떤 버전이 나갔나</text>
+      <rect class="hl qs2" x="265" y="218" width="230" height="64" rx="12" style="--c:var(--accent)"/>
+      <circle cx="303" cy="250" r="12" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="299" cy="247" r="1.5" fill="var(--ink)"/><circle cx="307" cy="247" r="1.5" fill="var(--ink)"/><path d="M297,253Q303,259 309,253" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <text x="327" y="255" text-anchor="start" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">사용자에게 오류가 보였나</text>
+      <rect class="hl qs3" x="510" y="218" width="230" height="64" rx="12" style="--c:var(--accent)"/>
+      <path d="M558,258C560,246 546,244 540,246" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /><path d="M545,240L539,246L546,250" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <text x="572" y="255" text-anchor="start" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">이전 버전으로 돌릴 수 있나</text>
     </svg>
     </figure>
 
@@ -188,7 +183,7 @@
       <p style="margin:.2rem 0;color:var(--muted);">직접 해 보니 — 서버에 필요한 프로그램이 없어 같은 사진에 500 오류가 났는데, Dockerfile로 환경을 정하자 200으로 바뀌었어요. 시험 서버와 실제 서비스에 나간 이미지의 고유 번호(다이제스트)가 64자리까지 같아서 같은 이미지임을 확인했어요. <a href="dockerfile-fixing-runtime-environment.html">자세히</a></p>
     </div>
     <div style="border-left:6px solid var(--folder-1);padding:.3rem 0 .3rem 1rem;margin:1rem 0;">
-      <p style="margin:.2rem 0;"><strong>4·5칸 · 시험 서버와 사람 승인 (staging)</strong> <span style="color:var(--muted);font-size:.9rem;">노드 67·69</span></p>
+      <p style="margin:.2rem 0;"><strong>4·5칸 · 시험 서버, 합치고 승인 (staging → main)</strong> <span style="color:var(--muted);font-size:.9rem;">노드 67·69</span></p>
       <p style="margin:.2rem 0;">실제 서비스와 같은 방식으로 도는 시험용 서비스에 먼저 올려서 확인해요. 실제 서비스(production)에는 사람이 승인해야 나가요.</p>
       <p style="margin:.2rem 0;color:var(--muted);">직접 해 보니 — staging을 main으로 올리자 테스트는 통과했지만, 실제 서비스 배포는 «승인 대기»에서 멈춰 사람이 누르기 전에는 바뀌지 않았어요. <a href="ci-tests-and-staging.html">자세히</a></p>
     </div>
