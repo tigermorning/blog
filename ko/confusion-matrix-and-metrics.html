@@ -27,11 +27,6 @@
     <p class="post-date">2026. 9. 16.</p>
     <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
 
-    <a class="post-nav" href="softmax-and-mnist-classification.html">
-      <span class="post-nav-label">← 이전 편</span>
-      <span class="post-nav-title">softmax로 분류하기 — MNIST 실습</span>
-    </a>
-
     <p class="one-liner">혼동 행렬은 <strong>예측과 실제 정답을 짝지어 네 칸으로 나눠 센 표</strong>다 — 정확도·정밀도·재현율은 이 칸들로 계산한다.</p>
 
     <div class="why-read" id="why-read">
@@ -74,6 +69,13 @@
         </dd>
       </dl>
     </div>
+
+    <a class="post-nav" href="softmax-and-mnist-classification.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">softmax로 분류하기 — MNIST 실습</span>
+    </a>
+
+    <hr>
 
     <h2><span class="hl">"몇 개 맞혔어?"로는 안 되는 이유</span></h2>
     <p>분류하는 모델을 만들면 제일 먼저 묻게 되는 게 "몇 개 맞혔나"예요. 100개 중 85개를 맞혔으면 85%. 이걸 <strong>정확도</strong>라고 부릅니다.</p>
@@ -188,7 +190,7 @@
       </tbody>
     </table>
     <p>실제로 쓸 때도 같아요. <strong>암 검사</strong>는 놓치면 큰일이라 재현율을 먼저 보고, <strong>스팸 차단</strong>은 멀쩡한 메일을 버리는 게 치명적이라 정밀도를 먼저 봅니다. 같은 모델이라도 어디에 쓰느냐에 따라 봐야 할 지표가 달라져요.</p>
-    <p>둘을 한 숫자로 합쳐 보고 싶으면 <strong>F1</strong>을 씁니다. 두 값의 조화평균이라 <strong>한쪽만 높은 상태를 좋은 점수로 쳐 주지 않아요.</strong> 정밀도 100%에 재현율 10%면 F1은 약 0.18입니다. 계산 예시와 카테고리가 여럿일 때 합치는 방법은 <a href="output-format-and-metrics.html#metrics">답의 모양과 채점법</a>에 정리해 뒀어요.</p>
+    <p>둘을 한 숫자로 합쳐 보고 싶으면 <strong>F1</strong>을 씁니다. 두 값의 조화평균<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>이라 <strong>한쪽만 높은 상태를 좋은 점수로 쳐 주지 않아요.</strong> 정밀도 100%에 재현율 10%면 F1은 약 0.18입니다. 계산 예시와 카테고리가 여럿일 때 합치는 방법은 <a href="output-format-and-metrics.html#metrics">답의 모양과 채점법</a>에 정리해 뒀어요.</p>
 
     <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 성적표를 받았을 때 확인할 것</h2>
     <p>모델 성능을 보고받거나 남의 숫자와 비교할 때 되짚을 값들이에요.</p>
@@ -242,6 +244,7 @@
     <section class="footnotes">
       <ol>
         <li id="fn1">혼동 행렬(confusion matrix) — 실제 정답과 모델의 판단을 두 축으로 놓아, 결과를 빠짐없이 네 칸에 나눠 담은 표예요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">조화평균 — 두 값의 역수를 평균 낸 뒤 다시 뒤집은 값으로, 둘 중 작은 쪽에 끌려가는 평균이에요. <a href="#fnref2">↩</a></li>
       </ol>
     </section>
 
@@ -250,6 +253,38 @@
       <span class="post-nav-title">남이 배운 것을 물려받다 — 파인튜닝과 전이학습</span>
     </a>
 
+    <hr>
+
+    <h3 id="series-list">"머신러닝 기초" 시리즈</h3>
+    <a class="post-nav" href="reading-python-code-basics.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">파이썬 코드 눈으로 읽기 — 함수·변수·반복·오류·async</span>
+    </a>
+    <a class="post-nav" href="how-ai-learns-from-data.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">AI는 어떻게 '배울까' — 규칙에서 데이터로</span>
+    </a>
+    <a class="post-nav" href="turning-data-into-numbers.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">데이터를 숫자로 바꾸기 — 벡터와 텐서</span>
+    </a>
+    <a class="post-nav" href="smallest-learning-in-code.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">가장 작은 학습을 코드로 보기 — 카페 매출 예측 실습</span>
+    </a>
+    <a class="post-nav" href="softmax-and-mnist-classification.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">softmax로 분류하기 — MNIST 실습</span>
+    </a>
+    <p class="post-date">(6) 맞혔다는 말로는 부족하다 — 혼동 행렬과 정확도·정밀도·재현율 (이 글)</p>
+    <a class="post-nav" href="fine-tuning-and-transfer-learning.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">남이 배운 것을 물려받다 — 파인튜닝과 전이학습</span>
+    </a>
+    <a class="post-nav" href="why-gpu-and-colab-cli.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">왜 내 노트북으론 벅찰까 — GPU와 Colab CLI</span>
+    </a>
   </main>
   </div>
 

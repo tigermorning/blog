@@ -45,22 +45,23 @@
         <dt>읽고 나면 할 수 있는 것</dt>
         <dd>
           <ul>
-            <li>실제로 필요한 메모리를 세 항으로 계산합니다 — 가중치(파라미터 10억 개당 약 0.57GB) + KV 캐시 + 런타임 오버헤드(약 0.75GB).</li>
-            <li>컨텍스트 길이가 메모리를 얼마나 먹는지 표로 봅니다. 8B급에서 4K는 0.5GB, 32K는 4GB, 128K는 16GB — 가중치 4.6GB와 합치면 각각 5.1GB·8.6GB·20.6GB예요.</li>
-            <li>MoE 모델의 비대칭을 설명합니다. 총 21B라 메모리는 21B만큼 쓰는데, 토큰당 활성 파라미터가 3.6B라 속도는 작은 모델의 것이에요.</li>
+            <li>실제로 필요한 메모리를 세 항으로 계산할 수 있어요 — 가중치(파라미터 10억 개당 약 0.57GB) + KV 캐시 + 런타임 오버헤드(약 0.75GB).</li>
+            <li>컨텍스트 길이가 메모리를 얼마나 먹는지 표로 볼 수 있어요. 8B급에서 4K는 0.5GB, 32K는 4GB, 128K는 16GB — 가중치 4.6GB와 합치면 각각 5.1GB·8.6GB·20.6GB예요.</li>
+            <li>MoE 모델의 비대칭을 설명할 수 있어요. 총 21B라 메모리는 21B만큼 쓰는데, 토큰당 활성 파라미터가 3.6B라 속도는 작은 모델의 것이에요.</li>
           </ul>
         </dd>
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>가중치 파일 크기만 보고 계산하면 반드시 틀립니다. 긴 문서 몇 편이 들어가게 컨텍스트 길이를 늘리면 캐시가 몇 배로 불어나요. <a class="suspect-jump" href="#suspect-context-oom">언제 의심하나 ↓</a></li>
+            <li>가중치 파일 크기만 보고 계산하면 반드시 틀려요. 긴 문서 몇 편이 들어가게 컨텍스트 길이를 늘리면 캐시가 몇 배로 불어나요. <a class="suspect-jump" href="#suspect-context-oom">언제 의심하나 ↓</a></li>
             <li>칸을 넘치면 프로그램이 죽는 대신 일부가 CPU로 밀려나, 초당 수십~백 토큰이던 속도가 한 자릿수로 주저앉아요. <a class="suspect-jump" href="#suspect-context-offload">언제 의심하나 ↓</a></li>
-            <li>같은 7B라도 구조를 안 보면 캐시가 네 배로 부풀 수 있습니다. 머리마다 Key·Value를 따로 드는 구형 방식이면 128K에서 64GB까지 가요. <a class="suspect-jump" href="#suspect-mha-cache">언제 의심하나 ↓</a></li>
+            <li>같은 7B라도 구조를 안 보면 캐시가 네 배로 부풀 수 있어요. 머리마다 Key·Value를 따로 드는 구형 방식이면 128K에서 64GB까지 가요. <a class="suspect-jump" href="#suspect-mha-cache">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
         <dd>
           <ul>
+            <li><strong>긴 문서를 넣었더니 갑자기 느려지거나 프로그램이 죽을 때.</strong> 컨텍스트 길이가 캐시를 몇 GB씩 먹고 있을 수 있어요. 길이를 정하기 전에 이 글의 식으로 먼저 계산해요.</li>
             <li>모델 카드에서 KV 헤드 수를 확인해 캐시가 얼마나 불어날지 먼저 보기</li>
             <li>좁은 VRAM에서는 컨텍스트 길이를 줄이거나 캐시를 양자화해 절반·4분의 1로 눌러보기</li>
             <li>MoE 모델을 고를 때 메모리는 전체 파라미터, 속도는 활성 파라미터 기준으로 따로 계산하기</li>
@@ -97,7 +98,15 @@
       </tbody>
     </table>
     <p>4.6GB짜리 모델 파일을 받아놓고 8GB 카드면 되겠다고 계산했다가, 긴 문서 몇 편이 들어가게 컨텍스트 길이를 늘려 잡는 순간 자리가 모자라 일부가 CPU 메모리로 밀려나거나 아예 메모리 부족으로 종료되는 일(OOM, Out Of Memory)이 생겨요. Ollama·LM Studio·llama.cpp 같은 도구는 설정한 길이만큼의 캐시 자리를 모델을 불러올 때 미리 잡아 두기 때문이에요. 가중치 파일 크기만 보고 계산하면 반드시 틀려요.</p>
-    <p>여기엔 구조에 따른 함정이 하나 더 있어요. 어텐션은 원래 여러 개의 머리로 나뉘어 각자 다른 관점에서 문장을 훑는데, 머리마다 Key와 Value를 따로 들고 있으면 캐시가 머리 수만큼 불어나요. <strong>GQA</strong>는 질문을 던지는 머리는 그대로 여럿 두되, Key와 Value는 몇 개 그룹으로 묶어 함께 쓰게 만든 구조라서 그만큼 캐시가 줄어요. 머리마다 Key와 Value를 하나씩 따로 들고 있던 구형 방식을 <strong>MHA</strong>라고 하는데, 이런 모델은 같은 7B라도 캐시가 네 배로 부풀어 128K에서 64GB까지 가요. 모델 카드에서 KV 헤드 수를 확인하는 습관이 여기서 값어치를 해요. 완화 수단도 있는데, 가중치를 양자화했듯 캐시도 양자화할 수 있어요 — 8비트로 내리면 절반, 4비트로 내리면 4분의 1로 줄어요.</p>
+    <p>여기엔 구조에 따른 함정이 하나 더 있어요. 어텐션은 원래 여러 개의 머리로 나뉘어 각자 다른 관점에서 문장을 훑는데, 머리마다 Key와 Value를 어떻게 두느냐가 캐시 크기를 갈라요.</p>
+    <table>
+      <thead><tr><th>구조</th><th>Key·Value를 두는 법</th><th>캐시 크기</th></tr></thead>
+      <tbody>
+        <tr><td><strong>MHA</strong> (구형)</td><td>머리마다 Key와 Value를 하나씩 따로 들고 있어요</td><td>캐시가 머리 수만큼 불어나요. 같은 7B라도 네 배로 부풀어 128K에서 64GB까지 가요</td></tr>
+        <tr><td><strong>GQA</strong></td><td>질문을 던지는 머리는 그대로 여럿 두되, Key와 Value는 몇 개 그룹으로 묶어 함께 써요</td><td>그만큼 캐시가 줄어요</td></tr>
+      </tbody>
+    </table>
+    <p>모델 카드에서 KV 헤드 수를 확인하는 습관이 여기서 값어치를 해요. 완화 수단도 있는데, 가중치를 양자화했듯 캐시도 양자화할 수 있어요 — 8비트로 내리면 절반, 4비트로 내리면 4분의 1로 줄어요.</p>
 
     <h2><span class="hl">내 하드웨어는 어느 칸에 있나</span></h2>
     <p>이 계산을 하드웨어 티어로 정리하면 감각이 잡혔어요. 여기서 말하는 메모리는 그래픽카드가 자기 안에 따로 달고 있는 전용 메모리, VRAM이에요.</p>
@@ -155,7 +164,7 @@
 
     <hr>
 
-    <h3>"LLM과 로컬 실행 - 클라우드 API vs 로컬" 시리즈</h3>
+    <h3 id="series-list">"로컬 LLM과 경량화" 시리즈</h3>
     <a class="post-nav" href="training-vs-inference-memory.html">
       <span class="post-nav-label">(1)</span>
       <span class="post-nav-title">내 노트북에서도 LLM이 돌아갈까 — 학습과 추론은 다른 일이다</span>
@@ -180,6 +189,10 @@
     <a class="post-nav" href="cost-and-control-of-local-llm.html">
       <span class="post-nav-label">(7)</span>
       <span class="post-nav-title">비용과 통제권 — 손익분기 계산과 누가 바꾸는가</span>
+    </a>
+    <a class="post-nav" href="value-vs-location-two-requests.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">금요일 오후에 도착한 두 개의 요청 — 값과 위치는 다른 답이다</span>
     </a>
   </main>
   </div>
