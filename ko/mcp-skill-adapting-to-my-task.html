@@ -212,7 +212,7 @@
     <p><strong>"그대로 쓸 것"이 한 줄이나 들어 있다</strong>는 데 눈길이 갔으면 좋겠어요. 열두 편 동안 배운 것 중 제일 오래 남는 건 특정 코드가 아니라, <strong>읽고 → 대조하고 → 다시 확인하는 그 순서</strong>거든요. <a href="mcp-skill-reuse-verification.html">9편</a>에서 다음 주 기록으로 다시 돌려 봤던 게 바로 그 순서의 마지막 칸이었고요.</p>
 
     <h2><span class="hl">바꿀 위치를 구분하기</span></h2>
-    <p>이제 그림의 세 갈래를 <strong>실제 파일 이름</strong>으로 내려 볼게요. 공통 실습 폴더를 열어 놓고 보면 이렇게 대응됩니다.</p>
+    <p>이제 그림의 세 갈래를 <strong>실제 파일 이름</strong>으로 내려 볼게요. 앞 편들에서 만든 폴더를 열어 놓고 보면 이렇게 대응됩니다.</p>
     <table>
       <thead><tr><th>갈래</th><th>공통 실습에서는 (파일)</th><th>내 과업에서는 무엇을 하나</th></tr></thead>
       <tbody>
@@ -226,7 +226,7 @@
 
     <h2><span class="hl">AI와 함께, 필요한 부분만 만들기</span></h2>
     <p>혼자 다 판단할 필요는 없어요. 다만 <strong>물어보는 순서</strong>가 중요합니다. "만들어 줘"가 아니라 <strong>"그대로 쓸 것과 바꿀 것부터 같이 정리하자"</strong>로 시작하세요.</p>
-    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— 실습 폴더를 연 Claude Code나 OpenCode 대화창에서요</span></p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— 작업 폴더를 연 Claude Code나 OpenCode 대화창에서요</span></p>
     <pre><code>이 예제를 학습 피드백 작업에 맞춰 바꾸고 싶어.
 답안과 평가 기준을 보고, 그대로 쓸 부분과 바꿀 부분부터 같이 정리해 줘.</code></pre>
     <p>여기서 <strong>한 번 걸러야 하는 대답</strong>이 있어요. AI가 <strong>"답안을 읽는 MCP 서버부터 새로 만들겠습니다"</strong>라고 제안하는 경우예요. 그럴듯하죠 — <a href="mcp-skill-building-server.html">3편</a>에서 실제로 그렇게 만들었으니까요.</p>
@@ -258,7 +258,7 @@
     <table>
       <thead><tr><th>내 상황</th><th>고를 연결</th><th>어느 편에서 배웠나</th></tr></thead>
       <tbody>
-        <tr><td>필요한 자료가 <strong>실습 폴더(로컬 파일)</strong>에 있다</td><td><strong>호스트의 파일 읽기 + Skill</strong>로 결과를 만들고 근거를 확인 — <strong>새로 만들 것이 없어요</strong></td><td><a href="mcp-skill-why-skill-needed.html">6편</a>·<a href="mcp-skill-writing-skill-md.html">8편</a></td></tr>
+        <tr><td>필요한 자료가 <strong>내 컴퓨터의 로컬 파일</strong>에 있다</td><td><strong>호스트의 파일 읽기 + Skill</strong>로 결과를 만들고 근거를 확인 — <strong>새로 만들 것이 없어요</strong></td><td><a href="mcp-skill-why-skill-needed.html">6편</a>·<a href="mcp-skill-writing-skill-md.html">8편</a></td></tr>
         <tr><td>자료가 <strong>Google Sheets</strong>에 모여 있다</td><td><strong>인증과 읽기 연결</strong>을 써서 필요한 자료를 가져온 뒤 기준을 적용</td><td><a href="mcp-skill-google-oauth-setup.html">11편</a>·<a href="mcp-skill-google-sheets-mcp.html">12편</a></td></tr>
         <tr><td>같은 <strong>집계·그래프를 반복 실행</strong>해야 한다</td><td><strong>Colab 셀</strong>에 계산을 남기고 입력과 실행 결과를 함께 확인</td><td><a href="mcp-skill-colab-notebook.html">10편</a></td></tr>
         <tr><td>별도 시스템의 기능을 <strong>여러 AI 앱에서</strong> 써야 한다</td><td>필요한 기능을 구현하고 <strong>MCP 서버로 제공</strong>하는 구조를 검토</td><td><a href="mcp-skill-tool-call-anatomy.html">1편</a>·<a href="mcp-skill-protocol-roles.html">2편</a>·<a href="mcp-skill-building-server.html">3편</a>·<a href="mcp-skill-host-connection.html">4편</a></td></tr>
@@ -316,39 +316,42 @@
     <p>네 줄이 각각 <strong>무엇을·어디서·어떤 기준으로·어떻게 확인했는지</strong>를 하나씩 맡고 있어요. <strong>파일 경로를 실제로 적어 둔 것</strong>이 핵심이고요 — "관련 자료 참고"라고만 적힌 안내문은 없는 것과 같습니다.</p>
     <p>단 하나 <strong>절대 같이 넣으면 안 되는 것</strong>이 있어요. <a href="mcp-skill-google-oauth-setup.html">11편</a>·<a href="mcp-skill-google-sheets-mcp.html">12편</a>의 Google 연결을 썼다면, <strong>개인 credential<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup>과 토큰 파일은 공유 결과물에 포함하지 않습니다.</strong> 그건 "내 계정으로 대신 들어갈 수 있는 열쇠"라서, 결과물에 섞여 나가면 <strong>받은 사람이 제 자료를 그대로 읽을 수</strong> 있어요.</p>
 
-    <h2><span class="hl">이번 편에 나온 구체적인 값</span></h2>
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 내 과업으로 옮길 때 빠뜨리지 않았는지 볼 것</h2>
+    <p>아래 표는 세 갈래 나누기·다섯 줄 설계표·결과 어긋남 좁히기·연결 고르기·남기는 자료 절에서 나온 개수를 모았어요. 이 값들은 측정한 성능이 아니라 옮길 때 쓰는 체크 단위예요.</p>
     <table>
-      <thead><tr><th>항목</th><th>값</th><th>조건·출처</th></tr></thead>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
       <tbody>
-        <tr><td>공통 실습을 갈라 보는 갈래</td><td><strong>3가지</strong></td><td>데이터 · 업무 지식 · 실행 기능 — 이 편의 핵심 프레임</td></tr>
-        <tr><td>그중 <strong>반드시 바꾸는</strong> 갈래</td><td><strong>2가지</strong></td><td>데이터와 업무 지식 — 실행 기능만 "안 바꿔도 되나"를 먼저 물음</td></tr>
-        <tr><td>작은 설계표의 줄 수</td><td><strong>5줄</strong></td><td>실제 입력 · 원하는 결과 · 확인할 기준 · 그대로 쓸 것 · 바꿀 것</td></tr>
-        <tr><td>출발점으로 든 과업 예</td><td>3개</td><td>학습 피드백 · 변경 안내문 · 주간 운영 보고 — 이 편은 첫 번째만 끝까지 설계</td></tr>
-        <tr><td>예제 문제의 수</td><td>3개 (8 · 10 · 12)</td><td>평균은 <strong>10</strong> — 답안의 숫자는 맞고 <strong>계산 설명만 없음</strong></td></tr>
-        <tr><td>답안 한 건에서 갈라 봐야 하는 것</td><td><strong>2가지</strong></td><td>정답이 맞는가 / 풀이에서 이해가 드러나는가 — 둘을 섞으면 과잉 추정이 생김</td></tr>
-        <tr><td>결과가 어긋났을 때 좁히는 갈래</td><td><strong>2갈래</strong></td><td>어떤 입력을 읽었나 / 어떤 기준을 읽었나</td></tr>
+        <tr><td>공통 실습을 갈라 보는 갈래</td><td><strong>3가지</strong></td><td>데이터 · 업무 지식 · 실행 기능. 옮길 때 셋 중 어느 것을 바꾸는지부터 따로 정해요</td></tr>
+        <tr><td>그중 <strong>반드시 바꾸는</strong> 갈래</td><td><strong>2가지</strong></td><td>데이터와 업무 지식이에요. 실행 기능만 "안 바꿔도 되나"를 먼저 물어요</td></tr>
+        <tr><td>설계표의 줄 수</td><td><strong>5줄</strong></td><td>실제 입력 · 원하는 결과 · 확인할 기준 · 그대로 쓸 것 · 바꿀 것. 이 다섯 줄을 못 채우면 아직 안 정해진 게 있는 거예요</td></tr>
+        <tr><td>출발점으로 든 과업 예</td><td>3개</td><td>학습 피드백 · 변경 안내문 · 주간 운영 보고. 맨 오른쪽 "이 과업에서만 필요한 판단" 칸이 과업마다 달라요</td></tr>
+        <tr><td>답안 한 건에서 갈라 봐야 하는 것</td><td><strong>2가지</strong></td><td>정답이 맞는가 / 풀이에서 이해가 드러나는가. 둘을 섞으면 없는 이해를 추정하는 피드백이 나와요</td></tr>
+        <tr><td>결과가 어긋났을 때 좁히는 갈래</td><td><strong>2갈래</strong></td><td>어떤 입력을 읽었나 / 어떤 기준을 읽었나. "절대로 틀리지 마세요" 한 줄을 더하기 전에 이 둘부터 확인해요</td></tr>
         <tr><td>자료 위치별 연결 선택지</td><td>4갈래</td><td>로컬 파일 · Google Sheets · Colab · 여러 앱 공용 MCP</td></tr>
-        <tr><td>답안이 로컬 파일일 때 새로 만들 MCP 서버</td><td><strong>0개일 수 있음</strong></td><td>호스트의 파일 읽기로 같은 입력을 가져올 수 있는 경우 — 먼저 확인해 볼 것</td></tr>
+        <tr><td>답안이 로컬 파일일 때 새로 만들 MCP 서버</td><td><strong>0개일 수 있음</strong></td><td>호스트의 파일 읽기로 같은 입력을 가져올 수 있으면 서버는 필요 없어요. 서버를 만들기 전에 먼저 확인해요</td></tr>
         <tr><td>남길 자료 묶음</td><td>3종</td><td>기능 사용 기록 · 재사용할 지식 · 입력·결과·확인 기록</td></tr>
-        <tr><td>README 예시 줄 수</td><td>4줄</td><td>무엇을 · 어디서 · 어떤 기준으로 · 어떻게 확인했는지</td></tr>
-        <tr><td>공유 결과물에 넣지 않는 것</td><td><strong>credential · 토큰</strong></td><td>Google 연결을 쓴 경우 — 개인 계정 접근 권한이 그대로 넘어감</td></tr>
+        <tr><td>README 예시 줄 수</td><td>4줄</td><td>무엇을 · 어디서 · 어떤 기준으로 · 어떻게 확인했는지를 한 줄씩, 파일 경로까지 적어요</td></tr>
+        <tr><td>공유 결과물에 넣지 않는 것</td><td><strong>credential · 토큰</strong></td><td>Google 연결을 썼다면 받은 사람이 내 계정 권한을 그대로 쓸 수 있으니 묶음에서 빼요</td></tr>
       </tbody>
     </table>
-    <p class="post-date">※ 위 값들은 <strong>이 실습의 설계 기준</strong>이지 측정된 성능 수치가 아니에요. 특히 "새로 만들 MCP 서버 0개"는 <strong>답안이 호스트가 읽을 수 있는 로컬 파일에 있을 때</strong>의 이야기이고, 자료가 인증 뒤에 있거나 여러 앱에서 공용으로 써야 한다면 조건이 달라집니다.</p>
+    <p class="post-date">※ 이 값들은 <strong>이 글의 설계 기준</strong>이지 측정된 성능 수치가 아니에요. 특히 "새로 만들 MCP 서버 0개"는 <strong>답안이 호스트가 읽을 수 있는 로컬 파일에 있을 때</strong>의 이야기이고, 자료가 인증 뒤에 있거나 여러 앱에서 공용으로 써야 한다면 조건이 달라집니다.</p>
 
     <h2><span class="hl">직접 해보기</span></h2>
     <p>여기부터는 <strong>읽는 게 아니라 적는 시간</strong>이에요. 이 편의 진짜 연습은 딱 하나 — <strong>자기 과업 하나를 골라 세 줄을 적어 보는 것</strong>입니다.</p>
-    <p>① <strong>과업 하나 고르기.</strong> 매주 또는 매달 <strong>반복해서 만드는 결과물</strong> 중 하나를 고르세요. 조건은 하나예요 — <strong>입력과 결과가 눈에 보일 것.</strong> "생각 정리"처럼 입력이 안 보이는 일은 이번엔 피하세요.</p>
-    <p>② <strong>세 줄 적기.</strong> 종이든 메모장이든 좋으니 이 세 줄만 실제로 적어 보세요.</p>
-    <ul>
-      <li><strong>실제 입력 한 건</strong> — 가상의 예시 말고 <strong>진짜로 존재하는 한 건</strong>의 내용을 그대로 붙여넣으세요.</li>
-      <li><strong>원하는 결과</strong> — "좋은 보고서"처럼 뭉뚱그리지 말고 <strong>어떤 항목이 들어 있어야 하는지</strong>까지요.</li>
-      <li><strong>확인할 기준</strong> — 나온 결과를 보고 <strong>합격·불합격을 가를 문장</strong> 두세 개요. 평균 예제에서 "없는 풀이를 상상하지 않았는가"가 그런 문장이었어요.</li>
-    </ul>
-    <p>③ <strong>세 갈래로 나눠 보기.</strong> 그 과업을 <strong>데이터 / 업무 지식 / 실행 기능</strong>으로 갈라 적어 보세요. 그리고 갈래마다 <strong>"바꾼다 / 그대로 둔다"</strong>를 적어 보세요. <strong>실행 기능 칸에 "그대로 둔다"가 적히는지</strong> 특히 눈여겨보세요 — 대부분의 경우 거기가 그대로예요.</p>
-    <p>④ <strong>한 번 돌려 보고 결과 한 문장 잡아내기.</strong> 기준을 넣고 실제로 돌린 다음, <strong>원자료로 확인되지 않는 문장 하나</strong>를 찾아보세요. 그런 문장이 <strong>하나도 없다면</strong> 기준이 잘 전달된 거고, 있다면 <strong>입력 쪽인지 기준 쪽인지</strong> 두 갈래로 좁혀 보세요.</p>
-    <p>⑤ <strong>두 번째 입력으로 다시.</strong> 성격이 조금 다른 <strong>두 번째 입력 한 건</strong>을 넣어 보세요. 평균 예제에서 <strong>풀이가 있는 답안</strong>을 넣었던 것처럼요. 같은 기준이 <strong>두 입력에서 각각 맞게 작동해야</strong> 비로소 재사용 가능한 기준이에요.</p>
-    <p>⑥ <strong>네 줄 README 쓰기.</strong> 마지막으로 위의 네 줄짜리 안내문을 <strong>제 과업 버전으로</strong> 적어 보세요. 이걸 못 적겠으면 <strong>아직 어딘가가 안 정해진 것</strong>이고, 어느 줄에서 막히는지가 <strong>다음에 뭘 해야 하는지</strong>를 알려 줍니다.</p>
+    <ol>
+      <li><strong>과업 하나 고르기.</strong> 매주 또는 매달 <strong>반복해서 만드는 결과물</strong> 중 하나를 고르세요. 조건은 하나예요 — <strong>입력과 결과가 눈에 보일 것.</strong> "생각 정리"처럼 입력이 안 보이는 일은 이번엔 피하세요.</li>
+      <li><strong>세 줄 적기.</strong> 종이든 메모장이든 좋으니 이 세 줄만 실제로 적어 보세요.
+        <ul>
+          <li><strong>실제 입력 한 건</strong> — 가상의 예시 말고 <strong>진짜로 존재하는 한 건</strong>의 내용을 그대로 붙여넣으세요.</li>
+          <li><strong>원하는 결과</strong> — "좋은 보고서"처럼 뭉뚱그리지 말고 <strong>어떤 항목이 들어 있어야 하는지</strong>까지요.</li>
+          <li><strong>확인할 기준</strong> — 나온 결과를 보고 <strong>합격·불합격을 가를 문장</strong> 두세 개요. 평균 예제에서 "없는 풀이를 상상하지 않았는가"가 그런 문장이었어요.</li>
+        </ul>
+      </li>
+      <li><strong>세 갈래로 나눠 보기.</strong> 그 과업을 <strong>데이터 / 업무 지식 / 실행 기능</strong>으로 갈라 적어 보세요. 그리고 갈래마다 <strong>"바꾼다 / 그대로 둔다"</strong>를 적어 보세요. <strong>실행 기능 칸에 "그대로 둔다"가 적히는지</strong> 특히 눈여겨보세요 — 대부분의 경우 거기가 그대로예요.</li>
+      <li><strong>한 번 돌려 보고 결과 한 문장 잡아내기.</strong> 기준을 넣고 실제로 돌린 다음, <strong>원자료로 확인되지 않는 문장 하나</strong>를 찾아보세요. 그런 문장이 <strong>하나도 없다면</strong> 기준이 잘 전달된 거고, 있다면 <strong>입력 쪽인지 기준 쪽인지</strong> 두 갈래로 좁혀 보세요.</li>
+      <li><strong>두 번째 입력으로 다시.</strong> 성격이 조금 다른 <strong>두 번째 입력 한 건</strong>을 넣어 보세요. 평균 예제에서 <strong>풀이가 있는 답안</strong>을 넣었던 것처럼요. 같은 기준이 <strong>두 입력에서 각각 맞게 작동해야</strong> 비로소 재사용 가능한 기준이에요.</li>
+      <li><strong>네 줄 README 쓰기.</strong> 마지막으로 위의 네 줄짜리 안내문을 <strong>제 과업 버전으로</strong> 적어 보세요. 이걸 못 적겠으면 <strong>아직 어딘가가 안 정해진 것</strong>이고, 어느 줄에서 막히는지가 <strong>다음에 뭘 해야 하는지</strong>를 알려 줍니다.</li>
+    </ol>
     <p>정답은 하나가 아니에요. 제 과업의 자료가 어디 있고 어떤 판단이 필요한지는 <strong>제 조건에서 직접 재 봐야</strong> 알 수 있어요. 이 편이 드리는 건 <strong>재는 자</strong>지 답이 아닙니다.</p>
     <p><strong>다음 편에서는</strong> 여기서 남긴 재료로 한 걸음 더 나갑니다. 오늘 적은 <strong>입력과 결과, 그리고 아직 확인하고 싶은 질문</strong>이 그 작업의 출발점이 돼요 — <strong>여러 입력에서 실패와 개선이 쌓이면 에이전트가 그걸 스스로 지식으로 남길 수 있는가</strong>를 다룬 연구를 읽어 봅니다.</p>
 
@@ -375,7 +378,7 @@
         </tr>
         <tr id="suspect-new-server">
           <td>에이전트가 <strong>"답안을 읽는 MCP 서버부터 새로 만들겠습니다"</strong>라는 계획을 내놓거나, 폴더에 새 서버 파일과 MCP 연결 설정이 생겨 있어요</td>
-          <td>계획보다 <strong>입력이 어디 있는지</strong>예요. 답안이 <code>samples/answer-one.md</code>처럼 실습 폴더 안의 파일인지 봐요</td>
+          <td>계획보다 <strong>입력이 어디 있는지</strong>예요. 답안이 <code>samples/answer-one.md</code>처럼 작업 폴더 안의 파일인지 봐요</td>
           <td>서버를 만들기 전에 "새 서버 없이 이 파일을 직접 읽어서 해 줘"라고 먼저 부탁해 봐요. 같은 결과가 나오면 서버는 필요 없어요. 인증을 거쳐야 하는 곳이거나 여러 AI 앱이 같이 써야 할 때만 서버를 검토해요</td>
         </tr>
         <tr id="suspect-invented-praise">
@@ -386,7 +389,7 @@
       </tbody>
     </table>
     <p>결과가 어색할 때 바로 고쳐 달라고 하면, 옛 규칙이 남은 줄은 그대로 둔 채 부탁 문장만 늘어나기 쉬워요. 그래서 먼저 <strong>어느 파일 어느 줄인지 보여 달라고</strong> 해요.</p>
-    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— 과업 Skill과 입력 파일이 있는 실습 폴더에서</span></p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— 과업 Skill과 입력 파일이 있는 작업 폴더에서</span></p>
     <pre><code>이 폴더에서 학습 피드백 작업에 쓰이는 Skill과 입력 파일을 살펴서, 아래를 파일 이름과 줄 번호로 보여 줘. 아직 아무것도 고치지 마.
 1. 과업용 Skill과 원본 team-weekly-report Skill의 폴더 위치, 그리고 두 Skill의 설명이 서로 헷갈릴 만큼 비슷한지
 2. 과업용 Skill 본문과 참고 파일에 남아 있는 옛 보고서 규칙(완료·진행·위험, 팀 보고 규칙 등)이 적힌 줄
@@ -406,7 +409,7 @@
 
     <hr>
 
-    <h3>"MCP와 Skill로 에이전트에게 업무 맡기기" 시리즈</h3>
+    <h3>"MCP와 Skill로 업무 맡기기" 시리즈</h3>
     <a class="post-nav" href="mcp-skill-tool-call-anatomy.html">
       <span class="post-nav-label">(1)</span>
       <span class="post-nav-title">도구 하나가 호출되기까지 — 정의·파싱·구조화 요청</span>

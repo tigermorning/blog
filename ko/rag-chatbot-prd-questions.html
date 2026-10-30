@@ -74,7 +74,7 @@
       <span class="post-nav-title">근거를 보여주는 챗봇 만들기 — 프로젝트 개관 (1)</span>
     </a>
 
-    <p>어제 지도를 봤으니 오늘은 첫 걸음이다. 그런데 그 첫 걸음이 코드가 아니라는 게 의외였다. 에이전트한테 "챗봇 화면 만들어줘"라고 바로 시키는 게 아니라, 그 전에 <strong>내가 스스로에게 질문지를 채우는 자리</strong>부터였다.</p>
+    <p><a href="rag-chatbot-project-overview.html">앞 글</a>에서 지도를 봤으니 이번엔 첫 걸음이다. 그런데 그 첫 걸음이 코드가 아니라는 게 의외였다. 에이전트한테 "챗봇 화면 만들어줘"라고 바로 시키는 게 아니라, 그 전에 <strong>내가 스스로에게 질문지를 채우는 자리</strong>부터였다.</p>
 
     <h2>1. <span class="hl">왜 코드보다 질문이 먼저인가</span></h2>
     <p>바이브 코딩은 말하면 에이전트가 화면과 파일을 만들어주는 경험이다. 근데 그 요청 자체가 "무엇을 성공으로 볼지" 비워둔 채 길어지면, 결과물은 빨리 생겨도 <strong>검증할 대상이 사라진다</strong>. 화면이 떴다는 사실만으로는 성공 여부를 판정할 수 없다는 뜻이다.</p>
@@ -101,21 +101,21 @@
 
     <h2>3. <span class="hl">목표는 기능 목록이 아니라 사용자의 변화</span></h2>
     <p>"모두콘 챗봇을 만든다"는 작업 목록으로는 쓸 수 있어도 제품 요구로는 부족하다. 사용자가 행사 소개를 읽고 역대 정보를 찾으며, 답의 출처를 열어본다는 <strong>변화</strong>까지 적어야 소개 페이지, 청크, 검색, 생성 UI가 하나의 목표를 향한다.</p>
-    <p>비목표는 목표를 축소하는 사과가 아니라 <strong>이번 구현이 약속하지 않는 것을 선언하는 안전장치</strong>다. 로그인, 전문 DB 검색, 다국어, 모바일 최적화, 서버 수집을 비목표로 적으면 에이전트가 계정 시스템이나 서버 동기화를 필요한 것처럼 구조를 부풀리지 않는다. 정적 브라우저 앱이라는 선택과도 맞물린다 — 공개 문서를 정적 파일로 두고 브라우저에서 검색하며 로컬 Ollama를 부르는 구조에서, 서버 쪽 계정 관리와 비공개 데이터 검색을 섞는 건 목표 확장이 아니라 다른 제품의 시작이다.</p>
+    <p>비목표는 목표를 축소하는 사과가 아니라 <strong>이번 구현이 약속하지 않는 것을 선언하는 안전장치</strong>다. 로그인, 전문 DB 검색, 다국어, 모바일 최적화, 서버 수집을 비목표로 적으면 에이전트가 계정 시스템이나 서버 동기화를 필요한 것처럼 구조를 부풀리지 않는다. 정적 브라우저 앱이라는 선택과도 맞물린다 — 공개 문서를 정적 파일로 두고 브라우저에서 검색하며 로컬 <a href="running-local-llm-with-ollama.html">Ollama</a>(내 컴퓨터에서 모델을 돌려 주는 프로그램)를 부르는 구조에서, 서버 쪽 계정 관리와 비공개 데이터 검색을 섞는 건 목표 확장이 아니라 다른 제품의 시작이다.</p>
 
     <h2>4. <span class="hl">수용 기준</span> — "좋은 챗봇"을 관찰 가능한 문장으로</h2>
     <p>수용 기준은 해석이 갈리는 표현("좋은 챗봇")을 화면에서 확인 가능한 문장으로 바꾸는 장치다. 모두콘 기준에는 이런 게 들어간다.</p>
     <ul>
       <li>소개에 출처를 표시할 것</li>
       <li>"모두콘이 뭐야?"에는 <code>[ID]</code> 근거를 가진 스트리밍 답변을 보일 것</li>
-      <li>"내일 날씨"처럼 도메인 밖 질문에는 <code>refusal=true</code>로 제한할 것</li>
+      <li>"내일 날씨"처럼 도메인 밖 질문에는 <code>refusal=true</code>(근거가 없어 "없다"고 답했다는 판정 표시 — <a href="rag-chatbot-llm-judge.html">7번째 글</a>)로 제한할 것</li>
       <li>모든 답변에 판정 배지를 보일 것</li>
       <li>API 키 없이도 로컬 자기평가를 시도할 것</li>
       <li>판정에 실패해도 기존 UI를 무너뜨리지 않을 것</li>
-      <li>상대시간 질문은 질문 시점의 KST로 해석할 것</li>
+      <li>상대시간 질문("다음 주")은 질문 시점의 KST(한국 표준시)로 해석할 것</li>
       <li>출처 칩에서 원문을 열 수 있을 것</li>
       <li>Ollama가 꺼졌을 때 배너와 재시도를 보일 것</li>
-      <li>CORS 설정 뒤 github.io 환경에서도 동작할 것</li>
+      <li>CORS(다른 주소의 웹페이지가 내 컴퓨터의 Ollama를 부르는 걸 브라우저가 기본으로 막는 규칙) 설정 뒤 github.io 환경에서도 동작할 것</li>
     </ul>
     <p>여기서 로컬 judge는 같은 2B 모델이 답과 판정을 모두 다루므로 독립 평가가 아니다. 교육용의 거친 신호로 읽어야 한다는 단서도 기준에 함께 적어둔다. 기준 하나는 기능 하나를 추가하라는 명령이 아니라, <strong>실패해도 사용자가 아무것도 없는 상태를 겪지 않게 하는 관찰 가능성의 약속</strong>이다.</p>
 
@@ -177,6 +177,42 @@
     <p>같은 태도를 <strong>에이전트 하네스</strong>에 적용한 이야기는 <a href="my-harness-users-and-prd.html">맡길 일부터 적는다 — 내 하네스의 사용자와 미완성 PRD</a>에 있다. 거기서는 빈칸이 남은 PRD를 AI와 대화하며 채우고, 그 결정에 <code>OPEN</code>·<code>CHOSEN</code>·<code>DEFERRED</code> 상태를 붙여 추적한다.</p>
 
     <p class="post-date">한 걸음 더: 만든 AI 기능을 서비스로 내놓기 전에 누가·언제·어디서 쓰는지와 키·데이터·실패를 어디에 둘지 정하는 일은 <a href="ai-service-design-before-code.html">AI 기능을 서비스로 설계한다는 것 — 코딩 에이전트에게 맡기기 전에 정할 것 (1)</a>에서 이어서 다뤄요.</p>
+
+    <h3>"나만의 챗봇 만들기" 시리즈</h3>
+    <a class="post-nav" href="rag-chatbot-project-overview.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">근거를 보여주는 챗봇 만들기 — 프로젝트 개관</span>
+    </a>
+    <p class="post-date">(2) 바이브 코딩의 첫 문장 — PRD를 스스로에게 묻기 (이 글)</p>
+    <a class="post-nav" href="rag-chatbot-chunk-design.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">검색되는 자료와 답할 수 있는 자료는 다르다 — 청크 설계</span>
+    </a>
+    <a class="post-nav" href="rag-chatbot-embedding-vectorstore.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">브라우저 안에서 문장을 좌표로 바꾸기 — 임베딩과 벡터스토어</span>
+    </a>
+    <a class="post-nav" href="rag-chatbot-hybrid-search.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">가까운 청크를 고른다 — 코사인과 BM25의 하이브리드 검색</span>
+    </a>
+    <a class="post-nav" href="rag-chatbot-prompt-streaming.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">프롬프트는 근거의 경계다 — 프롬프트 조립과 로컬 LLM 스트리밍</span>
+    </a>
+    <a class="post-nav" href="rag-chatbot-llm-judge.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">답변 뒤에 심사위원 하나를 더 둔다 — LLM-as-a-Judge</span>
+    </a>
+    <a class="post-nav" href="rag-chatbot-prompt-experiment.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">감이 아니라 기록으로 — 나만의 루브릭으로 실험하기</span>
+    </a>
+    <a class="post-nav" href="rag-chatbot-submission.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">지도를 접고 첫걸음을 — 배포와 제출</span>
+    </a>
+
 
 
     <a class="post-nav" href="rag-chatbot-chunk-design.html">

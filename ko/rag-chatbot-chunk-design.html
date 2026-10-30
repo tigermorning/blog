@@ -79,7 +79,7 @@
     <p>행사 소개처럼 보이는 문장을 그러모아도, 원문 URL과 문단 맥락이 빠져 있으면 사용자가 출처를 눌렀을 때 돌아갈 곳이 없다. 그러면 그 문장은 검색 후보에서 빼고 원문 URL과 섹션부터 다시 확인해야 한다. <strong>검색에 걸리는 문장과 사용자가 근거로 확인할 수 있는 문장은 같지 않다</strong>는 게 오늘의 첫 문장이었다.</p>
 
     <h2>1. <span class="hl">자료를 모은다는 건 무엇을 모으는 일인가</span></h2>
-    <p>RAG에서 자료를 모은다는 말은 웹페이지를 많이 저장한다는 뜻이 아니다. 나중에 답변 문장과 연결할 수 있는 공개 근거를 고르는 일이다. 모두콘 챗봇의 코퍼스는 2025년 본행사, 2018~2024 역대 행사, 모두의연구소 소개라는 <strong>세 범위</strong>의 공개 문서로 만든 37개 청크로 구성된다. 각 청크는 최소 120자의 사실 단위이며, 본문만 떼어두지 않고 원문 URL과 섹션을 함께 보관한다.</p>
+    <p>RAG(질문과 관련된 자료를 찾아 모델에게 넘겨 그 근거로 답하게 하는 방식 — <a href="rag-chatbot-project-overview.html">첫 글</a>)에서 자료를 모은다는 말은 웹페이지를 많이 저장한다는 뜻이 아니다. 나중에 답변 문장과 연결할 수 있는 공개 근거를 고르는 일이다. 모두콘 챗봇의 코퍼스(검색 대상으로 모아 둔 자료 전체)는 2025년 본행사, 2018~2024 역대 행사, 모두의연구소 소개라는 <strong>세 범위</strong>의 공개 문서로 만든 37개 청크로 구성된다. 각 청크는 최소 120자의 사실 단위이며, 본문만 떼어두지 않고 원문 URL과 섹션을 함께 보관한다.</p>
     <p>수집 단계에서 먼저 물어야 할 건 두 가지다. "이 페이지가 질문의 답을 포함하는가"와 "그 답이 어느 시점의 어떤 공개 문서에 근거하는가". 행사명이나 연도만 있는 페이지를 기계적으로 쪼개면 검색은 되지만 날짜·프로그램·소개처럼 서로 다른 사실이 한 청크에 섞여 생성 단계에서 엉뚱한 결론을 유도할 수 있다. 반대로 한 문장마다 자르면 문맥이 사라져 질문과의 관계를 판단하기 어려워진다. 최소 120자 기준은 글자 수 자체가 품질을 보장한다는 뜻이 아니라, <strong>독립적으로 읽을 수 있는 사실 맥락을 확보하면서도 검색 단위가 지나치게 넓어지지 않게 하는 출발점</strong>이다.</p>
 
     <h2>2. <span class="hl">청크는 본문이 아니라 출처를 가진 레코드다</span></h2>
@@ -93,7 +93,7 @@
         <tr><td><code>text</code></td><td>최소 120자의 사실 단위 본문</td><td>모두콘 소개와 행사 사실을 담은 문단</td></tr>
         <tr><td><code>url</code></td><td>본문을 확인할 공개 원문 주소</td><td>모두콘 또는 모두의연구소 공개 페이지 URL</td></tr>
         <tr><td><code>section</code></td><td>원문 안의 맥락 또는 주제</td><td>2025 본행사</td></tr>
-        <tr><td><code>vector</code></td><td>본문을 임베딩한 검색용 값</td><td>768차원 임베딩 배열</td></tr>
+        <tr><td><code>vector</code></td><td>본문을 <a href="rag-chatbot-embedding-vectorstore.html">임베딩</a>(문장을 숫자 목록으로 바꾸는 일)한 검색용 값</td><td>768차원 임베딩 배열</td></tr>
       </tbody>
     </table>
     <p>id는 답변의 근거를 가리키는 안정적 표식, text는 검색과 프롬프트에 들어갈 사실 본문, url은 원문 확인 경로, section은 같은 문서 안에서 이 사실이 어느 맥락에 속하는지 보존한다. vector만 보고 자료를 고르면 안 되는 이유는, 사용자가 실제로 확인할 수 있는 건 숫자 배열이 아니라 원문과 인용된 본문이기 때문이다. 그리고 코퍼스 벡터와 질의 벡터는 같은 모델·같은 공간이어야 한다 — 384차원과 768차원 경로를 섞으면 배열이 있어도 비교 계약이 성립하지 않는다.</p>
@@ -105,8 +105,8 @@
     <h2>4. <span class="hl">경계를 자를 때 확인할 세 가지</span></h2>
     <ol>
       <li><strong>한 청크에는 하나의 중심 사실을 둔다.</strong> 특정 연도 소개와 일반 소개가 원문에서 인접해 있어도, 질문자가 물을 사실과 인용할 URL·섹션이 달라진다면 별도 청크 후보로 본다.</li>
-      <li><strong>단독으로 읽어도 주어와 맥락이 충분한지 확인한다.</strong> "그 행사는"처럼 앞 문단을 알아야 이해되는 문장을 떼어내면, 임베딩과 BM25는 일부 단어를 잡더라도 생성 모델은 대상을 추측하게 된다.</li>
-      <li><strong>원문을 요약·정리했을 때는 URL·섹션을 더 엄격히 확인한다.</strong> 청크는 답변 자체가 아니므로, 원문이 말하지 않은 연결이나 평가를 편리하게 덧붙이면 출처가 있어도 환각을 감추는 재료가 된다.</li>
+      <li><strong>단독으로 읽어도 주어와 맥락이 충분한지 확인한다.</strong> "그 행사는"처럼 앞 문단을 알아야 이해되는 문장을 떼어내면, 임베딩과 <a href="rag-chatbot-hybrid-search.html">BM25</a>(낱말이 같은지로 찾는 검색)는 일부 단어를 잡더라도 생성 모델은 대상을 추측하게 된다.</li>
+      <li><strong>원문을 요약·정리했을 때는 URL·섹션을 더 엄격히 확인한다.</strong> 청크는 답변 자체가 아니므로, 원문이 말하지 않은 연결이나 평가를 편리하게 덧붙이면 출처가 있어도 환각(근거 없이 지어낸 틀린 답)을 감추는 재료가 된다.</li>
     </ol>
     <p>최소 120자 기준은 이 세 확인을 통과시키기 위한 하한선이지, 채우기 위해 주변 사실을 덧붙이라는 지시가 아니다. 필요한 맥락을 담은 뒤에도 서로 다른 주제가 한 청크에 남는다면 분리하는 편이 낫다. URL이 빠진 청크는 점수가 높아도 사용자가 검증할 수 없고, section이 빠진 청크는 나중에 원문을 고칠 때 뭘 다시 임베딩해야 하는지 알기 어렵다.</p>
 
@@ -163,6 +163,42 @@
       </tbody>
     </table>
     <p>증상이 아직 없어도, <strong>AI에게 "자료 좀 모아 줘"라고 시킨 직후</strong>라면 받은 행을 무작위로 세 개만 골라 <code>url</code>을 열어 본다. 셋 다 맞으면 나머지도 같은 방식으로 나왔을 가능성이 높고, 하나라도 어긋나면 그 묶음 전체를 다시 봐야 한다.</p>
+
+    <h3>"나만의 챗봇 만들기" 시리즈</h3>
+    <a class="post-nav" href="rag-chatbot-project-overview.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">근거를 보여주는 챗봇 만들기 — 프로젝트 개관</span>
+    </a>
+    <a class="post-nav" href="rag-chatbot-prd-questions.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">바이브 코딩의 첫 문장 — PRD를 스스로에게 묻기</span>
+    </a>
+    <p class="post-date">(3) 검색되는 자료와 답할 수 있는 자료는 다르다 — 청크 설계 (이 글)</p>
+    <a class="post-nav" href="rag-chatbot-embedding-vectorstore.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">브라우저 안에서 문장을 좌표로 바꾸기 — 임베딩과 벡터스토어</span>
+    </a>
+    <a class="post-nav" href="rag-chatbot-hybrid-search.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">가까운 청크를 고른다 — 코사인과 BM25의 하이브리드 검색</span>
+    </a>
+    <a class="post-nav" href="rag-chatbot-prompt-streaming.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">프롬프트는 근거의 경계다 — 프롬프트 조립과 로컬 LLM 스트리밍</span>
+    </a>
+    <a class="post-nav" href="rag-chatbot-llm-judge.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">답변 뒤에 심사위원 하나를 더 둔다 — LLM-as-a-Judge</span>
+    </a>
+    <a class="post-nav" href="rag-chatbot-prompt-experiment.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">감이 아니라 기록으로 — 나만의 루브릭으로 실험하기</span>
+    </a>
+    <a class="post-nav" href="rag-chatbot-submission.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">지도를 접고 첫걸음을 — 배포와 제출</span>
+    </a>
+
 
     <a class="post-nav" href="rag-chatbot-embedding-vectorstore.html">
       <span class="post-nav-label">다음 편 →</span>

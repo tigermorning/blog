@@ -109,8 +109,10 @@
       </tbody>
     </table>
     <p>세 번째와 다섯 번째 줄을 조금만 더 볼게요.</p>
-    <p><strong>"주차를 알아낼 수 없으면 확인한다"</strong>는 팀 규칙 문서가 아니라 <code>SKILL.md</code> 본문에 들어가요. 이건 <strong>업무를 어떻게 분류하는가</strong>에 대한 약속이 아니라, <strong>일을 시작하기 전에 밟아야 할 절차</strong>거든요. 팀 규칙은 "무엇이 완료인가"를 말하고, Skill 본문은 "이 일을 어떤 순서로 처리하는가"를 말해요. 둘 다 다음 주에도 쓰이지만 성격이 달라서 자리를 나눠 두면 나중에 고칠 때 어디를 열어야 할지가 분명해져요.</p>
-    <p><strong>"꼼꼼하고 완벽하게 작성한다"</strong>는 제가 처음에 꼭 넣고 싶었던 문장이에요. 좋은 말이잖아요. 그런데 이 줄을 넣기 전과 후를 비교해 보면, 도구가 <strong>새로 할 수 있게 되는 일이 하나도 없어요.</strong> 어떤 필드를 볼지도, 어느 파일을 읽을지도 안 알려 주거든요. 이런 문장을 걸러내는 기준을 저는 이렇게 정했어요 — <strong>"이 줄을 지우면 결과가 달라지나?"</strong> 안 달라지면 안 넣습니다.</p>
+    <ul>
+      <li><strong>"주차를 알아낼 수 없으면 확인한다"</strong>는 팀 규칙 문서가 아니라 <code>SKILL.md</code> 본문에 들어가요. 이건 <strong>업무를 어떻게 분류하는가</strong>에 대한 약속이 아니라, <strong>일을 시작하기 전에 밟아야 할 절차</strong>거든요. 팀 규칙은 "무엇이 완료인가"를 말하고, Skill 본문은 "이 일을 어떤 순서로 처리하는가"를 말해요. 둘 다 다음 주에도 쓰이지만 성격이 달라서 자리를 나눠 두면 나중에 고칠 때 어디를 열어야 할지가 분명해져요.</li>
+      <li><strong>"꼼꼼하고 완벽하게 작성한다"</strong>는 제가 처음에 꼭 넣고 싶었던 문장이에요. 좋은 말이잖아요. 그런데 이 줄을 넣기 전과 후를 비교해 보면, 도구가 <strong>새로 할 수 있게 되는 일이 하나도 없어요.</strong> 어떤 필드를 볼지도, 어느 파일을 읽을지도 안 알려 주거든요. 이런 문장을 걸러내는 기준을 저는 이렇게 정했어요 — <strong>"이 줄을 지우면 결과가 달라지나?"</strong> 안 달라지면 안 넣습니다.</li>
+    </ul>
     <p>그리고 이 갈라내기를 AI와 같이 할 수도 있어요. 7편에서 보고서를 만든 <strong>그 대화에 이어서</strong> 이렇게 요청하면 돼요.</p>
     <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— 7편에서 보고서를 만든 그 대화에 이어서요</span></p>
     <pre><code>방금 사용한 보고 방식을 다음 주에도 쓸 수 있게 스킬로 만들어 줘.
@@ -183,7 +185,7 @@
     <p><strong>읽는 법:</strong> 위에서 아래로 한 방향이에요. 가운데 ①에서 <strong>좌우로 갈리는 지점</strong>이 이번 편의 핵심이고, <strong>점선 상자(왼쪽)로 간 문장은 아래로 내려가지 않아요</strong> — Skill에 안 들어간다는 뜻이에요. 오른쪽만 아래로 합류해서 파일이 되고, 마지막 ④는 "만들었다"와 "실제로 읽혔다"가 다른 일이라 따로 확인한다는 뜻이에요.</p>
 
     <h2><span class="hl">완성된 SKILL.md</span> 전문 읽기</h2>
-    <p>실습 자료에는 <code>team-weekly-report/SKILL.md</code>가 이미 들어 있어요. 먼저 전문을 통째로 보고, 그다음 문단별로 뜯어 볼게요. 처음 보면 낯선 기호가 몇 개 있는데 바로 아래에서 하나씩 풀어요.</p>
+    <p>아래가 완성된 <code>team-weekly-report/SKILL.md</code>예요. 먼저 전문을 통째로 보고, 그다음 문단별로 뜯어 볼게요. 처음 보면 낯선 기호가 몇 개 있는데 바로 아래에서 하나씩 풀어요.</p>
     <p class="run-tag">실행: SKILL.md 파일로 저장 <span class="run-tag-why">— Claude Code나 OpenCode가 이 폴더를 찾아 스킬로 읽어요</span></p>
     <pre><code>---
 name: team-weekly-report
@@ -215,12 +217,14 @@ description: 가상 제품팀의 업무 기록을 팀 기준에 맞는 주간 �
       </tbody>
     </table>
 
-    <p>이제 하나씩 볼게요.</p>
-    <p><strong>1문단은 울타리예요.</strong> "입력은 한 주의 업무 기록, 결과는 Markdown 보고서"라고 못 박아요. 여기서 <strong>'프로젝트를 관리한다'처럼 넓게 적으면 안 되는 이유</strong>가 있어요. 넓은 문장은 읽는 쪽에서 일정 수정이나 담당자 배정까지 포함이라고 해석할 여지를 남기거든요. 그리고 마지막 문장 <strong>"상태 이름만 보고 완료 여부를 결정하지 않는다"</strong>는 7편의 TASK-102와 바로 이어져요 — 상태가 '개발 완료'인데 완료가 아니었던 그 사례요.</p>
-    <p><strong>2문단은 이정표예요.</strong> "이 판단에 필요한 지식은 내가 아니라 저 파일에 있다"고 알려 줘요. 실제 분류 순서와 날짜 기준은 <code>references/team-rules.md</code>에 있고, <code>SKILL.md</code>는 그걸 <strong>가리키기만</strong> 해요. 뒤에 붙은 "새로 추측하거나 일반적인 기준으로 바꾸지 않는다"가 중요해요 — 이게 없으면 규칙 파일을 못 찾았을 때 그럴싸한 일반 기준으로 채워 넣고 넘어가 버릴 수 있어요.</p>
-    <p><strong>3문단은 통로와 지식을 구분해요.</strong> <a href="mcp-skill-building-server.html">3편</a>에서 만든 <code>get_weekly_records</code>는 <strong>기록을 가져오는 통로</strong>일 뿐이에요. Skill은 그렇게 가져온 기록을 <strong>팀 기준으로 해석</strong>하고요. 그래서 이미 JSON 파일을 손에 들고 있다면 <a href="mcp-skill-host-connection.html">4편</a>에서 한 MCP 연결을 새로 할 필요가 없어요. 이 문단이 없으면 "자료가 필요하니 서버부터 설치할까요?"로 새는 일이 생겨요.</p>
-    <p><strong>4문단은 되짚을 수 있게 만들어요.</strong> 컴퓨터의 오늘 날짜 대신 입력의 <code>report_date</code>를 쓰면, 지난주 보고서를 몇 달 뒤에 다시 만들어도 <strong>시간 기준이 흔들리지 않아요.</strong> 7편의 신문 마감 시각 비유가 그대로 한 줄로 들어간 셈이에요. "판정의 근거가 된 필드를 남긴다"도 여기 있는데, 이건 결과만 남기지 말고 <strong>어느 칸을 보고 그렇게 정했는지</strong>까지 적으라는 뜻이에요.</p>
-    <p><strong>5문단은 하지 않을 일을 적어요.</strong> 기록 자체를 고치지 않고, 메시지를 보내지 않아요. 초보자 입장에서 이 문단이 제일 안 와닿았는데, 지금은 <strong>가장 안심되는 문단</strong>이라고 생각해요 — 보고서를 만들어 달라고 했더니 원본 기록을 정리해 버리는 상황을 막아 주거든요.</p>
+    <p>이제 문단 하나씩 볼게요.</p>
+    <ul>
+      <li><strong>1문단은 울타리예요.</strong> "입력은 한 주의 업무 기록, 결과는 Markdown 보고서"라고 못 박아요. <strong>'프로젝트를 관리한다'처럼 넓게 적으면 안 되는 이유</strong>가 있어요. 읽는 쪽이 일정 수정이나 담당자 배정까지 포함이라고 해석할 여지를 남기거든요. 마지막 문장 <strong>"상태 이름만 보고 완료 여부를 결정하지 않는다"</strong>는 7편의 TASK-102와 이어져요 — 상태가 '개발 완료'인데 완료가 아니었던 그 사례요.</li>
+      <li><strong>2문단은 이정표예요.</strong> "이 판단에 필요한 지식은 내가 아니라 저 파일에 있다"고 알려 줘요. 실제 분류 순서와 날짜 기준은 <code>references/team-rules.md</code>에 있고, <code>SKILL.md</code>는 그걸 <strong>가리키기만</strong> 해요. 뒤에 붙은 "새로 추측하거나 일반적인 기준으로 바꾸지 않는다"가 중요해요. 이게 없으면 규칙 파일을 못 찾았을 때 그럴싸한 일반 기준으로 채워 넣고 넘어가 버릴 수 있어요.</li>
+      <li><strong>3문단은 통로와 지식을 구분해요.</strong> <a href="mcp-skill-building-server.html">3편</a>에서 만든 <code>get_weekly_records</code>는 <strong>기록을 가져오는 통로</strong>일 뿐이고, Skill은 가져온 기록을 <strong>팀 기준으로 해석</strong>해요. 이미 JSON 파일을 손에 들고 있다면 <a href="mcp-skill-host-connection.html">4편</a>의 MCP 연결을 새로 할 필요가 없어요. 이 문단이 없으면 "자료가 필요하니 서버부터 설치할까요?"로 새는 일이 생겨요.</li>
+      <li><strong>4문단은 되짚을 수 있게 만들어요.</strong> 컴퓨터의 오늘 날짜 대신 입력의 <code>report_date</code>를 쓰면, 지난주 보고서를 몇 달 뒤에 다시 만들어도 <strong>시간 기준이 흔들리지 않아요.</strong> 7편의 신문 마감 시각 비유가 한 줄로 들어간 셈이에요. "판정의 근거가 된 필드를 남긴다"는 결과만 남기지 말고 <strong>어느 칸을 보고 그렇게 정했는지</strong>까지 적으라는 뜻이에요.</li>
+      <li><strong>5문단은 하지 않을 일을 적어요.</strong> 기록 자체를 고치지 않고, 메시지를 보내지 않아요. 초보자 입장에서 이 문단이 제일 안 와닿았는데, 지금은 <strong>가장 안심되는 문단</strong>이라고 생각해요 — 보고서를 만들어 달라고 했더니 원본 기록을 정리해 버리는 상황을 막아 주거든요.</li>
+    </ul>
 
     <h2><span class="hl">문서 맨 위 세 줄</span>의 정체 — frontmatter와 YAML</h2>
     <p>이제 위에서 미뤄 둔 기호를 풀 차례예요. <code>.md</code>는 <strong>마크다운<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup></strong> 문서에 흔히 쓰는 확장자예요. 본문의 <code># 팀 주간 진행 보고서</code>에서 <code>#</code>은 <strong>제목</strong>을 뜻하고, <code>[팀 규칙](references/team-rules.md)</code>은 <strong>대괄호 안이 화면에 보이는 문구</strong>, <strong>괄호 안이 실제 파일 위치</strong>인 링크 표기예요.</p>
@@ -245,16 +249,36 @@ description: 값
 └── references/
     └── team-rules.md</code></pre>
     <p><code>SKILL.md</code> 본문에 적힌 <code>references/team-rules.md</code>는 <strong>상대경로<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup></strong>예요. "내 컴퓨터의 C드라이브 어디어디"처럼 <strong>출발점을 못 박은 주소</strong>가 아니라, <strong>"나(<code>SKILL.md</code>)가 있는 자리에서 <code>references</code> 폴더로 들어가 <code>team-rules.md</code>"</strong>라는 뜻이에요.</p>
-    <p>이게 왜 좋으냐면, 이 폴더를 <strong>다른 컴퓨터로 옮겨도 두 파일의 관계가 유지</strong>되거든요. 폴더가 바탕화면에 있든 회사 노트북에 있든, <code>SKILL.md</code> 옆에 <code>references</code>가 붙어 있기만 하면 링크는 계속 맞아요.</p>
-    <p>바로 여기서 <strong>공유하거나 설치할 때 <code>SKILL.md</code> 하나만 보내면 안 되는 이유</strong>가 나와요. <code>SKILL.md</code>만 떼어 가면 그 안의 <code>references/team-rules.md</code>는 <strong>존재하지 않는 자리를 가리키는 링크</strong>가 돼요. 요리 교실 비유로 돌아가면, 벽에 붙인 카드에 "자세한 계량은 서랍 속 공책 참고"라고 적어 놓고 <strong>카드만 떼어 다른 주방으로 가져간</strong> 상황이에요. 옮길 땐 <code>team-weekly-report</code> <strong>폴더 전체</strong>를 옮깁니다.</p>
+    <p>이게 왜 좋은지는 폴더를 옮기는 두 가지 경우를 비교하면 보여요. 요리 교실 비유로는, 벽에 붙인 카드에 "자세한 계량은 서랍 속 공책 참고"라고 적어 둔 상황이에요.</p>
+    <table>
+      <thead><tr><th>옮기는 방법</th><th>상대경로가 어떻게 되나</th><th>비유로는</th></tr></thead>
+      <tbody>
+        <tr><td><code>team-weekly-report</code> <strong>폴더 전체</strong></td><td>바탕화면이든 회사 노트북이든 <code>SKILL.md</code> 옆에 <code>references</code>가 붙어 있어서 링크가 계속 맞아요</td><td>카드와 공책을 같은 상자에 넣어 옮겨요</td></tr>
+        <tr><td><code>SKILL.md</code> <strong>한 장만</strong> 복사</td><td><code>references/team-rules.md</code>가 <strong>존재하지 않는 자리를 가리키는 링크</strong>가 돼요</td><td>카드만 떼어 다른 주방으로 가져가요</td></tr>
+      </tbody>
+    </table>
+    <p>공유하거나 설치할 때 <code>SKILL.md</code> 하나만 보내면 안 되는 이유가 이거예요. 옮길 땐 <strong>폴더 전체</strong>를 옮깁니다.</p>
     <p>그럼 <code>team-rules.md</code>에는 뭐가 들어 있을까요? 7편에서 판정할 때 쓴 바로 그 문장들이에요. 두 줄만 옮겨 볼게요.</p>
     <blockquote>
       <p>각 업무를 위험 → 완료 → 진행 순서로 확인하여 한 범주에만 넣는다.</p>
       <p>기한이 보고 기준일과 같으면 지연이 아니다.</p>
     </blockquote>
     <p>두 문장 모두 <strong>실제 판정을 바꿔요.</strong> 첫 문장은 차단 요인이 남아 있는 '배포 완료' 업무를 어느 범주에 넣을지 정하고, 두 번째 문장은 보고 당일이 기한인 업무를 성급하게 지연으로 분류하지 않게 막아요. 7편에서 <strong>TASK-104</strong>가 딱 이 경우였죠 — 규칙을 안 읽으면 감으로는 '지연'이 나오는 자리요.</p>
-    <p>이렇게 나눠 두면 읽는 순서도 자연스럽게 계단이 돼요. <strong>이름과 설명으로 관련성을 판단</strong>하고 → <strong>선택된 Skill의 본문을 읽고</strong> → <strong>필요한 참조 자료를 더 읽는</strong> 흐름이요. <a href="ai-skills-and-rules-files.html">스킬과 규칙 파일</a>에서 <strong>점진 공개<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup></strong>라고 불렀던 그 방식이 폴더 구조로 그대로 나타난 거예요.</p>
-    <p>참고로 지원 자료가 늘어나면 <strong>역할에 따라 폴더 이름을 나누는 관례</strong>가 있어요 — <code>references</code>는 판단에 필요한 문서, <code>scripts</code>는 재사용할 실행 코드, <code>assets</code>는 결과물에 적용할 서식이나 이미지요. 다만 <strong>이번에는 실제로 쓰는 팀 규칙 하나면 충분</strong>해요. 안 쓸 폴더를 미리 만들어 두면 나중에 "여기 뭐가 들어가야 하지?"만 남아요.</p>
+    <p>이렇게 나눠 두면 읽는 순서도 자연스럽게 계단이 돼요. <a href="ai-skills-and-rules-files.html">스킬과 규칙 파일</a>에서 <strong>점진 공개<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup></strong>라고 불렀던 그 방식이 폴더 구조로 그대로 나타난 거예요.</p>
+    <ol>
+      <li><strong>이름과 설명으로</strong> 이 Skill이 지금 요청과 관련 있는지 판단해요.</li>
+      <li>관련 있다고 고른 Skill의 <strong>본문을 읽어요.</strong></li>
+      <li>본문이 가리키는 <strong>참조 자료를 필요할 때 더 읽어요.</strong></li>
+    </ol>
+    <p>지원 자료가 늘어나면 <strong>역할에 따라 폴더 이름을 나누는 관례</strong>가 있어요. 다만 <strong>이번에는 실제로 쓰는 팀 규칙 하나면 충분</strong>해요. 안 쓸 폴더를 미리 만들어 두면 나중에 "여기 뭐가 들어가야 하지?"만 남아요.</p>
+    <table>
+      <thead><tr><th>폴더 이름</th><th>담는 것</th></tr></thead>
+      <tbody>
+        <tr><td><code>references</code></td><td>판단에 필요한 문서 (이번 편에서 실제로 쓰는 것)</td></tr>
+        <tr><td><code>scripts</code></td><td>재사용할 실행 코드</td></tr>
+        <tr><td><code>assets</code></td><td>결과물에 적용할 서식이나 이미지</td></tr>
+      </tbody>
+    </table>
 
     <h2><span class="hl">나쁜 선택 vs 좋은 선택</span> — 요리 교실 벽 앞에서</h2>
     <table class="choice-table">
@@ -280,7 +304,7 @@ description: 값
     </table>
 
     <h2><span class="hl">폴더를 어디에 둬야</span> 도구가 찾아 읽나</h2>
-    <p>여기서 꼭 갈라야 할 게 하나 있어요. <strong>"자료 폴더 안에 Skill 파일이 있다"</strong>는 것과 <strong>"Claude Code나 OpenCode가 그 파일을 Skill로 발견한다"</strong>는 건 <strong>다른 이야기</strong>예요. 실습 자료를 내려받아 폴더에 뒀다고 해서 자동으로 쓸 수 있게 되는 게 아니라, <strong>도구가 들여다보는 자리</strong>에 놓아야 해요.</p>
+    <p>여기서 꼭 갈라야 할 게 하나 있어요. <strong>"어딘가의 폴더 안에 Skill 파일이 있다"</strong>는 것과 <strong>"Claude Code나 OpenCode가 그 파일을 Skill로 발견한다"</strong>는 건 <strong>다른 이야기</strong>예요. 만든 폴더를 아무 데나 뒀다고 해서 자동으로 쓸 수 있게 되는 게 아니라, <strong>도구가 들여다보는 자리</strong>에 놓아야 해요.</p>
     <p>둘 곳은 크게 두 갈래예요. 요리 교실로 치면 <strong>이 주방 벽에 붙일지</strong>, <strong>내가 늘 두르고 다니는 앞치마 주머니에 넣을지</strong>의 차이예요. 앞의 것은 이 가게에서만 쓰이고, 뒤의 것은 어느 가게에 가도 따라와요.</p>
     <table>
       <thead><tr><th>도구</th><th>이 프로젝트에서만 (프로젝트 범위)</th><th>내 컴퓨터 전체에서 (개인 공용 범위)</th></tr></thead>
@@ -330,33 +354,30 @@ description: 값
     </table>
     <p>마지막 줄만 조금 풀게요. Claude Code는 <strong>이미 감시 중인 Skill 폴더</strong> 안에서 파일이 바뀌면 <strong>지금 대화에 바로 반영</strong>해요. 그런데 <strong>세션을 시작할 때 아예 없던 최상위 Skills 폴더를 이번에 처음 만든 경우</strong>에는 재시작이 필요해요. 없던 서랍장을 새로 들여놓은 셈이라, 도구가 그 서랍장의 존재부터 다시 알아야 하는 거예요.</p>
 
-    <h2><span class="hl">이번 편에 나온 구체적인 값</span></h2>
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — Skill 폴더를 만들거나 안 읽힐 때 확인할 것</h2>
+    <p>아래 표는 Skill 폴더를 만들고 배치하는 절(<code>SKILL.md</code> 전문 읽기, 폴더 구조, 배치 위치, 불러오기)에서 나온 값 가운데 다른 Skill을 만들 때도 다시 쓰는 것만 모았어요.</p>
     <table>
-      <thead><tr><th>항목</th><th>값</th><th>조건·출처</th></tr></thead>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
       <tbody>
-        <tr><td>다시 펼치는 7편 산출물</td><td>2개</td><td><code>first-week-report.md</code> · <code>report-work-notes.md</code></td></tr>
-        <tr><td>문장을 나누는 갈래</td><td>4가지</td><td>팀 규칙 · Skill 작업 지침 · 이번 주 보고서 · <strong>생략</strong></td></tr>
-        <tr><td>구분 질문</td><td>1개</td><td>"다음 주 기록을 가져와도 그대로 맞나?"</td></tr>
-        <tr><td>Skill 폴더에 두는 파일</td><td>2개</td><td><code>SKILL.md</code> · <code>references/team-rules.md</code></td></tr>
-        <tr><td>frontmatter 속성</td><td>2개</td><td><code>name</code> · <code>description</code></td></tr>
-        <tr><td><code>SKILL.md</code> 본문 문단</td><td>5개</td><td>범위 · 지식 위치 · 자료 통로 · 재확인 · 하지 않을 일</td></tr>
-        <tr><td>관례적 하위 폴더 이름</td><td>3개 (<code>references</code>·<code>scripts</code>·<code>assets</code>)</td><td>이번 편에서 실제로 쓰는 건 <code>references</code> <strong>1개</strong>뿐</td></tr>
-        <tr><td>배치 위치 후보</td><td>4곳</td><td>도구 2개(Claude Code·OpenCode) × 범위 2개(프로젝트·개인 공용)</td></tr>
-        <tr><td>이름을 지정해 부르는 방법</td><td>2가지</td><td>Claude Code <code>/스킬이름</code> · OpenCode 문장 안에 이름</td></tr>
-        <tr><td>호출 뒤 따로 확인할 기록</td><td>2개</td><td>Skill을 읽었는지 · <strong>참조 문서까지</strong> 읽었는지</td></tr>
-        <tr><td>보고서에서 맞춰 볼 값</td><td>3개</td><td>업무 4건 · 기준일 <code>2026-09-04</code> · ID별 판정 근거</td></tr>
-        <tr><td>재시작이 필요한 경우</td><td>1가지</td><td>세션 시작 때 없던 <strong>최상위 Skills 폴더를 처음 만든</strong> 경우</td></tr>
+        <tr><td>frontmatter 속성</td><td>2개 (<code>name</code> · <code>description</code>)</td><td>둘 다 채워요. <code>name</code>은 폴더 이름과 같게(소문자·숫자·하이픈), <code>description</code>에는 쓸 상황과 안 쓸 상황을 함께 적어요</td></tr>
+        <tr><td>관례적 하위 폴더 이름</td><td>3개 (<code>references</code>·<code>scripts</code>·<code>assets</code>)</td><td>필요한 것만 만들어요. 이번 편에서 실제로 쓰는 건 <code>references</code> 1개뿐이에요</td></tr>
+        <tr><td>배치 위치 후보</td><td>4곳</td><td>도구 2개(Claude Code·OpenCode) × 범위 2개(프로젝트·개인 공용). 안 찾아질 때 이 네 자리를 먼저 확인해요</td></tr>
+        <tr><td>이름을 지정해 부르는 방법</td><td>2가지</td><td>Claude Code는 <code>/스킬이름</code>, OpenCode는 문장 안에 이름을 넣어요</td></tr>
+        <tr><td>호출 뒤 따로 확인할 기록</td><td>2개</td><td>Skill을 읽었는지, <strong>참조 문서까지</strong> 읽었는지를 따로 봐요. "사용했습니다"라는 말만으로는 둘 중 무엇도 알 수 없어요</td></tr>
+        <tr><td>재시작이 필요한 경우</td><td>1가지</td><td>세션을 시작할 때 없던 <strong>최상위 Skills 폴더를 처음 만든</strong> 경우예요. 이미 있는 폴더 안의 수정은 바로 반영돼요</td></tr>
       </tbody>
     </table>
     <p class="post-date">※ 위 값 중 <strong>팀 규칙·업무 기록·날짜는 전부 학습용 가상 설정</strong>이에요. 그리고 <strong>배치 경로와 재시작 조건은 도구 버전에 따라 달라질 수 있는 값</strong>이라, 잘 안 되면 지금 쓰는 도구의 공식 문서에서 Skill 폴더 위치를 한 번 확인해 보세요.</p>
 
     <h2><span class="hl">직접 해보기</span></h2>
     <p>이번 연습의 목적은 <strong>예제를 그대로 베끼는 게 아니라, 내 손으로 문장을 갈라 보는 것</strong>이에요.</p>
-    <p>① <strong>내 작업 메모를 두 칸으로 갈라 보기.</strong> 7편에서 남긴 <code>report-work-notes.md</code>(또는 실제 업무에서 남긴 메모)를 열고, 문장마다 <strong>"다음 주 기록에도 그대로 맞나?"</strong>를 물어 두 칸에 나눠 적으세요. 애매해서 어느 쪽에도 못 넣는 문장이 나오면 그게 제일 중요한 발견이에요 — 대개 <strong>구체적인 숫자나 이름이 섞여 있어서</strong> 그래요. 그 부분만 빼면 오른쪽으로 갈 수 있는지 확인해 보세요.</p>
-    <p>② <strong>"이 줄을 지우면 결과가 달라지나?" 통과시키기.</strong> 오른쪽 칸에 넣은 문장을 하나씩 짚으며 이 질문을 던지세요. 안 달라지는 문장이 하나라도 나오면 지웁니다. <strong>"꼼꼼하게", "정확하게", "잘"</strong> 같은 말이 들어간 줄이 주로 여기서 걸려요.</p>
-    <p>③ <strong><code>description</code>을 두 가지 버전으로 써 보기.</strong> 같은 Skill에 대해 <strong>넓은 버전</strong>("업무 문서를 처리한다")과 <strong>좁은 버전</strong>(쓸 상황 + 안 쓸 상황을 함께 적은 것)을 각각 한 줄씩 쓰세요. 그리고 <strong>이 Skill을 꺼내면 안 되는 요청</strong>을 하나 지어내서, 두 버전 중 어느 쪽이 그 요청을 걸러 낼지 적어 보세요.</p>
-    <p>④ <strong>링크를 일부러 끊어 보기.</strong> <code>SKILL.md</code>만 다른 폴더에 복사해 두고 불러 보세요. 참조 문서를 못 찾으면 어떤 반응이 나오는지 <strong>직접 보는 게</strong> 중요해요 — 대부분은 오류가 나는 게 아니라 <strong>그럴듯한 일반 기준으로 채운 보고서</strong>가 나오거든요. 그게 폴더째 옮겨야 하는 이유를 몸으로 알게 해 줘요. 확인했으면 원래대로 되돌려 놓으세요.</p>
-    <p>⑤ <strong>불러온 기록 두 줄 적기.</strong> 이름을 지정해 한 번 실행한 뒤, <strong>"Skill을 읽은 흔적"</strong>과 <strong>"<code>references/team-rules.md</code>를 읽은 흔적"</strong>을 각각 한 줄로 옮겨 적으세요. 둘 중 하나가 안 보이면 그 자리가 다음에 손볼 곳이에요.</p>
+    <ol>
+      <li><strong>내 작업 메모를 두 칸으로 갈라 보기.</strong> 7편에서 남긴 <code>report-work-notes.md</code>(또는 실제 업무에서 남긴 메모)를 열고, 문장마다 <strong>"다음 주 기록에도 그대로 맞나?"</strong>를 물어 두 칸에 나눠 적으세요. 애매해서 어느 쪽에도 못 넣는 문장이 나오면 그게 제일 중요한 발견이에요 — 대개 <strong>구체적인 숫자나 이름이 섞여 있어서</strong> 그래요. 그 부분만 빼면 오른쪽으로 갈 수 있는지 확인해 보세요.</li>
+      <li><strong>"이 줄을 지우면 결과가 달라지나?" 통과시키기.</strong> 오른쪽 칸에 넣은 문장을 하나씩 짚으며 이 질문을 던지세요. 안 달라지는 문장이 하나라도 나오면 지웁니다. <strong>"꼼꼼하게", "정확하게", "잘"</strong> 같은 말이 들어간 줄이 주로 여기서 걸려요.</li>
+      <li><strong><code>description</code>을 두 가지 버전으로 써 보기.</strong> 같은 Skill에 대해 <strong>넓은 버전</strong>("업무 문서를 처리한다")과 <strong>좁은 버전</strong>(쓸 상황 + 안 쓸 상황을 함께 적은 것)을 각각 한 줄씩 쓰세요. 그리고 <strong>이 Skill을 꺼내면 안 되는 요청</strong>을 하나 지어내서, 두 버전 중 어느 쪽이 그 요청을 걸러 낼지 적어 보세요.</li>
+      <li><strong>링크를 일부러 끊어 보기.</strong> <code>SKILL.md</code>만 다른 폴더에 복사해 두고 불러 보세요. 참조 문서를 못 찾으면 어떤 반응이 나오는지 <strong>직접 보는 게</strong> 중요해요 — 대부분은 오류가 나는 게 아니라 <strong>그럴듯한 일반 기준으로 채운 보고서</strong>가 나오거든요. 그게 폴더째 옮겨야 하는 이유를 몸으로 알게 해 줘요. 확인했으면 원래대로 되돌려 놓으세요.</li>
+      <li><strong>불러온 기록 두 줄 적기.</strong> 이름을 지정해 한 번 실행한 뒤, <strong>"Skill을 읽은 흔적"</strong>과 <strong>"<code>references/team-rules.md</code>를 읽은 흔적"</strong>을 각각 한 줄로 옮겨 적으세요. 둘 중 하나가 안 보이면 그 자리가 다음에 손볼 곳이에요.</li>
+    </ol>
     <p>여기까지 하면 <strong>다음 주에 새 대화를 열어도 같은 기준이 적용되는 파일</strong>이 손에 남아요. 다만 아직 확인하지 않은 게 있어요 — 이번엔 제가 <strong>이름을 대고 불렀다</strong>는 점이요. 다음 편에서는 이름을 말하지 않고 다른 주의 보고서를 맡겨서, <strong>필요한 Skill을 스스로 고르는지</strong>와 <strong>새 기록을 제대로 판단하는지</strong>를 나눠서 확인해 볼게요.</p>
 
     <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 만든 Skill을 불렀는데 결과가 기대와 다를 때</h2>
@@ -421,7 +442,7 @@ description: 값
 
     <hr>
 
-    <h3>"MCP와 Skill로 에이전트에게 업무 맡기기" 시리즈</h3>
+    <h3>"MCP와 Skill로 업무 맡기기" 시리즈</h3>
     <a class="post-nav" href="mcp-skill-tool-call-anatomy.html">
       <span class="post-nav-label">(1)</span>
       <span class="post-nav-title">도구 하나가 호출되기까지 — 정의·파싱·구조화 요청</span>

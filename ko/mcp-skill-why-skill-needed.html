@@ -80,8 +80,7 @@
 
     <h2><span class="hl">비유</span> — 운송장 한 장, 도장 세 개</h2>
     <p>온라인으로 물건을 하나 샀다고 해 볼게요. 주문 조회 화면에 운송장 정보가 떠요. 그 운송장에는 도장 칸이 <strong>세 개</strong> 있어요 — <strong>상품 준비</strong>, <strong>발송</strong>, <strong>수령</strong>이요.</p>
-    <p>지금은 <strong>첫 칸에만 도장이 찍혀 있어요.</strong> 가게는 상품을 다 만들어 포장까지 끝냈어요. 그런데 트럭에 싣지는 않았고, 당연히 저는 아직 못 받았죠.</p>
-    <p>이 상태를 놓고 두 곳이 서로 다른 말을 해요. 가게 내부 회의에서는 <strong>"이번 주 준비 물량, 다 끝냈습니다"</strong>라고 보고해요 — 맞는 말이에요. 그런데 같은 순간 저에게 <strong>"배송 완료됐습니다"</strong>라고 안내하면 그건 틀린 말이 되죠. 물건이 제 손에 없으니까요.</p>
+    <p>지금은 <strong>첫 칸에만 도장이 찍혀 있어요.</strong> 가게는 상품을 다 만들어 포장까지 끝냈어요. 그런데 트럭에 싣지는 않았고, 당연히 저는 아직 못 받았죠. 이 상태를 놓고 두 곳이 서로 다른 말을 해요. 가게 내부 회의에서는 <strong>"이번 주 준비 물량, 다 끝냈습니다"</strong>라고 보고해요 — 맞는 말이에요. 그런데 같은 순간 저에게 <strong>"배송 완료됐습니다"</strong>라고 안내하면 그건 틀린 말이 되죠. 물건이 제 손에 없으니까요.</p>
     <p>여기서 중요한 건, <strong>둘 중 누구도 운송장을 위조하지 않았다</strong>는 거예요. 운송장은 하나뿐이고 도장도 그대로예요. 다른 건 <strong>"어디까지 찍혀야 끝이라고 부를지"</strong>라는 각자의 방침이에요.</p>
     <table>
       <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
@@ -125,7 +124,7 @@ note          : "코드 작성은 끝났으며 다음 배포를 기다린다."</
         <tr><td><strong>팀 B</strong> — 고객 제공 성과 공유</td><td><strong>배포</strong>와 <strong>운영 확인</strong>까지 마친 작업</td><td>"로그인 안내 문구 개선은 진행 중입니다. 개발을 마쳤고 배포와 운영 확인이 남아 있습니다."</td></tr>
       </tbody>
     </table>
-    <p>어느 쪽도 기록을 바꾸지 않았어요. <strong>보고의 목적과 분류 기준이 다를 뿐</strong>이에요. 그리고 <strong>이번 공통 실습의 가상 제품팀은 팀 B 쪽 규칙</strong>을 씁니다 — 배포와 운영 확인까지 갖춘 일만 '완료'로 봐요. 앞으로 이 시리즈에서 '완료'라고 하면 그 뜻이에요.</p>
+    <p>어느 쪽도 기록을 바꾸지 않았어요. <strong>보고의 목적과 분류 기준이 다를 뿐</strong>이에요. 그리고 <strong>이번 공통 실습의 가상 제품팀은 팀 B 쪽 규칙</strong>을 써요 — 배포와 운영 확인까지 갖춘 일만 '완료'로 봐요. 앞으로 이 시리즈에서 '완료'라고 하면 그 뜻이에요.</p>
 
     <h2><span class="hl">업무 고유 지식</span> — 일반 상식으로는 못 맞히는 정보</h2>
     <p>AI는 <strong>일반적인 요약</strong>은 아주 잘해요. "이 기록을 짧게 정리해 줘"는 잘 되죠. 그런데 <strong>"우리 팀이 어떤 항목을 완료 건수에 넣는가"</strong>는 아무리 똑똑해도 못 맞혀요. 그건 지식이 아니라 <strong>약속</strong>이거든요. 어딘가에 적혀 있지 않으면 세상 어디에도 없는 정보예요.</p>
@@ -145,8 +144,7 @@ note          : "코드 작성은 끝났으며 다음 배포를 기다린다."</
     <p>그럼 그 기준을 어디에 적을까요. 제일 간단한 방법부터 볼게요.</p>
     <p class="run-tag">실행: AI 챗봇 대화창에 붙여넣기 <span class="run-tag-why">— claude.ai·ChatGPT 등</span></p>
     <pre><code>이 기록을 팀 규칙에 맞춰 주간 보고서로 정리해 줘. 규칙은 이 파일에 있어.</code></pre>
-    <p>보고서를 <strong>딱 한 번</strong> 만들 거라면 이걸로 충분해요. 규칙 파일 하나 던져 주고 끝이죠.</p>
-    <p>문제는 다음 주예요. 같은 보고서를 또 만들고, <strong>다른 팀원도 새 대화에서</strong> 같은 방식으로 써야 한다면? 매번 어떤 규칙 파일을 읽힐지 설명하고, 예전 보고서를 뒤져서 찾아 주고, 빠뜨린 요구를 다시 전달하는 일이 <strong>반복</strong>돼요. <a href="ai-skills-and-rules-files.html">스킬과 규칙 파일</a>에서 <strong>재프롬프트 문제</strong>라고 불렀던 그 상황이 업무 데이터를 만나서 그대로 재현되는 거예요.</p>
+    <p>보고서를 <strong>딱 한 번</strong> 만들 거라면 이걸로 충분해요. 규칙 파일 하나 던져 주고 끝이죠. 문제는 다음 주예요. 같은 보고서를 또 만들고, <strong>다른 팀원도 새 대화에서</strong> 같은 방식으로 써야 한다면? 매번 어떤 규칙 파일을 읽힐지 설명하고, 예전 보고서를 뒤져서 찾아 주고, 빠뜨린 요구를 다시 전달하는 일이 <strong>반복</strong>돼요. <a href="ai-skills-and-rules-files.html">스킬과 규칙 파일</a>에서 <strong>재프롬프트 문제</strong>라고 불렀던 그 상황이 업무 데이터를 만나서 그대로 재현되는 거예요.</p>
     <p>이때 쓰는 게 <strong>Agent Skill<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup></strong>이에요. <strong>특정 종류의 일을 할 때 쓸 지침과 자료를 함께 묶어 두는 형식</strong>이고, 중심에 <strong><code>SKILL.md</code><sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup></strong>라는 지침 파일이 있어요. 에이전트는 Skill의 <strong>이름과 설명</strong>으로 "이게 지금 필요한 일인가"를 먼저 판단하고, 필요할 때만 본문과 연결된 자료를 읽어요.</p>
     <p>보고서 Skill이라면 이런 걸 한 곳에 담아 둘 수 있어요.</p>
     <ul>
@@ -322,34 +320,37 @@ note          : "코드 작성은 끝났으며 다음 배포를 기다린다."</
     <p>마지막 줄을 눈여겨보세요. <strong>"하지 않을 일"을 적는 것</strong>도 지침이에요. 읽으러 갔다가 실수로 원본을 건드리는 사고를 막는 한 줄이죠. Google 계정 연결과 Sheets를 MCP로 붙이는 이야기는 <strong>11편·12편</strong>에서 본격적으로 다룰게요.</p>
 
     <h2><span class="hl">Skill의 재료는 책상 앞이 아니라 실제 작업에서 나와요</span></h2>
-    <p>제가 이 대목에서 제일 크게 바꾼 습관이 있어요. 전에는 "쓸 만한 Skill을 하나 만들어야지" 하고 <strong>빈 문서부터 열었어요.</strong> 그러면 "모든 상황에서 완벽한 보고서를 만든다" 같은 문장만 쓰다가 막혀요. 어떤 기준을 적어야 하는지 <strong>모르는 상태</strong>니까요.</p>
-    <p>순서를 뒤집는 게 나았어요. <strong>실제 보고서 한 편을 먼저 만들고</strong>, 만드는 동안 "어? 이건 내가 정해 줘야 하네" 싶었던 지점을 모으는 거예요. 그게 그대로 Skill의 재료예요.</p>
+    <p>제가 이 대목에서 제일 크게 바꾼 습관이 있어요. Skill의 재료를 모으는 순서예요.</p>
+    <table>
+      <thead><tr><th>예전 순서</th><th>바꾼 순서</th></tr></thead>
+      <tbody>
+        <tr><td>"쓸 만한 Skill을 하나 만들어야지" 하고 <strong>빈 문서부터 열었어요.</strong> "모든 상황에서 완벽한 보고서를 만든다" 같은 문장만 쓰다가 막혀요. 어떤 기준을 적어야 하는지 <strong>모르는 상태</strong>니까요</td><td><strong>실제 보고서 한 편을 먼저 만들고</strong>, 만드는 동안 "어? 이건 내가 정해 줘야 하네" 싶었던 지점을 모아요. 그게 그대로 Skill의 재료예요</td></tr>
+      </tbody>
+    </table>
     <p>그리고 오해 하나. <strong>Skill을 만들려고 일부러 오류를 만들 필요는 없어요.</strong> 처음부터 결과가 괜찮았다면, "그 판단을 뒷받침한 자료가 뭐였지?"를 되짚으면 돼요. 잘된 경우에도 재료는 똑같이 나와요.</p>
     <p>참고로 <strong>skill-creator<sup class="fn-ref"><a href="#fn14" id="fnref14">14</a></sup></strong>라는 공식 Skill도 있어요. <strong>Skill 만드는 걸 돕는 Skill</strong>이에요. 원하는 과업과 적용 상황을 물어보고, 초안을 만든 뒤, 실제 요청에 적용해 본 결과를 평가하고 고치는 흐름을 안내해요. 이 "만들고 → 써 보고 → 고친다"는 순환이 이 시리즈의 7·8·9편 구조와 정확히 같아요.</p>
 
-    <h2><span class="hl">이번 편에 나온 구체적인 값</span></h2>
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 지침을 어디에 둘지 고를 때 보는 표</h2>
+    <p>"한 번이면 파일, 반복이면 Skill" 이후의 절에서 나온 분류의 개수와, 공식 Skill 사례에서 가져온 값만 모았어요.</p>
     <table>
-      <thead><tr><th>항목</th><th>값</th><th>조건·출처</th></tr></thead>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
       <tbody>
-        <tr><td>TASK-102의 핵심 상태값</td><td><code>status</code> 개발 완료 · <code>deployed_at</code> <code>null</code> · <code>verification</code> 미실시</td><td><a href="mcp-skill-building-server.html">3편</a> 실습 자료 <code>data/week-one.json</code> — 가상 제품팀</td></tr>
-        <tr><td>기록 한 건에 섞여 있는 사건</td><td>3가지 (개발 · 배포 · 운영 확인)</td><td>서로 다른 시점의 서로 다른 작업</td></tr>
-        <tr><td>같은 기록에 대한 판정</td><td>2가지 (팀 A '완료' / 팀 B '진행 중')</td><td>기록은 동일 — <strong>보고 목적과 분류 기준만 다름</strong></td></tr>
-        <tr><td>이번 실습 가상 제품팀의 완료 기준</td><td>배포 + 운영 확인까지</td><td>7편 이후 이 시리즈에서 '완료'는 이 뜻</td></tr>
-        <tr><td>지시를 전달하는 방식</td><td>4가지 (요청 프롬프트 · 프로젝트 지침 · Skill · MCP)</td><td>대체재가 아니라 <strong>합류 시점이 다른 것</strong></td></tr>
-        <tr><td>Skill과 함께 둘 수 있는 자료</td><td>3종 (참조 자료 · 자산 · 스크립트)</td><td>Agent Skills 명세 기준</td></tr>
-        <tr><td>3P의 구성</td><td>3가지 (Progress · Plans · Problems)</td><td>internal-comms의 <code>examples/3p-updates.md</code></td></tr>
-        <tr><td>brand-guidelines의 주 강조색</td><td><code>#d97757</code></td><td><strong>그 회사의 기준값</strong> — 일반 규칙이 아님</td></tr>
-        <tr><td>외부 업무를 실행하는 경로</td><td>2가지 (CLI 경로 / MCP 경로)</td><td>어느 쪽이든 Skill은 <strong>읽히는 지침</strong>일 뿐</td></tr>
-        <tr><td>이번 실습에서 연결한 도구</td><td>1개 (<code>get_weekly_records</code>)</td><td>3편에서 만든 서버를 그대로 사용</td></tr>
+        <tr><td>지시를 전달하는 방식</td><td>4가지 (요청 프롬프트 · 프로젝트 지침 · Skill · MCP)</td><td>대체재가 아니라 <strong>합류 시점이 다른 것</strong>이에요. 새 기준을 적을 때 어디에 둘지 이 넷으로 가려요</td></tr>
+        <tr><td>Skill과 함께 둘 수 있는 자료</td><td>3종 (참조 자료 · 자산 · 스크립트)</td><td>Agent Skills 명세 기준이에요. 숫자 집계처럼 매번 같아야 하는 일은 스크립트 쪽에 둬요</td></tr>
+        <tr><td>3P의 구성</td><td>3가지 (Progress · Plans · Problems)</td><td>internal-comms의 <code>examples/3p-updates.md</code>가 쓰는 틀이에요. 진행 공유 문서를 갈라 쓸 때 빌려 써요</td></tr>
+        <tr><td>brand-guidelines의 주 강조색</td><td><code>#d97757</code></td><td><strong>그 회사의 기준값</strong>이라 일반 규칙이 아니에요. 배울 건 값이 아니라 "판단을 값으로 못 박는" 태도예요</td></tr>
+        <tr><td>외부 업무를 실행하는 경로</td><td>2가지 (CLI 경로 / MCP 경로)</td><td>어느 쪽이든 Skill은 <strong>읽히는 지침</strong>일 뿐이에요. 실행 권한은 셸 도구·MCP 클라이언트와 계정 쪽에서 와요</td></tr>
       </tbody>
     </table>
-    <p class="post-date">※ 위 값 중 <strong>TASK-102의 필드값과 팀 기준은 학습용 가상 설정</strong>이고, <strong><code>#d97757</code>과 3P는 공개된 공식 Skill의 내용</strong>이에요. 앞의 것을 다른 팀에 그대로 옮기면 안 되고, 뒤의 것도 "이 회사는 이렇게 못 박아 뒀다"는 사례로 읽어야 해요.</p>
+    <p class="post-date">※ 위 값 중 <strong><code>#d97757</code>과 3P는 공개된 공식 Skill의 내용</strong>이에요. "이 회사는 이렇게 못 박아 뒀다"는 사례로 읽어야 해요. 본문의 TASK-102 필드값과 팀 기준은 <strong>학습용 가상 설정</strong>이라 다른 팀에 그대로 옮기면 안 돼요.</p>
 
     <h2><span class="hl">직접 해보기</span></h2>
     <p>이번 연습의 목적은 <strong>Skill을 만드는 게 아니라, 내 업무에서 "아무 데도 안 적혀 있는 기준"을 찾아내는 것</strong>이에요.</p>
-    <p>① <strong>내 업무 기록의 '완료'를 세 칸으로 쪼개 보기.</strong> 실제로 쓰는 표나 이슈 트래커를 열고, '완료'라고 표시된 항목 하나를 골라 보세요. 그 하나가 정말 한 사건인가요, 아니면 TASK-102처럼 <strong>여러 사건이 한 줄에 뭉쳐</strong> 있나요? 칸을 몇 개로 나눌 수 있는지 세어 보세요.</p>
-    <p>② <strong>같은 기록으로 서로 다른 두 문장 써 보기.</strong> 그 항목 하나를 놓고 <strong>내부 진척 보고용 문장</strong>과 <strong>고객·상급자 보고용 문장</strong>을 각각 한 줄씩 써 보세요. 두 문장이 <strong>둘 다 참인데 인상이 다르다</strong>면, 그 차이를 만든 게 바로 여러분 팀의 판정 기준이에요. 그걸 한 문장으로 적어 두세요 — 7편에서 쓸 재료예요.</p>
-    <p>③ <strong>기준을 빼고 요청해 보고, 넣고 다시 요청해 보기.</strong> AI에게 기록만 주고 "완료 몇 건인지 세 줘"라고 해 본 다음, 이번엔 "완료는 배포와 운영 확인까지 끝난 건만 센다"를 붙여서 다시 물어보세요. <strong>답이 달라지는 지점</strong>이 곧 "이건 어딘가에 적어 둬야 하는 지식"이라는 신호예요.</p>
+    <ul>
+      <li>① <strong>내 업무 기록의 '완료'를 세 칸으로 쪼개 보기.</strong> 실제로 쓰는 표나 이슈 트래커를 열고, '완료'라고 표시된 항목 하나를 골라 보세요. 그 하나가 정말 한 사건인가요, 아니면 TASK-102처럼 <strong>여러 사건이 한 줄에 뭉쳐</strong> 있나요? 칸을 몇 개로 나눌 수 있는지 세어 보세요.</li>
+      <li>② <strong>같은 기록으로 서로 다른 두 문장 써 보기.</strong> 그 항목 하나를 놓고 <strong>내부 진척 보고용 문장</strong>과 <strong>고객·상급자 보고용 문장</strong>을 각각 한 줄씩 써 보세요. 두 문장이 <strong>둘 다 참인데 인상이 다르다</strong>면, 그 차이를 만든 게 바로 여러분 팀의 판정 기준이에요. 그걸 한 문장으로 적어 두세요 — 7편에서 쓸 재료예요.</li>
+      <li>③ <strong>기준을 빼고 요청해 보고, 넣고 다시 요청해 보기.</strong> AI에게 기록만 주고 "완료 몇 건인지 세 줘"라고 해 본 다음, 이번엔 "완료는 배포와 운영 확인까지 끝난 건만 센다"를 붙여서 다시 물어보세요. <strong>답이 달라지는 지점</strong>이 곧 "이건 어딘가에 적어 둬야 하는 지식"이라는 신호예요.</li>
+    </ul>
     <p>여기까지 오면 <strong>무엇을 적어야 하는지</strong>는 손에 잡혔어요. 다음 편에서는 가상 제품팀의 규칙 문서를 실제로 읽히고, <strong>첫 주간 보고서 한 편을 끝까지 완성</strong>해 볼게요. Skill 파일을 쓰는 건 그다음(8편)이에요 — 순서가 반대면 적을 게 없거든요.</p>
 
     <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — AI가 쓴 주간 보고서가 팀 기준과 어긋날 때</h2>
@@ -397,7 +398,7 @@ note          : "코드 작성은 끝났으며 다음 배포를 기다린다."</
 
     <hr>
 
-    <h3>"MCP와 Skill로 에이전트에게 업무 맡기기" 시리즈</h3>
+    <h3>"MCP와 Skill로 업무 맡기기" 시리즈</h3>
     <a class="post-nav" href="mcp-skill-tool-call-anatomy.html">
       <span class="post-nav-label">(1)</span>
       <span class="post-nav-title">도구 하나가 호출되기까지 — 정의·파싱·구조화 요청</span>

@@ -50,23 +50,23 @@
         <dt>읽고 나면 할 수 있는 것</dt>
         <dd>
           <ul>
-            <li>세 역할을 회사 전화로 구분합니다 — 호스트(내가 쓰는 앱) · 클라이언트(호스트 안에서 서버 하나와 이어진 내선) · 서버(요청을 받아 자료를 읽어주는 프로그램).</li>
-            <li>두 종류의 메시지를 가릅니다 — "거기서 뭘 해 주나요?"(도구 목록)와 "그중 이걸 이 값으로 해 주세요"(도구 실행).</li>
-            <li>메시지 구조를 읽습니다 — 요청 번호(어느 답장이 어느 요청의 것인지 짝짓는 값) · 요청하는 작업 이름 · 딸려 보내는 입력.</li>
+            <li>세 역할을 구분할 수 있어요 — 호스트(내가 쓰는 앱) · 클라이언트(호스트 안에서 서버 하나와 이어진 연결 담당) · 서버(요청을 받아 자료를 읽어 주는 프로그램).</li>
+            <li>두 종류의 메시지를 가를 수 있어요 — "거기서 뭘 해 주나요?"(도구 목록)와 "그중 이걸 이 값으로 해 주세요"(도구 실행).</li>
+            <li>메시지 구조를 읽을 수 있어요 — 요청 번호(어느 답장이 어느 요청의 것인지 짝짓는 값) · 요청하는 작업 이름 · 딸려 보내는 입력.</li>
           </ul>
         </dd>
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>앱마다 코드를 따로 만들면 저장 위치가 바뀌는 날 두 벌을 다 고쳐야 하고, 한 벌만 고치면 팀원과 내 숫자가 달라집니다. <a class="suspect-jump" href="#suspect-two-apps-differ">언제 의심하나 ↓</a></li>
-            <li>"연결했다"와 "자료를 받았다"를 같은 상태로 착각하게 됩니다 — 메뉴판을 받은 것과 음식을 받은 것은 달라요. <a class="suspect-jump" href="#suspect-connected-not-read">언제 의심하나 ↓</a></li>
-            <li>서버가 시작될 때 상태 문구를 표준 출력으로 찍으면, 그 문장이 통신 통로에 섞여 나가 메시지 해석이 깨질 수 있습니다. <a class="suspect-jump" href="#suspect-print-stdout">언제 의심하나 ↓</a></li>
+            <li>앱마다 코드를 따로 만들면 저장 위치가 바뀌는 날 두 벌을 다 고쳐야 하고, 한 벌만 고치면 팀원과 내 숫자가 달라져요. <a class="suspect-jump" href="#suspect-two-apps-differ">언제 의심하나 ↓</a></li>
+            <li>"연결했다"와 "자료를 받았다"를 같은 상태로 착각하게 돼요 — 연결은 "어떤 도구가 있는지 안내를 받은" 데까지예요. <a class="suspect-jump" href="#suspect-connected-not-read">언제 의심하나 ↓</a></li>
+            <li>서버가 시작될 때 상태 문구를 표준 출력으로 찍으면, 그 문장이 통신 통로에 섞여 나가 메시지 해석이 깨질 수 있어요. <a class="suspect-jump" href="#suspect-print-stdout">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
         <dd>
           <ul>
-            <li><strong>MCP가 뭔지 설명을 여러 번 읽어도 안 잡힐 때.</strong> 등장인물이 셋(앱·연결·서버)인데 글마다 부르는 이름이 달라서 그래요. 회사 전화로 한 번 맞춰 두면 그다음 문서가 읽혀요.</li>
+            <li><strong>MCP가 뭔지 설명을 여러 번 읽어도 안 잡힐 때.</strong> 등장인물이 셋(앱·연결·서버)인데 글마다 부르는 이름이 달라서 그래요. 이 글의 세 역할 구분으로 한 번 맞춰 두면 그다음 문서가 읽혀요.</li>
             <li>같은 서버를 두 앱에 각각 연결해 결과가 어긋나지 않게 하기</li>
             <li>응답을 도착 순서가 아니라 요청 번호로 짝지어 처리하기</li>
             <li>상태 문구는 표준 오류로 따로 내보내고 반환값만 돌려주기</li>
@@ -84,7 +84,12 @@
     <p>가장 단순한 답은 "앱마다 기록 파일을 읽는 코드를 새로 만든다"예요. 처음 한 번은 이게 제일 빨라요. 문제는 그다음이에요. 기록 저장 위치가 바뀌면 두 벌을 다 고쳐야 하고, "부서 이름으로도 걸러 달라"는 조건이 추가되면 또 두 벌을 다 고쳐야 해요. 앱이 셋, 넷으로 늘면 고칠 곳도 그만큼 늘어요.</p>
     <p>그래서 <strong>경계를 하나 긋습니다.</strong> 기록을 읽는 일은 기록 읽는 프로그램이 혼자 맡고, AI와 대화하는 앱은 그 프로그램이 뭘 해 줄 수 있는지 물어보기만 해요. 이때 "물어보는 방식"과 "시키는 방식"을 <strong>모든 앱이 똑같이</strong> 쓰기로 약속하면, 프로그램은 한 번만 만들면 돼요.</p>
     <p>이 약속이 <strong>MCP<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>(Model Context Protocol)</strong>예요. 이름 끝의 <strong>프로토콜<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup></strong>은 프로그램들이 메시지를 주고받을 때 지키는 규칙이라는 뜻이에요. 왜 이런 공통 규칙이 필요한지는 <a href="mcp-usb-c-for-ai.html">MCP — AI를 내 데이터에 꽂는 USB-C</a>에서 "충전 단자를 하나로 통일하는 것"에 빗대어 처음 다뤘어요. 이번 편은 그 단자 안으로 실제로 어떤 신호가 흐르는지를 뜯어보는 셈이에요.</p>
-    <p>이번 실습에서 만들 프로그램의 이름은 <code>weekly-records</code>예요. <code>week-one</code>이나 <code>week-two</code>를 입력으로 받아 그 주의 가상 팀 기록을 돌려줘요. Claude Code와 OpenCode는 이 <strong>같은 서버 코드와 같은 자료</strong>를 쓸 수 있어요. 다만 앱에 서버를 등록하는 설정 화면이나 설정 파일 형식까지 똑같아지는 건 아니에요 — 등록하는 방법은 앱마다 조금씩 달라요.</p>
+    <p>이번 실습에서 만들 프로그램은 이렇게 나뉘어요.</p>
+    <ul>
+      <li><strong>이름과 일:</strong> <code>weekly-records</code>예요. <code>week-one</code>이나 <code>week-two</code>를 입력으로 받아 그 주의 가상 팀 기록을 돌려줘요.</li>
+      <li><strong>두 앱이 같이 쓰는 것:</strong> Claude Code와 OpenCode는 <strong>같은 서버 코드와 같은 자료</strong>를 쓸 수 있어요.</li>
+      <li><strong>앱마다 달라지는 것:</strong> 서버를 등록하는 설정 화면이나 설정 파일 형식까지 똑같아지는 건 아니에요 — 등록하는 방법은 앱마다 조금씩 달라요.</li>
+    </ul>
 
     <h2><span class="hl">비유</span> — 회사 대표번호와 전화 교환대</h2>
     <p>어떤 회사에 전화를 걸어요. 번호는 대표번호 하나뿐이에요. 전화를 받은 교환원이 "어느 부서 연결해 드릴까요?" 하고 물어요. 저는 "자료실 부탁드립니다"라고 하고, 교환원이 자료실로 <strong>내선을 하나 이어 줘요</strong>. 자료실 직원은 캐비닛에서 서류를 꺼내 읽어 주고요. 제가 자료실 캐비닛을 직접 연 게 아니에요 — 저는 교환대까지만 말했고, 캐비닛은 자료실 직원이 열었어요.</p>
@@ -107,9 +112,15 @@
 
     <h2><span class="hl">서버가 꼭 인터넷 어딘가의 큰 컴퓨터는 아니에요</span></h2>
     <p>'서버'라는 말을 들으면 인터넷 저쪽 어딘가에 있는 커다란 기계가 떠올라요. 저도 그랬어요. 그런데 이번 실습의 서버는 <strong>제 노트북에서 실행하는 작은 파이썬 프로그램 하나</strong>예요. 파일 이름은 <code>weekly_records_server.py</code>가 될 거고요.</p>
-    <p>서버라는 말은 기계의 크기나 위치가 아니라 <strong>역할</strong>을 가리켜요. "요청을 받으면 기능이나 자료를 제공하는 쪽"이면 서버예요. 그러니 별도 컴퓨터를 빌릴 필요가 없어요.</p>
-    <p>같은 이유로, 클라이언트와 서버가 <strong>같은 컴퓨터 안에서</strong> 돌아도 이 구분은 그대로예요. '어디에서 실행되는가'와 '어떤 역할을 하는가'는 서로 다른 질문이니까요.</p>
-    <p>한 가지 더 짚고 갈 게 있어요. Claude Code와 OpenCode를 둘 다 켜 놓고 같은 로컬<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup> 서버 코드를 각각 등록하면, <strong>각 앱이 자기 몫의 서버 프로세스<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup>를 따로 띄울 수 있어요.</strong> 같은 소스 파일을 쓴다는 말이 "실행 중인 프로그램 하나를 나눠 쓴다"는 뜻은 아니에요. 같은 요리책을 보고 두 집에서 각자 요리하는 것과 비슷해요.</p>
+    <p>서버라는 말은 기계의 크기나 위치가 아니라 <strong>역할</strong>을 가리켜요. "요청을 받으면 기능이나 자료를 제공하는 쪽"이면 서버예요. 그러니 별도 컴퓨터를 빌릴 필요가 없어요. 헷갈리기 쉬운 세 가지를 짝지어 보면 이래요.</p>
+    <table>
+      <thead><tr><th>이렇게 생각하기 쉬워요</th><th>실제로는</th></tr></thead>
+      <tbody>
+        <tr><td>서버는 인터넷 저쪽의 큰 컴퓨터다</td><td>역할을 가리키는 말이라 내 노트북 안의 작은 프로그램도 서버예요</td></tr>
+        <tr><td>클라이언트와 서버가 같은 컴퓨터에서 돌면 구분이 사라진다</td><td>'어디에서 실행되는가'와 '어떤 역할을 하는가'는 서로 다른 질문이라 구분은 그대로예요</td></tr>
+        <tr><td>두 앱이 같은 서버 코드를 쓰면 실행 중인 프로그램 하나를 나눠 쓴다</td><td>같은 로컬<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup> 서버 코드를 각각 등록하면 <strong>각 앱이 자기 몫의 서버 프로세스<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup>를 따로 띄울 수 있어요.</strong> 같은 요리책을 보고 두 집에서 각자 요리하는 것과 비슷해요</td></tr>
+      </tbody>
+    </table>
 
     <h2><span class="hl">전체 흐름 그림</span> — 호스트 안에 클라이언트, 밖에 서버</h2>
     <svg viewBox="0 0 760 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="큰 사각형 하나가 호스트(Claude Code 또는 OpenCode)이고, 그 안에 업무 기록 서버용 클라이언트와 문서 서버용 클라이언트 두 개가 들어 있다. 각 클라이언트에서 바깥의 weekly-records 서버와 문서 서버로 MCP 메시지 화살표가 오간다. 호스트 왼쪽에는 사용자가 있다.">
@@ -161,7 +172,7 @@
         <text x="380" y="322" text-anchor="middle" font-size="11" fill="var(--muted)">점선 상자는 "이렇게 늘릴 수 있다"는 확장 예이고, 이번 실습에서 만드는 건 실선 쪽 하나뿐이다</text>
       </g>
     </svg>
-    <p><strong>읽는 법:</strong> 굵은 테두리 큰 상자가 <strong>호스트</strong> 하나예요. 클라이언트는 호스트 <em>안에</em> 있고, 서버는 <em>밖에</em> 있어요. 이게 이 그림에서 제일 중요한 배치예요. 화살표가 오가는 지점을 보면, 모델과 서버는 <strong>서로 직접 말하지 않아요</strong> — 언제나 호스트를 거쳐요. 그리고 클라이언트는 서버 하나에 하나씩 붙어요. 서버를 세 개 연결하면 클라이언트도 세 개가 생겨요. 이번 수업에서 제가 클라이언트를 직접 만들거나 설치할 일은 없어요. 쓰고 있는 앱이 그 역할을 이미 하고 있어요.</p>
+    <p><strong>읽는 법:</strong> 굵은 테두리 큰 상자가 <strong>호스트</strong> 하나예요. 클라이언트는 호스트 <em>안에</em> 있고, 서버는 <em>밖에</em> 있어요. 이게 이 그림에서 제일 중요한 배치예요. 화살표가 오가는 지점을 보면, 모델과 서버는 <strong>서로 직접 말하지 않아요</strong> — 언제나 호스트를 거쳐요. 그리고 클라이언트는 서버 하나에 하나씩 붙어요. 서버를 세 개 연결하면 클라이언트도 세 개가 생겨요. 이 시리즈에서 제가 클라이언트를 직접 만들거나 설치할 일은 없어요. 쓰고 있는 앱이 그 역할을 이미 하고 있어요.</p>
     <p>제 말 한마디가 이 그림 위를 어떻게 지나가는지 순서대로 적으면 이래요. 제가 호스트에 "첫째 주 기록을 읽어 줘"라고 말하고 → 모델이 쓸 도구와 입력을 골라 호출을 요청하고 → 호스트가 "이 도구 실행해도 되나요" 같은 허용 절차를 처리하고 → 클라이언트가 그 요청을 서버에 전달하고 → 서버의 파이썬 코드가 기록을 읽어 결과를 돌려주고 → 호스트가 그 결과를 모델에게 넘겨 답변을 잇게 해요. <strong>도구를 고르는 모델과 파일을 실제로 읽는 서버는 끝까지 서로 다른 역할</strong>이에요.</p>
     <table>
       <thead><tr><th>역할</th><th>이번 실습에서는</th><th>문제가 생기면 여기를 본다</th></tr></thead>
@@ -338,10 +349,12 @@ print("서버가 시작되었습니다!", file=sys.stderr)</code></pre>
       </tbody>
     </table>
     <p>여기서 오해하기 쉬운 게 몇 개 있어서 하나씩 못 박고 갈게요.</p>
-    <p><strong>"도구는 뭔가를 고치는 작업만 한다"고 생각하면 안 돼요.</strong> <code>get_weekly_records</code>는 파일을 하나도 수정하지 않지만 분명한 도구예요. 검색·계산·조회처럼 "실행해서 결과를 내는 일"이면 다 도구가 될 수 있어요. 이걸 놓치면 읽기 전용 MCP 서버가 뭘 하는 물건인지 이해가 안 돼요.</p>
-    <p><strong>Resource의 주소는 웹 주소가 아니에요.</strong> <code>team://guide/terms</code>의 <code>team://</code> 부분이 <code>https://</code>처럼 생겼지만, 이건 자료를 구별하기 위한 식별자(URI<sup class="fn-ref"><a href="#fn16" id="fnref16">16</a></sup>)일 뿐이에요. 브라우저 주소창에 붙여 넣는다고 문서가 열리지 않아요. 호스트가 이 식별자로 자료를 가져와 대화에 넣어 주는 용도예요.</p>
-    <p><strong>같은 기록을 도구로 낼 수도 있고 자료로 낼 수도 있어요.</strong> 주차별 URI로 기록을 resource로 제공하는 설계도 충분히 가능해요. "읽는 거니까 무조건 resource"처럼 <strong>동사 하나로 정답을 정하지 않아요.</strong> 이번 서버에서는 입력과 호출이 오가는 걸 관찰하기 좋도록 tool 하나만 만들 거예요. 세 종류를 다 구현해야 MCP 서버가 되는 것도 아니고요.</p>
-    <p>마지막으로, 시리즈 뒤쪽에서 만들 <strong>Agent Skill</strong>과 여기 나온 <strong>MCP Prompt</strong>를 이름만 보고 같은 것으로 묶지 마세요. MCP Prompt는 <em>서버에서 발견해 가져오는 대화 템플릿</em>이고, Skill은 <em>에이전트가 특정 과업을 수행하도록 지식·절차·참고 자료를 묶어 둔 것</em>이에요. <a href="ai-skills-and-rules-files.html">스킬과 규칙 파일</a>에서 다뤘던 그 Skill은 <strong>MCP 없이도 쓸 수 있어요.</strong></p>
+    <ul>
+      <li><strong>"도구는 뭔가를 고치는 작업만 한다"고 생각하면 안 돼요.</strong> <code>get_weekly_records</code>는 파일을 하나도 수정하지 않지만 분명한 도구예요. 검색·계산·조회처럼 "실행해서 결과를 내는 일"이면 다 도구가 될 수 있어요. 이걸 놓치면 읽기 전용 MCP 서버가 뭘 하는 물건인지 이해가 안 돼요.</li>
+      <li><strong>Resource의 주소는 웹 주소가 아니에요.</strong> <code>team://guide/terms</code>의 <code>team://</code> 부분이 <code>https://</code>처럼 생겼지만, 이건 자료를 구별하기 위한 식별자(URI<sup class="fn-ref"><a href="#fn16" id="fnref16">16</a></sup>)일 뿐이에요. 브라우저 주소창에 붙여 넣는다고 문서가 열리지 않아요. 호스트가 이 식별자로 자료를 가져와 대화에 넣어 주는 용도예요.</li>
+      <li><strong>같은 기록을 도구로 낼 수도 있고 자료로 낼 수도 있어요.</strong> 주차별 URI로 기록을 resource로 제공하는 설계도 충분히 가능해요. "읽는 거니까 무조건 resource"처럼 <strong>동사 하나로 정답을 정하지 않아요.</strong> 이번 서버에서는 입력과 호출이 오가는 걸 관찰하기 좋도록 tool 하나만 만들 거예요. 세 종류를 다 구현해야 MCP 서버가 되는 것도 아니고요.</li>
+      <li>마지막으로, 시리즈 뒤쪽에서 만들 <strong>Agent Skill</strong>과 여기 나온 <strong>MCP Prompt</strong>를 이름만 보고 같은 것으로 묶지 마세요. MCP Prompt는 <em>서버에서 발견해 가져오는 대화 템플릿</em>이고, Skill은 <em>에이전트가 특정 과업을 수행하도록 지식·절차·참고 자료를 묶어 둔 것</em>이에요. <a href="ai-skills-and-rules-files.html">스킬과 규칙 파일</a>에서 다뤘던 그 Skill은 <strong>MCP 없이도 쓸 수 있어요.</strong></li>
+    </ul>
 
     <h2><span class="hl">원격 서버가 나눠 주는 것과 안 나눠 주는 것</span></h2>
     <p>우리가 만든 조회 기능을 다른 팀도 쓰게 하고 싶은데, 서버의 파이썬 코드나 원본 데이터베이스 전체까지 넘기고 싶지는 않을 수 있어요. 이럴 때는 제공하는 쪽이 서버를 운영하고, 쓰는 쪽 호스트가 <strong>원격(remote) MCP 서버</strong>에 접속하게 구성할 수 있어요.</p>
@@ -367,18 +380,18 @@ print("서버가 시작되었습니다!", file=sys.stderr)</code></pre>
     <p><strong>오른쪽 칸이 저절로 비공개가 되는 건 아니에요.</strong> 서버가 원본 자료를 응답에 담아 버리면 그 자료는 그대로 호스트로 넘어가요. API 키나 접근 토큰 같은 비밀도 도구 설명이나 결과에 섞어 넣으면 안 돼요. MCP는 HTTP 연결을 위한 권한 부여 규약도 함께 제공하지만, <strong>주소를 안다는 이유만으로 사내 자료를 볼 수 있게 되는 건 아니에요</strong> — 권한은 따로 챙겨야 하는 문제예요.</p>
     <p>솔직히 말하면, 소스 코드를 배포하지 않고 서버 쪽에서 기능을 실행하는 구조 자체는 <a href="what-is-api.html">일반적인 API</a>로도 가능해요. 이 구성에서 MCP가 더하는 이점은 그게 아니라 <strong>여러 호스트가 같은 방식으로 도구를 발견하고 호출할 수 있다</strong>는 점이에요. 처음 질문 — "같은 기능을 두 앱에서 어떻게 쓰나" — 로 돌아온 셈이죠.</p>
 
-    <h2><span class="hl">이번 편에 나온 구체적인 값</span></h2>
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 버전이 헷갈릴 때 보는 표</h2>
+    <p>역할·종류·통로의 개수와 세 가지 버전 숫자를 모았어요. 앞의 역할, 통로, 공개 종류 절과 JSON-RPC 절에서 온 값이에요.</p>
     <table>
-      <thead><tr><th>항목</th><th>값</th><th>조건·출처</th></tr></thead>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
       <tbody>
-        <tr><td>MCP의 역할 구분</td><td>3가지 (호스트 · 클라이언트 · 서버)</td><td>클라이언트는 호스트 <strong>안</strong>, 서버는 <strong>밖</strong></td></tr>
-        <tr><td>서버가 공개할 수 있는 종류</td><td>3가지 (tools · resources · prompts)</td><td>셋을 다 구현해야 MCP 서버가 되는 건 아님</td></tr>
-        <tr><td>표준 연결 통로</td><td>2가지 (stdio · Streamable HTTP)</td><td>인터넷 사용 여부가 아니라 "직접 실행 vs 주소로 접속"의 차이</td></tr>
-        <tr><td>한 번의 조회 단계</td><td>6단계 (연결 준비 → 목록 → 선택 → 전달 → 처리 → 활용)</td><td>매 대화마다 6단계가 다 반복되는 건 아님 — 목록은 보관될 수 있음</td></tr>
-        <tr><td>JSON-RPC 버전</td><td><code>2.0</code></td><td>메시지의 <code>jsonrpc</code> 항목 값 — SDK 버전·MCP 명세 버전과 다른 숫자</td></tr>
-        <tr><td>수업 서버가 쓴 MCP Python SDK</td><td>2.1.1</td><td>수업에서 서버를 제작한 버전 — 버전이 다르면 세부가 달라질 수 있음</td></tr>
-        <tr><td>실제 stdio 검증에서 통신한 MCP 명세</td><td>2025-11-25</td><td>SDK 클라이언트와의 검증에서 확인된 값 — 명세 버전은 날짜로 적음</td></tr>
-        <tr><td>실습에서 조회 가능한 주</td><td>2개 (<code>week-one</code>, <code>week-two</code>)</td><td>가상 제품팀 실습 자료의 범위 — 실제 회사 기록이 아님</td></tr>
+        <tr><td>MCP의 역할 구분</td><td>3가지 (호스트 · 클라이언트 · 서버)</td><td>클라이언트는 호스트 <strong>안</strong>, 서버는 <strong>밖</strong>이에요. 문제가 생기면 어느 역할에서 멈췄는지부터 가려요</td></tr>
+        <tr><td>서버가 공개할 수 있는 종류</td><td>3가지 (tools · resources · prompts)</td><td>셋을 다 구현해야 MCP 서버가 되는 건 아니에요. 같은 기록을 도구로도, 자료로도 낼 수 있어요</td></tr>
+        <tr><td>표준 연결 통로</td><td>2가지 (stdio · Streamable HTTP)</td><td>인터넷 사용 여부가 아니라 "직접 실행 vs 주소로 접속"의 차이예요. 서버 등록 때 실행 명령을 줄지 주소를 줄지 가려요</td></tr>
+        <tr><td>한 번의 조회 단계</td><td>6단계 (연결 준비 → 목록 → 선택 → 전달 → 처리 → 활용)</td><td>매 대화마다 6단계가 다 반복되는 건 아니에요 — 목록은 보관될 수 있어요</td></tr>
+        <tr><td>JSON-RPC 버전</td><td><code>2.0</code></td><td>메시지의 <code>jsonrpc</code> 항목 값이에요. SDK 버전·MCP 명세 버전과 다른 숫자예요</td></tr>
+        <tr><td>이 시리즈의 서버가 쓴 MCP Python SDK 버전</td><td>2.1.1</td><td>이 시리즈에서 서버를 만든 버전이에요. 버전이 다르면 세부가 달라질 수 있으니 내 환경 버전을 먼저 확인해요</td></tr>
+        <tr><td>실제 stdio 검증에서 통신한 MCP 명세 버전</td><td>2025-11-25</td><td>SDK 클라이언트와의 검증에서 확인된 값이에요. 명세 버전은 날짜로 적어요</td></tr>
       </tbody>
     </table>
     <p class="post-date">※ SDK 버전(2.1.1) · MCP 명세 버전(2025-11-25) · JSON-RPC 버전(2.0)은 <strong>서로 다른 세 가지 버전</strong>이에요. 같은 자리에 나오는 숫자가 아니니 헷갈리지 마세요.</p>
@@ -386,7 +399,12 @@ print("서버가 시작되었습니다!", file=sys.stderr)</code></pre>
     <h2><span class="hl">다음 편의 코드에서 찾을 세 곳</span></h2>
     <p>여기까지 오면 다음 절의 코드가 뭘 구현해야 하는지가 보여요. <strong>어떤 기능인지 설명하고, 입력을 받아 실제 자료를 읽고, 결과를 돌려주는 것</strong> 세 가지예요.</p>
     <p>다행히 제가 JSON-RPC 메시지를 직접 조립하거나 표준 입력을 한 줄씩 읽어 처리할 필요는 없어요. 그 연결 부분을 대신 해 주는 <strong>SDK<sup class="fn-ref"><a href="#fn18" id="fnref18">18</a></sup></strong>를 쓰거든요. SDK는 특정 기능을 개발할 때 필요한 코드와 도구를 미리 모아 둔 꾸러미예요.</p>
-    <p>다음 편에서 <code>weekly_records_server.py</code>를 읽을 때 이 세 곳을 찾아보세요. ① <code>get_weekly_records</code>라는 <strong>이름</strong>은 어디에서 정해지는가, ② <code>week</code>가 <strong>문자열</strong>이라는 규칙은 코드 어디에 적히는가, ③ 실제로 첫째 주 <strong>자료를 읽는</strong> 코드는 어디인가. 이 셋만 짚어도 서버 코드 전체가 훨씬 덜 낯설어요.</p>
+    <p>다음 편에서 <code>weekly_records_server.py</code>를 읽을 때 이 세 곳을 찾아보세요. 이 셋만 짚어도 서버 코드 전체가 훨씬 덜 낯설어요.</p>
+    <ol>
+      <li><code>get_weekly_records</code>라는 <strong>이름</strong>은 어디에서 정해지는가</li>
+      <li><code>week</code>가 <strong>문자열</strong>이라는 규칙은 코드 어디에 적히는가</li>
+      <li>실제로 첫째 주 <strong>자료를 읽는</strong> 코드는 어디인가</li>
+    </ol>
     <p>마지막으로 하나. <strong>서버를 추가하는 건 모델을 새로 훈련시키는 일이 아니에요.</strong> 모델이 필요할 때 쓸 기능을 연결하고, 그 실행 결과를 대화에 전달하는 일이에요. 모델 자체는 아무것도 배우지 않았어요.</p>
 
     <h2><span class="hl">직접 해보기</span></h2>
@@ -453,7 +471,7 @@ print("서버가 시작되었습니다!", file=sys.stderr)</code></pre>
 
     <hr>
 
-    <h3>"MCP와 Skill로 에이전트에게 업무 맡기기" 시리즈</h3>
+    <h3>"MCP와 Skill로 업무 맡기기" 시리즈</h3>
     <a class="post-nav" href="mcp-skill-tool-call-anatomy.html">
       <span class="post-nav-label">(1)</span>
       <span class="post-nav-title">도구 하나가 호출되기까지 — 정의·파싱·구조화 요청</span>

@@ -75,10 +75,14 @@
       </dl>
     </div>
 
-    <p>이 시리즈에서 저는 <strong>Skill<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>은 절차 지식</strong>이라고 계속 말해 왔어요. <a href="mcp-skill-why-skill-needed.html">6편</a>에서 "도구는 자료를 가져오고 Skill은 판단을 정한다"고 갈랐고, <a href="mcp-skill-writing-skill-md.html">8편</a>에서 그 판단을 실제로 <code>SKILL.md</code> 한 장에 옮겼죠.</p>
-    <p>그런데 <a href="mcp-skill-adapting-to-my-task.html">13편</a> 마지막에 질문 하나를 남겨 뒀어요. <strong>그 절차는 한 번 써 놓으면 그대로 고정되는 문서일까요, 아니면 실행을 거치면서 달라질 수 있는 물건일까요?</strong></p>
+    <p>이 시리즈에서 저는 <strong>Skill<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>은 절차 지식</strong>이라고 계속 말해 왔어요. <a href="mcp-skill-why-skill-needed.html">6편</a>에서 "도구는 자료를 가져오고 Skill은 판단을 정한다"고 갈랐고, <a href="mcp-skill-writing-skill-md.html">8편</a>에서 그 판단을 실제로 <code>SKILL.md</code> 한 장에 옮겼죠. 그런데 <a href="mcp-skill-adapting-to-my-task.html">13편</a> 마지막에 질문 하나를 남겨 뒀어요. <strong>그 절차는 한 번 써 놓으면 그대로 고정되는 문서일까요, 아니면 실행을 거치면서 달라질 수 있는 물건일까요?</strong></p>
     <p>Google Research 등의 연구진이 발표한 <strong>WikiSkill 논문</strong>은 이 질문을 <strong>에이전트의 실행 경험</strong>으로 다뤄요. 에이전트가 일을 하며 얻은 경험을 <strong>다음 실행에도 남는 영속 지식으로 정리하고</strong>, 그 지식을 바탕으로 <strong>실행 가능한 스킬을 갱신하는</strong> 틀이에요. 핵심은 <strong>경험과 지식과 스킬을 같은 것으로 취급하지 않는다</strong>는 데 있고요.</p>
-    <p>그리고 이 얘기가 남 얘기가 아니에요. 이 시리즈의 <a href="mcp-skill-first-weekly-report.html">7편</a>·<a href="mcp-skill-writing-skill-md.html">8편</a>·<a href="mcp-skill-reuse-verification.html">9편</a>에서 <strong>제가 이미 세 단계를 손으로 통과했거든요.</strong> 이번 편에서는 그 세 편과 이 연구의 세 요소를 나란히 놓고 읽어 볼게요.</p>
+    <p>그리고 이 얘기가 남 얘기가 아니에요. <strong>제가 이미 세 단계를 손으로 통과했거든요.</strong> 이번 편에서는 그 세 편과 이 연구의 세 요소를 나란히 놓고 읽어 볼게요.</p>
+    <ul>
+      <li><a href="mcp-skill-first-weekly-report.html">7편</a> — 첫 주 기록으로 보고서 쓰기</li>
+      <li><a href="mcp-skill-writing-skill-md.html">8편</a> — 그 판단을 <code>SKILL.md</code>로 남기기</li>
+      <li><a href="mcp-skill-reuse-verification.html">9편</a> — 새 대화에서 재사용 검증하기</li>
+    </ul>
 
     <h2><span class="hl">비유</span> — 동네 자동차 정비소에 있는 세 가지 종이</h2>
     <p>동네 자동차 정비소를 하나 떠올려 볼게요. 이 정비소에는 성격이 완전히 다른 <strong>종이 세 가지</strong>가 있어요.</p>
@@ -200,10 +204,15 @@
 
     <h2><span class="hl">연구가 보고한 비교 결과</span></h2>
     <p>그럼 이렇게 갈라 놓으면 실제로 더 나았을까요. 연구진은 <strong>벤치마크<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup></strong>로 비교했어요.</p>
-    <p>여러 벤치마크와 여러 모델 조건에서, <strong>위키를 거쳐 스킬을 갱신하는 방식</strong>은 <strong>스킬이 아예 없는 경우</strong>와 <strong>기존의 스킬 진화 방식</strong>보다 우위를 보였다고 보고했어요. 세 갈래를 나란히 놓고 잰 비교예요.</p>
-    <p>그리고 논문의 Figure 1에서는 <strong>강한 모델일수록 이점이 커지는 경향</strong>이 정성적으로 관찰됐어요. 이건 <strong>"모델만 좋으면 절차 같은 건 필요 없다"의 반대</strong>예요. 모델이 강할수록 <strong>축적된 지식을 읽어서 지금 과업에 맞는 절차로 써먹을 여지</strong>가 커질 수 있다는 관찰이거든요.</p>
-    <p>모델 <strong>사이</strong>의 전이도 관찰됐어요. 한 모델에서 진화한 스킬을 <strong>다른 모델에 이식</strong>했을 때, 그 모델이 <strong>자기 경험만으로</strong> 스킬을 진화시킨 경우보다 나은 결과를 보인 경우가 있었다고 해요. 정리된 지식과 실행 절차가 <strong>모델 하나의 대화 기록에만 묶이지 않을 가능성</strong>을 시험한 셈이죠.</p>
-    <p>다만 여기서 한 걸음 물러설게요. <strong>모든 스킬이 언제나 옮겨 간다는 보장은 아니에요.</strong> 이 연구가 관찰한 건 <strong>특정 벤치마크 과업과 비교 조건에서의 결과</strong>고, "경우가 있었다"는 표현은 <strong>"항상 그렇다"와 다른 말</strong>이에요.</p>
+    <table>
+      <thead><tr><th>비교한 것</th><th>연구가 보고한 것</th><th>읽을 때의 단서</th></tr></thead>
+      <tbody>
+        <tr><td><strong>위키를 거쳐 스킬을 갱신</strong> ↔ 스킬 없음 ↔ 기존의 스킬 진화 방식</td><td>여러 벤치마크와 여러 모델 조건에서 <strong>위키를 거치는 방식이 우위</strong>를 보였다고 보고했어요. 세 갈래를 나란히 놓고 잰 비교예요</td><td>논문이 고른 벤치마크와 모델 조건에서 잰 결과예요</td></tr>
+        <tr><td>모델의 강함 ↔ 이점의 크기</td><td>논문의 Figure 1에서 <strong>강한 모델일수록 이점이 커지는 경향</strong>이 정성적으로 관찰됐어요</td><td>"모델만 좋으면 절차 같은 건 필요 없다"의 반대예요. 모델이 강할수록 축적된 지식을 지금 과업에 맞는 절차로 써먹을 여지가 커질 수 있다는 <strong>관찰</strong>이에요</td></tr>
+        <tr><td>한 모델에서 진화한 스킬을 <strong>다른 모델에 이식</strong> ↔ 그 모델이 <strong>자기 경험만으로</strong> 진화시킨 스킬</td><td>이식한 쪽이 더 나은 결과를 보인 <strong>경우가 있었다</strong>고 해요</td><td>정리된 지식과 절차가 모델 하나의 대화 기록에만 묶이지 않을 가능성을 시험한 셈이에요. "경우가 있었다"는 "항상 그렇다"와 달라요</td></tr>
+      </tbody>
+    </table>
+    <p>다만 여기서 한 걸음 물러설게요. <strong>모든 스킬이 언제나 옮겨 간다는 보장은 아니에요.</strong> 이 연구가 관찰한 건 <strong>특정 벤치마크 과업과 비교 조건에서의 결과</strong>예요.</p>
 
     <h2><span class="hl">나쁜 선택 vs 좋은 선택</span> — 정비소에서 카드를 고칠 때</h2>
     <table class="choice-table">
@@ -243,31 +252,29 @@
     <p>그리고 한 가지 더요. <strong>스킬을 잘 쓰는 일</strong>과 <strong>스킬을 축적하는 일</strong>은 서로 다른 수준의 일이에요. 앞엣것은 <strong>주어진 절차를 읽고 적용하는</strong> 일이고, 뒤엣것은 <strong>실행 기록에서 재사용할 판단을 가려 내고 절차를 갱신하는</strong> 일이거든요. 이 시리즈에서 제가 한 건 대부분 앞엣것이었고, <a href="mcp-skill-writing-skill-md.html">8편</a>·<a href="mcp-skill-reuse-verification.html">9편</a>·<a href="mcp-skill-adapting-to-my-task.html">13편</a>에서야 뒤엣것에 손을 댔어요.</p>
     <p>그러니 <a href="mcp-skill-writing-skill-md.html">8편</a>에서 만든 Skill 폴더도 이 관점으로 다시 볼 수 있어요. <strong>한 번 쓰고 버리는 지시문 모음일 필요가 없어요.</strong> 실행 뒤에 확인한 실패 원인, 필요한 입력, 검증 순서, 예외 처리의 근거를 남기고 다음 절차에 반영한다면 <strong>경험이 쌓이는 지식 창고</strong>가 될 수 있어요.</p>
 
-    <h2><span class="hl">이번 편에 나온 구체적인 값</span></h2>
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 논문 결과를 내 작업에 옮기기 전에 볼 조건</h2>
+    <p>이 글에는 논문의 구체적인 점수가 나오지 않아서, 아래 표는 프레임의 개수와 결과를 읽을 때 붙는 조건만 모았어요. 비교 결과 자체는 앞의 "연구가 보고한 비교 결과" 표에 있어요.</p>
     <table>
-      <thead><tr><th>항목</th><th>값</th><th>조건·출처</th></tr></thead>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
       <tbody>
-        <tr><td>WikiSkill이 갈라 놓는 요소</td><td><strong>3가지</strong></td><td>실행 경험 · 영속 지식 기반(위키) · 실행 가능한 스킬 — 이 프레임의 핵심</td></tr>
-        <tr><td>①에서 ③으로 가는 지름길</td><td><strong>없음</strong></td><td>반드시 ②를 거치는 것이 이 프레임의 설계 — 그림의 화살표가 그 뜻</td></tr>
-        <tr><td>벤치마크에서 나란히 비교한 방식</td><td>3갈래</td><td>스킬 없음 / 기존 스킬 진화 방식 / <strong>위키를 거쳐 스킬 갱신</strong></td></tr>
-        <tr><td>그중 우위를 보인 방식</td><td><strong>위키를 거쳐 갱신</strong></td><td>여러 벤치마크·여러 모델 조건에서의 비교 — 논문이 보고한 결과</td></tr>
-        <tr><td>모델 성능과 이점의 관계</td><td>강할수록 이점이 커지는 <strong>경향</strong></td><td>Figure 1에서 <strong>정성적으로 관찰</strong> — 수치로 못 박은 법칙이 아님</td></tr>
-        <tr><td>모델 사이 스킬 이식 결과</td><td>더 나은 <strong>경우가 있었음</strong></td><td>자기 경험만으로 진화시킨 경우와의 비교 — <strong>항상 옮겨 간다는 보장 아님</strong></td></tr>
-        <tr><td>실험에서 활성 Skill을 넣은 위치</td><td><strong>시스템 지시에 전문</strong></td><td>자동 선택·점진 공개의 정확성까지 시험한 결과가 <strong>아님</strong></td></tr>
-        <tr><td>수정한 Skill의 채택 판단</td><td><strong>별도 검증 과제</strong></td><td>평가 후 <strong>채택하거나 되돌림</strong> — 고쳤다고 다 쓴 것이 아님</td></tr>
-        <tr><td>Figure 1이 보여 주는 값의 성격</td><td><strong>벤치마크 평균</strong></td><td>모든 모델·과제 조합에서 향상됐다는 뜻이 <strong>아님</strong></td></tr>
-        <tr><td>이 시리즈에서 세 요소와 관문에 대응한 편</td><td>3편 (7·8·9편)</td><td>실행 경험(7편) → 지식·절차 정리(8편) → 재사용 검증(9편) 순서로 이미 통과함</td></tr>
+        <tr><td>WikiSkill이 갈라 놓는 요소</td><td><strong>3가지</strong></td><td>실행 경험 · 영속 지식 기반(위키) · 실행 가능한 스킬. 내 Skill 폴더를 이 세 칸으로 나눠 보면 어느 칸이 비었는지 보여요</td></tr>
+        <tr><td>경험에서 스킬로 가는 지름길</td><td><strong>0개</strong></td><td>①에서 ③으로 바로 가지 않고 반드시 ②를 거쳐요. 일지를 그대로 카드에 옮기면 이 길을 건너뛴 거예요</td></tr>
+        <tr><td>벤치마크에서 나란히 비교한 방식</td><td>3갈래</td><td>스킬 없음 / 기존 스킬 진화 방식 / 위키를 거쳐 스킬 갱신</td></tr>
+        <tr><td>실험에서 활성 Skill을 넣은 위치</td><td><strong>시스템 지시에 전문</strong></td><td>Skill 자동 선택이나 점진 공개의 정확성까지 시험한 결과는 아니에요. 필요할 때만 꺼내 읽는 내 환경에 그대로 옮기지 않아요</td></tr>
+        <tr><td>Figure 1이 보여 주는 값의 성격</td><td><strong>벤치마크 평균</strong></td><td>모든 모델·과제 조합에서 향상됐다는 뜻이 아니에요. 평균이 올라도 개별 조합에서는 떨어진 자리가 있을 수 있어요</td></tr>
       </tbody>
     </table>
-    <p class="post-date">※ 위 표에서 <strong>비교 결과에 해당하는 줄들은 논문이 자기 벤치마크와 모델 조건에서 측정해 보고한 값</strong>이고, 제 컴퓨터나 여러분의 저장소에서 잰 값이 아니에요. 특히 "강할수록 이점이 커지는 경향"과 "이식이 더 나은 경우가 있었음"은 <strong>정성적 관찰과 일부 사례</strong>를 옮긴 표현이라, <strong>"항상 그렇다"로 읽으면 원문이 하지 않은 말</strong>이 됩니다.</p>
+    <p class="post-date">※ 비교 결과와 "강할수록 이점이 커지는 경향", "이식이 더 나은 경우가 있었음"은 <strong>논문이 자기 벤치마크와 모델 조건에서 측정해 보고한 정성적 관찰과 일부 사례</strong>를 옮긴 것이에요. 제 컴퓨터나 여러분의 저장소에서 잰 값이 아니라서 <strong>"항상 그렇다"로 읽으면 원문이 하지 않은 말</strong>이 됩니다.</p>
 
     <h2><span class="hl">직접 해보기</span></h2>
     <p>이번 편의 연습은 <strong>내 Skill 폴더를 세 요소로 갈라 보는 것</strong>이에요. 종이 한 장이면 됩니다.</p>
-    <p>① <strong>지금 내 폴더에서 셋을 찾아 적기.</strong> <strong>실행 경험</strong>에 해당하는 파일(작업 메모·대화 기록·결과물), <strong>지식</strong>에 해당하는 파일(<code>references/</code> 안의 문서), <strong>실행 절차</strong>에 해당하는 파일(<code>SKILL.md</code> 본문)을 각각 <strong>경로째</strong> 적어 보세요. <strong>비어 있는 칸이 어디인지</strong>가 이 연습의 절반이에요 — 대개 <strong>지식 칸</strong>이 비어 있고, 경험이 곧바로 절차로 올라가 있어요.</p>
-    <p>② <strong>절차에 올라가면 안 될 한 줄 찾기.</strong> <code>SKILL.md</code> 본문을 읽으면서 <strong>"이건 그때 그 입력에서만 맞았던 거 아닌가?"</strong> 싶은 문장을 <strong>딱 하나</strong>만 찾아 보세요. 못 찾으면 좋은 거고, 찾으면 그게 <strong>일지를 그대로 벽에 붙인 자리</strong>예요.</p>
-    <p>③ <strong>그 한 줄을 지식 칸으로 내리기.</strong> 지운다는 뜻이 아니에요. <strong>참조 문서에 조건과 함께 옮겨 적으세요</strong> — "이런 상황에서는 이렇게 했고, 이유는 이거였다"로요. 절차에는 <strong>여러 입력에서 반복된 것만</strong> 남깁니다.</p>
-    <p>④ <strong>고친 다음에 반드시 다시 재기.</strong> <a href="mcp-skill-reuse-verification.html">9편</a>에서 했던 것처럼 <strong>새 대화</strong>를 열고, <strong>고치기 전에 통과했던 입력</strong>을 다시 넣어 보세요. 좋아졌으면 채택하고, <strong>나빠졌으면 되돌리세요.</strong> 이 되돌리는 동작이 그림의 <strong>관문</strong>이고, 없으면 순환이 그냥 표류합니다.</p>
-    <p>⑤ <strong>"안 남길 것"도 한 줄 정하기.</strong> 무엇을 남길지만큼 <strong>무엇은 안 남길지</strong>가 중요해요. 예를 들어 <strong>한 번뿐인 환경 오류</strong>나 <strong>제가 오타를 냈던 시행</strong>은 지식이 아니에요. 이 기준을 한 줄로 적어 두면 폴더가 두꺼워지기만 하는 걸 막아 줍니다.</p>
+    <ol>
+      <li><strong>지금 내 폴더에서 셋을 찾아 적기.</strong> <strong>실행 경험</strong>에 해당하는 파일(작업 메모·대화 기록·결과물), <strong>지식</strong>에 해당하는 파일(<code>references/</code> 안의 문서), <strong>실행 절차</strong>에 해당하는 파일(<code>SKILL.md</code> 본문)을 각각 <strong>경로째</strong> 적어 보세요. <strong>비어 있는 칸이 어디인지</strong>가 이 연습의 절반이에요 — 대개 <strong>지식 칸</strong>이 비어 있고, 경험이 곧바로 절차로 올라가 있어요.</li>
+      <li><strong>절차에 올라가면 안 될 한 줄 찾기.</strong> <code>SKILL.md</code> 본문을 읽으면서 <strong>"이건 그때 그 입력에서만 맞았던 거 아닌가?"</strong> 싶은 문장을 <strong>딱 하나</strong>만 찾아 보세요. 못 찾으면 좋은 거고, 찾으면 그게 <strong>일지를 그대로 벽에 붙인 자리</strong>예요.</li>
+      <li><strong>그 한 줄을 지식 칸으로 내리기.</strong> 지운다는 뜻이 아니에요. <strong>참조 문서에 조건과 함께 옮겨 적으세요</strong> — "이런 상황에서는 이렇게 했고, 이유는 이거였다"로요. 절차에는 <strong>여러 입력에서 반복된 것만</strong> 남깁니다.</li>
+      <li><strong>고친 다음에 반드시 다시 재기.</strong> <a href="mcp-skill-reuse-verification.html">9편</a>에서 했던 것처럼 <strong>새 대화</strong>를 열고, <strong>고치기 전에 통과했던 입력</strong>을 다시 넣어 보세요. 좋아졌으면 채택하고, <strong>나빠졌으면 되돌리세요.</strong> 이 되돌리는 동작이 그림의 <strong>관문</strong>이고, 없으면 순환이 그냥 표류합니다.</li>
+      <li><strong>"안 남길 것"도 한 줄 정하기.</strong> 무엇을 남길지만큼 <strong>무엇은 안 남길지</strong>가 중요해요. 예를 들어 <strong>한 번뿐인 환경 오류</strong>나 <strong>제가 오타를 냈던 시행</strong>은 지식이 아니에요. 이 기준을 한 줄로 적어 두면 폴더가 두꺼워지기만 하는 걸 막아 줍니다.</li>
+    </ol>
     <p>정답은 하나가 아니에요. 이 편이 드리는 건 <strong>연구가 쓴 결론</strong>이 아니라 <strong>경험·지식·절차를 갈라 보는 자</strong>예요. 그 자로 제 폴더를 재 보는 건 <strong>제 조건에서 직접</strong> 해야 하는 일이고요.</p>
 
     <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 지침을 고친 뒤 AI가 전과 다르게 굴 때</h2>
@@ -329,7 +336,7 @@
 
     <hr>
 
-    <h3>"MCP와 Skill로 에이전트에게 업무 맡기기" 시리즈</h3>
+    <h3>"MCP와 Skill로 업무 맡기기" 시리즈</h3>
     <a class="post-nav" href="mcp-skill-tool-call-anatomy.html">
       <span class="post-nav-label">(1)</span>
       <span class="post-nav-title">도구 하나가 호출되기까지 — 정의·파싱·구조화 요청</span>

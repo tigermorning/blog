@@ -76,7 +76,7 @@
       <span class="post-nav-title">안전하게 쓰고 평가하기 — 권한·회귀·과제 제출 (3)</span>
     </a>
 
-    <p>새 코스가 시작됐다 — "나만의 챗봇 서비스 만들기". 이번 코스는 총 9개 노드로 구성되고, 마지막 노드에서 내가 고른 주제로 챗봇을 직접 만들어 제출하는 게 목표다. 다만 오늘 노드는 코드를 짜는 자리가 아니다. 앞으로 8개 노드에 걸쳐 만들 것의 전체 그림을 먼저 보고, 왜 이 순서로 쌓아야 하는지를 이해하는 <strong>개관(오버뷰)</strong> 노드다. 그래서 이 글도 코드보다 그림 위주로, 완전히 새로 시작하는 사람도 따라올 수 있게 풀어본다.</p>
+    <p>새 시리즈가 시작된다 — "나만의 챗봇 만들기". 이 시리즈는 총 9편으로 구성되고, 마지막 편에서 내가 고른 주제로 챗봇을 직접 만들어 제출하는 게 목표다. 다만 이 글은 코드를 짜는 자리가 아니다. 앞으로 8편에 걸쳐 만들 것의 전체 그림을 먼저 보고, 왜 이 순서로 쌓아야 하는지를 이해하는 <strong>개관(오버뷰)</strong> 글이다. 그래서 코드보다 그림 위주로, 완전히 새로 시작하는 사람도 따라올 수 있게 풀어본다.</p>
 
     <h2>1. <span class="hl">왜 그냥 챗봇이 아니라 "근거를 보여주는" 챗봇인가</span></h2>
     <p>일반 AI 챗봇에 "OO 행사가 언제 열리나요?"라고 물으면, 모델은 답을 그럴듯하게 지어낼 수 있다. 학습할 때 본 적 없는 정보라도 문장을 만드는 능력 자체는 있기 때문이다. 이렇게 근거 없이 만들어낸 틀린 답을 <strong>환각(hallucination)</strong>이라 부른다 — <a href="agent-tool-design-and-harness.html">이전 시리즈</a>에서도 다룬 문제다.</p>
@@ -92,8 +92,17 @@
     <p>이번 프로젝트의 완성형 참조 구현은 모두의연구소 컨퍼런스 <strong>모두콘</strong>을 안내하는 챗봇이다. <code>suncreation.github.io/moducon-chatbot</code>에서 직접 열어 동작을 확인할 수 있다. 첫 화면은 단순한 대화창이 아니라 행사 소개·연혁·프로그램·FAQ와 챗봇 상태까지 함께 보여주는 안내 공간으로 구성돼 있다.</p>
     <p>그런데 이 앱에는 눈에 잘 안 띄는 특이한 점이 하나 있다 — <strong>서버가 없다</strong>. 질문에 답하는 AI 연산을 어딘가의 클라우드 서버가 대신 해주는 게 아니라, <strong>이 페이지를 연 사용자의 컴퓨터가 직접</strong> 두 가지 일을 한다. 하나는 브라우저 안에서 질문을 숫자로 바꾸고(임베딩) 검색하는 일이고, 다른 하나는 그 사람 컴퓨터에 설치된 <strong>로컬 Ollama</strong>(<a href="running-local-llm-with-ollama.html">직접 Ollama로 로컬 LLM 돌려보기</a>에서 설치한 바로 그 프로그램, qwen3.5:2b 모델)가 실제 답변 문장을 만드는 일이다.</p>
 
-    <p>이게 왜 특이한 구조인지는 보통의 AI 챗봇과 비교해보면 드러난다. 흔한 구조는 <strong>브라우저 → 내 서버 → 클라우드 LLM API</strong>다. 서버가 중간에 끼는 이유는 두 가지다. 하나는 <strong>API 키를 숨기기 위해서</strong> — LLM API 키를 브라우저 코드에 그대로 넣으면 누구나 열어서 훔쳐 쓸 수 있으니, 서버가 대신 갖고 있다가 요청을 대신 보내준다. 다른 하나는 <strong>무거운 연산을 대신 처리하기 위해서</strong> — 임베딩 계산이나 모델 추론은 계산량이 커서 보통 서버(혹은 서버 뒤의 GPU)가 떠맡는다.</p>
-    <p>그런데 이 앱이 올라가는 <strong>GitHub Pages는 정적 파일(HTML·CSS·JS)만 나눠줄 뿐, 서버 코드 자체를 돌릴 수 없는 곳</strong>이다. 그 자리를 채우는 대신, 서버가 하던 두 가지 일을 통째로 <strong>방문자 자신의 컴퓨터</strong>로 떠넘긴 것이다. 임베딩·검색은 브라우저 안 WASM이 대신 계산하고, 답변 생성은 애초에 클라우드 API를 호출하지 않고 방문자 컴퓨터의 로컬 Ollama가 처리하니 숨겨야 할 API 키도 없다. 그 결과 "AI 챗봇인데 서버 비용이 0원"인 구조가 되지만, 대가로 방문자가 임베딩 모델(약 200MB)을 내려받고 Ollama를 직접 켜둬야 하는 불편을 떠안는다.</p>
+    <p>이게 왜 특이한 구조인지는 보통의 AI 챗봇과 비교해보면 드러난다. 흔한 구조는 <strong>브라우저 → 내 서버 → 클라우드 LLM API</strong>이고, 서버가 중간에 끼는 이유는 두 가지다.</p>
+    <table>
+      <thead>
+        <tr><th>서버가 하던 일</th><th>흔한 구조에서는</th><th>이 앱에서는</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>API 키 숨기기</strong></td><td>LLM API 키를 브라우저 코드에 그대로 넣으면 누구나 열어서 훔쳐 쓸 수 있으니, 서버가 대신 갖고 있다가 요청을 대신 보내준다</td><td>클라우드 API를 호출하지 않고 방문자 컴퓨터의 로컬 Ollama가 답변을 만드니 숨겨야 할 키가 없다</td></tr>
+        <tr><td><strong>무거운 연산 대신 처리</strong></td><td>임베딩 계산이나 모델 추론은 계산량이 커서 보통 서버(혹은 서버 뒤의 GPU)가 떠맡는다</td><td>임베딩·검색은 브라우저 안 WASM(브라우저 안에서 빠르게 도는 실행 형식)이 계산하고, 답변 생성은 로컬 Ollama가 처리한다</td></tr>
+      </tbody>
+    </table>
+    <p>이 앱이 올라가는 <strong>GitHub Pages는 정적 파일(HTML·CSS·JS)만 나눠줄 뿐, 서버 코드 자체를 돌릴 수 없는 곳</strong>이다. 그 자리를 채우는 대신, 서버가 하던 두 가지 일을 통째로 <strong>방문자 자신의 컴퓨터</strong>로 떠넘긴 것이다. 그 결과 "AI 챗봇인데 서버 비용이 0원"인 구조가 되지만, 대가로 방문자가 임베딩 모델(약 200MB)을 내려받고 Ollama를 직접 켜둬야 하는 불편을 떠안는다.</p>
 
     <figure>
       <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="fig1title">
@@ -147,7 +156,7 @@
       <figcaption>GitHub Pages는 페이지 파일만 나눠줄 뿐, 질문을 이해하고 답을 만드는 연산은 전부 방문자 자신의 컴퓨터(브라우저 + 로컬 Ollama) 안에서 끝난다.</figcaption>
     </figure>
 
-    <p>이 구조 때문에 실제로 써보려면 조건이 두 가지 붙는다. 첫 방문 때 임베딩 모델을 한 번 내려받아야 하고(약 200MB), 답변을 받으려면 자기 컴퓨터에 Ollama가 실행 중이어야 한다. 그리고 원격 주소의 웹페이지가 내 컴퓨터에서 돌아가는 Ollama와 통신하려면, 브라우저 보안 정책상 기본적으로는 막혀 있는 걸 <strong>CORS</strong>라는 허용 설정(<code>OLLAMA_ORIGINS</code>)으로 풀어줘야 한다. CORS가 정확히 왜 필요한 규칙인지는 <a href="connecting-frontend-backend.html">AI로 프론트-백엔드 연결하기</a>에 더 자세히 정리해 뒀다. 이 설정 방법 자체는 다음 노드들의 구현 단계에서 실습으로 다룬다.</p>
+    <p>이 구조 때문에 실제로 써보려면 조건이 두 가지 붙는다. 첫 방문 때 임베딩 모델을 한 번 내려받아야 하고(약 200MB), 답변을 받으려면 자기 컴퓨터에 Ollama가 실행 중이어야 한다. 그리고 원격 주소의 웹페이지가 내 컴퓨터에서 돌아가는 Ollama와 통신하려면, 브라우저 보안 정책상 기본적으로는 막혀 있는 걸 <strong>CORS</strong>라는 허용 설정(<code>OLLAMA_ORIGINS</code>)으로 풀어줘야 한다. CORS가 정확히 왜 필요한 규칙인지는 <a href="connecting-frontend-backend.html">AI로 프론트-백엔드 연결하기</a>에 더 자세히 정리해 뒀다. 이 설정 방법 자체는 뒤따르는 글들의 구현 단계에서 실습으로 다룬다.</p>
 
     <h2>3. <span class="hl">기존 파이썬 실습과 다른 두 가지</span></h2>
     <p>지금까지의 실습은 대부분 파이썬 스크립트를 돌리고 결과를 확인하는 식이었다. 이번 프로젝트는 다르다.</p>
@@ -158,7 +167,7 @@
     <p>즉 "만들면 끝"이 아니라 "만든 다음 내 손으로 개선까지" 해보는 게 이번 프로젝트의 핵심이다.</p>
 
     <h2>4. <span class="hl">학습 목표 여섯 가지</span></h2>
-    <p>이번 코스 전체가 끝나면 아래 여섯 가지를 할 수 있어야 한다. 각각 뒤에 나올 노드들과 짝지어 두면 지도가 더 선명해진다.</p>
+    <p>이 시리즈를 끝까지 따라가면 아래 여섯 가지를 할 수 있어야 한다. 각각 뒤에 나올 글들과 짝지어 두면 지도가 더 선명해진다.</p>
     <ul>
       <li><strong>기획하기</strong> — 자기 도메인(관심 주제)의 안내 챗봇을 PRD(제품 요구사항 문서)부터 스스로에게 질문하며 기획한다.</li>
       <li><strong>자료 준비하기</strong> — 공개 자료를 모으고, 청크(작은 조각)와 임베딩(숫자로 바꾼 값)을 구성해 브라우저 안에 벡터스토어(검색 가능한 자료 창고)를 만든다.</li>
@@ -287,32 +296,32 @@
       <li>출처 칩, 근거 모달(팝업), 검색 단계, 경고 배지를 화면에 보이게 만든다.</li>
       <li>선택 엔진, LLM-as-Judge, 사람 피드백, GitHub Pages 배포, 수용 기준 점검을 한 화면의 사용 경험으로 묶는다.</li>
     </ol>
-    <p>이 순서 자체가 특정 도구를 써야 한다는 정답이 아니다. <strong>"질문이 입력된 순간부터 근거와 답변과 판정이 각각 눈으로 확인 가능해야 한다"</strong>는 설계 원칙을, 그대로 구현하는 순서로 바꿔 놓은 것뿐이다. 그래서 청크·ID 규칙(③④)이 벡터스토어(⑤)보다 먼저 오고, 검색(⑧)이 프롬프트 조립(⑨)보다 먼저 오며, 판정(⑫)이 맨 마지막에 오는 순서가 전부 이유를 갖는다.</p>
+    <p>이 순서 자체가 특정 도구를 써야 한다는 정답이 아니다. <strong>"질문이 입력된 순간부터 근거와 답변과 판정이 각각 눈으로 확인 가능해야 한다"</strong>는 설계 원칙을, 그대로 구현하는 순서로 바꿔 놓은 것뿐이다. 그래서 위 목록에서 청크·ID 규칙(3·4번)이 벡터스토어(5번)보다 먼저 오고, 검색(8번)이 프롬프트 조립(9번)보다 먼저 오며, 판정(12번)이 맨 마지막에 오는 순서가 전부 이유를 갖는다.</p>
 
     <h2>7. <span class="hl">더 깊이 갈 사람을 위한 길</span> — 로컬과 API 비교</h2>
-    <p>기본 경로는 로컬 Ollama만으로 완결된다. 그런데 예시 구현에는 <strong>Gemini API</strong>를 쓰는 선택 엔진도 함께 자리 잡고 있어서, 로컬 무료 경로를 유지하면서 API 키를 입력하는 경로를 나란히 비교해볼 수 있다. 같은 질문을 두 엔진에 각각 던져보면 답변이 나오는 리듬과 판정 결과가 어떻게 달라지는지 관찰할 수 있고, 이 비교 자체가 나중에 판정(LLM-as-Judge) 단계의 실험 재료가 된다. 지도를 접어 주머니에 넣는 것과 실제로 첫걸음을 떼는 것은 다른 일이다 — 다음 노드부터 진짜로 걷기 시작한다.</p>
+    <p>기본 경로는 로컬 Ollama만으로 완결된다. 그런데 예시 구현에는 <strong>Gemini API</strong>를 쓰는 선택 엔진도 함께 자리 잡고 있어서, 로컬 무료 경로를 유지하면서 API 키를 입력하는 경로를 나란히 비교해볼 수 있다. 같은 질문을 두 엔진에 각각 던져보면 답변이 나오는 리듬과 판정 결과가 어떻게 달라지는지 관찰할 수 있고, 이 비교 자체가 나중에 판정(LLM-as-Judge) 단계의 실험 재료가 된다. 지도를 접어 주머니에 넣는 것과 실제로 첫걸음을 떼는 것은 다른 일이다 — 다음 글부터 진짜로 걷기 시작한다.</p>
 
-    <h2><span class="hl">이번 코스의 아홉 노드</span></h2>
-    <p>오늘은 이 중 1번, 전체 지도를 그리는 자리였다. 나머지 여덟 노드에서 하나씩 실제로 만들어 나갈 예정이다.</p>
+    <h2><span class="hl">이 시리즈의 아홉 편</span></h2>
+    <p>이 글은 이 중 1번째, 전체 지도를 그리는 글이다. 나머지 여덟 편에서 하나씩 실제로 만들어 나간다.</p>
     <table>
       <thead>
-        <tr><th>#</th><th>노드</th><th>이 글과의 관계</th></tr>
+        <tr><th>#</th><th>글</th></tr>
       </thead>
       <tbody>
-        <tr><td>1</td><td>메인 프로젝트 — RAG 가이드 챗봇을 만들고 배포하고 평가하기</td><td>이 글 (개관)</td></tr>
-        <tr><td>2</td><td><a href="rag-chatbot-prd-questions.html">바이브 코딩의 첫 문장 — PRD를 스스로에게 묻기</a></td><td>발행</td></tr>
-        <tr><td>3</td><td><a href="rag-chatbot-chunk-design.html">검색되는 자료와 답할 수 있는 자료는 다르다 — 청크 설계</a></td><td>발행</td></tr>
-        <tr><td>4</td><td><a href="rag-chatbot-embedding-vectorstore.html">브라우저 안에서 문장을 좌표로 바꾸기 — 임베딩과 벡터스토어</a></td><td>발행</td></tr>
-        <tr><td>5</td><td><a href="rag-chatbot-hybrid-search.html">가까운 청크를 고른다 — 하이브리드 검색</a></td><td>발행</td></tr>
-        <tr><td>6</td><td><a href="rag-chatbot-prompt-streaming.html">프롬프트는 근거의 경계다 — 프롬프트 조립과 로컬 LLM 스트리밍</a></td><td>발행</td></tr>
-        <tr><td>7</td><td><a href="rag-chatbot-llm-judge.html">답변 뒤에 심사위원 하나를 더 둔다 — LLM-as-a-Judge</a></td><td>발행</td></tr>
-        <tr><td>8</td><td><a href="rag-chatbot-prompt-experiment.html">감이 아니라 기록으로 — 나만의 루브릭으로 실험하기</a></td><td>발행</td></tr>
-        <tr><td>9</td><td><a href="rag-chatbot-submission.html">지도를 접고 첫걸음을 — 배포와 제출</a></td><td>발행 (최종 과제 제출)</td></tr>
+        <tr><td>1</td><td>근거를 보여주는 챗봇 만들기 — 프로젝트 개관 (이 글)</td></tr>
+        <tr><td>2</td><td><a href="rag-chatbot-prd-questions.html">바이브 코딩의 첫 문장 — PRD를 스스로에게 묻기</a></td></tr>
+        <tr><td>3</td><td><a href="rag-chatbot-chunk-design.html">검색되는 자료와 답할 수 있는 자료는 다르다 — 청크 설계</a></td></tr>
+        <tr><td>4</td><td><a href="rag-chatbot-embedding-vectorstore.html">브라우저 안에서 문장을 좌표로 바꾸기 — 임베딩과 벡터스토어</a></td></tr>
+        <tr><td>5</td><td><a href="rag-chatbot-hybrid-search.html">가까운 청크를 고른다 — 코사인과 BM25의 하이브리드 검색</a></td></tr>
+        <tr><td>6</td><td><a href="rag-chatbot-prompt-streaming.html">프롬프트는 근거의 경계다 — 프롬프트 조립과 로컬 LLM 스트리밍</a></td></tr>
+        <tr><td>7</td><td><a href="rag-chatbot-llm-judge.html">답변 뒤에 심사위원 하나를 더 둔다 — LLM-as-a-Judge</a></td></tr>
+        <tr><td>8</td><td><a href="rag-chatbot-prompt-experiment.html">감이 아니라 기록으로 — 나만의 루브릭으로 실험하기</a></td></tr>
+        <tr><td>9</td><td><a href="rag-chatbot-submission.html">지도를 접고 첫걸음을 — 배포와 제출</a> (최종 과제 제출)</td></tr>
       </tbody>
     </table>
 
     <h2><span class="hl">정리</span></h2>
-    <p>오늘 확인한 건 결국 하나다 — 이 프로젝트가 지키려는 약속은 <strong>"내 컴퓨터 안에서, 진짜 자료에 근거해서, 그 근거와 확신도까지 같이 보여주는 챗봇"</strong>이라는 것. 임베딩·하이브리드 검색·프롬프트 조립·판정이라는 낯선 낱말들도, 전부 이 약속 하나를 지키기 위한 부품이라고 생각하면 훨씬 덜 낯설다. 다음 노드부터는 이 약속을 실제 코드로 옮기는 첫걸음, PRD를 스스로에게 질문하는 자리로 이어진다.</p>
+    <p>오늘 확인한 건 결국 하나다 — 이 프로젝트가 지키려는 약속은 <strong>"내 컴퓨터 안에서, 진짜 자료에 근거해서, 그 근거와 확신도까지 같이 보여주는 챗봇"</strong>이라는 것. 임베딩·하이브리드 검색·프롬프트 조립·판정이라는 낯선 낱말들도, 전부 이 약속 하나를 지키기 위한 부품이라고 생각하면 훨씬 덜 낯설다. 다음 글부터는 이 약속을 실제 코드로 옮기는 첫걸음, PRD를 스스로에게 질문하는 자리로 이어진다.</p>
 
 
     <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 챗봇을 만들다 중간에 막혔을 때</h2>
@@ -338,6 +347,42 @@
       </tbody>
     </table>
     <p>세 줄 다 "나중에 고치면 되지"가 잘 안 통하는 자리다. 청크와 꼬리표가 빠진 채로 벡터를 만들어 두면, 나중에 채우려 할 때 <strong>임베딩부터 다시</strong> 돌려야 하기 때문이다.</p>
+
+    <h3>"나만의 챗봇 만들기" 시리즈</h3>
+    <p class="post-date">(1) 근거를 보여주는 챗봇 만들기 — 프로젝트 개관 (이 글)</p>
+    <a class="post-nav" href="rag-chatbot-prd-questions.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">바이브 코딩의 첫 문장 — PRD를 스스로에게 묻기</span>
+    </a>
+    <a class="post-nav" href="rag-chatbot-chunk-design.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">검색되는 자료와 답할 수 있는 자료는 다르다 — 청크 설계</span>
+    </a>
+    <a class="post-nav" href="rag-chatbot-embedding-vectorstore.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">브라우저 안에서 문장을 좌표로 바꾸기 — 임베딩과 벡터스토어</span>
+    </a>
+    <a class="post-nav" href="rag-chatbot-hybrid-search.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">가까운 청크를 고른다 — 코사인과 BM25의 하이브리드 검색</span>
+    </a>
+    <a class="post-nav" href="rag-chatbot-prompt-streaming.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">프롬프트는 근거의 경계다 — 프롬프트 조립과 로컬 LLM 스트리밍</span>
+    </a>
+    <a class="post-nav" href="rag-chatbot-llm-judge.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">답변 뒤에 심사위원 하나를 더 둔다 — LLM-as-a-Judge</span>
+    </a>
+    <a class="post-nav" href="rag-chatbot-prompt-experiment.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">감이 아니라 기록으로 — 나만의 루브릭으로 실험하기</span>
+    </a>
+    <a class="post-nav" href="rag-chatbot-submission.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">지도를 접고 첫걸음을 — 배포와 제출</span>
+    </a>
+
 
     <a class="post-nav" href="rag-chatbot-prd-questions.html">
       <span class="post-nav-label">다음 편 →</span>

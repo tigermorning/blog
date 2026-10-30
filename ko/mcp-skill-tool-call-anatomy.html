@@ -46,7 +46,7 @@
         <dd>
           <ul>
             <li>도구 하나가 이름·설명·입력 형식 세 가지로 이루어진다는 걸 알고, 내가 맡기려는 일을 그 세 칸에 직접 채워 넣을 수 있어요.</li>
-            <li>AI가 내놓는 건 음식이 아니라 주문표라는 것 — 즉 실행이 아니라 "이 도구를 이렇게 불러주세요"라는 요청이라는 것 — 을 구분할 수 있어요.</li>
+            <li>AI가 내놓는 건 실행 결과가 아니라 "이 도구를 이렇게 불러 주세요"라는 요청이라는 것을 구분할 수 있어요.</li>
             <li>도구 호출이 실패했을 때 파싱이 깨진 건지, 실행이 터진 건지, 엉뚱한 도구를 부른 건지 나눠서 볼 수 있어요.</li>
           </ul>
         </dd>
@@ -62,8 +62,8 @@
         <dd>
           <ul>
             <li><strong>사내 시스템(이슈 상태 바꾸기, 배포 기록 남기기)을 AI에게 맡기기 전에.</strong> 도구 설명을 어떻게 써야 오작동이 줄어드는지는, 호출이 실제로 어떻게 오가는지를 봐야 정할 수 있어요.</li>
-            <li>vLLM 같은 걸로 직접 모델을 띄울 때 --tool-call-parser 에 hermes·qwen3_xml 중 뭘 줘야 하는지 고를 때요.</li>
-            <li>Claude API 응답에서 tool_use 블록의 name·input 을 꺼내 실제 함수로 연결하는 코드를 짤 때요.</li>
+            <li>vLLM 같은 걸로 직접 모델을 띄울 때 <code>--tool-call-parser</code>에 <code>hermes</code>·<code>qwen3_xml</code> 중 뭘 줘야 하는지 고를 때요.</li>
+            <li>Claude API 응답에서 <code>tool_use</code> 블록의 <code>name</code>·<code>input</code>을 꺼내 실제 함수로 연결하는 코드를 짤 때요.</li>
           </ul>
         </dd>
       </dl>
@@ -298,24 +298,30 @@
     </table>
     <p>나중에 실제로 연결 실습을 할 때는 AI의 문장만 읽고 끝내지 않고 도구명·입력·반환된 기록을 함께 볼 거예요. 호출 요청을 처리한 뒤 그 결과를 모델에게 다시 전달하는 것 — 이게 도구 사용의 한 차례 흐름이에요.</p>
 
-    <h2><span class="hl">이번 편에 나온 구체적인 값</span></h2>
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 도구를 직접 서빙할 때 설정을 고르는 표</h2>
+    <p>도구 정의의 구성과 나눠 봐야 할 성공의 개수, 그리고 vLLM으로 직접 서빙할 때 쓰는 도구 호출 파서 값만 모았어요. 앞의 두 절(도구 정의, 세 가지 성공)과 모델의 출력을 읽는 절에서 나온 값이에요.</p>
     <table>
-      <thead><tr><th>항목</th><th>값</th><th>조건·출처</th></tr></thead>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
       <tbody>
-        <tr><td>실습에서 조회 가능한 주</td><td>2개 (<code>week-one</code>, <code>week-two</code>)</td><td>가상 제품팀 실습 자료의 범위 — 실제 회사 기록이 아님</td></tr>
-        <tr><td>도구 정의에 필요한 항목</td><td>3가지 (이름 · 설명 · 입력 스키마)</td><td>모델에게 전달되는 부분. 함수 코드 자체는 전달되지 않음</td></tr>
-        <tr><td>나눠 봐야 할 성공</td><td>3가지 (파싱 · 실행 · 의미)</td><td>셋이 다 성공해야 사용자 요청에 맞는 결과</td></tr>
-        <tr><td>요청에서 답변까지 단계</td><td>8단계</td><td>한 번의 조회로 답하는 경우의 설명용 순서도 — 실제로는 조회가 여러 번일 수 있음</td></tr>
-        <tr><td>vLLM 도구 호출 파서 (Qwen2.5)</td><td><code>hermes</code></td><td>vLLM 공식 문서의 안내값 — 직접 서빙할 때만 해당</td></tr>
-        <tr><td>vLLM 도구 호출 파서 (Qwen3-Coder)</td><td><code>qwen3_xml</code></td><td>같은 Qwen 계열이어도 세부 모델에 따라 달라지는 사례</td></tr>
-        <tr><td>TASK-102 기한</td><td>2026-09-07</td><td>실습용 가상 업무 기록의 값</td></tr>
+        <tr><td>도구 정의에 필요한 항목</td><td>3가지 (이름 · 설명 · 입력 스키마)</td><td>모델에게 전달되는 부분이에요. 함수 코드 자체는 전달되지 않으니, 내 도구를 만들 때 이 세 칸을 채웠는지 점검해요</td></tr>
+        <tr><td>나눠 봐야 할 성공</td><td>3가지 (파싱 · 실행 · 의미)</td><td>셋이 다 성공해야 사용자 요청에 맞는 결과예요. 호출이 이상할 때 이 순서로 어디가 깨졌는지 좁혀요</td></tr>
+        <tr><td>vLLM 도구 호출 파서 (Qwen2.5)</td><td><code>hermes</code></td><td>vLLM 공식 문서의 안내값이에요. 직접 서빙할 때만 해당하고, 서버를 띄우는 명령의 <code>--tool-call-parser</code>에 넣어요</td></tr>
+        <tr><td>vLLM 도구 호출 파서 (Qwen3-Coder)</td><td><code>qwen3_xml</code></td><td>같은 Qwen 계열이어도 세부 모델에 따라 달라지는 사례예요. 모델을 바꾸면 파서 값도 다시 확인해요</td></tr>
       </tbody>
     </table>
     <p class="post-date">※ vLLM 파서 이름은 <strong>직접 모델을 서빙할 때</strong>의 설정값이에요. Claude API 같은 제공자 API를 쓰면 이 설정을 만질 일이 없어요.</p>
 
     <h2><span class="hl">같은 기능을 여러 앱에 연결하려면</span></h2>
     <p>여기까지 오니 조회 기능 하나의 흐름이 보여요. 개발자가 기능을 준비하고, 모델은 설명을 받아 호출을 요청하고, 프로그램이 실행 결과를 돌려줘요. 그러면 <strong>같은 조회 기능을 Claude Code에서도 OpenCode에서도 쓰려면</strong> 어떻게 해야 할까요?</p>
-    <p>도구 사용 기능 자체는 MCP가 나오기 전에도 있었어요. 개발자가 모델이 받는 도구 설명 형식에 맞추고, 돌아온 호출 요청을 읽고, 실제 서비스에 연결하고, 결과를 다시 보내는 부분을 직접 작성할 수 있었어요. 다만 앱이나 서비스의 연결 방식이 달라지면 그때마다 맞추는 작업이 또 생겼죠.</p>
+    <p>도구 사용 기능 자체는 MCP가 나오기 전에도 있었어요. 다만 앱이나 서비스의 연결 방식이 달라지면 그때마다 맞추는 작업이 또 생겼죠.</p>
+    <table>
+      <thead><tr><th>개발자가 직접 맞춰야 하던 부분</th><th>앱이 바뀌면 생기는 일</th></tr></thead>
+      <tbody>
+        <tr><td>모델이 받는 도구 설명 형식에 맞추기</td><td>앱마다 형식이 달라 다시 맞춰요</td></tr>
+        <tr><td>돌아온 호출 요청 읽기</td><td>앱마다 읽는 코드를 다시 짜요</td></tr>
+        <tr><td>실제 서비스에 연결하고 결과를 다시 보내기</td><td>연결 방식이 달라지면 이 부분도 다시 작성해요</td></tr>
+      </tbody>
+    </table>
     <p>다음 편에서는 이 중 <strong>도구를 제공하는 프로그램과 AI 앱 사이에 공통 규칙을 두는 방법</strong>을 봐요. 그 규칙이 MCP예요. 방금 살펴본 모델의 요청 · 프로그램의 실행 · 결과 전달을 기억해 두면, MCP가 맡는 부분과 제가 직접 구현할 업무 기능을 구별하기가 훨씬 쉬워져요.</p>
     <p class="post-date">한 걸음 더: 이 세 부분이 LangGraph 코드에서는 각각 <code>bind_tools</code>(메뉴판 건네기), 모델 응답의 <code>tool_calls</code>(주문표), <code>ToolNode</code>(주방)로 나뉘어요. 직접 조립해 본 과정은 <a href="langgraph-branches-and-tool-loop.html#tool-loop">모델이 다음 길을 고르게 한다 — 도구를 쥐여 주는 루프</a>에 있어요.</p>
 
@@ -339,7 +345,7 @@
         </tr>
         <tr id="suspect-no-tool-call">
           <td>기록을 물었는데 <strong>호출 기록에 <code>get_weekly_records</code>가 한 번도 없어요</strong>. 그런데도 답은 보고서 모양으로 그럴듯하게 나와요</td>
-          <td>먼저 호스트의 MCP 목록에 그 도구가 있는지, 있다면 도구의 <strong>설명 칸</strong>이에요. 함수 코드 자체는 대개 범인이 아니에요</td>
+          <td>먼저 호스트(도구를 연결해 쓰는 AI 앱 — <a href="mcp-skill-protocol-roles.html">2편</a>)의 MCP 목록에 그 도구가 있는지, 있다면 도구의 <strong>설명 칸</strong>이에요. 함수 코드 자체는 대개 범인이 아니에요</td>
           <td>목록에 없으면 함수만 저장되고 도구로는 안 올라간 거예요 (<a href="mcp-skill-host-connection.html">4편</a>). 목록에 있는데도 안 부르면, 설명 한 줄만 읽고 "주간 진행 상황을 물으면 이게 필요하다"를 판단할 수 있는지 봐요</td>
         </tr>
         <tr id="suspect-parser-mismatch">
@@ -374,7 +380,7 @@
 
     <hr>
 
-    <h3>"MCP와 Skill로 에이전트에게 업무 맡기기" 시리즈</h3>
+    <h3>"MCP와 Skill로 업무 맡기기" 시리즈</h3>
     <p class="post-date">(1) 도구 하나가 호출되기까지 — 정의·파싱·구조화 요청 (이 글)</p>
     <a class="post-nav" href="mcp-skill-protocol-roles.html">
       <span class="post-nav-label">(2)</span>

@@ -81,12 +81,12 @@
     <p>먼저 말 두 개만 풀고 갈게요. 노트북의 <strong>한 칸</strong>을 <strong>셀<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup></strong>이라고 불러요. Python을 적는 <strong>코드 셀</strong>과 제목·설명을 적는 <strong>텍스트 셀</strong>이 있고, 코드 셀을 실행하면 그 칸 <strong>바로 아래에 출력</strong>이 붙어요. 그리고 그 코드를 실제로 계산해 주는 자리를 <strong>런타임<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup></strong>이라고 해요. 이 둘이 <strong>다른 곳</strong>이라는 게 이번 편에서 제일 중요한 이야기예요.</p>
 
     <h2><span class="hl">비유 하나</span> — 요리 교실의 레시피 공책과 가스레인지</h2>
-    <p>요리 교실을 하나 그려 볼게요. 저는 강의실에 앉아 있고, 주방은 유리벽 너머에 있어요. 벽에는 <strong>레시피 공책</strong>이 한 권 걸려 있고, 공책은 칸칸이 나뉘어 있어서 한 칸에 한 단계씩 적게 돼 있어요. 주방 안에는 <strong>가스레인지 앞에 선 요리사</strong>가 있고요.</p>
+    <p>요리 교실을 하나 그려 볼게요. 저는 교실 의자에 앉아 있고, 주방은 유리벽 너머에 있어요. 벽에는 <strong>레시피 공책</strong>이 한 권 걸려 있고, 공책은 칸칸이 나뉘어 있어서 한 칸에 한 단계씩 적게 돼 있어요. 주방 안에는 <strong>가스레인지 앞에 선 요리사</strong>가 있고요.</p>
     <p>저는 주방에 직접 못 들어가요. 대신 <strong>심부름꾼</strong>에게 부탁합니다. "공책 새 칸에 <strong>당근 세 개를 썬다</strong>라고 적어 줘"라고 하면 심부름꾼이 가서 그 줄을 적어요. 그렇다고 당근이 썰리진 않죠. 당근이 썰리려면 "<strong>그 칸에 적힌 대로 실제로 해 줘</strong>"라고 한 번 더 말해야 하고, 그제서야 요리사가 칼을 잡아요.</p>
     <table>
       <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
       <tbody>
-        <tr><td>강의실에 앉은 <strong>나</strong></td><td>내가 말을 거는 <strong>Claude Code 또는 OpenCode</strong> — 내 컴퓨터에서 도는 에이전트</td></tr>
+        <tr><td>교실에 앉은 <strong>나</strong></td><td>내가 말을 거는 <strong>Claude Code 또는 OpenCode</strong> — 내 컴퓨터에서 도는 에이전트</td></tr>
         <tr><td>주방을 오가는 <strong>심부름꾼</strong></td><td><strong>Colab MCP 서버</strong> — 이것도 <strong>내 컴퓨터</strong>에서 돌아요</td></tr>
         <tr><td>벽에 걸린 <strong>레시피 공책</strong></td><td>Chrome 탭에 열려 있는 <strong>Colab 노트북 문서</strong></td></tr>
         <tr><td>공책의 <strong>한 칸</strong></td><td><strong>셀</strong> — 코드 셀 또는 텍스트 셀</td></tr>
@@ -223,7 +223,15 @@ print(average)</code></pre>
 
     <h3>Colab이 대신 정해 주지 않는 것</h3>
     <p>그런데 여기서 진짜 중요한 질문이 하나 남아요. <strong>30분은 무엇의 평균일까요?</strong></p>
-    <p>정확히 말하면 <strong>"기록이 남은 세 번"의 평균</strong>이에요. 일주일이 7일인데 기록은 3일치뿐이라면, 나머지 4일을 <strong>0분으로 보고</strong> 7로 나눌 수도 있어요. 그러면 90 ÷ 7 = <strong>약 12.9분</strong>이 나와요. 30분과 12.9분, 둘 다 <strong>계산은 정확해요.</strong> 다른 건 계산이 아니라 <strong>"기록 없는 날을 어떻게 볼 것인가"라는 기준</strong>이거든요.</p>
+    <p>정확히 말하면 <strong>"기록이 남은 세 번"의 평균</strong>이에요. 일주일이 7일인데 기록은 3일치뿐이라면, 기록 없는 날을 어떻게 보느냐에 따라 같은 자료에서 값이 둘 나와요.</p>
+    <table>
+      <thead><tr><th>기준</th><th>계산</th><th>평균</th></tr></thead>
+      <tbody>
+        <tr><td>기록이 있는 날만 센다</td><td>90 ÷ 3</td><td><strong>30분</strong></td></tr>
+        <tr><td>나머지 4일을 <strong>0분으로 보고</strong> 7일로 나눈다</td><td>90 ÷ 7</td><td><strong>약 12.9분</strong></td></tr>
+      </tbody>
+    </table>
+    <p>둘 다 <strong>계산은 정확해요.</strong> 다른 건 계산이 아니라 <strong>"기록 없는 날을 어떻게 볼 것인가"라는 기준</strong>이거든요.</p>
     <p>Colab은 <strong>제가 고른 계산을 실행해 줄 뿐</strong>이에요. 숫자만 보고 "기록이 없는 날은 이렇게 다뤄야 한다"까지 정해 주지는 않아요. 이건 <a href="mcp-skill-why-skill-needed.html">6편</a>에서 "같은 기록인데 판정이 갈린다"고 했던 것과 같은 자리예요 — <strong>도구는 규칙을 실행하고, 규칙은 사람과 팀이 정한다</strong>는 이야기요.</p>
     <p>덧붙여 실무에서 자주 걸리는 함정 하나요. 아직 기록이 하나도 없어서 <strong>리스트가 비어 있으면</strong> <code>len(minutes)</code>가 <strong>0</strong>이라 위 코드는 <strong>0으로 나누게</strong> 돼요. 여기서 곧장 "오류 처리 코드를 길게 붙이자"로 가기 쉬운데, 그 전에 정할 게 있어요 — <strong>"자료가 없음"을 보고서에 어떻게 표시할 것인가</strong>요. 0분이라고 쓸지, "기록 없음"이라고 쓸지, 아예 그 주를 빼고 낼지를 먼저 정하면 코드는 그다음에 따라와요.</p>
 
@@ -272,35 +280,31 @@ print(average)</code></pre>
     </table>
     <p>표의 셋째 줄이 특히 헷갈리는 자리예요. "연결해 줘" 도구만 계속 보인다는 건 <strong>연결이 실패했거나</strong>, 연결은 됐는데 <strong>호스트가 새 도구 목록을 아직 안 읽었거나</strong> 둘 중 하나예요. 이 둘은 고칠 곳이 완전히 다르니, <strong>연결 성공 결과부터</strong> 확인하고 다음으로 넘어가세요.</p>
 
-    <h2><span class="hl">이번 편에 나온 구체적인 값</span></h2>
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — Colab 연결이 안 될 때 먼저 볼 것</h2>
+    <p>아래 표는 흐름 그림·준비물·두 개의 Connect·42 검증 절에서 나온 값 가운데, 다른 노트북 연결에서도 다시 확인하게 되는 것만 모았어요. 평균 30분·12.9분 같은 예제 계산값은 본문에 있어서 뺐어요.</p>
     <table>
-      <thead><tr><th>항목</th><th>값</th><th>조건·출처</th></tr></thead>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
       <tbody>
-        <tr><td>연결에 등장하는 역할</td><td>4단계</td><td>에이전트 → Colab MCP 서버 → 노트북 문서 → 런타임</td></tr>
-        <tr><td>그중 <strong>내 컴퓨터</strong>에서 도는 것</td><td>2개</td><td>Claude Code·OpenCode · Colab MCP 서버</td></tr>
-        <tr><td>이름이 Connect인 버튼</td><td>2개</td><td>오른쪽 위(런타임 연결) · 가운데 승인 창(MCP 서버 연결)</td></tr>
-        <tr><td>셀의 종류</td><td>2가지</td><td>코드 셀 · 텍스트 셀</td></tr>
-        <tr><td>셀 하나를 만들고 실행할 때의 도구 호출</td><td>2번</td><td><code>add_code_cell</code>(문서에 쓰기) · <code>run_code_cell</code>(계산 요청)</td></tr>
-        <tr><td>연결 검증용 계산</td><td><code>print(37 + 5)</code> → <strong>42</strong></td><td>답을 미리 아는 계산이라야 <strong>연결</strong>을 검증할 수 있음</td></tr>
-        <tr><td>MCP 서버용 Python 요구 버전</td><td><strong>3.13 이상</strong></td><td>노트북 안의 Python이 아니라 <strong>내 컴퓨터에서 서버를 띄울</strong> Python</td></tr>
-        <tr><td>학습 시간 기록</td><td>3개 (20 · 30 · 40분)</td><td>합계 90분 — 학습용 가상 기록</td></tr>
-        <tr><td>기록이 있는 날만 낸 평균</td><td>30분 (<code>30.0</code>으로 표시)</td><td>90 ÷ 3 — Python의 <code>/</code>는 결과를 늘 소수로 돌려줌</td></tr>
-        <tr><td>기록 없는 날을 0분으로 넣은 평균</td><td>약 12.9분</td><td>90 ÷ 7 — <strong>일주일 7일 기준으로 제가 계산해 본 값</strong>이며, 어느 쪽을 쓸지는 팀이 정할 문제</td></tr>
-        <tr><td>마지막 값을 40 → 70으로 바꾸면</td><td>합계 120분 · 평균 40분</td><td>실행 전에 <strong>손으로 먼저 적어 보는</strong> 연습용</td></tr>
-        <tr><td>기록이 하나도 없을 때</td><td><code>len</code>이 <strong>0</strong> → 0으로 나눔</td><td>코드보다 <strong>"자료 없음"을 어떻게 표기할지</strong>를 먼저 정할 것</td></tr>
-        <tr><td>연결이 멈춘 위치 점검 항목</td><td>5가지</td><td>서버 등록 · 연결 승인 · 도구 목록 갱신 · 런타임 실행 · 연결 유지</td></tr>
+        <tr><td>연결에 등장하는 단계</td><td>4단계</td><td>에이전트 → Colab MCP 서버 → 노트북 문서 → 런타임. 안 될 때 "어느 단계까지 갔나"부터 정하면 확인할 자리가 좁혀져요. 이 중 내 컴퓨터에서 도는 건 앞의 둘이에요</td></tr>
+        <tr><td>이름이 Connect인 버튼</td><td>2개</td><td>오른쪽 위는 노트북 ↔ 런타임, 가운데 승인 창은 노트북 ↔ 내 컴퓨터의 MCP 서버예요. 둘 다 눌러야 셀이 만들어지고 계산돼요</td></tr>
+        <tr><td>셀 하나를 만들고 실행할 때의 도구 호출</td><td>2번</td><td><code>add_code_cell</code>(문서에 쓰기) · <code>run_code_cell</code>(계산 요청). 호출 기록에 앞의 것만 있으면 계산은 안 된 거예요</td></tr>
+        <tr><td>연결 검증용 계산</td><td><code>print(37 + 5)</code> → <strong>42</strong></td><td>답을 미리 아는 계산이라야 <strong>연결</strong>이 끝까지 이어졌는지 검증돼요. 42가 아니면 계산이 아니라 연결을 의심해요</td></tr>
+        <tr><td>MCP 서버용 Python 요구 버전</td><td><strong>3.13 이상</strong></td><td>노트북 안의 Python이 아니라 <strong>내 컴퓨터에서 서버를 띄울</strong> Python이에요. 서버 등록부터 실패하면 이 버전을 먼저 봐요</td></tr>
+        <tr><td>연결이 멈춘 위치 점검 항목</td><td>5가지</td><td>서버 등록 · 연결 승인 · 도구 목록 갱신 · 런타임 실행 · 연결 유지 — "연결이 멈춘 위치 찾기" 표의 다섯 줄이에요</td></tr>
       </tbody>
     </table>
-    <p class="post-date">※ 위 학습 시간 기록과 팀의 요청은 <strong>학습용 가상 설정</strong>이에요. 그리고 <strong>화면 구성과 도구 이름은 Colab·MCP 서버 버전에 따라 달라질 수 있으니</strong>, 버튼 위치가 글과 다르면 "이 버튼이 무엇과 무엇을 잇는가"로 되짚어 보세요.</p>
+    <p class="post-date">※ 이 글의 학습 시간 기록과 팀의 요청은 <strong>학습용 가상 설정</strong>이에요. 그리고 <strong>화면 구성과 도구 이름은 Colab·MCP 서버 버전에 따라 달라질 수 있으니</strong>, 버튼 위치가 글과 다르면 "이 버튼이 무엇과 무엇을 잇는가"로 되짚어 보세요.</p>
 
     <h2><span class="hl">직접 해보기</span></h2>
     <p>이번 연습의 목적은 <strong>평균을 구하는 게 아니라, 계산의 근거를 남기는 자리를 만드는 것</strong>이에요.</p>
-    <p>① <strong>두 부탁을 일부러 나눠서 해 보기.</strong> "셀을 하나 추가만 해 줘"까지만 시키고 <strong>화면을 확인</strong>하세요. 셀은 생겼는데 <strong>아래에 출력이 없는 상태</strong>를 눈으로 보는 게 목적이에요. 그다음에 "이제 그 셀을 실행해 줘"를 시키고, 무엇이 새로 생겼는지 한 줄로 적으세요.</p>
-    <p>② <strong>Connect 두 개를 표로 그려 보기.</strong> 이 글의 표를 보지 말고, <strong>내 화면을 보면서</strong> "어디에 있는 어떤 버튼이 무엇과 무엇을 잇는지"를 직접 적어 보세요. 헷갈린 쪽이 이따 문제가 생겼을 때 <strong>제일 먼저 의심할 자리</strong>예요.</p>
-    <p>③ <strong>바꾸기 전에 예측 적기.</strong> <code>minutes</code>의 마지막 값을 <code>70</code>으로 바꾸기 전에 합계·개수·평균을 <strong>종이에 먼저</strong> 적고 실행하세요. 값이 다르면 <strong>어느 줄에서 제 예측이 틀렸는지</strong>를 찾으세요 — 이게 코드를 읽는 힘이 붙는 지점이에요.</p>
-    <p>④ <strong>내 기준을 텍스트 셀에 적기.</strong> 계산 셀 <strong>바로 위에</strong> 텍스트 셀을 하나 만들고 "이 평균은 <strong>기록이 남은 날만</strong> 대상으로 한다"처럼 한 줄 적어 두세요. 숫자만 남은 노트북과, 기준이 같이 적힌 노트북은 <strong>석 달 뒤에 완전히 다른 물건</strong>이 돼요.</p>
-    <p>⑤ <strong>런타임을 새로 시작해 보기.</strong> 두 번째 셀만 단독으로 실행해서 <strong>일부러 실패시켜</strong> 보세요. "문서에는 적혀 있는데 런타임은 모른다"를 <strong>직접 겪어 보는 것</strong>이 이 편의 핵심 감각이에요. 확인했으면 위에서부터 다시 실행하세요.</p>
-    <p>⑥ <strong>보관 결정하기.</strong> 남길 게 있으면 <strong>Copy to Drive</strong>로 옮기고 제목을 붙이세요. 안 남길 거면 그냥 닫되, <strong>"이건 사라지는 노트북"이라는 걸 알고 닫는 것</strong>과 모르고 닫는 것은 달라요.</p>
+    <ol>
+      <li><strong>두 부탁을 일부러 나눠서 해 보기.</strong> "셀을 하나 추가만 해 줘"까지만 시키고 <strong>화면을 확인</strong>하세요. 셀은 생겼는데 <strong>아래에 출력이 없는 상태</strong>를 눈으로 보는 게 목적이에요. 그다음에 "이제 그 셀을 실행해 줘"를 시키고, 무엇이 새로 생겼는지 한 줄로 적으세요.</li>
+      <li><strong>Connect 두 개를 표로 그려 보기.</strong> 이 글의 표를 보지 말고, <strong>내 화면을 보면서</strong> "어디에 있는 어떤 버튼이 무엇과 무엇을 잇는지"를 직접 적어 보세요. 헷갈린 쪽이 이따 문제가 생겼을 때 <strong>제일 먼저 의심할 자리</strong>예요.</li>
+      <li><strong>바꾸기 전에 예측 적기.</strong> <code>minutes</code>의 마지막 값을 <code>70</code>으로 바꾸기 전에 합계·개수·평균을 <strong>종이에 먼저</strong> 적고 실행하세요. 값이 다르면 <strong>어느 줄에서 제 예측이 틀렸는지</strong>를 찾으세요 — 이게 코드를 읽는 힘이 붙는 지점이에요. (합계 120분·평균 40분이 나오면 맞아요.)</li>
+      <li><strong>내 기준을 텍스트 셀에 적기.</strong> 계산 셀 <strong>바로 위에</strong> 텍스트 셀을 하나 만들고 "이 평균은 <strong>기록이 남은 날만</strong> 대상으로 한다"처럼 한 줄 적어 두세요. 숫자만 남은 노트북과, 기준이 같이 적힌 노트북은 <strong>석 달 뒤에 완전히 다른 물건</strong>이 돼요.</li>
+      <li><strong>런타임을 새로 시작해 보기.</strong> 두 번째 셀만 단독으로 실행해서 <strong>일부러 실패시켜</strong> 보세요. "문서에는 적혀 있는데 런타임은 모른다"를 <strong>직접 겪어 보는 것</strong>이 이 편의 핵심 감각이에요. 확인했으면 위에서부터 다시 실행하세요.</li>
+      <li><strong>보관 결정하기.</strong> 남길 게 있으면 <strong>Copy to Drive</strong>로 옮기고 제목을 붙이세요. 안 남길 거면 그냥 닫되, <strong>"이건 사라지는 노트북"이라는 걸 알고 닫는 것</strong>과 모르고 닫는 것은 달라요.</li>
+    </ol>
     <p>여기까지 하면 계산의 <strong>입력·과정·결과·기준</strong>이 한 문서에 나란히 남아요. 다음 편에서는 방향을 한 번 더 틀어서, <strong>팀이 실제로 쓰는 공유 표(구글 스프레드시트)를 읽어 오는 준비</strong>를 합니다. 여기서 미리 짚어 둘 게 하나 있어요 — <strong>Colab에 로그인해 있다는 사실이 다른 앱의 접근 동의까지 대신해 주지는 않아요.</strong> 그래서 다음 편에서는 Google Workspace용 <strong>credential JSON</strong>을 새로 준비하는 절차부터 시작해요.</p>
 
     <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 에이전트가 Colab에서 계산했다고 할 때</h2>
@@ -360,7 +364,7 @@ print(average)</code></pre>
 
     <hr>
 
-    <h3>"MCP와 Skill로 에이전트에게 업무 맡기기" 시리즈</h3>
+    <h3>"MCP와 Skill로 업무 맡기기" 시리즈</h3>
     <a class="post-nav" href="mcp-skill-tool-call-anatomy.html">
       <span class="post-nav-label">(1)</span>
       <span class="post-nav-title">도구 하나가 호출되기까지 — 정의·파싱·구조화 요청</span>
