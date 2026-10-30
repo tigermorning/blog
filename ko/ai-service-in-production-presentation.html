@@ -31,9 +31,9 @@
     <p class="one-liner">AI 서비스를 사용자에게 내보내는 일은 «어떤 버전이 나갔는지, 사용자에게 오류가 보였는지, 이전 버전으로 돌릴 수 있는지»를 숫자로 말할 수 있게 만드는 일이에요.</p>
 
 
- <h2 id="flow"><span class="hl">한 장 그림</span> — 전체 지도</h2>
+    <h2 id="flow"><span class="hl">한 장 그림</span> — 전체 지도</h2>
     <figure>
-    <svg viewBox="0 0 760 306" role="img" aria-label="전체 지도: 설계에서 출발한 변경이 합치기, 테스트, 이미지 만들기, 시험 서버, 전환을 차례로 지나 Cloud Run에 도착한다. 아래에는 어떤 버전이 나갔나, 사용자에게 오류가 보였나, 이전 버전으로 돌릴 수 있나 세 질문이 있다" style="width:100%;height:auto;">
+    <svg viewBox="0 0 760 306" role="img" aria-label="전체 지도: 설계에서 출발한 변경이 테스트, 합치기, 이미지 만들기, 시험 서버, 요청 옮기기를 차례로 지나 실제 서비스(Cloud Run)에 도착한다. 아래 띠는 각 칸을 배운 노드다. 맨 아래에는 어떤 버전이 나갔나, 사용자에게 오류가 보였나, 이전 버전으로 돌릴 수 있나 세 질문이 있다" style="width:100%;height:auto;">
       <style>
         .hl{fill:var(--c);fill-opacity:0;stroke:var(--border);stroke-width:2;animation-duration:21s;animation-iteration-count:infinite;animation-timing-function:linear;}
         .pk{animation:k_pk 21s infinite ease-in-out;}
@@ -51,9 +51,9 @@
         .zr{animation-name:k_zr}
         @keyframes k_dc{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}83.71%{stroke:var(--border);stroke-width:2;fill-opacity:0}85.71%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}98%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
         @keyframes k_dz{0%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}14.09%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}16.29%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
-        @keyframes k_qs1{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}12.29%{stroke:var(--border);stroke-width:2;fill-opacity:0}14.29%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}28.37%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}30.57%{stroke:var(--border);stroke-width:2;fill-opacity:0}40.86%{stroke:var(--border);stroke-width:2;fill-opacity:0}42.86%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}71.23%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}73.43%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
-        @keyframes k_qs2{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}26.57%{stroke:var(--border);stroke-width:2;fill-opacity:0}28.57%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}42.66%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}44.86%{stroke:var(--border);stroke-width:2;fill-opacity:0}55.14%{stroke:var(--border);stroke-width:2;fill-opacity:0}57.14%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}85.51%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}87.71%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
-        @keyframes k_qs3{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}12.29%{stroke:var(--border);stroke-width:2;fill-opacity:0}14.29%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}28.37%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}30.57%{stroke:var(--border);stroke-width:2;fill-opacity:0}40.86%{stroke:var(--border);stroke-width:2;fill-opacity:0}42.86%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}85.51%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}87.71%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes k_qs1{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}26.57%{stroke:var(--border);stroke-width:2;fill-opacity:0}28.57%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}71.23%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}73.43%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes k_qs2{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}12.29%{stroke:var(--border);stroke-width:2;fill-opacity:0}14.29%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}28.37%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}30.57%{stroke:var(--border);stroke-width:2;fill-opacity:0}55.14%{stroke:var(--border);stroke-width:2;fill-opacity:0}57.14%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}85.51%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}87.71%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes k_qs3{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}26.57%{stroke:var(--border);stroke-width:2;fill-opacity:0}28.57%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}85.51%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}87.71%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
         @keyframes k_st1{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}12.29%{stroke:var(--border);stroke-width:2;fill-opacity:0}14.29%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}28.37%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}30.57%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
         @keyframes k_st2{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}26.57%{stroke:var(--border);stroke-width:2;fill-opacity:0}28.57%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}42.66%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}44.86%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
         @keyframes k_st3{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}40.86%{stroke:var(--border);stroke-width:2;fill-opacity:0}42.86%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}56.94%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}59.14%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
@@ -74,11 +74,11 @@
       <path d="M51,77H69V101H51Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /><path d="M55,85h10M55,90h10M55,95h6" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
       <text x="60" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">설계</text>
       <circle class="hl st1" cx="175" cy="90" r="26" style="--c:var(--folder-1)"/>
-      <path d="M162,80L174,90M162,100L174,90M174,90H188M183,85L188,90L183,95" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
-      <text x="175" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">합치기</text>
+      <path d="M165,77H185V103H165Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /><path d="M170,91L174,96L181,84" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <text x="175" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">테스트</text>
       <circle class="hl st2" cx="275" cy="90" r="26" style="--c:var(--folder-1)"/>
-      <path d="M265,77H285V103H265Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /><path d="M270,91L274,96L281,84" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
-      <text x="275" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">테스트</text>
+      <path d="M262,80L274,90M262,100L274,90M274,90H288M283,85L288,90L283,95" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <text x="275" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">합치기</text>
       <circle class="hl st3" cx="375" cy="90" r="26" style="--c:var(--folder-2)"/>
       <path d="M364,82H386V100H364Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /><path d="M364,88H386M375,82V88" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
       <text x="375" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">이미지</text>
@@ -88,18 +88,23 @@
       <text x="475" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">시험 서버</text>
       <circle class="hl st5" cx="575" cy="90" r="26" style="--c:var(--folder-4)"/>
       <path d="M560,81H570V99H560Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-dasharray="3 3" opacity=".6"/><path d="M580,81H590V99H580Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /><path d="M572,90H578M575,87L578,90L575,93" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
-      <text x="575" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">전환</text>
+      <text x="575" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">요청 옮기기</text>
       <circle class="hl dc" cx="700" cy="90" r="26" style="--c:var(--muted)"/>
       <path d="M688,98H710A7,7 0 0 0 710,84A10,10 0 0 0 691,87A6,6 0 0 0 688,98Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
-      <text x="700" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">Cloud Run</text>
+      <text x="700" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">실제 서비스</text>
+      <text x="700" y="174" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">(Cloud Run)</text>
       <rect x="130" y="170" width="190" height="6" rx="3" fill="var(--folder-1)"/>
       <text x="225.0" y="192" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">CI/CD</text>
+      <text x="225.0" y="205" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">노드 66·67</text>
       <rect x="333" y="170" width="85" height="6" rx="3" fill="var(--folder-2)"/>
       <text x="375.5" y="192" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">Docker</text>
+      <text x="375.5" y="205" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">노드 68·69</text>
       <rect x="432" y="170" width="43.0" height="6" rx="3" fill="var(--folder-1)"/><rect x="475.0" y="170" width="43.0" height="6" rx="3" fill="var(--folder-2)"/>
       <text x="475.0" y="192" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">CI/CD + Docker</text>
+      <text x="475.0" y="205" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">노드 67·69</text>
       <rect x="532" y="170" width="86" height="6" rx="3" fill="var(--folder-4)"/>
       <text x="575.0" y="192" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">배포 전략</text>
+      <text x="575.0" y="205" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">노드 70·71</text>
       <g transform="translate(60,128)"><g class="pk"><rect x="-10" y="-16" width="20" height="18" rx="3" fill="var(--accent)"/><path d="M-10,-9H10M0,-16V-9" stroke="#fff" stroke-width="2"/></g></g>
       <rect class="hl qs1" x="20" y="226" width="230" height="64" rx="12" style="--c:var(--accent)"/>
       <path d="M46,250H61L70,258L61,266H46Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /><circle cx="52" cy="258" r="2" fill="var(--ink)"/>
@@ -160,7 +165,7 @@
       <p style="margin:.2rem 0;color:var(--muted);">직접 해 보니 — 코드 없이 프로토타입(시제품)으로 먼저 확인한 뒤, 구조 그림과 PRD 한 장으로 정리했어요. <a href="ai-service-design-before-code.html">자세히</a></p>
     </div>
     <div style="border-left:6px solid var(--folder-1);padding:.3rem 0 .3rem 1rem;margin:1rem 0;">
-      <p style="margin:.2rem 0;"><strong>1·2칸 · 합치기와 테스트 (CI/CD)</strong> <span style="color:var(--muted);font-size:.9rem;">노드 66·67</span></p>
+      <p style="margin:.2rem 0;"><strong>1·2칸 · 테스트와 합치기 (CI/CD)</strong> <span style="color:var(--muted);font-size:.9rem;">노드 66·67</span></p>
       <p style="margin:.2rem 0;">CI는 합쳐 달라는 요청(PR)이 올라올 때마다 테스트를 자동으로 돌려 깨진 코드를 찾아 주고, CD는 코드가 main에 합쳐지면 새 버전을 자동으로 배포해요. 열쇠 파일 없이 일회용 신분증(WIF)으로 Google Cloud에 들어가요.</p>
       <p style="margin:.2rem 0;color:var(--muted);">직접 해 보니 — 일부러 고장 낸 변경(PR #5)은 새 버전(00003)이 시작하지 못해서 사용자에게 나가지 않았어요. 도장판에서 일부러 깨뜨린 변경(PR #9)은 테스트 9개 중 3개가 실패했어요. <a href="github-actions-auto-deploy.html">자세히</a></p>
     </div>
@@ -175,12 +180,12 @@
       <p style="margin:.2rem 0;color:var(--muted);">직접 해 보니 — staging을 main으로 올리자 테스트는 통과했지만, 실제 서비스 배포는 «승인 대기»에서 멈춰 사람이 누르기 전에는 바뀌지 않았어요. <a href="ci-tests-and-staging.html">자세히</a></p>
     </div>
     <div style="border-left:6px solid var(--folder-4);padding:.3rem 0 .3rem 1rem;margin:1rem 0;">
-      <p style="margin:.2rem 0;"><strong>5칸 · 전환 (배포 전략)</strong> <span style="color:var(--muted);font-size:.9rem;">노드 70·71</span></p>
+      <p style="margin:.2rem 0;"><strong>5칸 · 요청 옮기기 (배포 전략)</strong> <span style="color:var(--muted);font-size:.9rem;">노드 70·71</span></p>
       <p style="margin:.2rem 0;">새 버전을 요청 0%로 먼저 올려 두고, 준비가 됐는지 확인한 뒤에만 사용자의 요청을 옮겨요.</p>
       <p style="margin:.2rem 0;color:var(--muted);">직접 해 보니 — 노드 70에서는 서버 두 벌 앞의 Nginx로 방향을 바꿔 봤어요(서버가 멈췄을 때 연결 대기를 60초→1초로 줄이자 137건 중 19건 실패 → 284건 중 0건). 노드 71의 실험은 아래 «확장»에 있어요. <a href="load-balancer-zero-downtime.html">자세히</a></p>
     </div>
     <div style="border-left:6px solid var(--muted);padding:.3rem 0 .3rem 1rem;margin:1rem 0;">
-      <p style="margin:.2rem 0;"><strong>도착 · Cloud Run</strong> <span style="color:var(--muted);font-size:.9rem;">노드 64·65</span></p>
+      <p style="margin:.2rem 0;"><strong>도착 · 실제 서비스 (Cloud Run)</strong> <span style="color:var(--muted);font-size:.9rem;">노드 64·65</span></p>
       <p style="margin:.2rem 0;">코드 폴더를 올리면 공개 주소를 붙여 실행해 주는 구글 서비스예요. 서버 기록이 정상이어도 사용자가 답을 못 받을 수 있어서, 타임아웃과 로그를 봐요.</p>
       <p style="margin:.2rem 0;color:var(--muted);">직접 해 보니 — 명령 한 줄로 약 2분 만에 공개 주소가 생겼어요. 타임아웃을 1초로 줄이자 서버 기록은 200(정상)인데 화면은 «답을 받지 못했어요»가 떠서, 실제 걸린 시간(요청 하나 약 5초)보다 넉넉하게 정했어요. <a href="cloud-run-source-deploy-meaning.html">자세히</a></p>
     </div>
@@ -264,11 +269,11 @@
     <table>
       <thead><tr><th></th><th>어떤 버전이 나갔나</th><th>사용자에게 오류가 보였나</th><th>이전 버전으로 돌릴 수 있나</th></tr></thead>
       <tbody>
-        <tr><td><strong style="color:var(--accent)">✖ 비어 있는 곳</strong></td><td>GitHub Pages가 저장소 전체를 공개해서 시험 파일(tests 폴더)까지 보여요.</td><td>살아 있다는 것까지만 알아요. 도우미가 엉뚱한 답을 하는지는 사람이 물어봐야 알아요.</td><td>main 브랜치(서비스가 되는 코드 줄기)에 보호 규칙이 없어서, 테스트가 실패해도 합칠 수 있어요.</td></tr>
-        <tr><td><strong style="color:var(--folder-1)">➜ 다음에 할 일</strong></td><td>공개할 파일만 남기도록 공개 범위를 정리해요.</td><td>배포 뒤 대표 질문 몇 개를 자동으로 보내, 규칙을 어긴 횟수를 세요.</td><td>테스트를 통과해야만 합치도록 main에 필수 검사를 걸어요.</td></tr>
+        <tr><td><strong style="color:var(--accent)">✖ 비어 있는 곳</strong></td><td>GitHub Pages가 저장소 전체를 공개해서 시험 파일(tests 폴더)까지 보여요.</td><td>합치기 전 테스트(ci)는 «칸이 열리는 규칙»만 확인해요. 배포한 뒤 화면이 뜨는지, 사진 글자 읽기가 되는지는 자동으로 확인하지 않아요.</td><td>main 브랜치(서비스가 되는 코드 줄기)에 보호 규칙이 없어서, 테스트가 실패해도 합칠 수 있어요.</td></tr>
+        <tr><td><strong style="color:var(--folder-1)">➜ 다음에 할 일</strong></td><td>공개할 파일만 남기도록 공개 범위를 정리해요.</td><td>배포 뒤 새 버전 주소로 화면과 <code>/health</code>를 자동으로 열어 보고, 실패하면 배포를 멈춰요.</td><td>테스트를 통과해야만 합치도록 main에 필수 검사를 걸어요.</td></tr>
       </tbody>
     </table>
-    <p><strong>정리하면</strong> 비어 있는 곳은 «사용자에게 오류가 보였나»에 몰려 있어요. 서비스가 떠 있는지는 기계가 확인하지만, 답이 맞는지는 아직 사람이 확인해요. 가장 먼저 자동화할 곳이에요.</p>
+    <p><strong>정리하면</strong> 비어 있는 곳은 «사용자에게 오류가 보였나»에 몰려 있어요. 칸이 열리는 규칙은 기계가 확인하지만, 배포한 뒤 화면과 기능이 제대로 도는지는 아직 사람이 확인해요. 가장 먼저 자동화할 곳이에요.</p>
   </main>
   </div>
 
