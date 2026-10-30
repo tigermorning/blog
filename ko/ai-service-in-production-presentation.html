@@ -48,18 +48,15 @@
       </tbody>
     </table>
 
-    <h2 id="flow"><span class="hl">한 장 그림</span> — 전체 지도와, 그 안의 길</h2>
-    <p>먼저 숲을 보세요. 이번 모듈은 AI 서비스를 사용자에게 내보내는 일이고, 한 줄로 이렇게 이어져요.</p>
-    <ul>
-      <li><strong>출발 — 무엇을 내보낼까:</strong> 코드를 짜기 전에 정해요. (설계)</li>
-      <li><strong>길 — 어떻게 안전하게 보낼까:</strong> 코드 변경이 사용자에게 가는 다섯 칸이에요. (CI/CD, Docker, 배포 전략)</li>
-      <li><strong>도착 — 어디에서 돌아가나:</strong> 서비스가 실제로 돌아가고 사용자가 오는 곳이에요. (Cloud Run)</li>
-    </ul>
-    <p>그림 가운데 줄은 «길»을 펼친 것이고, 아래 줄은 그 길이 안전한지 확인하는 세 질문이에요. 그림은 저절로 반복돼요. 출발, 길의 1~5칸, 도착 순서로 불이 들어오고, 칸이 켜질 때마다 그 칸이 답해 주는 질문도 같이 켜져요. 예를 들어 3칸 «이미지 만들기»가 켜지면 «무엇이 나갔나»와 «되돌릴 수 있나»가 켜져요.</p>
+    <h2 id="flow"><span class="hl">한 장 그림</span> — 전체 지도</h2>
     <figure>
-    <svg viewBox="0 0 760 376" role="img" aria-label="전체 지도: 출발(설계)에서 길(CI/CD, Docker, 배포 전략)을 지나 도착(Cloud Run)으로 가는 흐름. 길을 펼치면 합치기, 테스트, 이미지 만들기, 시험 서버, 실제 서비스 다섯 칸이고, 아래에 무엇이 나갔나, 사용자는 괜찮았나, 되돌릴 수 있나 세 질문이 있다" style="width:100%;height:auto;">
+    <svg viewBox="0 0 760 306" role="img" aria-label="전체 지도: 설계에서 출발한 변경이 합치기, 테스트, 이미지 만들기, 시험 서버, 전환을 차례로 지나 Cloud Run에 도착한다. 아래에는 무엇이 나갔나, 사용자는 괜찮았나, 되돌릴 수 있나 세 질문이 있다" style="width:100%;height:auto;">
       <style>
-        .za,.zr,.zc,.st,.qs{stroke:var(--border);stroke-width:2;animation-duration:21s;animation-iteration-count:infinite;animation-timing-function:linear;}
+        .hl{fill:var(--c);fill-opacity:0;stroke:var(--border);stroke-width:2;animation-duration:21s;animation-iteration-count:infinite;animation-timing-function:linear;}
+        .pk{animation:k_pk 21s infinite ease-in-out;}
+        .zr{opacity:.35;}
+        .dc{animation-name:k_dc}
+        .dz{animation-name:k_dz}
         .qs1{animation-name:k_qs1}
         .qs2{animation-name:k_qs2}
         .qs3{animation-name:k_qs3}
@@ -68,89 +65,69 @@
         .st3{animation-name:k_st3}
         .st4{animation-name:k_st4}
         .st5{animation-name:k_st5}
-        .za{animation-name:k_za}
-        .zc{animation-name:k_zc}
         .zr{animation-name:k_zr}
-        @keyframes k_qs1{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}12.29%{stroke:var(--border);stroke-width:2;fill-opacity:0}14.29%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.14}28.37%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.14}30.57%{stroke:var(--border);stroke-width:2;fill-opacity:0}40.86%{stroke:var(--border);stroke-width:2;fill-opacity:0}42.86%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.14}71.23%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.14}73.43%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
-        @keyframes k_qs2{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}26.57%{stroke:var(--border);stroke-width:2;fill-opacity:0}28.57%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.14}42.66%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.14}44.86%{stroke:var(--border);stroke-width:2;fill-opacity:0}55.14%{stroke:var(--border);stroke-width:2;fill-opacity:0}57.14%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.14}85.51%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.14}87.71%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
-        @keyframes k_qs3{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}12.29%{stroke:var(--border);stroke-width:2;fill-opacity:0}14.29%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.14}28.37%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.14}30.57%{stroke:var(--border);stroke-width:2;fill-opacity:0}40.86%{stroke:var(--border);stroke-width:2;fill-opacity:0}42.86%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.14}85.51%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.14}87.71%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
-        @keyframes k_st1{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}12.29%{stroke:var(--border);stroke-width:2;fill-opacity:0}14.29%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.14}28.37%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.14}30.57%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
-        @keyframes k_st2{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}26.57%{stroke:var(--border);stroke-width:2;fill-opacity:0}28.57%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.14}42.66%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.14}44.86%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
-        @keyframes k_st3{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}40.86%{stroke:var(--border);stroke-width:2;fill-opacity:0}42.86%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.14}56.94%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.14}59.14%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
-        @keyframes k_st4{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}55.14%{stroke:var(--border);stroke-width:2;fill-opacity:0}57.14%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.14}71.23%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.14}73.43%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
-        @keyframes k_st5{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}69.43%{stroke:var(--border);stroke-width:2;fill-opacity:0}71.43%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.14}85.51%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.14}87.71%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
-        @keyframes k_za{0%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.14}14.09%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.14}16.29%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
-        @keyframes k_zc{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}83.71%{stroke:var(--border);stroke-width:2;fill-opacity:0}85.71%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.14}98%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.14}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
-        @keyframes k_zr{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}12.29%{stroke:var(--border);stroke-width:2;fill-opacity:0}14.29%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.14}85.51%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.14}87.71%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
-        @media (prefers-reduced-motion:reduce){.za,.zr,.zc,.st,.qs{animation:none}}
+        @keyframes k_dc{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}83.71%{stroke:var(--border);stroke-width:2;fill-opacity:0}85.71%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}98%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes k_dz{0%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}14.09%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}16.29%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes k_qs1{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}12.29%{stroke:var(--border);stroke-width:2;fill-opacity:0}14.29%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}28.37%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}30.57%{stroke:var(--border);stroke-width:2;fill-opacity:0}40.86%{stroke:var(--border);stroke-width:2;fill-opacity:0}42.86%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}71.23%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}73.43%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes k_qs2{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}26.57%{stroke:var(--border);stroke-width:2;fill-opacity:0}28.57%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}42.66%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}44.86%{stroke:var(--border);stroke-width:2;fill-opacity:0}55.14%{stroke:var(--border);stroke-width:2;fill-opacity:0}57.14%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}85.51%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}87.71%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes k_qs3{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}12.29%{stroke:var(--border);stroke-width:2;fill-opacity:0}14.29%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}28.37%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}30.57%{stroke:var(--border);stroke-width:2;fill-opacity:0}40.86%{stroke:var(--border);stroke-width:2;fill-opacity:0}42.86%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}85.51%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}87.71%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes k_st1{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}12.29%{stroke:var(--border);stroke-width:2;fill-opacity:0}14.29%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}28.37%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}30.57%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes k_st2{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}26.57%{stroke:var(--border);stroke-width:2;fill-opacity:0}28.57%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}42.66%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}44.86%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes k_st3{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}40.86%{stroke:var(--border);stroke-width:2;fill-opacity:0}42.86%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}56.94%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}59.14%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes k_st4{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}55.14%{stroke:var(--border);stroke-width:2;fill-opacity:0}57.14%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}71.23%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}73.43%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes k_st5{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}69.43%{stroke:var(--border);stroke-width:2;fill-opacity:0}71.43%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}85.51%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}87.71%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes k_zr{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}12.29%{stroke:var(--border);stroke-width:2;fill-opacity:0}14.29%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}85.51%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}87.71%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes k_pk{0%{transform:translateX(0px);opacity:0}2%{transform:translateX(0px);opacity:1}10%{transform:translateX(0px);opacity:1}14.29%{transform:translateX(115px);opacity:1}24.29%{transform:translateX(115px);opacity:1}28.57%{transform:translateX(215px);opacity:1}38.57%{transform:translateX(215px);opacity:1}42.86%{transform:translateX(315px);opacity:1}52.86%{transform:translateX(315px);opacity:1}57.14%{transform:translateX(415px);opacity:1}67.14%{transform:translateX(415px);opacity:1}71.43%{transform:translateX(515px);opacity:1}81.43%{transform:translateX(515px);opacity:1}85.71%{transform:translateX(640px);opacity:1}95.71%{transform:translateX(640px);opacity:1}97%{transform:translateX(640px);opacity:1}100%{transform:translateX(640px);opacity:0}}
+        @media (prefers-reduced-motion:reduce){.hl,.pk{animation:none}}
         text{pointer-events:none;}
       </style>
-      <defs>
-        <marker id="fl-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/></marker>
-      </defs>
-      <text x="8" y="18" text-anchor="start" font-family="var(--font-heading)" font-size="13" fill="var(--muted)">전체 지도 — 일의 흐름: 출발 → 길 → 도착</text>
-      <rect class="za" x="8" y="28" width="200" height="88" rx="8" fill="var(--accent)" fill-opacity="0"/>
-      <text x="108" y="52" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">출발 — 무엇을 내보낼까</text>
-      <text x="108" y="72" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">설계 (노드 63)</text>
-      <text x="108" y="88" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">코드를 짜기 전에 누구에게</text>
-      <text x="108" y="103" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">어떻게 쓰게 할지 정해요</text>
-      <line x1="210" y1="72" x2="228" y2="72" stroke="var(--muted)" stroke-width="2" marker-end="url(#fl-a)"/>
-      <rect class="zr" x="230" y="28" width="300" height="88" rx="8" fill="var(--accent)" fill-opacity="0"/>
-      <text x="380" y="52" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">길 — 어떻게 안전하게 보낼까</text>
-      <text x="380" y="72" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">코드 변경이 지나가는 다섯 칸</text>
-      <text x="380" y="88" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">CI/CD · Docker · 배포 전략</text>
-      <text x="380" y="103" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">(노드 66~71) ▼ 아래에 펼쳤어요</text>
-      <line x1="532" y1="72" x2="550" y2="72" stroke="var(--muted)" stroke-width="2" marker-end="url(#fl-a)"/>
-      <rect class="zc" x="552" y="28" width="200" height="88" rx="8" fill="var(--accent)" fill-opacity="0"/>
-      <text x="652" y="52" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">도착 — 어디에서 돌아가나</text>
-      <text x="652" y="72" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">Cloud Run (노드 64·65)</text>
-      <text x="652" y="88" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">서비스가 실제로 돌아가고</text>
-      <text x="652" y="103" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">사용자가 오는 곳이에요</text>
-      <text x="380" y="146" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--muted)">▼ 길을 펼치면 — 이 순서대로 지나가요</text>
-      <line x1="232" y1="118" x2="8" y2="158" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4 4"/>
-      <line x1="528" y1="118" x2="738" y2="158" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4 4"/>
-      <rect class="st st1" x="8" y="160" width="130" height="96" rx="8" fill="var(--accent)" fill-opacity="0"/>
-      <text x="73" y="185" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">1 합치기</text>
-      <text x="73" y="205" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">main에 합치면</text>
-      <text x="73" y="221" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">자동으로 시작해요</text>
-      <text x="73" y="244" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">CI/CD · 노드 66</text>
-      <line x1="140" y1="208" x2="156" y2="208" stroke="var(--muted)" stroke-width="2" marker-end="url(#fl-a)"/>
-      <rect class="st st2" x="158" y="160" width="130" height="96" rx="8" fill="var(--accent)" fill-opacity="0"/>
-      <text x="223" y="185" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">2 테스트</text>
-      <text x="223" y="205" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">깨진 코드는</text>
-      <text x="223" y="221" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">여기서 멈춰요</text>
-      <text x="223" y="244" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">CI/CD · 노드 67</text>
-      <line x1="290" y1="208" x2="306" y2="208" stroke="var(--muted)" stroke-width="2" marker-end="url(#fl-a)"/>
-      <rect class="st st3" x="308" y="160" width="130" height="96" rx="8" fill="var(--accent)" fill-opacity="0"/>
-      <text x="373" y="185" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">3 이미지 만들기</text>
-      <text x="373" y="205" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">한 번만 만들고</text>
-      <text x="373" y="221" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">지문을 남겨요</text>
-      <text x="373" y="244" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">Docker · 노드 68·69</text>
-      <line x1="440" y1="208" x2="456" y2="208" stroke="var(--muted)" stroke-width="2" marker-end="url(#fl-a)"/>
-      <rect class="st st4" x="458" y="160" width="130" height="96" rx="8" fill="var(--accent)" fill-opacity="0"/>
-      <text x="523" y="185" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">4 시험 서버</text>
-      <text x="523" y="205" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">그 이미지를</text>
-      <text x="523" y="221" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">먼저 돌려 봐요</text>
-      <text x="523" y="244" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">CI/CD+Docker · 노드 67·69</text>
-      <line x1="590" y1="208" x2="606" y2="208" stroke="var(--muted)" stroke-width="2" marker-end="url(#fl-a)"/>
-      <rect class="st st5" x="608" y="160" width="130" height="96" rx="8" fill="var(--accent)" fill-opacity="0"/>
-      <text x="673" y="185" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">5 실제 서비스</text>
-      <text x="673" y="205" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">0%로 올려 확인한 뒤</text>
-      <text x="673" y="221" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">요청을 옮겨요</text>
-      <text x="673" y="244" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">배포 전략 · 노드 70·71</text>
-      <line x1="673" y1="158" x2="673" y2="122" stroke="var(--muted)" stroke-width="2" marker-end="url(#fl-a)"/>
-      <text x="8" y="288" text-anchor="start" font-family="var(--font-heading)" font-size="13" fill="var(--muted)">그 길이 안전한지 확인하는 세 질문</text>
-      <rect class="qs qs1" x="8" y="300" width="238" height="66" rx="8" fill="var(--accent)" fill-opacity="0"/>
-      <text x="127" y="326" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">무엇이 나갔나</text>
-      <text x="127" y="348" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">커밋 번호, 이미지 지문</text>
-      <rect class="qs qs2" x="261" y="300" width="238" height="66" rx="8" fill="var(--accent)" fill-opacity="0"/>
-      <text x="380" y="326" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">사용자는 괜찮았나</text>
-      <text x="380" y="348" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">테스트 9개, 요청 세기</text>
-      <rect class="qs qs3" x="514" y="300" width="238" height="66" rx="8" fill="var(--accent)" fill-opacity="0"/>
-      <text x="633" y="326" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">되돌릴 수 있나</text>
-      <text x="633" y="348" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">Revert PR, 롤백 24초</text>
+      <text x="60" y="22" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">출발</text>
+      <text x="383" y="22" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">길</text>
+      <text x="700" y="22" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">도착</text>
+      <rect class="hl zr" x="118" y="30" width="530" height="170" rx="16" style="--c:var(--accent)"/>
+      <line x1="30" y1="130" x2="728" y2="130" stroke="var(--border)" stroke-width="4" stroke-dasharray="2 10" stroke-linecap="round"/>
+      <path d="M722,124L732,130L722,136" stroke="var(--border)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle class="hl dz" cx="60" cy="90" r="26" style="--c:var(--muted)"/>
+      <path d="M51,77H69V101H51Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /><path d="M55,85h10M55,90h10M55,95h6" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <text x="60" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">설계</text>
+      <circle class="hl st1" cx="175" cy="90" r="26" style="--c:var(--folder-1)"/>
+      <path d="M162,80L174,90M162,100L174,90M174,90H188M183,85L188,90L183,95" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <text x="175" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">합치기</text>
+      <circle class="hl st2" cx="275" cy="90" r="26" style="--c:var(--folder-1)"/>
+      <path d="M265,77H285V103H265Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /><path d="M270,91L274,96L281,84" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <text x="275" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">테스트</text>
+      <circle class="hl st3" cx="375" cy="90" r="26" style="--c:var(--folder-2)"/>
+      <path d="M364,82H386V100H364Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /><path d="M364,88H386M375,82V88" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <text x="375" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">이미지</text>
+      <circle class="hl st4" cx="475" cy="90" r="26" style="--c:var(--folder-1)"/>
+      <circle cx="475" cy="90" r="31" fill="none" stroke="var(--folder-2)" stroke-width="2" opacity=".8"/>
+      <path d="M463,77H487V87H463ZM463,91H487V101H463Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-dasharray="3 3"/><circle cx="482" cy="82" r="1.6" fill="var(--ink)"/><circle cx="482" cy="96" r="1.6" fill="var(--ink)"/>
+      <text x="475" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">시험 서버</text>
+      <circle class="hl st5" cx="575" cy="90" r="26" style="--c:var(--folder-4)"/>
+      <path d="M560,81H570V99H560Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-dasharray="3 3" opacity=".6"/><path d="M580,81H590V99H580Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /><path d="M572,90H578M575,87L578,90L575,93" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <text x="575" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">전환</text>
+      <circle class="hl dc" cx="700" cy="90" r="26" style="--c:var(--muted)"/>
+      <path d="M688,98H710A7,7 0 0 0 710,84A10,10 0 0 0 691,87A6,6 0 0 0 688,98Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <text x="700" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">Cloud Run</text>
+      <rect x="130" y="170" width="190" height="6" rx="3" fill="var(--folder-1)"/>
+      <text x="225.0" y="192" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">CI/CD</text>
+      <rect x="333" y="170" width="85" height="6" rx="3" fill="var(--folder-2)"/>
+      <text x="375.5" y="192" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">Docker</text>
+      <rect x="432" y="170" width="43.0" height="6" rx="3" fill="var(--folder-1)"/><rect x="475.0" y="170" width="43.0" height="6" rx="3" fill="var(--folder-2)"/>
+      <text x="475.0" y="192" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">CI/CD + Docker</text>
+      <rect x="532" y="170" width="86" height="6" rx="3" fill="var(--folder-4)"/>
+      <text x="575.0" y="192" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">배포 전략</text>
+      <g transform="translate(60,128)"><g class="pk"><rect x="-10" y="-16" width="20" height="18" rx="3" fill="var(--accent)"/><path d="M-10,-9H10M0,-16V-9" stroke="#fff" stroke-width="2"/></g></g>
+      <rect class="hl qs1" x="60" y="226" width="200" height="64" rx="12" style="--c:var(--accent)"/>
+      <path d="M86,250H101L110,258L101,266H86Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /><circle cx="92" cy="258" r="2" fill="var(--ink)"/>
+      <text x="126" y="263" text-anchor="start" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">무엇이 나갔나</text>
+      <rect class="hl qs2" x="280" y="226" width="200" height="64" rx="12" style="--c:var(--accent)"/>
+      <circle cx="318" cy="258" r="12" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="314" cy="255" r="1.5" fill="var(--ink)"/><circle cx="322" cy="255" r="1.5" fill="var(--ink)"/><path d="M312,261Q318,267 324,261" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <text x="346" y="263" text-anchor="start" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">사용자는 괜찮았나</text>
+      <rect class="hl qs3" x="500" y="226" width="200" height="64" rx="12" style="--c:var(--accent)"/>
+      <path d="M548,266C550,254 536,252 530,254" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /><path d="M535,248L529,254L536,258" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <text x="566" y="263" text-anchor="start" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">되돌릴 수 있나</text>
     </svg>
-    <figcaption>읽는 법: 노드 번호는 배운 날짜 순서이고, 지도는 일이 흘러가는 순서라서 번호가 건너뛰어요(설계 63 → 길 66~71 → Cloud Run 64·65). 그림의 1~5는 길의 순서이고, 길의 칸과 질문의 연결은 «아홉 개 노드를 한 번에» 글에 적힌 노드 표시를 따랐어요.</figcaption>
     </figure>
 
     <h2 id="organize"><span class="hl">정리</span> — 다섯 장면, 한 문장씩</h2>
