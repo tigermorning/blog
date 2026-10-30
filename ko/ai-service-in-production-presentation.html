@@ -51,63 +51,79 @@
     <h2 id="flow"><span class="hl">한 장 그림</span> — 아홉 날을 다섯 장면과 세 질문으로</h2>
     <figure>
     <svg viewBox="0 0 760 290" role="img" aria-label="프로덕트 설계, Cloud Run 배포, CI/CD, Docker, 서비스 배포 전략 다섯 장면이 차례로 이어지고, 아래에 무엇이 나갔나, 사용자는 괜찮았나, 되돌릴 수 있나 세 질문이 있는 그림" style="width:100%;height:auto;">
+      <style>
+        .sc,.qs{stroke:var(--border);stroke-width:2;}
+        .sc{animation-duration:15s;animation-iteration-count:infinite;animation-timing-function:step-end;}
+        .qs{animation-duration:15s;animation-iteration-count:infinite;animation-timing-function:step-end;}
+        .sc1{animation-name:on1}.sc2{animation-name:on2}.sc3{animation-name:on3}.sc4{animation-name:on4}.sc5{animation-name:on5}
+        .qs1{animation-name:onq1}.qs2{animation-name:onq2}.qs3{animation-name:onq3}
+        @keyframes on1{0%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.12}20%,100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes on2{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}20%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.12}40%,100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes on3{0%,20%{stroke:var(--border);stroke-width:2;fill-opacity:0}40%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.12}60%,100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes on4{0%,40%{stroke:var(--border);stroke-width:2;fill-opacity:0}60%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.12}80%,100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes on5{0%,60%{stroke:var(--border);stroke-width:2;fill-opacity:0}80%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.12}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes onq1{0%,40%{stroke:var(--border);stroke-width:2;fill-opacity:0}40%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.12}80%,100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes onq2{0%,40%{stroke:var(--border);stroke-width:2;fill-opacity:0}40%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.12}60%{stroke:var(--border);stroke-width:2;fill-opacity:0}80%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.12}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes onq3{0%,40%{stroke:var(--border);stroke-width:2;fill-opacity:0}40%{stroke:var(--accent);stroke-width:3.5;fill-opacity:.12}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @media (prefers-reduced-motion:reduce){.sc,.qs{animation:none}.sc5,.qs1,.qs2,.qs3{stroke:var(--accent)}}
+      </style>
       <defs>
         <marker id="pr-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/></marker>
       </defs>
       <text x="8" y="22" font-family="var(--font-heading)" font-size="13" fill="var(--muted)">다섯 장면 (10월 19일 ~ 29일)</text>
 
-      <rect x="8" y="36" width="136" height="92" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <rect class="sc sc1" x="8" y="36" width="136" height="92" rx="8" fill="var(--accent)" fill-opacity="0" stroke="var(--border)" stroke-width="2"/>
       <text x="76" y="60" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">① 설계</text>
       <text x="76" y="80" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">코드 전에</text>
       <text x="76" y="96" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">문서 한 장</text>
       <text x="76" y="118" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">10.19</text>
       <line x1="146" y1="82" x2="156" y2="82" stroke="var(--muted)" stroke-width="2" marker-end="url(#pr-a)"/>
 
-      <rect x="158" y="36" width="136" height="92" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <rect class="sc sc2" x="158" y="36" width="136" height="92" rx="8" fill="var(--accent)" fill-opacity="0" stroke="var(--border)" stroke-width="2"/>
       <text x="226" y="60" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">② Cloud Run</text>
       <text x="226" y="80" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">첫 배포와</text>
       <text x="226" y="96" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">운영·로그</text>
       <text x="226" y="118" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">10.20 ~ 21</text>
       <line x1="296" y1="82" x2="306" y2="82" stroke="var(--muted)" stroke-width="2" marker-end="url(#pr-a)"/>
 
-      <rect x="308" y="36" width="136" height="92" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <rect class="sc sc3" x="308" y="36" width="136" height="92" rx="8" fill="var(--accent)" fill-opacity="0" stroke="var(--border)" stroke-width="2"/>
       <text x="376" y="60" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">③ CI/CD</text>
       <text x="376" y="80" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">합치면 자동 배포,</text>
       <text x="376" y="96" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">테스트가 막아요</text>
       <text x="376" y="118" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">10.22 ~ 23</text>
       <line x1="446" y1="82" x2="456" y2="82" stroke="var(--muted)" stroke-width="2" marker-end="url(#pr-a)"/>
 
-      <rect x="458" y="36" width="136" height="92" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <rect class="sc sc4" x="458" y="36" width="136" height="92" rx="8" fill="var(--accent)" fill-opacity="0" stroke="var(--border)" stroke-width="2"/>
       <text x="526" y="60" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">④ Docker</text>
       <text x="526" y="80" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">환경을 파일로 적고</text>
       <text x="526" y="96" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">한 번만 만들어요</text>
       <text x="526" y="118" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">10.26 ~ 27</text>
       <line x1="596" y1="82" x2="606" y2="82" stroke="var(--muted)" stroke-width="2" marker-end="url(#pr-a)"/>
 
-      <rect x="608" y="36" width="144" height="92" rx="8" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
-      <text x="680" y="60" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">⑤ 배포 전략</text>
+      <rect class="sc sc5" x="608" y="36" width="144" height="92" rx="8" fill="var(--accent)" fill-opacity="0" stroke="var(--border)" stroke-width="2"/>
+      <text x="680" y="60" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">⑤ 배포 전략</text>
       <text x="680" y="80" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">0%로 먼저 올리고</text>
       <text x="680" y="96" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">확인 뒤에 옮겨요</text>
       <text x="680" y="118" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">10.28 ~ 29</text>
 
       <text x="8" y="164" font-family="var(--font-heading)" font-size="13" fill="var(--muted)">장면들이 함께 답해 주는 세 질문</text>
 
-      <rect x="8" y="178" width="238" height="100" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <rect class="qs qs1" x="8" y="178" width="238" height="100" rx="8" fill="var(--accent)" fill-opacity="0" stroke="var(--border)" stroke-width="2"/>
       <text x="127" y="204" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">무엇이 나갔나</text>
       <text x="127" y="230" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">커밋 번호, 이미지 지문</text>
       <text x="127" y="266" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">③ ④ 장면에서 쌓아요</text>
 
-      <rect x="261" y="178" width="238" height="100" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <rect class="qs qs2" x="261" y="178" width="238" height="100" rx="8" fill="var(--accent)" fill-opacity="0" stroke="var(--border)" stroke-width="2"/>
       <text x="380" y="204" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">사용자는 괜찮았나</text>
       <text x="380" y="230" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">테스트 9개, 요청 세기</text>
       <text x="380" y="266" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">③ ⑤ 장면에서 쌓아요</text>
 
-      <rect x="514" y="178" width="238" height="100" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <rect class="qs qs3" x="514" y="178" width="238" height="100" rx="8" fill="var(--accent)" fill-opacity="0" stroke="var(--border)" stroke-width="2"/>
       <text x="633" y="204" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">되돌릴 수 있나</text>
       <text x="633" y="230" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">Revert PR, 롤백 24초</text>
       <text x="633" y="266" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">③ ④ ⑤ 장면에서 쌓아요</text>
     </svg>
-    <figcaption>읽는 법: 위 줄은 배운 순서예요. 아래 세 상자는 «배포가 안전한가»를 확인하는 세 가지 질문이에요. 한 장면이 질문 하나만 맡지 않고, 여러 장면이 같은 질문에 증거를 보태요.</figcaption>
+    <figcaption>읽는 법: 장면이 차례로 켜질 때, 그 장면이 증거를 쌓는 질문도 함께 켜져요. ③ CI/CD는 세 질문 모두에, ④ Docker는 «무엇이 나갔나»와 «되돌릴 수 있나»에, ⑤ 배포 전략은 «사용자는 괜찮았나»와 «되돌릴 수 있나»에 증거를 보태요. ①②는 이 그림에서 질문과 이어 두지 않았어요.</figcaption>
     </figure>
 
     <h2 id="organize"><span class="hl">정리</span> — 다섯 장면, 한 문장씩</h2>
