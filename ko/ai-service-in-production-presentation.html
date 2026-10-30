@@ -33,17 +33,17 @@
     <h2 id="nodes"><span class="hl">이 글이 묶은 노드</span> — 모두연 63~71번, 아홉 날</h2>
     <p>노드 이름은 학습 사이트 목록에 적힌 이름이에요.</p>
     <table>
-      <thead><tr><th>노드</th><th>날짜</th><th>학습 사이트의 이름</th><th>이 글의 장면</th><th>이 노드를 정리한 블로그 글</th></tr></thead>
+      <thead><tr><th>노드</th><th>날짜</th><th>학습 사이트의 이름</th><th>주제</th><th>이 노드를 정리한 블로그 글</th></tr></thead>
       <tbody>
-        <tr><td>63</td><td>10.19</td><td>프로덕트 설계</td><td>① 설계</td><td><a href="ai-service-design-before-code.html">AI 기능을 서비스로 설계한다는 것</a></td></tr>
-        <tr><td>64</td><td>10.20</td><td>GCP Cloud Run 배포</td><td>② Cloud Run</td><td><a href="cloud-run-source-deploy-meaning.html">Cloud Run에 소스를 배포한다는 것</a></td></tr>
-        <tr><td>65</td><td>10.21</td><td>GCP Cloud Run 배포</td><td>② Cloud Run</td><td><a href="cloud-run-operating-ai-service.html">배포한 AI 서비스가 말없이 틀리는 순간</a></td></tr>
-        <tr><td>66</td><td>10.22</td><td>CI/CD</td><td>③ CI/CD</td><td><a href="github-actions-auto-deploy.html">코드를 머지하면 서비스가 저절로 바뀌는 길</a></td></tr>
-        <tr><td>67</td><td>10.23</td><td>CI/CD</td><td>③ CI/CD</td><td><a href="ci-tests-and-staging.html">합치기 전에 테스트하고 내보내기 전에 먼저 본다</a></td></tr>
-        <tr><td>68</td><td>10.26</td><td>Docker</td><td>④ Docker</td><td><a href="dockerfile-fixing-runtime-environment.html">로컬에서는 되는데 서버에서만 안 되는 이유</a></td></tr>
-        <tr><td>69</td><td>10.27</td><td>Docker</td><td>④ Docker</td><td><a href="build-once-promote-image.html">시험한 이미지와 내보낸 이미지가 같다는 증거</a></td></tr>
-        <tr><td>70</td><td>10.28</td><td>서비스 배포 전략</td><td>⑤ 배포 전략</td><td><a href="load-balancer-zero-downtime.html">새 버전으로 바뀌는 몇 초 동안</a></td></tr>
-        <tr><td>71</td><td>10.29</td><td>서비스 배포 전략</td><td>⑤ 배포 전략</td><td><a href="cloud-run-zero-downtime-deploy.html">배포하는 동안 사용자는 오류를 봤을까</a></td></tr>
+        <tr><td>63</td><td>10.19</td><td>프로덕트 설계</td><td>설계</td><td><a href="ai-service-design-before-code.html">AI 기능을 서비스로 설계한다는 것</a></td></tr>
+        <tr><td>64</td><td>10.20</td><td>GCP Cloud Run 배포</td><td>Cloud Run</td><td><a href="cloud-run-source-deploy-meaning.html">Cloud Run에 소스를 배포한다는 것</a></td></tr>
+        <tr><td>65</td><td>10.21</td><td>GCP Cloud Run 배포</td><td>Cloud Run</td><td><a href="cloud-run-operating-ai-service.html">배포한 AI 서비스가 말없이 틀리는 순간</a></td></tr>
+        <tr><td>66</td><td>10.22</td><td>CI/CD</td><td>CI/CD</td><td><a href="github-actions-auto-deploy.html">코드를 머지하면 서비스가 저절로 바뀌는 길</a></td></tr>
+        <tr><td>67</td><td>10.23</td><td>CI/CD</td><td>CI/CD</td><td><a href="ci-tests-and-staging.html">합치기 전에 테스트하고 내보내기 전에 먼저 본다</a></td></tr>
+        <tr><td>68</td><td>10.26</td><td>Docker</td><td>Docker</td><td><a href="dockerfile-fixing-runtime-environment.html">로컬에서는 되는데 서버에서만 안 되는 이유</a></td></tr>
+        <tr><td>69</td><td>10.27</td><td>Docker</td><td>Docker</td><td><a href="build-once-promote-image.html">시험한 이미지와 내보낸 이미지가 같다는 증거</a></td></tr>
+        <tr><td>70</td><td>10.28</td><td>서비스 배포 전략</td><td>배포 전략</td><td><a href="load-balancer-zero-downtime.html">새 버전으로 바뀌는 몇 초 동안</a></td></tr>
+        <tr><td>71</td><td>10.29</td><td>서비스 배포 전략</td><td>배포 전략</td><td><a href="cloud-run-zero-downtime-deploy.html">배포하는 동안 사용자는 오류를 봤을까</a></td></tr>
               <tr><td>72</td><td>10.30</td><td>Mini Wrap up!</td><td>(정리 시간)</td><td><a href="ai-service-in-production-wrap-up.html">아홉 개 노드를 한 번에 — AI 서비스를 프로덕션에 올리기까지 돌아보기</a>와 이 글</td></tr>
       </tbody>
     </table>
@@ -51,9 +51,9 @@
     <h2 id="flow"><span class="hl">한 장 그림</span> — 전체 지도와, 그 안의 길</h2>
     <p>먼저 숲을 보세요. 이번 모듈은 AI 서비스를 사용자에게 내보내는 일이고, 한 줄로 이렇게 이어져요.</p>
     <ul>
-      <li><strong>출발 — 무엇을 내보낼까:</strong> 코드를 짜기 전에 정해요. (① 설계)</li>
-      <li><strong>길 — 어떻게 안전하게 보낼까:</strong> 코드 변경이 사용자에게 가는 다섯 칸이에요. (③ CI/CD, ④ Docker, ⑤ 배포 전략)</li>
-      <li><strong>도착 — 어디에서 돌아가나:</strong> 서비스가 실제로 돌아가고 사용자가 오는 곳이에요. (② Cloud Run)</li>
+      <li><strong>출발 — 무엇을 내보낼까:</strong> 코드를 짜기 전에 정해요. (설계)</li>
+      <li><strong>길 — 어떻게 안전하게 보낼까:</strong> 코드 변경이 사용자에게 가는 다섯 칸이에요. (CI/CD, Docker, 배포 전략)</li>
+      <li><strong>도착 — 어디에서 돌아가나:</strong> 서비스가 실제로 돌아가고 사용자가 오는 곳이에요. (Cloud Run)</li>
     </ul>
     <p>그림 가운데 줄은 «길»을 펼친 것이고, 아래 줄은 그 길이 안전한지 확인하는 세 질문이에요. 그림은 저절로 반복돼요. 출발, 길의 1~5칸, 도착 순서로 불이 들어오고, 칸이 켜질 때마다 그 칸이 답해 주는 질문도 같이 켜져요. 예를 들어 3칸 «이미지 만들기»가 켜지면 «무엇이 나갔나»와 «되돌릴 수 있나»가 켜져요.</p>
     <figure>
@@ -88,22 +88,22 @@
       <defs>
         <marker id="fl-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/></marker>
       </defs>
-      <text x="8" y="18" text-anchor="start" font-family="var(--font-heading)" font-size="13" fill="var(--muted)">전체 지도 — 왼쪽에서 오른쪽으로 읽어요</text>
+      <text x="8" y="18" text-anchor="start" font-family="var(--font-heading)" font-size="13" fill="var(--muted)">전체 지도 — 일의 흐름: 출발 → 길 → 도착</text>
       <rect class="za" x="8" y="28" width="200" height="88" rx="8" fill="var(--accent)" fill-opacity="0"/>
       <text x="108" y="52" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">출발 — 무엇을 내보낼까</text>
-      <text x="108" y="72" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">① 설계 (노드 63)</text>
+      <text x="108" y="72" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">설계 (노드 63)</text>
       <text x="108" y="88" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">코드를 짜기 전에 누구에게</text>
       <text x="108" y="103" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">어떻게 쓰게 할지 정해요</text>
       <line x1="210" y1="72" x2="228" y2="72" stroke="var(--muted)" stroke-width="2" marker-end="url(#fl-a)"/>
       <rect class="zr" x="230" y="28" width="300" height="88" rx="8" fill="var(--accent)" fill-opacity="0"/>
       <text x="380" y="52" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">길 — 어떻게 안전하게 보낼까</text>
       <text x="380" y="72" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">코드 변경이 지나가는 다섯 칸</text>
-      <text x="380" y="88" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">③ CI/CD · ④ Docker · ⑤ 배포 전략</text>
+      <text x="380" y="88" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">CI/CD · Docker · 배포 전략</text>
       <text x="380" y="103" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">(노드 66~71) ▼ 아래에 펼쳤어요</text>
       <line x1="532" y1="72" x2="550" y2="72" stroke="var(--muted)" stroke-width="2" marker-end="url(#fl-a)"/>
       <rect class="zc" x="552" y="28" width="200" height="88" rx="8" fill="var(--accent)" fill-opacity="0"/>
       <text x="652" y="52" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">도착 — 어디에서 돌아가나</text>
-      <text x="652" y="72" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">② Cloud Run (노드 64·65)</text>
+      <text x="652" y="72" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">Cloud Run (노드 64·65)</text>
       <text x="652" y="88" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">서비스가 실제로 돌아가고</text>
       <text x="652" y="103" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">사용자가 오는 곳이에요</text>
       <text x="380" y="146" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--muted)">▼ 길을 펼치면 — 이 순서대로 지나가요</text>
@@ -150,18 +150,18 @@
       <text x="633" y="326" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">되돌릴 수 있나</text>
       <text x="633" y="348" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">Revert PR, 롤백 24초</text>
     </svg>
-    <figcaption>읽는 법: 길의 칸과 질문의 연결은 «아홉 개 노드를 한 번에» 글에 적힌 노드 표시를 따랐어요. 그림의 1~5는 길의 순서이고, ①~⑤는 아래 «정리» 표의 주제 번호예요.</figcaption>
+    <figcaption>읽는 법: 노드 번호는 배운 날짜 순서이고, 지도는 일이 흘러가는 순서라서 번호가 건너뛰어요(설계 63 → 길 66~71 → Cloud Run 64·65). 그림의 1~5는 길의 순서이고, 길의 칸과 질문의 연결은 «아홉 개 노드를 한 번에» 글에 적힌 노드 표시를 따랐어요.</figcaption>
     </figure>
 
     <h2 id="organize"><span class="hl">정리</span> — 다섯 장면, 한 문장씩</h2>
     <table>
-      <thead><tr><th>장면</th><th>한 문장</th><th>제가 본 것</th><th>자세한 글(노드)</th></tr></thead>
+      <thead><tr><th>주제 (배운 순서)</th><th>한 문장</th><th>제가 본 것</th><th>자세한 글(노드)</th></tr></thead>
       <tbody>
-        <tr><td>① 설계<br>10.19</td><td>코드를 짜기 전에 «누가, 어디서, 어떻게 쓰는지»를 사람이 먼저 정해 문서(PRD) 한 장으로 남겨요.</td><td>코드 없이 프로토타입(시제품)으로 먼저 확인한 뒤, 구조 그림과 PRD 한 장으로 정리했어요.</td><td><a href="ai-service-design-before-code.html">노드 63</a></td></tr>
-        <tr><td>② Cloud Run (코드를 올리면 공개 주소를 붙여 주는 구글 서비스)<br>10.20~21</td><td>코드 폴더를 올리면 공개 주소가 생겨요. 서버가 정상이라고 해도 손님이 답을 못 받을 수 있어서 타임아웃과 로그를 봐요.</td><td>새 버전과 옛 버전 사이로 요청을 옮겨 보고, API 키를 Secret Manager에 연결하고, 로그 세 종류를 찾아 읽었어요.</td><td><a href="cloud-run-source-deploy-meaning.html">노드 64</a> <a href="cloud-run-operating-ai-service.html">노드 65</a></td></tr>
-        <tr><td>③ CI/CD<br>10.22~23</td><td>코드를 합치면 서비스가 저절로 바뀌고, 합치기 전에 테스트가 깨진 코드를 막아요.</td><td>내 앱(도장판)에서 일부러 깨뜨린 PR #9는 테스트 9개 중 3개가 실패했어요. 연습용 템플릿 저장소에서는 main에 직접 push하는 것이 GH006으로 거절됐어요.</td><td><a href="github-actions-auto-deploy.html">노드 66</a> <a href="ci-tests-and-staging.html">노드 67</a></td></tr>
-        <tr><td>④ Docker<br>10.26~27</td><td>실행 환경을 Dockerfile (실행 환경을 한 줄씩 적은 파일)이라는 파일에 적고, 시험한 이미지를 다시 만들지 않고 그대로 내보내요.</td><td>이미지의 sha256 지문으로 «같은 이미지인가»를 확인했고, 롤백은 24초, 복구는 36초가 걸렸어요.</td><td><a href="dockerfile-fixing-runtime-environment.html">노드 68</a> <a href="build-once-promote-image.html">노드 69</a></td></tr>
-        <tr><td>⑤ 배포 전략<br>10.28~29</td><td>새 버전을 요청 0%로 먼저 올려 두고, 준비가 됐는지 확인한 뒤에만 요청을 옮겨요.</td><td>기본 확인 방식에서는 요청 389건 중 71건이 실패했고, /health 확인 방식에서는 283건 중 0건이 실패했어요.</td><td><a href="load-balancer-zero-downtime.html">노드 70</a> <a href="cloud-run-zero-downtime-deploy.html">노드 71</a></td></tr>
+        <tr><td>설계<br>10.19</td><td>코드를 짜기 전에 «누가, 어디서, 어떻게 쓰는지»를 사람이 먼저 정해 문서(PRD) 한 장으로 남겨요.</td><td>코드 없이 프로토타입(시제품)으로 먼저 확인한 뒤, 구조 그림과 PRD 한 장으로 정리했어요.</td><td><a href="ai-service-design-before-code.html">노드 63</a></td></tr>
+        <tr><td>Cloud Run (코드를 올리면 공개 주소를 붙여 주는 구글 서비스)<br>10.20~21</td><td>코드 폴더를 올리면 공개 주소가 생겨요. 서버가 정상이라고 해도 손님이 답을 못 받을 수 있어서 타임아웃과 로그를 봐요.</td><td>새 버전과 옛 버전 사이로 요청을 옮겨 보고, API 키를 Secret Manager에 연결하고, 로그 세 종류를 찾아 읽었어요.</td><td><a href="cloud-run-source-deploy-meaning.html">노드 64</a> <a href="cloud-run-operating-ai-service.html">노드 65</a></td></tr>
+        <tr><td>CI/CD<br>10.22~23</td><td>코드를 합치면 서비스가 저절로 바뀌고, 합치기 전에 테스트가 깨진 코드를 막아요.</td><td>내 앱(도장판)에서 일부러 깨뜨린 PR #9는 테스트 9개 중 3개가 실패했어요. 연습용 템플릿 저장소에서는 main에 직접 push하는 것이 GH006으로 거절됐어요.</td><td><a href="github-actions-auto-deploy.html">노드 66</a> <a href="ci-tests-and-staging.html">노드 67</a></td></tr>
+        <tr><td>Docker<br>10.26~27</td><td>실행 환경을 Dockerfile (실행 환경을 한 줄씩 적은 파일)이라는 파일에 적고, 시험한 이미지를 다시 만들지 않고 그대로 내보내요.</td><td>이미지의 sha256 지문으로 «같은 이미지인가»를 확인했고, 롤백은 24초, 복구는 36초가 걸렸어요.</td><td><a href="dockerfile-fixing-runtime-environment.html">노드 68</a> <a href="build-once-promote-image.html">노드 69</a></td></tr>
+        <tr><td>배포 전략<br>10.28~29</td><td>새 버전을 요청 0%로 먼저 올려 두고, 준비가 됐는지 확인한 뒤에만 요청을 옮겨요.</td><td>기본 확인 방식에서는 요청 389건 중 71건이 실패했고, /health 확인 방식에서는 283건 중 0건이 실패했어요.</td><td><a href="load-balancer-zero-downtime.html">노드 70</a> <a href="cloud-run-zero-downtime-deploy.html">노드 71</a></td></tr>
       </tbody>
     </table>
 
@@ -209,28 +209,28 @@
     <h2 id="apply"><span class="hl">활용</span> — 내 앱(도장판)에 세 질문을 대 보기</h2>
     <p>제 앱 도장판은 도장을 모을수록 칸이 하나씩 열리는 루틴 앱이에요. 세 질문을 이 앱에 대 보면, 이미 갖춘 것과 아직 비어 있는 것이 보여요. 아래 «다음에 할 일»은 아직 하지 않았어요.</p>
 
-    <p><strong>① 무엇이 나갔나 — 지금 서비스에 올라간 코드가 어떤 것인지 말할 수 있나?</strong></p>
+    <p><strong>무엇이 나갔나 — 지금 서비스에 올라간 코드가 어떤 것인지 말할 수 있나?</strong></p>
     <ul>
       <li><strong>지금은:</strong> 화면 아래에 코드 버전 번호(커밋) 일곱 자리를 띄워서, 올라간 코드를 바로 알 수 있어요.</li>
       <li><strong>비어 있는 곳:</strong> GitHub Pages가 저장소 전체를 공개해서, 시험 파일(tests 폴더)까지 누구나 볼 수 있어요.</li>
       <li><strong>다음에 할 일:</strong> 공개할 파일만 남기도록 공개 범위를 정리해요.</li>
     </ul>
 
-    <p><strong>② 사용자는 괜찮았나 — 배포한 뒤 사용자가 오류나 이상한 답을 받지 않았다고 말할 수 있나?</strong></p>
+    <p><strong>사용자는 괜찮았나 — 배포한 뒤 사용자가 오류나 이상한 답을 받지 않았다고 말할 수 있나?</strong></p>
     <ul>
       <li><strong>지금은:</strong> 칸이 열리는 일정을 시험하는 테스트 9개가 있고, 서비스가 살아 있는지(/health)를 확인해요.</li>
       <li><strong>비어 있는 곳:</strong> 서비스가 살아 있다는 것까지만 알아요. 도우미가 엉뚱한 답을 하는지는 사람이 직접 물어봐야 알아요.</li>
       <li><strong>다음에 할 일:</strong> 배포가 끝나면 대표 질문 몇 개를 자동으로 보내고, 도우미가 정해 둔 규칙을 어긴 횟수를 세는 프로그램을 만들어요.</li>
     </ul>
 
-    <p><strong>③ 되돌릴 수 있나 — 문제가 생기면 바로 이전 상태로 돌릴 수 있나?</strong></p>
+    <p><strong>되돌릴 수 있나 — 문제가 생기면 바로 이전 상태로 돌릴 수 있나?</strong></p>
     <ul>
       <li><strong>지금은:</strong> 되돌리는 요청(Revert PR)과, 버튼 한 번으로 이전 버전으로 돌리는 롤백 자동화가 있어요. 롤백은 24초가 걸렸어요.</li>
       <li><strong>비어 있는 곳:</strong> main 브랜치(서비스가 되는 코드 줄기)에 보호 규칙이 없어서, 테스트가 실패해도 코드를 합칠 수 있어요.</li>
       <li><strong>다음에 할 일:</strong> 테스트를 통과해야만 합칠 수 있게 main에 필수 검사를 걸어요.</li>
     </ul>
 
-    <p><strong>정리하면</strong> 비어 있는 곳은 ②에 몰려 있어요. 서비스가 떠 있는지는 기계가 확인해 주지만, 답이 맞는지는 아직 사람이 확인하고 있어요. 다음에 자동화할 일 첫 번째가 이거예요.</p>
+    <p><strong>정리하면</strong> 비어 있는 곳은 «사용자는 괜찮았나»에 몰려 있어요. 서비스가 떠 있는지는 기계가 확인해 주지만, 답이 맞는지는 아직 사람이 확인하고 있어요. 다음에 자동화할 일 첫 번째가 이거예요.</p>
 
     <h2 id="not-done"><span class="hl">알아 둘 점</span></h2>
     <ul>
