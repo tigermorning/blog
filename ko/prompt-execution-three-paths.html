@@ -76,10 +76,11 @@
       <span class="post-nav-title">AI 에이전트(Agent) 쉽게 이해하기</span>
     </a>
 
-    <p><a href="prompt-engineering-history.html">프롬프트 기법의 역사</a>에서 system·이력이 답을 어떻게 바꾸는지 이론으로 봤다면, 이번엔 손으로 직접 세 가지 실행 경로를 돌려봤다. 결론부터 말하면 <strong>같은 "system 지시"라는 개념도 라이브러리마다 받는 자료형이 다르다</strong>. 인터페이스 차이를 감춰야 할 결함이 아니라, 실행 환경을 고를 때 확인할 조건으로 보는 법을 배웠다.</p>
+    <p><a href="prompt-engineering-history.html">프롬프트 기법의 역사</a>에서 system·이력이 답을 어떻게 바꾸는지 이론으로 봤다면, 이번엔 손으로 직접 세 가지 실행 경로를 돌려봤다. 여기서 system 지시는 AI에게 "이런 식으로 답해 줘"라고 미리 정해 두는 말이고, 이력은 앞서 주고받은 대화예요. 결론부터 말하면 <strong>같은 "system 지시"라도 라이브러리(남이 만들어 둔 기능 모음)마다 받는 자료형이 다르다</strong>. 자료형이란 입력을 담는 그릇의 모양(글자 하나인지, 목록인지)을 말해요. 이 차이는 감춰야 할 결함이 아니라, 실행 환경을 고를 때 확인할 조건이라고 보는 법을 배웠다.</p>
     <p>세 번째 경로에 나오는 Ollama는 내 컴퓨터 안에서 AI 모델을 내려받아 돌려 주는 무료 프로그램이다. 설치와 첫 실행은 <a href="running-local-llm-with-ollama.html">직접 Ollama로 로컬 LLM 돌려보기</a>에서 다뤘으니, 아직 안 깔았다면 그 글부터 보고 오는 편이 낫다.</p>
 
     <h2>1. <span class="hl">세 경로, 세 가지 자료형</span></h2>
+    <p>아래 표는 세 경로가 입력을 어떤 모양으로 받는지 비교한 거예요. 여기서는 읽기만 해도 돼요.</p>
     <table>
       <thead>
         <tr><th>경로</th><th>되는 것</th><th>주의할 점</th></tr>
@@ -90,10 +91,12 @@
         <tr><td>Ollama</td><td>인증 없이 로컬 모델 실행, <code>system·user·assistant</code> role 딕셔너리 목록을 <code>chat()</code>에 전달</td><td>로컬이라는 사실이 품질을 보장하지 않는다. 이력을 넣은 호출에서 소형 모델의 응답이 매우 짧을 수 있다</td></tr>
       </tbody>
     </table>
-    <p>표의 낯선 말을 풀면, 비동기 생성기는 결과를 한 번에 다 만들지 않고 하나씩 내어 주는 함수이고, 딕셔너리는 "이름: 값" 쌍을 묶어 둔 자료예요. SDK(Software Development Kit)는 어떤 서비스를 프로그램에서 쉽게 부르도록 모아 둔 도구 모음이에요. 한쪽의 입력 모양을 다른 쪽에 억지로 옮기지 말고, 각 인터페이스가 실제로 받는 것을 읽어야 한다는 게 첫 번째 교훈이었다.</p>
+    <p>표의 낯선 말을 풀어 볼게요. 인증은 "이 사용자가 맞다"고 확인받는 일이고, API 키는 그때 내미는 긴 비밀 문자열이에요. 비동기 생성기는 결과를 한 번에 다 만들지 않고 하나씩 내어 주는 함수예요. 딕셔너리는 "이름: 값" 쌍을 묶어 둔 자료예요. SDK(Software Development Kit)는 어떤 서비스를 프로그램에서 쉽게 부르도록 모아 둔 도구 모음이에요. 인터페이스는 프로그램끼리 주고받기로 약속한 입력의 모양을 말해요.</p>
+    <p>첫 번째 교훈은 이거였다. 한쪽의 입력 모양을 다른 쪽에 억지로 옮기지 말고, 각 인터페이스가 실제로 받는 것을 읽어야 한다.</p>
 
     <h2>2. <span class="hl">Claude Agent SDK</span> — 에이전트 입력 스트림 그대로 쓰기</h2>
-    <p>Claude 경로는 Claude Code 로그인과 <code>claude-agent-sdk</code> 설치가 필요하다. 공통 지시는 <code>system_prompt</code>에, 사용자의 현재 요청은 비동기 생성기가 내보내는 user 메시지에 둔다. <code>max_turns=1</code>은 에이전트 턴 수를 제한할 뿐 답변 길이를 제한하지 않고, <code>tools=[]</code>는 도구 호출을 제외한다.</p>
+    <p>Claude 경로를 쓰려면 Claude Code 로그인과 <code>claude-agent-sdk</code> 설치가 필요하다. 공통 지시는 <code>system_prompt</code>에 둔다. 사용자의 현재 요청은 비동기 생성기가 내보내는 user 메시지에 둔다. <code>max_turns=1</code>은 에이전트가 움직이는 횟수만 제한하고 답변 길이는 제한하지 않는다. <code>tools=[]</code>는 도구를 못 쓰게 비워 둔다는 뜻이다.</p>
+    <p>아래 코드는 같은 질문을 system 지시만 바꿔 두 번 보내고, AI가 돌려준 내용을 파일 두 개에 저장해요. 직접 실행해 보는 코드예요.</p>
     <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— claude-agent-sdk 설치 + Claude Code 로그인 필요</span></p>
     <pre><code>import asyncio
 from pathlib import Path
@@ -118,7 +121,7 @@ async def main():
     await save_run("claude-system-b.txt", SYSTEM_B)
 
 asyncio.run(main())</code></pre>
-    <p>이 SDK는 앞선 assistant 답변을 입력 문자열에 role 태그로 다시 조립해 넣는 걸 지원하지 않는다. 멀티턴 효과를 role 배열로 관찰하려면 LangChain이나 Ollama 경로를 쓴다.</p>
+    <p>role은 그 말을 한 쪽(system, user, assistant)을 알려 주는 이름표예요. 이 SDK는 앞선 AI 답변(assistant)에 role 이름표를 붙여 입력에 다시 끼워 넣는 방식을 지원하지 않는다. 대화가 이어지는 효과(멀티턴)를 role 배열로 보고 싶다면 LangChain이나 Ollama 경로를 쓴다.</p>
 
     <h2>3. <span class="hl">system만 바꿔 재호출한 결과</span> — 문체 자체가 달라진다</h2>
     <p>같은 질문("배송일은 언제인가요?")을 system만 바꿔 두 번 돌렸다. 실측 결과다.</p>
@@ -129,10 +132,11 @@ asyncio.run(main())</code></pre>
         <tr><td><strong>기술 문서 톤</strong><br><code>system_prompt: 기술 문서 톤으로 답한다</code></td><td>"질문에 필요한 컨텍스트가 없습니다. 현재 세션에는 주문·배송 관련 정보가 없고, 연결된 도구(캘린더, 드라이브, DB, 브라우저)에도 배송 조회용 데이터 소스가 지정되지 않았습니다. 확인이 필요한 항목입니다. 어떤 배송인가, 조회 경로, 대체 소스."</td></tr>
       </tbody>
     </table>
-    <p>둘 다 배송일을 단정하지 않았다는 점은 같다. 그러나 하나는 감사·사과와 주문자 정보 요청으로 고객 문의를 구성했고, 다른 하나는 컨텍스트·연결 도구·조회 경로로 기술적으로 분류했다. "더 좋다"가 아니라 <strong>"system 변경으로 무엇이 달라졌다"</strong>를 한 문장으로 남기는 게 이 실습의 목적이다.</p>
+    <p>둘 다 배송일을 단정하지 않았다는 점은 같다. 그런데 첫 답은 감사·사과와 주문자 정보 요청으로 고객 문의처럼 썼다. 둘째 답은 컨텍스트(AI가 지금 보고 있는 자료)·연결 도구·조회 경로를 들어 기술 문서처럼 썼다. "어느 쪽이 더 좋다"를 가리는 게 아니다. <strong>"system 변경으로 무엇이 달라졌다"</strong>를 한 문장으로 남기는 게 이 실습의 목적이다.</p>
 
     <h2>4. <span class="hl">LangChain + Gemini</span> — 메시지 객체 목록</h2>
-    <p><code>GEMINI_API_KEY</code>를 셸 환경 변수로 설정한 뒤, system 지시와 대화 이력을 각각 알맞은 메시지 객체로 표현한다.</p>
+    <p>LangChain은 여러 회사의 AI 모델을 비슷한 방식으로 부르게 해 주는 도구 모음이고, Gemini는 구글의 AI 모델이에요. 먼저 <code>GEMINI_API_KEY</code>를 셸 환경 변수(터미널에 이름표를 붙여 적어 두는 설정값)로 설정한다. 그다음 system 지시와 대화 이력을 각각 알맞은 메시지 객체로 표현한다.</p>
+    <p>아래 코드는 system 지시와 이전 대화를 넣어 Gemini에게 보내고, 받은 답을 파일로 저장해요. 직접 실행해 보는 코드예요.</p>
     <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— GEMINI_API_KEY 환경변수 필요</span></p>
     <pre><code>from pathlib import Path
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
@@ -154,7 +158,8 @@ save_run("gemini-with-history.txt", [
     <p class="post-date">한 걸음 더: LangChain이 이런 부품(모델 연결·메시지·도구 정의)을 맡는다면, 그 부품을 어떤 순서로 돌릴지는 같은 회사의 LangGraph가 맡아요. 두 도구와 LangSmith의 관계는 <a href="langgraph-what-and-why.html#langchain-family">다음에 어느 코드가 실행될까 — LangGraph와 워크플로·에이전트</a>에서 정리했어요.</p>
 
     <h2>5. <span class="hl">Ollama</span> — role 딕셔너리 목록</h2>
-    <p>Ollama 앱을 실행하고 <code>ollama pull qwen3.5:2b</code>로 모델을 준비한 뒤, 같은 관찰을 role 딕셔너리로 표현했다.</p>
+    <p>Ollama 앱을 실행하고 <code>ollama pull qwen3.5:2b</code>로 모델을 준비한다. pull은 모델 파일을 내 컴퓨터로 내려받는 명령이에요. 그다음 같은 관찰을 role 딕셔너리로 표현했다.</p>
+    <p>아래 코드는 앞 절과 같은 대화를 role 딕셔너리 목록으로 만들어 내 컴퓨터 안의 모델에게 보내고, 답을 파일로 저장해요. 직접 실행해 보는 코드예요.</p>
     <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— Ollama 앱 실행 + 모델 준비 필요</span></p>
     <pre><code>from pathlib import Path
 from ollama import chat
@@ -171,10 +176,10 @@ save_run("ollama-with-history.txt", [
 ])</code></pre>
 
     <h2>6. <span class="hl">앞선 대화를 넣었을 때, 모델이 정말 참조하는가</span></h2>
-    <p>Claude Agent SDK 경로는 이력을 assistant role 배열로 못 넣으니, 앞선 대화를 설명한 문장을 새 user 메시지에 통째로 담아 재호출한다. 이 방식으로 "주문번호 또는 운송장 번호"라는 앞선 제안이 마지막 답에서 어떻게 이어지는지 확인하는 게 핵심이었다. 참조가 안 보이면 "앞선 대화를 user 입력에 포함했으나 응답에서 분명한 참조를 확인하지 못했다"라고 그대로 기록한다 — <strong>이력이 입력이라는 사실과, 모델이 매번 이력을 원하는 방식으로 활용한다는 보장은 다르다</strong>.</p>
+    <p>Claude Agent SDK 경로는 이력을 assistant role 배열로 넣을 수 없어요. 그래서 앞선 대화를 글로 설명한 문장을 새 user 메시지에 통째로 담아 다시 호출한다. 핵심은 "주문번호 또는 운송장 번호"라는 앞선 제안이 마지막 답에서 어떻게 이어지는지 확인하는 거였다. 참조가 안 보이면 "앞선 대화를 user 입력에 포함했으나 응답에서 분명한 참조를 확인하지 못했다"라고 그대로 기록한다 — <strong>이력이 입력이라는 사실과, 모델이 매번 이력을 원하는 방식으로 활용한다는 보장은 다르다</strong>.</p>
 
     <h2><span class="hl">정리</span></h2>
-    <p>환경을 고르는 기준은 세 코드를 같은 모양으로 만드는 일이 아니었다. 구독 로그인으로 에이전트 실행을 관찰할지, API 키와 범용 메시지 추상화를 쓸지, 로컬 모델의 조건과 한계를 시험할지 결정하는 일이었다. 어느 경로든 비교할 질문은 같다 — user 요청을 고정하고 system만 바꿨을 때 문체·구조·추가 정보 요청이 무엇이 달라지는지, 앞선 대화 이력을 넣었을 때 새 응답이 그 이력을 실제로 반영하는지를 원문으로 확인하는 것.</p>
+    <p>환경을 고르는 기준은 세 코드를 같은 모양으로 만드는 일이 아니었다. 구독 로그인으로 에이전트 실행을 관찰할지, API 키와 범용 메시지 추상화(회사마다 다른 입력 모양을 한 겹 감싸 같게 보이게 하는 방식)를 쓸지, 로컬 모델의 조건과 한계를 시험할지를 정하는 일이었다. 어느 경로든 비교할 질문은 같다. user 요청을 고정하고 system만 바꿨을 때 문체·구조·추가 정보 요청이 무엇이 달라지는지 본다. 앞선 대화 이력을 넣었을 때 새 응답이 그 이력을 실제로 반영하는지도 본다. 둘 다 원문으로 확인한다.</p>
 
     <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 세 경로를 직접 돌리다 막히거나 결과가 이상할 때</h2>
     <p>세 경로를 AI에게 짜 달라고 하면, 막히는 자리는 대개 코드 줄보다 <strong>경로 사이의 차이</strong>예요. 한 경로에서 되던 모양을 다른 경로에 옮기거나, 호출 실패를 지시 실패로 읽거나, 이력을 넣었으니 참조했겠지 하고 넘어갈 때 생겨요.</p>
@@ -182,7 +187,7 @@ save_run("ollama-with-history.txt", [
       <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
       <tbody>
         <tr id="suspect-wrong-shape">
-          <td>"LangChain 코드처럼 이력도 넣어 줘"라고 했더니 Claude Agent SDK 코드에서 <code>unexpected keyword argument</code>가 들어간 <code>TypeError</code>가 나고, AI가 <strong>옵션 이름을 계속 바꿔 가며</strong> 다시 시도해요</td>
+          <td>"LangChain 코드처럼 이력도 넣어 줘"라고 했더니 Claude Agent SDK 코드에서 <code>unexpected keyword argument</code>가 들어간 <code>TypeError</code>(함수가 모르는 이름의 값을 넘겼다는 오류)가 나고, AI가 <strong>옵션 이름을 계속 바꿔 가며</strong> 다시 시도해요</td>
           <td>에러가 가리키는 줄의 <strong>함수와 거기 넘긴 모양</strong>이에요. <code>query()</code>나 <code>ClaudeAgentOptions(...)</code>에 role 딕셔너리 목록처럼 다른 경로의 입력 모양을 넣고 있는지 봐요</td>
           <td>AI의 기억 말고 설치된 패키지에 물어요. 파이썬에서 <code>help(ClaudeAgentOptions)</code>를 실행하면 받을 수 있는 이름이 나와요. 거기 없는 이름이면 버그가 아니라 그 경로가 원래 그렇게 받지 않는 거라, 이 SDK에서는 앞선 대화를 설명한 문장을 새 user 메시지에 담는 쪽으로 가요</td>
         </tr>
@@ -205,6 +210,7 @@ save_run("ollama-with-history.txt", [
     </table>
     <p>둘째 줄은 에러가 없어서 제일 놓치기 쉬워요. 그래서 이력을 넣은 판을 돌릴 때는 이력을 뺀 판도 처음부터 같이 돌려 원문을 남겨 둬요.</p>
     <p>첫째 줄처럼 AI가 없는 옵션을 붙들고 도는 중이라면, 더 고치게 하지 말고 설치된 패키지 기준으로 대조부터 시켜요. AI가 기억하는 사용법과 내 컴퓨터에 깔린 버전이 다를 수 있거든요.</p>
+    <p>아래 글을 코딩 에이전트에 붙여 넣으면, 폴더 안의 호출을 표로 정리해 줘요. 직접 해 보는 거예요. 코드를 고치지는 않아요.</p>
     <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— 세 경로 실습 코드가 있는 폴더에서</span></p>
     <pre><code>이 폴더에서 Claude Agent SDK, LangChain, Ollama를 호출하는 곳을 전부 찾아 아래를 표로 보여 줘. 아직 코드는 고치지 마.
 1. 호출마다 파일 이름·줄 번호, 부르는 함수, 넘기는 입력의 모양(비동기 생성기 / 메시지 객체 목록 / role 딕셔너리 목록)
