@@ -118,7 +118,7 @@
     <p>대신 발표가 "분명하다"고 한 건 효율이에요. 기본 설정(medium)의 Opus 5.5가 Terminal-Bench 4.0에서 max 설정의 Opus 5를 약 5분의 1 비용으로 이겼고, GDPval-AA에서는 max 설정의 GPT-6 Astra를 과제당 약 5분의 1 비용으로 이겼어요.</p>
 
     <h2><span class="hl">에이전트에게 오래 맡길 때</span> — 달라지는 점</h2>
-    <p>이 블로그의 <a href="big-map.html">에이전트 설계 다섯 기둥</a>으로 보면, 발표에서 눈여겨볼 대목은 모델이 똑똑해졌다는 것보다 <strong>사람이 안 볼 때 어떻게 구느냐</strong> 쪽이에요.</p>
+    <p>이 블로그의 <a href="big-map-agent.html">에이전트 설계 다섯 기둥</a>으로 보면, 발표에서 눈여겨볼 대목은 모델이 똑똑해졌다는 것보다 <strong>사람이 안 볼 때 어떻게 구느냐</strong> 쪽이에요.</p>
     <ul>
       <li><strong>단계를 덜 밟아요.</strong> GitHub는 VS Code에서 Opus 5보다 더 많은 터미널 과제를 절반이 안 되는 단계로 풀었다고 했고, Kiro는 호출 수가 약 40% 적고 토큰은 절반이었다고 했어요. <a href="what-is-ai-agent.html">에이전트</a>의 호출 한 번 한 번이 곧 시간과 돈이라, 단계가 준다는 건 비용이 준다는 뜻이에요.</li>
       <li><strong>일을 나눠 맡기기를 잘해요.</strong> 한 고객사는 서브에이전트<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>에게 일을 훨씬 잘 나눠 주고, 자기 결과를 스스로 확인하는 반복 구조도 짜기 쉬워졌다고 했어요(<a href="langgraph-pattern-orchestrator-worker.html">오케스트레이터-워커</a>가 바로 그 모양이에요).</li>
@@ -189,7 +189,7 @@
 
     <h2><span class="hl">함께 보기</span></h2>
     <ul>
-      <li><a href="big-map.html">큰 그림 지도 — 에이전트 설계 다섯 기둥</a> — 이 글의 "오래 맡길 때" 대목이 다섯 기둥의 어디에 걸리는지 볼 수 있어요.</li>
+      <li><a href="big-map-agent.html">에이전트 설계 지도 — 다섯 기둥</a> — 이 글의 "오래 맡길 때" 대목이 다섯 기둥의 어디에 걸리는지 볼 수 있어요.</li>
       <li><a href="cca-exam-agent-anti-patterns.html">에이전트 안티패턴 다섯 가지</a> — 서브에이전트에게 무엇을 넘기고, 파이프라인에서 어떻게 부를지 같은 설계 쪽 이야기예요.</li>
       <li><a href="tokens-and-context-window-cost.html">토큰과 컨텍스트 — 활용가가 보는 비용과 한계</a> — 토큰값 × 토큰 수로 비용을 계산하는 법을 처음부터 봐요.</li>
       <li><a href="jev-rlhf-rlvr-rlcd.html">Jev — 문장 대신 확률로 답하는 판정 전담 모델</a> — 같은 책장의 다른 새 모델이에요. 큰 모델 하나로 다 하지 않는 쪽의 선택지예요.</li>

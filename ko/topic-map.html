@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>블로그 주제 지도 - Tigermorning</title>
+  <title>공부 사다리 - Tigermorning</title>
   <meta name="description" content="이 블로그의 글들이 아홉 단계로 어떻게 쌓이는지, 그리고 '안 되면 다음 칸'으로 넘어가는 사다리들로 서로 어떻게 이어지는지 보여주는 지도입니다.">
   <meta property="og:type" content="article">
   <meta property="og:title" content="블로그 주제 지도 - Tigermorning">
@@ -11,6 +11,8 @@
   <meta property="og:locale" content="ko_KR">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="forest.css">
+  <link rel="stylesheet" href="two-layer.css">
   <style>
     .tm-box { stroke: var(--nc); stroke-width: 2.5; fill: var(--nc); fill-opacity: 0.1; }
     .tm-arrow { stroke: var(--border); stroke-width: 2.2; fill: none; }
@@ -45,8 +47,10 @@
   <div id="sidebar-mount"></div>
 
   <main>
-    <h1><span class="hl">블로그 주제 지도</span></h1>
-    <p class="post-date">글 하나하나가 아니라, 글들 사이의 순서를 보는 페이지예요.</p>
+    <h1><span class="hl">공부 사다리</span></h1>
+    <p class="post-date">하고 싶은 일 하나에 맞춰, 어떤 글을 어떤 순서로 읽으면 되는지 보는 페이지예요.</p>
+    <div id="forest" data-mode="path"></div>
+    <details class="deep"><summary>▼ 사다리마다 자세히 보기</summary>
 
     <div class="why-read">
       <p class="why-read-title">이 페이지를 읽기 전에</p>
@@ -691,6 +695,7 @@
       <span class="post-nav-label">← 목록으로</span>
       <span class="post-nav-title">전체 글 목록 보기</span>
     </a>
+    </details>
   </main>
   </div>
 
@@ -699,5 +704,8 @@
   </footer>
   <script src="fit-title.js"></script>
   <script src="sidebar-loader.js"></script>
+  <script src="forest-data.js"></script>
+  <script src="forest.js"></script>
+  <script src="two-layer.js"></script>
 </body>
 </html>

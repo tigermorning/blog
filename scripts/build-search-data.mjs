@@ -21,6 +21,7 @@ const SKIP = new Set([
   "start.html",
   "topic-map.html",
   "big-map.html",
+  "big-map-agent.html",
   "_sidebar.html",
 ]);
 

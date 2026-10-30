@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>에이전트 설계 지도 - Tigermorning</title>
+  <meta name="description" content="이 블로그의 글들을 AI 에이전트 설계 다섯 영역(Anthropic CCA 시험 기준)으로 나눠, 영역마다 묻는 것과 답하는 글을 확대해 들어가며 보는 지도입니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="에이전트 설계 지도 - Tigermorning">
+  <meta property="og:description" content="이 블로그의 글들을 AI 에이전트 설계 다섯 영역으로 나눠, 확대해 들어가며 보는 지도입니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/big-map-agent.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    #bm-root { margin-top: 1.2rem; }
+    .bm-crumbs { font-size: 0.86rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 0.2rem 0.4rem; align-items: center; margin: 0 0 0.6rem; }
+    .bm-crumbs a { color: var(--ink); }
+    .bm-crumbs [aria-current] { color: var(--ink); font-weight: 600; }
+    .bm-sep { color: var(--border); }
+    .bm-level { font-size: 0.8rem; color: var(--muted); margin: 0 0 0.3rem; display: flex; align-items: center; gap: 0.5rem; }
+    .bm-level-dots { display: inline-flex; gap: 3px; }
+    .bm-level-dots i { width: 18px; height: 6px; border-radius: 3px; background: var(--border); }
+    .bm-level-dots i.on { background: var(--ink); }
+    .bm-h { font-family: var(--font-subhead); font-weight: 400; font-size: 1.45rem; margin: 0.2rem 0 0.4rem; color: var(--nc, var(--ink)); }
+    .bm-lead { font-size: 0.97rem; line-height: 1.7; margin: 0 0 1rem; }
+    .bm-hint { font-size: 0.84rem; color: var(--muted); margin: 0.6rem 0 0; }
+    .bm-scene { border-left: 4px solid var(--nc); background: color-mix(in srgb, var(--nc) 7%, transparent); border-radius: 0 12px 12px 0; padding: 0.7rem 1rem; margin: 0 0 1.2rem; font-size: 0.93rem; line-height: 1.65; }
+    .bm-scene p { margin: 0; }
+    .bm-scene .bm-scene-title { font-family: var(--font-subhead); color: var(--nc); margin-bottom: 0.2rem; }
+
+    .bm-graph { position: relative; margin: 0.6rem 0 0.4rem; }
+    #bm-g { cursor: zoom-in; }
+    .bm-zoom-btn { display: block; margin: 0 0 0 auto; font: inherit; font-size: 0.82rem; color: var(--ink); background: var(--bg); border: 1px solid var(--border); border-radius: 999px; padding: 0.15rem 0.75rem; cursor: pointer; }
+    .bm-zoom-btn:hover { border-color: var(--ink); }
+    .bm-modal { width: min(1240px, 96vw); max-width: none; height: 92vh; max-height: none; padding: 0; border: none; border-radius: 16px; background: var(--bg); color: var(--ink); box-shadow: 0 10px 40px rgba(0,0,0,0.25); }
+    .bm-modal::backdrop { background: rgba(40, 34, 28, 0.55); }
+    .bm-modal[open] { display: flex; flex-direction: column; }
+    .bm-modal-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); }
+    .bm-modal-title { margin: 0; font-family: var(--font-subhead); font-size: 1.15rem; }
+    .bm-modal-close { font: inherit; font-size: 1.5rem; line-height: 1; width: 2.2rem; height: 2.2rem; border-radius: 50%; border: 1px solid var(--border); background: var(--bg); color: var(--ink); cursor: pointer; }
+    .bm-modal-scroll { flex: 1 1 auto; overflow: auto; scrollbar-gutter: stable; padding: 1rem; }
+    .bm-modal-graph { margin: 0 auto; }
+    .bm-modal-graph .bm-node-title { font-size: 1.1rem; }
+    .bm-modal-graph .bm-node-sub { font-size: 0.88rem; }
+    .bm-modal-graph .bm-edge-label { font-size: 0.8rem; }
+    .bm-edges { position: absolute; left: 0; top: 0; pointer-events: none; overflow: visible; }
+    .bm-edge { fill: none; stroke: var(--muted); stroke-width: 1.6; opacity: 0.7; }
+    .bm-arrowhead { fill: var(--muted); }
+    .bm-edge-label { position: absolute; font-size: 0.74rem; line-height: 1.2; color: var(--muted); background: var(--bg); padding: 1px 6px; border-radius: 8px; white-space: nowrap; pointer-events: none; }
+    .bm-node {
+      position: absolute; box-sizing: border-box; text-align: left; font: inherit; color: var(--ink);
+      border: 2px solid var(--nc); border-radius: 14px; padding: 0.55rem 0.7rem 0.6rem;
+      background: color-mix(in srgb, var(--nc) 8%, var(--bg));
+      display: flex; flex-direction: column; gap: 0.2rem; cursor: pointer;
+      transition: background-color 0.15s, transform 0.15s;
+    }
+    button.bm-node:hover, button.bm-node:focus-visible { background: color-mix(in srgb, var(--nc) 20%, var(--bg)); transform: translateY(-1px); }
+    .bm-node.bm-static { cursor: default; border-style: dashed; background: var(--bg); }
+    .bm-node-title { font-family: var(--font-subhead); font-size: 1rem; line-height: 1.3; color: var(--nc); word-break: keep-all; }
+    .bm-static .bm-node-title { color: var(--ink); }
+    .bm-node-sub { font-size: 0.8rem; line-height: 1.45; color: var(--ink); word-break: keep-all; }
+    .bm-node-count { font-size: 0.72rem; color: var(--muted); }
+    .bm-node-share { font-size: 0.8rem; line-height: 1.5; color: var(--ink); background: color-mix(in srgb, var(--nc) 12%, var(--bg)); border-radius: 8px; padding: 0.3rem 0.5rem; word-break: keep-all; }
+    .bm-node-share b { display: block; font-weight: 400; font-family: var(--font-subhead); font-size: 0.74rem; color: var(--nc); }
+    .bm-static .bm-node-share { background: color-mix(in srgb, var(--muted) 10%, var(--bg)); }
+    .bm-static .bm-node-share b { color: var(--muted); }
+    .bm-modal-graph .bm-node-share { font-size: 0.88rem; }
+    .bm-node-chips { display: flex; flex-wrap: wrap; gap: 0.2rem; margin-top: 0.15rem; }
+    .bm-node-chips i { font-style: normal; font-size: 0.7rem; line-height: 1.4; color: var(--nc); border: 1px solid color-mix(in srgb, var(--nc) 45%, transparent); border-radius: 999px; padding: 0 0.45rem; background: var(--bg); }
+    .bm-static .bm-node-chips i { color: var(--muted); border-color: var(--border); }
+    .bm-step { position: absolute; top: -10px; left: -10px; width: 22px; height: 22px; border-radius: 50%; background: var(--nc); color: #fff; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; font-family: var(--font-subhead); }
+    .bm-region .bm-node-title { font-size: 1.08rem; }
+
+    .bm-steps { margin: 1rem 0 0; padding-left: 0; list-style: none; font-size: 0.92rem; line-height: 1.6; }
+    .bm-steps li { padding: 0.35rem 0; border-top: 1px dashed var(--border); }
+    .bm-threads-title { font-family: var(--font-subhead); margin: 1.4rem 0 0.5rem; }
+    .bm-threads { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 0.6rem; }
+    .bm-thread { display: block; text-decoration: none; color: var(--ink); border: 2px dashed var(--nc); border-radius: 12px; padding: 0.6rem 0.8rem; }
+    .bm-thread:hover { background: color-mix(in srgb, var(--nc) 8%, transparent); }
+    .bm-thread strong { display: block; font-family: var(--font-subhead); font-weight: 400; color: var(--nc); }
+    .bm-thread span { font-size: 0.84rem; color: var(--muted); }
+
+    .bm-nb { font-size: 0.86rem; margin: 0 0 0.4rem; display: flex; flex-wrap: wrap; gap: 0.3rem; align-items: center; }
+    .bm-nb span { color: var(--muted); margin-right: 0.2rem; }
+    .bm-nb a { border: 1px solid var(--border); border-radius: 999px; padding: 0.05rem 0.6rem; text-decoration: none; color: var(--ink); }
+    .bm-cards { display: grid; gap: 0.8rem; margin-top: 0.9rem; }
+    .bm-card { border: 2px solid var(--border); border-top: 5px solid var(--nc); border-radius: 12px; padding: 0.8rem 1rem 0.9rem; }
+    .bm-card p { margin: 0 0 0.45rem; }
+    .bm-card-concept { font-family: var(--font-subhead); font-size: 1.08rem; color: var(--nc); }
+    .bm-card-line { font-size: 0.97rem; line-height: 1.65; }
+    .bm-card-practice, .bm-card-analogy { font-size: 0.9rem; line-height: 1.6; }
+    .bm-card-practice span, .bm-card-analogy span { display: inline-block; font-size: 0.74rem; border-radius: 6px; padding: 0 0.4rem; margin-right: 0.45rem; }
+    .bm-card-practice span { background: var(--hit-bg); color: var(--hit-ink); }
+    .bm-card-analogy span { background: var(--border); color: var(--ink); }
+    .bm-card-keys { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+    .bm-card-keys span { font-size: 0.75rem; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 0 0.5rem; }
+    .bm-card-read { display: inline-block; font-size: 0.9rem; margin: 0.1rem 0 0.3rem; }
+    .bm-card-links { font-size: 0.8rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 0.3rem; align-items: center; margin: 0 !important; }
+    .bm-card-links a { color: var(--ink); border: 1px dashed var(--border); border-radius: 999px; padding: 0 0.5rem; text-decoration: none; }
+    .bm-card-posts { margin: 0.2rem 0 0.4rem; padding-left: 1.1rem; font-size: 0.9rem; line-height: 1.7; }
+    .bm-card-gap { font-size: 0.86rem; line-height: 1.6; color: var(--muted); border-top: 1px dashed var(--border); padding-top: 0.45rem; margin: 0.3rem 0 0 !important; }
+    .bm-card-gap span { display: inline-block; font-size: 0.74rem; border-radius: 6px; padding: 0 0.4rem; margin-right: 0.45rem; border: 1px solid var(--border); color: var(--ink); }
+    .bm-scn { font-size: 0.9rem; margin-top: 0; }
+    .bm-scn-note { display: block; font-size: 0.8rem; color: var(--muted); margin-top: 0.15rem; }
+    .bm-pill { display: inline-flex; align-items: center; justify-content: center; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: var(--nc); color: #fff; font-family: var(--font-subhead); font-size: 0.8rem; text-decoration: none; margin: 0 0.25rem 0.2rem 0; }
+    .bm-alt { display: block; margin: 1.6rem 0 0; text-decoration: none; color: var(--ink); border: 2px solid var(--border); border-radius: 12px; padding: 0.7rem 1rem; }
+    .bm-alt:hover { border-color: var(--ink); }
+    .bm-alt strong { display: block; font-family: var(--font-subhead); font-weight: 400; }
+    .bm-alt span { font-size: 0.86rem; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">에이전트 설계 지도</span></h1>
+    <p><a href="big-map.html">← 전체 지도로 돌아가기</a></p>
+    <p class="post-date">이 블로그의 글들이 AI 에이전트를 만드는 일 전체에서 어디를 받치는지 보는 페이지예요.</p>
+
+    <div class="why-read">
+      <p class="why-read-title">이 페이지를 읽기 전에</p>
+      <dl>
+        <dt>이런 게 궁금했다면</dt>
+        <dd>
+          <ul>
+            <li>글을 많이 읽었는데 머릿속에 따로따로 흩어져 있어요.</li>
+            <li>프롬프트, 도구, LangGraph 같은 것들이 에이전트 하나를 만들 때 각각 어느 부분을 맡는지 모르겠어요.</li>
+            <li>Anthropic 인증 시험(CCA)이 묻는 것 가운데 내가 이미 읽은 것과 아직 비어 있는 것을 가려 보고 싶어요.</li>
+          </ul>
+        </dd>
+        <dt>이 블로그의 기둥</dt>
+        <dd>
+          <ul>
+            <li>첫 화면은 에이전트 설계를 다섯 영역으로 나눈 그림이에요. 영역과 비중은 Anthropic의 첫 공식 인증 시험 CCA의 구분을 그대로 따랐어요.</li>
+            <li>웹·서버(1단계)와 모델 원리(3단계) 글은 이 다섯 기둥이 서는 바닥이에요. 사진·음성·3D 글(4·5단계)은 시험 범위 밖이라 두 번째 지도에서 찾아요. 만든 에이전트를 서버에 올려 내보내는 글(9단계)은 첫 화면 맨 아래 «내보내기» 상자에서 이어져요.</li>
+          </ul>
+        </dd>
+        <dt>보는 법</dt>
+        <dd>
+          <ul>
+            <li>상자를 누르면 그 영역이 묻는 것이 카드로 나오고, 카드마다 답하는 글이 읽을 순서대로 붙어 있어요.</li>
+            <li>아래쪽 <strong>질문 하나가 AI 서비스를 지나가는 길</strong>은 같은 글들을 쓰임새로 늘어놓은 두 번째 지도예요. 위쪽 경로 줄을 누르면 바깥으로 나와요.</li>
+          </ul>
+        </dd>
+        <dt>주제 지도와 다른 점</dt>
+        <dd>
+          <ul>
+            <li><a href="topic-map.html">주제 지도</a>는 무엇을 먼저 읽을지(순서)를 보여 주고, 이 지도는 배운 것이 에이전트의 어디를 받치는지(자리)를 보여 줘요.</li>
+          </ul>
+        </dd>
+      </dl>
+    </div>
+
+    <div id="bm-root" aria-live="polite">
+      <noscript><p>이 지도는 자바스크립트로 그려져요. <a href="posts.html">글 목록</a>에서 단계별로 볼 수 있어요.</p></noscript>
+    </div>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+  <script src="big-map-data.js"></script>
+  <script src="big-map-pillar.js"></script>
+  <script src="big-map.js"></script>
+</body>
+</html>
