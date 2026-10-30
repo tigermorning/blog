@@ -39,7 +39,7 @@
           <ul>
             <li>에이전트 하나에 도구를 몇 개까지 붙여도 되나요? 많이 붙일수록 똑똑해지는 거 아닌가요?</li>
             <li>AI 답이 멀쩡한 문장으로 왔는데, 그걸 그냥 쓰면 왜 안 된다는 거죠?</li>
-            <li>컨텍스트 창이 100만 토큰이나 된다는데, 그냥 다 넣으면 안 되나요?</li>
+            <li>컨텍스트 창(AI가 한 번에 읽을 수 있는 글의 양)이 100만 토큰이나 된다는데, 그냥 다 넣으면 안 되나요?</li>
           </ul>
         </dd>
         <dt>읽고 나면 할 수 있는 것</dt>
@@ -77,18 +77,23 @@
     <table>
       <thead><tr><th>영역</th><th>비중</th></tr></thead>
       <tbody>
-        <tr><td>에이전트 아키텍처와 오케스트레이션</td><td>27%</td></tr>
+        <tr><td>에이전트 아키텍처와 오케스트레이션(여러 부품이 일을 주고받는 순서를 짜는 것)</td><td>27%</td></tr>
         <tr><td>Claude Code 설정과 워크플로</td><td>20%</td></tr>
         <tr><td>프롬프트 엔지니어링과 구조화된 출력</td><td>20%</td></tr>
         <tr><td>도구 설계와 <a href="mcp-usb-c-for-ai.html">MCP</a> 연동</td><td>18%</td></tr>
         <tr><td>컨텍스트 관리와 신뢰성</td><td>15%</td></tr>
       </tbody>
     </table>
-    <p>가장 큰 조각이 <strong>아키텍처</strong>예요. 모델을 잘 고르는 것도, 프롬프트를 잘 쓰는 것도 아니고, 시스템을 어떻게 짜느냐가 먼저라는 입장이에요. 문제는 여섯 개 시나리오(고객 지원 에이전트, Claude Code로 코드 생성, 멀티 에이전트 리서치, 개발 생산성, CI/CD<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>, 구조화된 데이터 추출) 가운데 무작위로 뽑힌 네 개에 붙어서 나와요. 발표는 그중 다섯 장면을 골라 안티패턴을 하나씩 짚어요.</p>
+    <p>가장 큰 조각이 <strong>아키텍처</strong>(시스템을 어떤 부품으로 어떻게 짜는지)예요. 모델을 잘 고르는 것도, 프롬프트를 잘 쓰는 것도 아니고, 시스템을 어떻게 짜느냐가 먼저라는 입장이에요. 문제는 여섯 개 시나리오(고객 지원 에이전트, Claude Code로 코드 생성, 멀티 에이전트 리서치, 개발 생산성, CI/CD<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>, 구조화된 데이터 추출) 가운데 무작위로 뽑힌 네 개에 붙어서 나와요. 발표는 그중 다섯 장면을 골라 안티패턴을 하나씩 짚어요.</p>
     <p>이 다섯 영역마다 무엇을 묻고, 이 블로그의 어느 글이 거기에 답하는지는 <a href="big-map.html">큰 그림 지도</a> 첫 화면에 영역별 카드로 모아 뒀어요.</p>
 
     <h2><span class="hl">왜 하필 지금 에이전트인가</span> — 1966년의 세 가지</h2>
-    <p>시나리오로 들어가기 전에 발표는 1966년으로 돌아가요. 뵘과 야코피니가 증명한 정리예요. <strong>어떤 계산이든 세 가지만 있으면 다 할 수 있다</strong> — 순서대로 실행하기, 조건에 따라 갈라지기, 그리고 반복하기.</p>
+    <p>시나리오로 들어가기 전에 발표는 1966년으로 돌아가요. 뵘과 야코피니가 증명한 정리예요. <strong>어떤 계산이든 세 가지만 있으면 다 할 수 있다</strong>는 내용이에요.</p>
+    <ul>
+      <li>순서대로 실행하기</li>
+      <li>조건에 따라 갈라지기</li>
+      <li>반복하기</li>
+    </ul>
     <p>여기에 지금의 AI를 대 보면 그림이 선명해져요. 프롬프트 한 번 던지고 답 받기는 "순서"예요. 조건을 걸어 <a href="what-is-routing.html">갈라지게</a> 하는 것까지는 많이들 했어요. 빠져 있던 게 <strong>반복</strong>이었어요. 답을 받아 다시 넣고, 또 받아 다시 넣는 구조요. 에이전트가 갑자기 다르게 느껴진 건 모델이 좋아진 덕도 있지만, 구조로 보면 이 세 번째 칸이 채워진 시점이라는 거예요. 그래서 첫 시나리오가 바로 그 반복, 루프예요.</p>
 
     <h2><span class="hl">비유로 먼저</span> — 집수리 기사를 부를 때</h2>
@@ -108,7 +113,12 @@
 
     <h2 id="loop"><span class="hl">① 루프</span> — 답을 쓰기 전에 stop_reason부터</h2>
     <p>첫 시나리오는 고객 지원 에이전트예요. 여기서 많은 사람이 반대로 알고 있는 사실이 하나 나와요. <strong>모델은 도구를 실행하지 못해요.</strong> 모델이 하는 일은 확률적으로 다음 단어를 고르는 것뿐이에요. 도구를 쥐여 줘도 "이 도구를 이 값으로 부르면 된다"고 알려 줄 뿐이고, 실제로 부르는 건 내 코드예요(이 구조는 <a href="agent-tool-design-and-harness.html">모델·하네스·루프</a>에서 처음부터 풀어 뒀어요).</p>
-    <p>그래서 안티패턴은 이거예요. <strong>응답이 오면 그냥 답으로 쓰기.</strong> 처방은 응답에 함께 오는 <code>stop_reason</code><sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup> — 모델이 왜 멈췄는지 — 을 먼저 보는 거예요.</p>
+    <table>
+      <thead><tr><th>안티패턴</th><th>처방</th></tr></thead>
+      <tbody>
+        <tr><td><strong>응답이 오면 그냥 답으로 쓰기</strong></td><td>응답에 함께 오는 <code>stop_reason</code><sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup> — 모델이 왜 멈췄는지 — 을 먼저 보기</td></tr>
+      </tbody>
+    </table>
 
     <figure>
     <svg viewBox="0 0 720 330" role="img" aria-label="내 코드가 모델을 부르면 응답의 stop_reason을 확인한다. tool_use면 내 코드가 도구를 실행해 결과를 대화에 붙이고 다시 모델을 부른다. end_turn이면 답을 꺼내 확신도를 보고, 낮으면 사람에게 넘긴다. max_tokens면 잘린 답이므로 그대로 쓰지 않는다.">
@@ -153,8 +163,8 @@
     </svg>
     <figcaption>발표 슬라이드의 루프 코드를 그림으로 옮김.</figcaption>
     </figure>
-    <p><strong>읽는 법:</strong> 가운데 상자가 갈림점이에요. 위쪽 점선을 따라 돌아가는 동안은 아직 일이 안 끝난 거예요. 오른쪽 가운데로 빠져나왔을 때만 답을 꺼내고, 그때도 확신이 낮으면 사람에게 넘길 자리(휴먼 인 더 루프)가 있어요. 맨 아래 칸이 가장 놓치기 쉬워요. <strong>출력 한도에 걸려 멈춰도 응답은 와요</strong>. 문장도 그럴듯하게 와요. 그런데 그건 중간에 잘린 답이에요.</p>
-    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 발표 슬라이드의 루프를 Anthropic 파이썬 SDK 모양으로 옮긴 뼈대예요. run_tool은 직접 만들어야 해요</span></p>
+    <p><strong>읽는 법:</strong> 가운데 상자가 갈림점이에요. 위쪽 점선을 따라 돌아가는 동안은 아직 일이 안 끝난 거예요. 오른쪽 가운데로 빠져나왔을 때만 답을 꺼내고, 그때도 확신이 낮으면 사람에게 넘길 자리(휴먼 인 더 루프, 중간에 사람이 확인하는 단계)가 있어요. 맨 아래 칸이 가장 놓치기 쉬워요. <strong>출력 한도에 걸려 멈춰도 응답은 와요</strong>. 문장도 그럴듯하게 와요. 그런데 그건 중간에 잘린 답이에요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 발표 슬라이드의 루프를 Anthropic 파이썬 SDK(코드에서 모델을 부르기 쉽게 만든 도구 모음) 모양으로 옮긴 뼈대예요. run_tool은 직접 만들어야 해요</span></p>
 <pre><code>while True:
     resp = client.messages.create(model=MODEL, max_tokens=1024,
                                   tools=tools, messages=messages)
@@ -184,9 +194,18 @@
     <p>셋이 함께 읽혀 합쳐지고, 서로 부딪히면 <strong>가장 구체적인 파일이 이겨요</strong>. 한 파일에 다 넣으면 특정 폴더에서만 필요한 지침이 상관없는 작업에까지 따라와서 조용히 부딪혀요. 어디서 부딪혔는지도 안 보이고요. 규칙을 줄이는 게 아니라, <strong>규칙이 필요 없는 자리에는 안 보내는</strong> 거예요.</p>
 
     <h2 id="split"><span class="hl">③ 멀티 에이전트</span> — 도구 벨트를 키우지 말고 에이전트를 쪼개기</h2>
-    <p>세 번째가 위 비유의 원래 자리예요. 안티패턴은 <strong>에이전트 하나에 도구를 잔뜩 붙이기</strong>. 슬라이드에 적힌 기준선은 네다섯 개예요. 그 선을 넘으면 추론 품질이 떨어지고 도구 선택이 불안정해진다고요. 발표자는 말로는 "한두 개"라고도 했는데, 어느 쪽으로 잡든 방향은 같아요. 도구를 더 붙이는 대신 <strong>에이전트를 쪼개서 하나가 한 가지 일만</strong> 하게 해요. 함수는 한 가지 일만 해야 한다는 함수형 프로그래밍의 오래된 원칙과 같은 결이에요.</p>
+    <p>세 번째가 위 비유의 원래 자리예요. 안티패턴은 <strong>에이전트 하나에 도구를 잔뜩 붙이기</strong>예요.</p>
+    <ul>
+      <li>슬라이드에 적힌 기준선은 네다섯 개예요. 그 선을 넘으면 추론 품질이 떨어지고 도구 선택이 불안정해진다고요. 발표자는 말로는 "한두 개"라고도 했는데, 어느 쪽으로 잡든 방향은 같아요.</li>
+      <li>처방은 도구를 더 붙이는 대신 <strong>에이전트를 쪼개서 하나가 한 가지 일만</strong> 하게 하는 거예요. 함수는 한 가지 일만 해야 한다는 함수형 프로그래밍의 오래된 원칙과 같은 결이에요.</li>
+    </ul>
     <p>이 장면에서 가장 인상적인 건 <strong>검토 에이전트</strong>(크리틱) 코드예요. 앞 에이전트가 낸 결과를 검토시킬 때, 넘기는 건 딱 두 가지예요 — <strong>주장</strong>과 <strong>근거</strong>. 그 주장에 이르기까지의 생각 과정은 일부러 빼요. 검증하라고 만든 에이전트에게 정보를 덜 주는 셈인데, 이유는 <strong>그룹싱크</strong><sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>예요. 에이전트들이 서로의 생각을 들여다보면 하나의 결론으로 수렴해 버린다는 거예요. 발표자의 비유로는, 파티에서 다들 피자를 먹자는데 나만 싫어도 분위기 깨기 싫어서 따라가는 것과 같대요.</p>
-    <p>나누는 게 늘 이득은 아니라는 점도 같이 기억해 둘 만해요. 나누면 조율 비용이 생겨요. 언제 나누는 게 맞는지는 <a href="multi-agent-split-gains-and-losses.html">나누면 좋아질까 — 멀티 에이전트의 득실과 판정표</a>에, 나눈 뒤 어떤 모양으로 묶을지는 <a href="multi-agent-four-structures.html">네 가지 구조</a>에, 그중 "몇 명에게 나눌지를 LLM이 정하는" 모양은 <a href="langgraph-pattern-orchestrator-worker.html">④ 오케스트레이터-워커</a>에 있어요.</p>
+    <p>나누는 게 늘 이득은 아니에요. 나누면 조율 비용이 생겨요. 아래 글들이 이어서 답해요.</p>
+    <ul>
+      <li>언제 나누는 게 맞는지 — <a href="multi-agent-split-gains-and-losses.html">나누면 좋아질까 — 멀티 에이전트의 득실과 판정표</a></li>
+      <li>나눈 뒤 어떤 모양으로 묶을지 — <a href="multi-agent-four-structures.html">네 가지 구조</a></li>
+      <li>몇 명에게 나눌지를 LLM이 정하는 모양 — <a href="langgraph-pattern-orchestrator-worker.html">④ 오케스트레이터-워커</a></li>
+    </ul>
     <p>여기서 발표의 방향이 한 번 정리돼요. 앞의 둘이 "어떻게 제어할까"였다면, 남은 건 전부 한 방향이에요. <strong>무엇을 주지 않을까.</strong></p>
 
     <h2 id="context"><span class="hl">④ 컨텍스트</span> — 떼어 내고, 커지면 압축하기</h2>
@@ -205,7 +224,7 @@
     <p>마지막은 자동 실행 파이프라인이에요. 안티패턴이 좀 웃겨요. <strong>파이프라인 안에서 Claude Code를 평소처럼 대화형으로 부르기.</strong> 그러면 "이거 해도 될까요?"라고 권한을 묻는 자리에서 멈춰서, 아무도 누르지 않을 답을 하염없이 기다려요.</p>
     <p class="run-tag">실행: 로컬 터미널 <span class="run-tag-why">— Claude Code가 설치돼 있어야 해요. CI에서는 같은 줄을 워크플로 파일의 명령 칸에 넣어요</span></p>
 <pre><code>claude -p "tests 폴더의 실패한 테스트 원인을 요약해 줘" --output-format json</code></pre>
-    <p><code>-p</code>는 질문 하나에 답하고 끝나는 비대화식 실행이고, <code>--output-format json</code>은 파이프라인의 다음 단계가 읽을 수 있게 답을 JSON으로 받는 옵션이에요. 도중에 필요한 권한은 설정에서 미리 허락해 둬야 멈추지 않고 끝까지 가요.</p>
+    <p><code>-p</code>는 질문 하나에 답하고 끝나는 비대화식 실행이고, <code>--output-format json</code>은 파이프라인의 다음 단계가 읽을 수 있게 답을 JSON(이름표와 값을 짝지어 적는 데이터 형식)으로 받는 옵션이에요. 도중에 필요한 권한은 설정에서 미리 허락해 둬야 멈추지 않고 끝까지 가요.</p>
     <p>하나 더. 당장 결과가 필요 없는 일은 <strong>배치 API</strong><sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>로 넘기면 토큰 비용이 절반이에요. 대신 결과는 24시간 안에 와요. 발표자 말대로 "퇴근하고 하룻밤 자고 올 거라면" 배치로 돌리면 돼요.</p>
 
     <h2><span class="hl">다섯을 한 장에</span></h2>
@@ -300,7 +319,7 @@
       <ol>
         <li id="fn1">안티패턴(anti-pattern) — 자주 쓰이고 그럴듯해 보이지만 결과적으로 문제를 만드는 설계 습관을 모아 이름 붙인 것이에요. <a href="#fnref1">↩</a></li>
         <li id="fn2">CI/CD — 코드를 올릴 때마다 테스트·빌드·배포를 사람 손 없이 자동으로 돌리는 파이프라인이에요(<a href="newsletter-agent-publish-schedule.html">GitHub Actions로 매일 돌리기</a>가 그 한 예예요). <a href="#fnref2">↩</a></li>
-        <li id="fn3">stop_reason — Anthropic API 응답에 함께 오는 "모델이 왜 멈췄는지" 값으로, OpenAI API에서는 <code>finish_reason</code>이라 부르며 <a href="context-window-budget.html">컨텍스트 창은 왜 유한한가</a>에서 처음 다뤘어요. <a href="#fnref3">↩</a></li>
+        <li id="fn3">stop_reason — Anthropic API(내 코드가 모델을 부르는 연결 창구) 응답에 함께 오는 "모델이 왜 멈췄는지" 값으로, OpenAI API에서는 <code>finish_reason</code>이라 부르며 <a href="context-window-budget.html">컨텍스트 창은 왜 유한한가</a>에서 처음 다뤘어요. <a href="#fnref3">↩</a></li>
         <li id="fn4">그룹싱크(groupthink, 집단사고) — 구성원들이 반대 의견을 내지 않고 한 결론으로 쏠려서 집단의 판단이 오히려 나빠지는 현상이에요. <a href="#fnref4">↩</a></li>
         <li id="fn5">배치 API — 요청을 모아 한꺼번에 맡기고 결과는 나중에 받는 방식으로, 즉시 응답을 포기하는 대신 비용이 싸요. <a href="#fnref5">↩</a></li>
       </ol>

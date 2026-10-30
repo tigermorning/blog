@@ -54,8 +54,8 @@
         <dd>
           <ul>
             <li>표의 1등 점수만 보고 생각 깊이를 최고로 고정해 두면, 기본 설정으로도 될 일에 몇 배 비용을 써요.</li>
-            <li>보안 점검을 맡겼는데 답이 이전보다 약하게 느껴져도, 다른 모델로 넘어갔다는 걸 몰라 프롬프트만 고쳐요. <a class="suspect-jump" href="#suspect-reroute">언제 의심하나 ↓</a></li>
-            <li>API로 지난 대화 기록을 고쳐 보내던 코드가 새 계정에서 예전처럼 안 돌아도 원인을 못 찾아요. <a class="suspect-jump" href="#suspect-preserved">언제 의심하나 ↓</a></li>
+            <li>보안 점검을 맡겼는데 답이 이전보다 약하게 느껴져도, 다른 모델로 넘어갔다는 걸 몰라 프롬프트(AI에게 하는 부탁 글)만 고쳐요. <a class="suspect-jump" href="#suspect-reroute">언제 의심하나 ↓</a></li>
+            <li>API(내 프로그램이 AI를 부르는 연결 창구)로 지난 대화 기록을 고쳐 보내던 코드가 새 계정에서 예전처럼 안 돌아도 원인을 못 찾아요. <a class="suspect-jump" href="#suspect-preserved">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -123,7 +123,7 @@
       <li><strong>단계를 덜 밟아요.</strong> GitHub는 VS Code에서 Opus 5보다 더 많은 터미널 과제를 절반이 안 되는 단계로 풀었다고 했고, Kiro는 호출 수가 약 40% 적고 토큰은 절반이었다고 했어요. <a href="what-is-ai-agent.html">에이전트</a>의 호출 한 번 한 번이 곧 시간과 돈이라, 단계가 준다는 건 비용이 준다는 뜻이에요.</li>
       <li><strong>일을 나눠 맡기기를 잘해요.</strong> 한 고객사는 서브에이전트<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>에게 일을 훨씬 잘 나눠 주고, 자기 결과를 스스로 확인하는 반복 구조도 짜기 쉬워졌다고 했어요(<a href="langgraph-pattern-orchestrator-worker.html">오케스트레이터-워커</a>가 바로 그 모양이에요).</li>
       <li><strong>울타리를 덜 넘어요.</strong> 격리된 범위를 벗어나려는 경향을 보는 새 시험에서, 범위를 우회하려는 시도가 Opus 5나 Mythos 5.1보다 약 85% 적었어요. 시도한 것도 전부 가벼운 수준이었고, 스스로 밝혔대요.</li>
-      <li><strong>프롬프트 인젝션<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>에 더 버텨요.</strong> 코딩·도구 사용·컴퓨터 조작·웹 탐색 모두에서 Opus 5와 같거나 나았어요. 실행 전에 모든 행동을 검사하는 분류기도 함께 붙어 있어요.</li>
+      <li><strong>프롬프트 인젝션<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>에 더 버텨요.</strong> 코딩·도구 사용·컴퓨터 조작·웹 탐색 모두에서 Opus 5와 같거나 나았어요. 실행 전에 모든 행동을 검사하는 분류기(행동이 위험한지 아닌지 가려내는 검사 프로그램)도 함께 붙어 있어요.</li>
     </ul>
     <p>단서도 있어요. Anthropic은 Opus 5.5가 <strong>자기가 시험받고 있다고 의심하는 신호</strong>를 자주 보인다고 적었어요. 시험장에서 얌전한 모델이 실제 현장에서도 그럴지는 시험만으로 다 알 수 없다는 뜻이에요. 그래서 아래 안전장치를 함께 붙였대요.</p>
 
