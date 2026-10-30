@@ -28,12 +28,17 @@
     <p class="post-date">※ 이 글은 모두의연구소(모두연) 학습 자료를 제 나름의 말로 다시 정리한 글이에요.</p>
 
 
-    <p class="one-liner">AI 서비스를 사용자에게 내보내는 일은 «어떤 버전이 나갔는지, 사용자에게 오류가 보였는지, 이전 버전으로 돌릴 수 있는지»를 숫자로 말할 수 있게 만드는 일이에요.</p>
+    <div style="border:2px solid var(--accent);border-radius:14px;padding:.7rem 1rem;margin:1rem 0;background:color-mix(in srgb,var(--accent) 6%,transparent);">
+      <p style="margin:0 0 .3rem;font-weight:700;color:var(--accent);">한 줄 요약</p>
+      <p style="margin:.2rem 0;">시작은 명령 한 줄로 공개 주소를 받는 것이었어요(약 2분). 끝날 때는 변경 하나가 <strong>테스트 → 합치기 → 이미지 한 번 만들기 → 시험 서버 → 사람 승인 → 요청 옮기기</strong>를 거치는 배포 길을 만들었어요.</p>
+      <p style="margin:.2rem 0;">새 버전으로 바뀌는 동안 실패한 요청은 <strong>389건 중 71건 → 283건 중 0건</strong>이 됐어요(같은 예제 앱에서 준비 검사만 바꿔서).</p>
+      <p style="margin:.2rem 0;"><strong>결론</strong> — «배포 성공»은 새 버전이 떴다는 뜻이지, 사용자가 제대로 된 답을 받는다는 뜻이 아니에요. 그래서 세 질문(어떤 버전이 나갔나 · 사용자에게 오류가 보였나 · 이전 버전으로 돌릴 수 있나)에 숫자로 답할 수 있게 만드는 것이 이 모듈의 일이에요.</p>
+    </div>
 
 
     <h2 id="flow"><span class="hl">한 장 그림</span> — 전체 지도</h2>
     <figure>
-    <svg viewBox="0 0 760 306" role="img" aria-label="전체 지도: 설계에서 출발한 변경이 테스트, 합치기, 이미지 만들기, 시험 서버, 요청 옮기기를 차례로 지나 실제 서비스(Cloud Run)에 도착한다. 아래 띠는 각 칸을 배운 노드다. 맨 아래에는 어떤 버전이 나갔나, 사용자에게 오류가 보였나, 이전 버전으로 돌릴 수 있나 세 질문이 있다" style="width:100%;height:auto;">
+    <svg viewBox="0 0 760 306" role="img" aria-label="전체 지도: 설계에서 출발한 변경이 테스트, 합치기, 이미지 만들기, 시험 서버, 사람 승인, 요청 옮기기를 차례로 지나 실제 서비스(Cloud Run)에 도착한다. 아래 띠는 각 칸을 배운 노드다. 맨 아래에는 어떤 버전이 나갔나, 사용자에게 오류가 보였나, 이전 버전으로 돌릴 수 있나 세 질문이 있다" style="width:100%;height:auto;">
       <style>
         .hl{fill:var(--c);fill-opacity:0;stroke:var(--border);stroke-width:2;animation-duration:21s;animation-iteration-count:infinite;animation-timing-function:linear;}
         .pk{animation:k_pk 21s infinite ease-in-out;}
@@ -48,63 +53,71 @@
         .st3{animation-name:k_st3}
         .st4{animation-name:k_st4}
         .st5{animation-name:k_st5}
+        .st6{animation-name:k_st6}
         .zr{animation-name:k_zr}
-        @keyframes k_dc{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}83.71%{stroke:var(--border);stroke-width:2;fill-opacity:0}85.71%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}98%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
-        @keyframes k_dz{0%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}14.09%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}16.29%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
-        @keyframes k_qs1{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}26.57%{stroke:var(--border);stroke-width:2;fill-opacity:0}28.57%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}71.23%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}73.43%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
-        @keyframes k_qs2{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}12.29%{stroke:var(--border);stroke-width:2;fill-opacity:0}14.29%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}28.37%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}30.57%{stroke:var(--border);stroke-width:2;fill-opacity:0}55.14%{stroke:var(--border);stroke-width:2;fill-opacity:0}57.14%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}85.51%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}87.71%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
-        @keyframes k_qs3{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}26.57%{stroke:var(--border);stroke-width:2;fill-opacity:0}28.57%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}85.51%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}87.71%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
-        @keyframes k_st1{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}12.29%{stroke:var(--border);stroke-width:2;fill-opacity:0}14.29%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}28.37%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}30.57%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
-        @keyframes k_st2{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}26.57%{stroke:var(--border);stroke-width:2;fill-opacity:0}28.57%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}42.66%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}44.86%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
-        @keyframes k_st3{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}40.86%{stroke:var(--border);stroke-width:2;fill-opacity:0}42.86%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}56.94%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}59.14%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
-        @keyframes k_st4{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}55.14%{stroke:var(--border);stroke-width:2;fill-opacity:0}57.14%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}71.23%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}73.43%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
-        @keyframes k_st5{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}69.43%{stroke:var(--border);stroke-width:2;fill-opacity:0}71.43%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}85.51%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}87.71%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
-        @keyframes k_zr{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}12.29%{stroke:var(--border);stroke-width:2;fill-opacity:0}14.29%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}85.51%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}87.71%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
-        @keyframes k_pk{0%{transform:translateX(0px);opacity:0}2%{transform:translateX(0px);opacity:1}10%{transform:translateX(0px);opacity:1}14.29%{transform:translateX(115px);opacity:1}24.29%{transform:translateX(115px);opacity:1}28.57%{transform:translateX(215px);opacity:1}38.57%{transform:translateX(215px);opacity:1}42.86%{transform:translateX(315px);opacity:1}52.86%{transform:translateX(315px);opacity:1}57.14%{transform:translateX(415px);opacity:1}67.14%{transform:translateX(415px);opacity:1}71.43%{transform:translateX(515px);opacity:1}81.43%{transform:translateX(515px);opacity:1}85.71%{transform:translateX(640px);opacity:1}95.71%{transform:translateX(640px);opacity:1}97%{transform:translateX(640px);opacity:1}100%{transform:translateX(640px);opacity:0}}
+        @keyframes k_dc{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}85.5%{stroke:var(--border);stroke-width:2;fill-opacity:0}87.5%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}98%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes k_dz{0%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}12.3%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}14.5%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes k_qs1{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}23%{stroke:var(--border);stroke-width:2;fill-opacity:0}25%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}74.8%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}77%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes k_qs2{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}10.5%{stroke:var(--border);stroke-width:2;fill-opacity:0}12.5%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}24.8%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}27%{stroke:var(--border);stroke-width:2;fill-opacity:0}48%{stroke:var(--border);stroke-width:2;fill-opacity:0}50%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}62.3%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}64.5%{stroke:var(--border);stroke-width:2;fill-opacity:0}73%{stroke:var(--border);stroke-width:2;fill-opacity:0}75%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}87.3%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}89.5%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes k_qs3{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}23%{stroke:var(--border);stroke-width:2;fill-opacity:0}25%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}62.3%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}64.5%{stroke:var(--border);stroke-width:2;fill-opacity:0}73%{stroke:var(--border);stroke-width:2;fill-opacity:0}75%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}87.3%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}89.5%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes k_st1{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}10.5%{stroke:var(--border);stroke-width:2;fill-opacity:0}12.5%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}24.8%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}27%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes k_st2{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}23%{stroke:var(--border);stroke-width:2;fill-opacity:0}25%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}37.3%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}39.5%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes k_st3{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}35.5%{stroke:var(--border);stroke-width:2;fill-opacity:0}37.5%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}49.8%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}52%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes k_st4{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}48%{stroke:var(--border);stroke-width:2;fill-opacity:0}50%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}62.3%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}64.5%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes k_st5{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}60.5%{stroke:var(--border);stroke-width:2;fill-opacity:0}62.5%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}74.8%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}77%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes k_st6{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}73%{stroke:var(--border);stroke-width:2;fill-opacity:0}75%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}87.3%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}89.5%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes k_zr{0%{stroke:var(--border);stroke-width:2;fill-opacity:0}10.5%{stroke:var(--border);stroke-width:2;fill-opacity:0}12.5%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}87.3%{stroke:var(--c);stroke-width:3.5;fill-opacity:.16}89.5%{stroke:var(--border);stroke-width:2;fill-opacity:0}100%{stroke:var(--border);stroke-width:2;fill-opacity:0}}
+        @keyframes k_pk{0%{transform:translateX(0px);opacity:0}2%{transform:translateX(0px);opacity:1}8.75%{transform:translateX(0px);opacity:1}12.5%{transform:translateX(100px);opacity:1}21.25%{transform:translateX(100px);opacity:1}25%{transform:translateX(185px);opacity:1}33.75%{transform:translateX(185px);opacity:1}37.5%{transform:translateX(270px);opacity:1}46.25%{transform:translateX(270px);opacity:1}50%{transform:translateX(355px);opacity:1}58.75%{transform:translateX(355px);opacity:1}62.5%{transform:translateX(440px);opacity:1}71.25%{transform:translateX(440px);opacity:1}75%{transform:translateX(525px);opacity:1}83.75%{transform:translateX(525px);opacity:1}87.5%{transform:translateX(640px);opacity:1}96.25%{transform:translateX(640px);opacity:1}97%{transform:translateX(640px);opacity:1}100%{transform:translateX(640px);opacity:0}}
         @media (prefers-reduced-motion:reduce){.hl,.pk{animation:none}}
         text{pointer-events:none;}
       </style>
       <text x="60" y="22" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">출발</text>
       <text x="383" y="22" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">길</text>
       <text x="700" y="22" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">도착</text>
-      <rect class="hl zr" x="118" y="30" width="530" height="170" rx="16" style="--c:var(--accent)"/>
+      <rect class="hl zr" x="112" y="30" width="518" height="170" rx="16" style="--c:var(--accent)"/>
       <line x1="30" y1="130" x2="728" y2="130" stroke="var(--border)" stroke-width="4" stroke-dasharray="2 10" stroke-linecap="round"/>
       <path d="M722,124L732,130L722,136" stroke="var(--border)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
       <circle class="hl dz" cx="60" cy="90" r="26" style="--c:var(--muted)"/>
       <path d="M51,77H69V101H51Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /><path d="M55,85h10M55,90h10M55,95h6" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
       <text x="60" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">설계</text>
-      <circle class="hl st1" cx="175" cy="90" r="26" style="--c:var(--folder-1)"/>
-      <path d="M165,77H185V103H165Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /><path d="M170,91L174,96L181,84" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
-      <text x="175" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">테스트</text>
-      <circle class="hl st2" cx="275" cy="90" r="26" style="--c:var(--folder-1)"/>
-      <path d="M262,80L274,90M262,100L274,90M274,90H288M283,85L288,90L283,95" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
-      <text x="275" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">합치기</text>
-      <circle class="hl st3" cx="375" cy="90" r="26" style="--c:var(--folder-2)"/>
-      <path d="M364,82H386V100H364Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /><path d="M364,88H386M375,82V88" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
-      <text x="375" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">이미지</text>
-      <circle class="hl st4" cx="475" cy="90" r="26" style="--c:var(--folder-1)"/>
-      <circle cx="475" cy="90" r="31" fill="none" stroke="var(--folder-2)" stroke-width="2" opacity=".8"/>
-      <path d="M463,77H487V87H463ZM463,91H487V101H463Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-dasharray="3 3"/><circle cx="482" cy="82" r="1.6" fill="var(--ink)"/><circle cx="482" cy="96" r="1.6" fill="var(--ink)"/>
-      <text x="475" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">시험 서버</text>
-      <circle class="hl st5" cx="575" cy="90" r="26" style="--c:var(--folder-4)"/>
-      <path d="M560,81H570V99H560Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-dasharray="3 3" opacity=".6"/><path d="M580,81H590V99H580Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /><path d="M572,90H578M575,87L578,90L575,93" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
-      <text x="575" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">요청 옮기기</text>
+      <circle class="hl st1" cx="160" cy="90" r="26" style="--c:var(--folder-1)"/>
+      <path d="M150,77H170V103H150Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /><path d="M155,91L159,96L166,84" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <text x="160" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">테스트</text>
+      <circle class="hl st2" cx="245" cy="90" r="26" style="--c:var(--folder-1)"/>
+      <path d="M232,80L244,90M232,100L244,90M244,90H258M253,85L258,90L253,95" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <text x="245" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">합치기</text>
+      <circle class="hl st3" cx="330" cy="90" r="26" style="--c:var(--folder-2)"/>
+      <path d="M319,82H341V100H319Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /><path d="M319,88H341M330,82V88" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <text x="330" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">이미지</text>
+      <circle class="hl st4" cx="415" cy="90" r="26" style="--c:var(--folder-1)"/>
+      <circle cx="415" cy="90" r="31" fill="none" stroke="var(--folder-2)" stroke-width="2" opacity=".8"/>
+      <path d="M403,77H427V87H403ZM403,91H427V101H403Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-dasharray="3 3"/><circle cx="422" cy="82" r="1.6" fill="var(--ink)"/><circle cx="422" cy="96" r="1.6" fill="var(--ink)"/>
+      <text x="415" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">시험 서버</text>
+      <circle class="hl st5" cx="500" cy="90" r="26" style="--c:var(--folder-1)"/>
+      <circle cx="500" cy="84" r="5" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M490,102C490,92 510,92 510,102" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /><path d="M505,93L509,97L516,87" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <text x="500" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">사람 승인</text>
+      <circle class="hl st6" cx="585" cy="90" r="26" style="--c:var(--folder-4)"/>
+      <path d="M570,81H580V99H570Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-dasharray="3 3" opacity=".6"/><path d="M590,81H600V99H590Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /><path d="M582,90H588M585,87L588,90L585,93" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <text x="585" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">요청 옮기기</text>
       <circle class="hl dc" cx="700" cy="90" r="26" style="--c:var(--muted)"/>
       <path d="M688,98H710A7,7 0 0 0 710,84A10,10 0 0 0 691,87A6,6 0 0 0 688,98Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
       <text x="700" y="158" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">실제 서비스</text>
       <text x="700" y="174" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">(Cloud Run)</text>
-      <rect x="130" y="170" width="190" height="6" rx="3" fill="var(--folder-1)"/>
-      <text x="225.0" y="192" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">CI/CD</text>
-      <text x="225.0" y="205" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">노드 66·67</text>
-      <rect x="333" y="170" width="85" height="6" rx="3" fill="var(--folder-2)"/>
-      <text x="375.5" y="192" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">Docker</text>
-      <text x="375.5" y="205" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">노드 68·69</text>
-      <rect x="432" y="170" width="43.0" height="6" rx="3" fill="var(--folder-1)"/><rect x="475.0" y="170" width="43.0" height="6" rx="3" fill="var(--folder-2)"/>
-      <text x="475.0" y="192" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">CI/CD + Docker</text>
-      <text x="475.0" y="205" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">노드 67·69</text>
-      <rect x="532" y="170" width="86" height="6" rx="3" fill="var(--folder-4)"/>
-      <text x="575.0" y="192" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">배포 전략</text>
-      <text x="575.0" y="205" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">노드 70·71</text>
+      <rect x="119" y="170" width="167" height="6" rx="3" fill="var(--folder-1)"/>
+      <text x="202.5" y="192" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">CI/CD</text>
+      <text x="202.5" y="205" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">노드 66·67</text>
+      <rect x="291" y="170" width="78" height="6" rx="3" fill="var(--folder-2)"/>
+      <text x="330.0" y="192" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">Docker</text>
+      <text x="330.0" y="205" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">노드 68·69</text>
+      <rect x="374" y="170" width="41.0" height="6" rx="3" fill="var(--folder-1)"/><rect x="415.0" y="170" width="41.0" height="6" rx="3" fill="var(--folder-2)"/>
+      <text x="415.0" y="192" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">CI/CD + Docker</text>
+      <text x="415.0" y="205" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">노드 67·69</text>
+      <rect x="461" y="170" width="78" height="6" rx="3" fill="var(--folder-1)"/>
+      <text x="500.0" y="192" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">CI/CD</text>
+      <text x="500.0" y="205" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">노드 67</text>
+      <rect x="544" y="170" width="82" height="6" rx="3" fill="var(--folder-4)"/>
+      <text x="585.0" y="192" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">배포 전략</text>
+      <text x="585.0" y="205" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">노드 70·71</text>
       <g transform="translate(60,128)"><g class="pk"><rect x="-10" y="-16" width="20" height="18" rx="3" fill="var(--accent)"/><path d="M-10,-9H10M0,-16V-9" stroke="#fff" stroke-width="2"/></g></g>
       <rect class="hl qs1" x="20" y="226" width="230" height="64" rx="12" style="--c:var(--accent)"/>
       <path d="M46,250H61L70,258L61,266H46Z" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /><circle cx="52" cy="258" r="2" fill="var(--ink)"/>
@@ -175,12 +188,12 @@
       <p style="margin:.2rem 0;color:var(--muted);">직접 해 보니 — 서버에 필요한 프로그램이 없어 같은 사진에 500 오류가 났는데, Dockerfile로 환경을 정하자 200으로 바뀌었어요. 시험 서버와 실제 서비스에 나간 이미지의 고유 번호(다이제스트)가 64자리까지 같아서 같은 이미지임을 확인했어요. <a href="dockerfile-fixing-runtime-environment.html">자세히</a></p>
     </div>
     <div style="border-left:6px solid var(--folder-1);padding:.3rem 0 .3rem 1rem;margin:1rem 0;">
-      <p style="margin:.2rem 0;"><strong>4칸 · 시험 서버 (staging)</strong> <span style="color:var(--muted);font-size:.9rem;">노드 67·69</span></p>
+      <p style="margin:.2rem 0;"><strong>4·5칸 · 시험 서버와 사람 승인 (staging)</strong> <span style="color:var(--muted);font-size:.9rem;">노드 67·69</span></p>
       <p style="margin:.2rem 0;">실제 서비스와 같은 방식으로 도는 시험용 서비스에 먼저 올려서 확인해요. 실제 서비스(production)에는 사람이 승인해야 나가요.</p>
       <p style="margin:.2rem 0;color:var(--muted);">직접 해 보니 — staging을 main으로 올리자 테스트는 통과했지만, 실제 서비스 배포는 «승인 대기»에서 멈춰 사람이 누르기 전에는 바뀌지 않았어요. <a href="ci-tests-and-staging.html">자세히</a></p>
     </div>
     <div style="border-left:6px solid var(--folder-4);padding:.3rem 0 .3rem 1rem;margin:1rem 0;">
-      <p style="margin:.2rem 0;"><strong>5칸 · 요청 옮기기 (배포 전략)</strong> <span style="color:var(--muted);font-size:.9rem;">노드 70·71</span></p>
+      <p style="margin:.2rem 0;"><strong>6칸 · 요청 옮기기 (배포 전략)</strong> <span style="color:var(--muted);font-size:.9rem;">노드 70·71</span></p>
       <p style="margin:.2rem 0;">새 버전을 요청 0%로 먼저 올려 두고, 준비가 됐는지 확인한 뒤에만 사용자의 요청을 옮겨요.</p>
       <p style="margin:.2rem 0;color:var(--muted);">직접 해 보니 — 노드 70에서는 서버 두 벌 앞의 Nginx로 방향을 바꿔 봤어요(서버가 멈췄을 때 연결 대기를 60초→1초로 줄이자 137건 중 19건 실패 → 284건 중 0건). 노드 71의 실험은 아래 «확장»에 있어요. <a href="load-balancer-zero-downtime.html">자세히</a></p>
     </div>
@@ -189,6 +202,13 @@
       <p style="margin:.2rem 0;">코드 폴더를 올리면 공개 주소를 붙여 실행해 주는 구글 서비스예요. 서버 기록이 정상이어도 사용자가 답을 못 받을 수 있어서, 타임아웃과 로그를 봐요.</p>
       <p style="margin:.2rem 0;color:var(--muted);">직접 해 보니 — 명령 한 줄로 약 2분 만에 공개 주소가 생겼어요. 타임아웃을 1초로 줄이자 서버 기록은 200(정상)인데 화면은 «답을 받지 못했어요»가 떠서, 실제 걸린 시간(요청 하나 약 5초)보다 넉넉하게 정했어요. <a href="cloud-run-source-deploy-meaning.html">자세히</a></p>
     </div>
+
+    <h2 id="numbers"><span class="hl">숫자로 본 변화</span></h2>
+    <table>
+      <thead><tr><th>무엇을 바꿨나</th><th>바꾸기 전</th><th>바꾼 뒤</th><th>노드</th></tr></thead>
+      <tbody><tr><td>사진 기능 — Dockerfile로 실행 환경을 정하기</td><td style="text-align:right;white-space:nowrap;">500 오류</td><td style="text-align:right;white-space:nowrap;"><strong>200 정상</strong></td><td>68</td></tr><tr><td>서버가 멈췄을 때 — Nginx 연결 대기 60초 → 1초</td><td style="text-align:right;white-space:nowrap;">137건 중 19건 실패</td><td style="text-align:right;white-space:nowrap;"><strong>284건 중 0건 실패</strong></td><td>70</td></tr><tr><td>배포하는 동안 — 준비 검사를 기본 프로브 → /health로</td><td style="text-align:right;white-space:nowrap;">389건 중 71건 실패</td><td style="text-align:right;white-space:nowrap;"><strong>283건 중 0건 실패</strong></td><td>71</td></tr><tr><td>배포가 끝나기까지 걸린 시간 — 위와 같은 바꿈</td><td style="text-align:right;white-space:nowrap;">약 19초</td><td style="text-align:right;white-space:nowrap;"><strong>약 62초</strong></td><td>71</td></tr><tr><td>두 관문을 넣은 배포 과정으로 배포하는 동안(PR #29)</td><td style="text-align:right;white-space:nowrap;">—</td><td style="text-align:right;white-space:nowrap;"><strong>714건 중 0건 실패</strong></td><td>71</td></tr></tbody>
+    </table>
+    <p>준비 검사를 바꾸자 배포는 더 오래 걸렸지만, 그동안 사용자는 이전 버전을 그대로 썼어요.</p>
 
     <h2 id="example"><span class="hl">확장</span> — 배포는 "성공"인데 요청 71건이 실패한 이유</h2>
     <p>새 버전이 시작하는 데 30초가 걸리는 예제 앱을 일부러 배포하고, 배포하는 동안 같은 주소에 0.2초마다 요청을 보내 실패를 셌어요.</p>
@@ -247,6 +267,9 @@
     <p>스모크 테스트는 원래 서비스 주소가 아니라 새 버전 전용 주소(태그 URL)로 해야 해요. 원래 주소에는 아직 이전 버전이 답해서, 새 버전이 망가져 있어도 «정상»으로 통과하기 때문이에요.</p>
     <p><strong>결과.</strong> 이렇게 바꾼 배포 과정으로 배포하는 동안(PR #29) 요청 714건 중 실패는 0건이었어요. 일부러 망가뜨린 버전(/health가 503)은 첫 관문에서 걸려 배포가 멈췄고, 요청은 그대로 이전 버전이 받았어요(이 시험은 gcloud 명령으로 했어요).</p>
 
+    <h2 id="lessons"><span class="hl">배운 점</span> — 노드를 가로질러</h2>
+    <ol><li style="margin:.45rem 0;"><strong>«배포 성공»은 새 버전이 떴다는 뜻이었어요.</strong> 배포 명령은 성공인데 요청 389건 중 71건이 실패했어요. 사용자 쪽에서 직접 세어 보고서야 알았어요. <span style="color:var(--muted);font-size:.9rem;">노드 71</span></li><li style="margin:.45rem 0;"><strong>서버 기록이 정상이어도 사용자는 답을 못 받을 수 있었어요.</strong> 타임아웃을 1초로 줄이자 서버 기록은 200인데 화면에는 «답을 받지 못했어요»가 떴어요. <span style="color:var(--muted);font-size:.9rem;">노드 65</span></li><li style="margin:.45rem 0;"><strong>내 컴퓨터와 서버는 다른 환경이었어요.</strong> 서버에 필요한 프로그램이 없어 같은 사진에 500이 났고, Dockerfile에 환경을 적고 나서야 200이 됐어요. <span style="color:var(--muted);font-size:.9rem;">노드 68</span></li><li style="margin:.45rem 0;"><strong>«같은 것을 내보냈다»는 증거는 다시 만들지 않는 데서 나왔어요.</strong> 이미지를 한 번만 만들어 옮기자 시험 서버와 실제 서비스의 다이제스트가 64자리까지 같았어요. <span style="color:var(--muted);font-size:.9rem;">노드 69</span></li><li style="margin:.45rem 0;"><strong>자동화가 막는 곳과 사람이 지키는 곳은 따로 있었어요.</strong> 테스트는 깨뜨린 변경을 잡았지만(PR #9, 9개 중 3개 실패), 실제 서비스로 내보내는 건 사람이 승인해야 했어요. <span style="color:var(--muted);font-size:.9rem;">노드 66·67</span></li></ol>
+
     <h2 id="apply"><span class="hl">활용</span> — 내 앱(도장판)에 세 질문을 대 보기</h2>
     <p>도장판은 오늘 할 일 칸 세 개에 도장을 찍는 루틴 앱이에요. 도장이 쌓이면 칸이 하나씩 열려요.</p>
     <figure style="margin:1rem 0;text-align:center;">
@@ -274,6 +297,12 @@
       </tbody>
     </table>
     <p><strong>정리하면</strong> 비어 있는 곳은 «사용자에게 오류가 보였나»에 몰려 있어요. 칸이 열리는 규칙은 기계가 확인하지만, 배포한 뒤 화면과 기능이 제대로 도는지는 아직 사람이 확인해요. 가장 먼저 자동화할 곳이에요.</p>
+    <h2 id="open"><span class="hl">아직 못 푼 것</span></h2>
+    <ul>
+      <li>요청 옮기기까지 넣은 배포 과정은 production도 대상으로 만들었지만, 실행은 staging에서만 했어요. main에 합치고 production을 승인하는 데까지는 돌려 보지 못했어요. <span style="color:var(--muted);font-size:.9rem;">노드 71</span></li>
+      <li>이전 버전으로 되돌리기도 staging에서만 해 봤어요. production에서 실제로 되돌려 본 적은 없어요. <span style="color:var(--muted);font-size:.9rem;">노드 69</span></li>
+      <li>도장판은 배포한 뒤 화면과 기능을 자동으로 확인하지 않고, main에 보호 규칙도 없어요(위 «활용»).</li>
+    </ul>
   </main>
   </div>
 
