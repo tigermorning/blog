@@ -62,9 +62,8 @@
         <dd>
           <ul>
             <li><strong>"에이전트 여럿이 낫다"는 말을 검증해야 할 때.</strong> 같은 버그를 방식만 바꿔 세 번 돌려 보면, 소문 대신 내 숫자가 생겨요.</li>
-            <li>Claude Agent SDK로 실험 조건을 고정하고 조율 방식만 바꿔 돌릴 때요.</li>
             <li>탐색 담당이 파일을 고치지 못하게 도구를 제한해 역할을 가둘 때요.</li>
-            <li>리드가 서브에이전트를 실제로 불렀는지 세션 전사에서 확인할 때요.</li>
+            <li>리드가 서브에이전트를 실제로 불렀는지 세션 전사(AI가 한 일을 줄마다 적은 기록 파일)에서 확인할 때요.</li>
             <li>코딩 에이전트에게 실험 구현을 맡길 때 — 요약 말고 실제로 실행한 명령과 생긴 결과 파일을 같이 받을 때요.</li>
           </ul>
         </dd>
@@ -85,12 +84,12 @@
       <thead><tr><th>실행</th><th>다음 행동을 정하는 주체</th><th>구성</th><th>턴 예산</th></tr></thead>
       <tbody>
         <tr><td><strong>기준선 실행(A)</strong></td><td>에이전트 하나</td><td>한 세션이 탐색과 수정을 모두 함</td><td>최대 25턴</td></tr>
-        <tr><td><strong>워크플로 실행(B)</strong></td><td>파이썬 코드</td><td>읽기 전용 locator가 보고서를 쓰고, fixer가 새 세션에서 수정. 순서는 코드가 고정</td><td>locator 12턴 + fixer 18턴</td></tr>
-        <tr><td><strong>오케스트레이션 실행(C)</strong></td><td>리드 모델</td><td>리드 세션에 locator를 서브에이전트로 등록. 부를지 말지, 어떻게 쓸지는 리드가 결정</td><td>최대 40턴</td></tr>
+        <tr><td><strong>워크플로 실행(B)</strong></td><td>파이썬 코드</td><td>읽기 전용 locator(원인이 있는 곳을 찾는 담당)가 보고서를 쓰고, fixer(고치는 담당)가 새 세션에서 수정. 순서는 코드가 고정</td><td>locator 12턴 + fixer 18턴</td></tr>
+        <tr><td><strong>오케스트레이션 실행(C)</strong></td><td>리드 모델</td><td>리드 세션에 locator를 서브에이전트(리드가 필요할 때 일을 맡기려고 등록해 두는 보조 에이전트)로 등록. 부를지 말지, 어떻게 쓸지는 리드가 결정</td><td>최대 40턴</td></tr>
       </tbody>
     </table>
     <p>여기서 <strong>턴</strong>은 모델이 한 번 생각하고 도구를 한 번 부르는 왕복 한 사이클이에요. 표의 마지막 열을 보면 세 실행의 턴 예산이 <strong>서로 달라요</strong>. 이건 나중에 숫자를 읽을 때 계속 따라다니는 단서라서 지금 미리 적어 둬요.</p>
-    <p>B와 C의 차이는 오케스트라에 빗대면 선명해요. 워크플로 실행(B)은 <strong>악보</strong>에 연주 순서가 미리 고정돼 있어서 locator 다음에 fixer가 반드시 연주해요. 오케스트레이션 실행(C)은 <strong>지휘자</strong>(리드 모델)가 연주 중 상황을 보고 다음 순서를 정해요. locator를 부를 수도, 안 부를 수도 있어요.</p>
+    <p>B와 C의 차이는 <a href="multi-agent-split-gains-and-losses.html">1편</a>의 조사 프로젝트 팀에 빗대면 선명해요. 워크플로 실행(B)은 팀장이 "조사 담당 → 보고서 → 수리 담당" 순서를 업무 매뉴얼(파이썬 코드)에 미리 적어 둔 팀이라, locator 다음에 fixer가 반드시 일해요. 오케스트레이션 실행(C)은 팀장(리드 모델)이 상황을 보고 다음 순서를 그때그때 정하는 팀이라, locator를 부를 수도 안 부를 수도 있어요.</p>
     <figure>
       <svg viewBox="0 0 680 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="fig3title">
         <title id="fig3title">세 실행에서 다음 행동을 정하는 주체가 다르다</title>
@@ -154,7 +153,16 @@
     <p>저장소의 <code>tasks/</code> 폴더에는 문제별로 원문 이슈, 확인용 테스트 패치, 기준 커밋 정보가 들어 있어요. <strong>정답 패치는 없어요.</strong> 무엇을 맞혔는지는 오직 테스트 실행으로만 확인해요. SymPy 세 문제는 공식 도커 평가가 아니라 <strong>경량 평가</strong>예요. 저장소를 특정 커밋(<a href="git-commit-concept.html">커밋</a>은 저장소의 한 시점 스냅샷이에요)으로 고정해 받고, 에이전트가 수정한 복사본에 테스트 패치를 적용해 대상 테스트만 실행해요. 이것도 나중에 결론의 범위를 정할 때 다시 나오는 단서예요.</p>
 
     <h2><span class="hl">왜 Claude Agent SDK인가</span> — 조건을 고정하기 가장 쉬운 길</h2>
-    <p>같은 문제를 자동으로 고치는 방법은 여럿이에요. 대화형 CLI(Claude Code, opencode)를 셸 스크립트에서 여러 번 부를 수도 있지만, 사람의 조작과 셸 환경이 끼어들어 조건을 고정하고 재현하기 어려워요. Messages API를 직접 부르면 도구 실행기·권한 승인·기록 형식을 전부 내가 만들어야 해서 실험보다 기반 공사에 시간이 가요. <a href="langgraph-what-and-why.html">LangGraph</a> 같은 범용 프레임워크로 짜도 되지만, 그 프레임워크의 문법을 익혀야 하고 도구 실행·권한·세션 기록을 그 위에 다시 얹어야 해요. 오늘 비교하려는 건 판을 새로 짜는 방법이 아니라, <strong>같은 판 위에서 다음 행동의 결정 주체만 바꿨을 때</strong> 무엇이 달라지는가거든요.</p>
+    <p>같은 문제를 자동으로 고치는 방법은 여럿인데, 조건을 고정하기에는 각각 걸리는 점이 있어요.</p>
+    <table>
+      <thead><tr><th>방법</th><th>이 실험에서 걸리는 점</th></tr></thead>
+      <tbody>
+        <tr><td>대화형 CLI(터미널에서 글자로 명령을 주고받는 프로그램, 예: Claude Code, opencode)를 셸 스크립트에서 여러 번 부르기</td><td>사람의 조작과 셸 환경이 끼어들어 조건을 고정하고 재현하기 어려워요</td></tr>
+        <tr><td>Messages API를 직접 부르기</td><td>도구 실행기·권한 승인·기록 형식을 전부 내가 만들어야 해서 실험보다 기반 공사에 시간이 가요</td></tr>
+        <tr><td><a href="langgraph-what-and-why.html">LangGraph</a> 같은 범용 프레임워크로 짜기</td><td>그 프레임워크의 문법을 익혀야 하고, 도구 실행·권한·세션 기록을 그 위에 다시 얹어야 해요</td></tr>
+      </tbody>
+    </table>
+    <p>오늘 비교하려는 건 판을 새로 짜는 방법이 아니라, <strong>같은 판 위에서 다음 행동의 결정 주체만 바꿨을 때</strong> 무엇이 달라지는가거든요.</p>
     <p>그래서 이 실험은 <strong>Claude Agent SDK</strong>(<code>claude-agent-sdk</code>, SDK는 어떤 서비스를 코드에서 부를 수 있게 묶어 둔 개발용 도구 모음이에요)로 실행해요. Claude Code의 도구 실행, 권한, 세션 기록, 서브에이전트 정의, 구조화 출력을 파이썬 코드에서 그대로 쓸 수 있어요. (SDK의 <code>query()</code>를 처음 부르는 모습은 <a href="prompt-execution-three-paths.html">프롬프트 세 경로 직접 실행해보기</a>에서 봤어요.) 실험 폴더에는 전용 <strong>가상 환경</strong>(프로젝트 전용으로 파이썬과 부품을 따로 담아 두는 작은 방, 폴더 이름이 <code>.venv</code>)을 만들어요. 시스템 파이썬에 바로 설치하면 프로젝트끼리 부품이 섞이고, 최근 리눅스에서는 전역 설치 자체가 막히기도 하거든요.</p>
 
     <h2><span class="hl">기준선 실행(A)</span> — 한 에이전트가 끝까지</h2>
@@ -196,7 +204,7 @@ if arm == "A":
     <p>실행하고 나면 <code>runs/A-sympy__sympy-24909/result.json</code> 같은 결과 파일이 생겨요. <code>resolved</code>와 <code>invalid</code>는 테스트 채점 결과, <code>cost_usd</code>·<code>num_turns</code>·<code>wall_s</code>는 비용·턴·경과 시간 관측값, <code>final_text</code>는 마지막 응답, <code>changes.diff</code>는 실제 수정 내용이에요. 성공 여부만 보지 말고 턴 수와 변경 내용을 같이 읽어요. 실제로 한 실행에서 haiku가 25턴을 <strong>모두 소진</strong>한 관측이 있었는데, 그건 단순 오류가 아니라 어디까지 탐색했고 어디서 멈췄는지 읽어야 할 기록이에요.</p>
 
     <h2><span class="hl">워크플로 실행(B)</span> — 코드가 순서를 고정한다</h2>
-    <p>건물 보수 현장을 떠올려 보세요. 구조조사팀이 먼저 균열을 살펴 보고서를 넘기고, 시공팀은 그 보고서를 바탕으로 보수해요. B는 이 순서와 인계 내용을 현장이 아니라 <strong>파이썬 코드가 미리 고정</strong>하는 구성이에요. locator는 읽기와 검색만 하고 파일 경로·함수 이름·진단을 구조화된 보고로 남겨요. 그 보고를 받은 fixer가 <strong>새 세션</strong>에서 수정해요.</p>
+    <p>B는 탐색과 수정의 순서와 인계 내용을 <strong>파이썬 코드가 미리 고정</strong>하는 구성이에요. locator는 읽기와 검색만 하고 파일 경로·함수 이름·진단을 구조화된 보고로 남겨요. 그 보고를 받은 fixer가 <strong>새 세션</strong>에서 수정해요.</p>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 직접 실행하는 코드 아니에요</span></p>
     <pre><code>loc, err_loc = await asyncio.wait_for(_run_once(
     f"Bug report:\n\n{problem}\n\nLocate the likely cause.",
@@ -336,7 +344,7 @@ cat runs/C-sympy__sympy-24909/changes.diff</code></pre>
 
     <hr>
 
-    <h3>"멀티 에이전트, 나눌까 말까" 시리즈</h3>
+    <h3>"멀티 에이전트 실험" 시리즈</h3>
     <a class="post-nav" href="multi-agent-split-gains-and-losses.html">
       <span class="post-nav-label">(1)</span>
       <span class="post-nav-title">나누면 좋아질까 — 멀티 에이전트의 득실과 판정표</span>

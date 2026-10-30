@@ -319,34 +319,34 @@ For troubleshooting, visit: https://docs.langchain.com/oss/python/langgraph/erro
     <pre><code>from typing_extensions import TypedDict
 from langgraph.graph import StateGraph, START, END
 
-class Note(TypedDict):                       # ① 전표에 칸 두 개만 둔다
+class Note(TypedDict):                       # (1) 전표에 칸 두 개만 둔다
     text: str
     verdict: str
 
-def accept(state: Note):                     # ② 노드는 하나뿐
+def accept(state: Note):                     # (2) 노드는 하나뿐
     print("accept가 본 verdict:", state.get("verdict"))
     return {}
 
-def triage(state: Note) -&gt; str:              # ③ 라우터
-    state["verdict"] = "라우터가 적은 판정"   # ④ 실험 1: 라우터가 전표에 직접 적어 본다
-    return "accept"                          # ⑤ 갈 곳 이름
+def triage(state: Note) -&gt; str:              # (3) 라우터
+    state["verdict"] = "라우터가 적은 판정"   # (4) 실험 1: 라우터가 전표에 직접 적어 본다
+    return "accept"                          # (5) 갈 곳 이름
 
 builder = StateGraph(Note)
 builder.add_node("accept", accept)
-builder.add_conditional_edges(START, triage, ["accept"])   # ⑥ 시작하자마자 라우터를 한 번 태운다
+builder.add_conditional_edges(START, triage, ["accept"])   # (6) 시작하자마자 라우터를 한 번 태운다
 builder.add_edge("accept", END)
-print("최종 전표:", builder.compile().invoke({"text": "아무 노트"}))   # ⑦</code></pre>
+print("최종 전표:", builder.compile().invoke({"text": "아무 노트"}))   # (7)</code></pre>
     <p>줄마다 무슨 일을 하는지 풀면 이래요. 조립하는 순서는 <a href="langgraph-state-node-edge.html#build-branch">지난 편</a>과 같아요.</p>
     <table>
       <thead><tr><th>줄</th><th>하는 일</th></tr></thead>
       <tbody>
-        <tr><td>①</td><td>전표에 <code>text</code>·<code>verdict</code> 두 칸이 있다고 선언해요. 값을 넣는 게 아니라 <strong>칸 이름표를 붙이는</strong> 줄이에요</td></tr>
-        <tr><td>②</td><td>노드가 받는 <code>state</code>가 전표예요. <code>state.get("verdict")</code>는 그 칸을 꺼내 보되 <strong>칸이 없으면 <code>None</code></strong>을 내놔요. <code>return {}</code>는 "전표에 적을 건 없다"는 뜻이에요</td></tr>
-        <tr><td>③</td><td><code>-&gt; str</code>는 이 함수가 <strong>글자를 돌려준다</strong>는 표시예요. 노드가 아니라 라우터라는 신호이기도 해요</td></tr>
-        <tr><td>④</td><td>이번 실험의 한 줄이에요. 노드처럼 돌려주는 게 아니라, 받은 전표의 <code>verdict</code> 칸에 <strong>그 자리에서</strong> 적어요</td></tr>
-        <tr><td>⑤</td><td>돌려주는 글자는 다음에 갈 곳의 이름이에요. 여기선 갈 곳이 <code>accept</code> 하나뿐이라 늘 같은 값이에요</td></tr>
-        <tr><td>⑥</td><td>출발점이 <code>START</code>라서, 노드를 거치기도 전에 라우터부터 돌아요. 뒤의 <code>["accept"]</code>가 목적지 목록이에요</td></tr>
-        <tr><td>⑦</td><td><code>invoke(...)</code>에 넣은 딕셔너리가 <strong>처음 전표</strong>예요. 다 돌고 난 마지막 전표가 그대로 돌아와요</td></tr>
+        <tr><td>(1)</td><td>전표에 <code>text</code>·<code>verdict</code> 두 칸이 있다고 선언해요. 값을 넣는 게 아니라 <strong>칸 이름표를 붙이는</strong> 줄이에요</td></tr>
+        <tr><td>(2)</td><td>노드가 받는 <code>state</code>가 전표예요. <code>state.get("verdict")</code>는 그 칸을 꺼내 보되 <strong>칸이 없으면 <code>None</code></strong>을 내놔요. <code>return {}</code>는 "전표에 적을 건 없다"는 뜻이에요</td></tr>
+        <tr><td>(3)</td><td><code>-&gt; str</code>는 이 함수가 <strong>글자를 돌려준다</strong>는 표시예요. 노드가 아니라 라우터라는 신호이기도 해요</td></tr>
+        <tr><td>(4)</td><td>이번 실험의 한 줄이에요. 노드처럼 돌려주는 게 아니라, 받은 전표의 <code>verdict</code> 칸에 <strong>그 자리에서</strong> 적어요</td></tr>
+        <tr><td>(5)</td><td>돌려주는 글자는 다음에 갈 곳의 이름이에요. 여기선 갈 곳이 <code>accept</code> 하나뿐이라 늘 같은 값이에요</td></tr>
+        <tr><td>(6)</td><td>출발점이 <code>START</code>라서, 노드를 거치기도 전에 라우터부터 돌아요. 뒤의 <code>["accept"]</code>가 목적지 목록이에요</td></tr>
+        <tr><td>(7)</td><td><code>invoke(...)</code>에 넣은 딕셔너리가 <strong>처음 전표</strong>예요. 다 돌고 난 마지막 전표가 그대로 돌아와요</td></tr>
       </tbody>
     </table>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 위 코드를 실행했을 때 제 화면에 찍힌 출력이에요</span></p>
@@ -444,22 +444,22 @@ TypeError: unhashable type: 'dict'</code></pre>
     <p>정리하면 되돌아가는 선을 그을 때 물을 건 하나예요. <strong>"이 바퀴에서 전표의 무엇이 바뀌나?"</strong> 답이 "없음"이면 그건 반복이 아니라 무한 루프예요.</p>
 
     <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 반복을 그리기 전에 볼 것</h2>
-    <p>이 편에서 <strong>다른 그래프를 짤 때도 그대로 쓰이는 숫자</strong>만 모아 뒀어요. 예제가 몇 자를 몇 조각으로 잘랐는지 같은 실행 기록은 본문에 있는 그대로가 전부라 여기 옮기지 않았어요. 남은 세 줄은 전부 <strong>되돌아가는 선을 그릴 때 물리는 값</strong>이에요.</p>
+    <p>이 편에서 <strong>다른 그래프를 짤 때도 그대로 쓰이는 숫자</strong>만 모아 뒀어요. 예제가 몇 자를 몇 조각으로 잘랐는지, 13자 노트가 몇 바퀴 돌았는지 같은 실행 기록은 본문에 있는 그대로가 전부라 여기 옮기지 않았어요. 남은 한 줄은 <strong>되돌아가는 선을 그릴 때 물리는 값</strong>이에요.</p>
     <table>
       <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
       <tbody>
-        <tr><td>되돌아가는 선에서 State를 안 바꿨을 때 도는 횟수</td><td>상한 6: 노드 2개가 3번씩<br>상한 없음: 5,004번 + 5,003번</td><td>같은 값이 다시 들어오면 라우터는 같은 판단을 다시 내려요. 그래서 <strong>끝나는 조건은 State가 바퀴마다 바뀔 때만 뜻이 있어요</strong>. 13자 노트 하나로 낸 결과예요 (<a href="#drill-loop">문제 ③</a>)</td></tr>
         <tr><td>반복을 강제로 끊는 기본 상한<br><code>recursion_limit</code></td><td>10007스텝<br>(langgraph 1.2 기준)</td><td>노드가 한 줄로 이어서 돌 때는 노드 한 번 실행이 1스텝이고(여러 노드가 동시에 도는 경우는 <a href="langgraph-pattern-parallelization.html#parallel">8편의 슈퍼스텝</a>), 닿으면 <code>GraphRecursionError</code>로 멈춰요. 버전마다 달라서 1.0.0은 25, 1.1.0은 10000이었어요. 만 번이면 <strong>사실상 안 막아 주는 것</strong>이라, 되돌아가는 선을 그렸으면 직접 낮춰 두는 게 맞아요 (<a href="langgraph-state-node-edge.html#numbers">2편</a>)</td></tr>
-        <tr><td>라우터에서 State를 고쳐 본 세 가지 방법 중 값이 남은 것</td><td>3가지 중 1가지</td><td>리스트 안을 <code>append</code>로 직접 고친 경우만 값이 남았고, 나머지 둘은 사라지거나 <code>TypeError</code>였어요. 우연히 되는 한 가지에 기대지 말고 <strong>전표에 적는 일은 노드에게</strong> 맡기면 돼요 (<a href="#router-no-write">라우터는 길만 고른다</a>)</td></tr>
       </tbody>
     </table>
 
     <section class="apply-box" id="apply-blog">
       <p class="apply-box-title">내 파이프라인에 대입하면 — 스텝 하나를 받았을 때의 세 갈래</p>
       <p>이 편의 세 문제가 <a href="langgraph-state-node-edge.html#apply-blog">블로그 글 만들기</a>에서는 이렇게 나와요.</p>
-      <p><strong>① 세 갈래.</strong> 정리할 원문 한 단원을 받으면 갈 곳이 셋이에요. 짧고 얕으면 <code>합치기</code>(다음 단원과 한 편으로), 알맞으면 <code>그대로</code>, 길고 빽빽하면 <code>쪼개기</code>(두 편으로). 위의 짧은 노트·보통 노트·긴 노트와 같은 모양이에요.</p>
-      <p><strong>② 이름 어긋남.</strong> 판정하는 쪽이 <code>"쪼개기"</code>를 돌려주는데 목적지 목록에는 <code>"분할"</code>로 적어 뒀다면, 짧은 스텝과 보통 스텝만 넣어 본 날은 멀쩡히 지나가요. <strong>처음으로 긴 스텝이 들어오는 날</strong>에야 터져요. 갈래를 늘렸으면 그 갈래로 실제로 가는 입력을 한 번은 넣어 봐야 하는 이유예요.</p>
-      <p><strong>③ 끝나지 않는 반복.</strong> 이 블로그에는 "비유가 그 편 내용에 안 맞으면 다시 쓴다"는 규칙이 있어요. 이걸 되돌아가는 선으로 그려 놓고, 다시 쓰는 쪽이 <strong>지난번 지적을 못 받아 보면</strong> 같은 비유를 또 써요. 전표가 안 바뀌니 같은 자리를 계속 돌아요. 바퀴 수를 적는 칸과 빠져나가는 출구가 필요한 게 이 자리예요.</p>
+      <ul>
+        <li><strong>① 세 갈래.</strong> 정리할 원문 한 단원을 받으면 갈 곳이 셋이에요. 짧고 얕으면 <code>합치기</code>(다음 단원과 한 편으로), 알맞으면 <code>그대로</code>, 길고 빽빽하면 <code>쪼개기</code>(두 편으로). 위의 짧은 노트·보통 노트·긴 노트와 같은 모양이에요.</li>
+        <li><strong>② 이름 어긋남.</strong> 판정하는 쪽이 <code>"쪼개기"</code>를 돌려주는데 목적지 목록에는 <code>"분할"</code>로 적어 뒀다면, 짧은 스텝과 보통 스텝만 넣어 본 날은 멀쩡히 지나가요. <strong>처음으로 긴 스텝이 들어오는 날</strong>에야 터져요. 갈래를 늘렸으면 그 갈래로 실제로 가는 입력을 한 번은 넣어 봐야 하는 이유예요.</li>
+        <li><strong>③ 끝나지 않는 반복.</strong> 이 블로그에는 "비유가 그 편 내용에 안 맞으면 다시 쓴다"는 규칙이 있어요. 이걸 되돌아가는 선으로 그려 놓고, 다시 쓰는 쪽이 <strong>지난번 지적을 못 받아 보면</strong> 같은 비유를 또 써요. 전표가 안 바뀌니 같은 자리를 계속 돌아요. 바퀴 수를 적는 칸과 빠져나가는 출구가 필요한 게 이 자리예요.</li>
+      </ul>
     </section>
     <section class="apply-box apply-box--repo" id="apply-repo">
       <p class="apply-box-title">실제 코드에 대입하면 — 교정기의 세 갈래는 화자가 정해요</p>
@@ -482,10 +482,12 @@ TypeError: unhashable type: 'dict'</code></pre>
         continue
 
     # 여기부터: 사투리 미지정 화자 또는 to_standard 화자</code></pre>
-      <p><strong>① 세 갈래.</strong> <code>resolve_dialect_mode</code>가 돌려주는 <code>mode</code>가 갈래를 고르는 자리예요. <code>"protect"</code>면 아무것도 안 고치고 원문 그대로, <code>"assist"</code>면 제안만 남기고 텍스트는 그대로, <code>"to_standard"</code>거나 사투리 지정이 없으면 규칙 스물네 개 쪽으로 가요. 갈래마다 <code>continue</code>로 빠져나가는 게, 이 편에서 목적지를 따로 적어 준 것과 같은 일이에요.</p>
-      <p><strong>다만 이 코드는 위의 <a href="#key-router-read-only">라우터는 길만 고른다</a>를 안 지켜요.</strong> 고르는 블록이 <code>protected_indices</code>에도 적고 <code>flags</code>에도 적거든요. 평범한 파이썬이라 그래도 돌아가요. 그런데 이걸 LangGraph로 옮기면 <strong>고르는 일과 적는 일을 갈라야 해요</strong> — 라우터가 돌려주는 건 목적지 이름 한 글자뿐이라, 적는 일은 갈래 끝의 노드로 내려보내야 해요. 이 편의 그 규칙이 실제로 코드를 바꾸게 만드는 자리예요.</p>
-      <p><strong>② 이름 어긋남.</strong> 걸릴 자리가 실제로 있어요. 고르는 쪽이 돌려주는 글자와 받는 쪽이 비교하는 글자가 <strong>양쪽 코드에 따로 적혀 있거든요.</strong> 한쪽을 <code>"assist"</code>에서 다른 말로 바꿔 놓으면, 사투리 화자가 없는 자막으로는 아무리 돌려도 안 걸려요. 사투리 화자를 <code>assist</code>로 지정한 파일이 처음 들어오는 날에야 규칙 스물네 개 쪽으로 새 버려요. <strong>게다가 여기서는 에러조차 안 나요</strong> — 위의 실습은 목적지 목록에 없는 이름이라 <code>ValueError</code>로 멈췄지만, 이 코드는 그냥 <code>if</code> 둘을 다 지나쳐 아래로 흘러요. 보호했어야 할 대사가 표준어로 고쳐져 나올 뿐이에요.</p>
-      <p><strong>③ 되돌아가는 선.</strong> 이 코드에는 아직 없어요. 줄 하나를 고치고 다시 그 줄로 돌아오는 선이 없어서, 규칙끼리 물고 도는 일이 구조적으로 안 일어나요. 대신 규칙 스물네 개는 저마다 뒤에 <strong>결과를 검사하는 관문</strong>을 하나씩 달고 있는데, 그건 <a href="langgraph-pattern-chaining.html#apply-repo">6편</a>에서 꺼낼게요.</p>
+      <ul>
+        <li><strong>① 세 갈래.</strong> <code>resolve_dialect_mode</code>가 돌려주는 <code>mode</code>가 갈래를 고르는 자리예요. <code>"protect"</code>면 아무것도 안 고치고 원문 그대로, <code>"assist"</code>면 제안만 남기고 텍스트는 그대로, <code>"to_standard"</code>거나 사투리 지정이 없으면 규칙 스물네 개 쪽으로 가요. 갈래마다 <code>continue</code>로 빠져나가는 게, 이 편에서 목적지를 따로 적어 준 것과 같은 일이에요.</li>
+        <li><strong>다만 이 코드는 위의 <a href="#key-router-read-only">라우터는 길만 고른다</a>를 안 지켜요.</strong> 고르는 블록이 <code>protected_indices</code>에도 적고 <code>flags</code>에도 적거든요. 평범한 파이썬이라 그래도 돌아가요. 그런데 이걸 LangGraph로 옮기면 <strong>고르는 일과 적는 일을 갈라야 해요</strong> — 라우터가 돌려주는 건 목적지 이름 한 글자뿐이라, 적는 일은 갈래 끝의 노드로 내려보내야 해요. 이 편의 그 규칙이 실제로 코드를 바꾸게 만드는 자리예요.</li>
+        <li><strong>② 이름 어긋남.</strong> 걸릴 자리가 실제로 있어요. 고르는 쪽이 돌려주는 글자와 받는 쪽이 비교하는 글자가 <strong>양쪽 코드에 따로 적혀 있거든요.</strong> 한쪽을 <code>"assist"</code>에서 다른 말로 바꿔 놓으면, 사투리 화자가 없는 자막으로는 아무리 돌려도 안 걸려요. 사투리 화자를 <code>assist</code>로 지정한 파일이 처음 들어오는 날에야 규칙 스물네 개 쪽으로 새 버려요. <strong>게다가 여기서는 에러조차 안 나요</strong> — 위의 실습은 목적지 목록에 없는 이름이라 <code>ValueError</code>로 멈췄지만, 이 코드는 그냥 <code>if</code> 둘을 다 지나쳐 아래로 흘러요. 보호했어야 할 대사가 표준어로 고쳐져 나올 뿐이에요.</li>
+        <li><strong>③ 되돌아가는 선.</strong> 이 코드에는 아직 없어요. 줄 하나를 고치고 다시 그 줄로 돌아오는 선이 없어서, 규칙끼리 물고 도는 일이 구조적으로 안 일어나요. 대신 규칙 스물네 개는 저마다 뒤에 <strong>결과를 검사하는 관문</strong>을 하나씩 달고 있는데, 그건 <a href="langgraph-pattern-chaining.html#apply-repo">6편</a>에서 꺼낼게요.</li>
+      </ul>
     </section>
 
     <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — AI가 짠 그래프가 이상하게 굴 때</h2>
@@ -559,7 +561,7 @@ TypeError: unhashable type: 'dict'</code></pre>
 
     <hr>
 
-    <h3 id="series-list">"에이전트 팀 꾸리기 — LangGraph" 시리즈</h3>
+    <h3 id="series-list">"LangGraph 기초 — State·Node·Edge" 시리즈</h3>
     <a class="post-nav" href="langgraph-what-and-why.html">
       <span class="post-nav-label">(1)</span>
       <span class="post-nav-title">다음에 어느 코드가 실행될까 — LangGraph와 워크플로·에이전트</span>
@@ -576,83 +578,6 @@ TypeError: unhashable type: 'dict'</code></pre>
     <a class="post-nav" href="langgraph-env-troubleshooting.html">
       <span class="post-nav-label">(5)</span>
       <span class="post-nav-title">.env가 안 읽혔던 네 겹의 이유 — 원격 주피터에서 API 키 넣기</span>
-    </a>
-    <a class="post-nav" href="langgraph-pattern-chaining.html">
-      <span class="post-nav-label">(6)</span>
-      <span class="post-nav-title">① 프롬프트 체이닝 — 순서대로, 사이에 검사</span>
-    </a>
-    <a class="post-nav" href="langgraph-pattern-routing.html">
-      <span class="post-nav-label">(7)</span>
-      <span class="post-nav-title">② 라우팅 — 먼저 분류하고, 한 갈래로</span>
-    </a>
-    <a class="post-nav" href="langgraph-pattern-parallelization.html">
-      <span class="post-nav-label">(8)</span>
-      <span class="post-nav-title">③ 병렬화 — 동시에 돌리고, 합친다</span>
-    </a>
-    <a class="post-nav" href="langgraph-pattern-orchestrator-worker.html">
-      <span class="post-nav-label">(9)</span>
-      <span class="post-nav-title">④ 오케스트레이터-워커 — 몇 갈래일지 LLM이 정한다</span>
-    </a>
-    <a class="post-nav" href="langgraph-pattern-evaluator-optimizer.html">
-      <span class="post-nav-label">(10)</span>
-      <span class="post-nav-title">⑤ 평가자-최적화자 — 통과할 때까지 고쳐 쓰기</span>
-    </a>
-    <a class="post-nav" href="newsletter-agent-skeleton.html">
-      <span class="post-nav-label">(11)</span>
-      <span class="post-nav-title">뉴스레터 에이전트를 빈 노드 다섯 개로 먼저 세운다</span>
-    </a>
-    <a class="post-nav" href="newsletter-agent-collect.html">
-      <span class="post-nav-label">(12)</span>
-      <span class="post-nav-title">기사를 어디서 가져올까 — RSS·관문·수집 노드</span>
-    </a>
-    <a class="post-nav" href="newsletter-agent-select.html">
-      <span class="post-nav-label">(13)</span>
-      <span class="post-nav-title">100건에서 5건 고르기 — 점수 대신 비교, 예선과 본선</span>
-    </a>
-    <a class="post-nav" href="newsletter-agent-summarize-verify.html">
-      <span class="post-nav-label">(14)</span>
-      <span class="post-nav-title">요약을 세 칸으로 받고 원문과 대조한다</span>
-    </a>
-    <a class="post-nav" href="newsletter-agent-publish-schedule.html">
-      <span class="post-nav-label">(15)</span>
-      <span class="post-nav-title">디스코드로 매일 아침 받아 보기 — 웹훅과 GitHub Actions</span>
-    </a>
-    <a class="post-nav" href="newsletter-agent-metrics-config.html">
-      <span class="post-nav-label">(16)</span>
-      <span class="post-nav-title">돌고 나서 재 본다 — 실행 기록과 설정 파일</span>
-    </a>
-    <a class="post-nav" href="cs-agent-routing-eval.html">
-      <span class="post-nav-label">(17)</span>
-      <span class="post-nav-title">문의 한 줄을 다섯 갈래로 — 라우트는 회사 문서에서 가져온다</span>
-    </a>
-    <a class="post-nav" href="cs-agent-grounding.html">
-      <span class="post-nav-label">(18)</span>
-      <span class="post-nav-title">값을 말하지 말고 조회하게 한다 — 매뉴얼 쪼개기·도구·가드레일</span>
-    </a>
-    <a class="post-nav" href="cs-agent-improve.html">
-      <span class="post-nav-label">(19)</span>
-      <span class="post-nav-title">59%에서 94%로 — 프롬프트만 고쳐 지표를 올린 기록</span>
-    </a>
-    <a class="post-nav" href="graphrag-why-multihop.html">
-      <span class="post-nav-label">(20)</span>
-      <span class="post-nav-title">검색으로는 못 찾는 답 — 멀티홉 질문과 지식 그래프</span>
-    </a>
-    <a class="post-nav" href="graphrag-build-knowledge-graph.html">
-      <span class="post-nav-label">(21)</span>
-      <span class="post-nav-title">스키마가 답할 질문을 정한다 — 추출·정규화·위키 분류</span>
-    </a>
-    <a class="post-nav" href="graphrag-agent-three-routes.html">
-      <span class="post-nav-label">(22)</span>
-      <span class="post-nav-title">세 갈래로 답하는 에이전트 — 커뮤니티 요약·라우터·탐색 예산</span>
-    </a>
-    <a class="post-nav" href="graphrag-goldenset-eval.html">
-      <span class="post-nav-label">(23)</span>
-      <span class="post-nav-title">같은 15문항으로 채점한다 — 세 층 평가와 심판의 한계</span>
-    </a>
-
-    <a class="post-nav" href="langgraph-branches-and-tool-loop.html">
-      <span class="post-nav-label">다음 편 →</span>
-      <span class="post-nav-title">모델이 다음 길을 고르게 한다 — 도구를 쥐여 주는 루프</span>
     </a>
 
   </main>

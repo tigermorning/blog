@@ -38,7 +38,7 @@
       <p class="why-read-title">이 글을 읽기 전에</p>
       <dl>
         <dt>어디쯤인가</dt>
-        <dd><a href="posts.html#cat-agent-system">8단계</a> › <a href="posts.html#graphrag-project">GraphRAG로 지식 그래프 얹기</a> — 2번째 글 (전 4편). 첫 글은 <a href="langgraph-what-and-why.html">1편</a>이고, 영화 추천 에이전트 묶음은 <a href="graphrag-why-multihop.html">20편</a>부터예요.</dd>
+        <dd><a href="posts.html#cat-agent-system">8단계</a> › <a href="posts.html#graphrag-project">GraphRAG로 지식 그래프 얹기</a> — 2번째 글 (전 4편). 한국 영화 문서로 추천 에이전트를 만드는 네 편짜리 시리즈는 <a href="graphrag-why-multihop.html">20편</a>부터 시작해요.</dd>
         <dt>이런 게 궁금했다면</dt>
         <dd>
           <ul>
@@ -287,7 +287,7 @@
 'Cj엔터테인먼트'     ← ['Cj엔터테인먼트', 'Cj 엔터테인먼트', 'CJ 엔터테인먼트']
 '기생충'            ← ['기생충', '기생충 (영화)']
 '베를린 국제 영화제' ← ['베를린 국제 영화제', '베를린국제영화제']</code></pre>
-    <p>이 목록은 자동으로 처리하고 끝낼 게 아니라 <strong>사람이 한 번 훑어볼 목록</strong>이에요. 표기 흔들림이면 합치는 게 맞지만 동명이인이면 절대 합치면 안 되니까요. 실무에서는 이걸 표로 내보내 담당자가 "합칠 것·둘 것"을 표시해요. 자동으로 처리하되 위험한 자리만 사람에게 보여 주는 것, 이게 사람 확인 단계(HITL, Human-in-the-loop)의 가장 작은 모양이에요.</p>
+    <p>이 목록은 자동으로 처리하고 끝낼 게 아니라 <strong>사람이 한 번 훑어볼 목록</strong>이에요. 표기 흔들림이면 합치는 게 맞지만 동명이인이면 절대 합치면 안 되니까요. 실무에서는 이걸 표로 내보내 담당자가 "합칠 것·둘 것"을 표시해요. 자동으로 처리하되 위험한 자리만 사람에게 보여 주는 것, 이게 사람 확인 단계(HITL, Human-in-the-loop — 자동화 중간에 사람의 승인을 끼워 넣는 설계, <a href="langgraph-hitl-interrupt-resume.html">HITL 시리즈 1편</a>)의 가장 작은 모양이에요.</p>
 
     <h2 id="rules"><span class="hl">위키 분류로 보강한다</span> — 규칙은 좁지만 정확하다</h2>
     <p><a href="graphrag-why-multihop.html#data">20편</a>에서 본 "분류:" 줄을 여기서 써요. 위키 편집자가 손으로 단 태그라 형식이 고정돼 있어서, 정규식 몇 줄로 삼중항이 나와요.</p>
@@ -537,94 +537,18 @@ plotly로 인터랙티브 네트워크 시각화를 만들어 줘.
 
     <hr>
 
-    <h3 id="series-list">"에이전트 팀 꾸리기 — LangGraph" 시리즈</h3>
-    <a class="post-nav" href="langgraph-what-and-why.html">
-      <span class="post-nav-label">(1)</span>
-      <span class="post-nav-title">다음에 어느 코드가 실행될까 — LangGraph와 워크플로·에이전트</span>
-    </a>
-    <a class="post-nav" href="langgraph-state-node-edge.html">
-      <span class="post-nav-label">(2)</span>
-      <span class="post-nav-title">흐름을 그림으로 짠다 — LangGraph의 State·Node·Edge</span>
-    </a>
-    <a class="post-nav" href="langgraph-branch-drills.html">
-      <span class="post-nav-label">(3)</span>
-      <span class="post-nav-title">갈림길을 밀어붙인다 — 세 갈래·라벨·끝나지 않는 반복</span>
-    </a>
-    <a class="post-nav" href="langgraph-branches-and-tool-loop.html">
-      <span class="post-nav-label">(4)</span>
-      <span class="post-nav-title">모델이 다음 길을 고르게 한다 — 도구를 쥐여 주는 루프</span>
-    </a>
-    <a class="post-nav" href="langgraph-env-troubleshooting.html">
-      <span class="post-nav-label">(5)</span>
-      <span class="post-nav-title">.env가 안 읽혔던 네 겹의 이유 — 원격 주피터에서 API 키 넣기</span>
-    </a>
-    <a class="post-nav" href="langgraph-pattern-chaining.html">
-      <span class="post-nav-label">(6)</span>
-      <span class="post-nav-title">① 프롬프트 체이닝 — 순서대로, 사이에 검사</span>
-    </a>
-    <a class="post-nav" href="langgraph-pattern-routing.html">
-      <span class="post-nav-label">(7)</span>
-      <span class="post-nav-title">② 라우팅 — 먼저 분류하고, 한 갈래로</span>
-    </a>
-    <a class="post-nav" href="langgraph-pattern-parallelization.html">
-      <span class="post-nav-label">(8)</span>
-      <span class="post-nav-title">③ 병렬화 — 동시에 돌리고, 합친다</span>
-    </a>
-    <a class="post-nav" href="langgraph-pattern-orchestrator-worker.html">
-      <span class="post-nav-label">(9)</span>
-      <span class="post-nav-title">④ 오케스트레이터-워커 — 몇 갈래일지 LLM이 정한다</span>
-    </a>
-    <a class="post-nav" href="langgraph-pattern-evaluator-optimizer.html">
-      <span class="post-nav-label">(10)</span>
-      <span class="post-nav-title">⑤ 평가자-최적화자 — 통과할 때까지 고쳐 쓰기</span>
-    </a>
-    <a class="post-nav" href="newsletter-agent-skeleton.html">
-      <span class="post-nav-label">(11)</span>
-      <span class="post-nav-title">뉴스레터 에이전트를 빈 노드 다섯 개로 먼저 세운다</span>
-    </a>
-    <a class="post-nav" href="newsletter-agent-collect.html">
-      <span class="post-nav-label">(12)</span>
-      <span class="post-nav-title">기사를 어디서 가져올까 — RSS·관문·수집 노드</span>
-    </a>
-    <a class="post-nav" href="newsletter-agent-select.html">
-      <span class="post-nav-label">(13)</span>
-      <span class="post-nav-title">100건에서 5건 고르기 — 점수 대신 비교, 예선과 본선</span>
-    </a>
-    <a class="post-nav" href="newsletter-agent-summarize-verify.html">
-      <span class="post-nav-label">(14)</span>
-      <span class="post-nav-title">요약을 세 칸으로 받고 원문과 대조한다</span>
-    </a>
-    <a class="post-nav" href="newsletter-agent-publish-schedule.html">
-      <span class="post-nav-label">(15)</span>
-      <span class="post-nav-title">디스코드로 매일 아침 받아 보기 — 웹훅과 GitHub Actions</span>
-    </a>
-    <a class="post-nav" href="newsletter-agent-metrics-config.html">
-      <span class="post-nav-label">(16)</span>
-      <span class="post-nav-title">돌고 나서 재 본다 — 실행 기록과 설정 파일</span>
-    </a>
-    <a class="post-nav" href="cs-agent-routing-eval.html">
-      <span class="post-nav-label">(17)</span>
-      <span class="post-nav-title">문의 한 줄을 다섯 갈래로 — 라우트는 회사 문서에서 가져온다</span>
-    </a>
-    <a class="post-nav" href="cs-agent-grounding.html">
-      <span class="post-nav-label">(18)</span>
-      <span class="post-nav-title">값을 말하지 말고 조회하게 한다 — 매뉴얼 쪼개기·도구·가드레일</span>
-    </a>
-    <a class="post-nav" href="cs-agent-improve.html">
-      <span class="post-nav-label">(19)</span>
-      <span class="post-nav-title">59%에서 94%로 — 프롬프트만 고쳐 지표를 올린 기록</span>
-    </a>
+    <h3 id="series-list">"GraphRAG로 지식 그래프 얹기" 시리즈</h3>
     <a class="post-nav" href="graphrag-why-multihop.html">
-      <span class="post-nav-label">(20)</span>
+      <span class="post-nav-label">(1)</span>
       <span class="post-nav-title">검색으로는 못 찾는 답 — 멀티홉 질문과 지식 그래프</span>
     </a>
-    <p class="post-date">(21) 스키마가 답할 질문을 정한다 — 추출·정규화·위키 분류 (이 글)</p>
+    <p class="post-date">(2) 스키마가 답할 질문을 정한다 — 추출·정규화·위키 분류 (이 글)</p>
     <a class="post-nav" href="graphrag-agent-three-routes.html">
-      <span class="post-nav-label">(22)</span>
+      <span class="post-nav-label">(3)</span>
       <span class="post-nav-title">세 갈래로 답하는 에이전트 — 커뮤니티 요약·라우터·탐색 예산</span>
     </a>
     <a class="post-nav" href="graphrag-goldenset-eval.html">
-      <span class="post-nav-label">(23)</span>
+      <span class="post-nav-label">(4)</span>
       <span class="post-nav-title">같은 15문항으로 채점한다 — 세 층 평가와 심판의 한계</span>
     </a>
 

@@ -38,7 +38,7 @@
       <p class="why-read-title">이 글을 읽기 전에</p>
       <dl>
         <dt>어디쯤인가</dt>
-        <dd><a href="posts.html#cat-agent-system">8단계</a> › <a href="posts.html#graphrag-project">GraphRAG로 지식 그래프 얹기</a> — 3번째 글 (전 4편). 첫 글은 <a href="langgraph-what-and-why.html">1편</a>이고, 영화 추천 에이전트 묶음은 <a href="graphrag-why-multihop.html">20편</a>부터예요.</dd>
+        <dd><a href="posts.html#cat-agent-system">8단계</a> › <a href="posts.html#graphrag-project">GraphRAG로 지식 그래프 얹기</a> — 3번째 글 (전 4편). 한국 영화 문서로 추천 에이전트를 만드는 네 편짜리 시리즈는 <a href="graphrag-why-multihop.html">20편</a>부터 시작해요.</dd>
         <dt>이런 게 궁금했다면</dt>
         <dd>
           <ul>
@@ -124,8 +124,15 @@ C11 68노드 · 인물 홍상수·이병우·기주봉·김민희 · 작품 강�
 C18 35노드 · 인물 크리스틴 벨·제니퍼 리 · 작품 겨울왕국 2·겨울왕국
 C24 18노드 · 인물 M. 나이트 샤말란 · 작품 애프터 어스·더 비지트·언브레이커블</code></pre>
     <p>무게를 낮추지 않으면 가장 큰 무리가 181노드로 부풀어요. 장르 노드를 다리 삼아 관계없는 영화들이 한데 묶인 거예요.</p>
-    <p>무리를 읽어 보면 실제 협업 관계가 나타나요. 박찬욱·류승완·최민식이 한 무리고, 홍상수·김민희가 한 무리예요. 그리고 <strong>한국 영화와 상관없는 무리</strong>도 보여요. 《겨울왕국》 제작진(C18), 샤말란 감독 작품(C24) 같은 것들이요. <a href="graphrag-why-multihop.html#data">20편</a>에서 본, 문서를 모을 때 링크를 타고 딸려 들어온 문서들이 무리째로 드러난 거예요. 허브 목록만 봐서는 몰랐던 오염의 크기가 여기서 보여요.</p>
-    <p>그래서 커뮤니티 탐지는 전역 질문을 위한 장치이면서 <strong>데이터 품질 진단 도구</strong>이기도 해요. 낯선 문서 묶음을 받으면 먼저 해 볼 만한 일이에요.</p>
+    <p>무리를 읽어 보면 두 종류가 보여요.</p>
+    <table>
+      <thead><tr><th>무리</th><th>읽히는 것</th></tr></thead>
+      <tbody>
+        <tr><td>C1 · C11 등</td><td>실제 협업 관계예요. 박찬욱·류승완·최민식이 한 무리고, 홍상수·김민희가 한 무리예요</td></tr>
+        <tr><td>C18 · C24</td><td><strong>한국 영화와 상관없는 무리</strong>예요. 《겨울왕국》 제작진, 샤말란 감독 작품이요. <a href="graphrag-why-multihop.html#data">20편</a>에서 본, 문서를 모을 때 링크를 타고 딸려 들어온 문서들이 무리째로 드러난 거예요</td></tr>
+      </tbody>
+    </table>
+    <p>허브 목록만 봐서는 몰랐던 오염의 크기가 여기서 보여요. 그래서 커뮤니티 탐지는 전역 질문을 위한 장치이면서 <strong>데이터 품질 진단 도구</strong>이기도 해요. 낯선 문서 묶음을 받으면 먼저 해 볼 만한 일이에요.</p>
     <h3 id="community-report">무리마다 보고서를 쓴다</h3>
     <p>무리의 노드 이름 수백 개를 LLM에 그대로 던지면 좋은 요약이 안 나와요. 먼저 집계해서 <strong>프로필</strong>(핵심 인물 여섯, 대표 작품 여섯, 주요 장르·소재·배경·수상·배급사)을 만들고, 그 프로필만 줘요. 프롬프트에는 "주어진 집계 정보만 근거로 삼고 없는 사실은 지어내지 마라"를 넣고, 제목·요약·발견 세 칸의 JSON으로 받아요.</p>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 실제로 나온 보고서 두 개의 앞부분이에요</span></p>
@@ -240,7 +247,14 @@ X [전역-15] 기대 global | 규칙 global | LLM path | 2단 global | 한국 �
     <p>LLM에 넣을 수 있는 분량은 정해져 있어서, 삼중항을 무한정 넣을 수 없어요. 저는 총 200개, 반경 2까지로 잡았어요. 그런데 그냥 이웃을 긁어 오면 문제가 생겨요. 이 그래프는 출연 관계가 압도적으로 많아서, 출연이 예산을 다 먹고 정작 필요한 수상 관계 한 줄이 잘려요. <a href="graphrag-build-knowledge-graph.html#inspect">21편</a>에서 본 《극한직업》은 연결 83개 중 73개가 출연이었죠.</p>
     <p>그래서 <strong>한 노드에서 관계당 최대 10개</strong>까지만 담게 했어요. 출연이 아무리 많아도 다른 관계가 자리를 확보해요.</p>
     <p>그러면 10개를 넘는 관계는 무엇을 남기고 무엇을 버릴까요. 신뢰도 높은 순으로 남기는데, 이 기준이 생각보다 약했어요. 대종상 노드의 수상 선 70개 중 신뢰도 1.0이 28개라, 할당량 10개는 <strong>동점인 28개 중 18개를 버려야</strong> 해요. 신뢰도가 못 가르니 사실상 선이 들어온 순서가 자르고 있었고, 그 바람에 추천-06의 정답 근거 (살인의 추억, WON_AWARD, 대종상)이 잘렸어요.</p>
-    <p>그래서 <strong>위키 분류 규칙이 확인해 준 선(<code>rule</code>·<code>rule+llm</code>)은 할당량에서 면제</strong>했어요. 규칙 선은 사람이 단 태그를 옮긴 것이라 모델이 지어낼 자리가 없어요. 세어 보니 규칙 계열은 전체 선의 16%인데, 골든셋 정답 경로에 쓰이는 선 39개 중에서는 26개(67%)를 차지했어요. 반대로 규칙은 출연을 원리적으로 못 만드니, 《극한직업》의 배역 선은 여전히 할당량에 잘려요. 면제해 주고 싶은 것과 잘라야 하는 것이 정확히 갈리는 거죠.</p>
+    <p>그래서 <strong>위키 분류 규칙이 확인해 준 선(<code>rule</code>·<code>rule+llm</code>)은 할당량에서 면제</strong>했어요. 면제해 주고 싶은 것과 잘라야 하는 것이 정확히 갈려요.</p>
+    <table>
+      <thead><tr><th>선의 출처</th><th>할당량</th><th>이유</th></tr></thead>
+      <tbody>
+        <tr><td>위키 분류 규칙 계열 (<code>rule</code>·<code>rule+llm</code>)</td><td>면제</td><td>사람이 단 태그를 옮긴 것이라 모델이 지어낼 자리가 없어요. 전체 선의 16%인데, 골든셋 정답 경로에 쓰이는 선 39개 중에서는 26개(67%)를 차지했어요</td></tr>
+        <tr><td>LLM이 뽑은 선 (출연 등)</td><td>적용</td><td>규칙은 출연을 원리적으로 못 만들어서, 《극한직업》의 배역 선은 여전히 할당량에 잘려요</td></tr>
+      </tbody>
+    </table>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 면제를 켜고 끄고 정답 근거가 몇 개 들어오는지 센 출력이에요</span></p>
     <pre><code>[추천-06] 면제 ON 놓침 [] | 면제 OFF 놓침 [('살인의 추억', 'WON_AWARD', '대종상')]
 면제 ON 37/39 · 면제 OFF 36/39</code></pre>
@@ -391,94 +405,18 @@ app = builder.compile()</code></pre>
 
     <hr>
 
-    <h3 id="series-list">"에이전트 팀 꾸리기 — LangGraph" 시리즈</h3>
-    <a class="post-nav" href="langgraph-what-and-why.html">
-      <span class="post-nav-label">(1)</span>
-      <span class="post-nav-title">다음에 어느 코드가 실행될까 — LangGraph와 워크플로·에이전트</span>
-    </a>
-    <a class="post-nav" href="langgraph-state-node-edge.html">
-      <span class="post-nav-label">(2)</span>
-      <span class="post-nav-title">흐름을 그림으로 짠다 — LangGraph의 State·Node·Edge</span>
-    </a>
-    <a class="post-nav" href="langgraph-branch-drills.html">
-      <span class="post-nav-label">(3)</span>
-      <span class="post-nav-title">갈림길을 밀어붙인다 — 세 갈래·라벨·끝나지 않는 반복</span>
-    </a>
-    <a class="post-nav" href="langgraph-branches-and-tool-loop.html">
-      <span class="post-nav-label">(4)</span>
-      <span class="post-nav-title">모델이 다음 길을 고르게 한다 — 도구를 쥐여 주는 루프</span>
-    </a>
-    <a class="post-nav" href="langgraph-env-troubleshooting.html">
-      <span class="post-nav-label">(5)</span>
-      <span class="post-nav-title">.env가 안 읽혔던 네 겹의 이유 — 원격 주피터에서 API 키 넣기</span>
-    </a>
-    <a class="post-nav" href="langgraph-pattern-chaining.html">
-      <span class="post-nav-label">(6)</span>
-      <span class="post-nav-title">① 프롬프트 체이닝 — 순서대로, 사이에 검사</span>
-    </a>
-    <a class="post-nav" href="langgraph-pattern-routing.html">
-      <span class="post-nav-label">(7)</span>
-      <span class="post-nav-title">② 라우팅 — 먼저 분류하고, 한 갈래로</span>
-    </a>
-    <a class="post-nav" href="langgraph-pattern-parallelization.html">
-      <span class="post-nav-label">(8)</span>
-      <span class="post-nav-title">③ 병렬화 — 동시에 돌리고, 합친다</span>
-    </a>
-    <a class="post-nav" href="langgraph-pattern-orchestrator-worker.html">
-      <span class="post-nav-label">(9)</span>
-      <span class="post-nav-title">④ 오케스트레이터-워커 — 몇 갈래일지 LLM이 정한다</span>
-    </a>
-    <a class="post-nav" href="langgraph-pattern-evaluator-optimizer.html">
-      <span class="post-nav-label">(10)</span>
-      <span class="post-nav-title">⑤ 평가자-최적화자 — 통과할 때까지 고쳐 쓰기</span>
-    </a>
-    <a class="post-nav" href="newsletter-agent-skeleton.html">
-      <span class="post-nav-label">(11)</span>
-      <span class="post-nav-title">뉴스레터 에이전트를 빈 노드 다섯 개로 먼저 세운다</span>
-    </a>
-    <a class="post-nav" href="newsletter-agent-collect.html">
-      <span class="post-nav-label">(12)</span>
-      <span class="post-nav-title">기사를 어디서 가져올까 — RSS·관문·수집 노드</span>
-    </a>
-    <a class="post-nav" href="newsletter-agent-select.html">
-      <span class="post-nav-label">(13)</span>
-      <span class="post-nav-title">100건에서 5건 고르기 — 점수 대신 비교, 예선과 본선</span>
-    </a>
-    <a class="post-nav" href="newsletter-agent-summarize-verify.html">
-      <span class="post-nav-label">(14)</span>
-      <span class="post-nav-title">요약을 세 칸으로 받고 원문과 대조한다</span>
-    </a>
-    <a class="post-nav" href="newsletter-agent-publish-schedule.html">
-      <span class="post-nav-label">(15)</span>
-      <span class="post-nav-title">디스코드로 매일 아침 받아 보기 — 웹훅과 GitHub Actions</span>
-    </a>
-    <a class="post-nav" href="newsletter-agent-metrics-config.html">
-      <span class="post-nav-label">(16)</span>
-      <span class="post-nav-title">돌고 나서 재 본다 — 실행 기록과 설정 파일</span>
-    </a>
-    <a class="post-nav" href="cs-agent-routing-eval.html">
-      <span class="post-nav-label">(17)</span>
-      <span class="post-nav-title">문의 한 줄을 다섯 갈래로 — 라우트는 회사 문서에서 가져온다</span>
-    </a>
-    <a class="post-nav" href="cs-agent-grounding.html">
-      <span class="post-nav-label">(18)</span>
-      <span class="post-nav-title">값을 말하지 말고 조회하게 한다 — 매뉴얼 쪼개기·도구·가드레일</span>
-    </a>
-    <a class="post-nav" href="cs-agent-improve.html">
-      <span class="post-nav-label">(19)</span>
-      <span class="post-nav-title">59%에서 94%로 — 프롬프트만 고쳐 지표를 올린 기록</span>
-    </a>
+    <h3 id="series-list">"GraphRAG로 지식 그래프 얹기" 시리즈</h3>
     <a class="post-nav" href="graphrag-why-multihop.html">
-      <span class="post-nav-label">(20)</span>
+      <span class="post-nav-label">(1)</span>
       <span class="post-nav-title">검색으로는 못 찾는 답 — 멀티홉 질문과 지식 그래프</span>
     </a>
     <a class="post-nav" href="graphrag-build-knowledge-graph.html">
-      <span class="post-nav-label">(21)</span>
+      <span class="post-nav-label">(2)</span>
       <span class="post-nav-title">스키마가 답할 질문을 정한다 — 추출·정규화·위키 분류</span>
     </a>
-    <p class="post-date">(22) 세 갈래로 답하는 에이전트 — 커뮤니티 요약·라우터·탐색 예산 (이 글)</p>
+    <p class="post-date">(3) 세 갈래로 답하는 에이전트 — 커뮤니티 요약·라우터·탐색 예산 (이 글)</p>
     <a class="post-nav" href="graphrag-goldenset-eval.html">
-      <span class="post-nav-label">(23)</span>
+      <span class="post-nav-label">(4)</span>
       <span class="post-nav-title">같은 15문항으로 채점한다 — 세 층 평가와 심판의 한계</span>
     </a>
 

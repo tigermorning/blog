@@ -227,14 +227,6 @@ for note in [note_a, note_b]:
     </table>
     <p>정리하면 체이닝에서 물을 건 하나예요. <strong>"이 요구들 사이에 순서가 있고, 그 사이에 확인할 게 있나?"</strong> 그렇다면 한 호출에 몰아넣지 말고 단계로 쪼개야 해요.</p>
 
-    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span></h2>
-    <table>
-      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
-      <tbody>
-        <tr><td>용어 두 개로 통과/실패를 가른 노트 두 개를 검사했을 때</td><td>2건 중 2건 판정이 뒤집힘</td><td>글자만 보는 게이트라 뜻이 맞아도 표기(<code>State</code> vs <code>state</code>)가 다르면 떨어지고, 뜻이 틀려도 글자만 들어 있으면 통과해요 (<a href="#gate-limits">게이트가 못 보는 것</a>)</td></tr>
-      </tbody>
-    </table>
-
     <section class="apply-box" id="apply-blog">
       <p class="apply-box-title">내 파이프라인에 대입하면 — 이 블로그도 체이닝으로 쓰여요</p>
       <p>이 블로그의 모든 글은 본문을 같은 순서로 써요. 한 줄 정의 → 이 글을 읽기 전에 박스 → 비유 → 흐름 그림 → 나쁜 선택 vs 좋은 선택 → 숫자 표 → 용어 각주. 앞 칸을 채워야 뒤 칸을 채울 수 있는 한 줄이에요. 이 글도 그 순서대로 여기까지 왔어요.</p>
@@ -296,7 +288,7 @@ for note in [note_a, note_b]:
     <h2>함께 읽으면 좋은 글</h2>
     <ul>
       <li><a href="output-format-and-metrics.html">답의 모양과 채점법</a> — 구조화 출력이 형식은 강제해도 사실까지 강제하지는 못한다는 이야기를 먼저 다룬 글이에요.</li>
-      <li><a href="langgraph-what-and-why.html">다음에 어느 코드가 실행될까 — LangGraph와 워크플로·에이전트</a> — 이 다섯 모양이 왜 전부 워크플로인지의 기준을 세운 시리즈 첫 편이에요.</li>
+      <li><a href="langgraph-what-and-why.html">다음에 어느 코드가 실행될까 — LangGraph와 워크플로·에이전트</a> — 이 다섯 모양이 왜 전부 워크플로인지의 기준을 세운 LangGraph 기초 시리즈의 첫 편이에요.</li>
     </ul>
 
     <section class="footnotes">
@@ -308,95 +300,23 @@ for note in [note_a, note_b]:
 
     <hr>
 
-    <h3 id="series-list">"에이전트 팀 꾸리기 — LangGraph" 시리즈</h3>
-    <a class="post-nav" href="langgraph-what-and-why.html">
-      <span class="post-nav-label">(1)</span>
-      <span class="post-nav-title">다음에 어느 코드가 실행될까 — LangGraph와 워크플로·에이전트</span>
-    </a>
-    <a class="post-nav" href="langgraph-state-node-edge.html">
-      <span class="post-nav-label">(2)</span>
-      <span class="post-nav-title">흐름을 그림으로 짠다 — LangGraph의 State·Node·Edge</span>
-    </a>
-    <a class="post-nav" href="langgraph-branch-drills.html">
-      <span class="post-nav-label">(3)</span>
-      <span class="post-nav-title">갈림길을 밀어붙인다 — 세 갈래·라벨·끝나지 않는 반복</span>
-    </a>
-    <a class="post-nav" href="langgraph-branches-and-tool-loop.html">
-      <span class="post-nav-label">(4)</span>
-      <span class="post-nav-title">모델이 다음 길을 고르게 한다 — 도구를 쥐여 주는 루프</span>
-    </a>
-    <a class="post-nav" href="langgraph-env-troubleshooting.html">
-      <span class="post-nav-label">(5)</span>
-      <span class="post-nav-title">.env가 안 읽혔던 네 겹의 이유 — 원격 주피터에서 API 키 넣기</span>
-    </a>
-    <p class="post-date">(6) ① 프롬프트 체이닝 — 순서대로, 사이에 검사 (이 글)</p>
+    <h3 id="series-list">"에이전트 워크플로 다섯 패턴" 시리즈</h3>
+    <p class="post-date">(1) ① 프롬프트 체이닝 — 순서대로, 사이에 검사 (이 글)</p>
     <a class="post-nav" href="langgraph-pattern-routing.html">
-      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-label">(2)</span>
       <span class="post-nav-title">② 라우팅 — 먼저 분류하고, 한 갈래로</span>
     </a>
     <a class="post-nav" href="langgraph-pattern-parallelization.html">
-      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-label">(3)</span>
       <span class="post-nav-title">③ 병렬화 — 동시에 돌리고, 합친다</span>
     </a>
     <a class="post-nav" href="langgraph-pattern-orchestrator-worker.html">
-      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-label">(4)</span>
       <span class="post-nav-title">④ 오케스트레이터-워커 — 몇 갈래일지 LLM이 정한다</span>
     </a>
     <a class="post-nav" href="langgraph-pattern-evaluator-optimizer.html">
-      <span class="post-nav-label">(10)</span>
+      <span class="post-nav-label">(5)</span>
       <span class="post-nav-title">⑤ 평가자-최적화자 — 통과할 때까지 고쳐 쓰기</span>
-    </a>
-    <a class="post-nav" href="newsletter-agent-skeleton.html">
-      <span class="post-nav-label">(11)</span>
-      <span class="post-nav-title">뉴스레터 에이전트를 빈 노드 다섯 개로 먼저 세운다</span>
-    </a>
-    <a class="post-nav" href="newsletter-agent-collect.html">
-      <span class="post-nav-label">(12)</span>
-      <span class="post-nav-title">기사를 어디서 가져올까 — RSS·관문·수집 노드</span>
-    </a>
-    <a class="post-nav" href="newsletter-agent-select.html">
-      <span class="post-nav-label">(13)</span>
-      <span class="post-nav-title">100건에서 5건 고르기 — 점수 대신 비교, 예선과 본선</span>
-    </a>
-    <a class="post-nav" href="newsletter-agent-summarize-verify.html">
-      <span class="post-nav-label">(14)</span>
-      <span class="post-nav-title">요약을 세 칸으로 받고 원문과 대조한다</span>
-    </a>
-    <a class="post-nav" href="newsletter-agent-publish-schedule.html">
-      <span class="post-nav-label">(15)</span>
-      <span class="post-nav-title">디스코드로 매일 아침 받아 보기 — 웹훅과 GitHub Actions</span>
-    </a>
-    <a class="post-nav" href="newsletter-agent-metrics-config.html">
-      <span class="post-nav-label">(16)</span>
-      <span class="post-nav-title">돌고 나서 재 본다 — 실행 기록과 설정 파일</span>
-    </a>
-    <a class="post-nav" href="cs-agent-routing-eval.html">
-      <span class="post-nav-label">(17)</span>
-      <span class="post-nav-title">문의 한 줄을 다섯 갈래로 — 라우트는 회사 문서에서 가져온다</span>
-    </a>
-    <a class="post-nav" href="cs-agent-grounding.html">
-      <span class="post-nav-label">(18)</span>
-      <span class="post-nav-title">값을 말하지 말고 조회하게 한다 — 매뉴얼 쪼개기·도구·가드레일</span>
-    </a>
-    <a class="post-nav" href="cs-agent-improve.html">
-      <span class="post-nav-label">(19)</span>
-      <span class="post-nav-title">59%에서 94%로 — 프롬프트만 고쳐 지표를 올린 기록</span>
-    </a>
-    <a class="post-nav" href="graphrag-why-multihop.html">
-      <span class="post-nav-label">(20)</span>
-      <span class="post-nav-title">검색으로는 못 찾는 답 — 멀티홉 질문과 지식 그래프</span>
-    </a>
-    <a class="post-nav" href="graphrag-build-knowledge-graph.html">
-      <span class="post-nav-label">(21)</span>
-      <span class="post-nav-title">스키마가 답할 질문을 정한다 — 추출·정규화·위키 분류</span>
-    </a>
-    <a class="post-nav" href="graphrag-agent-three-routes.html">
-      <span class="post-nav-label">(22)</span>
-      <span class="post-nav-title">세 갈래로 답하는 에이전트 — 커뮤니티 요약·라우터·탐색 예산</span>
-    </a>
-    <a class="post-nav" href="graphrag-goldenset-eval.html">
-      <span class="post-nav-label">(23)</span>
-      <span class="post-nav-title">같은 15문항으로 채점한다 — 세 층 평가와 심판의 한계</span>
     </a>
 
     <a class="post-nav" href="langgraph-pattern-routing.html">
