@@ -79,20 +79,49 @@
     <hr>
 
     <h2><span class="hl">쌓일수록 강해지기</span> — 컴파운드 엔지니어링</h2>
-    <p><a href="ai-skills-and-rules-files.html">앞서 본</a> AGENTS.md·스킬에는 숨은 힘이 하나 있었어요. 한 번 적어두면 다음 작업이 더 수월해진다는 것. 이 아이디어를 아예 방법론으로 밀어붙인 게 <strong>컴파운드 엔지니어링(compound engineering)</strong>이에요. 핵심은 '일할 때마다 그 경험을 규칙·스킬로 남겨, 다음 일이 이전 일 위에 쌓이게' 하는 거예요. 버그를 한 번 고치면 그 교훈을 AGENTS.md에 적어두고, AI가 다음부터 자동으로 지키게 하는 식이죠. 개발사 Every가 이 방식으로 소수 인원이 여러 제품을 굴린다고 알려졌고, 같은 이름의 Claude Code 플러그인도 인기래요.</p>
+    <p><a href="ai-skills-and-rules-files.html">앞서 본</a> AGENTS.md·스킬에는 숨은 힘이 하나 있었어요. 한 번 적어두면 다음 작업이 더 수월해진다는 것. 이 아이디어를 아예 방법론으로 밀어붙인 게 <strong>컴파운드 엔지니어링(compound engineering)</strong>이에요. 핵심은 '일할 때마다 그 경험을 규칙·스킬로 남겨, 다음 일이 이전 일 위에 쌓이게' 하는 거예요.</p>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">버그를 고치고 대화에서만 설명하고 끝낸다 → 새 대화는 그 교훈을 몰라서, 다음에 같은 버그를 또 만들어요.</td>
+          <td class="choice-good">버그를 한 번 고치면 그 교훈을 AGENTS.md에 한 줄 적어 둔다 → AI가 다음부터 자동으로 지켜요.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>개발사 Every가 이 방식으로 소수 인원이 여러 제품을 굴린다고 알려졌고, 같은 이름의 Claude Code 플러그인도 인기래요.</p>
     <p>이걸 도구로 구현한 예가 Nous Research의 Hermes였어요. 보통 AI는 대화창을 닫으면 배운 걸 잊지만, Hermes는 기억을 남기고 스스로 스킬을 만들어 오래 쓸수록 똑똑해지도록 설계됐대요(모델은 갈아 끼울 수 있고요). 만든 쪽은 '진짜 열쇠는 더 똑똑한 모델이 아니라 모델을 감싸는 더 똑똑한 껍데기(하네스)'라고 말하는데, <a href="ai-agent-beginner-guide.html">앞서 배운</a> '모델 + 하네스'의 하네스를 끝까지 밀어붙인 셈이었어요.</p>
     <p class="post-date">한 걸음 더: 이 "경험을 남겨 다음 작업이 쌓이게 한다"는 아이디어를 ExpeL·Voyager·WikiSkill 같은 실제 연구와 함께 훨씬 깊게 다룬 글이 <a href="harness-experience-and-reflection.html">성공은 자산으로, 실패는 설명으로</a>예요. 여기 나온 Hermes를 "경험을 재사용하는 도구" 관점에서 다시 살펴보고, 반대로 반성(Reflexion)이 항상 성능을 높이진 않았다는 반전 사례도 다뤄요.</p>
 
     <h2><span class="hl">프롬프트를 넘어 루프로</span> — 'Ralph'</h2>
-    <p><a href="agent-react-loop-and-autogpt.html">앞에서 본</a> "계획-실행-관찰-반복" 루프를, 요즘은 사람이 직접 설계하는 흐름이 뜨고 있대요. 대표가 개발자 제프리 헌틀리가 퍼뜨린 <strong>'Ralph'</strong>예요(이름은 심슨 캐릭터 랠프 위검에서 땄고, '단순해 보이는데 진짜 되더라'는 뜻으로 붙였대요). 방법은 놀랄 만큼 단순했어요. 같은 지시(스펙 = 앞서 본 명세 파일)를 계속 다시 주고, 한 번에 한 가지만 하고 커밋하기를 목표를 이룰 때까지 반복해요. 진행 상황은 대화 기억이 아니라 파일과 git에 쌓아두고요.</p>
+    <p><a href="agent-react-loop-and-autogpt.html">앞에서 본</a> "계획-실행-관찰-반복" 루프를, 요즘은 사람이 직접 설계하는 흐름이 뜨고 있대요. 대표가 개발자 제프리 헌틀리가 퍼뜨린 <strong>'Ralph'</strong>예요(이름은 심슨 캐릭터 랠프 위검에서 땄고, '단순해 보이는데 진짜 되더라'는 뜻으로 붙였대요). 방법은 놀랄 만큼 단순했어요.</p>
+    <ol>
+      <li>같은 지시(스펙 = <a href="claude-plugins-and-spec-driven-development.html">앞서 본 명세 파일</a>)를 계속 다시 줘요.</li>
+      <li>한 번에 한 가지만 하고 <a href="git-commit-concept.html">커밋</a>(바뀐 내용을 되돌아올 수 있게 저장하는 일)해요.</li>
+      <li>목표를 이룰 때까지 반복해요. 진행 상황은 대화 기억이 아니라 파일과 git(변경 기록을 쌓는 도구)에 쌓아두고요.</li>
+    </ol>
     <p>왜 하나의 긴 대화 대신 이렇게 할까 궁금했는데, <a href="ai-permissions-local-models-and-token-cost.html">앞서 본</a> '컨텍스트 부패'를 떠올리면 이해가 됐어요. 대화가 길어질수록 AI가 헤매니, 상태를 대화 기억에 쌓지 않고 스펙·AGENTS.md 같은 고정 파일과 git에 두는 거예요. 그러면 어느 바퀴에서 시작하든 AI가 같은 안내 파일을 근거로 삼아요. <a href="agent-react-loop-and-autogpt.html">2023년 AutoGPT</a>가 '무한 반복'으로 실패했던 자리를, '멈출 기준(스펙) + 파일에 쌓는 진행'으로 다시 푼 셈이에요. 헌틀리는 이 방식으로 프로그래밍 언어 하나를 약 300달러어치 호출로 만들어 화제가 됐대요.</p>
     <p>이 흐름이 굳어져 이제 도구에 아예 들어왔어요. Claude Code에는 목표만 주면 알아서 도는 <code>/goal</code> 명령이 생겼고, Anthropic과 OpenAI가 '루프 만드는 법'을 공식 문서로 냈어요. Claude Code를 만든 보리스 체르니는 "나는 이제 프롬프트하지 않는다, 루프를 돌리고 그 루프가 대신 프롬프트한다"고까지 말한대요. 다만 안전장치가 없으면 무한 반복·엉뚱한 목표·요금 폭발이 흔하니, 멈출 기준과 검토는 여전히 사람 몫이라는 걸 잊지 않아야 했어요.</p>
 
     <h2><span class="hl">요즘 흐름</span> — MCP에서 '스킬 + CLI'로</h2>
-    <p><a href="mcp-usb-c-for-ai.html">MCP</a>는 편하지만 공짜는 아니었어요. 연결해두면 AI가 그 도구 설명서를 미리 통째로 읽어두는데, 이게 컨텍스트(기억 공간)를 꽤 잡아먹어요. 서버 몇 개만 붙여도 대화를 시작하기도 전에 수만 토큰이 날아가곤 한대요. 그래서 2026년 들어 재미있는 반작용이 생겼어요 — 무거운 MCP 서버 대신, AI가 원래 알고 있는 명령줄 도구(CLI)를 그냥 쓰게 하자는 흐름이에요. 예를 들어 깃허브 작업은 <code>gh</code>라는 공식 CLI가 이미 있고 AI는 이 명령을 학습으로 알고 있어서, GitHub용 MCP 서버를 따로 세우는 대신 "gh로 이슈 목록 가져와"라고 시키면 돼요. 한 벤치마크에서는 같은 일을 하는 데 CLI가 약 1천 토큰, MCP가 약 4만 토큰을 썼대요. 여기에 "이럴 땐 이 명령을 써" 정도를 담은 짧은 스킬 파일 하나만 얹으면 더 빠르고 정확해진다고 해요.</p>
-    <p>게다가 이 '무겁다'는 문제 자체도 도구 쪽에서 이미 손보고 있었어요. 요즘 Claude Code는 연결된 MCP 도구를 처음부터 다 읽지 않고, 필요할 때 검색해서 그때그때 불러오는 방식(툴 서치)을 기본으로 써요. 그래서 MCP를 잔뜩 붙여둬도 예전처럼 대화를 시작하자마자 컨텍스트가 꽉 차진 않아요. 결국 'MCP는 무거우니 무조건 피하라'가 아니라, 무거운 부분은 도구가 알아서 덜어주는 쪽으로 가고 있는 거였어요. 그렇다고 MCP가 한물간 것도 아니었어요 — 여러 사람이 같이 쓰고 접근 권한·기록이 중요한 회사 환경에서는 MCP의 표준화된 관리가 여전히 강했거든요. 그래서 요즘 정리는 "셋 중 하나가 아니라, 스킬·MCP·CLI를 함께"였어요. 혼자 작은 걸 만들 땐 '이미 있는 CLI + 짧은 스킬'이 가볍고, 여럿이 쓰고 권한을 챙겨야 하면 MCP를 쓰는 거예요.</p>
+    <p><a href="mcp-usb-c-for-ai.html">MCP</a>는 편하지만 공짜는 아니었어요. 연결해두면 AI가 그 도구 설명서를 미리 통째로 읽어두는데, 이게 컨텍스트(기억 공간)를 꽤 잡아먹어요. 그래서 2026년 들어 재미있는 반작용이 생겼어요 — 무거운 MCP 서버 대신, AI가 원래 알고 있는 명령줄 도구(CLI)를 그냥 쓰게 하자는 흐름이에요.</p>
+    <table>
+      <thead><tr><th>방식</th><th>어떻게 일하나</th><th>한 벤치마크에서 같은 일에 쓴 토큰</th></tr></thead>
+      <tbody>
+        <tr><td><strong>MCP 서버</strong></td><td>연결해 둔 도구 설명서를 미리 통째로 읽어요. 서버 몇 개만 붙여도 대화를 시작하기도 전에 수만 토큰이 날아가곤 한대요</td><td>약 4만</td></tr>
+        <tr><td><strong>CLI</strong></td><td>AI가 학습으로 이미 아는 명령을 그때그때 불러요. 예를 들어 깃허브 작업은 <code>gh</code>라는 공식 CLI가 이미 있어서, GitHub용 MCP 서버를 세우는 대신 "gh로 이슈 목록 가져와"라고 시키면 돼요</td><td>약 1천</td></tr>
+      </tbody>
+    </table>
+    <p>여기에 "이럴 땐 이 명령을 써" 정도를 담은 짧은 스킬 파일 하나만 얹으면 더 빠르고 정확해진다고 해요. 게다가 이 '무겁다'는 문제 자체도 도구 쪽에서 이미 손보고 있었어요. 요즘 Claude Code는 연결된 MCP 도구를 처음부터 다 읽지 않고, 필요할 때 검색해서 그때그때 불러오는 방식(툴 서치)을 기본으로 써요. 그래서 MCP를 잔뜩 붙여둬도 예전처럼 대화를 시작하자마자 컨텍스트가 꽉 차진 않아요. 결국 'MCP는 무거우니 무조건 피하라'가 아니라, 무거운 부분은 도구가 알아서 덜어주는 쪽으로 가고 있는 거였어요. 그렇다고 MCP가 한물간 것도 아니었어요. 그래서 요즘 정리는 "셋 중 하나가 아니라, 스킬·MCP·CLI를 함께"였어요.</p>
+    <table>
+      <thead><tr><th>이런 상황이면</th><th>이걸 써요</th></tr></thead>
+      <tbody>
+        <tr><td>혼자 작은 걸 만들 때</td><td>이미 있는 CLI + 짧은 스킬 — 가볍고 빨라요</td></tr>
+        <tr><td>여러 사람이 같이 쓰고 접근 권한·기록이 중요한 회사 환경</td><td>MCP — 표준화된 관리가 여전히 강했어요</td></tr>
+      </tbody>
+    </table>
 
-    <p>이 바닥은 정말 빠르게 바뀐다는 것도 기억해야 했어요. AI 코딩 도구의 이름·가격·무료 정책·회사는 짧은 기간에도 바뀌니, 특정 도구의 인수·중단·대체 여부는 고정 사실로 외우기보다 선택 직전에 공식 공지와 현재 저장소 상태를 확인할 정보로 다루는 편이 안전했어요. 그래서 도구 이름을 외우는 건 의미가 적었어요. 대신 이번 시리즈에서 배운 개념 — 에이전트 = 모델 + 하네스, MCP(연결), 스킬(반복 자동화), 루프(반복 실행) — 을 잡아두면, 어떤 새 도구가 나와도 "아, 이건 하네스가 이렇구나, MCP 되나?"로 빠르게 판단할 수 있었어요. 다음엔 AI가 도구를 넘어 실제로 어떻게 "배우는지" — 데이터에서 규칙을 찾아내는 학습의 원리로 이어져요.</p>
+    <p>이 바닥은 정말 빠르게 바뀐다는 것도 기억해야 했어요. AI 코딩 도구의 이름·가격·무료 정책·회사는 짧은 기간에도 바뀌니, 특정 도구의 인수·중단·대체 여부는 고정 사실로 외우기보다 선택 직전에 공식 공지와 현재 저장소 상태를 확인할 정보로 다루는 편이 안전했어요. 그래서 도구 이름을 외우는 건 의미가 적었어요. 대신 이번 시리즈에서 배운 개념 — 에이전트 = 모델 + 하네스, MCP(연결), 스킬(반복 자동화), 루프(반복 실행) — 을 잡아두면, 어떤 새 도구가 나와도 "아, 이건 하네스가 이렇구나, MCP 되나?"로 빠르게 판단할 수 있었어요. 이 도구들 안쪽에서 AI가 어떻게 "배우는지"는 3단계 <a href="how-ai-learns-from-data.html">AI는 어떻게 '배울까'</a>에서 이어지고, 먼저 다음 편에서는 opencode로 모델을 고르는 법을 봐요.</p>
 
     <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 같은 실수가 돌아오거나 루프가 안 끝날 때</h2>
     <p>경험이 안 쌓이는 문제와 루프가 새는 문제는 둘 다 <strong>대화창 밖</strong>에 흔적이 남아요. 규칙 파일에 무엇이 적혔는지, git에 어떤 커밋이 쌓였는지를 보면 AI가 기억하는 척하는지, 실제로 앞으로 가고 있는지가 드러나요.</p>
@@ -125,32 +154,24 @@
 
     <hr>
 
-    <h3>"AI 에이전트 도구 - 내 AI를 더 강하게" 시리즈</h3>
-    <a class="post-nav" href="agent-react-loop-and-autogpt.html">
-      <span class="post-nav-label">(1)</span>
-      <span class="post-nav-title">에이전트는 어떻게 스스로 반복할까 — ReAct 루프와 AutoGPT 소동</span>
-    </a>
-    <a class="post-nav" href="mcp-usb-c-for-ai.html">
-      <span class="post-nav-label">(2)</span>
-      <span class="post-nav-title">MCP — AI를 내 데이터에 꽂는 USB-C</span>
-    </a>
-    <a class="post-nav" href="ai-skills-and-rules-files.html">
-      <span class="post-nav-label">(3)</span>
-      <span class="post-nav-title">스킬과 규칙 파일 — 반복 작업을 AI에게 외워 두기</span>
-    </a>
+    <h3>"코딩 에이전트와 협업 도구" 시리즈</h3>
     <a class="post-nav" href="choosing-ai-coding-tools.html">
-      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-label">(1)</span>
       <span class="post-nav-title">AI 코딩 도구 고르기 — 터미널이냐 편집기냐 클라우드냐</span>
     </a>
-    <a class="post-nav" href="ai-permissions-local-models-and-token-cost.html">
-      <span class="post-nav-label">(5)</span>
-      <span class="post-nav-title">AI에게 컴퓨터를 맡길 때 — 권한, 로컬 모델, 토큰 비용</span>
-    </a>
     <a class="post-nav" href="claude-plugins-and-spec-driven-development.html">
-      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-label">(2)</span>
       <span class="post-nav-title">플러그인과 명세 주도 개발</span>
     </a>
-    <p class="post-date">(7) 컴파운드 엔지니어링과 루프, 그리고 MCP 다음은 CLI (이 글)</p>
+    <p class="post-date">(3) 컴파운드 엔지니어링과 루프, MCP 다음은 CLI (이 글)</p>
+    <a class="post-nav" href="opencode-models-and-muse-spark.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">모델 이름이 왜 이렇게 많을까 — opencode 모델 고르기와 Muse Spark 1.3 (1)</span>
+    </a>
+    <a class="post-nav" href="opencode-sisyphus-orchestration.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">혼자 일하던 에이전트를 팀으로 — Sisyphus와 오케스트레이션 플러그인 (2)</span>
+    </a>
   </main>
   </div>
 

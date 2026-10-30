@@ -27,7 +27,7 @@
     <p class="post-date">2026. 9. 8.</p>
     <p class="post-date">※ 이 글은 같이 공부하는 분들과 나눈 대화에서 출발해, 공식 문서와 공개된 자료를 직접 확인하고 제 나름의 언어로 정리한 것입니다.</p>
 
-    <p class="one-liner">opencode 모델 목록은 <strong>몇 안 되는 모델을 제공자·버전·요금 티어·추론 강도 네 축으로 곱해 나열한 것</strong>이다.</p>
+    <p class="one-liner">opencode 모델 목록은 <strong>몇 안 되는 모델을 제공자·버전·요금 티어·추론 강도 네 축으로 곱해 나열한 것</strong>이에요.</p>
 
     <div class="why-read">
       <p class="why-read-title">이 글을 읽기 전에</p>
@@ -80,12 +80,10 @@
 
     <h2><span class="hl">먼저, opencode가 뭔가요</span></h2>
     <p><strong>opencode</strong>는 터미널<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup> 안에서 도는 AI 코딩 도구예요. 제가 <a href="choosing-ai-coding-tools.html">AI 코딩 도구 고르기 — 터미널이냐 편집기냐 클라우드냐</a>에서 나눠 본 네 부류 중 <strong>터미널형</strong>에 해당해요. 채팅창에 말하듯 시키면 그게 내 프로젝트 폴더의 파일을 직접 읽고 고치는 물건이라고 보면 돼요.</p>
-    <p>이런 도구를 통틀어 <strong>하네스(harness)</strong>라고 불러요 — 모델 자체가 아니라, 모델을 붙들어 놓고 파일을 읽히고 명령을 돌리게 만드는 껍데기예요(<a href="harness-observation-and-feature-map.html">맡길 일부터 관찰까지 — 하네스 보는 법</a>에서 자세히 다뤘어요). opencode의 특징은 이 껍데기가 <strong>어떤 회사의 모델에도 붙는다</strong>는 점이에요. Claude를 쓰든 GPT를 쓰든 Gemini를 쓰든, 껍데기는 그대로예요.</p>
-    <p>그래서 처음 켜면 겁이 나요. <code>/models</code>를 눌렀을 때 나오는 목록이 <strong>수백 줄</strong>이거든요. 이 글은 그 목록을 읽는 법에 관한 거예요.</p>
+    <p>이런 도구를 통틀어 <strong>하네스(harness)</strong>라고 불러요 — 모델 자체가 아니라, 모델을 붙들어 놓고 파일을 읽히고 명령을 돌리게 만드는 껍데기예요(<a href="harness-observation-and-feature-map.html">맡길 일부터 관찰까지 — 하네스 보는 법</a>에서 자세히 다뤘어요). opencode의 특징은 이 껍데기가 <strong>어떤 회사의 모델에도 붙는다</strong>는 점이에요. Claude를 쓰든 GPT를 쓰든 Gemini를 쓰든, 껍데기는 그대로예요. 그래서 처음 켜면 겁이 나요. <code>/models</code>를 눌렀을 때 나오는 목록이 <strong>수백 줄</strong>이거든요. 이 글은 그 목록을 읽는 법에 관한 거예요.</p>
 
     <h2><span class="hl">비유</span> — 기차표 예매 화면</h2>
-    <p>서울에서 부산까지 가려고 예매 앱을 열었다고 해볼게요. 실제로 그 시간대에 부산으로 가는 열차는 서너 편밖에 없어요. 그런데 검색 결과는 수십 줄이 뜹니다.</p>
-    <p>왜냐면 <strong>같은 열차 한 편</strong>이 여러 번 나오거든요. 코레일 앱에서 산 것, 여행사 사이트에서 산 것, 역 창구에서 산 것이 각각 다른 줄로 보이고, 거기에 일반운임·조기할인·청소년할인이 또 갈라지고, 일반실과 특실이 다시 갈라져요. 열차는 넷인데 줄은 마흔 줄이 되는 거예요.</p>
+    <p>서울에서 부산까지 가려고 예매 앱을 열었다고 해볼게요. 실제로 그 시간대에 부산으로 가는 열차는 서너 편밖에 없어요. 그런데 검색 결과는 수십 줄이 뜹니다. 왜냐면 <strong>같은 열차 한 편</strong>이 여러 번 나오거든요. 코레일 앱에서 산 것, 여행사 사이트에서 산 것, 역 창구에서 산 것이 각각 다른 줄로 보이고, 거기에 일반운임·조기할인·청소년할인이 또 갈라지고, 일반실과 특실이 다시 갈라져요. 열차는 넷인데 줄은 마흔 줄이 되는 거예요.</p>
     <table>
       <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
       <tbody>
@@ -101,12 +99,15 @@
     <p>다만 여기서 비유가 끊기는 점은 — 기차는 어느 예매처에서 사든 앉는 좌석이 똑같지만, AI 모델은 <strong>어느 제공자를 거치느냐에 따라 실제로 달라질 수 있어요</strong>. 컨텍스트 한도<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>를 제공자가 더 좁게 잘라 놓기도 하고, 속도가 다르기도 하고, 무엇보다 <strong>내 코드가 어떻게 취급되는지</strong>가 달라요. 이 마지막 항목은 아래에서 따로 볼게요.</p>
 
     <h2><span class="hl">모델 이름 읽는 법</span></h2>
-    <p>opencode에서 모델 하나를 가리키는 이름은 <code>제공자/모델이름</code> 형식이에요. 슬래시 앞이 "어느 창구로 사느냐", 뒤가 "무슨 열차냐"인 셈이죠. 여기에 추론 강도를 고르는 <code>#</code> 꼬리표가 붙을 수 있어요.</p>
-    <p>공식 문서가 못 박아 둔 규칙이 하나 있어요 — 제공자 이름에는 <code>/</code>와 <code>#</code>이 들어갈 수 없고, 모델 이름에는 <code>#</code>이 들어갈 수 없어요. 그래서 <strong>첫 번째 슬래시까지가 항상 제공자</strong>, <strong>마지막 <code>#</code>부터가 항상 변형</strong>으로 안전하게 잘라 읽을 수 있어요.</p>
+    <p>opencode에서 모델 하나를 가리키는 이름은 <code>제공자/모델이름</code> 형식이에요. 슬래시 앞이 "어느 창구로 사느냐", 뒤가 "무슨 열차냐"인 셈이죠. 여기에 추론 강도를 고르는 <code>#</code> 꼬리표가 붙을 수 있어요. 공식 문서가 못 박아 둔 규칙이 하나 있어서, 이름을 안전하게 잘라 읽을 수 있어요.</p>
+    <ul>
+      <li>제공자 이름에는 <code>/</code>와 <code>#</code>이 들어갈 수 없어요 → <strong>첫 번째 슬래시까지가 항상 제공자</strong>예요.</li>
+      <li>모델 이름에는 <code>#</code>이 들어갈 수 없어요 → <strong>마지막 <code>#</code>부터가 항상 변형</strong>이에요.</li>
+    </ul>
 
     <h2><span class="hl">전체 흐름</span> — 이름 해부와 목록이 만들어지는 길</h2>
     <svg viewBox="0 0 720 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="모델 이름의 구조와 opencode 모델 목록이 만들어지는 흐름">
-      <text x="10" y="22" font-family="var(--font-heading)" font-size="17" fill="var(--accent)">① 이름 해부하기</text>
+      <text x="10" y="22" font-family="var(--font-heading)" font-size="17" fill="var(--accent)">A. 이름 해부하기</text>
 
       <rect x="10" y="36" width="700" height="46" rx="8" fill="none" stroke="var(--border)" stroke-width="3"/>
       <text x="26" y="66" font-family="monospace" font-size="16" fill="var(--ink)">opencode</text>
@@ -126,7 +127,7 @@
       <line x1="210" y1="186" x2="210" y2="204" stroke="var(--accent)" stroke-width="2"/>
       <text x="150" y="220" font-family="var(--font-body)" font-size="13" fill="var(--accent)">추론 강도 변형</text>
 
-      <text x="10" y="264" font-family="var(--font-heading)" font-size="17" fill="var(--accent)">② 이 목록은 어디서 오나</text>
+      <text x="10" y="264" font-family="var(--font-heading)" font-size="17" fill="var(--accent)">B. 이 목록은 어디서 오나</text>
 
       <rect x="10" y="280" width="160" height="40" rx="8" fill="none" stroke="var(--border)" stroke-width="3"/>
       <text x="26" y="305" font-family="var(--font-body)" font-size="13" fill="var(--ink)">models.dev 공개 목록</text>
@@ -158,25 +159,30 @@
 
       <text x="220" y="392" font-family="var(--font-body)" font-size="12" fill="var(--accent)">↑ 새 모델이 안 보이면 대개 여기가 낡은 것</text>
     </svg>
-    <p class="post-date">읽는 법: 위쪽 두 상자는 모델 이름 한 줄을 조각으로 자른 것이고, 아래 화살표는 왼쪽 세 곳에서 모은 정보가 <strong>내 컴퓨터에 저장된 캐시<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup> 파일 하나</strong>를 거쳐 화면 목록이 된다는 뜻이에요. 화면에 없는 모델은 "존재하지 않는 모델"이 아니라 "이 캐시가 아직 모르는 모델"일 때가 많아요.</p>
+    <p class="post-date">읽는 법: A의 두 상자는 모델 이름 한 줄을 조각으로 자른 것이고, B의 화살표는 왼쪽 세 곳에서 모은 정보가 <strong>내 컴퓨터에 저장된 캐시<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup> 파일 하나</strong>를 거쳐 화면 목록이 된다는 뜻이에요. 화면에 없는 모델은 "존재하지 않는 모델"이 아니라 "이 캐시가 아직 모르는 모델"일 때가 많아요.</p>
 
     <h2><span class="hl">Muse Spark 1.3이 뭐길래</span></h2>
     <p>제가 이 글을 쓰게 된 계기가 이거예요. 같이 공부하는 분이 "1.3이 컨텍스트 용량이 훨씬 커서 1.3 쓰는 게 낫다"고 했는데, 제 목록엔 1.3이 없었거든요.</p>
     <p><strong>Muse Spark 1.3</strong>은 Meta가 2026년 9월 2일에 낸 코딩용 모델이에요. 자기네 코딩 도구인 Muse Code와 Meta Model API에 먼저 올렸고, opencode에서는 아래에서 설명할 <strong>Contributor 계열</strong>로 쓸 수 있어요.</p>
-    <p>Meta가 내세운 건 두 가지예요. 하나는 <strong>1M 토큰 컨텍스트 창</strong> — 한 번의 대화에 담아 둘 수 있는 분량이 아주 크다는 뜻이에요. 다른 하나는 <strong>같은 일을 더 적은 걸음으로 끝낸다</strong>는 거예요. 1.2와 비교해 도구 호출<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup> 횟수가 약 20%, 쓰는 토큰이 약 25% 줄었다고 발표했어요.</p>
+    <p>Meta가 내세운 건 두 가지예요.</p>
+    <ul>
+      <li><strong>1M 토큰 컨텍스트 창</strong> — 한 번의 대화에 담아 둘 수 있는 분량이 아주 크다는 뜻이에요.</li>
+      <li><strong>같은 일을 더 적은 걸음으로 끝낸다</strong> — 1.2와 비교해 도구 호출<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup> 횟수가 약 20%, 쓰는 토큰이 약 25% 줄었다고 발표했어요.</li>
+    </ul>
     <p>여기서 제가 헷갈렸던 걸 짚고 갈게요. <strong>"컨텍스트가 커진 덕분에 좋아진 게 아니에요."</strong> 공개된 설명을 보면 1.3의 개선은 학습·튜닝에서 온 것이지 컨텍스트 창을 늘려서 생긴 게 아니에요. 컨텍스트가 크다는 것과 그 큰 컨텍스트를 꽉 채워 쓰는 게 좋다는 건 아예 다른 얘기고요 — 창을 채울수록 중간에 넣은 정보를 놓치기 쉬워진다는 건 <a href="lost-in-the-middle-and-context-rot.html">중간이 사라진다 — Lost in the Middle과 컨텍스트 부패</a>에서, 그래서 예산처럼 관리해야 한다는 건 <a href="context-window-budget.html">컨텍스트 창 예산 세우기</a>에서 다뤘어요.</p>
 
-    <h3>숫자로 보기</h3>
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 모델을 고르기 전에 볼 것</h2>
+    <p>Muse Spark 1.3의 사양·발표 수치·요금을 모은 표예요. 위 "Muse Spark 1.3이 뭐길래"와 아래 "가장 중요한 축" 절에서 온 값이에요.</p>
     <table>
-      <thead><tr><th>항목</th><th>값</th><th>측정·발표 조건</th></tr></thead>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
       <tbody>
-        <tr><td>출시일</td><td>2026년 9월 2일</td><td>Muse Code + Meta Model API</td></tr>
-        <tr><td>컨텍스트 창</td><td>1,048,576 토큰 (흔히 "1M")</td><td>기술 사양</td></tr>
-        <tr><td>도구 호출 횟수</td><td>1.2 대비 약 20% 감소</td><td>Meta 자체 발표, 동급 엔지니어링 과업 기준</td></tr>
+        <tr><td>출시일</td><td>2026년 9월 2일</td><td>Muse Code + Meta Model API에 먼저 올라왔어요. 출시 직후라면 내 목록이 아직 모르는 게 정상일 수 있어요</td></tr>
+        <tr><td>컨텍스트 창</td><td>1,048,576 토큰 (흔히 "1M")</td><td>기술 사양이에요. 이 한도까지 채워 쓰라는 뜻이 아니에요</td></tr>
+        <tr><td>도구 호출 횟수</td><td>1.2 대비 약 20% 감소</td><td>Meta 자체 발표, 동급 엔지니어링 과업 기준이라 내 과제에서는 직접 재 봐야 알아요</td></tr>
         <tr><td>토큰 사용량</td><td>1.2 대비 약 25% 감소</td><td>Meta 자체 발표, 같은 기준</td></tr>
-        <tr><td>Standard 요금</td><td>입력 100만 토큰당 $1.25 / 출력 $4.25</td><td>1.2와 동일 (인상 없음)</td></tr>
-        <tr><td>Contributor 요금</td><td>입력 100만 토큰당 $0.10 / 출력 $0.20</td><td>학습 사용 동의가 조건</td></tr>
-        <tr><td>Contributor Free</td><td>$0</td><td>무료 풀, 예고 없이 바뀔 수 있음</td></tr>
+        <tr><td>Standard 요금</td><td>입력 100만 토큰당 $1.25 / 출력 $4.25</td><td>1.2와 동일(인상 없음). 학습에 쓰이지 않는 쪽이라 업무 폴더의 기본값 후보예요</td></tr>
+        <tr><td>Contributor 요금</td><td>입력 100만 토큰당 $0.10 / 출력 $0.20</td><td>학습 사용 동의가 조건이에요. 싸다고 업무 폴더에 쓰면 안 돼요</td></tr>
+        <tr><td>Contributor Free</td><td>$0</td><td>무료 풀이라 예고 없이 바뀔 수 있어요. 어제 있던 모델이 오늘 없을 수 있어요</td></tr>
       </tbody>
     </table>
     <p class="post-date">표 아래 단서: 20%·25%라는 감소 폭은 <strong>Meta가 자기 모델을 자기 기준으로 잰 값</strong>이에요. 독립 기관이 검증한 수치가 아니니 "내 작업에서도 그만큼 줄어든다"로 읽으면 안 돼요. 이런 근거 등급 구분은 <a href="harness-evaluation-and-comparison.html">결과와 궤적을 함께 본다 — 평가 루프와 일곱 하네스 비교</a>에서 다뤘어요.</p>
@@ -208,8 +214,7 @@
     <p>기차표 비유로 돌아가면 — 조기할인표가 싸다고 좋은 게 아니라, 그 표에 붙은 조건(환불 불가·날짜 변경 불가)을 읽고 골라야 하는 것과 같아요.</p>
 
     <h2><span class="hl">1.3이 목록에 안 보일 때</span></h2>
-    <p>제 경우가 이랬어요. 강사님 화면엔 있는데 제 화면엔 없었죠. 앞의 그림에서 본 <strong>캐시</strong>가 원인일 때가 대부분이에요. opencode는 매번 인터넷에서 목록을 새로 받지 않고, 예전에 받아 둔 목록 파일을 재사용하거든요. 새 모델이 나온 지 며칠 안 됐으면 그 파일이 아직 모르는 거예요.</p>
-    <p>위에서부터 순서대로 해보세요. 앞 단계에서 해결되면 뒤는 안 해도 돼요.</p>
+    <p>제 경우가 이랬어요. 그분 화면엔 있는데 제 화면엔 없었죠. 앞의 그림에서 본 <strong>캐시</strong>가 원인일 때가 대부분이에요. opencode는 매번 인터넷에서 목록을 새로 받지 않고, 예전에 받아 둔 목록 파일을 재사용하거든요. 새 모델이 나온 지 며칠 안 됐으면 그 파일이 아직 모르는 거예요. 위에서부터 순서대로 해보세요. 앞 단계에서 해결되면 뒤는 안 해도 돼요.</p>
     <p><strong>1단계 — opencode 자체를 최신으로 올린다.</strong> 새 제공자·새 모델을 알아보는 코드가 프로그램 안에 들어 있어서, 프로그램이 낡으면 캐시를 지워도 소용없어요.</p>
     <p class="run-tag">실행: 로컬 터미널</p>
     <pre>opencode upgrade</pre>
@@ -232,8 +237,15 @@
 
     <h2><span class="hl">알아두면 좋은 것</span> — Zen이라는 창구</h2>
     <p>모델 이름 앞에 붙는 <code>opencode/</code>가 뭔지 궁금하셨을 거예요. 이건 <strong>opencode Zen</strong>이라는 <strong>게이트웨이<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup></strong>예요. opencode 팀이 직접 테스트해 본 모델만 모아 놓은 창구라고 보면 돼요.</p>
-    <p>이게 편한 이유는 <strong>계정을 하나만 만들면 되기 때문</strong>이에요. 원래는 Anthropic에 가입해서 키 받고, OpenAI에 가입해서 키 받고, Google에도 가입해서… 이걸 다 해야 하는데, Zen은 그 창구를 하나로 합쳐 줘요. 여러 회사 모델을 한 계정으로 쓰고 청구서도 한 장이에요.</p>
-    <p>대신 대가도 있어요. 요청이 한 곳을 더 거치니 그만큼 중간에 낀 사람이 하나 늘어나는 셈이고, Zen이 골라 넣은 모델만 쓸 수 있어요. 이 "중간에 하나 더 끼우는" 구조 자체가 무엇인지는 <a href="what-is-proxy-server.html">프록시 서버란 무엇인가</a>에 정리돼 있어요.</p>
+    <table>
+      <thead><tr><th>좋은 점</th><th>대가</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>계정을 하나만 만들면 돼요.</strong> 원래는 Anthropic에 가입해서 키 받고, OpenAI에 가입해서 키 받고, Google에도 가입해서… 이걸 다 해야 하는데, Zen은 그 창구를 하나로 합쳐 줘요. 여러 회사 모델을 한 계정으로 쓰고 청구서도 한 장이에요.</td>
+          <td>요청이 한 곳을 더 거치니 그만큼 중간에 낀 사람이 하나 늘어나는 셈이고, Zen이 골라 넣은 모델만 쓸 수 있어요. 이 "중간에 하나 더 끼우는" 구조 자체가 무엇인지는 <a href="what-is-proxy-server.html">프록시 서버란 무엇인가</a>에 정리돼 있어요.</td>
+        </tr>
+      </tbody>
+    </table>
     <p>참고로 Zen에는 결제 정보 없이 쓸 수 있는 무료 구간이 따로 있는데, 하루 요청 수 같은 제한이 걸려 있어요. 유료로 넘어가면 쓴 만큼 내는 방식이고요.</p>
 
     <h2><span class="hl">그래서 초보자는 뭘 골라야 하나</span></h2>
@@ -251,10 +263,12 @@
 
     <h2><span class="hl">직접 해보기</span></h2>
     <p>연습 폴더를 하나 만들고 이걸 재보세요. "어느 모델이 더 똑똑한가"가 아니라 <strong>"같은 일에 얼마를 쓰는가"</strong>를 보는 연습이에요.</p>
-    <p><strong>바꿀 것:</strong> 모델 하나만. 프롬프트와 폴더 내용은 고정.<br>
-    <strong>시킬 것:</strong> 짧은 과제 하나 — 예를 들어 "이 폴더의 HTML 파일에서 제목만 뽑아 목록 파일로 만들어 줘".<br>
-    <strong>잴 것:</strong> ⓐ 끝날 때까지 걸린 시간, ⓑ 도구 호출 횟수(에이전트가 파일을 몇 번 읽고 몇 번 고쳤는지), ⓒ 세션 사용량 화면에 뜬 토큰 수.<br>
-    <strong>비교할 것:</strong> 같은 과제를 두 모델로 각각 두 번씩(총 네 번). 한 번씩만 재면 그날 운을 재게 돼요.</p>
+    <ul>
+      <li><strong>바꿀 것:</strong> 모델 하나만. 프롬프트와 폴더 내용은 고정.</li>
+      <li><strong>시킬 것:</strong> 짧은 과제 하나 — 예를 들어 "이 폴더의 HTML 파일에서 제목만 뽑아 목록 파일로 만들어 줘".</li>
+      <li><strong>잴 것:</strong> ⓐ 끝날 때까지 걸린 시간, ⓑ 도구 호출 횟수(에이전트가 파일을 몇 번 읽고 몇 번 고쳤는지), ⓒ 세션 사용량 화면에 뜬 토큰 수.</li>
+      <li><strong>비교할 것:</strong> 같은 과제를 두 모델로 각각 두 번씩(총 네 번). 한 번씩만 재면 그날 운을 재게 돼요.</li>
+    </ul>
     <p>이렇게 재 보면 "좋은 모델"이 아니라 <strong>"내 과제에 싼 모델"</strong>이 보여요. 비용을 이런 식으로 다루는 관점은 <a href="ai-permissions-local-models-and-token-cost.html">AI에게 컴퓨터를 맡길 때 — 권한, 로컬 모델, 토큰 비용</a>에 더 있어요.</p>
 
     <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 모델을 고른 뒤 아무 일도 없어 보일 때</h2>
@@ -318,11 +332,23 @@
 
     <hr>
 
-    <h3>"opencode 세팅하기" 시리즈</h3>
-    <p class="post-date">(1) 모델 이름이 왜 이렇게 많을까 — opencode 모델 고르기와 Muse Spark 1.3 (이 글)</p>
-    <a class="post-nav" href="opencode-sisyphus-orchestration.html">
+    <h3>"코딩 에이전트와 협업 도구" 시리즈</h3>
+    <a class="post-nav" href="choosing-ai-coding-tools.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">AI 코딩 도구 고르기 — 터미널이냐 편집기냐 클라우드냐</span>
+    </a>
+    <a class="post-nav" href="claude-plugins-and-spec-driven-development.html">
       <span class="post-nav-label">(2)</span>
-      <span class="post-nav-title">혼자 일하던 에이전트를 팀으로 — Sisyphus와 오케스트레이션 플러그인</span>
+      <span class="post-nav-title">플러그인과 명세 주도 개발</span>
+    </a>
+    <a class="post-nav" href="compound-engineering-and-loop-engineering.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">컴파운드 엔지니어링과 루프, MCP 다음은 CLI</span>
+    </a>
+    <p class="post-date">(4) 모델 이름이 왜 이렇게 많을까 — opencode 모델 고르기와 Muse Spark 1.3 (1) (이 글)</p>
+    <a class="post-nav" href="opencode-sisyphus-orchestration.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">혼자 일하던 에이전트를 팀으로 — Sisyphus와 오케스트레이션 플러그인 (2)</span>
     </a>
   </main>
   </div>

@@ -90,7 +90,7 @@
         <tr><td>Ollama</td><td>인증 없이 로컬 모델 실행, <code>system·user·assistant</code> role 딕셔너리 목록을 <code>chat()</code>에 전달</td><td>로컬이라는 사실이 품질을 보장하지 않는다. 이력을 넣은 호출에서 소형 모델의 응답이 매우 짧을 수 있다</td></tr>
       </tbody>
     </table>
-    <p>한쪽의 입력 모양을 다른 쪽에 억지로 옮기지 말고, 각 인터페이스가 실제로 받는 것을 읽어야 한다는 게 첫 번째 교훈이었다.</p>
+    <p>표의 낯선 말을 풀면, 비동기 생성기는 결과를 한 번에 다 만들지 않고 하나씩 내어 주는 함수이고, 딕셔너리는 "이름: 값" 쌍을 묶어 둔 자료예요. SDK(Software Development Kit)는 어떤 서비스를 프로그램에서 쉽게 부르도록 모아 둔 도구 모음이에요. 한쪽의 입력 모양을 다른 쪽에 억지로 옮기지 말고, 각 인터페이스가 실제로 받는 것을 읽어야 한다는 게 첫 번째 교훈이었다.</p>
 
     <h2>2. <span class="hl">Claude Agent SDK</span> — 에이전트 입력 스트림 그대로 쓰기</h2>
     <p>Claude 경로는 Claude Code 로그인과 <code>claude-agent-sdk</code> 설치가 필요하다. 공통 지시는 <code>system_prompt</code>에, 사용자의 현재 요청은 비동기 생성기가 내보내는 user 메시지에 둔다. <code>max_turns=1</code>은 에이전트 턴 수를 제한할 뿐 답변 길이를 제한하지 않고, <code>tools=[]</code>는 도구 호출을 제외한다.</p>
@@ -122,8 +122,13 @@ asyncio.run(main())</code></pre>
 
     <h2>3. <span class="hl">system만 바꿔 재호출한 결과</span> — 문체 자체가 달라진다</h2>
     <p>같은 질문("배송일은 언제인가요?")을 system만 바꿔 두 번 돌렸다. 실측 결과다.</p>
-    <p><strong>고객 문의 톤</strong>(<code>system_prompt: 고객 문의에 정중하게 답한다</code>) — "문의해 주셔서 감사합니다. 다만 제가 지금 확인할 수 있는 주문·배송 정보가 없어서, 배송일을 바로 안내드리기 어렵습니다. 정확한 안내를 위해 아래 내용을 알려주시면 도움이 됩니다. 주문번호 또는 주문 시 사용한 이메일/연락처, 어떤 상품을 주문하셨는지, 주문 일자."</p>
-    <p><strong>기술 문서 톤</strong>(<code>system_prompt: 기술 문서 톤으로 답한다</code>) — "질문에 필요한 컨텍스트가 없습니다. 현재 세션에는 주문·배송 관련 정보가 없고, 연결된 도구(캘린더, 드라이브, DB, 브라우저)에도 배송 조회용 데이터 소스가 지정되지 않았습니다. 확인이 필요한 항목입니다. 어떤 배송인가, 조회 경로, 대체 소스."</p>
+    <table>
+      <thead><tr><th>system 지시</th><th>실측 응답</th></tr></thead>
+      <tbody>
+        <tr><td><strong>고객 문의 톤</strong><br><code>system_prompt: 고객 문의에 정중하게 답한다</code></td><td>"문의해 주셔서 감사합니다. 다만 제가 지금 확인할 수 있는 주문·배송 정보가 없어서, 배송일을 바로 안내드리기 어렵습니다. 정확한 안내를 위해 아래 내용을 알려주시면 도움이 됩니다. 주문번호 또는 주문 시 사용한 이메일/연락처, 어떤 상품을 주문하셨는지, 주문 일자."</td></tr>
+        <tr><td><strong>기술 문서 톤</strong><br><code>system_prompt: 기술 문서 톤으로 답한다</code></td><td>"질문에 필요한 컨텍스트가 없습니다. 현재 세션에는 주문·배송 관련 정보가 없고, 연결된 도구(캘린더, 드라이브, DB, 브라우저)에도 배송 조회용 데이터 소스가 지정되지 않았습니다. 확인이 필요한 항목입니다. 어떤 배송인가, 조회 경로, 대체 소스."</td></tr>
+      </tbody>
+    </table>
     <p>둘 다 배송일을 단정하지 않았다는 점은 같다. 그러나 하나는 감사·사과와 주문자 정보 요청으로 고객 문의를 구성했고, 다른 하나는 컨텍스트·연결 도구·조회 경로로 기술적으로 분류했다. "더 좋다"가 아니라 <strong>"system 변경으로 무엇이 달라졌다"</strong>를 한 문장으로 남기는 게 이 실습의 목적이다.</p>
 
     <h2>4. <span class="hl">LangChain + Gemini</span> — 메시지 객체 목록</h2>
@@ -213,6 +218,43 @@ save_run("ollama-with-history.txt", [
       <span class="post-nav-label">다음 시리즈 →</span>
       <span class="post-nav-title">에이전트는 어떻게 스스로 반복할까 — ReAct 루프와 AutoGPT 소동</span>
     </a>
+
+    <hr>
+
+    <h3>"프롬프트와 에이전트 개념" 시리즈</h3>
+    <a class="post-nav" href="what-is-prompt-engineering.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">프롬프트 엔지니어링이란?</span>
+    </a>
+    <a class="post-nav" href="what-is-ai-agent.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">AI 에이전트(Agent)란 무엇인가</span>
+    </a>
+    <a class="post-nav" href="what-is-model-input.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">AI가 실제로 읽는 입력이란?</span>
+    </a>
+    <a class="post-nav" href="context-engineering-basics.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">컨텍스트 엔지니어링이란?</span>
+    </a>
+    <a class="post-nav" href="prompt-engineering-history.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">프롬프트 기법의 역사</span>
+    </a>
+    <a class="post-nav" href="prompt-technique-verification.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">프롬프트 기법 재검증하기</span>
+    </a>
+    <a class="post-nav" href="agent-self-improvement-complexity.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">AI 에이전트 자기개선과 복잡도</span>
+    </a>
+    <a class="post-nav" href="ai-agent-beginner-guide.html">
+      <span class="post-nav-label">(+)</span>
+      <span class="post-nav-title">AI 에이전트 쉽게 이해하기 (입문편)</span>
+    </a>
+    <p class="post-date">(+) 프롬프트 세 경로 직접 실행해보기 (이 글, 실습 보충편)</p>
   </main>
   </div>
 
