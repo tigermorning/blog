@@ -4,7 +4,7 @@
   var root = document.getElementById('forest');
   if (!F || !root) return;
   var NS = 'http://www.w3.org/2000/svg';
-  var W = 1000, H = 430, C = 6.4, R = 4.4;
+  var W = 1000, H = 445, C = 6.4, R = 4.4;
   var STAGE_POS = { 1: [95, 170], 2: [215, 330], 3: [320, 130], 4: [445, 320], 5: [550, 125], 6: [650, 315], 7: [745, 135], 8: [865, 305], 9: [948, 115] };
   var SHORT = { 1: '웹과 컴퓨터', 2: 'AI 도구 써보기', 3: 'AI 작동 원리', 4: '보고 듣고 그리는 AI', 5: '공간과 자연', 6: '지시·컨텍스트·도구', 7: '내 도구 만들기', 8: '오케스트레이션', 9: '서비스로 내놓기' };
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -71,12 +71,13 @@
 
   // 막(幕) 띠
   // 큰 묶음 세 개: 이름은 모두 «무엇을 + 어떻게 하기»
-  var acts = [['기초 다지기', '1~3단계', 30, 372], ['분야 넓히기', '4~5단계', 388, 600], ['에이전트 만들기', '6~9단계', 616, 990]];
+  var acts = [['기초 다지기', '1~3단계', 30, 372, '웹과 AI의 원리를 익히고 직접 써 봐요'], ['분야 넓히기', '4~5단계', 388, 600, 'AI로 이미지·소리·과학 다루기'], ['에이전트 만들기', '6~9단계', 616, 990, 'AI에게 일을 맡기고 서비스로 내놓아요']];
   acts.forEach(function (a) {
     el('rect', { x: a[2], y: 34, width: a[3] - a[2], height: 380, rx: 22, fill: 'var(--border)', 'fill-opacity': .3, stroke: 'var(--muted)', 'stroke-opacity': .55, 'stroke-width': 2, 'stroke-dasharray': '7 6' }, svg);
     var t = el('text', { x: (a[2] + a[3]) / 2, y: 24, 'text-anchor': 'middle', class: 'glabel', 'font-size': 20, 'font-weight': 700, fill: 'var(--ink)' }, svg);
     t.textContent = a[0] + ' ';
     var r = el('tspan', { 'font-size': 14, 'font-weight': 400, fill: 'var(--muted)' }, t); r.textContent = a[1];
+    var dsc = el('text', { x: (a[2] + a[3]) / 2, y: 437, 'text-anchor': 'middle', 'font-size': 15, fill: 'var(--muted)' }, svg); dsc.textContent = a[4];
   });
 
   // 길(1→9단계)

@@ -10,5 +10,6 @@
 .deep-toc{border:3px dashed var(--border);border-radius:14px;padding:.6rem 1.1rem;margin:1rem 0;}
 .deep-toc p{margin:.3rem 0;}
 details.deep{margin:.4rem 0 1.2rem;}
-details.deep>summary{cursor:pointer;color:var(--muted);font-weight:700;padding:.3rem 0;}
+details.deep>summary{cursor:pointer;color:var(--muted);font-weight:700;padding:.3rem 0;list-style:none;}
+details.deep>summary::-webkit-details-marker{display:none;}
 .deep-one{background:rgba(0,0,0,.03);border-left:5px solid var(--folder-1);padding:.4rem .9rem;border-radius:0 10px 10px 0;}
