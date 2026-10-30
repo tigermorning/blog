@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>발표용 한 장 요약 — 코드를 사용자에게 내보내는 아홉 날을 다섯 장으로 (11) - Tigermorning</title>
+  <meta name="description" content="프로덕트 설계부터 서비스 배포 전략까지 아홉 날의 학습을 다섯 장면과 세 질문으로 줄여, 발표 한 번에 말할 수 있게 정리했어요.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="발표용 한 장 요약 — 코드를 사용자에게 내보내는 아홉 날을 다섯 장으로 (11)">
+  <meta property="og:description" content="아홉 날의 학습을 다섯 장면으로 줄이고, 배포 성공인데 요청 71건이 실패한 실험 한 가지를 골라 말하는 발표용 글이에요.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/ai-service-in-production-presentation.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">발표용 한 장 요약</span> — 코드를 사용자에게 내보내는 아홉 날을 다섯 장으로 (11)</h1>
+    <p class="post-date">2026. 10. 30.</p>
+    <p class="post-date">※ 이 글은 모두의연구소(모두연) 학습 자료를 제 나름의 말로 다시 정리한 글이에요.</p>
+
+    <p class="one-liner">AI 서비스를 사용자에게 내보내는 일은 «무엇이 나갔는지, 사용자는 괜찮았는지, 되돌릴 수 있는지»를 숫자로 말할 수 있게 만드는 일이에요.</p>
+
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>어디쯤인가</dt>
+        <dd>9단계 › AI 서비스로 내놓기 — 11번째 글 (발표용 요약)</dd>
+        <dt>이런 게 궁금했다면</dt>
+        <dd>
+          <ul>
+            <li>이번 모듈(프로덕트 설계부터 서비스 배포 전략까지)을 한 번에 이해하고 싶어요.</li>
+            <li>발표 시간은 짧은데, 아홉 날 동안 배운 것 중 무엇을 말해야 하나요?</li>
+            <li>Cloud Run, CI/CD, Docker 같은 말이 서로 어떻게 이어지는지 알고 싶어요.</li>
+          </ul>
+        </dd>
+        <dt>읽고 나면 할 수 있는 것</dt>
+        <dd>
+          <ul>
+            <li>아홉 날의 학습을 «다섯 장면»으로 나눠 한 문장씩 설명할 수 있어요.</li>
+            <li>"배포 성공"이라는 화면만 믿으면 안 되는 이유를, 요청 389건 중 71건이 실패한 실험으로 말할 수 있어요.</li>
+            <li>내 앱의 배포를 세 질문으로 점검할 수 있어요.</li>
+          </ul>
+        </dd>
+        <dt>모르면 이런 일이 생겨요</dt>
+        <dd>
+          <ul>
+            <li>배포 화면이 초록색이면 안심해도 된다고 믿게 돼요. 이번 실험에서는 배포가 성공으로 끝났는데 요청 389건 중 71건이 실패했어요. <a class="suspect-jump" href="#suspect-green">언제 의심하나 ↓</a></li>
+            <li>도구 이름만 외우면 «테스트를 붙였으니 안전하다»처럼 절반만 맞는 결론에 머물러요. <a class="suspect-jump" href="#suspect-half">언제 의심하나 ↓</a></li>
+          </ul>
+        </dd>
+        <dt>어디에 쓰나</dt>
+        <dd>
+          <ul>
+            <li><strong>이번 모듈을 발표하기 전에.</strong> 다섯 장면 순서대로 화면을 넘기며 한 문장씩 말하면 돼요.</li>
+            <li>더 자세히 알고 싶은 사람에게 «어느 글을 보면 되는지» 알려 줄 때 써요.</li>
+          </ul>
+        </dd>
+      </dl>
+    </div>
+
+    <a class="post-nav" href="ai-service-in-production-wrap-up.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">아홉 개 노드를 한 번에 — AI 서비스를 프로덕션에 올리기까지 돌아보기 (10)</span>
+    </a>
+
+    <p>이 글은 10번 글을 발표 시간에 맞게 줄인 글이에요. 10번 글은 아홉 편 전체를 표와 계산으로 꼼꼼히 정리해서 길어요. 이 글은 <strong>다섯 장면</strong>만 말하고, 그중 <strong>한 가지 실험</strong>만 깊게 보여 줘요. 막히면 여기서 막히는 게 정상이에요. 아홉 날 동안 새 말이 정말 많이 나왔으니까요. 모르는 말은 쪽 아래 풀이를 봐요.</p>
+
+    <h2 id="analogy"><span class="hl">비유로 먼저</span> — 밀키트 상자를 가맹점에 보내는 본사</h2>
+    <p>내가 본사이고, 밀키트 상자는 새 코드예요. 가맹점은 사용자가 쓰는 실제 서비스예요. 처음에는 사장이 상자를 직접 들고 갔지만, 이제는 배송 로봇이 가요. 가맹점은 영업 중이라서 새 상자를 뒤쪽 진열대에 먼저 차려 두고, 손님 안내만 새 진열대로 돌려요.</p>
+    <table>
+      <thead><tr><th>비유 속 일</th><th>컴퓨터에서 실제로 하는 일</th></tr></thead>
+      <tbody>
+        <tr><td>사장이 상자를 직접 들고 가요</td><td>사람이 배포 명령을 직접 쳐요 (수동 배포)</td></tr>
+        <tr><td>배송 로봇이 가요</td><td>코드를 합치면 GitHub Actions가 자동으로 배포해요</td></tr>
+        <tr><td>검수대에서 상자를 열어 봐요</td><td>CI<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup> 테스트가 깨진 코드를 막아요</td></tr>
+        <tr><td>뒤쪽 진열대에 먼저 차려 둬요</td><td>새 버전을 요청 0%로 먼저 올려 둬요</td></tr>
+        <tr><td>손님 안내만 돌려요</td><td>준비를 확인한 뒤에 요청을 새 버전으로 옮겨요</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 상자를 보내는 일은 포장, 검수, 시식, 안내 교체가 이어진 한 줄이에요. 비유가 끊기는 곳도 있어요. 손님은 진열대가 바뀌는 걸 눈으로 보지만, 서비스 사용자는 바뀐 줄도 몰라요. 그래서 «사용자가 오류를 봤는지»는 눈이 아니라 <strong>숫자로 세어야 해요</strong>.</p>
+
+    <h2 id="flow"><span class="hl">한 장 그림</span> — 아홉 날을 다섯 장면과 세 질문으로</h2>
+    <p>위 줄은 다섯 장면이에요. 아래 줄은 그 장면들이 답해 주는 세 가지 질문이에요.</p>
+    <figure>
+    <svg viewBox="0 0 760 290" role="img" aria-label="프로덕트 설계, Cloud Run 배포, CI/CD, Docker, 서비스 배포 전략 다섯 장면이 차례로 이어지고, 아래에 무엇이 나갔나, 사용자는 괜찮았나, 되돌릴 수 있나 세 질문이 있는 그림" style="width:100%;height:auto;">
+      <defs>
+        <marker id="pr-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/></marker>
+      </defs>
+      <text x="8" y="22" font-family="var(--font-heading)" font-size="13" fill="var(--muted)">다섯 장면 (10월 19일 ~ 29일)</text>
+
+      <rect x="8" y="36" width="136" height="92" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="76" y="60" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">① 설계</text>
+      <text x="76" y="80" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">코드 전에</text>
+      <text x="76" y="96" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">문서 한 장</text>
+      <text x="76" y="118" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">10.19</text>
+      <line x1="146" y1="82" x2="156" y2="82" stroke="var(--muted)" stroke-width="2" marker-end="url(#pr-a)"/>
+
+      <rect x="158" y="36" width="136" height="92" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="226" y="60" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">② Cloud Run</text>
+      <text x="226" y="80" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">첫 배포와</text>
+      <text x="226" y="96" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">운영·로그</text>
+      <text x="226" y="118" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">10.20 ~ 21</text>
+      <line x1="296" y1="82" x2="306" y2="82" stroke="var(--muted)" stroke-width="2" marker-end="url(#pr-a)"/>
+
+      <rect x="308" y="36" width="136" height="92" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="376" y="60" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">③ CI/CD</text>
+      <text x="376" y="80" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">합치면 자동 배포,</text>
+      <text x="376" y="96" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">테스트가 막아요</text>
+      <text x="376" y="118" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">10.22 ~ 23</text>
+      <line x1="446" y1="82" x2="456" y2="82" stroke="var(--muted)" stroke-width="2" marker-end="url(#pr-a)"/>
+
+      <rect x="458" y="36" width="136" height="92" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="526" y="60" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">④ Docker</text>
+      <text x="526" y="80" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">환경을 파일로 적고</text>
+      <text x="526" y="96" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">한 번만 만들어요</text>
+      <text x="526" y="118" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">10.26 ~ 27</text>
+      <line x1="596" y1="82" x2="606" y2="82" stroke="var(--muted)" stroke-width="2" marker-end="url(#pr-a)"/>
+
+      <rect x="608" y="36" width="144" height="92" rx="8" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+      <text x="680" y="60" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">⑤ 배포 전략</text>
+      <text x="680" y="80" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">0%로 먼저 올리고</text>
+      <text x="680" y="96" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">확인 뒤에 옮겨요</text>
+      <text x="680" y="118" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">10.28 ~ 29</text>
+
+      <text x="8" y="164" font-family="var(--font-heading)" font-size="13" fill="var(--muted)">장면들이 함께 답해 주는 세 질문</text>
+
+      <rect x="8" y="178" width="238" height="100" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="127" y="204" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">무엇이 나갔나</text>
+      <text x="127" y="230" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">커밋 번호, 이미지 지문</text>
+      <text x="127" y="266" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">③ ④ 장면에서 쌓아요</text>
+
+      <rect x="261" y="178" width="238" height="100" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="380" y="204" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">사용자는 괜찮았나</text>
+      <text x="380" y="230" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">테스트 9개, 요청 세기</text>
+      <text x="380" y="266" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">③ ⑤ 장면에서 쌓아요</text>
+
+      <rect x="514" y="178" width="238" height="100" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="633" y="204" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">되돌릴 수 있나</text>
+      <text x="633" y="230" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">Revert PR, 롤백 24초</text>
+      <text x="633" y="266" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">③ ④ ⑤ 장면에서 쌓아요</text>
+    </svg>
+    <figcaption>읽는 법: 위 줄은 배운 순서예요. 아래 세 상자는 «배포가 안전한가»를 확인하는 세 가지 질문이에요. 한 장면이 질문 하나만 맡지 않고, 여러 장면이 같은 질문에 증거를 보태요.</figcaption>
+    </figure>
+
+    <h2 id="organize"><span class="hl">정리</span> — 다섯 장면, 한 문장씩</h2>
+    <p>아홉 날을 다섯 장면으로 묶었어요. 각 장면에서 <strong>쉬운 말로 한 문장</strong>과, <strong>제가 직접 본 것 하나</strong>만 적었어요. 자세한 과정은 오른쪽 열의 글에 있어요. 첫 장면(10월 19일 설계)과 둘째 장면의 값은 이번에 본문을 다시 읽지 않고, 10번 글의 표에 적어 둔 내용만 옮겼어요.</p>
+    <table>
+      <thead><tr><th>장면</th><th>한 문장</th><th>제가 본 것</th><th>더 읽기</th></tr></thead>
+      <tbody>
+        <tr><td>① 설계<br>10.19</td><td>코드를 짜기 전에 «누가, 어디서, 어떻게 쓰는지»를 사람이 먼저 정해 문서(PRD) 한 장으로 남겨요.</td><td>코드 없이 프로토타입(시제품)으로 먼저 확인한 뒤, 구조 그림과 PRD 한 장으로 정리했어요.</td><td><a href="ai-service-design-before-code.html">(1)</a></td></tr>
+        <tr><td>② Cloud Run<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup><br>10.20~21</td><td>코드 폴더를 올리면 공개 주소가 생겨요. 서버가 정상이라고 해도 손님이 답을 못 받을 수 있어서 타임아웃과 로그를 봐요.</td><td>새 버전과 옛 버전 사이로 요청을 옮겨 보고, API 키를 Secret Manager에 연결하고, 로그 세 종류를 찾아 읽었어요.</td><td><a href="cloud-run-source-deploy-meaning.html">(2)</a> <a href="cloud-run-operating-ai-service.html">(3)</a></td></tr>
+        <tr><td>③ CI/CD<br>10.22~23</td><td>코드를 합치면 서비스가 저절로 바뀌고, 합치기 전에 테스트가 깨진 코드를 막아요.</td><td>일부러 깨뜨린 PR #9에서 테스트 9개 중 3개가 실패했고, main에 직접 push하는 건 GH006으로 거절됐어요.</td><td><a href="github-actions-auto-deploy.html">(4)</a> <a href="ci-tests-and-staging.html">(5)</a></td></tr>
+        <tr><td>④ Docker<br>10.26~27</td><td>실행 환경을 Dockerfile<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>이라는 파일에 적고, 시험한 이미지를 다시 만들지 않고 그대로 내보내요.</td><td>이미지의 sha256 지문으로 «같은 이미지인가»를 확인했고, 롤백은 24초, 복구는 36초가 걸렸어요.</td><td><a href="dockerfile-fixing-runtime-environment.html">(6)</a> <a href="build-once-promote-image.html">(7)</a></td></tr>
+        <tr><td>⑤ 배포 전략<br>10.28~29</td><td>새 버전을 요청 0%로 먼저 올려 두고, 준비가 됐는지 확인한 뒤에만 요청을 옮겨요.</td><td>기본 확인 방식에서는 요청 389건 중 71건이 실패했고, /health 확인 방식에서는 283건 중 0건이 실패했어요.</td><td><a href="load-balancer-zero-downtime.html">(8)</a> <a href="cloud-run-zero-downtime-deploy.html">(9)</a></td></tr>
+      </tbody>
+    </table>
+    <p>이 표에서 눈에 띄는 건, 다섯 장면 모두 <strong>«말로는 안전하다고 하지만 숫자로 보여 주는» 방식</strong>이라는 점이에요. 실패한 테스트 개수, 이미지 지문, 실패한 요청 수가 전부 그래요.</p>
+
+    <h2 id="example"><span class="hl">내 예시</span> — 배포는 "성공"인데 요청 71건이 실패한 이야기</h2>
+    <p>다섯 장면 중 발표에서 한 가지만 깊게 말한다면 이 실험이에요. 새 버전이 시작하는 데 30초가 걸리는 예제 앱을 일부러 배포했어요. 배포하는 동안 같은 주소에 0.2초마다 요청을 보내 실패한 건수를 세었어요.</p>
+    <p>Cloud Run에는 새 버전이 요청을 받을 준비가 됐는지 확인하는 <strong>스타트업 프로브</strong><sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>가 있어요. 기본 프로브는 «문이 열렸는가(포트가 열렸는가)»만 봐요. 그래서 앱이 아직 준비 중인데도 통과시켜요. 제가 /health 주소로 «진짜 준비됐는가»를 묻도록 바꾸자 결과가 달라졌어요.</p>
+    <figure>
+    <svg viewBox="0 0 760 170" role="img" aria-label="기본 프로브는 요청 389건 중 71건이 실패했고, /health 프로브는 요청 283건 중 0건이 실패했다는 막대 그림" style="width:100%;height:auto;">
+      <text x="8" y="22" font-family="var(--font-heading)" font-size="13" fill="var(--muted)">배포하는 동안 보낸 요청 (막대 전체 = 보낸 요청 수)</text>
+
+      <text x="8" y="62" font-family="var(--font-body)" font-size="12" fill="var(--ink)">기본 프로브</text>
+      <rect x="130" y="44" width="520" height="28" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <rect x="130" y="44" width="95" height="28" fill="var(--accent)"/>
+      <text x="660" y="63" font-family="var(--font-body)" font-size="12" fill="var(--ink)">389건</text>
+      <text x="134" y="92" font-family="var(--font-body)" font-size="12" fill="var(--accent)">실패 71건 (약 18%)</text>
+
+      <text x="8" y="132" font-family="var(--font-body)" font-size="12" fill="var(--ink)">/health 프로브</text>
+      <rect x="130" y="114" width="378" height="28" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="518" y="133" font-family="var(--font-body)" font-size="12" fill="var(--ink)">283건</text>
+      <text x="134" y="160" font-family="var(--font-body)" font-size="12" fill="var(--ink)">실패 0건</text>
+    </svg>
+    <figcaption>읽는 법: 색이 칠해진 부분이 실패한 요청이에요. 두 실험에서 보낸 요청 수가 달라서 막대 전체 길이도 달라요. 한 번씩 잰 값이고, 시험용(staging) 서비스에서만 해 본 실험이에요.</figcaption>
+    </figure>
+    <p>실패를 없애는 대가도 있었어요. 배포가 약 19초에서 약 62초로, <strong>약 43초 더 걸렸어요</strong>. 이 값도 한 번 잰 값이에요.</p>
+
+    <h2 id="choice"><span class="hl">나쁜 선택 vs 좋은 선택</span> — 배포가 끝난 뒤 "괜찮은가"를 확인할 때</h2>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">배포 화면이 초록색이니 괜찮다고 보고 확인을 끝내요. → 기본 프로브는 문만 열리면 통과시켜서, 요청 389건 중 71건이 실패했어요. 배포 명령은 «성공»이었어요.</td>
+          <td class="choice-good">배포하는 동안 같은 주소에 요청을 보내 실패 건수를 세요. → /health 프로브로 바꿔 요청 283건 중 0건 실패를 확인했어요.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="extend"><span class="hl">확장</span> — "무중단"에 숫자를 붙이면 하루에 몇 번 배포할 수 있나</h2>
+    <p>실험에서 실패한 시간이 약 29초(15:11:07~15:11:36)였는데, 이게 긴지 짧은지 기준이 없었어요. 그래서 <strong>가용성</strong><sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup> 숫자를 기준으로 삼아 계산해 봤어요. 1년은 8,760시간이에요.</p>
+    <table>
+      <thead><tr><th>가용성 목표</th><th>1년에 멈춰도 되는 시간</th><th>계산</th></tr></thead>
+      <tbody>
+        <tr><td>99.9%</td><td>약 8.8시간</td><td>8,760시간 × 0.1% = 8.76시간</td></tr>
+        <tr><td>99.99%</td><td>약 53분</td><td>8,760시간 × 0.01% ≈ 52.6분</td></tr>
+      </tbody>
+    </table>
+    <p>여기에 <strong>제가 세운 가정</strong>을 더해요. «배포마다 29초 동안 모든 요청이 실패하고, 하루에 한 번 배포한다»고 해 볼게요. 이건 실제 측정이 아니에요. 실제로는 요청의 약 18%만 실패했으니 훨씬 보수적인 가정이에요.</p>
+    <table>
+      <thead><tr><th>배포 횟수</th><th>1년에 잃는 시간</th><th>99.9% 허용량(8.76시간)과 비교</th></tr></thead>
+      <tbody>
+        <tr><td>하루 1번</td><td>29초 × 365 = 10,585초 ≈ 2.9시간</td><td>약 34%를 배포가 써요</td></tr>
+        <tr><td>하루 3번</td><td>약 8.8시간</td><td>허용량을 거의 다 써서, 다른 사고가 나면 바로 목표를 넘어요</td></tr>
+      </tbody>
+    </table>
+    <p><strong>제가 얻은 해석:</strong> 배포 한 번의 실패가 작아 보여도 횟수를 곱하면 가용성 예산을 크게 써요. 그래서 /health 프로브는 «배포가 43초 늦어지는 대가»로 배포가 많아져도 예산을 쓰지 않는 구조를 사 오는 일이에요. 이 해석은 계산에서 나온 추정이고, 실제 서비스의 가용성은 사용자가 몰리는 시간이나 다른 장애까지 포함해 따로 재야 해요.</p>
+
+    <h2 id="apply"><span class="hl">활용</span> — 내 앱(도장판)에 세 질문을 대 보기</h2>
+    <p>제 앱은 칸이 열리는 루틴 도장 앱이에요. 앞 글들에서 제가 스스로 «비어 있다»고 적어 둔 곳을 세 질문 아래에 모았어요. 오른쪽 열은 <strong>제안</strong>이고, 아직 하나도 하지 않았어요.</p>
+    <table>
+      <thead><tr><th>질문</th><th>지금 있는 것</th><th>비어 있는 곳</th><th>다음 한 걸음(제안)</th></tr></thead>
+      <tbody>
+        <tr><td>무엇이 나갔나</td><td>화면 아래 커밋 7자리, 머지 기록</td><td>GitHub Pages가 저장소 전체를 공개해서 tests/와 package.json도 보여요.</td><td>공개 범위를 정리하고, 시험한 이미지의 지문을 배포 기록에 남기기</td></tr>
+        <tr><td>사용자는 괜찮았나</td><td>테스트 9개, /health와 /version 확인</td><td>/health와 /version만 봐서 앱의 답이 이상해졌는지는 몰라요.</td><td>배포 뒤 대표 질문 몇 개를 보내 규칙을 어겼는지 세는 스크립트 만들기</td></tr>
+        <tr><td>되돌릴 수 있나</td><td>Revert PR, 롤백 24초, 롤백 워크플로(버튼 한 번)</td><td>main에 브랜치 보호가 없어서 테스트가 실패해도 합치기가 막히지 않아요.</td><td>main에 필수 검사를 걸기</td></tr>
+      </tbody>
+    </table>
+    <p>표를 만들고 보니 비어 있는 칸이 <strong>«사용자는 괜찮았나»</strong>에 몰려 있었어요. 자동 도구는 «서비스가 떠 있는가»는 잘 보는데, «답이 맞는가»는 사람이 보고 있다는 뜻이에요.</p>
+
+    <h2 id="present"><span class="hl">발표할 때</span> — 다섯 장을 이렇게 말해요</h2>
+    <p>아래는 제가 발표에서 쓰려고 짠 <strong>제안 순서</strong>예요. 장마다 1분 안팎으로 잡았는데, 실제 발표 시간은 다를 수 있어요.</p>
+    <table>
+      <thead><tr><th>순서</th><th>화면에서 보여 줄 곳</th><th>말할 한 문장</th></tr></thead>
+      <tbody>
+        <tr><td>시작</td><td>한 장 그림</td><td>"이번 모듈은 코드를 사용자에게 내보내는 아홉 날이었고, 다섯 장면으로 말할게요."</td></tr>
+        <tr><td>1~4장</td><td>정리 표의 ①~④ 행</td><td>"설계, Cloud Run, CI/CD, Docker는 각각 이런 문제를 막아 줘요."</td></tr>
+        <tr><td>5장</td><td>막대 그림</td><td>"배포는 성공이었는데 요청 389건 중 71건이 실패했어요. 프로브를 바꾸니 0건이 됐어요."</td></tr>
+        <tr><td>마무리</td><td>활용 표</td><td>"세 질문으로 점검하니, 비어 있는 곳은 «사용자는 괜찮았나»였어요."</td></tr>
+        <tr><td>질문이 오면</td><td>더 읽기 링크</td><td>"그 부분은 (4)번 글에 자세히 있어요."처럼 글 번호로 안내해요.</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 다시 볼 값만 모았어요</h2>
+    <p>모두 앞의 글에서 직접 잰 값이거나, 이 글에서 제가 세운 가정으로 계산한 값이에요. 한 번씩 잰 값이라 서비스마다 달라질 수 있어요.</p>
+    <table>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
+      <tbody>
+        <tr><td>기본 프로브 vs /health 프로브</td><td>389건 중 71건 실패 vs 283건 중 0건</td><td>실패를 없앤 대가는 배포 시간(약 19초 → 약 62초)이에요.</td></tr>
+        <tr><td>99.9% 가용성 목표</td><td>1년에 약 8.8시간 멈춤 허용</td><td>하루 3번 배포하면서 배포마다 29초 실패하면 거의 다 써요(이 글의 가정).</td></tr>
+        <tr><td>롤백 / 복구 배포 시간</td><td>24초 / 36초</td><td>배포 명령이 걸린 시간만이고, 원인을 찾는 시간은 빠졌어요.</td></tr>
+        <tr><td>CI 테스트</td><td>9개 중 3개 실패(PR #9)</td><td>일부러 깨뜨린 코드라서 실제 사고의 비율은 아니에요.</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 배포가 끝났는데 안심이 안 될 때</h2>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-green">
+          <td>배포가 <strong>초록색으로 끝났는데</strong> 사용자가 오류를 봤다고 해요.</td>
+          <td>Cloud Run의 스타트업 프로브 설정(문만 보는 기본값인지, <code>/health</code> 주소인지)</td>
+          <td>배포하는 동안 0.2초마다 요청을 보내 실패 건수를 세요. 실패가 배포 직후 몇십 초에 몰려 있으면 프로브를 의심해요.</td>
+        </tr>
+        <tr id="suspect-half">
+          <td>테스트는 전부 통과했는데 «이제 안전하다»고 생각하고 있어요.</td>
+          <td>테스트가 가짜 AI를 쓰는지, 실제 서비스에 요청을 보내는지</td>
+          <td>테스트는 «코드가 깨졌는가»를 막아 줘요. «사용자가 괜찮았는가»는 배포 중 요청 세기와 실제 답 확인이 따로 필요해요.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="not-done"><span class="hl">확인 범위와 해 보지 못한 것</span></h2>
+    <ul>
+      <li>이 글의 숫자는 10번 글과, 거기에 적힌 4·5·6·7·8·9번 글의 측정값에서 옮겼어요. 이번에 글 본문을 다시 열어 확인한 건 각 글의 한 줄 정의와 각주 풀이예요.</li>
+      <li>설계(1번)와 운영(2·3번)의 값은 본문을 다시 읽지 않았어요. 10번 글의 표에 적힌 내용만 옮겼어요.</li>
+      <li>가용성 계산은 제가 세운 가정(배포마다 29초, 모든 요청 실패, 하루 1번 또는 3번)에서 나온 산술이에요. 실제 서비스에서 잰 값이 아니에요.</li>
+      <li>활용 표의 «다음 한 걸음»은 제안이고 아직 하지 않았어요. 9번 글의 실험은 staging에서만 했고, production에서 승인과 전환까지 돌려 보지는 못했어요.</li>
+      <li>발표 순서와 «장마다 1분»은 제 제안이에요. 실제 발표를 해 본 결과가 아니에요.</li>
+    </ul>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">Cloud Run — Google Cloud가 제공하는 서비스로, 컨테이너 이미지를 받아 실행하고 공개 주소를 붙여 줘요. <a href="cloud-run-source-deploy-meaning.html">Cloud Run에 소스를 배포한다는 것</a>에서 처음 다뤘어요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">CI(지속적 통합) — 코드를 합칠 때마다 서버가 테스트를 자동으로 돌리는 것이에요. <a href="ci-tests-and-staging.html">CI 테스트와 staging 환경</a>에서 다뤘어요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">Dockerfile — 이미지를 어떻게 만들지 위에서 아래로 한 줄씩 적은 파일로, 실행 환경을 코드처럼 저장소에 남겨요. <a href="dockerfile-fixing-runtime-environment.html">Dockerfile로 실행 환경 정하기</a>에서 다뤘어요. <a href="#fnref3">↩</a></li>
+        <li id="fn4">스타트업 프로브(startup probe) — 새 인스턴스가 요청을 받을 준비가 됐는지 Cloud Run이 확인하는 검사예요. <a href="cloud-run-zero-downtime-deploy.html">Cloud Run으로 무중단 배포하기</a>에서 다뤘어요. <a href="#fnref4">↩</a></li>
+        <li id="fn5">가용성 — 서비스가 정상으로 답한 시간의 비율이에요. <a href="load-balancer-zero-downtime.html">로드밸런서로 무중단 배포 구성하기</a>의 가용성 표에서 다뤘어요. <a href="#fnref5">↩</a></li>
+      </ol>
+    </section>
+
+    <h3>"AI 서비스로 내놓기" 시리즈</h3>
+    <a class="post-nav" href="ai-service-design-before-code.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">AI 기능을 서비스로 설계한다는 것 — 코딩 에이전트에게 맡기기 전에 정할 것</span>
+    </a>
+    <a class="post-nav" href="cloud-run-source-deploy-meaning.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">Cloud Run에 소스를 배포한다는 것 — 코드 폴더 하나가 공개 주소가 되기까지</span>
+    </a>
+    <a class="post-nav" href="cloud-run-operating-ai-service.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">배포한 AI 서비스가 말없이 틀리는 순간 — 타임아웃, 인스턴스, 비용, 로그</span>
+    </a>
+    <a class="post-nav" href="github-actions-auto-deploy.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">코드를 머지하면 서비스가 저절로 바뀌는 길 — GitHub Actions로 자동 배포하기</span>
+    </a>
+    <a class="post-nav" href="ci-tests-and-staging.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">합치기 전에 테스트하고 내보내기 전에 먼저 본다 — CI 테스트와 staging 환경</span>
+    </a>
+    <a class="post-nav" href="dockerfile-fixing-runtime-environment.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">로컬에서는 되는데 서버에서만 안 되는 이유 — Dockerfile로 실행 환경 정하기</span>
+    </a>
+    <a class="post-nav" href="build-once-promote-image.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">시험한 이미지와 내보낸 이미지가 같다는 증거 — 이미지를 한 번만 만들어 그대로 보내기</span>
+    </a>
+    <a class="post-nav" href="load-balancer-zero-downtime.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">새 버전으로 바뀌는 몇 초 동안 — 로드밸런서로 무중단 배포 구성하기</span>
+    </a>
+    <a class="post-nav" href="cloud-run-zero-downtime-deploy.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">배포하는 동안 사용자는 오류를 봤을까 — Cloud Run으로 무중단 배포하기</span>
+    </a>
+    <a class="post-nav" href="ai-service-in-production-wrap-up.html">
+      <span class="post-nav-label">(10)</span>
+      <span class="post-nav-title">아홉 개 노드를 한 번에 — AI 서비스를 프로덕션에 올리기까지 돌아보기</span>
+    </a>
+    <p class="post-date">(11) 발표용 한 장 요약 — 코드를 사용자에게 내보내는 아홉 날을 다섯 장으로 (이 글)</p>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>

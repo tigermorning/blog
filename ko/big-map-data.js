@@ -532,7 +532,8 @@ window.BIGMAP = {
     "my-harness-scoring-and-report.html",
     "ci-tests-and-staging.html",
     "cloud-run-zero-downtime-deploy.html",
-    "ai-service-in-production-wrap-up.html"
+    "ai-service-in-production-wrap-up.html",
+    "ai-service-in-production-presentation.html"
    ]
   },
   {
@@ -7574,7 +7575,8 @@ window.BIGMAP = {
       "id": "n3",
       "label": "세 질문으로 돌아보기",
       "posts": [
-       "ai-service-in-production-wrap-up.html"
+       "ai-service-in-production-wrap-up.html",
+       "ai-service-in-production-presentation.html"
       ]
      }
     ],
@@ -7639,6 +7641,21 @@ window.BIGMAP = {
       "배포 점검표"
      ],
      "links": []
+    },
+    {
+     "file": "ai-service-in-production-presentation.html",
+     "concept": "모듈 발표용 요약",
+     "one_line": "AI 서비스를 사용자에게 내보내는 일은 «무엇이 나갔는지, 사용자는 괜찮았는지, 되돌릴 수 있는지»를 숫자로 말할 수 있게 만드는 일이다",
+     "practice": "모듈 발표 전에 다섯 장면 순서로 화면을 넘기며 한 문장씩 말하고, 한 가지 실험(요청 389건 중 71건 실패)만 깊게 보여 준다",
+     "analogy": "밀키트 상자를 가맹점에 보내는 본사",
+     "keywords": [
+      "다섯 장면",
+      "발표 순서",
+      "세 질문"
+     ],
+     "links": [
+      "ai-service-in-production-wrap-up.html"
+     ]
     }
    ]
   },
@@ -8051,6 +8068,7 @@ window.BIGMAP = {
   "load-balancer-zero-downtime.html": "새 버전으로 바뀌는 몇 초 동안 — 로드밸런서로 무중단 배포 구성하기 (8)",
   "cloud-run-zero-downtime-deploy.html": "배포하는 동안 사용자는 오류를 봤을까 — Cloud Run으로 무중단 배포하기 (9)",
   "ai-service-in-production-wrap-up.html": "아홉 개 노드를 한 번에 — AI 서비스를 프로덕션에 올리기까지 돌아보기 (10)",
+  "ai-service-in-production-presentation.html": "발표용 한 장 요약 — 코드를 사용자에게 내보내는 아홉 날을 다섯 장으로 (11)",
   "langgraph-hitl-interrupt-resume.html": "멈췄다가 사람 답을 받아 잇는다 — interrupt·resume·체크포인터 (1)",
   "langgraph-hitl-criteria-and-approval-ui.html": "멈출 기준을 정하고 승인 화면을 설계한다 — 개입률·놓침·헛멈춤 (2)",
   "card-news-agent-flow-and-format.html": "고르고 승인하며 완성하는 카드뉴스 — 일곱 단계 흐름과 독자·형식 정하기 (1)",
