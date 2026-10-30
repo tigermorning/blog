@@ -87,7 +87,18 @@
 
     <h2><span class="hl">두 번째 답, 채점을 아예 없앤다</span> — 확산 모델</h2>
     <p>두 번째 갈래의 발상은 이랬어요. <strong>정답이 없는 문제를 정답이 있는 문제로 바꾸자.</strong> 깨끗한 사진 한 장에 우리가 직접 잡음을 조금씩 뿌려요. 수백 번 반복하면 원본이 완전히 사라지고 백색 잡음만 남아요. 이제 거꾸로 물어봐요. "이 화면에 방금 섞인 잡음이 무엇이었나?" 이건 정답이 있는 문제예요. 우리가 뿌린 잡음이니 우리가 답을 알아요. 채점관이 필요 없고, 학습하는 내내 기준이 흔들리지도 않아요. 잡음을 알아맞히는 법을 충분히 배우고 나면, 순수한 잡음에서 출발해 조금씩 걷어내는 것만으로 없던 그림이 떠올라요. 이게 <strong>확산 모델(diffusion model)</strong>이에요. 이 발상의 원논문은 2015년에 나왔는데, 비평형 열역학에서 착상을 가져왔대요.</p>
-    <p>흥미로운 게, GAN보다 겨우 반년쯤 늦게 나온 이 아이디어가 5년 가까이 묻혀 있었어요. 실제로 좋은 그림을 뽑아내게 만든 건 2020년의 DDPM(Denoising Diffusion Probabilistic Models)이고, 판도가 뒤집혔다고 선언한 논문은 그다음 해에 나와요. 제목이 그 자체로 사건이었어요 — "Diffusion Models Beat GANs on Image Synthesis". 좋은 아이디어가 나오자마자 이기는 건 아니었던 거예요. 이 방식에는 분명한 대가가 있었어요. GAN은 신경망을 한 번 통과시키면 그림이 나오는데, 확산은 수백 번에서 수천 번을 반복해야 했어요. 이 느림이 그 뒤 몇 년의 숙제가 됐어요.</p>
+    <p>흥미로운 게, GAN보다 겨우 반년쯤 늦게 나온 이 아이디어가 5년 가까이 묻혀 있었어요. 실제로 좋은 그림을 뽑아내게 만든 건 2020년의 DDPM(Denoising Diffusion Probabilistic Models)이고, 판도가 뒤집혔다고 선언한 논문은 그다음 해에 나와요. 제목이 그 자체로 사건이었어요 — "Diffusion Models Beat GANs on Image Synthesis". 좋은 아이디어가 나오자마자 이기는 건 아니었던 거예요.</p>
+
+    <p>여기까지의 두 갈래를 비교하면 이래요. 확산의 대가는 속도예요 — GAN은 신경망을 한 번 통과시키면 그림이 나오는데, 확산은 수백 번에서 수천 번을 반복해야 했고, 이 느림이 그 뒤 몇 년의 숙제가 됐어요.</p>
+    <table>
+      <thead><tr><th>비교할 것</th><th>GAN (2014)</th><th>확산 모델 (2015 착상, 2020~2021 실력 증명)</th></tr></thead>
+      <tbody>
+        <tr><td>채점 방법</td><td>감정사 신경망을 함께 학습시켜요</td><td>"방금 섞인 잡음이 무엇이었나"를 맞혀요. 정답을 우리가 알아요</td></tr>
+        <tr><td>대표 문제</td><td>모드 붕괴 — 감정사를 속이는 그림 한 장만 계속 그려요</td><td>느림 — 바로 아래 줄이에요. 학습하는 내내 기준은 흔들리지 않아요</td></tr>
+        <tr><td>그림 한 장 만드는 비용</td><td>신경망 한 번 통과</td><td>수백~수천 번 반복</td></tr>
+        <tr><td>문장으로 시키기</td><td>입구가 설계에 없어요</td><td>CLIP 같은 연결 통로를 붙일 수 있어요</td></tr>
+      </tbody>
+    </table>
 
     <h2><span class="hl">문장을 그림 쪽으로 데려오기</span> — CLIP</h2>
     <p>잡음을 걷어내는 법은 배웠는데, 어느 방향으로 걷어낼지 말해줄 통로가 없었어요. "빨간 오두막"이라는 글자열은 픽셀과 아무 관계가 없는 기호니까요. 2021년의 <strong>CLIP</strong>이 그 통로를 열었어요. 인터넷에서 이미지와 캡션 쌍을 4억 개 모아서, "어느 캡션이 어느 이미지에 붙는가"를 맞히도록 학습시켰어요. 문장을 넣으면 숫자 몇백 개(좌표)가 나오고, 그림을 넣어도 숫자 몇백 개가 나와요. CLIP이 한 일은 그림을 좌표로 바꾸는 인코더와 문장을 좌표로 바꾸는 인코더가 <strong>같은 공간</strong>을 쓰도록 만든 거예요. 짝이 맞는 그림과 캡션은 가까운 자리에, 안 맞는 것들은 먼 자리에 놓이도록요.</p>
@@ -123,30 +134,26 @@
 
     <hr>
 
-    <h3>"이미지 생성 어플리케이션 만들기" 시리즈</h3>
-    <a class="post-nav" href="blank-slots-model-decides.html">
-      <span class="post-nav-label">(1)</span>
-      <span class="post-nav-title">같은 모델인데 결과가 갈립니다 — 빈 칸은 모델이 채운다</span>
-    </a>
-    <p class="post-date">(2) 노이즈에서 되돌린다는 발상 — GAN에서 확산 모델까지 (이 글)</p>
+    <h3>"이미지·영상 생성" 시리즈</h3>
+    <p class="post-date">(1) 노이즈에서 되돌린다는 발상 — GAN에서 확산 모델까지 (이 글)</p>
     <a class="post-nav" href="latent-diffusion-and-distillation.html">
-      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-label">(2)</span>
       <span class="post-nav-title">개인 컴퓨터로 내려온 날 — 잠재 확산과 증류</span>
     </a>
     <a class="post-nav" href="writing-image-prompts.html">
-      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-label">(3)</span>
       <span class="post-nav-title">프롬프트를 쓰는 법 — 여섯 칸과 재질 하나</span>
     </a>
     <a class="post-nav" href="automating-image-generation.html">
-      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-label">(4)</span>
       <span class="post-nav-title">코드로 이미지 생성 자동화하기</span>
     </a>
     <a class="post-nav" href="choosing-image-generation-tools.html">
-      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-label">(5)</span>
       <span class="post-nav-title">무엇으로 만들 것인가 — 라이선스, ControlNet, 저작권</span>
     </a>
     <a class="post-nav" href="video-generation-and-empty-slots.html">
-      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-label">(6)</span>
       <span class="post-nav-title">동영상도 만들 수 있을까 — 빈 칸은 중립이 아니다</span>
     </a>
   </main>

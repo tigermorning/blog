@@ -33,7 +33,7 @@
       <p class="why-read-title">이 글을 읽기 전에</p>
       <dl>
         <dt>어디쯤인가</dt>
-        <dd><a href="posts.html#cat-prompt-agent">6단계</a> › <a href="posts.html#instruction-design">지시 설계</a> — 2번째 글 (전 7편). 중간부터 보셨다면 <a href="instruction-design-basics.html">첫 글</a>부터 보시는 게 편해요.</dd>
+        <dd><a href="posts.html#cat-prompt-agent">6단계</a> › <a href="posts.html#instruction-design">지시 설계</a> — 2번째 글 (전 8편). 중간부터 보셨다면 <a href="instruction-design-basics.html">첫 글</a>부터 보시는 게 편해요.</dd>
         <dt>이런 게 궁금했다면</dt>
         <dd>
           <ul>
@@ -45,7 +45,7 @@
         <dt>읽고 나면 할 수 있는 것</dt>
         <dd>
           <ul>
-            <li>넷이 부딪힐 때의 순서를 말합니다 — 시스템 > 개발자 > 사용자 > 자료. 자료는 답을 만들 근거이지 규칙을 새로 정하는 자리가 아니에요.</li>
+            <li>넷이 부딪힐 때의 순서를 말합니다 — 시스템 &gt; 개발자 &gt; 사용자 &gt; 자료. 자료는 답을 만들 근거이지 규칙을 새로 정하는 자리가 아니에요.</li>
             <li>유명한 기법을 가설로 다룹니다. 기준선·바꾸는 조건·성공 지표·기각 조건을 미리 적어두고 시험해요.</li>
             <li>지시안을 A/B/C로 만들어 통과/실패로만 채점합니다 — 근거 없는 날짜를 안 썼나 · 부족한 정보를 요청했나 · 고객용 말투인가 · 형식을 지켰나.</li>
           </ul>
@@ -111,9 +111,9 @@
     <p>이 구분이 문서를 거짓으로 취급하라는 뜻은 아니다. 믿을 만한 정책 문서라도 앱의 안전 규칙을 자동으로 바꿀 권한은 없고, 반대로 "자료"로 분류했다고 그 내용이 사실이라는 보장도 없다. 출처, 최신성, 권한은 <strong>각자 따로</strong> 확인해야 한다.</p>
 
     <h2><span class="hl">유명한 기법도 공식이 아니라 가설이다</span></h2>
-    <p>"few-shot 예시 넣으면 좋아진다", "역할 부여하면 정확해진다", "CoT 쓰면 똑똑해진다" — 이런 말들은 검증된 공식이 아니라 <strong>이 상황에서 시험해볼 가설</strong>로 다뤄야 한다. 그 이유를 보여주는 실제 사건이 있다.</p>
+    <p>"few-shot(풀이 예시를 몇 개 먼저 보여 주는 방식) 넣으면 좋아진다", "역할 부여하면 정확해진다", "CoT 쓰면 똑똑해진다" — 이런 말들은 검증된 공식이 아니라 <strong>이 상황에서 시험해볼 가설</strong>로 다뤄야 한다. 그 이유를 보여주는 실제 사건이 있다.</p>
     <p>2023년 미국 뉴욕 남부연방지방법원(Mata v. Avianca 사건)에서, 어느 변호사들이 ChatGPT로 조사한 판례를 법원 서면에 그대로 인용했는데 <strong>그 판례들이 실제로 존재하지 않았다.</strong> 법원은 5,000달러의 제재금을 부과했다. 문제는 AI가 지어낸 게 아니라, <strong>인용의 정확성을 아무도 원문으로 확인하지 않았다</strong>는 점이었다. "실재하는 판례만 인용하세요"라는 지시 문장은 실제 검색·대조를 대신해주지 않는다.</p>
-    <p>그래서 기법을 쓸 땐 이 표처럼 미리 적어두고 시작한다.</p>
+    <p>그래서 기법을 쓸 땐 이 표처럼 미리 적어두고 시작한다. 기준선은 그 기법을 쓰지 않은 상태의 결과다.</p>
     <table>
       <thead><tr><th>기법</th><th>기준선</th><th>바꾸는 조건</th><th>성공 지표</th><th>기각 조건</th></tr></thead>
       <tbody>
@@ -132,11 +132,23 @@
       <li><strong>B안(제약 보강안)</strong>: A안에 "정중한 한국어로", "입력에 없는 배송일·주문 상태는 추정하지 말라", "정보가 부족하면 확인 질문 하나를 하라"를 추가.</li>
       <li><strong>C안(형식 보강안)</strong>: B안에 <code>{"reply": "...", "question": "..."}</code> 형태의 JSON 객체만 출력하라는 형식 계약을 추가.</li>
     </ul>
-    <p>채점은 "잘 썼다/못 썼다"처럼 애매하게 하지 않고, <strong>통과냐 실패냐로만</strong> 나눈다. 근거 없는 날짜를 안 썼는가, 부족한 정보를 요청했는가, 고객용 말투인가, (C안만) JSON 형식을 지켰는가 — 이 넷을 각각 따로 판정한다. "답변이 자연스럽다"는 인상과 "안전 기준을 통과했다"는 완전히 다른 질문이다. 실제로 A안은 역할·제약·형식이 다 비어 있어서, 설령 친절한 답이 나와도 그게 지시 덕분인지 모델이 원래 그렇게 훈련됐기 때문인지 구분이 안 된다.</p>
-    <p>이 실습은 Claude Agent SDK(구독 로그인), LangChain+Gemini(API 키), Ollama(로컬 서버) 세 가지 실행 경로로 각각 3번씩 돌려보는 구성이다. 같은 <code>system</code>이라는 개념도 SDK마다 코드 모양이 다르다는 게 요점 — 결과 자체보다, <strong>한 조건씩만 바꿔서 세 번 이상 반복 실행하고, 원문을 그대로 남겨서 비교한다</strong>는 방법이 핵심이다. 한 번의 그럴듯한 답으로 "이 안이 낫다"고 단정하면 안 된다.</p>
+    <p>채점은 "잘 썼다/못 썼다"처럼 애매하게 하지 않고, <strong>통과냐 실패냐로만</strong> 나눈다. 아래 넷을 각각 따로 판정한다.</p>
+    <ul>
+      <li>근거 없는 날짜를 안 썼는가</li>
+      <li>부족한 정보를 요청했는가</li>
+      <li>고객용 말투인가</li>
+      <li>(C안만) JSON 형식을 지켰는가</li>
+    </ul>
+    <p>"답변이 자연스럽다"는 인상과 "안전 기준을 통과했다"는 완전히 다른 질문이다. 실제로 A안은 역할·제약·형식이 다 비어 있어서, 설령 친절한 답이 나와도 그게 지시 덕분인지 모델이 원래 그렇게 훈련됐기 때문인지 구분이 안 된다.</p>
+    <p>이 실습은 Claude Agent SDK(프로그램에서 Claude를 부르는 도구 묶음, 구독 로그인), LangChain+Gemini(API 키), Ollama(내 컴퓨터에서 모델을 돌리는 로컬 서버) 세 가지 실행 경로로 각각 3번씩 돌려보는 구성이다. 같은 <code>system</code>이라는 개념도 SDK마다 코드 모양이 다르다는 게 요점 — 결과 자체보다, <strong>한 조건씩만 바꿔서 세 번 이상 반복 실행하고, 원문을 그대로 남겨서 비교한다</strong>는 방법이 핵심이다. 한 번의 그럴듯한 답으로 "이 안이 낫다"고 단정하면 안 된다.</p>
 
     <h2><span class="hl">정리</span> — 확신 대신 확인</h2>
-    <p>세 가지 이야기가 결국 하나로 모인다. 출처와 우선권은 "이 문장을 누가, 어디에 뒀는지"를 확인하는 습관이고, 기법을 가설로 다루는 것은 "이게 정말 효과가 있는지"를 확인하는 습관이고, A/B/C 3안 비교는 그 확인을 실제로 <strong>실행해서</strong> 확인하는 습관이다. 셋 다 "그럴듯해 보인다"를 결론으로 삼지 않는다는 공통점이 있다.</p>
+    <p>세 가지 이야기가 결국 하나로 모인다. 셋 다 "그럴듯해 보인다"를 결론으로 삼지 않는다는 공통점이 있다.</p>
+    <ul>
+      <li><strong>출처와 우선권</strong> — "이 문장을 누가, 어디에 뒀는지"를 확인하는 습관</li>
+      <li><strong>기법을 가설로 다루기</strong> — "이게 정말 효과가 있는지"를 확인하는 습관</li>
+      <li><strong>A/B/C 3안 비교</strong> — 그 확인을 실제로 <strong>실행해서</strong> 확인하는 습관</li>
+    </ul>
     <p>지시를 다 정하고 세 안까지 비교했다면, 다음 질문은 "그 답이 통과인지 실패인지를 뭘로 잴 것인가"다. 다음 글에서 답의 형식 계약과 평가지표를 정리한다.</p>
 
     <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 내가 안 시킨 규칙이 답에 섞여 있을 때</h2>
@@ -186,6 +198,18 @@
     <a class="post-nav" href="instruction-design-principles.html">
       <span class="post-nav-label">(5)</span>
       <span class="post-nav-title">지시 설계 원칙 정리</span>
+    </a>
+    <a class="post-nav" href="study-evaluation-metrics.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">평가지표 정리 (복습노트)</span>
+    </a>
+    <a class="post-nav" href="eleven-ways-same-question.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">같은 질문, 열한 가지 방법 — 로컬 모델로 직접 재보기</span>
+    </a>
+    <a class="post-nav" href="why-instructions-work-training-lineage.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">왜 지시를 따르는가 — SFT·RLHF·DPO·GRPO의 계보</span>
     </a>
   </main>
   </div>
