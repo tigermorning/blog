@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>코드를 머지하면 서비스가 저절로 바뀌는 길 — GitHub Actions로 자동 배포하기 (4) - Tigermorning</title>
+  <meta name="description" content="코드를 고칠 때마다 배포 명령을 직접 치던 일을, main에 머지하면 GitHub Actions가 Cloud Run에 알아서 배포하도록 바꾸는 과정. 키 파일 없이 들어가기, 일부러 고장 내 보기, 다른 저장소 거절, 감사 로그까지 직접 해 본 기록이에요.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="코드를 머지하면 서비스가 저절로 바뀌는 길 — GitHub Actions로 자동 배포하기 (4)">
+  <meta property="og:description" content="main에 머지하면 GitHub Actions가 키 파일 없이 Cloud Run에 배포하는 길을 만들고, 고장 난 배포가 손님에게 안 나가는 것까지 확인했어요.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/github-actions-auto-deploy.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="flow-motion.css">
+  <style>
+    /* 이 글의 모션 그림(svg.dm): 화면에 보일 때만(dm-on) 재생하고, 모션 줄임 설정이면 멈춘다 */
+    svg.dm .dm-line { stroke-dasharray: 5 5; }
+    svg.dm.dm-on .dm-march { animation: dm-march 0.9s linear infinite; }
+    @keyframes dm-march { to { stroke-dashoffset: -10; } }
+    @media (prefers-reduced-motion: reduce) {
+      svg.dm .dm-march { animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">코드를 머지하면 서비스가 저절로 바뀌는 길</span> — GitHub Actions로 자동 배포하기 (4)</h1>
+    <p class="post-date">2026. 10. 22.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <p class="one-liner">GitHub의 main에 코드를 합치는 순간 GitHub Actions가 정해 둔 순서대로 서비스를 Cloud Run에 배포하게 만들면, 사람이 배포 명령을 치지 않아도 서비스가 바뀐다.</p>
+
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>어디쯤인가</dt>
+        <dd>9단계 › AI 서비스로 내놓기 — 4번째 글 (전 10편)</dd>
+        <dt>이런 게 궁금했다면</dt>
+        <dd>
+          <ul>
+            <li>코드를 고칠 때마다 배포 명령을 직접 치는 게 번거로운데, 합치기만 하면 알아서 올라가게 할 수 있나요?</li>
+            <li>GitHub이 내 Google Cloud에 배포하려면 비밀 키 파일을 넘겨줘야 하나요? 유출되면 어떡하죠?</li>
+            <li>고장 난 코드를 합쳐 버리면 사용자 화면도 같이 고장 나나요?</li>
+            <li>누가, 어느 저장소에서 배포했는지는 어디서 확인하나요?</li>
+          </ul>
+        </dd>
+        <dt>읽고 나면 할 수 있는 것</dt>
+        <dd>
+          <ul>
+            <li>"머지 한 번에 무슨 일이 어떤 순서로 일어나는지"를 그림 한 장으로 설명할 수 있어요.</li>
+            <li>키 파일 없이 "내 저장소에서 온 요청만" Google Cloud에 들어오게 하는 구조를 말할 수 있어요.</li>
+            <li>배포가 실패했을 때 사용자에게 나가는 것과 main에 남는 것을 나눠서 설명할 수 있어요.</li>
+          </ul>
+        </dd>
+        <dt>모르면 이런 일이 생겨요</dt>
+        <dd>
+          <ul>
+            <li>키 파일을 만들어 저장소에 넣어 두면, 그 파일이 새는 순간 누구나 내 서비스에 배포할 수 있어요.</li>
+            <li>배포가 실패했는데 "손님도 오류를 보겠지" 하고 겁먹거나, 반대로 main에 남은 고장 코드를 그대로 둘 수 있어요. <a class="suspect-jump" href="#suspect-broken">언제 의심하나 ↓</a></li>
+            <li>자동 배포가 거절될 때 로그 문장만 보고는 어디부터 열어야 할지 몰라요. <a class="suspect-jump" href="#suspect-reject">언제 의심하나 ↓</a></li>
+          </ul>
+        </dd>
+        <dt>어디에 쓰나</dt>
+        <dd>
+          <ul>
+            <li><strong>코드를 한 줄 고칠 때마다 배포 명령을 치다가 한 번 빼먹었을 때.</strong> 고쳤는데 사용자 화면은 그대로인 일이 생겨요. 합치기만 하면 배포되게 해 두면 빼먹을 칸이 없어요.</li>
+            <li>코딩 에이전트가 배포 설정 파일(<code>deploy.yml</code>)을 만들어 왔을 때, 권한 줄과 신분 확인 방식을 읽고 판단하는 기준으로 써요.</li>
+          </ul>
+        </dd>
+      </dl>
+    </div>
+
+    <a class="post-nav" href="cloud-run-operating-ai-service.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">배포한 AI 서비스가 말없이 틀리는 순간 — 타임아웃, 인스턴스, 비용, 로그 (3)</span>
+    </a>
+
+    <p>앞의 세 편에서는 <a href="ai-service-design-before-code.html">서비스를 설계</a>하고 <a href="cloud-run-source-deploy-meaning.html">Cloud Run에 소스를 배포</a>한 뒤 <a href="cloud-run-operating-ai-service.html">운영하면서 생기는 일</a>을 봤어요. 그때마다 배포는 제가 명령을 쳐서 했어요. 이번에는 <strong>도장판 앱</strong>(<code>routine-stamp-trial</code>, <code>index.html</code> 하나로 된 작은 앱이고 Cloud Run에 비공개 서비스로 올라가 있어요)으로 목표를 이렇게 잡았어요. <strong>"main에 머지<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>하면 저절로 배포된다."</strong> 코드를 고칠 때마다 사람이 배포 명령을 치면 빼먹거나 실수하기 쉬우니까요. 풀어야 할 질문은 세 가지였어요.</p>
+    <ul>
+      <li>로봇(GitHub Actions<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>)에게 어떻게 일을 시킬까?</li>
+      <li>비밀 키 파일 없이 어떻게 Google Cloud에 들어갈까?</li>
+      <li>고장 난 코드가 들어오면 어떻게 될까?</li>
+    </ul>
+    <p>이 글에서 "로봇"은 <strong>GitHub이 대신 일해 주는 컴퓨터</strong>(GitHub Actions의 러너<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>)를 뜻해요. 비유는 <a href="ai-service-design-before-code.html">1편</a>부터 쓰던 식당을 이어 써요.</p>
+
+    <h2 id="five"><span class="hl">노드 핵심 5줄</span> — 이번 글 전체를 먼저 요약하면</h2>
+    <ul>
+      <li><strong>워크플로</strong><sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>는 GitHub이 로봇에게 시키는 일 목록이에요(<code>.github/workflows</code>). 언제(이벤트)와 무엇을(일)을 적는 기능이라 푸시·배포 전용이 아니에요. PR 점검(<code>hello</code>)도 배포(<code>deploy</code>)도 같은 기능이고, 이벤트와 일만 다릅니다.</li>
+      <li>main에 머지되면 로봇이 자동으로 배포한다.</li>
+      <li>열쇠 파일 없이 일회용 신분증(WIF<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>)으로 Google Cloud에 들어간다.</li>
+      <li>고장 난 배포는 손님에게 안 나가고, Revert<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup>로 되돌린다.</li>
+      <li>감사 로그<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup>로 누가 배포했는지 확인할 수 있다.</li>
+    </ul>
+
+    <h2 id="analogy"><span class="hl">비유로 먼저</span> — 사장이 직접 상자를 들고 가던 가맹점 배송을 포장 로봇에게</h2>
+    <p>1편부터 이어 온 식당으로 말해 볼게요. 사장인 내가 밀키트 상자를 만들 때마다 직접 들고 가맹점(서비스)에 가서 진열하면, 바쁜 날 한 번 빼먹기 쉬워요. 그래서 <strong>"본점 장부(main)에 새 레시피가 올라오면 포장 로봇이 알아서 상자를 만들어 가맹점에 진열한다"</strong>는 규칙을 적어 줬어요. 문제는 로봇이 가맹점 본부 건물에 들어갈 때예요. 사장 열쇠를 로봇에게 복사해 주면 열쇠가 새는 순간 아무나 들어와요. 그래서 열쇠 대신 <strong>"본점 장부에서 온 로봇에게만 그때그때 발급하는 일회용 방문증"</strong>을 썼어요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>본점 장부에 새 레시피가 올라온다</td><td>main에 머지(push)된다</td></tr>
+        <tr><td>사장이 로봇에게 적어 준 "언제, 무슨 일을 하라"는 지시서</td><td>워크플로 파일(<code>deploy.yml</code>)의 이벤트와 일</td></tr>
+        <tr><td>지시서대로 움직이는 포장 로봇</td><td>GitHub Actions 러너</td></tr>
+        <tr><td>사장 열쇠를 복사해 로봇에게 맡기기</td><td>서비스 계정 키 파일을 만들어 저장소에 넣기</td></tr>
+        <tr><td>본점 장부에서 온 로봇에게만 그때그때 발급하는 일회용 방문증</td><td>WIF — 일회용 신분증을 보여 주고 임시 권한을 받는 방식</td></tr>
+        <tr><td>역할별로 나눈 사원증 3개(배포용·빌드용·실행용)</td><td>서비스 계정 3개</td></tr>
+        <tr><td>가맹점이 받던 상자는 그대로 두고 새 상자만 따로 준비</td><td>리비전 — 새 리비전이 못 떠도 이전 리비전이 손님을 받는다</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 사람이 하던 배포를 로봇에게 맡기되, 열쇠를 복사해 주지 말고 "내 저장소에서 온 로봇"임을 확인하는 일회용 방문증만 쓰게 한다.</p>
+    <p>다만 여기서 비유가 끊기는 점이 있어요. 실제로는 로봇을 부르는 것도 "장부에 올라오는 순간"이라는 <strong>이벤트</strong>예요. PR을 열 때처럼 다른 이벤트에도 같은 로봇 기능을 쓸 수 있고, 사람이 손으로 실행 버튼을 눌러도 돼요.</p>
+
+    <h2 id="flow"><span class="hl">머지 한 번에 일어나는 일</span> — 이 글의 전체 흐름</h2>
+    <p>머지부터 새 리비전<sup class="fn-ref"><a href="#fn8" id="fnref8">8</a></sup>까지를 한 장으로 먼저 보면 이래요. 아래에서 ②~⑤를 하나씩 풀어요. 사람이 명령을 치는 칸은 없어요.</p>
+    <figure>
+    <svg class="dm" viewBox="0 0 760 230" role="img" aria-label="main에 머지되면 로봇이 일회용 신분증으로 Google Cloud의 문을 통과하고, 이미지를 포장해 올리면 Cloud Run에 새 리비전이 생긴다.">
+      <defs>
+        <marker id="fl-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/></marker>
+        <marker id="fl-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/></marker>
+      </defs>
+      <rect x="10" y="60" width="130" height="90" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="75" y="86" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">① main에 머지</text>
+      <text x="75" y="110" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">PR을 합치는 순간</text>
+      <text x="75" y="130" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">(push 이벤트)</text>
+      <line class="dm-line dm-march" x1="142" y1="105" x2="158" y2="105" stroke="var(--muted)" stroke-width="2" marker-end="url(#fl-a)"/>
+
+      <rect x="160" y="60" width="130" height="90" rx="8" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+      <text x="225" y="86" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">② 로봇이 깨어남</text>
+      <text x="225" y="110" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">deploy.yml 의</text>
+      <text x="225" y="130" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">일을 시작</text>
+      <line class="dm-line dm-march" x1="292" y1="105" x2="308" y2="105" stroke="var(--muted)" stroke-width="2" marker-end="url(#fl-a)"/>
+
+      <rect x="310" y="60" width="130" height="90" rx="8" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+      <text x="375" y="86" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">③ 문을 통과</text>
+      <text x="375" y="110" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">일회용 신분증으로</text>
+      <text x="375" y="130" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">임시 권한을 받음</text>
+      <line class="dm-line dm-march" x1="442" y1="105" x2="458" y2="105" stroke="var(--muted)" stroke-width="2" marker-end="url(#fl-a)"/>
+
+      <rect x="460" y="60" width="130" height="90" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="525" y="86" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">④ 포장해서 올림</text>
+      <text x="525" y="110" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">Dockerfile 로</text>
+      <text x="525" y="130" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">index.html 을 서빙</text>
+      <line class="dm-line dm-march" x1="592" y1="105" x2="608" y2="105" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#fl-c)"/>
+
+      <rect x="610" y="60" width="140" height="90" rx="8" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+      <text x="680" y="86" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">⑤ 새 리비전</text>
+      <text x="680" y="110" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">Cloud Run 에 생김</text>
+      <text x="680" y="130" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">(비공개 유지)</text>
+
+      <text x="380" y="200" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">사람이 배포 명령을 치는 칸은 없어요 — ①의 머지가 ②~⑤를 전부 깨워요</text>
+    </svg>
+    <figcaption>머지 한 번에 일어나는 일. ③의 신분 확인이 이 글에서 가장 오래 걸린 단계예요.</figcaption>
+    </figure>
+
+    <h2 id="step1"><span class="hl">과정 1. 로봇에게 일 시키기</span> — PR #1, hello.yml</h2>
+    <p>먼저 배포가 아닌 연습용 워크플로 <code>hello.yml</code>을 만들었어요. PR을 열거나 손으로 실행하면 로봇이 세 칸을 차례로 확인해요.</p>
+    <table>
+      <thead><tr><th>칸</th><th>하는 일</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>정보 보기</td></tr>
+        <tr><td>2</td><td>코드 받기</td></tr>
+        <tr><td>3</td><td>파일 보기</td></tr>
+      </tbody>
+    </table>
+    <p>일부러 첫 칸에 <code>exit 1</code>(실패로 끝내라는 명령)을 넣어 실패시키면 뒤 칸은 건너뛰어요. 원인을 되돌리고(Revert) 다시 통과시킨 뒤 머지했어요. 이 연습으로 <strong>"PR → 검사 → 머지" 흐름</strong>과, 실행 기록에 <code>event</code> 값(<code>pull_request</code>, <code>push</code>)이 찍힌다는 것을 확인했어요.</p>
+
+    <h2 id="step2"><span class="hl">과정 2. 열쇠 없이 들어가는 길</span> — WIF</h2>
+    <p>GitHub 로봇이 Google Cloud에 배포하려면 신분이 필요해요. 키 파일을 만들면 유출 위험이 있어서, <strong>일회용 신분증(토큰)을 보여 주고 임시 권한을 받는 방식(Workload Identity Federation)</strong>을 썼어요. 구성은 이래요.</p>
+    <ul>
+      <li>사원증(서비스 계정<sup class="fn-ref"><a href="#fn9" id="fnref9">9</a></sup>)을 역할별로 3개로 나눴어요. <strong>배포용</strong>(소스 배포 + API 사용 역할만), <strong>빌드용</strong>(빌드 역할만), <strong>실행용</strong>(프로젝트 역할 없음)이에요.</li>
+      <li>문은 3개예요. <strong>접수처</strong>(풀), <strong>규칙표</strong>(공급자: 내 저장소에서 온 신분증만 통과), <strong>출입 명단</strong>(배포용 사원증을 빌려도 되는 대상)이에요.</li>
+      <li>저장소 변수 5개(<code>GCP_PROJECT_ID</code>, <code>WIF_PROVIDER</code>, <code>DEPLOY_SA</code>, <code>BUILD_SA</code>, <code>RUNTIME_SA</code>)만 등록했고, 키 파일과 비밀 값은 저장소에 넣지 않았어요.</li>
+    </ul>
+    <figure>
+    <svg viewBox="0 0 760 270" role="img" aria-label="로봇이 일회용 신분증을 들고 접수처, 규칙표, 출입 명단 세 문을 지나 배포용 사원증을 빌린다. 다른 저장소에서 온 로봇은 규칙표에서 거절된다.">
+      <defs>
+        <marker id="wf-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/></marker>
+        <marker id="wf-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/></marker>
+      </defs>
+      <rect x="10" y="40" width="130" height="80" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="75" y="68" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">내 저장소의 로봇</text>
+      <text x="75" y="92" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">일회용 신분증을</text>
+      <text x="75" y="108" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">들고 옴</text>
+      <line x1="142" y1="80" x2="168" y2="80" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#wf-c)"/>
+
+      <rect x="170" y="30" width="130" height="100" rx="8" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+      <text x="235" y="58" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">문 1 접수처</text>
+      <text x="235" y="84" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">풀(pool)</text>
+      <line x1="302" y1="80" x2="328" y2="80" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#wf-c)"/>
+
+      <rect x="330" y="30" width="130" height="100" rx="8" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+      <text x="395" y="58" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">문 2 규칙표</text>
+      <text x="395" y="82" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">공급자: 내 저장소에서</text>
+      <text x="395" y="100" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">온 신분증만 통과</text>
+      <line x1="462" y1="80" x2="488" y2="80" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#wf-c)"/>
+
+      <rect x="490" y="30" width="130" height="100" rx="8" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+      <text x="555" y="58" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">문 3 출입 명단</text>
+      <text x="555" y="82" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">배포용 사원증을</text>
+      <text x="555" y="100" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">빌려도 되는 대상</text>
+      <line x1="622" y1="80" x2="640" y2="80" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#wf-c)"/>
+
+      <rect x="642" y="40" width="108" height="80" rx="8" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+      <text x="696" y="68" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">배포용 사원증</text>
+      <text x="696" y="92" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">임시 권한을</text>
+      <text x="696" y="108" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">빌림</text>
+
+      <rect x="10" y="170" width="130" height="70" rx="8" fill="none" stroke="var(--muted)" stroke-width="2"/>
+      <text x="75" y="196" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">다른 저장소의 로봇</text>
+      <text x="75" y="218" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">같은 파일을 복사해 옴</text>
+      <path d="M 142 205 L 300 205 L 300 134" fill="none" stroke="var(--muted)" stroke-width="2" marker-end="url(#wf-a)"/>
+      <path d="M 300 205 L 395 205 L 395 134" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#wf-a)"/>
+      <text x="520" y="200" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">규칙표에서 거절 — unauthorized_client:</text>
+      <text x="520" y="218" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">rejected by the attribute condition</text>
+      <text x="520" y="250" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">(과제 2에서 실제로 본 결과예요)</text>
+    </svg>
+    <figcaption>세 개의 문. 내 저장소의 이름이 규칙표의 조건으로 걸려 있어서, 같은 파일을 복사한 다른 저장소는 통과하지 못해요.</figcaption>
+    </figure>
+
+    <h2 id="step3"><span class="hl">과정 3. 첫 자동 배포</span> — PR #3, #4</h2>
+    <p>Dockerfile(<code>nginx-unprivileged</code><sup class="fn-ref"><a href="#fn10" id="fnref10">10</a></sup>로 <code>index.html</code>을 서빙)과 <code>deploy.yml</code>(main에 push되면 동작, 권한은 <code>contents: read</code>와 <code>id-token: write</code>만)을 <strong>PR #3</strong>으로 머지했어요. 로봇이 문 두 개를 통과하고 포장해서 올리자 <strong>리비전 00001</strong>이 생겼어요. README만 바꾼 <strong>PR #4</strong>도 같은 길로 <strong>리비전 00002</strong>를 만들었어요. 배포는 <code>--no-allow-unauthenticated</code>로 비공개를 유지했어요. 권한 줄은 이런 모양이에요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 직접 실행하는 코드 아니에요</span></p>
+<pre><code># deploy.yml 의 권한 블록(줄만 발췌)
+permissions:
+  contents: read    # 저장소의 코드를 읽기만 한다
+  id-token: write   # 일회용 신분증(토큰)을 발급받는다</code></pre>
+
+    <h2 id="fail"><span class="hl">실패와 복구</span> — 일부러 고장 내 보기 (PR #5 → #6)</h2>
+    <p>고장 난 코드가 손님에게 나가는지 확인하려고 <strong>PR #5</strong>에서 일부러 틀린 nginx 설정을 넣었어요. 새 <strong>리비전 00003</strong>은 시작하지 못했어요(Cloud Run 로그: <code>unknown directive "cache_expiry_minutes" in default.conf:5</code>). 그래도 손님은 계속 <strong>00002</strong>를 받았어요. main에는 고장 난 코드가 남아 있으므로 <strong>PR #6(Revert)</strong>으로 되돌렸고, 새 <strong>리비전 00004</strong>가 정상으로 시작했어요.</p>
+    <figure>
+    <svg viewBox="0 0 760 250" role="img" aria-label="리비전 00002가 손님을 받는 동안 PR #5의 새 리비전 00003은 시작에 실패하고, PR #6 Revert 뒤 리비전 00004가 정상으로 시작한다.">
+      <defs>
+        <marker id="ft-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/></marker>
+      </defs>
+      <text x="10" y="24" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">손님</text>
+      <rect x="60" y="50" width="150" height="66" rx="8" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+      <text x="135" y="78" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">리비전 00002</text>
+      <text x="135" y="98" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">PR #4 로 만든 정상 리비전</text>
+      <path d="M 135 30 L 135 48" fill="none" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#ft-a)"/>
+
+      <rect x="260" y="50" width="200" height="66" rx="8" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 5"/>
+      <text x="360" y="74" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">리비전 00003 — 시작 못함</text>
+      <text x="360" y="94" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">PR #5 의 틀린 nginx 설정</text>
+      <text x="360" y="108" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">unknown directive … default.conf:5</text>
+      <line x1="212" y1="83" x2="256" y2="83" stroke="var(--muted)" stroke-width="2" marker-end="url(#ft-a)"/>
+
+      <rect x="510" y="50" width="150" height="66" rx="8" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+      <text x="585" y="78" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">리비전 00004</text>
+      <text x="585" y="98" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">PR #6 Revert 뒤 정상 시작</text>
+      <line x1="462" y1="83" x2="506" y2="83" stroke="var(--muted)" stroke-width="2" marker-end="url(#ft-a)"/>
+
+      <text x="380" y="160" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">00003이 뜨지 못하는 동안에도 손님은 00002를 계속 받아요</text>
+      <text x="380" y="184" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">하지만 main 에는 고장 난 코드가 남아 있어서, PR #6(Revert)으로 직접 치워요</text>
+      <text x="380" y="224" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">손님에게 나가는 것과 main 에 남는 것은 별개예요</text>
+    </svg>
+    <figcaption>실패 격리. 새 리비전이 못 떠도 손님은 이전 리비전을 받지만, main에 남은 고장은 사람이 되돌려야 해요.</figcaption>
+    </figure>
+
+    <h2 id="tasks"><span class="hl">과제로 내 프로젝트에 적용해 보기</span></h2>
+
+    <h3 id="task1">과제 1. 기능 하나 넣고 자동 배포 (PR #7)</h3>
+    <p>화면 맨 아래에 "배포된 커밋 번호"를 보여 주는 기능을 골랐어요. <code>index.html</code>에 <code>COMMIT</code> 자리를 두고, 로봇이 배포 직전에 머지 커밋 번호(7자리)로 바꿔 넣게 했어요. <strong>PR #7</strong>을 머지하자 사람이 배포 명령을 치지 않았는데 <strong>리비전 00005</strong>가 생겼고, 화면에 <code>v 076c27a</code>가 떴어요. 이 번호가 머지 기록의 번호와 같다는 것으로 "방금 머지한 코드가 나갔다"를 확인했어요.</p>
+
+    <h3 id="task2">과제 2. 다른 저장소에서 배포 시도</h3>
+    <p>공개 저장소 <code>wif-reject-test</code>를 만들어 같은 워크플로를 돌려 봤어요. 로봇이 신분증을 내밀자 규칙표에서 <code>unauthorized_client: rejected by the attribute condition</code>으로 거절됐고, 배포 단계는 실행되지 않았어요. 새 서비스는 생기지 않았고 기존 리비전도 그대로였어요. <strong>내 저장소 이름이 조건으로 걸려 있어서 다른 저장소는 같은 파일을 복사해도 못 들어간다</strong>는 것을 확인했어요.</p>
+
+    <h3 id="task3">과제 3. 누가 배포했는지 감사 로그로 추적</h3>
+    <p>Cloud Run 활동 감사 로그를 읽기 전용으로 조회했어요. 손으로 배포한 기록은 내 Google 계정으로, 자동 배포 기록은 배포용 사원증(서비스 계정)으로 남아 있고, 그 뒤쪽 <code>delegation</code> 정보에 내 저장소 이름과 <code>refs/heads/main</code>이 함께 찍혀 있었어요. 즉 <strong>"어느 계정"뿐 아니라 "어느 저장소의 어느 브랜치에서 온 로봇"까지</strong> 추적돼요.</p>
+
+    <h3 id="task4">과제 4. GitHub Actions 대신 다른 것을 썼다면?</h3>
+    <p>내가 만든 파이프라인의 조각(누가 일하나, 무엇이 깨우나, 권한, 승인·롤백)을 기준으로 대안을 대 봤어요. 표의 "문서 확인"은 공식 문서에서 읽은 내용이고, "내 해석"은 문서를 내 프로젝트에 대 본 추정이라 <strong>실제로 해 보지는 않았어요.</strong></p>
+    <table>
+      <thead>
+        <tr>
+          <th>조각</th>
+          <th>GitHub Actions (실제로 한 것)</th>
+          <th>Cloud Run 저장소 연결 (Cloud Build<sup class="fn-ref"><a href="#fn11" id="fnref11">11</a></sup>)</th>
+          <th>Cloud Deploy<sup class="fn-ref"><a href="#fn12" id="fnref12">12</a></sup></th>
+          <th>GitLab CI/CD</th>
+          <th>Argo CD<sup class="fn-ref"><a href="#fn13" id="fnref13">13</a></sup></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>누가 일하나</td><td>GitHub 러너</td><td>Google Cloud 안의 Cloud Build</td><td>Cloud Build와 Skaffold</td><td>GitLab 러너</td><td>쿠버네티스 클러스터 안 컨트롤러</td></tr>
+        <tr><td>무엇이 깨우나</td><td>main에 push(머지)</td><td>브랜치 push</td><td>파이프라인 YAML에 정의한 릴리스</td><td><code>.gitlab-ci.yml</code> 규칙</td><td>Git 저장소의 상태 변화</td></tr>
+        <tr><td>권한은</td><td>일회용 신분증(WIF) 교환, 사원증 3개, 변수 5개를 내가 직접 구성</td><td>빌드가 Google Cloud 안에서 돌아서 신분증 교환 단계가 필요 없을 수 있음 (내 해석)</td><td>같은 이유로 교환 단계가 줄 수 있음 (내 해석)</td><td>GitLab과 Google Cloud 연동을 따로 설정해야 함 (문서 확인)</td><td>클러스터 권한(RBAC) 체계를 따름 (문서 확인)</td></tr>
+        <tr><td>승인·롤백</td><td>PR 검사(<code>hello</code>)와 Revert PR로 직접 처리</td><td>테스트·승인 방법은 조사한 문서에 없었음</td><td>승인(<code>requireApproval</code>)과 롤백 기능이 있음 (문서 확인)</td><td>테스트와 환경별 배포를 지원 (문서 확인)</td><td>자동·수동 동기화와 롤백을 지원 (문서 확인)</td></tr>
+        <tr><td>도장판에 쓴다면</td><td>그대로 사용</td><td>가장 단순한 대안. 단 PR 검사(<code>hello</code>)는 GitHub에 따로 남겨야 함 (내 해석)</td><td>환경을 단계별로 나눌 때만 후보</td><td>저장소를 GitLab으로 옮겨야 함</td><td>쿠버네티스 전용이라 Cloud Run에는 그대로 맞지 않음 (문서 확인)</td></tr>
+      </tbody>
+    </table>
+    <p><strong>내 결론:</strong> 도장판은 파일 하나짜리 정적 앱이고 저장소가 이미 GitHub에 있어서, PR 검사와 배포를 한곳에서 하는 GitHub Actions가 가장 단순했어요. 다만 Cloud Build 트리거로 바꿨다면 오늘 가장 오래 걸린 "열쇠 없이 들어가기" 단계가 줄었을 가능성이 있어요. 반대로 승인 단계가 필요한 서비스라면 Cloud Deploy를 후보로 두겠어요.</p>
+
+    <h2 id="map"><span class="hl">개념 → 내 프로젝트 적용 한눈에</span></h2>
+    <table>
+      <thead><tr><th>노드에서 배운 것</th><th>내 프로젝트에 한 일</th><th>확인한 증거</th></tr></thead>
+      <tbody>
+        <tr><td>워크플로: 이벤트가 오면 로봇이 일한다</td><td><code>hello.yml</code>(PR 또는 손으로 실행)과 <code>deploy.yml</code>(main push)</td><td>PR #1, PR #3 머지. 실행 목록의 <code>event</code> 값이 <code>pull_request</code> / <code>push</code>로 구분됨</td></tr>
+        <tr><td>최소 권한</td><td><code>deploy.yml</code>에 <code>contents: read</code>, <code>id-token: write</code>만</td><td><code>deploy.yml</code>의 <code>permissions</code> 블록</td></tr>
+        <tr><td>키 파일 없이 들어가기(WIF)</td><td>저장소 변수 5개만 등록, 서비스 계정 키 파일은 만들지 않음</td><td>저장소 변수 목록 5개</td></tr>
+        <tr><td>사원증 3개로 나누기</td><td>배포용·빌드용·실행용</td><td>IAM 조회: 배포용 = 소스 배포 + API 사용, 빌드용 = 빌드, 실행용 = 프로젝트 역할 없음</td></tr>
+        <tr><td>비공개 서비스</td><td><code>--no-allow-unauthenticated</code></td><td>서비스가 인증 없이는 열리지 않음</td></tr>
+        <tr><td>리비전과 실패 격리</td><td>PR #5로 일부러 고장</td><td>리비전 00003 시작 실패, 손님은 00002 유지, PR #6 Revert 후 00004</td></tr>
+        <tr><td>과제 1~3</td><td>PR #7 / 다른 저장소 거절 / 감사 로그</td><td><code>v 076c27a</code>와 리비전 00005 / <code>unauthorized_client</code> / 저장소와 main이 로그에 남음</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="judgement"><span class="hl">내가 직접 판단한 것</span></h2>
+    <ul>
+      <li>서비스 이름을 따로 지었어요. 같은 프로젝트에 이미 있던 다른 서비스를 덮어쓰지 않으려고요.</li>
+      <li>기본 서비스 계정의 비밀 값 읽기 권한은 지우지 않았어요. 같은 프로젝트의 다른 서비스가 쓸 수 있어서 지우면 깨질 수 있다고 판단했어요.</li>
+      <li>배포 실패를 일부러 한 번 겪었어요. 실패가 사용자에게 안 나가고 Revert로 되돌려진다는 것을 눈으로 보려고요.</li>
+    </ul>
+
+    <h2 id="learned"><span class="hl">배운 점</span></h2>
+    <ul>
+      <li>자동 배포의 핵심은 "로봇이 일하는 규칙"과 "로봇에게 빌려주는 최소한의 권한"을 분리해서 보는 것이에요.</li>
+      <li>비밀 키 파일이 없어도 "어느 저장소에서 온 신분증인가"를 조건으로 걸면 안전하게 들어갈 수 있어요.</li>
+      <li>배포가 실패해도 Cloud Run은 이전 리비전으로 손님을 받아서 사용자는 모르지만, main에 남은 고장은 Revert로 직접 치워야 해요.</li>
+      <li>감사 로그에는 계정뿐 아니라 어느 저장소·브랜치에서 왔는지가 남아서 "누가 배포했나"를 끝까지 추적할 수 있어요.</li>
+      <li>방법을 고를 때는 "무엇이 더 좋은가"보다 "내 서비스에 필요한 것(승인, 단계, 저장소 위치)이 무엇인가"가 기준이에요.</li>
+    </ul>
+
+    <h2 id="choice"><span class="hl">나쁜 선택 vs 좋은 선택</span> — GitHub 로봇에게 Google Cloud 배포를 맡길 때</h2>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">서비스 계정 키 파일을 만들어 저장소에 넣고 로봇이 그 파일로 들어가게 한다 → 키 파일은 유출 위험이 있고, 새는 순간 그 파일을 가진 누구나 같은 권한으로 들어올 수 있어요</td>
+          <td class="choice-good">키 파일 없이 WIF로 일회용 신분증을 쓰고, 규칙표에 "내 저장소에서 온 신분증만"을 조건으로 건다 → 저장소 변수 5개만 등록하면 되고, 다른 저장소가 같은 파일을 복사해도 <code>unauthorized_client</code>로 거절돼요</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 자동 배포를 만들 때 다시 보는 값</h2>
+    <p>이 글에서 만든 구성의 값들이에요. 내 서비스에 옮길 때 "몇 개를 만들어야 하나"를 가늠하는 기준으로 써요. 서비스 규모에 따라 달라질 수 있어요.</p>
+    <table>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
+      <tbody>
+        <tr><td>역할별 서비스 계정(사원증)</td><td>3개</td><td>배포용·빌드용·실행용이에요. 배포용은 소스 배포 + API 사용, 빌드용은 빌드 역할만 있고, 실행용은 프로젝트 역할이 없어요. 하나로 합치지 않고 나눈 이유가 "필요한 것만 빌려주기"예요</td></tr>
+        <tr><td>WIF가 통과해야 하는 문</td><td>3개</td><td>접수처(풀), 규칙표(공급자), 출입 명단이에요. 거절 로그가 나오면 "어느 문에서 막혔나"를 이 순서로 가늠해요</td></tr>
+        <tr><td>등록한 저장소 변수</td><td>5개</td><td><code>GCP_PROJECT_ID</code>, <code>WIF_PROVIDER</code>, <code>DEPLOY_SA</code>, <code>BUILD_SA</code>, <code>RUNTIME_SA</code>이에요. 키 파일과 비밀 값은 저장소에 넣지 않았어요</td></tr>
+        <tr><td><code>deploy.yml</code>의 권한 줄</td><td>2줄</td><td><code>contents: read</code>와 <code>id-token: write</code>만이에요. 더 늘리기 전에 "정말 필요한가"를 묻는 기준이 돼요</td></tr>
+        <tr><td>화면에 새긴 커밋 번호</td><td>앞 7자리</td><td>머지 커밋 번호의 앞 7자리를 <code>COMMIT</code> 자리에 바꿔 넣어요. 화면의 7자리와 머지 기록의 번호가 같은지로 "방금 머지한 코드가 나갔나"를 봐요</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 자동 배포가 고장 나거나 거절될 때</h2>
+    <p>자동 배포 문제는 코드를 읽어서는 보이지 않고, <strong>배포 로그의 한 줄 문장</strong>이나 <strong>화면이 안 바뀌는 모습</strong>으로 먼저 나타나요. 아래 증상이 보이면 코드를 고치려 들기 전에 이 자리를 열어 봐요.</p>
+    <p>증상이 아직 없어도, <strong>AI에게 이런 부탁을 한 직후</strong>라면 한 번 확인하고 넘어가요.</p>
+    <ul>
+      <li>"자동 배포를 만들어 줘" — 서비스 계정 키 파일을 만들거나 저장소에 비밀 값을 넣는 줄이 생겼는지, 권한 블록이 <code>contents: read</code>와 <code>id-token: write</code>를 넘는지</li>
+    </ul>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-broken">
+          <td>머지했는데 <strong>새 리비전이 시작하지 못했어요</strong> (Cloud Run 로그에 <code>unknown directive "cache_expiry_minutes" in default.conf:5</code> 같은 문장이 보여요)</td>
+          <td>Cloud Run 로그와, 문장이 가리키는 설정 파일 줄(이 글에서는 nginx의 <code>default.conf</code> 5번째 줄)이에요. 손님이 오류를 보는 것이 아니라 이전 리비전이 계속 받고 있어요</td>
+          <td>서비스 주소가 이전 리비전으로 열리는지 먼저 봐요. 그다음 main에 남은 고장 코드를 Revert PR로 되돌리고 새 리비전이 정상으로 시작하는지 봐요. <a href="#fail">실패와 복구</a></td>
+        </tr>
+        <tr id="suspect-reject">
+          <td>로봇이 <strong>Google Cloud에서 거절돼요</strong> (<code>unauthorized_client: rejected by the attribute condition</code>)</td>
+          <td>WIF의 규칙표(공급자) 조건이에요. 내 저장소 이름이 조건으로 걸려 있어서, 다른 저장소나 복사한 파일은 이 문에서 막혀요. 배포 단계는 실행되지 않고 기존 리비전은 그대로예요</td>
+          <td>지금 돌린 저장소가 조건에 적힌 내 저장소가 맞는지 먼저 봐요. 맞는데도 막히면 세 문(접수처·규칙표·출입 명단)을 순서대로 확인해요. <a href="#step2">과정 2</a></td>
+        </tr>
+        <tr id="suspect-who">
+          <td>"이 배포를 <strong>누가 했는지</strong> 모르겠어요"</td>
+          <td>Cloud Run 활동 감사 로그예요. 자동 배포 기록은 배포용 사원증(서비스 계정)으로 남고, 그 뒤쪽 <code>delegation</code> 정보에 저장소 이름과 <code>refs/heads/main</code>이 찍혀요</td>
+          <td>읽기 전용으로 조회해서 계정과 <code>delegation</code> 정보를 같이 읽어요. <a href="#task3">과제 3</a></td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등</p>
+<pre><code>.github/workflows/deploy.yml 의 permissions 블록과, 서비스 계정 키 파일이나 비밀 값을 쓰는 줄이 있는지 찾아서
+파일·줄 번호로 보여 줘. 아직 아무것도 고치지 마.</code></pre>
+
+    <h2 id="not-done"><span class="hl">확인 범위와 해 보지 못한 것</span></h2>
+    <ul>
+      <li>과제 4의 대안 표는 공식 문서를 읽은 결과("문서 확인")와 내 프로젝트에 대 본 추정("내 해석")이고, 다른 도구로 실제 배포를 만들어 보지는 않았어요.</li>
+      <li>"Cloud Build 트리거로 바꿨다면 열쇠 없이 들어가기 단계가 줄었을 가능성"은 추정이에요.</li>
+      <li>감사 로그는 읽기 전용으로 조회만 했어요.</li>
+      <li>기본 서비스 계정의 비밀 값 읽기 권한은 지우지 않았어요. 지웠을 때 다른 서비스가 실제로 깨지는지는 시험하지 않았어요.</li>
+    </ul>
+
+    <h2><span class="hl">함께 보기</span></h2>
+    <ul>
+      <li><a href="cloud-run-source-deploy-meaning.html">Cloud Run에 소스를 배포한다는 것 (2)</a> — 리비전과 소스 배포가 무엇인지 풀어요.</li>
+      <li><a href="cloud-run-operating-ai-service.html">배포한 AI 서비스가 말없이 틀리는 순간 (3)</a> — Cloud Run 로그에서 원인을 찾는 순서를 봐요.</li>
+      <li><a href="what-is-docker.html">도커(Docker)란 무엇인가 — 이미지와 컨테이너, 상자에 뭘 담느냐</a> — 이 글에서 포장한다고 한 이미지가 무엇인지 풀어요.</li>
+      <li><a href="dockerfile-fixing-runtime-environment.html">로컬에서는 되는데 서버에서만 안 되는 이유 — Dockerfile로 실행 환경 정하기</a> — 이 글에서 쓴 Dockerfile 같은 설계도를 직접 다뤄요.</li>
+    </ul>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">머지(merge) — 합쳐 달라고 올린 요청(PR)의 고친 내용을 main 브랜치에 합치는 일이에요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">GitHub Actions — GitHub 저장소에 일이 생길 때(코드가 올라올 때 등) 정해 둔 작업을 자동으로 실행해 주는 기능이에요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">러너(runner) — GitHub Actions의 작업을 실제로 대신 실행해 주는 컴퓨터예요. <a href="#fnref3">↩</a></li>
+        <li id="fn4">워크플로(workflow) — 언제(이벤트)와 무엇을(일)을 적어 <code>.github/workflows</code> 폴더에 두는 GitHub Actions의 일 목록 파일이에요. <a href="#fnref4">↩</a></li>
+        <li id="fn5">WIF(Workload Identity Federation) — 키 파일 대신 일회용 신분증(토큰)을 보여 주고 Google Cloud의 임시 권한을 받는 방식이에요. <a href="#fnref5">↩</a></li>
+        <li id="fn6">Revert — 이미 합쳐진 변경을 취소하는 변경을 새 PR로 만들어 되돌리는 일이에요. <a href="#fnref6">↩</a></li>
+        <li id="fn7">감사 로그 — Google Cloud에서 누가 어떤 작업을 했는지 남기는 기록이에요. <a href="#fnref7">↩</a></li>
+        <li id="fn8">리비전 — 이미지와 설정을 함께 적은 Cloud Run의 배포 기록으로, <a href="cloud-run-source-deploy-meaning.html">2편</a>에서 다뤘어요. <a href="#fnref8">↩</a></li>
+        <li id="fn9">서비스 계정 — 사람이 아니라 프로그램이 Google Cloud에 들어갈 때 쓰는 신분이에요. <a href="#fnref9">↩</a></li>
+        <li id="fn10">nginx — 웹 서버 프로그램으로, 여기서는 <code>index.html</code>을 화면에 내보내는 역할이에요. <a href="#fnref10">↩</a></li>
+        <li id="fn11">Cloud Build — Google Cloud 안에서 코드를 받아 이미지를 만들고 배포 작업을 돌리는 서비스예요. <a href="#fnref11">↩</a></li>
+        <li id="fn12">Cloud Deploy — 릴리스를 환경 단계별로 나르며 승인과 롤백 기능을 갖췄다고 문서에 나온 Google Cloud의 배포 서비스예요. <a href="#fnref12">↩</a></li>
+        <li id="fn13">Argo CD — 쿠버네티스 클러스터 안에서 Git 저장소의 상태에 맞춰 배포를 동기화하는 도구예요. <a href="#fnref13">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+    <h3>"AI 서비스로 내놓기" 시리즈</h3>
+    <a class="post-nav" href="ai-service-design-before-code.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">AI 기능을 서비스로 설계한다는 것 — 코딩 에이전트에게 맡기기 전에 정할 것</span>
+    </a>
+    <a class="post-nav" href="cloud-run-source-deploy-meaning.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">Cloud Run에 소스를 배포한다는 것 — 코드 폴더 하나가 공개 주소가 되기까지</span>
+    </a>
+    <a class="post-nav" href="cloud-run-operating-ai-service.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">배포한 AI 서비스가 말없이 틀리는 순간 — 타임아웃, 인스턴스, 비용, 로그</span>
+    </a>
+    <p class="post-date">(4) 코드를 머지하면 서비스가 저절로 바뀌는 길 — GitHub Actions로 자동 배포하기 (이 글)</p>
+    <a class="post-nav" href="ci-tests-and-staging.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">합치기 전에 테스트하고 내보내기 전에 먼저 본다 — CI 테스트와 staging 환경</span>
+    </a>
+    <a class="post-nav" href="dockerfile-fixing-runtime-environment.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">로컬에서는 되는데 서버에서만 안 되는 이유 — Dockerfile로 실행 환경 정하기</span>
+    </a>
+    <a class="post-nav" href="build-once-promote-image.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">시험한 이미지와 내보낸 이미지가 같다는 증거 — 이미지를 한 번만 만들어 그대로 보내기</span>
+    </a>
+    <a class="post-nav" href="load-balancer-zero-downtime.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">새 버전으로 바뀌는 몇 초 동안 — 로드밸런서로 무중단 배포 구성하기</span>
+    </a>
+    <a class="post-nav" href="cloud-run-zero-downtime-deploy.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">배포하는 동안 사용자는 오류를 봤을까 — Cloud Run으로 무중단 배포하기</span>
+    </a>
+    <a class="post-nav" href="ai-service-in-production-wrap-up.html">
+      <span class="post-nav-label">(10)</span>
+      <span class="post-nav-title">아홉 개 노드를 한 번에 — AI 서비스를 프로덕션에 올리기까지 돌아보기</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="flow-motion.js"></script>
+  <script>
+    /* svg.dm: 화면에 30% 이상 보일 때만 dm-on 을 켜서 모션을 재생한다 */
+    (function () {
+      var svgs = document.querySelectorAll('svg.dm');
+      if (!svgs.length) return;
+      if (!('IntersectionObserver' in window)) { svgs.forEach(function (s) { s.classList.add('dm-on'); }); return; }
+      var io = new IntersectionObserver(function (es) {
+        es.forEach(function (e) { e.target.classList.toggle('dm-on', e.isIntersecting); });
+      }, { threshold: 0.3 });
+      svgs.forEach(function (s) { io.observe(s); });
+    })();
+  </script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>

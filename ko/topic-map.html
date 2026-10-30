@@ -157,7 +157,7 @@
         <a href="posts.html#cat-service-launch" class="tm-node"><g style="--nc:var(--folder-10)">
           <rect class="tm-box" x="20" y="912" width="660" height="74" rx="16"/>
           <text class="tm-title" x="350" y="942">9단계 · AI 서비스로 내놓기</text>
-          <text class="tm-tag" x="350" y="962">서비스 설계 · 소스 배포(Cloud Run)</text>
+          <text class="tm-tag" x="350" y="962">서비스 설계 · Cloud Run · 자동 배포(CI/CD) · Docker · 무중단 배포</text>
         </g></a>
       </svg>
       <figcaption>박스를 누르면 그 단계로 가요. 단계가 올라갈수록 사전 지식이 더 필요해요. &ldquo;보충수업 책장&rdquo;은 이 순서에 안 묶여 있어요 — 아무 때나 곁들이는 참고 자료예요.</figcaption>
@@ -639,7 +639,53 @@
       <figcaption>표 읽기 → 구조 읽기 → 거꾸로 설계 → 힘 계산. 다루려는 문제가 커질수록 오른쪽 칸이에요.</figcaption>
     </figure>
 
-    <p style="color:var(--muted); font-size:0.92rem;">사다리는 이 열 개가 전부는 아니에요. 카테고리 안에서 번호가 매겨진 시리즈(예: MCP와 Skill 14편, 멀티 에이전트 5편)는 전부 같은 종류의 사다리고, 그 글들은 <a href="posts.html">글 목록</a>에서 순서대로 읽으면 돼요.</p>
+    <h2><span class="hl">사다리 ⑪ — 바꾼 서비스를 사용자에게 내보낼 때</span></h2>
+    <p>손으로 올려도 되는지, 자동으로 올리고 검사까지 걸어야 하는지, 시험한 것과 내보내는 것이 같아야 하는지, 내보내는 동안에도 끊기면 안 되는지 — 서비스를 쓰는 사람이 많을수록 오른쪽 칸이에요.</p>
+
+    <figure class="tm-diagram">
+      <svg viewBox="0 0 764 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="tm-j-title">
+        <title id="tm-j-title">손으로 배포에서 자동 배포와 검사, 이미지 한 번 만들기, 무중단 배포로 넘어가는 사다리</title>
+        <defs>
+          <marker id="tm-am-j" markerWidth="9" markerHeight="9" refX="4.5" refY="4.5" orient="auto">
+            <path d="M0,0 L9,4.5 L0,9 z" fill="var(--border)"/>
+          </marker>
+        </defs>
+
+        <path d="M166,68 L208,68" class="tm-arrow" marker-end="url(#tm-am-j)"/>
+        <text x="187" y="16" class="tm-arrowcap">안 되면</text>
+        <path d="M360,68 L402,68" class="tm-arrow" marker-end="url(#tm-am-j)"/>
+        <text x="381" y="16" class="tm-arrowcap">그래도 안 되면</text>
+        <path d="M554,68 L596,68" class="tm-arrow" marker-end="url(#tm-am-j)"/>
+        <text x="575" y="16" class="tm-arrowcap">그래도 안 되면</text>
+
+        <a href="cloud-run-source-deploy-meaning.html" class="tm-node"><g style="--nc:var(--folder-5)">
+          <rect class="tm-box" x="16" y="34" width="150" height="68" rx="14"/>
+          <text class="tm-title" x="91" y="60">① 손으로 배포</text>
+          <text class="tm-tag" x="91" y="78">Cloud Run 소스 배포</text>
+        </g></a>
+
+        <a href="github-actions-auto-deploy.html" class="tm-node"><g style="--nc:var(--folder-6)">
+          <rect class="tm-box" x="210" y="34" width="150" height="68" rx="14"/>
+          <text class="tm-title" x="285" y="60">② 자동 배포·검사</text>
+          <text class="tm-tag" x="285" y="78">GitHub Actions · CI</text>
+        </g></a>
+
+        <a href="build-once-promote-image.html" class="tm-node"><g style="--nc:var(--folder-7)">
+          <rect class="tm-box" x="404" y="34" width="150" height="68" rx="14"/>
+          <text class="tm-title" x="479" y="60">③ 같은 이미지</text>
+          <text class="tm-tag" x="479" y="78">한 번 만들어 승격</text>
+        </g></a>
+
+        <a href="cloud-run-zero-downtime-deploy.html" class="tm-node"><g style="--nc:var(--folder-8)">
+          <rect class="tm-box" x="598" y="34" width="150" height="68" rx="14"/>
+          <text class="tm-title" x="673" y="60">④ 끊김 없이</text>
+          <text class="tm-tag" x="673" y="78">블루그린·카나리</text>
+        </g></a>
+      </svg>
+      <figcaption>손으로 배포 → 자동 배포·검사 → 같은 이미지 → 무중단 배포. 쓰는 사람이 많아질수록 오른쪽 칸이에요.</figcaption>
+    </figure>
+
+    <p style="color:var(--muted); font-size:0.92rem;">사다리는 이 열한 개가 전부는 아니에요. 카테고리 안에서 번호가 매겨진 시리즈(예: MCP와 Skill 14편, 멀티 에이전트 5편)는 전부 같은 종류의 사다리고, 그 글들은 <a href="posts.html">글 목록</a>에서 순서대로 읽으면 돼요.</p>
 
     <a class="post-nav" href="posts.html">
       <span class="post-nav-label">← 목록으로</span>

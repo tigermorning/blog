@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>합치기 전에 테스트하고 내보내기 전에 먼저 본다 — CI 테스트와 staging 환경 (5) - Tigermorning</title>
+  <meta name="description" content="코드를 합치기 전에 서버가 테스트를 돌려 주고, 진짜 서비스에 나가기 전에 연습용 서버와 사람 승인을 거치게 하려면 어떻게 할까요? 자동 테스트(CI), 환경 분리, 승인 대기, 브랜치 보호 네 관문을 직접 세워 본 기록이에요.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="합치기 전에 테스트하고 내보내기 전에 먼저 본다 — CI 테스트와 staging 환경 (5)">
+  <meta property="og:description" content="자동 테스트, 환경 분리, 승인 대기, 브랜치 보호 — 망가진 코드와 연습용 배포가 진짜 서비스에 닿지 않게 막는 네 관문을 직접 세워 봤어요.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/ci-tests-and-staging.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="flow-motion.css">
+  <style>
+    /* 이 글의 모션 그림(svg.dm): 화면에 보일 때만(dm-on) 재생하고, 모션 줄임 설정이면 멈춘다 */
+    svg.dm .dm-line { stroke-dasharray: 5 5; }
+    svg.dm.dm-on .dm-march { animation: dm-march 0.9s linear infinite; }
+    svg.dm.dm-on .dm-fade { animation: dm-fade 6s ease-in-out infinite; }
+    @keyframes dm-march { to { stroke-dashoffset: -10; } }
+    @keyframes dm-fade { 0%, 30% { opacity: 0; } 45%, 90% { opacity: 1; } 100% { opacity: 0; } }
+    @media (prefers-reduced-motion: reduce) {
+      svg.dm .dm-march, svg.dm .dm-fade { animation: none !important; opacity: 1 !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">합치기 전에 테스트하고 내보내기 전에 먼저 본다</span> — CI 테스트와 staging 환경 (5)</h1>
+    <p class="post-date">2026. 10. 23.</p>
+    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+
+    <p class="one-liner">코드를 합치기 전에 서버가 테스트를 대신 돌려 주고(CI), 진짜 서비스에 나가기 전에 연습용 서버를 거치게 하고, 사람의 승인과 브랜치 보호로 마지막 문을 닫으면, 망가진 코드와 연습용 배포가 진짜 서비스에 닿지 않아요.</p>
+
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>어디쯤인가</dt>
+        <dd>9단계 › AI 서비스로 내놓기 — 5번째 글 (전 10편)</dd>
+        <dt>이런 게 궁금했다면</dt>
+        <dd>
+          <ul>
+            <li>"내 컴퓨터에서는 테스트가 통과하는데 서버에서는 왜 실패하지?"</li>
+            <li>실수로 망가뜨린 코드가 그대로 진짜 서비스까지 올라가는 걸 어떻게 막나요?</li>
+            <li>연습으로 올린 것과 진짜 서비스를 어떻게 따로 두나요? 관리자인 나도 규칙을 못 어기게 할 수 있나요?</li>
+            <li>테스트가 전부 초록불이면 AI 서비스도 안심해도 되나요?</li>
+          </ul>
+        </dd>
+        <dt>읽고 나면 할 수 있는 것</dt>
+        <dd>
+          <ul>
+            <li>PR이 올라올 때마다 서버가 테스트를 돌리게 하고, 빨간불이면 합치기가 막히게 설정하는 순서를 말할 수 있어요.</li>
+            <li>연습용(staging)과 진짜(production)를 나누고, 진짜 앞에서 사람 승인으로 멈추게 하는 구조를 그림으로 설명할 수 있어요.</li>
+            <li>테스트가 확인해 주는 것과 확인해 주지 못하는 것을 가를 수 있어요.</li>
+          </ul>
+        </dd>
+        <dt>모르면 이런 일이 생겨요</dt>
+        <dd>
+          <ul>
+            <li>내 컴퓨터가 우연히 맞춰 주던 것(시간대, 실행 위치) 때문에, 서버에서만 틀리는 오류를 배포한 뒤에야 알게 돼요. <a class="suspect-jump" href="#suspect-server">언제 의심하나 ↓</a></li>
+            <li>테스트가 초록불이어도 AI 답이 규칙을 어길 수 있는데, 초록불만 믿고 지나가요. <a class="suspect-jump" href="#suspect-green">언제 의심하나 ↓</a></li>
+            <li>브랜치 보호를 걸지 않으면, 테스트가 실패해도 합치기 버튼이 막히지 않아요. <a class="suspect-jump" href="#suspect-protect">언제 의심하나 ↓</a></li>
+          </ul>
+        </dd>
+        <dt>어디에 쓰나</dt>
+        <dd>
+          <ul>
+            <li><strong>혼자 만든 앱을 고칠 때마다 걱정이 될 때.</strong> "이 수정이 다른 걸 망가뜨리진 않았나?"를 내가 눈으로 확인하는 대신 서버가 매번 확인해 줘요.</li>
+            <li>코딩 에이전트가 올린 PR을 합치기 전에, 어떤 검사가 걸려 있는지 확인하는 기준으로 써요.</li>
+          </ul>
+        </dd>
+      </dl>
+    </div>
+
+    <a class="post-nav" href="github-actions-auto-deploy.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">코드를 머지하면 서비스가 저절로 바뀌는 길 — GitHub Actions로 자동 배포하기 (4)</span>
+    </a>
+
+    <p>앞의 편에서 <a href="github-actions-auto-deploy.html">main에 합치면 저절로 배포되는 길</a>을 만들었어요. 그런데 이 길에는 구멍이 하나 있어요. 고장 난 코드도 합치기만 하면 같은 길로 나간다는 거예요. 이번에는 그 길 앞에 <strong>자동으로 확인하는 관문 네 개</strong>를 세웠어요. 먼저 관문 네 개가 막으려는 사고 세 가지를 보고, 하나씩 만든 다음, 도장판 앱에도 똑같이 붙여 봤어요. 마지막에는 "테스트는 전부 통과했는데 AI가 규칙을 어긴" 사례도 함께 적었어요.</p>
+    <p>이 글에 나오는 말부터 풀어 둘게요. <strong>PR</strong><sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>은 "이 변경을 합쳐 주세요"라는 요청이고, <strong>main</strong>은 진짜 서비스가 되는 본줄기 코드예요. 변경을 main에 넣는 것을 <strong>합친다(머지, merge)</strong><sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>고 해요. <strong>CI</strong><sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>는 PR마다 서버가 자동으로 돌리는 테스트고, <strong>리비전</strong><sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>은 서비스를 배포할 때마다 붙는 버전 번호예요.</p>
+
+    <h2 id="analogy"><span class="hl">비유로 먼저</span> — 가맹점에 상자를 보내기 전의 검수대</h2>
+    <p>이 시리즈는 비유를 하나만 써요. <a href="build-once-promote-image.html">7편</a>에서 세운 <strong>밀키트 가게</strong>를 이어 갈게요. 사장인 내가 밀키트 상자를 만들어 시식 주방(staging)에서 맛을 보고, 가맹점(production)에 보내요. 그런데 상자가 하루에도 여러 번 나가면 사고가 나기 시작해요. 사장 집 주방에서는 멀쩡한데 가맹점 주방에서만 안 되는 레시피가 나가고, 포장이 덜 된 상자가 그대로 나가고, 시식용 상자가 가맹점 진열대에 올라가요. 그래서 상자가 가맹점으로 가기 전에 <strong>검수대</strong>를 세워요. 검수대는 사장이 바빠서 못 볼 때도 자동으로 상자를 살펴요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>"이 상자를 진열대에 올려 주세요"라는 요청서</td><td>PR</td></tr>
+        <tr><td>요청서가 들어올 때마다 자동으로 돌아가는 검수 기계</td><td>CI(자동 테스트)</td></tr>
+        <tr><td>시식 주방 / 가맹점</td><td>staging / production</td></tr>
+        <tr><td>가맹점으로 출고하기 직전에 사장이 서명하는 칸</td><td>승인 대기</td></tr>
+        <tr><td>검수 기계가 불합격을 주면 사장이 와도 잠겨 있는 출고문</td><td>브랜치 보호 (관리자에게도 적용)</td></tr>
+        <tr><td>가맹점에 진열되는 본점 레시피 판</td><td>main</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 검수대는 상자를 만든 사람이 아니라 문에 서 있어서, 사장도 불합격 상자를 통과시킬 수 없다.</p>
+    <p>다만 여기서 비유가 끊기는 점이 있어요. 검수 기계는 "정해 둔 항목"만 살펴요. 사장이 미처 생각하지 못한 맛 문제는 기계가 모르듯이, 테스트도 내가 적어 둔 것만 확인해요. 이 글의 마지막 사례가 바로 그 이야기예요.</p>
+
+    <h2 id="flow"><span class="hl">전체 흐름</span> — PR에서 production까지 네 관문</h2>
+    <p>변경이 PR로 올라오면 ① 서버가 테스트를 돌려요. 통과해야만 ② main이나 staging으로 합칠 수 있고(브랜치 보호), 합쳐지면 staging에는 자동으로 나가요. production은 ③ 사람의 승인을 기다리며 멈춰요. 실패하면 문 앞에서 돌아와요.</p>
+    <figure>
+    <svg class="dm" viewBox="0 0 760 250" role="img" aria-label="PR이 올라오면 서버가 테스트를 돌린다. 통과하면 합칠 수 있고 staging에 자동으로 나가며, production 앞에서는 사람의 승인을 기다린다. 테스트가 실패하면 합치기가 막힌다.">
+      <defs>
+        <marker id="ci-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/></marker>
+        <marker id="ci-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/></marker>
+      </defs>
+      <rect x="8" y="60" width="110" height="80" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="63" y="86" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">PR 올림</text>
+      <text x="63" y="108" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">합쳐 달라는</text>
+      <text x="63" y="124" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">요청</text>
+      <line class="dm-line dm-march" x1="120" y1="100" x2="148" y2="100" stroke="var(--muted)" stroke-width="2" marker-end="url(#ci-a)"/>
+
+      <rect x="150" y="50" width="140" height="100" rx="8" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+      <text x="220" y="76" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">관문 1 · 테스트(CI)</text>
+      <text x="220" y="100" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">서버가 PR마다</text>
+      <text x="220" y="116" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">테스트를 돌린다</text>
+      <text x="220" y="138" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">필수 검사: test</text>
+      <line class="dm-line dm-march" x1="292" y1="100" x2="320" y2="100" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#ci-c)"/>
+
+      <rect x="322" y="50" width="140" height="100" rx="8" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+      <text x="392" y="76" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">관문 4 · 브랜치 보호</text>
+      <text x="392" y="100" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">test 통과해야만</text>
+      <text x="392" y="116" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">합칠 수 있다</text>
+      <text x="392" y="138" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">관리자도 예외 없음</text>
+      <line class="dm-line dm-march" x1="464" y1="100" x2="492" y2="100" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#ci-c)"/>
+
+      <rect x="494" y="30" width="120" height="64" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="554" y="56" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">관문 2 · staging</text>
+      <text x="554" y="78" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">자동으로 나간다</text>
+      <rect x="494" y="116" width="120" height="64" rx="8" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+      <text x="554" y="142" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">관문 3 · 승인 대기</text>
+      <text x="554" y="164" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">사람이 누를 때까지</text>
+      <line class="dm-line dm-march" x1="616" y1="148" x2="644" y2="148" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#ci-c)"/>
+
+      <rect x="646" y="116" width="104" height="64" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="698" y="142" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">production</text>
+      <text x="698" y="164" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">진짜 서비스</text>
+
+      <text x="380" y="214" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">테스트가 빨간불이면 합치기 버튼이 회색으로 막히고, 그 PR은 문 앞에서 멈춰요</text>
+    </svg>
+    <figcaption>이 글의 전체 흐름. 관문은 네 개고 모두 사람이 아니라 서버가 서 있어요.</figcaption>
+    </figure>
+
+    <h2 id="accidents"><span class="hl">막고 싶었던 사고</span> — 세 가지와 네 관문의 짝</h2>
+    <p>혼자서든 여럿이서든 코드를 서비스에 올리다 보면 이런 일이 생겨요.</p>
+    <ul>
+      <li><strong>서버에서만 틀리는 일.</strong> 내 컴퓨터에서는 테스트가 통과하는데 서버에 올리면 실패해요. 컴퓨터마다 설치된 것, 설정, 시간대가 다르기 때문이에요. 이번 예는 시간대였어요. 내 컴퓨터(한국 시간)에서는 통과했는데, 서버가 쓰는 세계 표준시(UTC)<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>로 돌리니 오전 8시가 오후 5시(17:00)로 저장됐어요.</li>
+      <li><strong>망가진 코드가 합쳐지는 일.</strong> 실수로 망가진 코드가 main에 합쳐지고, 그대로 서비스까지 올라가요.</li>
+      <li><strong>연습과 진짜가 섞이는 일.</strong> 연습으로 올린 것이 진짜 서비스를 바꿔 버려요.</li>
+    </ul>
+    <table>
+      <thead><tr><th>막고 싶었던 사고</th><th>막아 주는 관문</th></tr></thead>
+      <tbody>
+        <tr><td>서버에서만 틀리는 일</td><td>관문 1. 자동 테스트(CI)</td></tr>
+        <tr><td>연습과 진짜가 섞이는 일</td><td>관문 2. 환경 분리, 관문 3. 승인 대기</td></tr>
+        <tr><td>망가진 코드가 합쳐지는 일</td><td>관문 4. 브랜치 보호</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="gate1"><span class="hl">관문 1. 자동 테스트(CI)</span> — PR마다 서버가 대신 돌려요</h2>
+    <p>연습용 템플릿 저장소(friend-agent-template)에서 세 번에 나눠 만들었어요. 1~3번째 PR의 화면은 처음에 저장하지 못해서, 같은 PR과 실행 기록을 나중에 다시 열어 확인했어요.</p>
+    <h3>(1) 테스트 하나 넣기 (PR #1)</h3>
+    <p>"내일 아침 8시에 물 마시라고 알려 줘"라고 하면 약속 시각이 한국 시간 08:00으로 저장되는지 보는 테스트예요. PR #1로 올려 합쳤어요(합친 커밋 <code>d9512eb</code>). 내 컴퓨터에서 pytest<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup>를 돌리면 11개가 통과해요.</p>
+    <h3>(2) 첫 CI가 실패하고, 고치기 (PR #2)</h3>
+    <p>PR마다 서버가 테스트를 돌리게 하는 설정 파일(<code>ci.yml</code>)을 PR #2로 올렸어요. 그런데 첫 실행이 빨간불이었어요. 오류는 <code>No module named 'app'</code>(종료 코드 2)였어요. 서버에서는 pytest가 앱 폴더를 찾지 못한 거예요. 내 컴퓨터에서는 <code>python -m pytest</code>로 실행해서 현재 폴더가 경로에 들어갔기 때문에 몰랐던 것으로 보여요(추정). 해결은 한 줄이었어요.</p>
+    <p class="run-tag">실행: 프로젝트에 pytest.ini로 저장 — pytest가 실행할 때마다 자동으로 읽어요</p>
+<pre><code>pythonpath = .</code></pre>
+    <p>그러자 두 번째 실행은 초록불이었어요(합친 커밋 <code>cea1536</code>). 한 PR의 커밋 목록에 첫 커밋의 빨간 ✗와 고친 커밋의 초록 ✓가 같이 보여요.</p>
+    <h3>(3) 서버에서만 틀리는 시간대 버그 (PR #3)</h3>
+    <p>저장소에 미리 준비된 「일부러 망가뜨린 변경」 중 reminder-timezone을 PR #3으로 올렸어요. 이 변경은 약속 시각에서 시간대 정보를 지워서, 서버가 자기 시간대로 시각을 읽게 만들어요.</p>
+    <ul>
+      <li>내 컴퓨터(한국 시간)에서는 11개가 모두 통과해요.</li>
+      <li>서버처럼 UTC로 돌리면 약속 시각이 08:00이 아니라 17:00으로 저장되어 1개가 실패해요. 한국과 UTC의 시차인 9시간이 어긋난 거예요.</li>
+    </ul>
+    <figure>
+    <svg class="dm" viewBox="0 0 760 220" role="img" aria-label="약속 시각에서 시간대 표시가 지워지면 한국 시간 컴퓨터는 08:00으로, UTC로 도는 서버는 17:00으로 읽는다.">
+      <defs>
+        <marker id="tz-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/></marker>
+      </defs>
+      <rect x="10" y="70" width="170" height="80" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="95" y="96" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">저장된 약속 시각</text>
+      <text x="95" y="120" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">시간대 표시가</text>
+      <text x="95" y="136" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">지워진 "8시"</text>
+      <line class="dm-line dm-march" x1="182" y1="100" x2="300" y2="50" stroke="var(--muted)" stroke-width="2" marker-end="url(#tz-a)"/>
+      <line class="dm-line dm-march" x1="182" y1="120" x2="300" y2="170" stroke="var(--muted)" stroke-width="2" marker-end="url(#tz-a)"/>
+      <rect x="302" y="20" width="230" height="64" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="417" y="46" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">내 컴퓨터 (한국 시간)</text>
+      <text x="417" y="68" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">"8시"를 한국 8시로 읽음</text>
+      <rect x="302" y="136" width="230" height="64" rx="8" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+      <text x="417" y="162" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">서버 (UTC)</text>
+      <text x="417" y="184" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">"8시"를 UTC 8시로 읽음</text>
+      <text x="640" y="56" text-anchor="middle" font-family="var(--font-heading)" font-size="22" fill="var(--ink)">08:00</text>
+      <text x="640" y="76" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">통과</text>
+      <text x="640" y="172" text-anchor="middle" font-family="var(--font-heading)" font-size="22" fill="var(--accent)">17:00</text>
+      <text x="640" y="192" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">실패 (9시간 어긋남)</text>
+    </svg>
+    <figcaption>시간대 표시가 지워지면 같은 "8시"를 컴퓨터마다 다르게 읽어요. 한국과 UTC의 시차는 9시간이에요.</figcaption>
+    </figure>
+    <p>내 컴퓨터에서만 테스트했다면 못 잡았을 오류를 서버의 CI가 잡았어요. 같은 상황을 내 컴퓨터에서 <code>TZ=UTC</code>로 다시 돌려 보니 17:00으로 1개가 실패했고, CI 로그의 pytest 단계에서도 17:00이 찍혀 있었어요. PR #3은 원인을 읽는 것이 목적이어서 합치지 않고 닫았어요.</p>
+
+    <h2 id="gate2"><span class="hl">관문 2. 환경 분리</span> — staging과 production</h2>
+    <p>GitHub에 staging(연습용)과 production(진짜 서비스) 환경<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup>을 만들었어요. 환경마다 따로 값을 둬서(서비스 이름 변수와 환경 이름 변수) 같은 배포 파일이 환경에 맞게 움직여요. staging용 AI 키도 production과 따로 만들었고, 서비스 실행 계정이 읽을 수 있는 시크릿(비밀 값)<sup class="fn-ref"><a href="#fn8" id="fnref8">8</a></sup>도 그 키 하나로 제한했어요. 설정 화면에는 production(보호 규칙 1개)과 staging이 있고 각각 변수가 2개씩 있어요.</p>
+    <p>배포 중 한 번 막혔어요. 빌드 단계에서 <code>PERMISSION_DENIED</code>(기본 계정을 빌드에 쓸 권한이 없음)가 났어요. 빌드에 쓸 계정을 환경 변수로 지정하고 배포 명령에 빌드 계정 옵션을 추가해서(PR #5) 풀었어요. staging으로 합치자 테스트(19초)와 배포(2분 17초)가 모두 초록불이었어요.</p>
+
+    <h2 id="gate3"><span class="hl">관문 3. 승인 대기</span> — 사람이 누르기 전에는 안 나가요</h2>
+    <p>production 환경에는 「내 승인」이 있어야만 배포가 진행되도록 지정했어요. staging을 main으로 올리는 PR #6을 합치자, 테스트는 통과했지만 production 배포는 「승인 대기(Waiting)」에서 멈췄어요. 사람이 승인하기 전에는 진짜 서비스가 바뀌지 않는다는 것을 화면으로 확인했어요.</p>
+    <p>이 배포는 승인하지 않고 취소했어요. 확인해 보니 production 서비스의 설정(환경 값, 실행 계정, 시크릿 권한)이 설계와 맞지 않았어요. 맞지 않는 상태 그대로 승인을 눌러 진짜 서비스를 바꾸지 않으려는 판단이었어요.</p>
+
+    <h2 id="gate4"><span class="hl">관문 4. 브랜치 보호</span> — 관리자인 나도 못 합쳐요</h2>
+    <p>main과 staging에 규칙을 걸었어요. PR 없이는 합칠 수 없고, <code>test</code>라는 검사가 통과해야만(필수 검사<sup class="fn-ref"><a href="#fn9" id="fnref9">9</a></sup>) 합칠 수 있으며, 관리자(나)에게도 똑같이 적용했어요. 조회 명령으로 규칙이 걸린 것을 확인했고, main에 직접 push(코드를 바로 올리기)를 시도하니 <code>GH006</code>(보호된 브랜치라 거절)으로 막혔어요. 이렇게 걸어 두는 것을 브랜치 보호<sup class="fn-ref"><a href="#fn10" id="fnref10">10</a></sup>라고 해요.</p>
+    <p>저장소에 미리 준비된 「일부러 망가뜨린 변경」 세 개(safety-exact-match, weather-keyword, reminder-timezone)도 차례로 PR로 올렸어요. 모두 test가 빨간불이 되었고 합치기 버튼이 회색으로 막혔어요. 합치기 방식 메뉴를 열어 봐도 「검사를 건너뛰고 합치기」 같은 항목이 없어요. 관리자에게도 규칙이 적용되도록 했기 때문이에요.</p>
+
+    <h2 id="apply"><span class="hl">내 앱(루틴 도장)에 적용하기</span> — 칸 열림 일정부터 테스트로</h2>
+    <p>도장판은 계획표 없이 도장을 찍는 앱이에요. 도장이 쌓이면 칸이 하나씩 열려요(도장 3일 → 4번째 칸, 28일 → 5번째, 60일 → 6번째). 이 「칸 열림 일정」은 잘못 바뀌어도 눈으로 알아채기 어려워서 첫 테스트 대상으로 골랐어요.</p>
+    <ul>
+      <li><code>tests/unlock.test.js</code>: 칸 열림 일정 9개 시나리오. <code>node:test</code>와 jsdom<sup class="fn-ref"><a href="#fn11" id="fnref11">11</a></sup>으로 index.html을 실제로 열어 확인해요.</li>
+      <li><code>.github/workflows/ci.yml</code>: PR이 열릴 때마다 <code>npm ci</code>와 <code>npm test</code>를 실행해요.</li>
+      <li><code>index.html</code>은 고치지 않았어요. 테스트만 붙였어요.</li>
+    </ul>
+    <p>일부러 깨뜨린 PR도 올려 봤어요. PR #9는 칸 열림 일정을 옛 값으로 되돌렸더니 9개 중 3개가 실패했어요. PR #11도 같은 방식으로 깨뜨려 CI가 막는 것을 확인했고, 두 PR 모두 닫았어요. 테스트가 붙은 PR #8을 합치자 배포가 38초 만에 성공했어요.</p>
+    <p>오늘 나온 말과 내가 한 일을 한 표로 정리하면 이래요.</p>
+    <table>
+      <thead><tr><th>나온 말</th><th>뜻</th><th>내가 한 일</th></tr></thead>
+      <tbody>
+        <tr><td>CI</td><td>PR마다 서버가 테스트를 돌림</td><td>템플릿 pytest, 도장판 node:test</td></tr>
+        <tr><td>필수 검사</td><td>통과해야만 합칠 수 있는 검사</td><td>템플릿 main·staging에 test를 필수로 지정</td></tr>
+        <tr><td>브랜치 보호</td><td>규칙을 어기는 직접 push·합치기를 막음</td><td>main에 직접 push 시 GH006로 거절됨을 확인</td></tr>
+        <tr><td>환경</td><td>staging/production을 나눔</td><td>환경별 변수, production에 승인자 지정</td></tr>
+        <tr><td>승인 대기</td><td>사람이 누르기 전에는 배포 안 됨</td><td>production 배포를 Waiting 상태로 확인</td></tr>
+        <tr><td>키 분리</td><td>환경마다 다른 키와 최소 권한</td><td>staging 전용 키, 읽기 권한을 그 키 하나로 제한</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="real-case"><span class="hl">실전 사례</span> — 테스트는 통과했는데 AI는 규칙을 어겼다</h2>
+    <p>오늘 이 흐름을 내 앱의 실제 문제에 그대로 써 봤어요. 문제는 도우미(루틴 코치 챗)가 오후 4시에도 「아침 먹기」를 권한 것이었어요. 고친 것들을 PR로 하나씩 올려 CI를 통과시키고 합친 뒤 배포했어요. 배포할 때마다 서비스에는 새 리비전 번호가 붙어요.</p>
+    <table>
+      <thead><tr><th>순서</th><th>PR</th><th>한 일</th><th>리비전</th><th>같은 상황 재현 결과</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>#10, #12</td><td>도우미가 먼저 밝게 인사하고, 마지막은 요청을 살피는 문장으로 끝남</td><td>00014</td><td>-</td></tr>
+        <tr><td>2</td><td>#13</td><td>하루가 바뀌면 새 대화, 지난 대화는 기기에 보관해 한 줄로 꺼냄</td><td>00015</td><td>-</td></tr>
+        <tr><td>3</td><td>#14</td><td>지금 시각(시)을 도우미에게 알려 줌</td><td>00016</td><td>-</td></tr>
+        <tr><td>4</td><td>#15</td><td>칸마다 「몇 시까지」를 알려, 지난 칸은 권하지 않게 함</td><td>00017</td><td>4번 중 2번 지난 칸 권유</td></tr>
+        <tr><td>5</td><td>#16</td><td>서버가 답을 검사해, 지난 칸을 권하면 다시 쓰게 함</td><td>00018</td><td>8번 중 1번 빠져나감</td></tr>
+        <tr><td>6</td><td>#17</td><td>쉼표와 「아니면」에서 문장을 나눠 검사</td><td>00019</td><td>12번 중 0번</td></tr>
+      </tbody>
+    </table>
+    <p>핵심은 네 번째 단계(00017)를 배포한 뒤예요. 테스트와 CI는 모두 통과했는데도, 배포한 서비스에 같은 상황을 실제로 보내 보니 지난 칸을 또 권했어요. 테스트는 가짜 AI로 하기 때문에 「프롬프트(AI에게 주는 지시문)<sup class="fn-ref"><a href="#fn12" id="fnref12">12</a></sup>에 규칙이 들어갔다」까지만 확인할 수 있기 때문이에요. 그래서 서비스에 같은 요청을 여러 번 보내 세어 봤어요. 여섯 번째 단계에서 빠져나간 이유는, 한 문장 뒤쪽의 「내일의 루틴」이 앞쪽 권유를 가려서였어요. 서버의 검사는 답을 읽어서 지난 칸을 권했으면 다시 쓰게 하고, 세 번 모두 어기면 정해 둔 답을 써요.</p>
+    <figure>
+    <svg class="dm" viewBox="0 0 760 200" role="img" aria-label="도우미의 답을 서버가 검사한다. 지난 칸을 권했으면 다시 쓰게 하고, 세 번 모두 어기면 정해 둔 답을 쓴다. 통과하면 사용자에게 보여 준다.">
+      <defs>
+        <marker id="ck-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/></marker>
+        <marker id="ck-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/></marker>
+      </defs>
+      <rect x="10" y="50" width="140" height="70" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="80" y="80" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">도우미가 답 작성</text>
+      <text x="80" y="100" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">AI 모델</text>
+      <line class="dm-line dm-march" x1="152" y1="85" x2="196" y2="85" stroke="var(--muted)" stroke-width="2" marker-end="url(#ck-a)"/>
+      <rect x="198" y="40" width="170" height="90" rx="8" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+      <text x="283" y="68" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">서버가 답을 검사</text>
+      <text x="283" y="92" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">지난 칸을 권했나?</text>
+      <text x="283" y="110" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--muted)">쉼표·「아니면」에서 문장을 나눠 봄</text>
+      <line class="dm-line dm-march" x1="370" y1="85" x2="414" y2="85" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#ck-c)"/>
+      <text x="392" y="76" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--ink)">안 걸림</text>
+      <rect x="416" y="50" width="150" height="70" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="491" y="90" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">사용자에게 보여 줌</text>
+      <path class="dm-line dm-march" d="M 283 132 L 283 170 L 80 170 L 80 122" fill="none" stroke="var(--muted)" stroke-width="2" marker-end="url(#ck-a)"/>
+      <text x="180" y="190" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">걸리면 다시 쓰게 함</text>
+      <rect x="590" y="130" width="160" height="56" rx="8" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="670" y="154" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">세 번 모두 어기면</text>
+      <text x="670" y="172" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">정해 둔 답을 씀</text>
+    </svg>
+    <figcaption>도우미 답을 검사하는 장치. 테스트가 못 보는 「실제 모델의 행동」을 서버가 한 번 더 확인해요.</figcaption>
+    </figure>
+
+    <h2 id="choice"><span class="hl">나쁜 선택 vs 좋은 선택</span> — 에이전트에게 "배포 전에 테스트 붙여 줘"라고 할 때</h2>
+    <p>밀키트 가게로 치면 사장이 검수대를 세우고도 "기계가 합격시켰으니 끝"이라고 여기느냐 아니냐의 장면이에요. 아래는 이 글의 사례를 바탕으로 가정한 예시예요.</p>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">가짜 AI로 도는 테스트가 초록불이면 안심하고 배포를 끝낸다 → 테스트는 「프롬프트에 규칙이 들어갔다」까지만 아는데, 배포한 서비스는 오후 4시에도 지난 칸을 계속 권한다.</td>
+          <td class="choice-good">테스트가 통과한 뒤 배포한 서비스에 같은 요청을 여러 번 보내 세어 본다 → 4번 중 2번, 8번 중 1번, 12번 중 0번처럼 빠져나가는 정도가 보이고, 서버의 답 검사를 한 단계씩 더해 간다.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 오류 메시지를 읽거나 CI를 처음 붙일 때 다시 보는 값</h2>
+    <p>이 글에서 직접 확인한 값 중 다른 프로젝트에서도 쓸 만한 것만 모았어요. 시간은 이 템플릿 저장소에서 한 번 잰 값이라 서비스마다 달라요.</p>
+    <table>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
+      <tbody>
+        <tr><td>한국 시간과 UTC의 시차</td><td>9시간</td><td>시간대 표시가 없는 시각을 서버가 UTC로 읽으면 08:00이 17:00으로 바뀌어요. 시간이 어긋난 숫자가 9의 배수 근처면 시간대부터 의심해요</td></tr>
+        <tr><td>pytest가 앱 폴더를 못 찾았을 때</td><td>종료 코드 2, <code>No module named 'app'</code></td><td>내 컴퓨터에서는 되는데 CI에서만 나면 <code>pytest.ini</code>의 <code>pythonpath = .</code>를 확인해요</td></tr>
+        <tr><td>보호된 브랜치에 직접 push했을 때</td><td><code>GH006</code></td><td>이 코드가 보이면 규칙이 걸려 있다는 뜻이라, 오류가 아니라 의도한 거절이에요</td></tr>
+        <tr><td>staging 배포 한 번의 시간(이 템플릿)</td><td>테스트 19초 + 배포 2분 17초</td><td>CI를 붙인 뒤의 배포 시간을 비교할 기준이에요. 한 번 잰 값이에요</td></tr>
+        <tr><td>같은 요청을 서비스에 보낸 횟수와 규칙을 어긴 횟수</td><td>4번 중 2번 → 8번 중 1번 → 12번 중 0번</td><td>표본이 작아서 개선의 정도가 아니라 「실제로 확인했다」는 기록이에요</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 관문을 세운 뒤에도 문제가 지나갈 때</h2>
+    <p>이런 문제는 코드를 읽어서는 보이지 않고, <strong>초록불인데 서비스가 이상하거나, 빨간불인데 합쳐지는 모습</strong>으로 먼저 나타나요.</p>
+    <p>증상이 아직 없어도, <strong>AI에게 이런 부탁을 한 직후</strong>라면 한 번 확인하고 넘어가요.</p>
+    <ul>
+      <li>"테스트를 붙여 줘" — 서버에서 도는 실행 환경(시간대, 실행 위치)을 내 컴퓨터와 다르게 두고 돌려 봤는지</li>
+      <li>"main을 보호해 줘" — 관리자에게도 적용되는지, 필수 검사 이름이 실제 검사 이름과 같은지</li>
+    </ul>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-server">
+          <td>내 컴퓨터에서는 통과인데 <strong>CI만 빨간불</strong>이에요 (<code>No module named …</code>이나 시각이 몇 시간 어긋남)</td>
+          <td>CI 실행 로그의 pytest 단계, <code>pytest.ini</code>, 시간대가 걸린 코드예요. 범인이 테스트 코드가 아니라 서버와 내 컴퓨터의 환경 차이일 수 있어요</td>
+          <td>내 컴퓨터에서 <code>TZ=UTC</code>로 다시 돌려 같은 실패가 나는지 봐요. 앱 폴더를 못 찾으면 <code>pythonpath = .</code>를 확인해요</td>
+        </tr>
+        <tr id="suspect-green">
+          <td>테스트는 <strong>전부 초록불인데</strong> 배포한 AI 서비스의 답이 규칙을 어겨요</td>
+          <td>테스트가 가짜 AI를 쓰는지, 규칙이 프롬프트에만 들어 있는지예요. 실제 모델의 행동은 테스트가 보지 못해요</td>
+          <td>배포한 서비스에 같은 요청을 여러 번 보내 몇 번 어기는지 세어 봐요. 숫자가 작으면 늘려서 다시 봐요</td>
+        </tr>
+        <tr id="suspect-protect">
+          <td>검사가 실패했는데도 <strong>합치기가 막히지 않아요</strong></td>
+          <td>저장소의 브랜치 보호 규칙이에요. 이 글의 내 앱 main에는 보호를 걸지 않아서 이런 상태였어요</td>
+          <td>브랜치 보호 규칙을 조회해서 필수 검사와 관리자 적용 여부를 봐요</td>
+        </tr>
+        <tr id="suspect-wait">
+          <td>합쳤는데 production 배포가 <strong>「승인 대기」에서 멈춰 있어요</strong></td>
+          <td>GitHub 실행 화면의 production 환경 승인 요청이에요. 고장이 아니라 설정한 대로의 동작이에요</td>
+          <td>누르기 전에 production 서비스의 환경 값, 실행 계정, 시크릿 권한이 설계와 맞는지 봐요. 맞지 않으면 승인하지 않고 취소해요</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등</p>
+<pre><code>이 저장소의 브랜치 보호 규칙을 조회해서 main과 staging에 필수 검사(test)가 걸려 있는지,
+관리자에게도 적용되는지 알려 줘. ci.yml의 검사 이름과 필수 검사 이름이 같은지도 비교해 줘.
+아직 아무것도 바꾸지 마.</code></pre>
+
+    <h2 id="retro"><span class="hl">돌아보기</span> — 만든 것, 비어 있는 곳, 직접 판단한 것, 배운 점</h2>
+    <h3>만든 것</h3>
+    <ul>
+      <li>PR마다 도는 테스트(CI)와, 통과해야만 합치게 하는 필수 검사(템플릿).</li>
+      <li>staging과 production 분리, production 승인 대기, staging 전용 키.</li>
+      <li>내 앱 칸 열림 일정 테스트 9개와 CI, 일부러 깨뜨린 PR이 막히는 것 확인.</li>
+      <li>배포 후 실제 서비스에 같은 요청을 보내 확인하는 습관(서비스 설정의 배포 전후 비교 포함).</li>
+    </ul>
+    <h3 id="not-done">비어 있는 곳</h3>
+    <ul>
+      <li>내 앱 main에는 브랜치 보호를 걸지 않았어요(조회 결과 보호 없음). 테스트가 실패해도 합치기가 막히지 않아요. 지금은 제가 확인하고 합칠 뿐이에요.</li>
+      <li>내 앱의 CI는 화면 테스트(webtests)만 돌려요. 서버 테스트(190여 개)는 내 컴퓨터에서만 돌렸어요.</li>
+      <li>내 앱은 GitHub Pages가 저장소 전체를 공개해요. tests/와 package.json도 보이는 상태예요(저장소가 공개이고 비밀 값은 없어요). 공개 범위는 아직 정리하지 않았어요.</li>
+      <li>도우미의 답 품질은 사람이 같은 요청을 여러 번 보내 확인했어요. 자동으로 점검하는 평가(실제 모델 대상)는 아직 없어요.</li>
+      <li>production 서비스(템플릿)의 설정이 설계와 맞지 않는 점은 손대지 않았어요. 승인 대기 배포는 취소했어요.</li>
+      <li>도우미 재현 숫자(4번 중 2번, 8번 중 1번, 12번 중 0번)는 표본이 작아서, 개선의 정도가 아니라 「실제로 확인했다」는 기록이에요.</li>
+    </ul>
+    <h3>내가 직접 판단한 것</h3>
+    <ul>
+      <li>과제 2(예시를 테스트로)와 3(메신저 알림)은 하지 않기로 하고, 1과 4에 집중했어요.</li>
+      <li>템플릿의 시간대 버그 PR #3은 합치지 않고 닫았어요. 목적이 「원인을 읽는 것」이었기 때문이에요.</li>
+      <li>staging AI 키를 처음에는 Claude 키로 만들었다가, 이 프로젝트가 쓰는 OpenAI 키로 다시 바꿨어요. 바꾼 뒤 이전 버전은 폐기해서, staging 키에 버전이 여러 개 남지 않게 했어요.</li>
+      <li>production 배포가 승인 대기에서 멈췄을 때 승인하지 않고 취소했어요(관문 3).</li>
+    </ul>
+    <h3>배운 점</h3>
+    <ul>
+      <li>테스트는 「통과했다」가 아니라 「무엇을 확인했는가」가 중요해요. 가짜 AI를 쓴 테스트는 규칙이 프롬프트에 들어갔는지만 알아요. 실제 모델의 행동은 배포한 서비스에 직접 보내 봐야 알아요.</li>
+      <li>CI는 내 컴퓨터가 우연히 맞춰 주는 것(시간대, 실행 위치)을 걷어 내요. 시간대 버그와 pythonpath 오류가 같은 종류였어요.</li>
+      <li>관문은 사람의 부주의를 막는 장치이지, 사람의 판단을 대신하지 않아요. production 승인 대기에서 멈춘 것을 승인하지 않고 취소한 것이 그 예예요.</li>
+      <li>한 번에 크게 고치지 않고 PR 단위로 작게 나누면, 무엇이 문제였는지(프롬프트만으로는 부족했다)가 리비전 번호와 함께 남아요.</li>
+    </ul>
+
+    <h2><span class="hl">함께 보기</span></h2>
+    <ul>
+      <li><a href="github-actions-auto-deploy.html">코드를 머지하면 서비스가 저절로 바뀌는 길 — GitHub Actions로 자동 배포하기 (4)</a> — 이 글의 관문이 앞에 서 있는 자동 배포 길이 어떻게 만들어졌는지 봐요.</li>
+      <li><a href="build-once-promote-image.html">시험한 이미지와 내보낸 이미지가 같다는 증거 (7)</a> — staging에서 확인한 이미지를 production에 그대로 보내는 방법을 봐요.</li>
+      <li><a href="cloud-run-source-deploy-meaning.html">Cloud Run에 소스를 배포한다는 것 (2)</a> — 리비전이 무엇인지 풀어요.</li>
+    </ul>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">PR(pull request) — "이 변경을 main에 합쳐 주세요"라고 요청하는 GitHub의 기능이에요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">머지(merge) — PR의 변경 내용을 main 같은 대상 브랜치에 합쳐 넣는 일이에요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">CI(지속적 통합) — PR이 올라올 때마다 서버가 테스트를 자동으로 돌려, 합치기 전에 문제를 찾는 방식이에요. 같은 GitHub Actions 기능이 <a href="github-actions-auto-deploy.html">4편</a>에서는 배포를 맡았어요. <a href="#fnref3">↩</a></li>
+        <li id="fn4">리비전 — 이미지와 설정을 함께 적은 Cloud Run의 배포 기록으로, <a href="cloud-run-source-deploy-meaning.html">2편</a>에서 다뤘어요. <a href="#fnref4">↩</a></li>
+        <li id="fn5">UTC(세계 표준시) — 서버가 기본으로 쓰는 시간대로, 한국 시간보다 9시간 느려요. <a href="#fnref5">↩</a></li>
+        <li id="fn6">pytest — 파이썬 코드의 테스트를 찾아 실행하고 통과·실패를 알려 주는 도구예요. <a href="#fnref6">↩</a></li>
+        <li id="fn7">GitHub 환경(Environment) — 배포 대상(staging, production)마다 변수와 승인 규칙을 따로 걸 수 있게 하는 GitHub의 설정 단위예요. <a href="#fnref7">↩</a></li>
+        <li id="fn8">시크릿(secret) — API 키처럼 코드나 화면에 드러나면 안 되는 비밀 값을 따로 보관하는 장치에 넣은 값이에요. <a href="#fnref8">↩</a></li>
+        <li id="fn9">필수 검사(required check) — 통과해야만 PR을 합칠 수 있도록 지정해 둔 검사예요. <a href="#fnref9">↩</a></li>
+        <li id="fn10">브랜치 보호(branch protection) — main 같은 브랜치에 PR 필수, 필수 검사 통과 같은 규칙을 걸어 직접 push와 무검사 합치기를 막는 설정이에요. <a href="#fnref10">↩</a></li>
+        <li id="fn11">jsdom — 브라우저 없이 서버 쪽에서 HTML 화면을 실제처럼 열어 동작을 확인하게 해 주는 도구예요. <a href="#fnref11">↩</a></li>
+        <li id="fn12">프롬프트 — AI에게 무엇을 어떻게 하라고 적어 주는 지시문이에요. <a href="#fnref12">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+    <h3>"AI 서비스로 내놓기" 시리즈</h3>
+    <a class="post-nav" href="ai-service-design-before-code.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">AI 기능을 서비스로 설계한다는 것 — 코딩 에이전트에게 맡기기 전에 정할 것</span>
+    </a>
+    <a class="post-nav" href="cloud-run-source-deploy-meaning.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">Cloud Run에 소스를 배포한다는 것 — 코드 폴더 하나가 공개 주소가 되기까지</span>
+    </a>
+    <a class="post-nav" href="cloud-run-operating-ai-service.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">배포한 AI 서비스가 말없이 틀리는 순간 — 타임아웃, 인스턴스, 비용, 로그</span>
+    </a>
+    <a class="post-nav" href="github-actions-auto-deploy.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">코드를 머지하면 서비스가 저절로 바뀌는 길 — GitHub Actions로 자동 배포하기</span>
+    </a>
+    <p class="post-date">(5) 합치기 전에 테스트하고 내보내기 전에 먼저 본다 — CI 테스트와 staging 환경 (이 글)</p>
+    <a class="post-nav" href="dockerfile-fixing-runtime-environment.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">로컬에서는 되는데 서버에서만 안 되는 이유 — Dockerfile로 실행 환경 정하기</span>
+    </a>
+    <a class="post-nav" href="build-once-promote-image.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">시험한 이미지와 내보낸 이미지가 같다는 증거 — 이미지를 한 번만 만들어 그대로 보내기</span>
+    </a>
+    <a class="post-nav" href="load-balancer-zero-downtime.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">새 버전으로 바뀌는 몇 초 동안 — 로드밸런서로 무중단 배포 구성하기</span>
+    </a>
+    <a class="post-nav" href="cloud-run-zero-downtime-deploy.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">배포하는 동안 사용자는 오류를 봤을까 — Cloud Run으로 무중단 배포하기</span>
+    </a>
+    <a class="post-nav" href="ai-service-in-production-wrap-up.html">
+      <span class="post-nav-label">(10)</span>
+      <span class="post-nav-title">아홉 개 노드를 한 번에 — AI 서비스를 프로덕션에 올리기까지 돌아보기</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="flow-motion.js"></script>
+  <script>
+    /* svg.dm: 화면에 30% 이상 보일 때만 dm-on 을 켜서 모션을 재생한다 */
+    (function () {
+      var svgs = document.querySelectorAll('svg.dm');
+      if (!svgs.length) return;
+      if (!('IntersectionObserver' in window)) { svgs.forEach(function (s) { s.classList.add('dm-on'); }); return; }
+      var io = new IntersectionObserver(function (es) {
+        es.forEach(function (e) { e.target.classList.toggle('dm-on', e.isIntersecting); });
+      }, { threshold: 0.3 });
+      svgs.forEach(function (s) { io.observe(s); });
+    })();
+  </script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
