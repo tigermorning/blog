@@ -31,6 +31,13 @@
     <p class="one-liner">AI 서비스를 사용자에게 내보내는 일은 «무엇이 나갔는지, 사용자는 괜찮았는지, 되돌릴 수 있는지»를 숫자로 말할 수 있게 만드는 일이에요.</p>
 
 
+    <p>이 글은 Mini WRAP UP 미션의 세 갈래로 정리했어요.</p>
+    <ul>
+      <li><strong>정리</strong> — 아홉 날을 다섯 주제로 묶었어요. 아래 «이 글이 묶은 노드»에서 주제 구역에 마우스를 대면 주제마다 하는 일과 직접 확인한 것이 나와요.</li>
+      <li><strong>확장</strong> — 배포가 «성공»했는데 왜 사용자는 오류를 봤는지 실험으로 확인하고, 그래서 배포 과정을 어떻게 바꿨는지 적었어요.</li>
+      <li><strong>활용</strong> — 내 앱 도장판에 세 질문을 대 보고 비어 있는 곳을 찾았어요.</li>
+    </ul>
+
     <h2 id="flow"><span class="hl">한 장 그림</span> — 전체 지도</h2>
     <figure>
     <svg viewBox="0 0 760 306" role="img" aria-label="전체 지도: 설계에서 출발한 변경이 합치기, 테스트, 이미지 만들기, 시험 서버, 전환을 차례로 지나 Cloud Run에 도착한다. 아래에는 무엇이 나갔나, 사용자는 괜찮았나, 되돌릴 수 있나 세 질문이 있다" style="width:100%;height:auto;">
@@ -153,7 +160,7 @@
       <div class="tp" data-g="5" hidden style="--c:var(--folder-4)"><p class="tp-title">배포 전략 <span>노드 70·71 · 10.28~29</span></p><p><strong>하는 일</strong> 새 버전을 요청 0%로 먼저 올려 두고, 준비가 됐는지 확인한 뒤에만 요청을 옮겨요.</p><p><strong>직접 확인한 것</strong> 기본 확인 방식에서는 요청 389건 중 71건이 실패했고, /health 확인 방식에서는 283건 중 0건이 실패했어요. (아래 «내 예시»)</p><p><strong>자세한 글</strong> <a href="load-balancer-zero-downtime.html">노드 70 · 새 버전으로 바뀌는 몇 초 동안</a> · <a href="cloud-run-zero-downtime-deploy.html">노드 71 · 배포하는 동안 사용자는 오류를 봤을까</a></p></div>
     </div>
 
-    <h2 id="example"><span class="hl">내 예시</span> — 배포는 "성공"인데 요청 71건이 실패한 이야기</h2>
+    <h2 id="example"><span class="hl">확장</span> — 배포는 "성공"인데 요청 71건이 실패한 이유</h2>
     <p>새 버전이 시작하는 데 30초가 걸리는 예제 앱을 일부러 배포하고, 배포하는 동안 같은 주소에 0.2초마다 요청을 보내 실패를 셌어요.</p>
     <figure>
     <svg viewBox="0 0 760 362" role="img" aria-label="새 버전이 시작되는 약 30초 동안, 기본 프로브는 바로 통과시켜 요청 389건 중 71건이 실패했고, /health 프로브는 200 응답이 올 때까지 기다려 이전 버전이 답해 283건 중 0건이 실패했다. 대신 배포하는 쪽이 기다리는 시간은 약 19초에서 약 62초로 43초 늘었다" style="width:100%;height:auto;">
@@ -205,6 +212,19 @@
       <text x="150" y="336" text-anchor="start" font-family="var(--font-body)" font-size="11" fill="var(--muted)">기본: 배포는 19초에 끝나지만 그 뒤에도 앱은 준비 중이라 오류가 이어져요.</text><text x="150" y="352" text-anchor="start" font-family="var(--font-body)" font-size="11" fill="var(--muted)">/health: 앱이 준비된 뒤에 끝나서 더 오래 걸리고, 그동안 사용자는 이전 버전을 정상으로 써요.</text>
     </svg>
     </figure>
+
+    <p><strong>무엇을 배웠나.</strong> «배포 성공»은 새 버전이 떴다는 뜻이지, 사용자가 제대로 된 답을 받는다는 뜻이 아니에요. 그래서 노드 71에서는 배포 순서를 바꿨어요. 새 버전을 요청 0%로 먼저 올려 두고, 두 번 걸러진 뒤에만 요청을 옮겨요.</p>
+    <table>
+      <thead><tr><th></th><th>첫 관문 — 스타트업 프로브</th><th>둘째 관문 — 스모크 테스트</th></tr></thead>
+      <tbody>
+        <tr><td>누가</td><td>Cloud Run이 자동으로</td><td>내 배포 자동화(워크플로)가</td></tr>
+        <tr><td>언제</td><td>새 버전이 시작될 때</td><td>요청을 옮기기 직전</td></tr>
+        <tr><td>묻는 것</td><td>손님을 받을 준비가 됐나?</td><td>내가 원한 그것이고 정상인가?</td></tr>
+        <tr><td>걸리면</td><td>배포가 실패하고 멈춰요</td><td>요청을 옮기지 않고 멈춰요</td></tr>
+      </tbody>
+    </table>
+    <p>스모크 테스트는 원래 서비스 주소가 아니라 새 버전 전용 주소(태그 URL)로 해야 해요. 원래 주소에는 아직 이전 버전이 답해서, 새 버전이 망가져 있어도 «정상»으로 통과하기 때문이에요.</p>
+    <p><strong>결과.</strong> 이렇게 바꾼 배포 과정으로 배포하는 동안(PR #29) 요청 714건 중 실패는 0건이었어요. 일부러 망가뜨린 버전(/health가 503)은 첫 관문에서 걸려 배포가 멈췄고, 요청은 그대로 이전 버전이 받았어요(이 시험은 gcloud 명령으로 했어요).</p>
 
     <h2 id="apply"><span class="hl">활용</span> — 내 앱(도장판)에 세 질문을 대 보기</h2>
     <p>도장판은 오늘 할 일 칸 세 개에 도장을 찍는 루틴 앱이에요. 도장이 쌓이면 칸이 하나씩 열려요.</p>
