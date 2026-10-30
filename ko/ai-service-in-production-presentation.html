@@ -113,20 +113,30 @@
     </svg>
     </figure>
 
-    <h2 id="nodes"><span class="hl">이 글이 묶은 노드</span> — 주제 구역을 눌러 보세요</h2>
+    <h2 id="nodes"><span class="hl">이 글이 묶은 노드</span></h2>
+    <p id="cue" class="cue">▼ 각 주제 구역에 마우스를 대 보세요</p>
     <style>
+      .cue{display:inline-block;margin:.2rem 0 .6rem;padding:.35rem 1rem;border-radius:999px;background:var(--accent);color:#fff;font-weight:700;animation:cuepulse 1.4s ease-in-out infinite;}
+      .cue.done{animation:none;background:var(--muted);}
+      @keyframes cuepulse{0%,100%{box-shadow:0 0 0 0 rgba(255,90,95,.55);transform:translateY(0)}50%{box-shadow:0 0 0 10px rgba(255,90,95,0);transform:translateY(3px)}}
+      @keyframes pillpulse{0%,100%{stroke-width:2;opacity:1}50%{stroke-width:5;opacity:.75}}
+      @keyframes cellpulse{0%,100%{fill-opacity:.16}50%{fill-opacity:.4}}
+      .nudge .tg:not([data-g="6"]) .pill{animation:pillpulse 1.4s ease-in-out infinite;}
+      .nudge .tg:not([data-g="6"]) .cell{animation:cellpulse 1.4s ease-in-out infinite;}
+      @media (prefers-reduced-motion:reduce){.cue,.nudge .pill,.nudge .cell{animation:none !important;}}
       .tg{cursor:pointer;outline:none;}
       .tg .cell,.tg .pill{transition:fill-opacity .2s,stroke-width .2s,fill .2s;}
       .tg:hover .cell,.tg:focus .cell,.tg.sel .cell{fill-opacity:.38;stroke-width:3.5;}
       .tg:hover .pill,.tg:focus .pill,.tg.sel .pill{fill:var(--c);fill-opacity:.2;stroke-width:3.5;}
       #tp-box{position:relative;height:0;}
       #tp-box .tp{position:absolute;left:0;right:0;top:.4rem;z-index:5;border-left:6px solid var(--c);background:linear-gradient(rgba(0,0,0,.03),rgba(0,0,0,.03)),var(--bg);box-shadow:0 10px 28px rgba(0,0,0,.18);border-radius:0 12px 12px 0;padding:.4rem 1rem;}
+      #tp-box .tp::before{content:'';position:absolute;left:0;right:0;top:-24px;height:24px;}
       #tp-box .tp p{margin:.35rem 0;}
       #tp-box .tp-title{font-size:1.1rem;font-weight:700;}
       #tp-box .tp-title span{font-size:.85rem;font-weight:400;color:var(--muted);margin-left:.5rem;}
     </style>
     <figure>
-    <svg viewBox="0 0 760 112" role="img" aria-label="모두연 노드 63번부터 72번까지의 날짜와 주제. 주제 구역을 누르면 내용이 나온다" style="width:100%;height:auto;">
+    <svg id="tl-svg" class="nudge" viewBox="0 0 760 112" role="img" aria-label="모두연 노드 63번부터 72번까지의 날짜와 주제. 주제 구역을 누르면 내용이 나온다" style="width:100%;height:auto;">
       <g class="tg" data-g="1" style="--c:var(--muted)" tabindex="0" role="button" aria-label="설계 내용 보기"><rect class="cell" x="8" y="8" width="68" height="58" rx="10" fill="var(--muted)" fill-opacity="0.16" stroke="var(--muted)" stroke-width="2"/><text x="42" y="34" text-anchor="middle" font-family="var(--font-heading)" font-size="18" fill="var(--ink)">63</text><text x="42" y="54" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">10.19</text><rect class="pill" x="8" y="76" width="68" height="28" rx="14" fill="var(--bg)" stroke="var(--muted)" stroke-width="2"/><text x="42.0" y="95" text-anchor="middle" font-family="var(--font-heading)" font-size="12.5" fill="var(--ink)">설계</text></g>
       <g class="tg" data-g="2" style="--c:var(--muted)" tabindex="0" role="button" aria-label="Cloud Run 내용 보기"><rect class="cell" x="83" y="8" width="68" height="58" rx="10" fill="var(--muted)" fill-opacity="0.16" stroke="var(--muted)" stroke-width="2"/><text x="117" y="34" text-anchor="middle" font-family="var(--font-heading)" font-size="18" fill="var(--ink)">64</text><text x="117" y="54" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">10.20</text><rect class="cell" x="158" y="8" width="68" height="58" rx="10" fill="var(--muted)" fill-opacity="0.16" stroke="var(--muted)" stroke-width="2"/><text x="192" y="34" text-anchor="middle" font-family="var(--font-heading)" font-size="18" fill="var(--ink)">65</text><text x="192" y="54" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">10.21</text><rect class="pill" x="83" y="76" width="143" height="28" rx="14" fill="var(--bg)" stroke="var(--muted)" stroke-width="2"/><text x="154.5" y="95" text-anchor="middle" font-family="var(--font-heading)" font-size="12.5" fill="var(--ink)">Cloud Run</text></g>
       <g class="tg" data-g="3" style="--c:var(--folder-1)" tabindex="0" role="button" aria-label="CI/CD 내용 보기"><rect class="cell" x="233" y="8" width="68" height="58" rx="10" fill="var(--folder-1)" fill-opacity="0.16" stroke="var(--folder-1)" stroke-width="2"/><text x="267" y="34" text-anchor="middle" font-family="var(--font-heading)" font-size="18" fill="var(--ink)">66</text><text x="267" y="54" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">10.22</text><rect class="cell" x="308" y="8" width="68" height="58" rx="10" fill="var(--folder-1)" fill-opacity="0.16" stroke="var(--folder-1)" stroke-width="2"/><text x="342" y="34" text-anchor="middle" font-family="var(--font-heading)" font-size="18" fill="var(--ink)">67</text><text x="342" y="54" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">10.23</text><rect class="pill" x="233" y="76" width="143" height="28" rx="14" fill="var(--bg)" stroke="var(--folder-1)" stroke-width="2"/><text x="304.5" y="95" text-anchor="middle" font-family="var(--font-heading)" font-size="12.5" fill="var(--ink)">CI/CD</text></g>
@@ -227,20 +237,27 @@
       var groups = document.querySelectorAll('.tg');
       var panels = document.querySelectorAll('#tp-box .tp');
       var pinned = null;
+      var svg = document.getElementById('tl-svg');
+      var cue = document.getElementById('cue');
+      function calm() { svg.classList.remove('nudge'); cue.classList.add('done'); }
       function show(g) {
         panels.forEach(function (p) { p.hidden = String(g) !== p.getAttribute('data-g'); });
       }
+      var timer = null;
+      function keep() { if (timer) { clearTimeout(timer); timer = null; } }
+      function later() { keep(); timer = setTimeout(refresh, 350); }
+      panels.forEach(function (p) { p.addEventListener('mouseenter', keep); p.addEventListener('mouseleave', later); });
       function refresh() { if (pinned) { show(pinned); } else { panels.forEach(function (p) { p.hidden = true; }); } }
       groups.forEach(function (el) {
         var g = el.getAttribute('data-g');
-        el.addEventListener('mouseenter', function () { show(g); });
-        el.addEventListener('mouseleave', refresh);
+        el.addEventListener('mouseenter', function () { calm(); keep(); show(g); });
+        el.addEventListener('mouseleave', later);
         function toggle() {
           pinned = pinned === g ? null : g;
           groups.forEach(function (x) { x.classList.toggle('sel', x.getAttribute('data-g') === pinned); });
           refresh();
         }
-        el.addEventListener('click', toggle);
+        el.addEventListener('click', function () { calm(); toggle(); });
         el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
       });
     })();
