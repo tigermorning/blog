@@ -1050,6 +1050,34 @@ body.list-page .site-header {
   margin-bottom: 2rem;
 }
 
+.sidebar .sidebar-maps {
+  margin: -0.8rem 0 2rem;
+  padding: 0.6rem 0.7rem 0.7rem;
+  border: 2px solid var(--accent);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.sidebar .sidebar-maps-h {
+  margin: 0 0 0.1rem;
+  font-family: var(--font-subhead);
+  font-size: 0.82rem;
+  color: var(--accent);
+}
+.sidebar .sidebar-maps a {
+  font-weight: 700;
+  border-left-color: var(--accent);
+}
+.sidebar .sidebar-maps .sb-sub {
+  display: block;
+  font-weight: 400;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: var(--muted);
+}
+
 .sidebar ul {
   list-style: none;
   margin: 0;
