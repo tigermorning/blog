@@ -25,7 +25,7 @@
   <main>
     <h1><span class="hl">설계가 코드 어디에 앉는가</span> — 실행 가능한 Python 하네스 읽기 (7)</h1>
     <p class="post-date">2026. 9. 8.</p>
-    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+    <p class="post-date">※ 이 글은 모두의연구소(모두연) 학습 자료를 제 나름의 말로 다시 정리한 글이에요.</p>
 
     <a class="post-nav" href="my-harness-vertical-slice.html">
       <span class="post-nav-label">← 이전 편</span>
@@ -81,7 +81,7 @@
     <p>먼저 목적을 분명히 해 둘게요. <strong>함수를 전부 외우거나 같은 파일 구성을 재현하는 게 목표가 아니에요.</strong> 이 예제의 결정은 Python·로컬 CLI·파일 세션 저장이고, 제가 다른 언어나 플랫폼을 골랐다면 그대로 바꿀 필요도 없어요. <strong>모델 연결·도구 실행·상태·검증을 어떻게 나눴는지</strong>를 제 설계와 대조하려고 읽습니다.</p>
     <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— Claude Code 등</span></p>
     <pre><code>이 하네스를 실행하고, 내 설계의 각 기능이 어느 코드에 해당하는지 설명해 줘. 먼저 파일 읽기부터 확인하자.</code></pre>
-    <p>키 설정은 압축 안의 <code>README.md</code>에 있는 방법을 따라요. macOS·Linux와 PowerShell용 <strong>숨김 입력</strong> 방법이 각각 제공돼요. 다시 강조하면 <strong>키 값은 AI 채팅에 붙이지 않고, 프로그램을 실행할 그 터미널에 설정</strong>합니다. <a href="my-harness-vertical-slice.html">6편</a>에서 짚었듯 <strong>키를 설정한 터미널과 실행 터미널이 다르면 값이 전달되지 않아요.</strong></p>
+    <p>키(모델 서비스를 쓰게 해 주는 비밀 문자열) 설정은 예제 하네스 폴더의 <code>README.md</code>에 있는 방법을 따라요. macOS·Linux와 PowerShell용 <strong>숨김 입력</strong> 방법이 각각 제공돼요. 다시 강조하면 <strong>키 값은 AI 채팅에 붙이지 않고, 프로그램을 실행할 그 터미널에 설정</strong>합니다. <a href="my-harness-vertical-slice.html">6편</a>에서 짚었듯 <strong>키를 설정한 터미널과 실행 터미널이 다르면 값이 전달되지 않아요.</strong></p>
 
     <h2><span class="hl">비유</span> — 신문사 편집국의 자리 배치</h2>
     <p>신문 기사 한 꼭지가 지면에 실리기까지, 편집국에서는 자리마다 맡은 일이 달라요.</p>
@@ -155,7 +155,7 @@
     <p>이렇게 나눈 목적은 딱 하나예요. <strong>파일 권한을 검사하는 코드가 모델 응답의 필드 이름에 의존하지 않게</strong> 하는 것. <a href="my-harness-interfaces.html">4편에서 어댑터</a>를 이야기할 때의 그 이유가 실제 파일 구조로 나타난 거예요.</p>
 
     <h2><span class="hl">반복의 중심</span> — 세 조각만 읽어도 돼요</h2>
-    <p>코드 전체를 읽을 필요는 없어요. 세 조각이면 흐름이 잡혀요. Python 문법이 낯설면 <a href="reading-python-code-basics.html">파이썬 코드 눈으로 읽기 — 함수·변수·반복·오류·async</a>를 옆에 두고 보세요.</p>
+    <p>코드 전체를 읽을 필요는 없어요. 세 조각이면 흐름이 잡혀요. 처음 보는 코드에서 모르는 줄이 나오는 건 정상이에요. 아래 조각은 읽기만 해도 되고, 직접 실행하지 않아요. Python 문법이 낯설면 <a href="reading-python-code-basics.html">파이썬 코드 눈으로 읽기 — 함수·변수·반복·오류·async</a>를 옆에 두고 보세요.</p>
     <p><strong>①모델을 부르는 곳</strong>이에요.</p>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 실제 파일에서 흐름만 보이게 뽑아낸 조각이라, 이것만으로는 실행되지 않아요</span></p>
     <pre><code>reply = await self.provider.complete(
@@ -169,7 +169,7 @@ class ToolRequest:
     id: str
     name: str
     arguments: dict[str, Any] | str</code></pre>
-    <p><code>id</code>는 <a href="my-harness-interfaces.html">4편의 호출 ID</a>예요 — 요청과 결과를 짝지어 줘요. <code>name</code>은 어느 도구인지, <code>arguments</code>는 그 도구의 입력이고요. 이렇게 <strong>타입이 적힌 자료형</strong>을 쓰면 각 부분이 주고받는 값이 눈에 보여요. 다만 <strong>타입 표기만으로 실행 검사가 끝나지는 않아요.</strong> 그래서 루프에서는 JSON을 해석하고, 도구의 JSON Schema<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>로 인수를 다시 검사합니다.</p>
+    <p><code>id</code>는 <a href="my-harness-interfaces.html">4편의 호출 ID</a>예요 — 요청과 결과를 짝지어 줘요. <code>name</code>은 어느 도구인지, <code>arguments</code>는 그 도구의 입력이고요. 이렇게 <strong>타입이 적힌 자료형</strong>을 쓰면 각 부분이 주고받는 값이 눈에 보여요. 다만 <strong>타입 표기만으로 실행 검사가 끝나지는 않아요.</strong> 그래서 루프에서는 JSON을 해석하고, 도구의 JSON Schema<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>로 인수(도구에 넘기는 입력값)를 다시 검사합니다.</p>
     <p><strong>③도구를 실제로 실행하는 곳</strong>이에요.</p>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 검사 후 실행이라는 순서만 보여 주는 조각이에요</span></p>
     <pre><code>validated = ToolRequest(request.id, request.name, arguments)
@@ -209,7 +209,7 @@ async with asyncio.timeout(self.limits.tool_timeout_seconds):
     <p>이 시리즈에서 읽고 있는 하네스는 <strong>①</strong>이에요. 앞에서 "이건 다른 에이전트 제품에 반복을 맡기는 호출이 아니라 모델 API를 직접 부르는 호출"이라고 한 게 그 뜻이었어요.</p>
 
     <h3>SDK가 두 개라 생기는 혼동</h3>
-    <p>이름이 비슷해서 헷갈리는데, 이건 서로 다른 두 개예요.</p>
+    <p>SDK(프로그램을 만들 때 가져다 쓰는 기능 꾸러미)는 이름이 비슷해서 헷갈리는데, 아래 둘은 서로 다른 두 개예요.</p>
     <table>
       <thead><tr><th>무엇</th><th>패키지 이름</th><th>주는 것</th></tr></thead>
       <tbody>
@@ -217,10 +217,10 @@ async with asyncio.timeout(self.limits.tool_timeout_seconds):
         <tr><td>Claude Agent SDK</td><td><code>claude-agent-sdk</code> / <code>@anthropic-ai/claude-agent-sdk</code></td><td>코딩 에이전트 한 벌을 통째로. 루프 + 내장 도구 + 권한·세션·서브에이전트 (위 ③)</td></tr>
       </tbody>
     </table>
-    <p>"SDK를 쓰면 API 역할이 아니라 에이전트로 동작한다"는 설명을 들었다면, 그건 <strong>아래쪽</strong>을 가리키는 말이에요. 위쪽 SDK를 설치했다고 에이전트가 되지는 않아요 — 그건 여전히 왕복 한 번을 대신 부쳐 주는 우편 창구고, 루프는 제가 짜야 해요. 뒤쪽은 <strong>코딩 에이전트 제품 하나를 라이브러리 형태로 가져다 쓰는 것</strong>에 가까워요. 실제로 <a href="opencode-sisyphus-orchestration.html">2편에서 본 오케스트레이션 플러그인</a>을 다른 도구로 옮겨 놓은 것들이 이 방식으로 만들어져요.</p>
+    <p>"SDK를 쓰면 API 역할이 아니라 에이전트로 동작한다"는 설명을 들었다면, 그건 <strong>아래쪽</strong>을 가리키는 말이에요. 위쪽 SDK를 설치했다고 에이전트가 되지는 않아요 — 그건 여전히 왕복 한 번을 대신 부쳐 주는 우편 창구고, 루프는 제가 짜야 해요. 뒤쪽은 <strong>코딩 에이전트 제품 하나를 라이브러리 형태로 가져다 쓰는 것</strong>에 가까워요. 실제로 <a href="opencode-sisyphus-orchestration.html">혼자 일하던 에이전트를 팀으로 — Sisyphus와 오케스트레이션 플러그인 (2)</a>에서 본 오케스트레이션 플러그인을 다른 도구로 옮겨 놓은 것들이 이 방식으로 만들어져요.</p>
     <p>주의할 게 하나 더 있어요. ②의 "도구 실행기"는 <strong>일반 API SDK 안에 들어 있는 보조 기능</strong>이라 ③과 이름이 헷갈리기 쉬운데, 둘은 달라요 — ②는 <strong>내가 정의한 도구만</strong> 돌려 주고 내장 도구도 파일 접근도 없어요. ③은 파일과 명령을 다루는 도구가 처음부터 들어 있고요.</p>
 
-    <h3>그러면 왜 ①을 하나</h3>
+    <h3>더 깊이 — 그러면 왜 ①을 하나</h3>
     <p>③이나 ④를 쓰면 훨씬 빨리 굴러가요. 그런데 이 시리즈가 ①을 읽는 이유가 있어요 — <strong>루프를 남이 짜 주면, 그 안에서 어떤 결정이 일어나는지가 안 보여요.</strong> 도구 인수를 언제 검사하는지, 실패한 도구 결과를 어떻게 돌려주는지, 몇 번째에서 멈추는지가 전부 남의 판단으로 정해져 있어요. 그게 나쁘다는 게 아니라, <strong>그 판단이 무엇인지 아는 사람과 모르는 사람이 갈린다</strong>는 뜻이에요.</p>
     <p>한 바퀴를 직접 짜 보고 나면 ③·④를 쓸 때도 "지금 저 안에서 ①~④ 중 어디가 도는 중이구나"가 보여요. 반대 순서로는 잘 안 보이고요.</p>
 
@@ -249,7 +249,7 @@ async with asyncio.timeout(self.limits.tool_timeout_seconds):
     <h2><span class="hl">세션 저장과 지표</span></h2>
     <p>세션은 <code>.harness/sessions/</code>에 저장돼요. 도구 요청과 각 결과를 <strong>중간중간 저장</strong>하고, 임시 파일을 다 쓴 뒤 <strong>교체하는 방식</strong>으로 저장 중 파일이 깨질 위험을 줄여요. 다만 <strong>같은 세션을 여러 프로세스가 동시에 쓰는 설계는 아니에요.</strong> 재개할 때 제공자·모델·주소·작업 폴더가 다르면 <strong>새 이름을 요구</strong>합니다.</p>
     <p>중단돼서 결과가 없는 요청은 <code>repair_pending</code>이 <strong>오류 결과로 종결</strong>해요. 여기서 중요한 한계가 하나 있어요. <strong>파일 변경과 세션 저장이 하나의 거래처럼 묶여 있지 않아요.</strong> 그러니 실행 여부가 불확실한 작업을 자동으로 반복하지 말고, <strong>실제 파일을 확인</strong>해야 해요. 그리고 대화 파일에는 자료 내용이 남을 수 있으니 <strong>공개 저장소에 넣지 않습니다.</strong></p>
-    <p><strong>지표<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>(metrics)</strong>는 실행을 서로 비교할 수 있게 남기는 수치예요. 모델·도구 호출 수, 도구 오류 수, 경과 시간, 보고된 입력·출력 토큰이 남아요.</p>
+    <p><strong>지표<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>(metrics)</strong>는 실행을 서로 비교할 수 있게 남기는 수치예요. 모델·도구 호출 수, 도구 오류 수, 경과 시간, 보고된 입력·출력 토큰(모델이 글의 양을 세는 단위)이 남아요.</p>
 
     <h2><span class="hl">나쁜 선택 vs 좋은 선택</span></h2>
     <p>지표를 읽는 두 가지 방식이에요.</p>
@@ -276,15 +276,19 @@ async with asyncio.timeout(self.limits.tool_timeout_seconds):
 ).run(instruction + "\n\nLocal task working directory (relative to workspace): "
       + options.get("task_cwd", "."))</code></pre>
     <p>이 연결에서 <strong>모델의 판단 루프는 기존 <code>Agent</code>가 그대로 맡고, 실행 범위와 도구 목록만 평가용 백엔드가 정해요.</strong> 앞 그림에서 오른쪽 자리를 갈아 끼운 거죠.</p>
-    <p>모델이 Python 코드를 실행하려면 <strong>먼저 작업 폴더에 <code>.py</code> 파일을 만든 뒤</strong> 파일 경로와 인수 목록으로 요청해야 해요. <strong>임의 셸 명령을 받는 방식과 구별되는 지점</strong>이에요.</p>
-    <p>그리고 정책 하나가 여기서 달라져요. <strong>평가 작업 복사본 안의 변경은 사전 허용된 동작</strong>으로 다뤄요. 매번 승인을 묻지 않는다는 뜻이죠. 하지만 <strong>그 허용이 사용자 컴퓨터의 다른 파일 접근까지 뜻하지는 않아요.</strong> 로컬 CLI의 "매번 확인" 승인 방식과 평가의 자동 실행 정책은 <strong>서로 다른 정책</strong>이라는 걸 기억해 두세요.</p>
-    <p><code>execution.py</code>는 실행할 Python 파일의 경로를 검사하고 출력과 시간을 제한해요. 출력이 상한을 넘으면 프로세스를 종료하면서도 <strong>파이프를 계속 비워</strong> 무한 대기를 줄여요. POSIX에서는 원래 프로세스 그룹을 종료하고 Windows에서는 자식 프로세스를 직접 종료하고요. 다만 <strong>별도 세션으로 벗어난 자식까지 가두는 운영체제 샌드박스는 아니에요.</strong></p>
+    <ul>
+      <li><strong>Python 실행:</strong> 모델이 Python 코드를 실행하려면 <strong>먼저 작업 폴더에 <code>.py</code> 파일을 만든 뒤</strong> 파일 경로와 인수 목록으로 요청해야 해요. 임의 셸 명령(컴퓨터에 아무 명령이나 시키는 방식)을 받는 방식과 구별되는 지점이에요.</li>
+      <li><strong>승인 정책:</strong> <strong>평가 작업 복사본 안의 변경은 사전 허용된 동작</strong>이라 매번 승인을 묻지 않아요. 하지만 그 허용이 사용자 컴퓨터의 다른 파일 접근까지 뜻하지는 않아요. 로컬 CLI의 "매번 확인" 방식과 평가의 자동 실행은 <strong>서로 다른 정책</strong>이에요.</li>
+      <li><strong>실행 제한:</strong> <code>execution.py</code>는 실행할 Python 파일의 경로를 검사하고 출력과 시간을 제한해요. 출력이 상한을 넘으면 프로세스를 종료하면서도 <strong>파이프를 계속 비워</strong> 무한 대기를 줄여요. POSIX에서는 원래 프로세스 그룹을 종료하고 Windows에서는 자식 프로세스를 직접 종료해요. 다만 <strong>별도 세션으로 벗어난 자식까지 가두는 운영체제 샌드박스는 아니에요.</strong></li>
+    </ul>
 
     <h2><span class="hl">원본 문제와 채점은 어디서 오나</span></h2>
     <p>여기부터는 <a href="my-harness-benchmark-local-port.html">다음 편</a>의 예고편이에요. 이 하네스의 평가 문제는 <strong>자체 제작이 아니에요.</strong> Terminal-Bench Pro의 <strong>고정 커밋</strong>에서 원본 난도 쉬움 2개·중간 4개·어려움 4개를 골라, 원래 컨테이너의 절대 경로를 <strong>로컬 작업 폴더로 옮겨</strong> 실행하는 구성이에요.</p>
-    <p><code>benchmark_source.py</code>는 목록에 기록된 저장소 커밋과 파일별 크기·<strong>SHA256<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup></strong>을 확인해요. 내려받은 파일이 <strong>약속한 원본과 같은지</strong> 보려는 거예요. 원본의 <code>/app</code>, <code>/protected</code>, <code>/home/user</code> 같은 경로는 작업 폴더 안의 대응 위치로 바뀌고, <strong>작업 지시와 채점 코드에도 같은 경로 규칙을 적용</strong>해야 해요.</p>
-    <p>그리고 <code>grading.py</code>가 원본 <code>tests/test_outputs.py</code>를 <code>pytest</code>로 실행해요. 여기서 이 시리즈 전체를 관통하는 규칙이 다시 나옵니다. <strong>모델이 "완료했다"고 말한 문장을 점수로 쓰지 않아요.</strong> 원본 검사가 실제 산출물을 확인한 결과를 씁니다. 검사 실행 오류나 시간·출력 한도 초과도 기록해야 하고요.</p>
-    <p>다만 채점 파일을 작업 폴더 밖에 두는 건 <strong>일반 파일 도구에 노출하지 않기 위한 구조</strong>일 뿐이에요. <strong>호스트에서 실행되는 Python 코드가 다른 파일을 못 읽게 보장하는 장치는 아니에요.</strong> 그리고 <strong>원본 정답과 채점 파일을 내 하네스의 입력이나 개선 프롬프트에 넣지 않는다</strong>는 평가 규칙도 함께 지킵니다.</p>
+    <ul>
+      <li><strong>원본 확인:</strong> <code>benchmark_source.py</code>는 목록에 기록된 저장소 커밋과 파일별 크기·<strong>SHA256<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup></strong>을 확인해요. 내려받은 파일이 <strong>약속한 원본과 같은지</strong> 보려는 거예요. 원본의 <code>/app</code>, <code>/protected</code>, <code>/home/user</code> 같은 경로는 작업 폴더 안의 대응 위치로 바뀌고, <strong>작업 지시와 채점 코드에도 같은 경로 규칙을 적용</strong>해야 해요.</li>
+      <li><strong>채점:</strong> <code>grading.py</code>가 원본 <code>tests/test_outputs.py</code>를 <code>pytest</code>로 실행해요. 이 시리즈를 관통하는 규칙이 다시 나와요. <strong>모델이 "완료했다"고 말한 문장을 점수로 쓰지 않고</strong>, 원본 검사가 실제 산출물을 확인한 결과를 써요. 검사 실행 오류나 시간·출력 한도 초과도 기록해야 해요.</li>
+      <li><strong>한계와 규칙:</strong> 채점 파일을 작업 폴더 밖에 두는 건 <strong>일반 파일 도구에 노출하지 않기 위한 구조</strong>일 뿐, 호스트에서 실행되는 Python 코드가 다른 파일을 못 읽게 보장하는 장치는 아니에요. 그리고 <strong>원본 정답과 채점 파일을 내 하네스의 입력이나 개선 프롬프트에 넣지 않는다</strong>는 평가 규칙도 함께 지켜요.</li>
+    </ul>
 
     <h2><span class="hl">직접 해보기</span></h2>
     <p>실제 모델 없이도 돌릴 수 있는 검사부터 해 봐요.</p>
@@ -344,7 +348,7 @@ async with asyncio.timeout(self.limits.tool_timeout_seconds):
 
     <hr>
 
-    <h3>"내 손으로 만드는 에이전트 하네스" 시리즈</h3>
+    <h3>"에이전트 하네스 — 내 손으로 만들기" 시리즈</h3>
     <a class="post-nav" href="my-harness-users-and-prd.html">
       <span class="post-nav-label">(1)</span>
       <span class="post-nav-title">맡길 일부터 적는다 — 내 하네스의 사용자와 미완성 PRD</span>

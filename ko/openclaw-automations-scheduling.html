@@ -25,7 +25,7 @@
   <main>
     <h1><span class="hl">사람이 기억하지 않도록</span> — 자동화 예약과 cron (7)</h1>
     <p class="post-date">2026. 9. 4.</p>
-    <p class="post-date">※ 이 글은 모두의연구소 학습 과정에서 배운 내용을 제 나름의 언어로 재구성한 것입니다.</p>
+    <p class="post-date">※ 이 글은 모두의연구소(모두연) 학습 자료를 제 나름의 말로 다시 정리한 글이에요.</p>
 
     <a class="post-nav" href="openclaw-multi-agent-bindings.html">
       <span class="post-nav-label">← 이전 편</span>
@@ -58,7 +58,7 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>예약(시간표)과 그걸 울리는 스케줄러(종 장치)가 별개예요. 게이트웨이가 꺼져 있어서 안 울린 건데 예약이 사라진 줄 알고 다시 만들면, 켜는 순간 같은 시보 두 개가 돌아요. <a class="suspect-jump" href="#suspect-silent-schedule">언제 의심하나 ↓</a></li>
+            <li>예약(시간표)과 그걸 울리는 스케줄러(종 장치)가 별개예요. 게이트웨이가 꺼져 있어서 안 울린 건데 예약이 사라진 줄 알고 다시 만들면, 켜는 순간 같은 시보(정해진 시각마다 오는 알림) 두 개가 돌아요. <a class="suspect-jump" href="#suspect-silent-schedule">언제 의심하나 ↓</a></li>
             <li>반복 예약은 지우지 않는 한 계속 실행되고 그때마다 토큰을 써요. 5분 시보를 켜 두고 자면 밤새 매시간 12번씩 호출돼 이유 모를 비용이 쌓여요. <a class="suspect-jump" href="#suspect-overnight-cost">언제 의심하나 ↓</a></li>
             <li>예약은 내가 안 볼 때 실행돼요. 그래서 권한 경계가 직접 대화할 때보다 더 중요해요. <a class="suspect-jump" href="#suspect-unattended-action">언제 의심하나 ↓</a></li>
             <li>cron 칸을 하나 빠뜨리면 뜻이 통째로 밀려요. <a class="suspect-jump" href="#suspect-cron-shifted">언제 의심하나 ↓</a></li>
@@ -131,7 +131,7 @@
     </svg>
     <p><strong>읽는 법:</strong> 왼쪽부터 순서대로 해요. 굵은 상자 ④가 3편의 "말이 아니라 기록"을 예약에 적용하는 자리예요. 종이 울렸다는 걸 채팅에 뜬 메시지로도 알 수 있지만, 실행 기록부에 두 번 적혔는지까지 봐야 확인이 끝나요.</p>
 
-    <h2><span class="hl">스케줄러는 게이트웨이 안에 있다</span></h2>
+    <h2><span class="hl">더 깊이 — 스케줄러는 게이트웨이 안에 있다</span></h2>
     <p>automations는 <a href="openclaw-what-and-where-from.html">1편</a>에서 본 게이트웨이에 들어 있는 스케줄러<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>예요. <strong>모델 안에서 실행되는 기능이 아니에요.</strong> 게이트웨이 프로세스가 실행 중이어야 예약한 시각에 일이 시작돼요. 일정, 실행 상태, 실행 기록은 OpenClaw의 공유 SQLite<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup> 데이터베이스에 저장되니, 게이트웨이를 다시 시작해도 예약 자체는 사라지지 않아요. 실행 결과는 채팅 채널, 웹훅<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>, 또는 기록으로 보낼 수 있어요.</p>
     <p>먼저 빈 시간표를 봐요. 처음 쓰는 환경이면 목록이 비어 있어요.</p>
     <p class="run-tag">실행: 로컬 터미널</p>
@@ -142,13 +142,13 @@
     <p>먼저 UTC<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>의 현재 시각을 확인하고, 거기서 3분 뒤의 ISO 시각<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>을 계산해요.</p>
     <p class="run-tag">실행: 로컬 터미널</p>
     <pre><code>date -u +%FT%TZ</code></pre>
-    <p>아래 <code>&lt;ISO시각&gt;</code> 자리에 그 값을 넣어요. <code>--session main</code>은 앞에서 연 WebChat의 main 세션으로 시스템 이벤트를 보내라는 뜻이에요.</p>
+    <p>아래 <code>&lt;ISO시각&gt;</code> 자리에 그 값을 넣어요. <code>--session main</code>은 앞에서 연 WebChat의 main 세션으로 시스템 이벤트(그 대화에 알림 문장을 넣는 일)를 보내라는 뜻이에요.</p>
     <p class="run-tag">실행: 로컬 터미널</p>
     <pre><code>openclaw automations create "&lt;ISO시각&gt;" --name "첫 알림" --session main --system-event "3분 전에 예약한 알림이 도착했습니다"</code></pre>
     <p>시간이 되면 main 세션에 메시지가 도착해요. WebChat을 열어 확인해요. <strong>한 번만 실행하는 작업은 성공하면 자동으로 지워져요.</strong> 명령의 순서도 정해져 있어요. 일정이 먼저, 프롬프트가 그다음. 위 명령은 프롬프트 대신 시스템 이벤트를 넣은 형태이고, 이름은 목록에서 알아보기 쉽게 붙여요.</p>
 
     <h2><span class="hl">5분마다 울리는 시보</span> — cron 표기식</h2>
-    <p><strong>cron 표기식</strong>은 반복 시간을 다섯 칸으로 적는 방식이에요. 칸의 순서는 "분 시 일 월 요일"이에요.</p>
+    <p><strong>cron 표기식</strong>은 반복 시간을 다섯 칸으로 적는 방식이에요. 칸의 순서는 "분 시 일 월 요일"이에요. 처음 보면 암호처럼 보이는 게 정상이에요.</p>
     <table>
       <thead><tr><th>칸</th><th>1번째</th><th>2번째</th><th>3번째</th><th>4번째</th><th>5번째</th></tr></thead>
       <tbody>
@@ -248,7 +248,7 @@
 
     <hr>
 
-    <h3>"OpenClaw로 내 에이전트 운영하기" 시리즈</h3>
+    <h3>"OpenClaw — 에이전트 게이트웨이" 시리즈</h3>
     <a class="post-nav" href="openclaw-what-and-where-from.html">
       <span class="post-nav-label">(1)</span>
       <span class="post-nav-title">새 껍데기, 같은 바닷가재 — OpenClaw는 무엇이고 어디서 왔나</span>
