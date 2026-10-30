@@ -5,38 +5,10 @@
   if (!F || !root) return;
   var NS = 'http://www.w3.org/2000/svg';
   var W = 1000, H = 445, C = 6.4, R = 4.4;
-  var STAGE_POS = { 1: [95, 170], 2: [215, 330], 3: [320, 130], 4: [445, 320], 5: [550, 125], 6: [650, 315], 7: [745, 135], 8: [865, 305], 9: [948, 115] };
   var SHORT = { 1: '웹과 컴퓨터', 2: 'AI 도구 써보기', 3: 'AI 작동 원리', 4: '보고 듣고 그리는 AI', 5: '공간과 자연', 6: '지시·컨텍스트·도구', 7: '내 도구 만들기', 8: '오케스트레이션', 9: '서비스로 내놓기' };
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
 
-  // 공부 사다리: 숲 대신 칸을 왼쪽→오른쪽(좁은 화면은 위→아래)으로 잇는다
-  if (root.getAttribute('data-mode') === 'path') {
-    var lchips = document.createElement('div'); lchips.className = 'forest-chips ladder-chips';
-    var board = document.createElement('div'); board.className = 'ladder-board';
-    root.appendChild(lchips); root.appendChild(board);
-    var showL = function (l) {
-      var h = '<p class="ladder-head">' + esc(l.mark + ' ' + l.name) + '</p><ol class="ladder-steps">';
-      l.steps.forEach(function (s, k) {
-        if (k) h += '<li class="ladder-cond" aria-hidden="true"><span>' + esc(l.conds[k - 1] || '') + '</span></li>';
-        var sc = s.stage ? 'var(--folder-' + s.stage + ')' : 'var(--muted)';
-        h += '<li class="ladder-step" style="--sc:' + sc + ';--k:' + k + '"><a href="' + s.f + '.html">' +
-          '<span class="ls-n">' + (k + 1) + '</span><span class="ls-t">' + esc(s.title) + '</span><span class="ls-tag">' + esc(s.tag) + '</span>' +
-          '<span class="ls-post">' + esc(s.t) + '</span>' + (s.stage ? '<span class="ls-st">' + s.stage + '단계 글</span>' : '') + '</a></li>';
-      });
-      board.innerHTML = h + '</ol>' + (l.note ? '<p class="ladder-note">' + esc(l.note) + '</p>' : '');
-    };
-    F.ladders.forEach(function (l, li) {
-      var b = document.createElement('button'); b.type = 'button'; b.textContent = l.mark + ' ' + l.name;
-      b.addEventListener('click', function () {
-        [].forEach.call(lchips.children, function (x) { x.classList.toggle('on', x === b); });
-        showL(l);
-      });
-      lchips.appendChild(b);
-      if (li === 0) b.click();
-    });
-    return;
-  }
 
   function el(tag, attrs, parent) {
     var e = document.createElementNS(NS, tag);
@@ -46,12 +18,19 @@
   }
   function gColor(g) { return 'var(--folder-' + F.groups[g].stage + ')'; }
 
-  // 그룹 중심
+  // 그룹 중심: 1~9단계를 번호 순서대로 한 줄에 놓는다(단계 사이를 잇는 선은 긋지 않는다 — 글끼리 앞 단계를 먼저 읽으라고 하지 않아서)
+  var CY = 215, x = 40;
+  F.groups.slice().sort(function (a, b) { return a.stage - b.stage; }).forEach(function (g) {
+    g.rad = C * Math.sqrt(g.n + 0.5) + 12;
+    if (g.stage === 4 || g.stage === 6) x += 40;
+    x += g.rad; g.c = [x, CY]; x += g.rad + 18;
+  });
+  W = x + 22;
   F.groups.forEach(function (g, i) {
     g.idx = i;
-    g.c = STAGE_POS[g.stage];
     g.label = g.stage + ' ' + SHORT[g.stage];
   });
+  function byStage(n) { return F.groups.filter(function (g) { return g.stage === n; })[0]; }
   // 점 위치: 그룹마다 해바라기 배열(가운데가 첫 글)
   var count = {};
   F.posts.forEach(function (p) {
@@ -65,14 +44,15 @@
   });
 
   var wrap = document.createElement('div'); wrap.className = 'forest-wrap';
-  var svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H, class: 'forest-svg', role: 'img', 'aria-label': '바이브 코딩 단계별 글을 점으로 그린 전체 지도. 1단계부터 9단계까지 점선 길로 이어진다' });
+  var svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H, class: 'forest-svg', role: 'img', 'aria-label': '바이브 코딩 단계별 글을 점으로 그린 전체 지도. 1단계부터 9단계까지 번호 순서대로 놓여 있다' });
   var tip = document.createElement('div'); tip.className = 'forest-tip';
   wrap.appendChild(svg); wrap.appendChild(tip);
 
-  // 막(幕) 띠
   // 큰 묶음 세 개: 이름은 모두 «무엇을 + 어떻게 하기»
-  var acts = [['기초 다지기', '1~3단계', 30, 372, '웹과 AI의 원리를 익히고 직접 써 봐요'], ['분야 넓히기', '4~5단계', 388, 600, 'AI로 이미지·소리·과학 다루기'], ['에이전트 만들기', '6~9단계', 616, 990, 'AI에게 일을 맡기고 서비스로 내놓아요']];
+  var acts = [['기초 다지기', '1~3단계', 1, 3, '웹과 AI의 원리를 익히고 직접 써 봐요'], ['분야 넓히기', '4~5단계', 4, 5, 'AI로 이미지·소리·과학 다루기'], ['에이전트 만들기', '6~9단계', 6, 9, 'AI에게 일을 맡기고 서비스로 내놓아요']];
   acts.forEach(function (a) {
+    var g1 = byStage(a[2]), g2 = byStage(a[3]);
+    a[2] = g1.c[0] - g1.rad - 18; a[3] = g2.c[0] + g2.rad + 18;
     el('rect', { x: a[2], y: 34, width: a[3] - a[2], height: 380, rx: 22, fill: 'var(--border)', 'fill-opacity': .3, stroke: 'var(--muted)', 'stroke-opacity': .55, 'stroke-width': 2, 'stroke-dasharray': '7 6' }, svg);
     var t = el('text', { x: (a[2] + a[3]) / 2, y: 24, 'text-anchor': 'middle', class: 'glabel', 'font-size': 20, 'font-weight': 700, fill: 'var(--ink)' }, svg);
     t.textContent = a[0] + ' ';
@@ -80,23 +60,14 @@
     var dsc = el('text', { x: (a[2] + a[3]) / 2, y: 437, 'text-anchor': 'middle', 'font-size': 15, fill: 'var(--muted)' }, svg); dsc.textContent = a[4];
   });
 
-  // 길(1→9단계)
-  var stages = F.groups.filter(function (g) { return g.stage; }).sort(function (a, b) { return a.stage - b.stage; });
-  var d = 'M' + stages[0].c[0] + ',' + stages[0].c[1];
-  for (var i = 1; i < stages.length; i++) {
-    var a = stages[i - 1].c, b = stages[i].c, mx = (a[0] + b[0]) / 2;
-    d += ' C' + mx + ',' + a[1] + ' ' + mx + ',' + b[1] + ' ' + b[0] + ',' + b[1];
-  }
-  var road = el('path', { d: d, class: 'road' }, svg);
 
   // 그룹 배경과 이름
   var halos = [];
   F.groups.forEach(function (g) {
-    var rad = C * Math.sqrt(g.n + 0.5) + 12;
-    g.rad = rad;
+    var rad = g.rad;
     var h = el('circle', { cx: g.c[0], cy: g.c[1], r: rad, fill: gColor(g.idx), opacity: .12, class: 'halo' }, svg);
     h.dataset.g = g.idx; halos.push(h);
-    var ty = g.c[1] < 220 ? g.c[1] - rad - 22 : g.c[1] + rad + 22;
+    var ty = g.stage % 2 ? g.c[1] - rad - 26 : g.c[1] + rad + 24;
     var t = el('text', { x: g.c[0], y: ty, 'text-anchor': 'middle', class: 'glabel', 'font-size': 17, fill: 'var(--ink)' }, svg);
     t.textContent = g.label;
     var n = el('text', { x: g.c[0], y: ty + 17, 'text-anchor': 'middle', class: 'glabel', 'font-size': 13, fill: 'var(--muted)' }, svg);
@@ -123,12 +94,6 @@
       c.style.transform = 'translate(' + p.x + 'px,' + p.y + 'px)';
       c.style.opacity = c.dataset.dim === '1' ? .12 : 1;
     });
-  }
-  // 길 그리기
-  var len = road.getTotalLength ? road.getTotalLength() : 0;
-  if (len && !reduce) {
-    road.style.strokeDasharray = len; road.style.strokeDashoffset = len;
-    road.style.transition = 'stroke-dashoffset 2.2s ease .6s';
   }
 
   function subName(p) {
@@ -166,7 +131,6 @@
   var placed = false;
   requestAnimationFrame(function () { requestAnimationFrame(function () {
     place();
-    if (len && !reduce) road.style.strokeDashoffset = 0;
   }); });
-  setTimeout(function () { place(); if (len && !reduce) road.style.strokeDashoffset = 0; }, 400);
+  setTimeout(place, 400);
 })();

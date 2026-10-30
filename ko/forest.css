@@ -19,29 +19,53 @@
 .forest-panel{border:3px dashed var(--border);border-radius:14px;padding:.6rem 1rem;min-height:3rem;}
 .forest-panel p{margin:.25rem 0;}
 .forest-panel ol{margin:.3rem 0 .2rem 1.2rem;padding:0;}
-/* 공부 사다리: 칸을 화살표로 잇는다 */
+/* 공부 사다리(ladder.js): 칸 · 이음(다음/더하기) · 갈래 */
 .ladder-chips{margin-bottom:1rem;}
-.ladder-head{font-family:var(--font-heading);font-size:1.25rem;margin:.2rem 0 .6rem;}
-.ladder-steps{list-style:none;margin:0;padding:0;display:flex;align-items:stretch;gap:0;}
-.ladder-step{flex:1 1 0;min-width:0;animation:lstep .45s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--k) * 160ms);}
-.ladder-step a{display:flex;flex-direction:column;gap:.2rem;height:100%;box-sizing:border-box;padding:.7rem .75rem;border:2px solid var(--sc);border-top-width:7px;border-radius:12px;background:color-mix(in srgb,var(--sc) 9%,var(--bg));color:var(--ink);text-decoration:none;transition:transform .15s,background-color .15s;}
-.ladder-step a:hover{transform:translateY(-3px);background:color-mix(in srgb,var(--sc) 18%,var(--bg));}
-.ls-n{display:inline-flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:50%;background:var(--sc);color:#fff;font-weight:700;font-size:.95rem;}
-.ls-t{font-family:var(--font-subhead);font-size:1.05rem;line-height:1.3;word-break:keep-all;}
-.ls-tag{font-size:.85rem;color:var(--sc);font-weight:700;}
-.ls-post{font-size:.82rem;line-height:1.45;color:var(--muted);word-break:keep-all;}
-.ls-st{margin-top:auto;align-self:flex-start;font-size:.72rem;border:1.5px solid var(--sc);color:var(--sc);border-radius:999px;padding:0 .45rem;}
-.ladder-cond{flex:0 0 3.6rem;display:flex;align-items:center;justify-content:center;position:relative;animation:lstep .45s both;animation-delay:calc(var(--k,0) * 160ms);}
-.ladder-cond::before{content:'';position:absolute;left:.3rem;right:.6rem;top:50%;border-top:2.5px solid var(--muted);}
-.ladder-cond::after{content:'';position:absolute;right:.3rem;top:50%;transform:translateY(-50%);border:6px solid transparent;border-left:9px solid var(--muted);border-right:0;}
-.ladder-cond span{position:relative;top:-1.1rem;font-size:.7rem;line-height:1.2;color:var(--muted);text-align:center;word-break:keep-all;}
-.ladder-note{margin:.9rem 0 0;font-size:.9rem;color:var(--muted);}
-@keyframes lstep{from{opacity:0;transform:translateX(-10px);}to{opacity:1;transform:none;}}
-@media (max-width:700px){
-  .ladder-steps{flex-direction:column;}
-  .ladder-cond{flex:0 0 2.6rem;}
-  .ladder-cond::before{left:50%;right:auto;top:.2rem;bottom:.7rem;border-top:0;border-left:2.5px solid var(--muted);}
-  .ladder-cond::after{left:50%;right:auto;top:auto;bottom:.2rem;transform:translateX(-50%);border:6px solid transparent;border-top:9px solid var(--muted);border-bottom:0;}
-  .ladder-cond span{top:0;left:2.2rem;text-align:left;}
+.ladder-head{font-family:var(--font-heading);font-size:1.25rem;margin:.2rem 0 .3rem;}
+.ladder-legend{display:flex;flex-wrap:wrap;gap:.4rem 1rem;font-size:.8rem;color:var(--muted);margin:0 0 .8rem;}
+.lrow{display:flex;align-items:center;gap:0;min-width:0;}
+.ltop{align-items:stretch;}
+.ltop>.lc,.ltop>.le{align-self:center;}
+.lc{flex:1 1 0;min-width:0;max-width:220px;display:flex;flex-direction:column;gap:.15rem;padding:.6rem .7rem;border:2px solid var(--sc);border-top-width:6px;border-radius:12px;background:color-mix(in srgb,var(--sc) 9%,var(--bg));color:var(--ink);text-decoration:none;transition:transform .15s,background-color .15s;}
+.lc:hover{transform:translateY(-2px);background:color-mix(in srgb,var(--sc) 18%,var(--bg));}
+.lc-n{display:inline-flex;align-items:center;justify-content:center;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--sc);color:#fff;font-weight:700;font-size:.85rem;}
+.lc-t{font-family:var(--font-subhead);font-size:.98rem;line-height:1.3;word-break:keep-all;}
+.lc-tag{font-size:.8rem;color:var(--sc);font-weight:700;}
+.lc-post{font-size:.78rem;line-height:1.4;color:var(--muted);word-break:keep-all;}
+.lc-st{margin-top:.2rem;align-self:flex-start;font-size:.7rem;border:1.5px solid var(--sc);color:var(--sc);border-radius:999px;padding:0 .4rem;}
+.le{flex:0 0 4.2rem;align-self:center;position:relative;height:2.6rem;}
+.le::before{content:'';position:absolute;left:.25rem;right:.55rem;top:60%;border-top:2.5px solid var(--muted);}
+.le::after{content:'';position:absolute;right:.2rem;top:60%;transform:translateY(-50%);border:6px solid transparent;border-left:9px solid var(--muted);border-right:0;}
+.le-add::before{border-top-style:dashed;border-top-color:var(--accent);}
+.le-add::after{border-left-color:var(--accent);}
+.le-l{position:absolute;left:0;right:0;top:0;font-size:.68rem;line-height:1.15;color:var(--muted);text-align:center;word-break:keep-all;}
+.le-add .le-l{color:var(--accent);font-weight:700;}
+.lch{flex:2 1 0;min-width:0;border:2px dashed color-mix(in srgb,var(--muted) 60%,transparent);border-radius:14px;padding:.5rem .6rem;display:flex;flex-direction:column;gap:.5rem;background:color-mix(in srgb,var(--border) 25%,transparent);}
+.lch-q{margin:0;font-family:var(--font-subhead);font-weight:700;font-size:.95rem;}
+.lch-q small{font-weight:400;color:var(--muted);font-size:.75rem;margin-left:.4rem;}
+.lch-o{display:flex;align-items:center;gap:.5rem;min-width:0;}
+.lch-w{flex:0 0 7.5rem;font-size:.78rem;line-height:1.3;color:var(--ink);background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:.25rem .45rem;word-break:keep-all;}
+.lch-o .lrow{flex:1;min-width:0;}
+.lg-add{color:var(--accent);font-weight:700;}
+@media (max-width:760px){
+  .lrow,.ltop{flex-direction:column;align-items:stretch;}
+  .lc{max-width:none;}
+  .le{flex:0 0 2.4rem;height:auto;}
+  .le::before{left:1.2rem;right:auto;top:.2rem;bottom:.7rem;border-top:0;border-left:2.5px solid var(--muted);}
+  .le-add::before{border-left-style:dashed;border-left-color:var(--accent);}
+  .le::after{left:1.2rem;right:auto;top:auto;bottom:.15rem;transform:translateX(-45%);border:6px solid transparent;border-top:9px solid var(--muted);border-bottom:0;}
+  .le-add::after{border-top-color:var(--accent);}
+  .le-l{left:2.2rem;top:50%;transform:translateY(-50%);text-align:left;}
+  .lch-o{flex-direction:column;align-items:stretch;}
+  .lch-w{flex:none;}
 }
-@media (prefers-reduced-motion:reduce){.forest-svg .dot{transition:none;}.ladder-step,.ladder-cond{animation:none;}}
+@media (prefers-reduced-motion:reduce){.forest-svg .dot{transition:none;}}
+/* 공부 사다리 · 읽는 순서대로 보기: 번호 붙은 목록 */
+.lorder{margin:0;padding:0 0 0 1.6rem;display:flex;flex-direction:column;gap:.45rem;}
+.lorder li{padding-left:.2rem;}
+.lorder li::marker{font-weight:700;color:var(--sc);}
+.lorder a{display:flex;flex-wrap:wrap;align-items:baseline;gap:.2rem .6rem;padding:.45rem .7rem;border:2px solid var(--sc);border-left-width:6px;border-radius:10px;background:color-mix(in srgb,var(--sc) 7%,var(--bg));color:var(--ink);text-decoration:none;}
+.lorder a:hover{background:color-mix(in srgb,var(--sc) 16%,var(--bg));}
+.lo-t{font-size:.95rem;}
+.lo-tag{font-size:.8rem;color:var(--sc);font-weight:700;}
+.lorder .lc-st{margin:0;}

@@ -1,5 +1,5 @@
 // 전체 지도(숲)용 데이터를 만든다: ko/forest-data.js
-// 원천: ko/posts.html(단계·소분류·글 순서), ko/topic-map.html(사다리), ko/big-map-data.js(주제 영역)
+// 원천: ko/posts.html(단계·소분류·글 순서), ko/big-map-data.js(주제 영역). 공부 사다리는 ko/ladder-data.js 에 손으로 쓴다
 // 실행: node scripts/build-forest-data.mjs
 import fs from 'fs';
 import vm from 'vm';
@@ -37,28 +37,7 @@ marks.forEach((g, gi) => {
 });
 groups.forEach((g, i) => { g.n = list.filter((p) => p.g === i).length; });
 
-// 2) 사다리(주제 지도)
-const tm = fs.readFileSync('ko/topic-map.html', 'utf8');
-const ladders = [];
-const secs = tm.split(/(?=<h2)/);
-for (const sec of secs) {
-  const h = sec.match(/<h2[^>]*>([\s\S]*?)<\/h2>/);
-  if (!h) continue;
-  const title = strip(h[1]);
-  const lm = title.match(/^사다리\s*(\S+)\s*—\s*(.*)$/);
-  if (!lm) continue;
-  // 칸: <a href="글.html" class="tm-node"> 안의 tm-title(하는 일)·tm-tag(용어), 칸 사이: tm-arrowcap(넘어가는 조건)
-  const steps = [...sec.matchAll(/<a href="([a-z0-9-]+)\.html" class="tm-node">[\s\S]*?class="tm-title"[^>]*>([^<]*)<\/text>\s*<text class="tm-tag"[^>]*>([^<]*)<\/text>/g)]
-    .map((x) => {
-      const p = list.find((q) => q.f === x[1]);
-      return { f: x[1], t: p ? p.t : x[1], stage: p ? groups[p.g].stage : 0, title: strip(x[2]).replace(/^[①-⑳]\s*/, ''), tag: strip(x[3]) };
-    });
-  const conds = [...sec.matchAll(/class="tm-arrowcap"[^>]*>([^<]*)</g)].map((x) => strip(x[1]));
-  const cap = sec.match(/<figcaption>([\s\S]*?)<\/figcaption>/);
-  ladders.push({ mark: lm[1], name: lm[2], steps, conds, note: cap ? strip(cap[1]) : '', posts: steps.map((x) => x.f) });
-}
-
-// 3) 주제 영역(큰 그림 데이터의 8영역)
+// 2) 주제 영역(큰 그림 데이터의 8영역)
 const ctx = { window: {} };
 vm.runInNewContext(fs.readFileSync('ko/big-map-data.js', 'utf8'), ctx);
 const B = ctx.window.BIGMAP;
@@ -76,8 +55,8 @@ for (const r of B.regions) {
 }
 list.forEach((p) => { p.r = regionOf[p.f] || null; });
 
-const out = { groups, posts: list, ladders, regions };
+const out = { groups, posts: list, regions };
 fs.writeFileSync('ko/forest-data.js',
   '// 전체 지도(숲) 데이터 — scripts/build-forest-data.mjs 가 만든다. 손으로 고치지 말 것.\nwindow.FOREST = ' + JSON.stringify(out) + ';\n');
 console.log('groups', groups.map((g) => `${g.short}:${g.n}`).join(' / '));
-console.log('posts', list.length, '| ladders', ladders.length, ladders.map((l) => l.posts.length).join(','), '| region 없는 글', list.filter((p) => !p.r).length);
+console.log('posts', list.length, '| region 없는 글', list.filter((p) => !p.r).length);
