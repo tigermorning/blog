@@ -37,6 +37,8 @@ window.BIGMAP = {
     "newsletter-agent-project",
     "cs-agent-project",
     "graphrag-project",
+    "hitl-agent",
+    "card-news-agent",
     "multi-agent-lab",
     "harness-observe",
     "harness-build",
@@ -88,6 +90,26 @@ window.BIGMAP = {
      "harness-observe",
      "openclaw",
      "완성품 운영"
+    ],
+    [
+     "langgraph-patterns",
+     "hitl-agent",
+     "멈출 자리 추가"
+    ],
+    [
+     "hitl-agent",
+     "harness-build",
+     "승인·종료 조건"
+    ],
+    [
+     "hitl-agent",
+     "card-news-agent",
+     "사람의 선택을 제품으로"
+    ],
+    [
+     "newsletter-agent-project",
+     "card-news-agent",
+     "수집·발행 흐름에 사람 선택을"
     ]
    ]
   },
@@ -533,7 +555,9 @@ window.BIGMAP = {
     "openclaw-security-boundaries.html",
     "voice-cloning-and-responsible-ai.html",
     "cloud-run-source-deploy-meaning.html",
-    "github-actions-auto-deploy.html"
+    "github-actions-auto-deploy.html",
+    "langgraph-hitl-interrupt-resume.html",
+    "langgraph-hitl-criteria-and-approval-ui.html"
    ]
   },
   {
@@ -1819,7 +1843,9 @@ window.BIGMAP = {
      ],
      "links": [
       "my-harness-platform-and-provider.html",
-      "my-harness-interfaces.html"
+      "my-harness-interfaces.html",
+      "langgraph-hitl-interrupt-resume.html",
+      "langgraph-hitl-criteria-and-approval-ui.html"
      ]
     },
     {
@@ -6619,7 +6645,8 @@ window.BIGMAP = {
       "langgraph-what-and-why.html",
       "reading-python-code-basics.html",
       "n8n-agent-delegation-and-if-node.html",
-      "my-harness-flow-and-state.html"
+      "my-harness-flow-and-state.html",
+      "langgraph-hitl-interrupt-resume.html"
      ]
     },
     {
@@ -6987,7 +7014,8 @@ window.BIGMAP = {
      "links": [
       "newsletter-agent-select.html",
       "newsletter-agent-publish-schedule.html",
-      "langgraph-pattern-orchestrator-worker.html"
+      "langgraph-pattern-orchestrator-worker.html",
+      "card-news-agent-review-and-extend.html"
      ]
     },
     {
@@ -7613,6 +7641,174 @@ window.BIGMAP = {
      "links": []
     }
    ]
+  },
+  "hitl-agent": {
+   "sub": "hitl-agent",
+   "name": "사람이 승인하는 에이전트(HITL)",
+   "role": "되돌릴 수 없는 실행 직전에 에이전트를 멈추고, 사람의 답을 받아 그 지점부터 이어서 실행하게 하는 일",
+   "scenario": "하루 200건을 처리하는 AI는 정확도가 95%든 99%든 남는 오류가 있고, 그 몇 건이 큰 금액이면 손해는 그대로예요. 그래서 정확도를 더 다듬는 대신 실행 직전에 멈추는 자리를 두고, 어떤 요청에서 멈출지를 계산 가능한 조건으로 적어 개입률·놓침·헛멈춤으로 확인해요.",
+   "flow": {
+    "nodes": [
+     {
+      "id": "n1",
+      "label": "멈추고 이어가기(interrupt·resume)",
+      "posts": [
+       "langgraph-hitl-interrupt-resume.html"
+      ]
+     },
+     {
+      "id": "n2",
+      "label": "멈출 기준과 승인 화면",
+      "posts": [
+       "langgraph-hitl-criteria-and-approval-ui.html"
+      ]
+     }
+    ],
+    "edges": [
+     [
+      "n1",
+      "n2",
+      "멈출 자리가 생기면 기준이 필요해요"
+     ]
+    ]
+   },
+   "posts": [
+    {
+     "file": "langgraph-hitl-interrupt-resume.html",
+     "concept": "멈추고 이어가기(interrupt·resume)",
+     "one_line": "HITL이란 되돌릴 수 없는 실행 직전에 에이전트를 멈추고, 사람의 답을 받은 뒤 그 지점부터 이어서 실행하게 만드는 장치다",
+     "practice": "정확도를 아무리 올려도 사고 건수가 안 줄어들 때, 정확도를 더 다듬는 대신 실행 직전에 멈추는 자리를 따로 둔다",
+     "analogy": "옷가게 환불 접수대",
+     "keywords": [
+      "interrupt",
+      "resume",
+      "체크포인터",
+      "멈춘 단계 재실행"
+     ],
+     "links": [
+      "langgraph-state-node-edge.html",
+      "my-harness-flow-and-state.html"
+     ]
+    },
+    {
+     "file": "langgraph-hitl-criteria-and-approval-ui.html",
+     "concept": "멈출 기준과 승인 화면",
+     "one_line": "멈출 기준 설계란 어떤 요청에서 사람에게 확인을 받을지 계산 가능한 조건으로 정하고, 그 조건이 개입률·놓침·헛멈춤 가운데 무엇을 만드는지 확인하는 작업이다",
+     "practice": "고객 문의 자동 답변이나 콘텐츠 자동 발행처럼 \"이 조건이면 사람에게, 아니면 자동으로\"를 나눠야 할 때 그 조건을 숫자로 적는다",
+     "analogy": "접수대 매니저가 보는 쪽지",
+     "keywords": [
+      "멈출 기준",
+      "개입률",
+      "놓침",
+      "헛멈춤",
+      "승인 화면"
+     ],
+     "links": [
+      "my-harness-flow-and-state.html",
+      "langgraph-hitl-interrupt-resume.html",
+      "card-news-agent-flow-and-format.html"
+     ]
+    }
+   ]
+  },
+  "card-news-agent": {
+   "sub": "card-news-agent",
+   "name": "카드뉴스 에이전트 만들기",
+   "role": "AI가 조사하고 사람이 고르고 승인하는 자리마다 멈췄다 이어 가며 카드뉴스 한 편을 완성하는 웹앱을 만드는 일",
+   "scenario": "'AI 최신소식'을 입력하면 최근 7일 자료를 조사하고, 사용자가 후보를 고르고 카드별 기획을 승인한 뒤에야 이미지와 글자를 만들어요. PRD 전체를 코딩 에이전트에 넘겨 구현하고, 질문 대기와 재개를 붙이고, 내보낸 파일을 검수한 다음 내 작업에 맞게 흐름을 바꿔요.",
+   "flow": {
+    "nodes": [
+     {
+      "id": "n1",
+      "label": "일곱 단계 흐름과 독자·형식",
+      "posts": [
+       "card-news-agent-flow-and-format.html"
+      ]
+     },
+     {
+      "id": "n2",
+      "label": "PRD·실행 엔진·질문 대기",
+      "posts": [
+       "card-news-agent-engine-and-questions.html"
+      ]
+     },
+     {
+      "id": "n3",
+      "label": "검수와 내 일로 확장",
+      "posts": [
+       "card-news-agent-review-and-extend.html"
+      ]
+     }
+    ],
+    "edges": [
+     [
+      "n1",
+      "n2",
+      "흐름을 PRD로"
+     ],
+     [
+      "n2",
+      "n3",
+      "만든 앱을 검수"
+     ]
+    ]
+   },
+   "posts": [
+    {
+     "file": "card-news-agent-flow-and-format.html",
+     "concept": "사용자 참여형 제작 흐름",
+     "one_line": "AI가 자료를 조사해 오면 사람이 후보를 고르고 기획을 승인하는 자리마다 작업이 멈췄다가, 그 답을 받아 이어서 카드뉴스 한 편을 완성하게 짠 일곱 단계의 순서다",
+     "practice": "매주 쌓이는 소식을 SNS 카드 몇 장으로 정리할 때, 자료는 AI가 찾아 주되 무엇을 뺄지와 누구에게 맞출지를 정하는 자리를 어디에 둘지 정한다",
+     "analogy": "손님이 고르는 자리가 있는 식당 주방",
+     "keywords": [
+      "일곱 단계",
+      "후보 선택",
+      "스토리보드",
+      "독자·형식"
+     ],
+     "links": [
+      "langgraph-hitl-criteria-and-approval-ui.html",
+      "newsletter-agent-skeleton.html",
+      "my-harness-users-and-prd.html"
+     ]
+    },
+    {
+     "file": "card-news-agent-engine-and-questions.html",
+     "concept": "PRD·실행 엔진·질문 대기",
+     "one_line": "앱이 AI 작업 도중 사용자에게 물을 일이 생기면 질문과 선택지와 현재 단계를 저장하고 '답변 대기'로 멈춰 두었다가, 답이 오면 같은 작업을 이어 가게 만드는 구조다",
+     "practice": "화면에서 버튼을 눌렀는데 계속 \"처리 중\"으로만 보일 때, 일하는 중인지 답을 기다리는 중인지 멈춘 건지를 상태 이름 하나로 구별하게 만든다",
+     "analogy": "주문서에 '손님 답변 대기' 도장 찍기",
+     "keywords": [
+      "PRD",
+      "실행 엔진",
+      "답변 대기",
+      "재개"
+     ],
+     "links": [
+      "langgraph-hitl-interrupt-resume.html",
+      "rag-chatbot-prd-questions.html",
+      "my-harness-vertical-slice.html"
+     ]
+    },
+    {
+     "file": "card-news-agent-review-and-extend.html",
+     "concept": "카드뉴스 검수와 확장",
+     "one_line": "앱이 만든 카드를 미리보기가 아니라 내보낸 파일로 열어 최신성·사실·글자 읽힘·실패 처리·저장 순서를 하나씩 통과시키고, 확인하지 못한 항목은 통과로 처리하지 않는 점검이다",
+     "practice": "카드를 다 만들었는데 오타 하나 때문에 그림까지 다시 뽑아야 할 때, 글자를 그림과 따로 두어 글만 고치게 한다",
+     "analogy": "요리와 메뉴 카드를 따로 두고 포장을 열어 보기",
+     "keywords": [
+      "검수",
+      "내보낸 파일",
+      "글자·이미지 분리",
+      "부분 수정"
+     ],
+     "links": [
+      "newsletter-agent-summarize-verify.html",
+      "newsletter-agent-publish-schedule.html",
+      "my-harness-acceptance.html"
+     ]
+    }
+   ]
   }
  },
  "titles": {
@@ -7854,6 +8050,11 @@ window.BIGMAP = {
   "build-once-promote-image.html": "시험한 이미지와 내보낸 이미지가 같다는 증거 — 이미지를 한 번만 만들어 그대로 보내기 (7)",
   "load-balancer-zero-downtime.html": "새 버전으로 바뀌는 몇 초 동안 — 로드밸런서로 무중단 배포 구성하기 (8)",
   "cloud-run-zero-downtime-deploy.html": "배포하는 동안 사용자는 오류를 봤을까 — Cloud Run으로 무중단 배포하기 (9)",
-  "ai-service-in-production-wrap-up.html": "아홉 개 노드를 한 번에 — AI 서비스를 프로덕션에 올리기까지 돌아보기 (10)"
+  "ai-service-in-production-wrap-up.html": "아홉 개 노드를 한 번에 — AI 서비스를 프로덕션에 올리기까지 돌아보기 (10)",
+  "langgraph-hitl-interrupt-resume.html": "멈췄다가 사람 답을 받아 잇는다 — interrupt·resume·체크포인터 (1)",
+  "langgraph-hitl-criteria-and-approval-ui.html": "멈출 기준을 정하고 승인 화면을 설계한다 — 개입률·놓침·헛멈춤 (2)",
+  "card-news-agent-flow-and-format.html": "고르고 승인하며 완성하는 카드뉴스 — 일곱 단계 흐름과 독자·형식 정하기 (1)",
+  "card-news-agent-engine-and-questions.html": "PRD로 시작해 질문과 재개를 붙인다 — 실행 엔진과 대기 상태 (2)",
+  "card-news-agent-review-and-extend.html": "만들고 검수하고 내 일로 바꾼다 — 최신 소식 한 편과 확장 (3)"
  }
 };

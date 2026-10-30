@@ -461,7 +461,7 @@ for line in run()["log"]:
     </div>
 
     <h2 id="fake-run"><span class="hl">키 없이 그래프만 돌려 보기</span> — 가짜 함수로 확인한 네 가지</h2>
-    <p>저는 OpenAI API 키가 없어서 요약과 검수의 실제 출력은 받지 못했어요. 대신 그래프가 제대로 이어졌는지는 LLM 없이도 볼 수 있어요. <code>build()</code>가 노드를 이름으로 찾으니, 본문 가져오기·요약·검수 함수를 <strong>늘 같은 값을 돌려주는 가짜</strong>로 바꿔 끼우면 돼요. 본문 길이는 한 건만 기준선 600자에 못 미치게, 검수는 <code>MIT TR</code> 한 건만 떨어뜨리게 했어요.</p>
+    <p>요약과 검수 출력은 실행마다 달라지니, 그래프가 제대로 이어졌는지는 LLM을 빼고 따로 볼 수 있어요. <code>build()</code>가 노드를 이름으로 찾으니, 본문 가져오기·요약·검수 함수를 <strong>늘 같은 값을 돌려주는 가짜</strong>로 바꿔 끼우면 돼요. 본문 길이는 한 건만 기준선 600자에 못 미치게, 검수는 <code>MIT TR</code> 한 건만 떨어뜨리게 했어요.</p>
     <p class="run-tag">실행: Colab 같은 원격 주피터 또는 로컬 주피터 <span class="run-tag-why">— 위 셀까지 정의해 둔 노트북에서 이어 가요, API 키 없이 돌아가요 (확인 뒤엔 12·13편과 이 편의 함수 셀을 다시 실행해 되돌려요)</span></p>
     <pre><code># 확인용 가짜 — 키·네트워크 없이 그래프 모양만 본다
 LEN = {"u0": 3000, "u1": 250, "u2": 1800, "u3": 2200, "u4": 900}
@@ -594,6 +594,7 @@ drafted 4 verified 3</code></pre>
     <h2>함께 읽으면 좋은 글</h2>
     <ul>
       <li><a href="langgraph-pattern-orchestrator-worker.html">④ 오케스트레이터-워커 — 몇 갈래일지 LLM이 정한다</a> — 이 편의 <code>Send</code> 팬아웃을 처음 만든 글이에요.</li>
+      <li><a href="card-news-agent-review-and-extend.html">만들고 검수하고 내 일로 바꾼다 — 최신 소식 한 편과 확장 (3)</a> — 만든 결과를 미리보기가 아니라 내보낸 파일로 열어 검수하는 방식을 카드뉴스 앱에서 이어서 다뤄요.</li>
       <li><a href="rag-chatbot-llm-judge.html">답변 뒤에 심사위원 하나를 더 둔다 — LLM-as-a-Judge</a> — 검수를 LLM에게 맡길 때 판정이 틀리는 모습을 다룬 글이에요.</li>
       <li><a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" rel="noopener">Anthropic — Building Effective Agents</a> — 평가자-최적화자와 오케스트레이터-워커 패턴의 원래 설명이에요.</li>
       <li><a href="https://trafilatura.readthedocs.io/" target="_blank" rel="noopener">trafilatura 문서</a> — 기사 주소에서 본문만 뽑는 <code>fetch_url</code>·<code>extract</code>의 설명이에요.</li>

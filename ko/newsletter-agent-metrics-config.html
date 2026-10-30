@@ -183,8 +183,8 @@ last = json.loads(METRICS.read_text(encoding="utf-8").splitlines()[-1])
 print(json.dumps({k: v for k, v in last.items() if k != "log"},
                  ensure_ascii=False, indent=2))</code></pre>
     <p>처음 보는 부분만 짚을게요. <code>METRICS.parent.mkdir(exist_ok=True)</code>는 <code>store</code> 폴더가 없으면 만들고 있으면 그냥 넘어가요. <code>open("a")</code>의 <code>a</code>는 덧붙이기(append)라서, 이미 있는 줄은 두고 끝에만 붙여요. <code>"w"</code>로 열면 실행할 때마다 앞의 기록이 지워져요. <code>ensure_ascii=False</code>는 한글 "수"를 <code>&#92;uc218</code> 같은 기호 대신 글자 그대로 적게 해요. 사람이 메모장으로 열어 볼 파일이라 이쪽이 낫고, 그 대신 파일 인코딩을 코드에서 정해 줘야 해요(바로 아래에서 이유를 봐요).</p>
-    <p>저는 API 키 없이 확인하려고, 노드 다섯 개를 정해진 값을 돌려주는 가짜 함수로 바꾸고 위 코드를 그대로 돌렸어요. 가짜 수집 노드가 98건을 내고, 취재에서 한 건이 본문 부족으로 빠지고, 검수에서 한 건이 떨어지게 꾸몄어요.</p>
-    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 노드를 가짜 함수로 바꿔 키 없이 돌렸을 때 제 화면에 찍힌 출력이에요. 숫자는 꾸민 값이에요. 15편 발행 노드를 그대로 두면 이 위에 <code>[dry-run]</code> 줄이 먼저 찍혀요</span></p>
+    <p>저는 모델 호출 없이 구조만 확인하려고, 노드 다섯 개를 정해진 값을 돌려주는 가짜 함수로 바꾸고 위 코드를 그대로 돌렸어요. 가짜 수집 노드가 98건을 내고, 취재에서 한 건이 본문 부족으로 빠지고, 검수에서 한 건이 떨어지게 꾸몄어요.</p>
+    <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 노드를 가짜 함수로 바꿔 모델 호출 없이 돌렸을 때 제 화면에 찍힌 출력이에요. 숫자는 꾸민 값이에요. 15편 발행 노드를 그대로 두면 이 위에 <code>[dry-run]</code> 줄이 먼저 찍혀요</span></p>
     <pre><code>{
   "run_id": "2026-09-14 12:54",
   "collected": 98,
