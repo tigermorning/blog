@@ -272,7 +272,8 @@
       '<div class="bm-scene" style="--nc:var(--folder-7)"><p class="bm-scene-title">이 질문이 실제로 지나간 길</p><p>' +
       "사용자 → 웹 서비스 → 오케스트레이션 → 프롬프트·컨텍스트 엔지니어링 → 머신러닝·LLM → 답 검사, 이 순서로 지나갔어요. " +
       "아래 그림의 번호 배지가 이 순서예요. 멀티모달과 RAG·MCP·자동화 상자엔 번호가 없어요 — 사진·음성이 있었거나 " +
-      "건별로 다른 값이 필요했다면 그 자리에서 대신 켜졌을, 이번엔 쉰 상자예요." +
+      "건별로 다른 값이 필요했다면 그 자리에서 대신 켜졌을, 이번엔 쉰 상자예요. " +
+      "개발 환경과 AI 서비스 운영·배포 상자도 번호가 없어요 — 질문이 오기 전에 서비스를 만들고, 서버에 올리고, 새 버전이 나가는 동안에도 끊기지 않게 지켜 두는 쪽이라, 이 질문이 지나가는 순서 밖에 있어요." +
       "</p></div>" +
       '<div class="bm-graph" id="bm-g"></div>' +
       '<ol class="bm-steps">' + D.world.steps.map((s) =>
@@ -375,7 +376,7 @@
       '<p class="bm-lead">' + esc(P.lead) + "</p>" +
       '<div class="bm-scene" style="--nc:var(--folder-7)"><p class="bm-scene-title">에이전트 하나를 뜯어 보면</p><p>' + esc(P.anatomy) + "</p></div>" +
       '<div class="bm-graph" id="bm-g"></div>' +
-      '<p class="bm-hint">번호 배지는 시험의 영역 번호예요. 맨 위 두 상자는 기둥이 서는 바닥이라, 누르면 그 글 묶음으로 가요.</p>' +
+      '<p class="bm-hint">번호 배지는 시험의 영역 번호예요. 맨 위 두 상자는 기둥이 서는 바닥이라, 누르면 그 글 묶음으로 가요. 맨 아래 «내보내기» 상자는 시험 범위 밖이지만, 만든 에이전트를 서버에 올려 끊김 없이 내보내는 글 묶음이에요.</p>' +
       '<p class="bm-threads-title">시험 시나리오 여섯 — 이 블로그에서 비슷한 걸 만든 곳</p>' +
       '<p class="bm-hint" style="margin:0 0 0.5rem">시험 문제는 이 여섯 장면 가운데 무작위로 뽑힌 네 장면에 붙어 나와요.</p>' +
       '<table class="bm-scn"><thead><tr><th>시험 장면</th><th>이 블로그에서</th><th>주로 걸리는 영역</th></tr></thead><tbody>' +

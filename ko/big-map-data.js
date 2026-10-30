@@ -234,6 +234,36 @@ window.BIGMAP = {
      "커밋·배포"
     ]
    ]
+  },
+  {
+   "id": "ship",
+   "name": "AI 서비스 운영·배포",
+   "color": "var(--folder-10)",
+   "role": "만든 에이전트를 서버에 올려 다른 사람이 쓰게 하고, 새 버전이 나가는 순간에도 끊기지 않게 지키는 일.",
+   "scenario": "AI 기능을 설계서 한 장으로 정하고 Cloud Run에 올리는 데서 시작해요. 머지하면 자동으로 배포되게 하고, 테스트·staging·승인으로 문을 닫고, 시험한 이미지를 그대로 보내고, 마지막에는 배포하는 동안의 실패 건수를 숫자로 확인해요.",
+   "subs": [
+    "ship-first",
+    "ship-auto",
+    "ship-image",
+    "ship-zero"
+   ],
+   "edges": [
+    [
+     "ship-first",
+     "ship-auto",
+     "손으로 하던 배포를"
+    ],
+    [
+     "ship-auto",
+     "ship-image",
+     "시험한 것과 같은 것을"
+    ],
+    [
+     "ship-image",
+     "ship-zero",
+     "내보내는 동안에도"
+    ]
+   ]
   }
  ],
  "world": {
@@ -248,7 +278,7 @@ window.BIGMAP = {
    {
     "id": "bench",
     "label": "개발 환경·Git",
-    "sub": "서비스를 만들고 고치고 내보내는 곳",
+    "sub": "서비스를 만들고 고치는 곳",
     "chips": [
      "터미널",
      "Claude Code",
@@ -256,6 +286,18 @@ window.BIGMAP = {
      "GitHub Pages"
     ],
     "share": "이 챗봇의 코드를 코딩 에이전트와 짜고, 커밋해 배포해 둔 상태예요. 질문이 오기 전에 할 일이 끝나 있어요."
+   },
+   {
+    "id": "ship",
+    "label": "AI 서비스 운영·배포",
+    "sub": "만든 서비스를 서버에 올리고, 새 버전이 나가는 동안에도 끊기지 않게 지키는 곳",
+    "chips": [
+     "Cloud Run",
+     "GitHub Actions",
+     "Docker",
+     "무중단 배포"
+    ],
+    "share": "질문이 오기 전에 이미 일을 마친 쪽이에요. 서비스가 떠 있고, 새 버전으로 바뀌는 순간에도 이 질문에 답할 수 있게 해 둬요."
    },
    {
     "id": "web",
@@ -351,14 +393,19 @@ window.BIGMAP = {
   ],
   "edges": [
    [
+    "bench",
+    "ship",
+    "고친 코드를"
+   ],
+   [
+    "ship",
+    "web",
+    "내보낸 서비스"
+   ],
+   [
     "user",
     "web",
     "질문"
-   ],
-   [
-    "bench",
-    "web",
-    "만들어 배포"
    ],
    [
     "web",
@@ -437,7 +484,7 @@ window.BIGMAP = {
    ],
    [
     "만드는 곳",
-    "이 전부는 개발 환경에서 코딩 에이전트와 Git으로 만들어 배포해요."
+    "이 전부는 개발 환경에서 코딩 에이전트와 Git으로 만들어요. 만든 서비스는 AI 서비스 운영·배포 단계가 서버에 올리고, 새 버전이 나가는 순간에도 끊기지 않게 지켜요."
    ]
   ]
  },
@@ -460,7 +507,10 @@ window.BIGMAP = {
     "tool-permission-and-evaluation.html",
     "multi-agent-judging-records.html",
     "harness-evaluation-and-comparison.html",
-    "my-harness-scoring-and-report.html"
+    "my-harness-scoring-and-report.html",
+    "ci-tests-and-staging.html",
+    "cloud-run-zero-downtime-deploy.html",
+    "ai-service-in-production-wrap-up.html"
    ]
   },
   {
@@ -481,7 +531,9 @@ window.BIGMAP = {
     "tool-permission-and-evaluation.html",
     "harness-minimal-and-permission.html",
     "openclaw-security-boundaries.html",
-    "voice-cloning-and-responsible-ai.html"
+    "voice-cloning-and-responsible-ai.html",
+    "cloud-run-source-deploy-meaning.html",
+    "github-actions-auto-deploy.html"
    ]
   },
   {
@@ -500,7 +552,9 @@ window.BIGMAP = {
     "quantization-why-it-still-works.html",
     "kv-cache-and-vram-budget.html",
     "cost-and-control-of-local-llm.html",
-    "openclaw-session-records-and-usage.html"
+    "openclaw-session-records-and-usage.html",
+    "cloud-run-operating-ai-service.html",
+    "build-once-promote-image.html"
    ]
   }
  ],
@@ -1729,7 +1783,8 @@ window.BIGMAP = {
       "실패 삼키기"
      ],
      "links": [
-      "my-harness-platform-and-provider.html"
+      "my-harness-platform-and-provider.html",
+      "ai-service-design-before-code.html"
      ]
     },
     {
@@ -1746,7 +1801,8 @@ window.BIGMAP = {
      ],
      "links": [
       "my-harness-users-and-prd.html",
-      "my-harness-flow-and-state.html"
+      "my-harness-flow-and-state.html",
+      "cloud-run-source-deploy-meaning.html"
      ]
     },
     {
@@ -2225,7 +2281,8 @@ window.BIGMAP = {
      ],
      "links": [
       "mock-data-and-rest-api.html",
-      "domain-http-and-packets.html"
+      "domain-http-and-packets.html",
+      "cloud-run-source-deploy-meaning.html"
      ]
     },
     {
@@ -2294,7 +2351,8 @@ window.BIGMAP = {
      "links": [
       "ai-code-security-basics.html",
       "connecting-frontend-backend.html",
-      "what-is-docker.html"
+      "what-is-docker.html",
+      "cloud-run-source-deploy-meaning.html"
      ]
     },
     {
@@ -2329,7 +2387,8 @@ window.BIGMAP = {
      ],
      "links": [
       "connecting-frontend-backend.html",
-      "what-is-cors.html"
+      "what-is-cors.html",
+      "load-balancer-zero-downtime.html"
      ]
     },
     {
@@ -2363,7 +2422,9 @@ window.BIGMAP = {
      ],
      "links": [
       "deploying-and-free-hosting.html",
-      "choosing-a-free-database.html"
+      "choosing-a-free-database.html",
+      "dockerfile-fixing-runtime-environment.html",
+      "build-once-promote-image.html"
      ]
     }
    ],
@@ -6012,7 +6073,8 @@ window.BIGMAP = {
       "바이브 코딩"
      ],
      "links": [
-      "my-harness-users-and-prd.html"
+      "my-harness-users-and-prd.html",
+      "ai-service-design-before-code.html"
      ]
     },
     {
@@ -7227,6 +7289,330 @@ window.BIGMAP = {
     }
    ],
    "name": "GraphRAG로 지식 그래프 얹기"
+  },
+  "ship-first": {
+   "sub": "ship-first",
+   "name": "설계하고 첫 배포·운영",
+   "role": "무엇을 만들지 정하고 서버에 올린 뒤, 올린 서비스가 손님에게 답을 주는지 지켜보는 일",
+   "scenario": "AI 기능을 누가 어디서 쓸지부터 정하고, 코드 폴더 하나를 Cloud Run에 올려 공개 주소를 받아요. 올린 뒤에는 타임아웃·인스턴스 수·비용 한도를 실제로 걸린 시간과 로그로 정해요.",
+   "flow": {
+    "nodes": [
+     {
+      "id": "n1",
+      "label": "서비스 설계",
+      "posts": [
+       "ai-service-design-before-code.html"
+      ]
+     },
+     {
+      "id": "n2",
+      "label": "첫 배포(소스 배포)",
+      "posts": [
+       "cloud-run-source-deploy-meaning.html"
+      ]
+     },
+     {
+      "id": "n3",
+      "label": "운영 설정과 로그",
+      "posts": [
+       "cloud-run-operating-ai-service.html"
+      ]
+     }
+    ],
+    "edges": [
+     [
+      "n1",
+      "n2",
+      "설계대로 올리기"
+     ],
+     [
+      "n2",
+      "n3",
+      "올린 뒤 지켜보기"
+     ]
+    ]
+   },
+   "posts": [
+    {
+     "file": "ai-service-design-before-code.html",
+     "concept": "AI 기능의 서비스 설계",
+     "one_line": "AI 기능을 서비스로 설계한다는 것은, 개발을 맡기기 전에 누가·언제·어디서 쓰는지와 키·데이터·실패를 어디에 둘지를 사람이 먼저 정해 문서로 남기는 일이다",
+     "practice": "AI에게 앱을 만들어 달라고 부탁하려는 순간에 쓴다. 부탁한 문장에 없는 것은 AI가 가장 빨리 돌아가는 쪽으로 정해 버린다",
+     "analogy": "식당을 열기 전에 사장이 정할 것",
+     "keywords": [
+      "프로토타입",
+      "아키텍처",
+      "PRD 한 장",
+      "키 위치",
+      "실패 처리"
+     ],
+     "links": [
+      "my-harness-users-and-prd.html",
+      "rag-chatbot-prd-questions.html",
+      "what-is-proxy-server.html"
+     ]
+    },
+    {
+     "file": "cloud-run-source-deploy-meaning.html",
+     "concept": "Cloud Run 소스 배포",
+     "one_line": "Cloud Run에 소스를 배포하면 코드 폴더를 Google에 넘기는 것만으로 코드·파이썬 버전·라이브러리를 한 묶음으로 포장해 서버에 올리고 공개 주소까지 붙는다",
+     "practice": "내 컴퓨터에서만 돌던 앱을 누군가에게 보여 주려는데 줄 주소가 없을 때 쓴다",
+     "analogy": "식당에서 포장 가게로",
+     "keywords": [
+      "리비전",
+      "트래픽 이동",
+      "Secret Manager",
+      "gcloud",
+      "공개 주소"
+     ],
+     "links": [
+      "what-is-docker.html",
+      "deploying-and-free-hosting.html",
+      "why-backend-needed.html",
+      "my-harness-platform-and-provider.html"
+     ]
+    },
+    {
+     "file": "cloud-run-operating-ai-service.html",
+     "concept": "AI 서비스 운영(타임아웃·인스턴스·비용·로그)",
+     "one_line": "서버가 정상이라고 말해도 손님이 답을 못 받을 수 있으므로, 타임아웃과 인스턴스 수와 비용 한도를 실제로 걸린 시간과 로그를 근거로 정한다",
+     "practice": "올린 서비스를 다른 사람이 써 보게 하기 전에 쓴다. 주소를 아는 누구나 내 비용으로 서비스를 쓸 수 있기 때문이다",
+     "analogy": "",
+     "keywords": [
+      "타임아웃",
+      "콜드 스타트",
+      "인스턴스 수",
+      "사용 한도",
+      "요청·컨테이너·시스템 로그"
+     ],
+     "links": []
+    }
+   ]
+  },
+  "ship-auto": {
+   "sub": "ship-auto",
+   "name": "자동 배포와 검사",
+   "role": "합치기만 하면 배포되게 만들고, 깨진 코드가 진짜 서비스에 닿지 않게 문을 닫는 일",
+   "scenario": "PR을 머지하면 GitHub Actions가 키 파일 없이 Cloud Run에 배포해요. 일부러 고장 낸 코드가 손님에게 안 나가는 것을 보고, 합치기 전 테스트와 staging·승인·브랜치 보호로 문을 하나씩 더 닫아요.",
+   "flow": {
+    "nodes": [
+     {
+      "id": "n1",
+      "label": "자동 배포",
+      "posts": [
+       "github-actions-auto-deploy.html"
+      ]
+     },
+     {
+      "id": "n2",
+      "label": "테스트와 staging",
+      "posts": [
+       "ci-tests-and-staging.html"
+      ]
+     }
+    ],
+    "edges": [
+     [
+      "n1",
+      "n2",
+      "배포가 자동이 되면 문이 필요해요"
+     ]
+    ]
+   },
+   "posts": [
+    {
+     "file": "github-actions-auto-deploy.html",
+     "concept": "GitHub Actions 자동 배포",
+     "one_line": "main에 코드를 합치는 순간 GitHub Actions가 정해 둔 순서대로 서비스를 Cloud Run에 배포하게 만들면, 사람이 배포 명령을 치지 않아도 서비스가 바뀐다",
+     "practice": "코드를 한 줄 고칠 때마다 배포 명령을 치다가 한 번 빼먹어, 고쳤는데 사용자 화면은 그대로인 일이 생길 때 쓴다",
+     "analogy": "사장이 들고 가던 배송을 포장 로봇에게",
+     "keywords": [
+      "워크플로",
+      "WIF(키 파일 없는 인증)",
+      "서비스 계정 3개",
+      "Revert PR",
+      "감사 로그"
+     ],
+     "links": [
+      "what-is-docker.html"
+     ]
+    },
+    {
+     "file": "ci-tests-and-staging.html",
+     "concept": "CI 테스트와 staging",
+     "one_line": "코드를 합치기 전에 서버가 테스트를 대신 돌리고(CI), 진짜 서비스 앞에 연습용 서버·사람의 승인·브랜치 보호를 두면 망가진 코드가 진짜 서비스에 닿지 않는다",
+     "practice": "혼자 만든 앱을 고칠 때마다 \"이 수정이 다른 걸 망가뜨리진 않았나\"가 걱정될 때, 눈으로 확인하는 대신 서버가 매번 확인하게 한다",
+     "analogy": "가맹점에 보내기 전의 검수대",
+     "keywords": [
+      "CI",
+      "필수 검사",
+      "staging",
+      "승인 대기",
+      "브랜치 보호"
+     ],
+     "links": []
+    }
+   ]
+  },
+  "ship-image": {
+   "sub": "ship-image",
+   "name": "이미지와 실행 환경",
+   "role": "서버에서 돌 환경을 직접 정하고, 시험한 것과 같은 것을 내보내는 일",
+   "scenario": "Dockerfile로 서버의 실행 환경을 정해 \"로컬에서는 되는데 서버에서만 안 되는\" 일을 줄여요. 그 이미지를 CI에서 한 번만 만들어 staging에서 확인한 그대로 production에 보내고, 쌓이는 이미지는 정리 규칙으로 관리해요.",
+   "flow": {
+    "nodes": [
+     {
+      "id": "n1",
+      "label": "실행 환경 고정",
+      "posts": [
+       "dockerfile-fixing-runtime-environment.html"
+      ]
+     },
+     {
+      "id": "n2",
+      "label": "이미지 한 번, 승격",
+      "posts": [
+       "build-once-promote-image.html"
+      ]
+     }
+    ],
+    "edges": [
+     [
+      "n1",
+      "n2",
+      "만든 환경을 한 번만 굽기"
+     ]
+    ]
+   },
+   "posts": [
+    {
+     "file": "dockerfile-fixing-runtime-environment.html",
+     "concept": "Dockerfile로 실행 환경 고정",
+     "one_line": "Dockerfile은 앱이 돌 실행 환경을 처음부터 끝까지 직접 적은 파일이라서, 코드만 보고 환경을 짐작하는 buildpacks가 놓치는 시스템 패키지까지 서버에 똑같이 깔 수 있다",
+     "practice": "소스 배포로 올린 서비스에 tesseract처럼 서버에 따로 깔아야 하는 프로그램이 필요한 기능을 붙일 때 쓴다",
+     "analogy": "사장 집 주방에만 있던 특수 칼",
+     "keywords": [
+      "Dockerfile",
+      "베이스 이미지",
+      "buildpacks",
+      "레이어",
+      "PORT"
+     ],
+     "links": [
+      "what-is-docker.html"
+     ]
+    },
+    {
+     "file": "build-once-promote-image.html",
+     "concept": "이미지 한 번 만들어 승격",
+     "one_line": "staging에서 확인한 이미지를 새로 만들지 않고 그 이미지의 지문(다이제스트)으로 가리켜 production에 그대로 보내면, 시험한 것과 내보낸 것이 같다는 것을 증거로 말할 수 있다",
+     "practice": "실제 서버에서 사고가 났을 때 \"지금 어느 코드가 돌고 있나, 시험한 그 이미지가 맞나\"를 바로 답해야 하는 순간에 쓴다",
+     "analogy": "시식한 상자를 다시 포장하지 않는 가게",
+     "keywords": [
+      "태그",
+      "다이제스트",
+      "승격",
+      "롤백",
+      "정리 정책"
+     ],
+     "links": [
+      "what-is-docker.html"
+     ]
+    }
+   ]
+  },
+  "ship-zero": {
+   "sub": "ship-zero",
+   "name": "끊김 없이 내보내기",
+   "role": "새 버전으로 바뀌는 동안에도 사용자가 오류를 보지 않게 하고, 그것을 숫자로 확인하는 일",
+   "scenario": "서버를 두 벌 두고 Nginx로 방향을 바꿔 보고, 같은 절차를 Cloud Run의 0% 배포와 스타트업 프로브·스모크 테스트로 자동화해요. 배포하는 동안 요청을 세어 실패 건수로 확인하고, 마지막에 세 질문으로 돌아봐요.",
+   "flow": {
+    "nodes": [
+     {
+      "id": "n1",
+      "label": "방향 바꾸기(블루그린)",
+      "posts": [
+       "load-balancer-zero-downtime.html"
+      ]
+     },
+     {
+      "id": "n2",
+      "label": "0% 배포와 두 관문",
+      "posts": [
+       "cloud-run-zero-downtime-deploy.html"
+      ]
+     },
+     {
+      "id": "n3",
+      "label": "세 질문으로 돌아보기",
+      "posts": [
+       "ai-service-in-production-wrap-up.html"
+      ]
+     }
+    ],
+    "edges": [
+     [
+      "n1",
+      "n2",
+      "같은 절차를 자동으로"
+     ],
+     [
+      "n2",
+      "n3",
+      "확인한 것을 정리"
+     ]
+    ]
+   },
+   "posts": [
+    {
+     "file": "load-balancer-zero-downtime.html",
+     "concept": "로드밸런서와 블루그린",
+     "one_line": "서버를 두 벌 두고 그 앞에서 요청을 나눠 보내는 장치(로드밸런서)의 방향만 바꾸면 서비스를 끄지 않고 새 버전으로 바꿀 수 있고, 사용자의 대화가 이어지려면 기억을 서버 밖의 데이터베이스에 두어야 한다",
+     "practice": "배포 직후 \"대화가 사라졌어요\"라는 신고가 왔는데 오류는 하나도 없을 때, 어디를 열어 볼지 알고 싶어서 쓴다",
+     "analogy": "영업 중인 식당 옆에 새 주방을 짓기",
+     "keywords": [
+      "Nginx",
+      "blue/green",
+      "reload",
+      "weight",
+      "무상태"
+     ],
+     "links": [
+      "what-is-proxy-server.html",
+      "what-is-docker.html"
+     ]
+    },
+    {
+     "file": "cloud-run-zero-downtime-deploy.html",
+     "concept": "Cloud Run 무중단 배포",
+     "one_line": "새 버전을 사용자 요청을 받지 않는 상태(트래픽 0%)로 먼저 올려 두고, 준비됐는지와 정상인지를 두 번 확인한 뒤에만 요청을 옮기면 배포하는 동안 사용자가 오류를 보지 않게 만들 수 있다",
+     "practice": "하루에도 여러 번 배포하게 되어 \"지금 쓰는 사람이 있을 텐데\" 하고 눈치 보지 않고 머지하고 싶을 때 쓴다",
+     "analogy": "점심 장사 중에 주방 팀을 바꾸는 식당",
+     "keywords": [
+      "0% 배포",
+      "스타트업 프로브",
+      "스모크 테스트",
+      "롤백",
+      "트래픽 고정"
+     ],
+     "links": [
+      "deploying-and-free-hosting.html"
+     ]
+    },
+    {
+     "file": "ai-service-in-production-wrap-up.html",
+     "concept": "배포를 세 질문으로 점검",
+     "one_line": "코드를 고쳐 사용자에게 내보내는 일은 «무엇이 나갔는지, 사용자는 괜찮았는지, 되돌릴 수 있는지» 세 질문에 기록으로 답할 수 있게 만드는 일이다",
+     "practice": "코딩 에이전트에게 \"배포 파이프라인 만들어 줘\"라고 맡기기 전에, 결과물이 세 질문 중 어디에 답하고 어디를 비워 뒀는지 읽는 기준으로 쓴다",
+     "analogy": "밀키트 상자를 가맹점에 보내는 본사",
+     "keywords": [
+      "세 질문",
+      "가용성 99.9%",
+      "배포 점검표"
+     ],
+     "links": []
+    }
+   ]
   }
  },
  "titles": {
@@ -7458,6 +7844,16 @@ window.BIGMAP = {
   "generative-ai-design-patterns-ch1.html": "프롬프트에서 에이전트까지 — 1장 정리노트",
   "generative-ai-design-patterns-ch2.html": "신입사원의 말투를 붙잡다 — 2장 정리노트",
   "generative-ai-design-patterns-ch3.html": "다 외우지 말고, RAG로 찾아보게 하자 — 3장 정리노트",
-  "codeact-code-as-agent-actions.html": "실행 가능한 코드 행동이 더 나은 LLM 에이전트를 만든다 (2024.02.01)"
+  "codeact-code-as-agent-actions.html": "실행 가능한 코드 행동이 더 나은 LLM 에이전트를 만든다 (2024.02.01)",
+  "ai-service-design-before-code.html": "AI 기능을 서비스로 설계한다는 것 — 코딩 에이전트에게 맡기기 전에 정할 것 (1)",
+  "cloud-run-source-deploy-meaning.html": "Cloud Run에 소스를 배포한다는 것 — 코드 폴더 하나가 공개 주소가 되기까지 (2)",
+  "cloud-run-operating-ai-service.html": "배포한 AI 서비스가 말없이 틀리는 순간 — 타임아웃, 인스턴스, 비용, 로그 (3)",
+  "github-actions-auto-deploy.html": "코드를 머지하면 서비스가 저절로 바뀌는 길 — GitHub Actions로 자동 배포하기 (4)",
+  "ci-tests-and-staging.html": "합치기 전에 테스트하고 내보내기 전에 먼저 본다 — CI 테스트와 staging 환경 (5)",
+  "dockerfile-fixing-runtime-environment.html": "로컬에서는 되는데 서버에서만 안 되는 이유 — Dockerfile로 실행 환경 정하기 (6)",
+  "build-once-promote-image.html": "시험한 이미지와 내보낸 이미지가 같다는 증거 — 이미지를 한 번만 만들어 그대로 보내기 (7)",
+  "load-balancer-zero-downtime.html": "새 버전으로 바뀌는 몇 초 동안 — 로드밸런서로 무중단 배포 구성하기 (8)",
+  "cloud-run-zero-downtime-deploy.html": "배포하는 동안 사용자는 오류를 봤을까 — Cloud Run으로 무중단 배포하기 (9)",
+  "ai-service-in-production-wrap-up.html": "아홉 개 노드를 한 번에 — AI 서비스를 프로덕션에 올리기까지 돌아보기 (10)"
  }
 };

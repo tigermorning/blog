@@ -12,7 +12,8 @@ window.BIGMAP_PILLAR = {
   { "id": "p2", "pillar": "p2" },
   { "id": "p5", "pillar": "p5" },
   { "id": "p1", "pillar": "p1" },
-  { "id": "p3", "pillar": "p3" }
+  { "id": "p3", "pillar": "p3" },
+  { "id": "ship", "region": "ship", "label": "내보내기 · AI 서비스 운영·배포", "sub": "만든 에이전트를 서버에 올리고, 새 버전이 나가는 순간에도 끊기지 않게 지키는 곳 — 시험 범위 밖", "chips": ["Cloud Run", "CI/CD", "Docker", "무중단 배포"] }
  ],
  "edges": [
   ["brain", "p4", "무엇을 시키나"],
@@ -22,7 +23,8 @@ window.BIGMAP_PILLAR = {
   ["p2", "p1", "호출 한 번"],
   ["p5", "p1", "호출 한 번"],
   ["web", "p1", "돌아갈 자리"],
-  ["p1", "p3", "완성품을 설정으로"]
+  ["p1", "p3", "완성품을 설정으로"],
+  ["p1", "ship", "서비스로 내보내기"]
  ],
  "pillars": [
   {
