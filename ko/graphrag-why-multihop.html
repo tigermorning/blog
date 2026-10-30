@@ -104,12 +104,12 @@
         <tr><td>낱말로 카드를 찾아 주는 직원</td><td>검색기 — 질문과 낱말이 겹치는 문서를 찾는다</td></tr>
         <tr><td>벽의 연결판에 꽂힌 핀</td><td>노드 — 영화·사람·시상식 같은 대상</td></tr>
         <tr><td>핀과 핀을 잇는 실 한 가닥</td><td>엣지 — "출연했다" 같은 관계</td></tr>
-        <tr><td>영업 전에 판을 만드는 수고</td><td>문서를 넣을 때(색인 시점) 관계를 미리 뽑는 비용</td></tr>
+        <tr><td>영업 전에 판을 만드는 수고</td><td>문서를 넣을 때(색인 시점, 검색할 수 있게 정리해 두는 때) 관계를 미리 뽑는 비용</td></tr>
         <tr><td>실을 따라 핀에서 핀으로 옮겨 가기</td><td>그래프 탐색 — 멀티홉 질문에 답하는 방법</td></tr>
       </tbody>
     </table>
     <p><strong>핵심 한 줄:</strong> 서랍 방식은 질문이 온 <strong>뒤에</strong> 연결을 찾으려다 실패하고, 연결판 방식은 질문이 오기 <strong>전에</strong> 연결을 만들어 둔 만큼 비용을 앞에서 치러요.</p>
-    <p>다만 여기서 비유가 끊기는 점이 있어요. 벽의 판은 사람이 정확하게 꽂지만, 실제 연결판은 LLM이 문서를 읽고 만들어서 <strong>틀린 실도 섞여요.</strong> 그걸 어떻게 거르는지가 <a href="graphrag-build-knowledge-graph.html">다음 편</a>의 주제예요.</p>
+    <p>다만 여기서 비유가 끊기는 점이 있어요. 벽의 판은 사람이 정확하게 꽂지만, 실제 연결판은 LLM(글을 읽고 쓰는 AI)이 문서를 읽고 만들어서 <strong>틀린 실도 섞여요.</strong> 그걸 어떻게 거르는지가 <a href="graphrag-build-knowledge-graph.html">다음 편</a>의 주제예요.</p>
 
     <h2 id="flow"><span class="hl">전체 흐름</span> — 연결을 언제 만드는가</h2>
     <svg viewBox="0 0 700 250" role="img" aria-label="위쪽은 검색 기반 RAG: 질문이 오면 문서 조각을 검색해 상위 k개를 LLM에 넘긴다. 아래쪽은 GraphRAG: 질문이 오기 전에 문서에서 삼중항을 뽑아 지식 그래프를 만들어 두고, 질문이 오면 시작 노드를 찾아 선을 따라 이동한 경로를 LLM에 넘긴다">
@@ -171,9 +171,11 @@
       </tbody>
     </table>
     <p>삼중항<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>의 힘은 <strong>이어 붙일 수 있다</strong>는 데 있어요. (봉준호, DIRECTED, 기생충)과 (송강호, ACTED_IN, 기생충)은 따로 보면 평범하지만, 가운데 "기생충"으로 이으면 "봉준호 영화에 나온 배우는?"의 답이 돼요. 문서 조각은 이렇게 이어지지 않아요.</p>
-    <p>파이썬에서는 <strong>NetworkX</strong><sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>라는 라이브러리로 그래프를 메모리에 바로 만들 수 있어요. 삼중항 둘로 그래프를 만들어 보면 이래요.</p>
+    <p>파이썬에서는 <strong>NetworkX</strong><sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>라는 라이브러리(남이 만들어 둔 코드 모음)로 그래프를 메모리에 바로 만들 수 있어요. 삼중항 둘로 그래프를 만들어 보면 이래요.</p>
+    <p>아래 한 줄은 NetworkX를 내 컴퓨터에 설치해요. 터미널(명령을 글자로 입력하는 창)에 직접 입력해요.</p>
     <p class="run-tag">실행: 로컬 터미널</p>
     <pre><code>pip install networkx</code></pre>
+    <p>아래 코드는 점 세 개와 선 두 개로 그래프를 만들고, 선을 하나씩 글자로 찍어 줘요. 직접 돌려 봐도 되고 읽기만 해도 돼요.</p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
     <pre><code>import networkx as nx   # networkx를 nx라는 별명으로 부르기로 한다 (pandas를 pd로 줄이는 것과 같은 관례)
 
@@ -199,7 +201,7 @@ for u, v, d in G.edges(data=True):
 
     <h3 id="digraph">DiGraph — 선에 방향이 있다</h3>
     <p>위 코드의 <code>nx.DiGraph()</code>는 <strong>방향이 있는 그래프</strong>(directed graph)예요. 선마다 출발점과 도착점이 정해져 있어요. NetworkX에는 방향 없는 <code>nx.Graph()</code>도 있는데, 여기서 DiGraph를 쓰는 이유는 삼중항의 주어와 목적어를 바꾸면 뜻이 달라지기 때문이에요. (봉준호, DIRECTED, 기생충)은 "봉준호가 기생충을 연출했다"지만, 방향을 뒤집으면 "기생충이 봉준호를 연출했다"가 돼요.</p>
-    <p>방향이 있으면 한 노드의 선이 둘로 나뉘어요. 그 노드에서 <strong>나가는 선</strong>과 그 노드로 <strong>들어오는 선</strong>이요. 삼중항 셋으로 확인해 봤어요.</p>
+    <p>방향이 있으면 한 노드의 선이 둘로 나뉘어요. 그 노드에서 <strong>나가는 선</strong>과 그 노드로 <strong>들어오는 선</strong>이요. 삼중항 셋으로 확인해 봤어요. 아래 코드는 선의 나가는 쪽과 들어오는 쪽을 따로 찍고, 방향을 지킬 때와 무시할 때 길이 있는지 비교해요. 직접 돌려 봐도 되고 읽기만 해도 돼요.</p>
     <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
     <pre><code>import networkx as nx
 
@@ -287,6 +289,7 @@ WHERE 영화.감독 = '봉준호' AND 출연2.영화 != 영화.영화;</code></p
     </ul>
 
     <h3 id="local-pip">① 패키지 — <code>%pip</code>와 재시작</h3>
+    <p>아래 셀은 필요한 패키지(남이 만든 코드 꾸러미)를 한꺼번에 설치해요. 직접 실행해요.</p>
     <p class="run-tag">실행: 로컬 VS Code 노트북</p>
     <pre><code>%pip install -q networkx pandas matplotlib tiktoken python-dotenv beautifulsoup4 requests
 %pip install -q rank_bm25 langchain-core langchain-text-splitters langchain-community
@@ -368,7 +371,7 @@ OPENAI_API_KEY 설정됨: True
       </tbody>
     </table>
     <p>이 "몇 건에 나오는가"를 거꾸로 뒤집어 점수로 바꾼 값이 <strong>IDF</strong>(역문서빈도)<sup class="fn-ref"><a href="#fn10" id="fnref10">10</a></sup>예요. BM25 점수는 이 IDF에 "그 문서 안에서 몇 번 나왔나"(TF)를 곱해서 만들어요.</p>
-    <p>문서 80건을 800자 청크<sup class="fn-ref"><a href="#fn8" id="fnref8">8</a></sup>로 자르니 700조각이 나왔어요. 한국어는 "영화를·영화가·영화는"을 공백 기준으로 다 다른 낱말로 보니, 정규식으로 한글·영문·숫자 덩어리만 뽑는 가벼운 토크나이저를 붙였어요.</p>
+    <p>문서 80건을 800자 청크<sup class="fn-ref"><a href="#fn8" id="fnref8">8</a></sup>로 자르니 700조각이 나왔어요. 한국어는 "영화를·영화가·영화는"을 공백 기준으로 다 다른 낱말로 보니, 정규식(글자 모양으로 찾는 규칙)으로 한글·영문·숫자 덩어리만 뽑는 가벼운 토크나이저(문장을 낱말 조각으로 자르는 도구)를 붙였어요.</p>
     <p>잴 것은 두 가지예요. 둘 다 답을 만들기 전 단계, 즉 <strong>검색이 정답에 닿았는지</strong>만 봐요. 근거 안에 정답이 없으면 뒤에 어떤 LLM을 붙여도 정답을 못 만드니까, 이게 그 시스템의 상한선이에요.</p>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 제가 2026-09-18에 상위 6개 청크로 잰 결과예요</span></p>
     <pre><code>① 정답 문자열이 상위 6개 청크 안에 통째로 있는가
@@ -399,7 +402,7 @@ OPENAI_API_KEY 설정됨: True
     <p>결과가 세 갈래로 나뉘어요. 유리하게 읽지 않도록 하나씩 볼게요.</p>
     <ul>
       <li><strong>처음부터 되는 경우 (추천-04).</strong> 송강호 문서가 1위예요. 검색이 질문을 이해해서가 아니라, 질문에 "기생충"이 있고 송강호 문서가 마침 "기생충"을 언급해서예요. 문서가 80건이 아니라 8,000건이면 "기생충"을 언급하는 문서가 수백 개일 테고, 이 행운은 사라져요.</li>
-      <li><strong>후보를 늘리면 구제되는 경우 (추천-06, 추천-12).</strong> 20개로 늘리면 7위·12위로 들어와요. 다만 공짜가 아니에요. 20조각 중 답에 필요한 건 한두 개고 나머지는 잡음이라, LLM이 읽을 분량과 토큰 비용이 같이 늘고 답의 질은 떨어져요.</li>
+      <li><strong>후보를 늘리면 구제되는 경우 (추천-06, 추천-12).</strong> 20개로 늘리면 7위·12위로 들어와요. 다만 공짜가 아니에요. 20조각 중 답에 필요한 건 한두 개고 나머지는 잡음이라, LLM이 읽을 분량과 토큰(AI가 읽는 글자 조각) 비용이 같이 늘고 답의 질은 떨어져요.</li>
       <li><strong>아무리 늘려도 안 되는 경우 (추천-09).</strong> 부산행 문서는 50개 안에도 없어요. 질문에 "부산행"도 "최우식"도 없으니까요. 송강호 → 기생충 → 최우식 → 부산행을 순서대로 알아내야 하는데, 그건 검색이 아니라 추적이에요.</li>
     </ul>
 
@@ -494,9 +497,10 @@ K=50  HitRate 0.75  Recall 0.75  Precision 0.015  MRR 0.307  nDCG 0.401</code></
 
     <div class="apply-box apply-box--try" id="try-it">
       <p class="apply-box-title">직접 해 보기 — 키 없이 벽 재기</p>
+      <p>아래 한 줄은 이 실습에 필요한 패키지를 설치해요.</p>
       <p class="run-tag">실행: 로컬 터미널</p>
       <pre><code>pip install langchain-community langchain-text-splitters rank_bm25</code></pre>
-      <p>데이터 zip을 받아 <code>input/</code> 폴더에 풀어 두고 아래를 돌려요.</p>
+      <p>데이터 zip을 받아 <code>input/</code> 폴더에 풀어 두고 아래를 돌려요. 아래 코드는 BM25 검색으로 문항마다 정답 근거가 몇 위에 오는지 세어요. 직접 따라 해 보세요.</p>
       <p class="run-tag">실행: 로컬 파이썬 — 아무 환경 OK</p>
       <pre><code>import os, re, glob, json
 from langchain_core.documents import Document

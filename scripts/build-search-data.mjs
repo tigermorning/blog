@@ -15,6 +15,7 @@ const OUT_FILE = path.join(ROOT, "search-data.js");
 
 // 글이 아니라 목록·이동용 페이지
 const SKIP = new Set([
+  "ai-service-in-production-presentation.html", // 발표 하루용 임시 글
   "index.html",
   "posts.html",
   "start.html",

@@ -86,8 +86,8 @@
       <span class="post-nav-title">코드를 머지하면 서비스가 저절로 바뀌는 길 — GitHub Actions로 자동 배포하기 (4)</span>
     </a>
 
-    <p>앞의 편에서 <a href="github-actions-auto-deploy.html">main에 합치면 저절로 배포되는 길</a>을 만들었어요. 그런데 이 길에는 구멍이 하나 있어요. 고장 난 코드도 합치기만 하면 같은 길로 나간다는 거예요. 이번에는 그 길 앞에 <strong>자동으로 확인하는 관문 네 개</strong>를 세웠어요. 먼저 관문 네 개가 막으려는 사고 세 가지를 보고, 하나씩 만든 다음, 도장판 앱에도 똑같이 붙여 봤어요. 마지막에는 "테스트는 전부 통과했는데 AI가 규칙을 어긴" 사례도 함께 적었어요.</p>
-    <p>이 글에 나오는 말부터 풀어 둘게요. <strong>PR</strong><sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>은 "이 변경을 합쳐 주세요"라는 요청이고, <strong>main</strong>은 진짜 서비스가 되는 본줄기 코드예요. 변경을 main에 넣는 것을 <strong>합친다(머지, merge)</strong><sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>고 해요. <strong>CI</strong><sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>는 PR마다 서버가 자동으로 돌리는 테스트고, <strong>리비전</strong><sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>은 서비스를 배포할 때마다 붙는 버전 번호예요.</p>
+    <p>앞의 편에서 <a href="github-actions-auto-deploy.html">main에 합치면 저절로 배포되는 길</a>을 만들었어요. 그런데 이 길에는 구멍이 하나 있어요. 고장 난 코드도 합치기만 하면 같은 길로 나간다는 거예요. 이번에는 그 길 앞에 <strong>자동으로 확인하는 관문 네 개</strong>를 세웠어요. 순서는 이래요. 먼저 관문 네 개가 막으려는 사고 세 가지를 봐요. 그다음 관문을 하나씩 만들어요. 그리고 도장판 앱에도 똑같이 붙여 봐요. 마지막에는 "테스트는 전부 통과했는데 AI가 규칙을 어긴" 사례도 적었어요. 처음 보는 말이 많아도 괜찮아요. 아래에서 하나씩 풀어 줘요.</p>
+    <p>이 글에 나오는 말부터 풀어 둘게요. <strong>PR</strong><sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>은 "이 변경을 합쳐 주세요"라는 요청이고, <strong>main</strong>은 진짜 서비스가 되는 본줄기 코드(여러 갈래로 고치던 코드가 모이는 줄기)예요. 변경을 main에 넣는 것을 <strong>합친다(머지, merge)</strong><sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>고 해요. <strong>CI</strong><sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>는 PR마다 서버가 자동으로 돌리는 테스트고, <strong>리비전</strong><sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>은 서비스를 배포할 때마다 붙는 버전 번호예요.</p>
 
     <h2 id="analogy"><span class="hl">비유로 먼저</span> — 가맹점에 상자를 보내기 전의 검수대</h2>
     <p>이 시리즈는 비유를 하나만 써요. <a href="build-once-promote-image.html">7편</a>에서 세운 <strong>밀키트 가게</strong>를 이어 갈게요. 사장인 내가 밀키트 상자를 만들어 시식 주방(staging)에서 맛을 보고, 가맹점(production)에 보내요. 그런데 상자가 하루에도 여러 번 나가면 사고가 나기 시작해요. 사장 집 주방에서는 멀쩡한데 가맹점 주방에서만 안 되는 레시피가 나가고, 포장이 덜 된 상자가 그대로 나가고, 시식용 상자가 가맹점 진열대에 올라가요. 그래서 상자가 가맹점으로 가기 전에 <strong>검수대</strong>를 세워요. 검수대는 사장이 바빠서 못 볼 때도 자동으로 상자를 살펴요.</p>
@@ -153,7 +153,7 @@
     <h2 id="accidents"><span class="hl">막고 싶었던 사고</span> — 세 가지와 네 관문의 짝</h2>
     <p>혼자서든 여럿이서든 코드를 서비스에 올리다 보면 이런 일이 생겨요.</p>
     <ul>
-      <li><strong>서버에서만 틀리는 일.</strong> 내 컴퓨터에서는 테스트가 통과하는데 서버에 올리면 실패해요. 컴퓨터마다 설치된 것, 설정, 시간대가 다르기 때문이에요. 이번 예는 시간대였어요. 내 컴퓨터(한국 시간)에서는 통과했는데, 서버가 쓰는 세계 표준시(UTC)<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>로 돌리니 오전 8시가 오후 5시(17:00)로 저장됐어요.</li>
+      <li><strong>서버에서만 틀리는 일.</strong> 내 컴퓨터에서는 테스트가 통과하는데 서버에 올리면 실패해요. 컴퓨터마다 설치된 것, 설정, 시간대가 다르기 때문이에요. 이번 예는 시간대였어요. 내 컴퓨터(한국 시간)에서는 통과했어요. 그런데 서버가 쓰는 세계 표준시(UTC)<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>로 돌리니 오전 8시가 오후 5시(17:00)로 저장됐어요.</li>
       <li><strong>망가진 코드가 합쳐지는 일.</strong> 실수로 망가진 코드가 main에 합쳐지고, 그대로 서비스까지 올라가요.</li>
       <li><strong>연습과 진짜가 섞이는 일.</strong> 연습으로 올린 것이 진짜 서비스를 바꿔 버려요.</li>
     </ul>
@@ -167,16 +167,17 @@
     </table>
 
     <h2 id="gate1"><span class="hl">관문 1. 자동 테스트(CI)</span> — PR마다 서버가 대신 돌려요</h2>
-    <p>연습용 템플릿 저장소(friend-agent-template)에서 세 번에 나눠 만들었어요. 1~3번째 PR의 화면은 처음에 저장하지 못해서, 같은 PR과 실행 기록을 나중에 다시 열어 확인했어요.</p>
+    <p>연습용 템플릿 저장소(friend-agent-template)에서 세 번에 나눠 만들었어요. 1~3번째 PR의 화면은 처음에 저장하지 못했어요. 그래서 같은 PR과 실행 기록을 나중에 다시 열어 확인했어요.</p>
     <h3>(1) 테스트 하나 넣기 (PR #1)</h3>
-    <p>"내일 아침 8시에 물 마시라고 알려 줘"라고 하면 약속 시각이 한국 시간 08:00으로 저장되는지 보는 테스트예요. PR #1로 올려 합쳤어요(합친 커밋 <code>d9512eb</code>). 내 컴퓨터에서 pytest<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup>를 돌리면 11개가 통과해요.</p>
+    <p>"내일 아침 8시에 물 마시라고 알려 줘"라고 하면 약속 시각이 한국 시간 08:00으로 저장되는지 보는 테스트예요. PR #1로 올려 합쳤어요(합친 커밋 <code>d9512eb</code>). 내 컴퓨터에서 pytest<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup>(파이썬 코드를 시험해 주는 도구)를 돌리면 11개가 통과해요.</p>
     <h3>(2) 첫 CI가 실패하고, 고치기 (PR #2)</h3>
-    <p>PR마다 서버가 테스트를 돌리게 하는 설정 파일(<code>ci.yml</code>)을 PR #2로 올렸어요. 그런데 첫 실행이 빨간불이었어요. 오류는 <code>No module named 'app'</code>(종료 코드 2)였어요. 서버에서는 pytest가 앱 폴더를 찾지 못한 거예요. 내 컴퓨터에서는 <code>python -m pytest</code>로 실행해서 현재 폴더가 경로에 들어갔기 때문에 몰랐던 것으로 보여요(추정). 해결은 한 줄이었어요.</p>
+    <p>PR마다 서버가 테스트를 돌리게 하는 설정 파일(<code>ci.yml</code>)을 PR #2로 올렸어요. 그런데 첫 실행이 빨간불이었어요. 오류는 <code>No module named 'app'</code>(종료 코드 2)였어요. 서버에서는 pytest가 앱 폴더를 찾지 못한 거예요. 내 컴퓨터에서는 <code>python -m pytest</code>로 실행해서 현재 폴더가 경로에 들어갔어요. 그래서 몰랐던 것으로 보여요(추정). 이런 오류에서 막히는 게 정상이에요. 해결은 한 줄이었어요.</p>
+    <p>아래 한 줄은 "현재 폴더에서도 코드를 찾으세요"라고 pytest에 알려 주는 설정이에요. 그대로 따라 저장하면 돼요.</p>
     <p class="run-tag">실행: 프로젝트에 pytest.ini로 저장 — pytest가 실행할 때마다 자동으로 읽어요</p>
 <pre><code>pythonpath = .</code></pre>
     <p>그러자 두 번째 실행은 초록불이었어요(합친 커밋 <code>cea1536</code>). 한 PR의 커밋 목록에 첫 커밋의 빨간 ✗와 고친 커밋의 초록 ✓가 같이 보여요.</p>
     <h3>(3) 서버에서만 틀리는 시간대 버그 (PR #3)</h3>
-    <p>저장소에 미리 준비된 「일부러 망가뜨린 변경」 중 reminder-timezone을 PR #3으로 올렸어요. 이 변경은 약속 시각에서 시간대 정보를 지워서, 서버가 자기 시간대로 시각을 읽게 만들어요.</p>
+    <p>저장소에 미리 준비된 「일부러 망가뜨린 변경」 중 reminder-timezone을 PR #3으로 올렸어요. 이 변경은 약속 시각에서 시간대 정보를 지워요. 그러면 서버가 자기 시간대로 시각을 읽게 돼요.</p>
     <ul>
       <li>내 컴퓨터(한국 시간)에서는 11개가 모두 통과해요.</li>
       <li>서버처럼 UTC로 돌리면 약속 시각이 08:00이 아니라 17:00으로 저장되어 1개가 실패해요. 한국과 UTC의 시차인 9시간이 어긋난 거예요.</li>
@@ -208,7 +209,7 @@
     <p>내 컴퓨터에서만 테스트했다면 못 잡았을 오류를 서버의 CI가 잡았어요. 같은 상황을 내 컴퓨터에서 <code>TZ=UTC</code>로 다시 돌려 보니 17:00으로 1개가 실패했고, CI 로그의 pytest 단계에서도 17:00이 찍혀 있었어요. PR #3은 원인을 읽는 것이 목적이어서 합치지 않고 닫았어요.</p>
 
     <h2 id="gate2"><span class="hl">관문 2. 환경 분리</span> — staging과 production</h2>
-    <p>GitHub에 staging(연습용)과 production(진짜 서비스) 환경<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup>을 만들었어요. 환경마다 따로 값을 둬서(서비스 이름 변수와 환경 이름 변수) 같은 배포 파일이 환경에 맞게 움직여요. staging용 AI 키도 production과 따로 만들었고, 서비스 실행 계정이 읽을 수 있는 시크릿(비밀 값)<sup class="fn-ref"><a href="#fn8" id="fnref8">8</a></sup>도 그 키 하나로 제한했어요. 설정 화면에는 production(보호 규칙 1개)과 staging이 있고 각각 변수가 2개씩 있어요.</p>
+    <p>GitHub에 staging(연습용)과 production(진짜 서비스) 환경<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup>을 만들었어요. 환경마다 따로 값을 둬서(서비스 이름 변수와 환경 이름 변수) 같은 배포 파일이 환경에 맞게 움직여요. staging용 AI 키도 production과 따로 만들었어요. 서비스 실행 계정이 읽을 수 있는 시크릿(비밀 값)<sup class="fn-ref"><a href="#fn8" id="fnref8">8</a></sup>도 그 키 하나로 제한했어요. 설정 화면에는 production(보호 규칙 1개)과 staging이 있고 각각 변수가 2개씩 있어요.</p>
     <p>배포 중 한 번 막혔어요. 빌드 단계에서 <code>PERMISSION_DENIED</code>(기본 계정을 빌드에 쓸 권한이 없음)가 났어요. 빌드에 쓸 계정을 환경 변수로 지정하고 배포 명령에 빌드 계정 옵션을 추가해서(PR #5) 풀었어요. staging으로 합치자 테스트(19초)와 배포(2분 17초)가 모두 초록불이었어요.</p>
 
     <h2 id="gate3"><span class="hl">관문 3. 승인 대기</span> — 사람이 누르기 전에는 안 나가요</h2>
@@ -216,7 +217,7 @@
     <p>이 배포는 승인하지 않고 취소했어요. 확인해 보니 production 서비스의 설정(환경 값, 실행 계정, 시크릿 권한)이 설계와 맞지 않았어요. 맞지 않는 상태 그대로 승인을 눌러 진짜 서비스를 바꾸지 않으려는 판단이었어요.</p>
 
     <h2 id="gate4"><span class="hl">관문 4. 브랜치 보호</span> — 관리자인 나도 못 합쳐요</h2>
-    <p>main과 staging에 규칙을 걸었어요. PR 없이는 합칠 수 없고, <code>test</code>라는 검사가 통과해야만(필수 검사<sup class="fn-ref"><a href="#fn9" id="fnref9">9</a></sup>) 합칠 수 있으며, 관리자(나)에게도 똑같이 적용했어요. 조회 명령으로 규칙이 걸린 것을 확인했고, main에 직접 push(코드를 바로 올리기)를 시도하니 <code>GH006</code>(보호된 브랜치라 거절)으로 막혔어요. 이렇게 걸어 두는 것을 브랜치 보호<sup class="fn-ref"><a href="#fn10" id="fnref10">10</a></sup>라고 해요.</p>
+    <p>main과 staging에 규칙을 걸었어요. 규칙은 세 가지예요. PR 없이는 합칠 수 없어요. <code>test</code>라는 검사가 통과해야만(필수 검사<sup class="fn-ref"><a href="#fn9" id="fnref9">9</a></sup>) 합칠 수 있어요. 관리자(나)에게도 똑같이 적용했어요. 조회 명령으로 규칙이 걸린 것을 확인했고, main에 직접 push(코드를 바로 올리기)를 시도하니 <code>GH006</code>(보호된 브랜치라 거절)으로 막혔어요. 이렇게 걸어 두는 것을 브랜치 보호<sup class="fn-ref"><a href="#fn10" id="fnref10">10</a></sup>라고 해요.</p>
     <p>저장소에 미리 준비된 「일부러 망가뜨린 변경」 세 개(safety-exact-match, weather-keyword, reminder-timezone)도 차례로 PR로 올렸어요. 모두 test가 빨간불이 되었고 합치기 버튼이 회색으로 막혔어요. 합치기 방식 메뉴를 열어 봐도 「검사를 건너뛰고 합치기」 같은 항목이 없어요. 관리자에게도 규칙이 적용되도록 했기 때문이에요.</p>
 
     <h2 id="apply"><span class="hl">내 앱(루틴 도장)에 적용하기</span> — 칸 열림 일정부터 테스트로</h2>
@@ -253,7 +254,7 @@
         <tr><td>6</td><td>#17</td><td>쉼표와 「아니면」에서 문장을 나눠 검사</td><td>00019</td><td>12번 중 0번</td></tr>
       </tbody>
     </table>
-    <p>핵심은 네 번째 단계(00017)를 배포한 뒤예요. 테스트와 CI는 모두 통과했는데도, 배포한 서비스에 같은 상황을 실제로 보내 보니 지난 칸을 또 권했어요. 테스트는 가짜 AI로 하기 때문에 「프롬프트(AI에게 주는 지시문)<sup class="fn-ref"><a href="#fn12" id="fnref12">12</a></sup>에 규칙이 들어갔다」까지만 확인할 수 있기 때문이에요. 그래서 서비스에 같은 요청을 여러 번 보내 세어 봤어요. 여섯 번째 단계에서 빠져나간 이유는, 한 문장 뒤쪽의 「내일의 루틴」이 앞쪽 권유를 가려서였어요. 서버의 검사는 답을 읽어서 지난 칸을 권했으면 다시 쓰게 하고, 세 번 모두 어기면 정해 둔 답을 써요.</p>
+    <p>핵심은 네 번째 단계(00017)를 배포한 뒤예요. 테스트와 CI는 모두 통과했어요. 그런데 배포한 서비스에 같은 상황을 실제로 보내 보니 지난 칸을 또 권했어요. 테스트는 가짜 AI로 하기 때문이에요. 「프롬프트(AI에게 주는 지시문)<sup class="fn-ref"><a href="#fn12" id="fnref12">12</a></sup>에 규칙이 들어갔다」까지만 확인할 수 있어요. 그래서 서비스에 같은 요청을 여러 번 보내 세어 봤어요. 여섯 번째 단계에서 빠져나간 이유는, 한 문장 뒤쪽의 「내일의 루틴」이 앞쪽 권유를 가려서였어요. 서버의 검사는 답을 읽어요. 지난 칸을 권했으면 다시 쓰게 해요. 세 번 모두 어기면 정해 둔 답을 써요.</p>
     <figure>
     <svg class="dm" viewBox="0 0 760 200" role="img" aria-label="도우미의 답을 서버가 검사한다. 지난 칸을 권했으면 다시 쓰게 하고, 세 번 모두 어기면 정해 둔 답을 쓴다. 통과하면 사용자에게 보여 준다.">
       <defs>
@@ -338,6 +339,7 @@
         </tr>
       </tbody>
     </table>
+    <p>아래 글은 코딩 에이전트(코드를 대신 짜 주는 AI)에게 그대로 붙여 넣는 부탁이에요. 조회만 하는 부탁이라 규칙을 바꾸지 않아요.</p>
     <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등</p>
 <pre><code>이 저장소의 브랜치 보호 규칙을 조회해서 main과 staging에 필수 검사(test)가 걸려 있는지,
 관리자에게도 적용되는지 알려 줘. ci.yml의 검사 이름과 필수 검사 이름이 같은지도 비교해 줘.
@@ -442,10 +444,6 @@
     <a class="post-nav" href="ai-service-in-production-wrap-up.html">
       <span class="post-nav-label">(10)</span>
       <span class="post-nav-title">아홉 개 노드를 한 번에 — AI 서비스를 프로덕션에 올리기까지 돌아보기</span>
-    </a>
-    <a class="post-nav" href="ai-service-in-production-presentation.html">
-      <span class="post-nav-label">(11)</span>
-      <span class="post-nav-title">발표용 한 장 요약 — 코드를 사용자에게 내보내는 아홉 날을 다섯 장으로</span>
     </a>
   </main>
   </div>

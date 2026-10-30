@@ -84,7 +84,7 @@
       <span class="post-nav-title">배포한 AI 서비스가 말없이 틀리는 순간 — 타임아웃, 인스턴스, 비용, 로그 (3)</span>
     </a>
 
-    <p>앞의 세 편에서는 <a href="ai-service-design-before-code.html">서비스를 설계</a>하고 <a href="cloud-run-source-deploy-meaning.html">Cloud Run에 소스를 배포</a>한 뒤 <a href="cloud-run-operating-ai-service.html">운영하면서 생기는 일</a>을 봤어요. 그때마다 배포는 제가 명령을 쳐서 했어요. 이번에는 <strong>도장판 앱</strong>(<code>routine-stamp-trial</code>, <code>index.html</code> 하나로 된 작은 앱이고 Cloud Run에 비공개 서비스로 올라가 있어요)으로 목표를 이렇게 잡았어요. <strong>"main에 머지<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>하면 저절로 배포된다."</strong> 코드를 고칠 때마다 사람이 배포 명령을 치면 빼먹거나 실수하기 쉬우니까요. 풀어야 할 질문은 세 가지였어요.</p>
+    <p>앞의 세 편에서는 <a href="ai-service-design-before-code.html">서비스를 설계</a>하고 <a href="cloud-run-source-deploy-meaning.html">Cloud Run에 소스를 배포</a>한 뒤 <a href="cloud-run-operating-ai-service.html">운영하면서 생기는 일</a>을 봤어요. 그때마다 배포(만든 앱을 사람들이 쓸 수 있게 올리는 일)는 제가 명령을 쳐서 했어요. 이번에는 <strong>도장판 앱</strong>으로 해 봤어요. 이름은 <code>routine-stamp-trial</code>이고, <code>index.html</code> 하나로 된 작은 앱이에요. Cloud Run에 비공개 서비스로 올라가 있어요. 목표는 이거였어요. <strong>"main에 머지<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>하면 저절로 배포된다."</strong> 코드를 고칠 때마다 사람이 배포 명령을 치면 빼먹거나 실수하기 쉬우니까요. 풀어야 할 질문은 세 가지였어요.</p>
     <ul>
       <li>로봇(GitHub Actions<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>)에게 어떻게 일을 시킬까?</li>
       <li>비밀 키 파일 없이 어떻게 Google Cloud에 들어갈까?</li>
@@ -94,7 +94,7 @@
 
     <h2 id="five"><span class="hl">노드 핵심 5줄</span> — 이번 글 전체를 먼저 요약하면</h2>
     <ul>
-      <li><strong>워크플로</strong><sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>는 GitHub이 로봇에게 시키는 일 목록이에요(<code>.github/workflows</code>). 언제(이벤트)와 무엇을(일)을 적는 기능이라 푸시·배포 전용이 아니에요. PR 점검(<code>hello</code>)도 배포(<code>deploy</code>)도 같은 기능이고, 이벤트와 일만 다릅니다.</li>
+      <li><strong>워크플로</strong><sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>는 GitHub이 로봇에게 시키는 일 목록이에요(<code>.github/workflows</code> 폴더에 적어요). 언제(이벤트)와 무엇을(일)을 적는 기능이라 배포 전용이 아니에요. PR 점검(<code>hello</code>)도 배포(<code>deploy</code>)도 같은 기능이고, 이벤트와 일만 달라요.</li>
       <li>main에 머지되면 로봇이 자동으로 배포한다.</li>
       <li>열쇠 파일 없이 일회용 신분증(WIF<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>)으로 Google Cloud에 들어간다.</li>
       <li>고장 난 배포는 손님에게 안 나가고, Revert<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup>로 되돌린다.</li>
@@ -102,7 +102,7 @@
     </ul>
 
     <h2 id="analogy"><span class="hl">비유로 먼저</span> — 사장이 직접 상자를 들고 가던 가맹점 배송을 포장 로봇에게</h2>
-    <p>1편부터 이어 온 식당으로 말해 볼게요. 사장인 내가 밀키트 상자를 만들 때마다 직접 들고 가맹점(서비스)에 가서 진열하면, 바쁜 날 한 번 빼먹기 쉬워요. 그래서 <strong>"본점 장부(main)에 새 레시피가 올라오면 포장 로봇이 알아서 상자를 만들어 가맹점에 진열한다"</strong>는 규칙을 적어 줬어요. 문제는 로봇이 가맹점 본부 건물에 들어갈 때예요. 사장 열쇠를 로봇에게 복사해 주면 열쇠가 새는 순간 아무나 들어와요. 그래서 열쇠 대신 <strong>"본점 장부에서 온 로봇에게만 그때그때 발급하는 일회용 방문증"</strong>을 썼어요.</p>
+    <p>1편부터 이어 온 식당으로 말해 볼게요. 사장인 내가 밀키트 상자를 만들 때마다 직접 들고 가맹점(서비스)에 가서 진열한다고 해요. 그러면 바쁜 날 한 번 빼먹기 쉬워요. 그래서 <strong>"본점 장부(main)에 새 레시피가 올라오면 포장 로봇이 알아서 상자를 만들어 가맹점에 진열한다"</strong>는 규칙을 적어 줬어요. 문제는 로봇이 가맹점 본부 건물에 들어갈 때예요. 사장 열쇠를 로봇에게 복사해 주면, 열쇠가 새는 순간 아무나 들어와요. 그래서 열쇠 대신 <strong>"본점 장부에서 온 로봇에게만 그때그때 발급하는 일회용 방문증"</strong>을 썼어요.</p>
     <table>
       <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
       <tbody>
@@ -116,7 +116,7 @@
       </tbody>
     </table>
     <p><strong>핵심 한 줄:</strong> 사람이 하던 배포를 로봇에게 맡기되, 열쇠를 복사해 주지 말고 "내 저장소에서 온 로봇"임을 확인하는 일회용 방문증만 쓰게 한다.</p>
-    <p>다만 여기서 비유가 끊기는 점이 있어요. 실제로는 로봇을 부르는 것도 "장부에 올라오는 순간"이라는 <strong>이벤트</strong>예요. PR을 열 때처럼 다른 이벤트에도 같은 로봇 기능을 쓸 수 있고, 사람이 손으로 실행 버튼을 눌러도 돼요.</p>
+    <p>다만 여기서 비유가 끊기는 점이 있어요. 컴퓨터에서는 로봇을 부르는 것도 "장부에 올라오는 순간"이라는 <strong>이벤트</strong>(일이 생겼다는 신호)예요. PR을 열 때처럼 다른 이벤트에도 같은 로봇 기능을 쓸 수 있어요. 사람이 손으로 실행 버튼을 눌러도 돼요.</p>
 
     <h2 id="flow"><span class="hl">머지 한 번에 일어나는 일</span> — 이 글의 전체 흐름</h2>
     <p>머지부터 새 리비전<sup class="fn-ref"><a href="#fn8" id="fnref8">8</a></sup>까지를 한 장으로 먼저 보면 이래요. 아래에서 ②~⑤를 하나씩 풀어요. 사람이 명령을 치는 칸은 없어요.</p>
@@ -161,7 +161,7 @@
     </figure>
 
     <h2 id="step1"><span class="hl">과정 1. 로봇에게 일 시키기</span> — PR #1, hello.yml</h2>
-    <p>먼저 배포가 아닌 연습용 워크플로 <code>hello.yml</code>을 만들었어요. PR을 열거나 손으로 실행하면 로봇이 세 칸을 차례로 확인해요.</p>
+    <p>먼저 배포가 아닌 연습용 워크플로 <code>hello.yml</code>을 만들었어요. <code>.yml</code>은 일 목록을 적는 설정 파일이에요. PR을 열거나 손으로 실행하면 로봇이 세 칸을 차례로 확인해요.</p>
     <table>
       <thead><tr><th>칸</th><th>하는 일</th></tr></thead>
       <tbody>
@@ -170,10 +170,10 @@
         <tr><td>3</td><td>파일 보기</td></tr>
       </tbody>
     </table>
-    <p>일부러 첫 칸에 <code>exit 1</code>(실패로 끝내라는 명령)을 넣어 실패시키면 뒤 칸은 건너뛰어요. 원인을 되돌리고(Revert) 다시 통과시킨 뒤 머지했어요. 이 연습으로 <strong>"PR → 검사 → 머지" 흐름</strong>과, 실행 기록에 <code>event</code> 값(<code>pull_request</code>, <code>push</code>)이 찍힌다는 것을 확인했어요.</p>
+    <p>일부러 첫 칸에 <code>exit 1</code>(실패로 끝내라는 명령)을 넣어 실패시켰어요. 그러면 뒤 칸은 건너뛰어요. 원인을 되돌리고(Revert) 다시 통과시킨 뒤 머지했어요. 이 연습으로 <strong>"PR → 검사 → 머지" 흐름</strong>과, 실행 기록에 <code>event</code> 값(<code>pull_request</code>, <code>push</code>)이 찍힌다는 것을 확인했어요.</p>
 
     <h2 id="step2"><span class="hl">과정 2. 열쇠 없이 들어가는 길</span> — WIF</h2>
-    <p>GitHub 로봇이 Google Cloud에 배포하려면 신분이 필요해요. 키 파일을 만들면 유출 위험이 있어서, <strong>일회용 신분증(토큰)을 보여 주고 임시 권한을 받는 방식(Workload Identity Federation)</strong>을 썼어요. 구성은 이래요.</p>
+    <p>GitHub 로봇이 Google Cloud에 배포하려면 신분이 필요해요. 키 파일(비밀번호 역할을 하는 파일)을 만들면 새어 나갈 위험이 있어요. 그래서 <strong>일회용 신분증(토큰)을 보여 주고 임시 권한을 받는 방식(Workload Identity Federation)</strong>을 썼어요. 구성은 이래요.</p>
     <ul>
       <li>사원증(서비스 계정<sup class="fn-ref"><a href="#fn9" id="fnref9">9</a></sup>)을 역할별로 3개로 나눴어요. <strong>배포용</strong>(소스 배포 + API 사용 역할만), <strong>빌드용</strong>(빌드 역할만), <strong>실행용</strong>(프로젝트 역할 없음)이에요.</li>
       <li>문은 3개예요. <strong>접수처</strong>(풀), <strong>규칙표</strong>(공급자: 내 저장소에서 온 신분증만 통과), <strong>출입 명단</strong>(배포용 사원증을 빌려도 되는 대상)이에요.</li>
@@ -226,7 +226,8 @@
     </figure>
 
     <h2 id="step3"><span class="hl">과정 3. 첫 자동 배포</span> — PR #3, #4</h2>
-    <p>Dockerfile(<code>nginx-unprivileged</code><sup class="fn-ref"><a href="#fn10" id="fnref10">10</a></sup>로 <code>index.html</code>을 서빙)과 <code>deploy.yml</code>(main에 push되면 동작, 권한은 <code>contents: read</code>와 <code>id-token: write</code>만)을 <strong>PR #3</strong>으로 머지했어요. 로봇이 문 두 개를 통과하고 포장해서 올리자 <strong>리비전 00001</strong>이 생겼어요. README만 바꾼 <strong>PR #4</strong>도 같은 길로 <strong>리비전 00002</strong>를 만들었어요. 배포는 <code>--no-allow-unauthenticated</code>로 비공개를 유지했어요. 권한 줄은 이런 모양이에요.</p>
+    <p>Dockerfile(앱을 상자에 담는 설계도)과 <code>deploy.yml</code>을 <strong>PR #3</strong>으로 머지했어요. Dockerfile은 <code>nginx-unprivileged</code><sup class="fn-ref"><a href="#fn10" id="fnref10">10</a></sup>로 <code>index.html</code>을 서빙해요(손님 화면으로 내보내요). <code>deploy.yml</code>은 main에 push되면 동작하고, 권한은 <code>contents: read</code>와 <code>id-token: write</code>만 있어요. 로봇이 문 두 개를 통과하고 포장해서 올리자 <strong>리비전 00001</strong>(배포 한 번마다 생기는 버전)이 생겼어요. README만 바꾼 <strong>PR #4</strong>도 같은 길로 <strong>리비전 00002</strong>를 만들었어요. 배포는 <code>--no-allow-unauthenticated</code>로 비공개를 유지했어요. 권한 줄은 이런 모양이에요.</p>
+    <p>아래 두 줄은 로봇이 가질 권한을 적은 부분이에요. 읽기만 해도 돼요.</p>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 직접 실행하는 코드 아니에요</span></p>
 <pre><code># deploy.yml 의 권한 블록(줄만 발췌)
 permissions:
@@ -234,7 +235,7 @@ permissions:
   id-token: write   # 일회용 신분증(토큰)을 발급받는다</code></pre>
 
     <h2 id="fail"><span class="hl">실패와 복구</span> — 일부러 고장 내 보기 (PR #5 → #6)</h2>
-    <p>고장 난 코드가 손님에게 나가는지 확인하려고 <strong>PR #5</strong>에서 일부러 틀린 nginx 설정을 넣었어요. 새 <strong>리비전 00003</strong>은 시작하지 못했어요(Cloud Run 로그: <code>unknown directive "cache_expiry_minutes" in default.conf:5</code>). 그래도 손님은 계속 <strong>00002</strong>를 받았어요. main에는 고장 난 코드가 남아 있으므로 <strong>PR #6(Revert)</strong>으로 되돌렸고, 새 <strong>리비전 00004</strong>가 정상으로 시작했어요.</p>
+    <p>고장 난 코드가 손님에게 나가는지 확인하려고 <strong>PR #5</strong>에서 일부러 틀린 nginx 설정(웹 서버의 설정)을 넣었어요. 새 <strong>리비전 00003</strong>은 시작하지 못했어요(Cloud Run 로그: <code>unknown directive "cache_expiry_minutes" in default.conf:5</code>). 그래도 손님은 계속 <strong>00002</strong>를 받았어요. 다만 main에는 고장 난 코드가 남아 있어요. 그래서 <strong>PR #6(Revert)</strong>으로 되돌렸어요. 그러자 새 <strong>리비전 00004</strong>가 정상으로 시작했어요.</p>
     <figure>
     <svg viewBox="0 0 760 250" role="img" aria-label="리비전 00002가 손님을 받는 동안 PR #5의 새 리비전 00003은 시작에 실패하고, PR #6 Revert 뒤 리비전 00004가 정상으로 시작한다.">
       <defs>
@@ -273,7 +274,7 @@ permissions:
     <p>공개 저장소 <code>wif-reject-test</code>를 만들어 같은 워크플로를 돌려 봤어요. 로봇이 신분증을 내밀자 규칙표에서 <code>unauthorized_client: rejected by the attribute condition</code>으로 거절됐고, 배포 단계는 실행되지 않았어요. 새 서비스는 생기지 않았고 기존 리비전도 그대로였어요. <strong>내 저장소 이름이 조건으로 걸려 있어서 다른 저장소는 같은 파일을 복사해도 못 들어간다</strong>는 것을 확인했어요.</p>
 
     <h3 id="task3">과제 3. 누가 배포했는지 감사 로그로 추적</h3>
-    <p>Cloud Run 활동 감사 로그를 읽기 전용으로 조회했어요. 손으로 배포한 기록은 내 Google 계정으로, 자동 배포 기록은 배포용 사원증(서비스 계정)으로 남아 있고, 그 뒤쪽 <code>delegation</code> 정보에 내 저장소 이름과 <code>refs/heads/main</code>이 함께 찍혀 있었어요. 즉 <strong>"어느 계정"뿐 아니라 "어느 저장소의 어느 브랜치에서 온 로봇"까지</strong> 추적돼요.</p>
+    <p>Cloud Run 활동 감사 로그(누가 무엇을 했는지 남는 기록)를 읽기 전용으로 조회했어요. 손으로 배포한 기록은 내 Google 계정으로 남아 있어요. 자동 배포 기록은 배포용 사원증(서비스 계정)으로 남아 있어요. 그 뒤쪽 <code>delegation</code> 정보에는 내 저장소 이름과 <code>refs/heads/main</code>이 함께 찍혀 있었어요. 즉 <strong>"어느 계정"뿐 아니라 "어느 저장소의 어느 브랜치에서 온 로봇"까지</strong> 추적돼요.</p>
 
     <h3 id="task4">과제 4. GitHub Actions 대신 다른 것을 썼다면?</h3>
     <p>내가 만든 파이프라인의 조각(누가 일하나, 무엇이 깨우나, 권한, 승인·롤백)을 기준으로 대안을 대 봤어요. 표의 "문서 확인"은 공식 문서에서 읽은 내용이고, "내 해석"은 문서를 내 프로젝트에 대 본 추정이라 <strong>실제로 해 보지는 않았어요.</strong></p>
@@ -296,7 +297,7 @@ permissions:
         <tr><td>도장판에 쓴다면</td><td>그대로 사용</td><td>가장 단순한 대안. 단 PR 검사(<code>hello</code>)는 GitHub에 따로 남겨야 함 (내 해석)</td><td>환경을 단계별로 나눌 때만 후보</td><td>저장소를 GitLab으로 옮겨야 함</td><td>쿠버네티스 전용이라 Cloud Run에는 그대로 맞지 않음 (문서 확인)</td></tr>
       </tbody>
     </table>
-    <p><strong>내 결론:</strong> 도장판은 파일 하나짜리 정적 앱이고 저장소가 이미 GitHub에 있어서, PR 검사와 배포를 한곳에서 하는 GitHub Actions가 가장 단순했어요. 다만 Cloud Build 트리거로 바꿨다면 오늘 가장 오래 걸린 "열쇠 없이 들어가기" 단계가 줄었을 가능성이 있어요. 반대로 승인 단계가 필요한 서비스라면 Cloud Deploy를 후보로 두겠어요.</p>
+    <p><strong>내 결론:</strong> 도장판은 파일 하나짜리 정적 앱이에요. 저장소도 이미 GitHub에 있어요. 그래서 PR 검사와 배포를 한곳에서 하는 GitHub Actions가 가장 단순했어요. 다만 Cloud Build 트리거로 바꿨다면 오늘 가장 오래 걸린 "열쇠 없이 들어가기" 단계가 줄었을 가능성이 있어요. 반대로 승인 단계가 필요한 서비스라면 Cloud Deploy를 후보로 두겠어요.</p>
 
     <h2 id="map"><span class="hl">개념 → 내 프로젝트 적용 한눈에</span></h2>
     <table>
@@ -353,7 +354,7 @@ permissions:
     </table>
 
     <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 자동 배포가 고장 나거나 거절될 때</h2>
-    <p>자동 배포 문제는 코드를 읽어서는 보이지 않고, <strong>배포 로그의 한 줄 문장</strong>이나 <strong>화면이 안 바뀌는 모습</strong>으로 먼저 나타나요. 아래 증상이 보이면 코드를 고치려 들기 전에 이 자리를 열어 봐요.</p>
+    <p>자동 배포 문제는 코드를 읽어서는 보이지 않아요. <strong>배포 로그의 한 줄 문장</strong>이나 <strong>화면이 안 바뀌는 모습</strong>으로 먼저 나타나요. 여기서 막히는 게 정상이에요. 아래 증상이 보이면 코드를 고치려 들기 전에 이 자리를 열어 봐요.</p>
     <p>증상이 아직 없어도, <strong>AI에게 이런 부탁을 한 직후</strong>라면 한 번 확인하고 넘어가요.</p>
     <ul>
       <li>"자동 배포를 만들어 줘" — 서비스 계정 키 파일을 만들거나 저장소에 비밀 값을 넣는 줄이 생겼는지, 권한 블록이 <code>contents: read</code>와 <code>id-token: write</code>를 넘는지</li>
@@ -378,6 +379,7 @@ permissions:
         </tr>
       </tbody>
     </table>
+    <p>아래 글을 코딩 에이전트(코드를 대신 짜 주는 AI)에 붙여 넣으면 권한 줄과 비밀 값을 쓰는 줄을 찾아 보여 줘요. 직접 해 보는 거예요.</p>
     <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등</p>
 <pre><code>.github/workflows/deploy.yml 의 permissions 블록과, 서비스 계정 키 파일이나 비밀 값을 쓰는 줄이 있는지 찾아서
 파일·줄 번호로 보여 줘. 아직 아무것도 고치지 마.</code></pre>
@@ -459,10 +461,6 @@ permissions:
     <a class="post-nav" href="ai-service-in-production-wrap-up.html">
       <span class="post-nav-label">(10)</span>
       <span class="post-nav-title">아홉 개 노드를 한 번에 — AI 서비스를 프로덕션에 올리기까지 돌아보기</span>
-    </a>
-    <a class="post-nav" href="ai-service-in-production-presentation.html">
-      <span class="post-nav-label">(11)</span>
-      <span class="post-nav-title">발표용 한 장 요약 — 코드를 사용자에게 내보내는 아홉 날을 다섯 장으로</span>
     </a>
   </main>
   </div>

@@ -79,13 +79,13 @@
       <span class="post-nav-title">통과했다는 말로는 부족하다 — 두 층 채점과 채택·축소·폐기 판정</span>
     </a>
 
-    <p><a href="multi-agent-judging-records.html">4편</a>까지 세 실행의 결과표를 읽고 판정문을 썼어요. 표를 덮고 나면 어려움이 넷 남아요. 이 넷은 이번 실험만의 사정이 아니라 멀티 에이전트가 실전에서 늘 부딪히는 문제이고, 도구 제작자들도 똑같이 겪었어요. 그래서 최근 나온 도구들은 저마다 이 가운데 하나를 겨냥해요. 어느 도구가 어느 문제를 푸는지 알면 <strong>이름이 아니라 문제로</strong> 도구를 고를 수 있고, 붙였을 때 비교 조건 중 무엇이 바뀌는지도 미리 알 수 있어요.</p>
+    <p><a href="multi-agent-judging-records.html">4편</a>까지 세 실행의 결과표를 읽고 판정문을 썼어요. 표를 덮고 나면 어려움이 넷 남아요. 멀티 에이전트(AI 일꾼 여러 명이 나눠 일하는 방식)는 실전에서 이 넷에 늘 부딪혀요. 이번 실험만의 사정이 아니에요. 도구 제작자들도 똑같이 겪었고, 최근 나온 도구들은 저마다 이 가운데 하나를 겨냥해요. 어느 도구가 어느 문제를 푸는지 알면 <strong>이름이 아니라 문제로</strong> 도구를 고를 수 있어요. 붙였을 때 비교 조건 중 무엇이 바뀌는지도 미리 알 수 있어요. 컨텍스트(AI가 한 번에 기억하고 있는 글의 범위)나 서브에이전트(리드가 일을 맡기는 보조 AI) 같은 말은 아래에서 풀어 가요.</p>
 
     <h2><span class="hl">네 문제</span> — 실험 안에서 어디에 있었나</h2>
     <table>
       <thead><tr><th>문제</th><th>실험에서 실제로 일어난 일</th><th>겨냥한 도구</th><th>바꾸는 층</th></tr></thead>
       <tbody>
-        <tr><td><strong>컨텍스트가 끊긴다</strong></td><td>워커 결과는 리드에게만 돌아와요. 워커가 둘이면 서로 무엇을 찾았는지 알 길이 없어요. C에서 리드가 locator를 정말 불렀는지를 인용으로 확인해야 했던 게 이 문제예요. <a href="multi-agent-split-gains-and-losses.html">1편</a>에서 Cognition이 지적한 "에이전트 사이 문맥 공유 부족"이 바로 여기서 일어나요.</td><td>Agent Teams</td><td>다음 행동을 팀원들이 정함</td></tr>
+        <tr><td><strong>컨텍스트가 끊긴다</strong></td><td>워커(일을 받아 하는 AI) 결과는 리드(일을 나눠 주는 AI)에게만 돌아와요. 워커가 둘이면 서로 무엇을 찾았는지 알 길이 없어요. C에서 리드가 locator를 정말 불렀는지를 인용으로 확인해야 했던 게 이 문제예요. <a href="multi-agent-split-gains-and-losses.html">1편</a>에서 Cognition이 지적한 "에이전트 사이 문맥 공유 부족"이 바로 여기서 일어나요.</td><td>Agent Teams</td><td>다음 행동을 팀원들이 정함</td></tr>
         <tr><td><strong>재현이 안 된다</strong></td><td>리드가 매 턴 다음 행동을 정하는 실행은 같은 명령을 다시 돌려도 같은 경로를 밟지 않아요. 러너가 result.json이 있으면 건너뛰고, 덮어쓰면 비교가 안 된다고 일러둔 까닭이에요.</td><td>Workflows</td><td>다음 행동을 스크립트가 정함</td></tr>
         <tr><td><strong>모델을 나눌 수 없다</strong></td><td>세 실행 모두 haiku로 고정했어요. 파일 경로를 찾는 워커와 수정 방침을 정하는 리드가 같은 모델을 써야 할 이유는 없지만, 실험에는 나눌 자리가 없었어요.</td><td>oh-my-claudecode</td><td>어느 모델이 그 행동을 하는가</td></tr>
         <tr><td><strong>상태가 안 보인다</strong></td><td>어느 실행이 어디서 멈췄는지는 끝난 뒤 judge.py가 전사를 읽어야 알았어요. 터미널을 닫으면 작업도 사라지고요.</td><td>herdr</td><td>그 행동을 어디서 지켜보는가</td></tr>
@@ -99,13 +99,13 @@
       <li><strong>하는 일.</strong> 서브에이전트는 결과를 리드에게 돌려주고 끝나지만, <strong>팀원</strong>(teammate)은 각자 컨텍스트 창을 가진 독립 세션이라 서로에게 직접 메시지를 보내고, 공유 작업 목록에서 다음 일을 스스로 가져가요. 두 팀원이 같은 작업을 동시에 잡지 않도록 파일 잠금이 막아 줘요.</li>
       <li><strong>쓰는 장면.</strong> 공식 문서가 드는 사례 하나는 원인이 불분명한 버그를 두고 팀원 다섯이 각자 다른 가설을 맡아 <strong>서로 반박</strong>하게 하는 조사예요. 한 에이전트가 첫 가설에 묶이는 일을 팀원 사이의 반박으로 푸는 발상이죠.</li>
       <li><strong>켜는 법.</strong> <code>settings.json</code>(Claude Code의 설정 파일, 프로젝트의 <code>.claude/</code> 폴더나 홈 폴더의 <code>~/.claude/</code>에 있어요)의 <code>env</code> 항목에 <code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS</code>를 <code>"1"</code>로 넣어요. <code>env</code>는 환경 변수, 곧 프로그램이 시작할 때 읽는 "이름=값" 설정이에요.</li>
-      <li><strong>대가.</strong> 팀원 하나가 곧 Claude 세션 하나라 토큰이 팀원 수에 비례해 늘고, 한 세션에 팀은 하나이며 팀원이 다시 팀을 만들 수 없고, <strong>대화형 세션에서만</strong> 팀원이 만들어져요. <a href="multi-agent-three-runs-abc.html">3편</a>의 <code>arms.py</code>처럼 SDK(코드에서 서비스를 부르는 개발용 도구 모음)로 돌리는 실행에서는 켜 두어도 서브에이전트로 돌아가니 지금 실험에 바로 끼울 수는 없어요.</li>
+      <li><strong>대가.</strong> 팀원 하나가 곧 Claude 세션 하나예요. 그래서 토큰(AI가 읽고 쓰는 글의 양, 요금의 단위)이 팀원 수에 비례해 늘어요. 한 세션에 팀은 하나이고, 팀원이 다시 팀을 만들 수 없어요. <strong>대화형 세션에서만</strong> 팀원이 만들어져요. <a href="multi-agent-three-runs-abc.html">3편</a>의 <code>arms.py</code>처럼 SDK(코드에서 서비스를 부르는 개발용 도구 모음)로 돌리는 실행에서는 켜 두어도 서브에이전트로 돌아가니 지금 실험에 바로 끼울 수는 없어요.</li>
       <li><strong>바뀌는 조건.</strong> <strong>다음 행동을 정하는 주체</strong>예요. 리드 하나가 아니라 팀원들이 함께 정하니, C와 나란히 놓으려면 같은 문제로 기준선을 다시 세워야 해요.</li>
     </ul>
 
     <h2><span class="hl">locator를 파일 하나로 옮기기</span> — 서브에이전트 정의 파일</h2>
-    <p><a href="multi-agent-three-runs-abc.html">3편</a>의 locator는 <code>arms.py</code> 안에서 <code>agents={"locator": ...}</code>로 파이썬 코드가 정의했어요. 같은 역할을 터미널에서 쓰는 코딩 에이전트에는 <strong>마크다운 파일 하나</strong>로 정의할 수 있고, Agent Teams의 팀원도 이 정의 파일에서 띄워요. 그래서 역할을 파일로 적어 두면 서브에이전트로도 팀원으로도 같은 정의를 써요. (파일로 규칙을 외워 두는 발상 자체는 <a href="ai-skills-and-rules-files.html">스킬과 규칙 파일</a>에서 봤어요.)</p>
-    <p><strong>Claude Code</strong>의 서브에이전트는 프로젝트의 <code>.claude/agents/</code> 폴더에 두는 마크다운이에요. 프로젝트 폴더에 두면 저장소와 함께 버전 관리되어 팀이 같은 정의를 쓰고, <code>~/.claude/agents/</code>(<code>~/</code>는 내 홈 폴더)에 두면 내 모든 프로젝트에서 써요. 파일 머리의 YAML(설정을 "이름: 값" 꼴로 적는 형식)에서 <code>name</code>과 <code>description</code>은 필수이고, <code>tools</code>로 도구를 제한하고, <code>model</code>과 <code>maxTurns</code>로 모델과 턴 예산을 정해요. 머리 아래 본문이 그 에이전트의 시스템 프롬프트가 돼요.</p>
+    <p><a href="multi-agent-three-runs-abc.html">3편</a>의 locator는 <code>arms.py</code> 안에서 <code>agents={"locator": ...}</code>로 파이썬 코드가 정의했어요. 같은 역할을 <strong>마크다운 파일 하나</strong>(글자만으로 쓰는 간단한 문서 파일)로도 정의할 수 있어요. 터미널에서 쓰는 코딩 에이전트가 이 파일을 읽어요. Agent Teams의 팀원도 이 정의 파일에서 띄워요. 그래서 역할을 파일로 적어 두면 서브에이전트로도 팀원으로도 같은 정의를 써요. 아래 두 코드는 읽기만 해도 되고, 직접 해 보려면 표시된 이름의 파일로 저장해요. (파일로 규칙을 외워 두는 발상 자체는 <a href="ai-skills-and-rules-files.html">스킬과 규칙 파일</a>에서 봤어요.)</p>
+    <p><strong>Claude Code</strong>의 서브에이전트는 프로젝트의 <code>.claude/agents/</code> 폴더에 두는 마크다운이에요. 프로젝트 폴더에 두면 저장소(코드를 담은 폴더)와 함께 버전 관리(바뀐 내용을 기록해 두는 것)되어 팀이 같은 정의를 쓰고, <code>~/.claude/agents/</code>(<code>~/</code>는 내 홈 폴더)에 두면 내 모든 프로젝트에서 써요. 파일 머리의 YAML(설정을 "이름: 값" 꼴로 적는 형식)에서 <code>name</code>과 <code>description</code>은 필수이고, <code>tools</code>로 도구를 제한하고, <code>model</code>과 <code>maxTurns</code>로 모델과 턴 예산을 정해요. 머리 아래 본문이 그 에이전트의 시스템 프롬프트가 돼요.</p>
     <p class="run-tag">실행: .claude/agents/locator.md로 저장 <span class="run-tag-why">— Claude Code가 서브에이전트 정의로 읽어요</span></p>
     <pre><code>---
 name: locator
@@ -143,10 +143,10 @@ permission:
     <p>핵심: 필드 이름만 다르고 담는 정보는 같아요. 다른 건 <strong>기록</strong>이에요. CLI의 서브에이전트 호출은 <code>result.json</code>과 <code>changes.diff</code>를 남기지 않으니, 이 정의로 비교 실험을 하려면 비용·턴·수정 범위를 실행 뒤 스스로 기록해야 해요.</p>
 
     <h2><span class="hl">그대로 나눠 쓰지 못하는 이유</span> — 개인화와 AX</h2>
-    <p>정의 파일 하나를 저장소에 커밋해 두면 팀이 같은 정의를 쓴다고 앞서 말했지만, 그 말에는 전제가 하나 숨어 있어요. <strong>모두의 업무 규칙과 컴퓨터 환경이 비슷하다는 전제</strong>예요. 이 전제가 깨지는 지점이 둘 있어요.</p>
+    <p>정의 파일 하나를 저장소에 커밋(바뀐 내용을 기록에 남기는 것)해 두면 팀이 같은 정의를 쓴다고 앞서 말했어요. 그런데 그 말에는 전제가 하나 숨어 있어요. <strong>모두의 업무 규칙과 컴퓨터 환경이 비슷하다는 전제</strong>예요. 이 전제가 깨지는 지점이 둘 있어요.</p>
     <ul>
       <li><strong>사람(파트)마다 업무 규칙이 달라요.</strong> locator처럼 역할을 읽기 전용으로 좁혀 둬도, "보고는 표로만 남긴다" 같은 팀 규칙은 파트마다 다르죠. 한 팀 규칙을 그대로 다른 팀에 얹으면 안 맞는 줄이 더 많아져요.</li>
-      <li><strong>컴퓨터마다 환경이 달라요.</strong> <code>model</code>에 적은 이름이 그 계정 요금제에서 막힌 값이면, 오류 없이 <strong>다른 모델로 조용히 바뀌어</strong> 돌아가요. 안 도는 게 아니라 <strong>다른 모델로 도는</strong> 거라 결과나 비용 차이의 원인을 찾기 어려워요. 파일 머리(YAML)에 오타나 이상한 들여쓰기가 섞이면 <code>tools</code>·<code>description</code> 같은 제한 전체가 에러 없이 통째로 빠진 채 돌기도 해요.</li>
+      <li><strong>컴퓨터마다 환경이 달라요.</strong> <code>model</code>에 적은 이름이 그 계정 요금제에서 막힌 값이면, 오류 없이 <strong>다른 모델로 조용히 바뀌어</strong> 돌아가요. 안 도는 게 아니라 <strong>다른 모델로 도는</strong> 거예요. 그래서 결과나 비용이 달라도 원인을 찾기 어려워요. 파일 머리(YAML)에 오타나 이상한 들여쓰기가 섞이면 <code>tools</code>·<code>description</code> 같은 제한 전체가 에러 없이 통째로 빠진 채 돌기도 해요.</li>
     </ul>
     <table>
       <thead><tr><th>표준화한 것</th><th>왜 그대로 안 통했나</th><th>그래서 어떻게 나눴나</th></tr></thead>
@@ -156,20 +156,20 @@ permission:
       </tbody>
     </table>
     <p>핵심: 정의 파일을 공유하는 건 <strong>같은 출발점</strong>을 주는 것이지 <strong>같은 결과</strong>를 보장하는 게 아니에요. 파트별 규칙과 컴퓨터별 환경은 공유된 파일 바깥에 그대로 남아 있어요.</p>
-    <p>요즘 여러 회사가 내세우는 <strong>AX</strong>(AI Transformation — 앞서 나온 DX·디지털 전환처럼, 회사 전체 업무에 AI를 심으려는 흐름을 가리키는 말)도 같은 벽에 부딪혀요. 표준 하네스 하나를 전사에 그대로 뿌리는 방식만으로는 파트별 업무 차이를 못 따라가서, 요즘 에이전트 제품들이 <strong>개인화(personalization)</strong> 기능 — 사용자마다 다른 규칙·기억·환경을 따로 저장해 주는 기능 — 을 많이 넣고 크게 내세우는 이유가 여기 있어요.</p>
-    <p>규칙 문서 쪽 해법은 <a href="ai-skills-and-rules-files.html">스킬과 규칙 파일</a>에서 다룬 원리를 한 겹 더 쓰는 거예요. <strong>늘 읽히는 공통 규칙 파일은 짧게 두고</strong>, 팀별 규칙이나 지난 결정 기록처럼 자주 안 쓰는 내용은 별도 문서로 빼서 링크만 걸어 둬요. 다만 스킬의 점진 공개와는 한 가지가 달라요 — 스킬은 설명 한 줄만 보고 도구가 알아서 본문을 펼치지만, 이런 링크는 <strong>AI가 그 링크를 열어 볼지 스스로 판단</strong>해야 해요. 그래서 링크를 걸 땐 파일 이름과 주변 문장에 "언제 열어봐야 하는지"를 적어 둬야 실제로 펼쳐져요. PRD처럼 맡길 일 자체를 좁혀 두는 문서는 <a href="my-harness-users-and-prd.html">맡길 일부터 적는다 — 내 하네스의 사용자와 미완성 PRD</a>에서 다룬 것과 같은 층이에요.</p>
+    <p>요즘 여러 회사가 내세우는 <strong>AX</strong>(AI Transformation — 앞서 나온 DX·디지털 전환처럼, 회사 전체 업무에 AI를 심으려는 흐름을 가리키는 말)도 같은 벽에 부딪혀요. 표준 하네스(AI가 일하는 환경과 규칙 묶음) 하나를 전사에 그대로 뿌리는 방식만으로는 파트별 업무 차이를 따라가지 못해요. 그래서 요즘 에이전트 제품들은 <strong>개인화(personalization)</strong> 기능을 많이 넣고 크게 내세워요. 개인화란 사용자마다 다른 규칙·기억·환경을 따로 저장해 주는 기능이에요.</p>
+    <p>규칙 문서 쪽 해법은 <a href="ai-skills-and-rules-files.html">스킬과 규칙 파일</a>에서 다룬 원리를 한 겹 더 쓰는 거예요. <strong>늘 읽히는 공통 규칙 파일은 짧게 두고</strong>, 팀별 규칙이나 지난 결정 기록처럼 자주 안 쓰는 내용은 별도 문서로 빼서 링크만 걸어 둬요. 다만 스킬의 점진 공개와는 한 가지가 달라요. 스킬은 설명 한 줄만 보고 도구가 알아서 본문을 펼쳐요. 하지만 이런 링크는 <strong>AI가 그 링크를 열어 볼지 스스로 판단</strong>해야 해요. 그래서 링크를 걸 땐 파일 이름과 주변 문장에 "언제 열어봐야 하는지"를 적어 둬야 실제로 펼쳐져요. PRD처럼 맡길 일 자체를 좁혀 두는 문서는 <a href="my-harness-users-and-prd.html">맡길 일부터 적는다 — 내 하네스의 사용자와 미완성 PRD</a>에서 다룬 것과 같은 층이에요.</p>
 
     <h2><span class="hl">재현이 안 되는 문제</span> — Workflows</h2>
     <p>Claude Code의 <strong>Workflows</strong>는 두번째 문제를 겨냥해요.</p>
     <ul>
-      <li><strong>하는 일.</strong> <a href="multi-agent-three-runs-abc.html">3편</a>에서 locator 다음 fixer를 부르는 순서는 사람이 파이썬으로 적었어요. Workflows는 그 파이썬을 Claude가 자바스크립트로 쓰게 하고, 실행을 맡는 런타임(프로그램을 실제로 돌려 주는 실행 환경)이 스크립트를 백그라운드에서 돌려요. 반복과 분기는 스크립트에 적히고 중간 결과는 스크립트 변수에 머물며, Claude의 컨텍스트에는 <strong>최종 결과만</strong> 들어와요. 공식 문서는 서브에이전트·스킬·팀·워크플로를 "다음에 실행할 것을 누가 정하는가"로 나눠요. A·B·C를 가른 물음과 같죠. 워크플로 실행(B)을 수십 개 에이전트 규모로 키운 게 이 제품이에요.</li>
-      <li><strong>재현 장치.</strong> 실행마다 스크립트와 각 에이전트의 결과가 세션 디렉터리에 남고, 같은 세션에서 다시 띄우면 이미 끝난 에이전트는 저장된 결과를 돌려주고 프롬프트가 달라진 에이전트부터 다시 실행해요. 스크립트 안에서 현재 시각이나 난수를 쓰면 오류를 내는데, 다시 돌렸을 때 같은 호출이 같은 순서로 반복되게 하려는 거예요. 3편의 러너가 result.json이 있으면 건너뛴 것과 같은 발상을 런타임이 <strong>강제</strong>하는 셈이에요.</li>
+      <li><strong>하는 일.</strong> <a href="multi-agent-three-runs-abc.html">3편</a>에서 locator 다음 fixer를 부르는 순서는 사람이 파이썬으로 적었어요. Workflows는 그 파이썬을 Claude가 자바스크립트로 쓰게 해요. 그러면 런타임(프로그램을 실제로 돌려 주는 실행 환경)이 그 스크립트를 백그라운드에서 돌려요. 반복과 분기는 스크립트에 적혀요. 중간 결과는 스크립트 변수에 머물고, Claude의 컨텍스트에는 <strong>최종 결과만</strong> 들어와요. 공식 문서는 서브에이전트·스킬·팀·워크플로를 "다음에 실행할 것을 누가 정하는가"로 나눠요. A·B·C를 가른 물음과 같죠. 워크플로 실행(B)을 수십 개 에이전트 규모로 키운 게 이 제품이에요.</li>
+      <li><strong>재현 장치.</strong> 실행마다 스크립트와 각 에이전트의 결과가 세션 디렉터리(그 작업의 기록 폴더)에 남아요. 같은 세션에서 다시 띄우면 이미 끝난 에이전트는 저장된 결과를 돌려줘요. 프롬프트(AI에게 주는 글)가 달라진 에이전트부터 다시 실행해요. 스크립트 안에서 현재 시각이나 난수를 쓰면 오류를 내는데, 다시 돌렸을 때 같은 호출이 같은 순서로 반복되게 하려는 거예요. 3편의 러너가 result.json이 있으면 건너뛴 것과 같은 발상을 런타임이 <strong>강제</strong>하는 셈이에요.</li>
       <li><strong>대가.</strong> 실행 중에 사람이 끼어들 수 없다는 점이에요. 단계 사이에 승인이 필요하면 워크플로를 단계마다 따로 나눠야 해요. 한 실행이 에이전트 25개나 150만 토큰을 넘으면 경고가 뜨지만 알림일 뿐 멈추지는 않아요.</li>
       <li><strong>바뀌는 조건.</strong> 역시 다음 행동의 주체이고, B와 같은 층이라 B의 파이썬을 이 스크립트로 옮겨 같은 문제를 돌리면 B와 바로 견줄 수 있어요.</li>
     </ul>
 
     <h2><span class="hl">모델을 나눌 수 없는 문제</span> — oh-my-claudecode</h2>
-    <p><a href="multi-agent-split-gains-and-losses.html">1편</a>에서 Anthropic의 멀티 에이전트 시스템이 채팅의 약 15배 토큰을 썼다는 수치를 봤어요 [벤더]. 워커가 늘수록 비용이 따라 늘지만, 워커마다 필요한 능력은 달라요. <strong>oh-my-claudecode</strong>는 Claude Code 위에서 도는 커뮤니티 오케스트레이션 프레임워크로(GitHub 스타 38,000 이상, 커뮤니티 자체 수치), 세번째 문제를 겨냥해요.</p>
+    <p><a href="multi-agent-split-gains-and-losses.html">1편</a>에서 Anthropic의 멀티 에이전트 시스템이 채팅의 약 15배 토큰을 썼다는 수치를 봤어요 [벤더]. 워커가 늘수록 비용이 따라 늘지만, 워커마다 필요한 능력은 달라요. <strong>oh-my-claudecode</strong>는 세번째 문제를 겨냥해요. Claude Code 위에서 도는 커뮤니티 오케스트레이션 프레임워크(여러 AI를 지휘하는 틀)예요(GitHub 스타 38,000 이상, 커뮤니티 자체 수치).</p>
     <ul>
       <li><strong>하는 일.</strong> 겨냥하는 지점이 <strong>역할별 모델 배분</strong>이에요. 단순 조회에는 Haiku, 표준 구현에는 Sonnet, 설계와 깊은 분석에는 Opus를 고르는 3단 배분이 기본이고, 그 위에 에이전트마다 어느 모델을 붙일지 적어 두는 표가 따로 있어요. 실행 모드 중 ralph는 검증이 통과할 때까지 수정을 반복해요. <a href="multi-agent-judging-records.html">4편</a>에서 judge.py가 "검증_성실성"으로 물었던 것, 곧 끝났다고 말하기 전에 실제로 확인했는가를 도구가 강제하는 장치예요.</li>
       <li><strong>대가.</strong> <strong>비교가 어려워지는 것</strong>이에요. 프레임워크가 자체 에이전트 정의와 프롬프트를 끼워 넣기 때문에 결과 차이가 모델 배분에서 왔는지 프레임워크의 프롬프트에서 왔는지 가르기 어렵고, 판이 빠르게 바뀌는 커뮤니티 프로젝트라 문서와 실제 동작이 다를 수 있어요.</li>
@@ -177,7 +177,7 @@ permission:
     </ul>
 
     <h2><span class="hl">상태가 안 보이는 문제</span> — herdr</h2>
-    <p>에이전트가 셋을 넘어가면 어느 창이 일하고 있고 어느 창이 승인을 기다리며 멈춰 있는지 눈으로 좇기 어렵고, 노트북 터미널을 닫으면 돌아가던 작업이 함께 사라져요. <strong>herdr</strong>는 이 네번째 문제를 겨냥한 오픈소스 런타임이에요.</p>
+    <p>에이전트가 셋을 넘어가면 어느 창이 일하고 있고 어느 창이 승인을 기다리며 멈춰 있는지 눈으로 좇기 어려워요. 노트북 터미널을 닫으면 돌아가던 작업도 함께 사라져요. <strong>herdr</strong>는 이 네번째 문제를 겨냥한 오픈소스 런타임이에요.</p>
     <ul>
       <li><strong>하는 일.</strong> 백그라운드 서버가 에이전트 CLI의 터미널을 소유하기 때문에 터미널을 닫거나 컴퓨터를 다시 켜도 작업이 이어지고, 다른 터미널이나 원격 접속으로 다시 붙을 수 있어요. 각 창에 작업 중(working)·대기(blocked)·유휴(idle) 세 상태가 표시되어 멈춘 에이전트를 바로 찾고, Claude Code뿐 아니라 다른 회사의 코딩 에이전트 CLI 20여 종을 같은 화면에 놓을 수 있어요. 한 에이전트가 다른 에이전트의 창을 띄운 뒤 그쪽이 입력을 기다리며 멈출 때까지 기다리는 동작도 지원해요.</li>
       <li><strong>못 하는 일.</strong> <strong>관측과 보존</strong>이지 결과 판정이 아니에요. 창이 유휴로 바뀌었다는 표시는 실행이 끝났다는 뜻일 뿐 테스트가 통과했다는 뜻이 아니니, result.json과 judge.py 층은 그대로 필요해요.</li>
@@ -200,7 +200,7 @@ permission:
     <p>지금 내 작업에서 가장 아픈 문제 하나를 위 표의 왼쪽 열에서 골라 보세요. 그 도구를 붙였을 때 4편의 "고정·조작·측정" 표에서 <strong>어느 칸이 바뀌는지</strong> 한 줄로 적고, 기준선을 다시 세워야 하는지(조율·모델 층) 아니면 그대로 얹어도 되는지(관측 층) 표시해요. 도구 이름에 끌려 붙이는 게 아니라, 문제에서 출발해 조건 변화를 먼저 적는 습관이 이 시리즈에서 남기고 싶은 전부예요.</p>
 
     <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 새 도구를 켜거나 에이전트 파일을 옮긴 뒤</h2>
-    <p>새 도구의 실수는 대부분 에러 없이 지나가요. 켜 둔 설정이 조용히 무시되거나, 도구는 제대로 돌았는데 그 표시를 다른 뜻으로 읽는 식이에요. 그래서 <strong>결과가 좋아 보이거나 화면이 "끝남"을 보일 때</strong>가 한 번 확인할 때예요.</p>
+    <p>새 도구의 실수는 대부분 에러 없이 지나가요. 켜 둔 설정이 조용히 무시되거나, 도구는 제대로 돌았는데 그 표시를 다른 뜻으로 읽는 식이에요. 여기서 헷갈리는 게 정상이에요. 그래서 <strong>결과가 좋아 보이거나 화면이 "끝남"을 보일 때</strong>가 한 번 확인할 때예요.</p>
     <p>증상이 아직 없어도, <strong>AI에게 이런 부탁을 한 직후</strong>라면 한 번 확인하고 넘어가요.</p>
     <ul>
       <li>"locator를 서브에이전트 파일로 옮겨 줘" — 파일 머리에 <code>name</code>과 <code>description</code>이 있는지, <code>tools</code>에 Read·Grep·Glob만 있는지(OpenCode라면 <code>permission</code>의 <code>edit</code>·<code>bash</code>가 <code>deny</code>인지)</li>
@@ -242,6 +242,7 @@ permission:
       </tbody>
     </table>
     <p>셋째 줄은 에러가 하나도 안 나서 제일 늦게 알아요. 켜 둔 설정이 조용히 무시되고 실행은 멀쩡히 끝나거든요. 그래서 새 기능을 SDK 실험에 끼우려면, 돌리기 전에 그 기능이 어떤 실행 방식에서 동작하는지부터 확인해요.</p>
+    <p>아래는 코딩 에이전트에게 붙여넣는 요청문이에요. 파일을 고치지 않고, 에이전트 정의 파일과 설정 경로를 표로만 보여 달라는 내용이에요.</p>
     <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— 에이전트 정의 파일을 둔 프로젝트 폴더에서</span></p>
     <pre><code>이 프로젝트에서 아래를 찾아 표로 보여 줘. 아직 아무것도 고치지 마.
 1. .claude/agents/와 .opencode/agents/에 있는 에이전트 정의 파일마다 파일 경로, name, description, 허용 도구(tools 또는 permission), model, maxTurns

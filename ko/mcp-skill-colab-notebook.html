@@ -76,13 +76,15 @@
       </dl>
     </div>
 
-    <p><a href="mcp-skill-reuse-verification.html">9편</a>까지는 판단을 <strong>문서로</strong> 남겼어요. 주간 보고서를 쓰고, 그 판단 기준을 <code>SKILL.md</code>에 적고, 다음 주에도 같은 기준이 적용되는지 확인했죠. 그런데 팀원이 이런 말을 꺼냈다고 해 볼게요. <strong>"앞으로는 학습 시간 같은 기록도 모아서 평균을 보고 싶어요. 어떤 값을 어떻게 계산했는지 나중에 다시 확인할 수 있게 남겨 주세요."</strong></p>
-    <p>보고서에 "평균 30분"이라고 적힌 문장 하나만 남으면, 석 달 뒤에 그 30분이 <strong>어떤 값을 어떻게 나눈 결과인지</strong> 아무도 못 되짚어요. 그래서 이번 편에는 문서 대신 <strong>돌려 볼 수 있는 형태</strong>가 등장해요. 브라우저에서 노트북을 쓰고 Python을 실행하는 환경이 <strong>Colab</strong>이고, 여기에 <a href="mcp-skill-protocol-roles.html">2편</a>에서 배운 <strong>MCP<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup></strong> 방식으로 에이전트를 붙이는 게 이번 편의 일이에요.</p>
-    <p>먼저 말 두 개만 풀고 갈게요. 노트북의 <strong>한 칸</strong>을 <strong>셀<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup></strong>이라고 불러요. Python을 적는 <strong>코드 셀</strong>과 제목·설명을 적는 <strong>텍스트 셀</strong>이 있고, 코드 셀을 실행하면 그 칸 <strong>바로 아래에 출력</strong>이 붙어요. 그리고 그 코드를 실제로 계산해 주는 자리를 <strong>런타임<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup></strong>이라고 해요. 이 둘이 <strong>다른 곳</strong>이라는 게 이번 편에서 제일 중요한 이야기예요.</p>
+    <p><a href="mcp-skill-reuse-verification.html">9편</a>까지는 판단을 <strong>문서로</strong> 남겼어요. 주간 보고서를 쓰고, 그 판단 기준을 <code>SKILL.md</code>에 적었어요. 그리고 다음 주에도 같은 기준이 적용되는지 확인했죠. 그런데 팀원이 이런 말을 꺼냈다고 해 볼게요. <strong>"앞으로는 학습 시간 같은 기록도 모아서 평균을 보고 싶어요. 어떤 값을 어떻게 계산했는지 나중에 다시 확인할 수 있게 남겨 주세요."</strong></p>
+    <p>보고서에 "평균 30분"이라고 적힌 문장 하나만 남으면, 석 달 뒤에 그 30분이 <strong>어떤 값을 어떻게 나눈 결과인지</strong> 아무도 못 되짚어요. 그래서 이번 편에는 문서 대신 <strong>돌려 볼 수 있는 형태</strong>가 등장해요.</p>
+    <p>브라우저에서 노트북을 쓰고 Python(프로그래밍 언어 하나)을 실행하는 환경이 <strong>Colab</strong>이에요. 여기에 <a href="mcp-skill-protocol-roles.html">2편</a>에서 배운 <strong>MCP<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup></strong> 방식으로 에이전트(일을 맡아 하는 AI)를 붙이는 게 이번 편의 일이에요.</p>
+    <p>먼저 말 두 개만 풀고 갈게요. 노트북의 <strong>한 칸</strong>을 <strong>셀<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup></strong>이라고 불러요. Python을 적는 <strong>코드 셀</strong>과 제목·설명을 적는 <strong>텍스트 셀</strong>이 있어요. 코드 셀을 실행하면 그 칸 <strong>바로 아래에 출력</strong>이 붙어요.</p>
+    <p>그리고 그 코드를 실제로 계산해 주는 자리를 <strong>런타임<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup></strong>이라고 해요. 노트북(적는 곳)과 런타임(계산하는 곳)이 <strong>다른 곳</strong>이라는 게 이번 편에서 제일 중요한 이야기예요. 처음 읽을 땐 낯설어서 막히는 게 정상이에요.</p>
 
     <h2><span class="hl">비유 하나</span> — 요리 교실의 레시피 공책과 가스레인지</h2>
     <p>요리 교실을 하나 그려 볼게요. 저는 교실 의자에 앉아 있고, 주방은 유리벽 너머에 있어요. 벽에는 <strong>레시피 공책</strong>이 한 권 걸려 있고, 공책은 칸칸이 나뉘어 있어서 한 칸에 한 단계씩 적게 돼 있어요. 주방 안에는 <strong>가스레인지 앞에 선 요리사</strong>가 있고요.</p>
-    <p>저는 주방에 직접 못 들어가요. 대신 <strong>심부름꾼</strong>에게 부탁합니다. "공책 새 칸에 <strong>당근 세 개를 썬다</strong>라고 적어 줘"라고 하면 심부름꾼이 가서 그 줄을 적어요. 그렇다고 당근이 썰리진 않죠. 당근이 썰리려면 "<strong>그 칸에 적힌 대로 실제로 해 줘</strong>"라고 한 번 더 말해야 하고, 그제서야 요리사가 칼을 잡아요.</p>
+    <p>저는 주방에 직접 못 들어가요. 대신 <strong>심부름꾼</strong>에게 부탁합니다. "공책 새 칸에 <strong>당근 세 개를 썬다</strong>라고 적어 줘"라고 하면 심부름꾼이 가서 그 줄을 적어요. 그렇다고 당근이 썰리진 않죠. 당근이 썰리려면 한 번 더 말해야 해요. "<strong>그 칸에 적힌 대로 실제로 해 줘</strong>"라고요. 그제서야 요리사가 칼을 잡아요.</p>
     <table>
       <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
       <tbody>
@@ -97,7 +99,7 @@
       </tbody>
     </table>
     <p><strong>핵심 한 줄:</strong> <strong>적는 것과 익히는 것은 다른 일</strong>이에요 — 그래서 에이전트에게 시킬 때도 "셀을 만들어 줘"와 "그 셀을 실행해 줘"는 <strong>서로 다른 부탁</strong>이에요.</p>
-    <p>다만 여기서 비유가 끊기는 점이 하나 있어요. 진짜 요리사라면 공책에 새 줄이 적히는 걸 보고 알아서 움직일 수도 있어요. 그런데 런타임은 <strong>절대 스스로 읽지 않아요.</strong> 누군가 그 셀을 <strong>실행</strong>하기 전까지는, 공책에 뭐가 적혔든 주방 쪽에서는 아무 일도 일어나지 않아요.</p>
+    <p>다만 여기서 비유가 끊기는 점이 하나 있어요. 진짜 요리사라면 공책에 새 줄이 적히는 걸 보고 알아서 움직일 수도 있어요. 컴퓨터에서는 달라요. 런타임은 <strong>스스로 읽지 않아요.</strong> 누군가 그 셀을 <strong>실행</strong>하기 전까지는, 노트북에 뭐가 적혔든 런타임에서는 아무 일도 일어나지 않아요.</p>
 
     <h2><span class="hl">전체 흐름 그림</span> — 내 컴퓨터에서 Colab 런타임까지 네 단계</h2>
     <p>제 말 한마디가 실제 계산에 닿기까지 <strong>네 곳</strong>을 거쳐요. 이 네 곳이 각각 어디서 도는지, 그리고 이따 나올 <strong>두 개의 Connect 버튼</strong>이 각각 어느 사이를 잇는지를 한 장에 그렸어요.</p>
@@ -165,8 +167,9 @@
 
     <h2><span class="hl">준비물</span> — Chrome과 내 컴퓨터의 실행 환경</h2>
     <p>준비물은 두 갈래예요. <strong>브라우저 쪽</strong>은 Chrome을 권해요(승인 창부터 셀 실행까지 확인된 환경이에요). 실습에 쓸 Google 계정으로 미리 로그인해 두세요.</p>
-    <p><strong>내 컴퓨터 쪽</strong>은 MCP 서버를 돌릴 환경이에요. Colab MCP 프로그램은 <strong>Python 3.13 이상</strong>을 요구하는데, 이건 <strong>노트북 안에서 돌 Python 버전이 아니라 내 컴퓨터에서 MCP 서버를 띄울 Python 버전</strong>이에요. 그리고 <strong>uv</strong>로 환경을 준비하고 <strong>uvx</strong>로 실행해요 — uvx는 도구가 필요한 패키지를 별도 환경에 알아서 설치하고 실행해 주는 명령이라, 내 컴퓨터를 어지럽히지 않고 도구 하나만 굴릴 때 편해요. <strong>Git</strong>도 필요하고요. uv와 가상 환경 이야기는 <a href="mcp-skill-building-server.html">3편</a>에서 서버를 만들 때 이미 한 번 나왔어요.</p>
-    <p>설치와 등록까지는 지금 쓰는 도구에 그대로 부탁하는 게 빨라요.</p>
+    <p><strong>내 컴퓨터 쪽</strong>은 MCP 서버(에이전트와 Colab 사이를 이어 주는 작은 프로그램)를 돌릴 환경이에요. Colab MCP 프로그램은 <strong>Python 3.13 이상</strong>을 요구해요. 이건 <strong>노트북 안에서 돌 Python 버전이 아니에요. 내 컴퓨터에서 MCP 서버를 띄울 Python 버전</strong>이에요.</p>
+    <p>그리고 <strong>uv</strong>(Python 도구를 관리해 주는 프로그램)로 환경을 준비하고 <strong>uvx</strong>로 실행해요. uvx는 도구에 필요한 패키지(남이 만든 도구 묶음)를 별도 환경에 알아서 설치하고 실행해 주는 명령이에요. 내 컴퓨터를 어지럽히지 않고 도구 하나만 굴릴 때 편해요. <strong>Git</strong>(코드 변화를 기록하는 도구)도 필요해요. uv와 가상 환경 이야기는 <a href="mcp-skill-building-server.html">3편</a>에서 서버를 만들 때 이미 한 번 나왔어요.</p>
+    <p>설치와 등록까지는 지금 쓰는 도구에 그대로 부탁하는 게 빨라요. 아래 두 줄은 에이전트 대화창에 붙여 넣는 말이에요. 설치에서 막히는 게 정상이니, 오류가 나면 그 문장을 AI와 같이 읽어요.</p>
     <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— Claude Code나 OpenCode 대화창에서요</span></p>
     <pre><code>이 Colab MCP를 지금 쓰는 도구에 연결해 줘.
 Chrome에서 노트북을 실행해 보고 싶어.</code></pre>
@@ -175,8 +178,8 @@ Chrome에서 노트북을 실행해 보고 싶어.</code></pre>
     <p>등록이 끝나면 이렇게 부탁해요.</p>
     <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— 앞의 등록이 끝난 다음에요</span></p>
     <pre><code>Colab에 연결해 줘.</code></pre>
-    <p>이때 처음에는 <code>open_colab_browser_connection</code>이라는 <strong>연결용 도구 하나만</strong> 보일 수 있어요. 이 도구가 하는 일은 계산이 아니라 <strong>Colab 탭을 열어서, 지금 도는 로컬 서버와 그 노트북이 이어질 기회를 만드는 것</strong>이에요.</p>
-    <p>그러면 브라우저 가운데에 <strong>"Connect to a local Colab MCP server"</strong>라는 승인 창이 떠요. 여기서 제가 승인하는 대상은 <strong>로컬 MCP 서버와 이 노트북의 연결</strong>이고, 안내에는 <strong>한 로컬 MCP 서버에 노트북 세션<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup> 하나를 연결한다</strong>는 설명이 붙어 있어요.</p>
+    <p>이때 처음에는 <code>open_colab_browser_connection</code>이라는 <strong>연결용 도구 하나만</strong> 보일 수 있어요. 이 도구는 계산을 하지 않아요. <strong>Colab 탭을 열어서, 지금 도는 로컬 서버(내 컴퓨터에서 도는 서버)와 그 노트북이 이어질 기회를 만드는 일</strong>을 해요.</p>
+    <p>그러면 브라우저 가운데에 <strong>"Connect to a local Colab MCP server"</strong>라는 승인 창이 떠요. 여기서 제가 승인하는 대상은 <strong>로컬 MCP 서버와 이 노트북의 연결</strong>이에요. 안내에는 <strong>한 로컬 MCP 서버에 노트북 세션<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup> 하나를 연결한다</strong>는 설명이 붙어 있어요.</p>
     <p>문제는 Colab 화면 <strong>오른쪽 위에도 Connect라는 버튼이 하나 더</strong> 있다는 거예요. 이름이 똑같아서 "아까 눌렀는데 왜 또?" 싶어지는데, 둘은 아예 다른 일을 해요.</p>
     <table>
       <thead><tr><th>어느 Connect</th><th>어디에 있나</th><th>무엇과 무엇을 잇나</th><th>누르면 가능해지는 것</th></tr></thead>
@@ -189,23 +192,24 @@ Chrome에서 노트북을 실행해 보고 싶어.</code></pre>
     <p>참고로 Colab 화면 오른쪽에 보이는 <strong>Gemini 패널</strong>은 Colab에 딸린 <strong>별도의 AI 대화 화면</strong>이에요. 이번 실습의 요청은 거기가 아니라 <strong>내 컴퓨터의 Claude Code나 OpenCode</strong>에 넣는 거라, 헷갈리지 마세요.</p>
 
     <h3>연결하고 나면 도구 목록 자체가 바뀐다</h3>
-    <p>연결 전후로 <strong>서버가 내주는 도구 목록이 달라질 수 있어요.</strong> 연결 전에는 "연결해 줘" 하나뿐이었는데, 연결 뒤에는 "셀을 추가해 줘", "셀을 실행해 줘" 같은 도구들이 새로 나타나는 식이죠. 이렇게 상황에 따라 목록이 바뀌는 걸 <strong>동적 도구 목록<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup></strong>이라고 해요. 이때 서버는 호스트에게 <strong>"도구 목록이 바뀌었다"는 알림</strong>을 보내고, 호스트가 그 알림을 받아 목록을 다시 읽어야 새 도구가 보여요.</p>
-    <p>그래서 공식 Colab MCP 안내는 <strong>도구 목록 변경 알림을 지원하는 호스트</strong>를 요구하고, 지원 예시에 Claude Code가 들어 있어요. <a href="mcp-skill-context-and-search.html">5편</a>에서 "도구가 많아지면 문맥이 무거워진다"며 목록을 다루는 이야기를 했는데, 여기서는 <strong>목록이 고정된 게 아니라는 사실</strong>이 새로 붙는 셈이에요.</p>
+    <p>연결 전후로 <strong>서버가 내주는 도구 목록이 달라질 수 있어요.</strong> 연결 전에는 "연결해 줘" 하나뿐이었는데, 연결 뒤에는 "셀을 추가해 줘", "셀을 실행해 줘" 같은 도구들이 새로 나타나는 식이죠. 이렇게 상황에 따라 목록이 바뀌는 걸 <strong>동적 도구 목록<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup></strong>이라고 해요.</p>
+    <p>이때 서버는 호스트(에이전트를 돌리는 프로그램)에게 <strong>"도구 목록이 바뀌었다"는 알림</strong>을 보내요. 호스트가 그 알림을 받아 목록을 다시 읽어야 새 도구가 보여요. 그래서 공식 Colab MCP 안내는 <strong>도구 목록 변경 알림을 지원하는 호스트</strong>를 요구해요. 지원 예시에 Claude Code가 들어 있어요.</p>
+    <p><a href="mcp-skill-context-and-search.html">5편</a>에서 "도구가 많아지면 문맥이 무거워진다"며 목록을 다루는 이야기를 했어요. 여기서는 <strong>목록이 고정된 게 아니라는 사실</strong>이 새로 붙는 셈이에요.</p>
     <p>연결이 됐으면 계산을 시키기 전에 <strong>지금 붙잡고 있는 게 어느 노트북인지</strong>부터 확인해요.</p>
     <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— 승인 창의 Connect를 누른 다음에요</span></p>
     <pre><code>연결된 노트북 이름과 지금 들어 있는 셀을 확인해 줘.</code></pre>
     <p>돌아온 <strong>노트북 이름이 Chrome 탭의 이름과 같은지</strong>, <strong>셀 내용도 화면에 보이는 것과 같은지</strong>를 눈으로 맞춰 보세요. 탭을 여러 개 열어 뒀다면 엉뚱한 노트북을 잡고 있을 수 있거든요.</p>
 
     <h2><span class="hl">42가 나오면</span> 네 단계가 다 이어진 것</h2>
-    <p>이제 제일 작은 계산으로 연결 전체를 검증해요.</p>
+    <p>이제 제일 작은 계산으로 연결 전체를 검증해요. 아래 두 가지는 직접 해 보는 거예요. 먼저 에이전트에게 부탁하는 말이에요.</p>
     <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— 연결된 노트북을 확인한 다음에요</span></p>
     <pre><code>연결된 노트북에 간단한 계산 셀 하나를 만들고 실행해 줘.
 결과를 같이 확인하자.</code></pre>
     <p>노트북에 들어갈 코드는 이거예요.</p>
     <p class="run-tag">실행: Colab 노트북 셀에 붙여넣기 <span class="run-tag-why">— 에이전트가 대신 넣어 주지만, 손으로 넣어 봐도 같은 결과예요</span></p>
     <pre><code>print(37 + 5)</code></pre>
-    <p>예상되는 출력은 <strong>42</strong>예요. 여기서 에이전트는 도구를 <strong>두 번</strong> 부릅니다 — <code>add_code_cell</code>로 코드를 담은 셀을 <strong>추가</strong>하고, <code>run_code_cell</code>로 그 셀을 <strong>실행</strong>해요. 첫 호출은 <strong>노트북 문서에 쓰는</strong> 단계, 두 번째 호출은 <strong>Python 계산을 요청하는</strong> 단계고요. 흐름 그림의 ③과 ④가 그대로 도구 두 개로 나뉘어 있는 거예요.</p>
-    <p>왜 하필 이렇게 시시한 덧셈이냐면, <strong>답을 미리 알고 있는 계산이라야 검증이 되기 때문</strong>이에요. 42가 아니라 다른 게 나오거나 아무것도 안 나오면, 계산이 틀린 게 아니라 <strong>어딘가 연결이 끊긴</strong> 거예요. 확인할 건 세 가지예요.</p>
+    <p>예상되는 출력은 <strong>42</strong>예요. 위 코드는 37과 5를 더해 화면에 보여 줘요. 여기서 에이전트는 도구를 <strong>두 번</strong> 불러요. <code>add_code_cell</code>로 코드를 담은 셀을 <strong>추가</strong>하고, <code>run_code_cell</code>로 그 셀을 <strong>실행</strong>해요. 첫 호출은 <strong>노트북 문서에 쓰는</strong> 단계예요. 두 번째 호출은 <strong>Python 계산을 요청하는</strong> 단계예요. 흐름 그림의 ③과 ④가 그대로 도구 두 개로 나뉘어 있는 거예요.</p>
+    <p>왜 하필 이렇게 시시한 덧셈이냐면, <strong>답을 미리 알고 있는 계산이라야 검증이 되기 때문</strong>이에요. 42가 아니라 다른 게 나오거나 아무것도 안 나오면, 계산이 틀린 게 아니에요. <strong>어딘가 연결이 끊긴</strong> 거예요. 확인할 건 세 가지예요.</p>
     <ul>
       <li>요청한 <strong>코드가 셀에 생겼는지</strong> — ③까지 갔는가</li>
       <li>그 <strong>셀이 실행됐는지</strong> — ④까지 갔는가</li>
@@ -213,12 +217,12 @@ Chrome에서 노트북을 실행해 보고 싶어.</code></pre>
     </ul>
 
     <h2><span class="hl">입력을 바꿔 보며</span> 계산의 근거 읽기</h2>
-    <p>연결이 확인됐으니 처음의 부탁으로 돌아가요. <strong>학습 시간의 평균</strong>이요. 기록이 20분, 30분, 40분 세 번이라면 합계는 90분, 기록 수는 3개, 평균은 30분이에요.</p>
+    <p>연결이 확인됐으니 처음의 부탁으로 돌아가요. <strong>학습 시간의 평균</strong>이요. 기록이 20분, 30분, 40분 세 번이라면 합계는 90분, 기록 수는 3개, 평균은 30분이에요. 아래 세 줄은 이 계산을 Colab 셀에 적은 거예요.</p>
     <p class="run-tag">실행: Colab 노트북 셀에 붙여넣기 <span class="run-tag-why">— 위 검증 셀 아래에 새 셀로 넣으세요</span></p>
     <pre><code>minutes = [20, 30, 40]
 average = sum(minutes) / len(minutes)
 print(average)</code></pre>
-    <p>줄별로 읽어 볼게요. 첫 줄의 대괄호는 여러 값을 차례로 담는 <strong>리스트<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup></strong>예요. <code>sum(minutes)</code>는 그 값을 다 더한 <strong>합(90)</strong>, <code>len(minutes)</code>는 <strong>기록의 개수(3)</strong>, <code>/</code>로 나누면 <strong>30</strong>이 나와요. 다만 Python의 <code>/</code>는 나눗셈 결과를 늘 소수로 돌려줘서 화면에는 <strong><code>30.0</code></strong>으로 찍혀요 — 틀린 게 아니에요.</p>
+    <p>줄별로 읽어 볼게요. 첫 줄의 대괄호는 여러 값을 차례로 담는 <strong>리스트<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup></strong>예요. <code>sum(minutes)</code>는 그 값을 다 더한 <strong>합(90)</strong>이에요. <code>len(minutes)</code>는 <strong>기록의 개수(3)</strong>예요. <code>/</code>로 나누면 <strong>30</strong>이 나와요. 다만 Python의 <code>/</code>는 나눗셈 결과를 늘 소수로 돌려줘서 화면에는 <strong><code>30.0</code></strong>으로 찍혀요. 틀린 게 아니에요.</p>
     <p>여기서 <strong>손으로 먼저 적어 보는 연습</strong>을 하나 권해요. 마지막 값 <code>40</code>을 <code>70</code>으로 바꾸기 <strong>전에</strong>, 바뀐 합계·기록 수·예상 평균을 종이에 먼저 적어 두는 거예요. 그다음 실행해서 맞춰 보세요. 이렇게 하면 코드가 <strong>내가 이해한 대로 도는지</strong>를 매번 확인하게 돼요.</p>
 
     <h3>Colab이 대신 정해 주지 않는 것</h3>
@@ -233,7 +237,7 @@ print(average)</code></pre>
     </table>
     <p>둘 다 <strong>계산은 정확해요.</strong> 다른 건 계산이 아니라 <strong>"기록 없는 날을 어떻게 볼 것인가"라는 기준</strong>이거든요.</p>
     <p>Colab은 <strong>제가 고른 계산을 실행해 줄 뿐</strong>이에요. 숫자만 보고 "기록이 없는 날은 이렇게 다뤄야 한다"까지 정해 주지는 않아요. 이건 <a href="mcp-skill-why-skill-needed.html">6편</a>에서 "같은 기록인데 판정이 갈린다"고 했던 것과 같은 자리예요 — <strong>도구는 규칙을 실행하고, 규칙은 사람과 팀이 정한다</strong>는 이야기요.</p>
-    <p>덧붙여 실무에서 자주 걸리는 함정 하나요. 아직 기록이 하나도 없어서 <strong>리스트가 비어 있으면</strong> <code>len(minutes)</code>가 <strong>0</strong>이라 위 코드는 <strong>0으로 나누게</strong> 돼요. 여기서 곧장 "오류 처리 코드를 길게 붙이자"로 가기 쉬운데, 그 전에 정할 게 있어요 — <strong>"자료가 없음"을 보고서에 어떻게 표시할 것인가</strong>요. 0분이라고 쓸지, "기록 없음"이라고 쓸지, 아예 그 주를 빼고 낼지를 먼저 정하면 코드는 그다음에 따라와요.</p>
+    <p>덧붙여 실무에서 자주 걸리는 함정이 하나 있어요. 아직 기록이 하나도 없어서 <strong>리스트가 비어 있으면</strong> <code>len(minutes)</code>가 <strong>0</strong>이 돼요. 그러면 위 코드는 <strong>0으로 나누게</strong> 돼요. 여기서 곧장 "오류 처리 코드를 길게 붙이자"로 가기 쉬워요. 그 전에 먼저 정할 게 있어요. <strong>"자료가 없음"을 보고서에 어떻게 표시할 것인가</strong>예요. 0분이라고 쓸지, "기록 없음"이라고 쓸지, 아예 그 주를 빼고 낼지를 먼저 정하면 코드는 그다음에 따라와요.</p>
 
     <h2><span class="hl">나쁜 선택 vs 좋은 선택</span> — 요리 교실에서</h2>
     <table class="choice-table">
@@ -264,7 +268,8 @@ print(average)</code></pre>
 
     <h2><span class="hl">보관과 다시 실행</span> — 위에서부터 순서대로</h2>
     <p>실행 결과 화면 위쪽에 <strong>Cannot save changes</strong>와 <strong>Copy to Drive</strong>가 보이면, 지금 열린 <code>scratchpad</code> 노트북이 <strong>임시</strong>라는 뜻이에요. 남길 게 있으면 Copy to Drive로 내 드라이브에 복사하고 제목을 제대로 붙이세요. "무제"로 쌓인 노트북은 한 달 뒤에 열어도 뭘 계산했는지 알 수 없거든요.</p>
-    <p>그리고 저장한 노트북을 나중에 다시 열 때 조심할 게 하나 있어요. 셀은 <strong>위에서부터 순서대로</strong> 실행하는 편이 안전해요. 첫 셀에서 <code>minutes</code>를 만들고 둘째 셀에서 평균을 냈다면, <strong>새 런타임</strong>에서 둘째 셀만 덜컥 실행할 경우 <code>minutes</code>를 찾지 못해요. 문서에는 분명히 적혀 있는데 말이죠 — 이게 바로 맨 위 비유의 <strong>"적는 것과 익히는 것은 다르다"</strong>가 다시 나타나는 자리예요. 런타임이 새로 시작되면 <strong>주방은 텅 빈 상태로 되돌아가</strong> 있어요.</p>
+    <p>그리고 저장한 노트북을 나중에 다시 열 때 조심할 게 하나 있어요. 셀은 <strong>위에서부터 순서대로</strong> 실행하는 편이 안전해요. 첫 셀에서 <code>minutes</code>를 만들고 둘째 셀에서 평균을 냈다고 해 봐요. <strong>새 런타임</strong>에서 둘째 셀만 실행하면 <code>minutes</code>를 찾지 못해요. 문서에는 분명히 적혀 있는데도요.</p>
+    <p>이게 바로 맨 위 비유의 <strong>"적는 것과 익히는 것은 다르다"</strong>가 다시 나타나는 자리예요. 런타임이 새로 시작되면 <strong>주방은 텅 빈 상태로 되돌아가</strong> 있어요. 컴퓨터로 말하면 이전에 만든 값이 모두 사라진 상태예요.</p>
 
     <h2><span class="hl">연결이 멈춘 위치</span> 찾기</h2>
     <p>안 될 때 "Colab MCP가 안 돼요"라고 뭉뚱그리면 고칠 곳을 못 찾아요. 흐름 그림의 <strong>네 단계 중 어디까지 갔는지</strong>를 먼저 정하면 확인할 자리가 좁혀져요.</p>
@@ -278,7 +283,7 @@ print(average)</code></pre>
         <tr><td>작업하다 <strong>연결이 끊김</strong></td><td>탭 · 로컬 프로세스 · 노트북 세션</td><td>대상 <strong>탭이 그대로 열려 있는지</strong>, MCP 프로세스가 살아 있는지 확인</td></tr>
       </tbody>
     </table>
-    <p>표의 셋째 줄이 특히 헷갈리는 자리예요. "연결해 줘" 도구만 계속 보인다는 건 <strong>연결이 실패했거나</strong>, 연결은 됐는데 <strong>호스트가 새 도구 목록을 아직 안 읽었거나</strong> 둘 중 하나예요. 이 둘은 고칠 곳이 완전히 다르니, <strong>연결 성공 결과부터</strong> 확인하고 다음으로 넘어가세요.</p>
+    <p>표의 셋째 줄이 특히 헷갈리는 자리예요. "연결해 줘" 도구만 계속 보인다는 건 둘 중 하나예요. <strong>연결이 실패했거나</strong>, 연결은 됐는데 <strong>호스트가 새 도구 목록을 아직 안 읽었거나</strong>요. 이 둘은 고칠 곳이 완전히 다르니, <strong>연결 성공 결과부터</strong> 확인하고 다음으로 넘어가세요.</p>
 
     <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — Colab 연결이 안 될 때 먼저 볼 것</h2>
     <p>아래 표는 흐름 그림·준비물·두 개의 Connect·42 검증 절에서 나온 값 가운데, 다른 노트북 연결에서도 다시 확인하게 되는 것만 모았어요. 평균 30분·12.9분 같은 예제 계산값은 본문에 있어서 뺐어요.</p>
@@ -305,10 +310,11 @@ print(average)</code></pre>
       <li><strong>런타임을 새로 시작해 보기.</strong> 두 번째 셀만 단독으로 실행해서 <strong>일부러 실패시켜</strong> 보세요. "문서에는 적혀 있는데 런타임은 모른다"를 <strong>직접 겪어 보는 것</strong>이 이 편의 핵심 감각이에요. 확인했으면 위에서부터 다시 실행하세요.</li>
       <li><strong>보관 결정하기.</strong> 남길 게 있으면 <strong>Copy to Drive</strong>로 옮기고 제목을 붙이세요. 안 남길 거면 그냥 닫되, <strong>"이건 사라지는 노트북"이라는 걸 알고 닫는 것</strong>과 모르고 닫는 것은 달라요.</li>
     </ol>
-    <p>여기까지 하면 계산의 <strong>입력·과정·결과·기준</strong>이 한 문서에 나란히 남아요. 다음 편에서는 방향을 한 번 더 틀어서, <strong>팀이 실제로 쓰는 공유 표(구글 스프레드시트)를 읽어 오는 준비</strong>를 합니다. 여기서 미리 짚어 둘 게 하나 있어요 — <strong>Colab에 로그인해 있다는 사실이 다른 앱의 접근 동의까지 대신해 주지는 않아요.</strong> 그래서 다음 편에서는 Google Workspace용 <strong>credential JSON</strong>을 새로 준비하는 절차부터 시작해요.</p>
+    <p>여기까지 하면 계산의 <strong>입력·과정·결과·기준</strong>이 한 문서에 나란히 남아요. 다음 편에서는 방향을 한 번 더 틀어서, <strong>팀이 실제로 쓰는 공유 표(구글 스프레드시트)를 읽어 오는 준비</strong>를 합니다.</p>
+    <p>여기서 미리 짚어 둘 게 하나 있어요. <strong>Colab에 로그인해 있다는 사실이 다른 앱의 접근 동의까지 대신해 주지는 않아요.</strong> 그래서 다음 편에서는 Google Workspace용 <strong>credential JSON</strong>(내 계정으로 접근해도 된다는 허락을 담은 파일)을 새로 준비하는 절차부터 시작해요.</p>
 
     <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 에이전트가 Colab에서 계산했다고 할 때</h2>
-    <p>Colab 연결의 문제는 대개 <strong>"했다"는 말과 화면이 어긋나는</strong> 모양으로 와요. 에이전트는 셀을 만들었다는데 출력이 없고, 노트북에는 코드가 멀쩡히 있는데 런타임은 그 값을 모르죠. 문서(노트북)와 계산(런타임)이 다른 곳이라, 한쪽만 보고 "됐다"고 판단하면 어긋나요.</p>
+    <p>Colab 연결의 문제는 대개 <strong>"했다"는 말과 화면이 어긋나는</strong> 모양으로 와요. 에이전트는 셀을 만들었다는데 출력이 없어요. 노트북에는 코드가 멀쩡히 있는데 런타임은 그 값을 몰라요. 문서(노트북)와 계산(런타임)이 다른 곳이라, 한쪽만 보고 "됐다"고 판단하면 어긋나요. 아래 표는 증상이 보일 때 찾아보는 용도예요.</p>
     <table class="suspect-table">
       <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
       <tbody>
@@ -341,7 +347,7 @@ print(average)</code></pre>
     </table>
     <p>두 번째 줄이 제일 놓치기 쉬워요. 나머지는 출력이 없거나 오류가 나서 알게 되는데, 기준이 다른 두 평균은 <strong>둘 다 멀쩡히 돌아가거든요</strong>. 그래서 숫자를 보고서에 옮기기 전에 나누는 수부터 확인해요.</p>
     <p>결과 화면을 캡처해 과제나 채팅에 올리기 직전에는 <strong>주소창</strong>도 한 번 봐요. 연결 도구가 연 탭 주소에는 연결용 임시 값이 들어 있어서, 노트북 이름과 결과 화면만 남기고 주소창은 잘라 내요.</p>
-    <p>셀이 늘어나면 어느 셀이 어느 값에 기대는지 눈으로 따라가기 어려워요. 다시 실행하기 전에 에이전트에게 노트북 구조부터 <strong>보여 달라고</strong> 해요.</p>
+    <p>셀이 늘어나면 어느 셀이 어느 값에 기대는지 눈으로 따라가기 어려워요. 다시 실행하기 전에 에이전트에게 노트북 구조부터 <strong>보여 달라고</strong> 해요. 아래 프롬프트는 직접 붙여 넣어 쓰는 거예요. 읽기만 하고 아무것도 고치지 않아요.</p>
     <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— Colab 노트북이 연결된 대화에서</span></p>
     <pre><code>연결된 노트북을 읽기만 해서 아래를 표로 보여 줘. 아직 셀을 추가하거나 실행하거나 고치지 마.
 1. 노트북 이름

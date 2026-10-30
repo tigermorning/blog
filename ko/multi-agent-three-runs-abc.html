@@ -75,8 +75,8 @@
       <span class="post-nav-title">여럿이라는 말만으론 부족하다 — 네 가지 구조와 맞는 과업</span>
     </a>
 
-    <p><a href="multi-agent-split-gains-and-losses.html">1편</a>에서 "나누면 좋아진다"는 기대와 "비용만 는다"는 회의를 봤고, 그 판정은 남의 발표가 아니라 <strong>직접 실행한 기록</strong>으로만 할 수 있다고 했어요. 이번 편이 그 실행이에요. 같은 고장 난 장치를 세 개의 작업대로 옮겨 가며 고치되, <strong>다음 행동을 정하는 주체</strong>만 바꿔요. 문제, 모델, 저장소 준비 방식, 채점 방식은 세 실행에 똑같이 둬요.</p>
-    <p>이번 편에는 파이썬 코드가 세 덩어리 나와요. 파이썬을 모르셔도 괜찮아요. 코드는 "쓰는" 게 아니라 "읽고 넘어가는" 그림이고, 각 덩어리 아래에 한 줄씩 한국어로 풀어 둘게요. 그래도 낯설면 <a href="reading-python-code-basics.html">파이썬 코드 눈으로 읽기</a>를 먼저 보고 오면 전부 풀려요. 변수·함수·<code>async</code>·딕셔너리 같은 말이 거기 있어요.</p>
+    <p><a href="multi-agent-split-gains-and-losses.html">1편</a>에서 "나누면 좋아진다"는 기대와 "비용만 는다"는 회의를 봤고, 그 판정은 남의 발표가 아니라 <strong>직접 실행한 기록</strong>으로만 할 수 있다고 했어요. 이번 편이 그 실행이에요. 같은 고장 난 장치를 세 개의 작업대로 옮겨 가며 고쳐요. 바꾸는 건 <strong>다음 행동을 정하는 주체</strong>뿐이에요. 문제, 모델, 저장소(코드를 모아 둔 폴더) 준비 방식, 채점 방식은 세 실행에 똑같이 둬요. 에이전트는 스스로 도구를 써서 일하는 AI를 말해요.</p>
+    <p>이번 편에는 파이썬 코드가 세 덩어리 나와요. 파이썬을 모르셔도 괜찮아요. 코드는 "직접 쓰는" 게 아니라 "읽고 넘어가는" 그림이에요. 각 덩어리 아래에 한 줄씩 한국어로 풀어 둘게요. 그래도 낯설면 <a href="reading-python-code-basics.html">파이썬 코드 눈으로 읽기</a>를 먼저 보고 오세요. 변수·함수·<code>async</code>·딕셔너리 같은 말이 거기서 풀려 있어요. 여기서 막히는 게 정상이에요.</p>
 
     <h2><span class="hl">세 실행의 차이</span> — 다음 행동을 누가 정하는가</h2>
     <p><a href="what-is-automation-workflow-agent.html">자동화·워크플로·에이전트, 뭐가 다를까</a>에서 셋을 가르는 기준이 딱 하나, "<strong>다음에 뭘 할지 누가 정하느냐</strong>"라고 했었죠. 이번 실험은 바로 그 기준으로 세 실행을 만들어요.</p>
@@ -88,8 +88,12 @@
         <tr><td><strong>오케스트레이션 실행(C)</strong></td><td>리드 모델</td><td>리드 세션에 locator를 서브에이전트(리드가 필요할 때 일을 맡기려고 등록해 두는 보조 에이전트)로 등록. 부를지 말지, 어떻게 쓸지는 리드가 결정</td><td>최대 40턴</td></tr>
       </tbody>
     </table>
-    <p>여기서 <strong>턴</strong>은 모델이 한 번 생각하고 도구를 한 번 부르는 왕복 한 사이클이에요. 표의 마지막 열을 보면 세 실행의 턴 예산이 <strong>서로 달라요</strong>. 이건 나중에 숫자를 읽을 때 계속 따라다니는 단서라서 지금 미리 적어 둬요.</p>
-    <p>B와 C의 차이는 <a href="multi-agent-split-gains-and-losses.html">1편</a>의 조사 프로젝트 팀에 빗대면 선명해요. 워크플로 실행(B)은 팀장이 "조사 담당 → 보고서 → 수리 담당" 순서를 업무 매뉴얼(파이썬 코드)에 미리 적어 둔 팀이라, locator 다음에 fixer가 반드시 일해요. 오케스트레이션 실행(C)은 팀장(리드 모델)이 상황을 보고 다음 순서를 그때그때 정하는 팀이라, locator를 부를 수도 안 부를 수도 있어요.</p>
+    <p>여기서 <strong>턴</strong>은 모델이 한 번 생각하고 도구를 한 번 부르는 왕복 한 번이에요. 표의 마지막 열을 보면 세 실행의 턴 예산이 <strong>서로 달라요</strong>. 나중에 숫자를 읽을 때 계속 따라다니는 단서라서 미리 적어 둬요.</p>
+    <p>B와 C의 차이는 <a href="multi-agent-split-gains-and-losses.html">1편</a>의 조사 프로젝트 팀에 빗대면 선명해요.</p>
+    <ul>
+      <li>워크플로 실행(B)은 팀장이 "조사 담당 → 보고서 → 수리 담당" 순서를 업무 매뉴얼(파이썬 코드)에 미리 적어 둔 팀이에요. locator 다음에 fixer가 반드시 일해요.</li>
+      <li>오케스트레이션 실행(C)은 팀장(리드 모델)이 상황을 보고 순서를 그때그때 정하는 팀이에요. locator를 부를 수도, 안 부를 수도 있어요.</li>
+    </ul>
     <figure>
       <svg viewBox="0 0 680 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="fig3title">
         <title id="fig3title">세 실행에서 다음 행동을 정하는 주체가 다르다</title>
@@ -140,7 +144,8 @@
     </figure>
 
     <h2><span class="hl">문제 다섯 건</span> — 정답 없이 테스트로만 확인한다</h2>
-    <p>대상은 벤치마크 문제 다섯 건이에요. <strong>SWE-bench</strong>는 실제 오픈소스 저장소의 이슈를 에이전트에게 고치게 하고 테스트로 채점하는 벤치마크이고, <strong>Terminal-Bench</strong>는 터미널 안에서 끝내야 하는 과제 모음이에요. 원문은 GitHub 저장소 <code>SunCreation/d035-agent-lab</code>에 모여 있어요.</p>
+    <p>대상은 벤치마크(성능을 재는 시험 문제) 다섯 건이에요. <strong>SWE-bench</strong>는 실제 오픈소스 저장소의 이슈(고장 신고 글)를 에이전트에게 고치게 하고 테스트로 채점하는 문제 모음이에요. <strong>Terminal-Bench</strong>는 터미널(글자 명령 창) 안에서 끝내야 하는 과제 모음이에요. 원문은 GitHub 저장소 <code>SunCreation/d035-agent-lab</code>에 모여 있어요.</p>
+    <p>아래 명령은 그 저장소를 내 컴퓨터로 복사해요. 직접 해 보세요.</p>
     <p class="run-tag">실행: 로컬 터미널</p>
     <pre><code>git clone https://github.com/SunCreation/d035-agent-lab.git   # 저장소를 내 컴퓨터로 통째로 복사</code></pre>
     <ul>
@@ -150,23 +155,24 @@
       <li><strong>log-summary</strong> — 여러 서비스의 로그 파일에서 ERROR·WARNING·INFO 줄 수를 세어 summary.csv를 만들어요.</li>
       <li><strong>bank-trans-filter</strong> — 회사명과 계좌번호에 오타가 섞인 거래 내역에서 특정 회사 거래만 골라 날짜순 output.json을 만들어요.</li>
     </ul>
-    <p>저장소의 <code>tasks/</code> 폴더에는 문제별로 원문 이슈, 확인용 테스트 패치, 기준 커밋 정보가 들어 있어요. <strong>정답 패치는 없어요.</strong> 무엇을 맞혔는지는 오직 테스트 실행으로만 확인해요. SymPy 세 문제는 공식 도커 평가가 아니라 <strong>경량 평가</strong>예요. 저장소를 특정 커밋(<a href="git-commit-concept.html">커밋</a>은 저장소의 한 시점 스냅샷이에요)으로 고정해 받고, 에이전트가 수정한 복사본에 테스트 패치를 적용해 대상 테스트만 실행해요. 이것도 나중에 결론의 범위를 정할 때 다시 나오는 단서예요.</p>
+    <p>저장소의 <code>tasks/</code> 폴더에는 문제별로 원문 이슈, 확인용 테스트 패치(테스트를 더하는 변경 파일), 기준 커밋 정보가 들어 있어요. <strong>정답 패치는 없어요.</strong> 무엇을 맞혔는지는 오직 테스트 실행으로만 확인해요.</p>
+    <p>SymPy 세 문제는 공식 도커 평가가 아니라 <strong>경량 평가</strong>예요. 먼저 저장소를 특정 커밋(<a href="git-commit-concept.html">커밋</a>은 저장소의 한 시점 스냅샷이에요)으로 고정해 받아요. 에이전트가 수정한 복사본에 테스트 패치를 적용해요. 그리고 대상 테스트만 실행해요. 이것도 나중에 결론의 범위를 정할 때 다시 나오는 단서예요.</p>
 
     <h2><span class="hl">왜 Claude Agent SDK인가</span> — 조건을 고정하기 가장 쉬운 길</h2>
-    <p>같은 문제를 자동으로 고치는 방법은 여럿인데, 조건을 고정하기에는 각각 걸리는 점이 있어요.</p>
+    <p>같은 문제를 자동으로 고치는 방법은 여럿이에요. 그런데 조건을 고정하기에는 각각 걸리는 점이 있어요.</p>
     <table>
       <thead><tr><th>방법</th><th>이 실험에서 걸리는 점</th></tr></thead>
       <tbody>
         <tr><td>대화형 CLI(터미널에서 글자로 명령을 주고받는 프로그램, 예: Claude Code, opencode)를 셸 스크립트에서 여러 번 부르기</td><td>사람의 조작과 셸 환경이 끼어들어 조건을 고정하고 재현하기 어려워요</td></tr>
-        <tr><td>Messages API를 직접 부르기</td><td>도구 실행기·권한 승인·기록 형식을 전부 내가 만들어야 해서 실험보다 기반 공사에 시간이 가요</td></tr>
+        <tr><td>Messages API(AI 모델에게 글을 보내고 답을 받는 창구)를 직접 부르기</td><td>도구 실행기·권한 승인·기록 형식을 전부 내가 만들어야 해서 실험보다 기반 공사에 시간이 가요</td></tr>
         <tr><td><a href="langgraph-what-and-why.html">LangGraph</a> 같은 범용 프레임워크로 짜기</td><td>그 프레임워크의 문법을 익혀야 하고, 도구 실행·권한·세션 기록을 그 위에 다시 얹어야 해요</td></tr>
       </tbody>
     </table>
-    <p>오늘 비교하려는 건 판을 새로 짜는 방법이 아니라, <strong>같은 판 위에서 다음 행동의 결정 주체만 바꿨을 때</strong> 무엇이 달라지는가거든요.</p>
-    <p>그래서 이 실험은 <strong>Claude Agent SDK</strong>(<code>claude-agent-sdk</code>, SDK는 어떤 서비스를 코드에서 부를 수 있게 묶어 둔 개발용 도구 모음이에요)로 실행해요. Claude Code의 도구 실행, 권한, 세션 기록, 서브에이전트 정의, 구조화 출력을 파이썬 코드에서 그대로 쓸 수 있어요. (SDK의 <code>query()</code>를 처음 부르는 모습은 <a href="prompt-execution-three-paths.html">프롬프트 세 경로 직접 실행해보기</a>에서 봤어요.) 실험 폴더에는 전용 <strong>가상 환경</strong>(프로젝트 전용으로 파이썬과 부품을 따로 담아 두는 작은 방, 폴더 이름이 <code>.venv</code>)을 만들어요. 시스템 파이썬에 바로 설치하면 프로젝트끼리 부품이 섞이고, 최근 리눅스에서는 전역 설치 자체가 막히기도 하거든요.</p>
+    <p>오늘 비교하려는 건 판을 새로 짜는 방법이 아니에요. <strong>같은 판 위에서 다음 행동의 결정 주체만 바꿨을 때</strong> 무엇이 달라지는지가 궁금해요.</p>
+    <p>그래서 이 실험은 <strong>Claude Agent SDK</strong>(<code>claude-agent-sdk</code>, SDK는 어떤 서비스를 코드에서 부를 수 있게 묶어 둔 개발용 도구 모음이에요)로 실행해요. Claude Code의 도구 실행, 권한, 세션 기록, 서브에이전트 정의, 구조화 출력(정해진 틀로 받는 답)을 파이썬 코드에서 그대로 쓸 수 있어요. (SDK의 <code>query()</code>를 처음 부르는 모습은 <a href="prompt-execution-three-paths.html">프롬프트 세 경로 직접 실행해보기</a>에서 봤어요.) 실험 폴더에는 전용 <strong>가상 환경</strong>(프로젝트 전용으로 파이썬과 부품을 따로 담아 두는 작은 방, 폴더 이름이 <code>.venv</code>)을 만들어요. 시스템 파이썬에 바로 설치하면 프로젝트끼리 부품이 섞이고, 최근 리눅스에서는 전역 설치 자체가 막히기도 하거든요.</p>
 
     <h2><span class="hl">기준선 실행(A)</span> — 한 에이전트가 끝까지</h2>
-    <p>실험 스크립트 <code>arms.py</code>의 핵심은 <code>query()</code>를 한 번 부르는 도우미 함수예요. 턴을 다 써서 SDK가 오류를 던져도, 실험에서는 그게 "턴 소진"이라는 <strong>관측 결과</strong>일 뿐이라 예외로 죽지 않고 남은 상태를 그대로 채점해요.</p>
+    <p>실험 스크립트 <code>arms.py</code>의 핵심은 <code>query()</code>를 한 번 부르는 도우미 함수예요. 턴을 다 써서 SDK가 오류를 내도, 실험에서는 그게 "턴 소진"이라는 <strong>관측 결과</strong>일 뿐이에요. 그래서 멈추지 않고 남은 상태를 그대로 채점해요. 아래 코드는 읽기만 해도 돼요.</p>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 직접 실행하는 코드 아니에요</span></p>
     <pre><code>async def _run_once(prompt, options):
     """(마지막 ResultMessage, 오류문) 반환."""
@@ -201,10 +207,10 @@ if arm == "A":
       </tbody>
     </table>
     <p><code>permission_mode="bypassPermissions"</code>는 도구 실행마다 사람에게 묻지 않고 넘어가는 설정이에요(권한 모드의 뜻은 <a href="harness-minimal-and-permission.html">덜어내기와 경계 긋기</a>에서 다뤘어요). 실험을 자동으로 돌리려면 필요하지만, 그만큼 격리된 폴더 안에서만 돌려야 해요. 기준선에는 읽기 전용 도구 제한을 걸지 않아요. 그 제한은 B의 locator에만 적용돼요.</p>
-    <p>실행하고 나면 <code>runs/A-sympy__sympy-24909/result.json</code> 같은 결과 파일이 생겨요. <code>resolved</code>와 <code>invalid</code>는 테스트 채점 결과, <code>cost_usd</code>·<code>num_turns</code>·<code>wall_s</code>는 비용·턴·경과 시간 관측값, <code>final_text</code>는 마지막 응답, <code>changes.diff</code>는 실제 수정 내용이에요. 성공 여부만 보지 말고 턴 수와 변경 내용을 같이 읽어요. 실제로 한 실행에서 haiku가 25턴을 <strong>모두 소진</strong>한 관측이 있었는데, 그건 단순 오류가 아니라 어디까지 탐색했고 어디서 멈췄는지 읽어야 할 기록이에요.</p>
+    <p>실행하고 나면 <code>runs/A-sympy__sympy-24909/result.json</code> 같은 결과 파일이 생겨요. <code>resolved</code>와 <code>invalid</code>는 테스트 채점 결과, <code>cost_usd</code>·<code>num_turns</code>·<code>wall_s</code>는 비용·턴·경과 시간 관측값, <code>final_text</code>는 마지막 응답, <code>changes.diff</code>는 실제 수정 내용이에요. 성공 여부만 보지 말고 턴 수와 변경 내용을 같이 읽어요. 실제로 한 실행에서 haiku(작고 빠른 Claude 모델)가 25턴을 <strong>모두 소진</strong>한 관측이 있었어요. 그건 그냥 오류가 아니라, 어디까지 탐색했고 어디서 멈췄는지 읽어야 할 기록이에요.</p>
 
     <h2><span class="hl">워크플로 실행(B)</span> — 코드가 순서를 고정한다</h2>
-    <p>B는 탐색과 수정의 순서와 인계 내용을 <strong>파이썬 코드가 미리 고정</strong>하는 구성이에요. locator는 읽기와 검색만 하고 파일 경로·함수 이름·진단을 구조화된 보고로 남겨요. 그 보고를 받은 fixer가 <strong>새 세션</strong>에서 수정해요.</p>
+    <p>B는 탐색과 수정의 순서와 인계 내용을 <strong>파이썬 코드가 미리 고정</strong>하는 구성이에요. locator는 읽기와 검색만 해요. 그리고 파일 경로·함수 이름·진단을 구조화된 보고로 남겨요. 그 보고를 받은 fixer가 <strong>새 세션</strong>(이전 대화를 이어받지 않는 새 대화)에서 수정해요. 아래 코드도 읽기만 해도 돼요.</p>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 직접 실행하는 코드 아니에요</span></p>
     <pre><code>loc, err_loc = await asyncio.wait_for(_run_once(
     f"Bug report:\n\n{problem}\n\nLocate the likely cause.",
@@ -271,13 +277,14 @@ if err:
     <p>여기서 꼭 붙잡을 문장이 있어요. <strong>서브에이전트를 정의했다는 사실만으로 분업이 일어났다고 볼 수 없어요.</strong> 리드가 locator를 실제로 불렀는지, 불렀다면 그 보고가 최종 편집에 반영됐는지는 실행 뒤 세션 기록과 판정 파일의 인용으로만 확인할 수 있어요. 안 불렀다면 대신 어떤 탐색을 했는지도 기록에서 읽어야 하고요.</p>
 
     <h2><span class="hl">바이브 코딩으로 돌리기</span> — 요약이 아니라 명령과 파일을 받는다</h2>
-    <p>이 실험 스크립트를 처음부터 손으로 다 짤 필요는 없어요. 위 코드를 참고 자료로 붙여 코딩 에이전트에게 부탁하면 돼요(<a href="what-is-vibe-coding.html">바이브 코딩</a>이 이런 거죠). 실제로 쓴 부탁은 이런 모양이었어요.</p>
+    <p>이 실험 스크립트를 처음부터 손으로 다 짤 필요는 없어요. 위 코드를 참고 자료로 붙여 코딩 에이전트에게 부탁하면 돼요(<a href="what-is-vibe-coding.html">바이브 코딩</a>이 이런 거죠). 아래 글은 코딩 에이전트에게 그대로 붙여 넣는 부탁이에요. 직접 해 보세요. 실제로 쓴 부탁은 이런 모양이었어요.</p>
     <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— Claude Code 등</span></p>
     <pre><code>https://github.com/SunCreation/d035-agent-lab 를 claude sdk 로 haiku4.5 로
 테스트 해볼 수 있게, 실험 구현을 해줘. 결과 파일에서 성공 여부, 비용,
 대화 횟수, 걸린 시간을 찾아 정리하고, 실행한 명령과 결과 파일 경로도
 보여 줘.  # 참고사항으로 위 코드 제공</code></pre>
     <p>인스턴스 준비와 채점까지 똑같이 만들 필요는 없어요. "한 문제를 한 에이전트가 처리하고 결과 파일을 남긴다"는 구조만 같으면 돼요. 다만 위임한 뒤에 <strong>에이전트의 요약을 결과로 받아들이지 말고</strong>, 실제로 실행된 명령과 실제로 생긴 결과 파일을 함께 확인해요. C를 돌릴 때는 "리드가 locator를 실제로 불렀는지 기록에서 확인해 알려 줘"까지 부탁에 넣어요.</p>
+    <p>아래 명령은 만든 스크립트를 실행하고 결과 파일을 열어 봐요. 터미널에서 직접 해 보세요.</p>
     <p class="run-tag">실행: 로컬 터미널</p>
     <pre><code># 가상 환경의 파이썬으로 arms.py 실행. 뒤의 두 단어가 "어느 실행, 어느 문제"
 .venv/bin/python arms.py A sympy__sympy-24909
@@ -327,7 +334,7 @@ cat runs/C-sympy__sympy-24909/changes.diff</code></pre>
       </tbody>
     </table>
     <p>첫째 줄이 제일 놓치기 쉬워요. <code>resolved</code>가 참이고 요약도 그럴듯해서 전사를 열 이유가 안 보이거든요. 그래서 C는 결과가 좋게 나왔을 때일수록 결론을 적기 전에 전사부터 열어요.</p>
-    <p>기록 파일이 많아 직접 뒤지기 어렵다면 에이전트에게 찾게 해도 돼요. 이때 <strong>다시 돌리지 말고 이미 있는 파일만 보여 달라고</strong> 해요. 다시 돌리면 비용이 또 들고, 비교해야 할 원래 기록이 흐트러질 수 있어요.</p>
+    <p>기록 파일이 많아 직접 뒤지기 어렵다면 에이전트에게 찾게 해도 돼요. 이때 <strong>다시 돌리지 말고 이미 있는 파일만 보여 달라고</strong> 해요. 다시 돌리면 비용이 또 들고, 비교해야 할 원래 기록이 흐트러질 수 있어요. 아래 글은 에이전트에게 붙여 넣는 부탁이에요. 파일을 읽어 보여 주기만 해요.</p>
     <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— arms.py가 있는 실험 폴더에서</span></p>
     <pre><code>이 폴더의 arms.py와 runs 폴더를 보고 아래를 표로 보여 줘. 코드는 고치지 말고, 실험도 다시 돌리지 마.
 1. A, B의 locator·fixer, C 호출마다 max_turns, cwd, permission_mode, 허용 도구 목록(allowed_tools 또는 tools)과 그 줄 번호

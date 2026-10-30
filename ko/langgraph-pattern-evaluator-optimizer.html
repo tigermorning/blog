@@ -81,7 +81,7 @@
           <tr class="is-current"><td>⑤ 평가자-최적화자</td><td>기준에 못 미치면 앞으로 되돌아가는 순환 구조</td><td>몇 바퀴 돌지</td></tr>
         </tbody>
       </table>
-      <p>위에서 아래로 갈수록 <strong>개발자가 미리 정해 두는 것이 줄고, LLM이 실행 중에 정하는 것이 늘어요.</strong> 그래도 다섯 다 워크플로예요. 갈 수 있는 길 자체는 전부 개발자가 미리 그려 뒀거든요.</p>
+      <p>위에서 아래로 갈수록 <strong>개발자가 미리 정해 두는 것이 줄고, LLM(글을 만들어 내는 큰 AI 모델)이 실행 중에 정하는 것이 늘어요.</strong> 그래도 다섯 다 워크플로(미리 그려 둔 길을 따라 가는 방식)예요. 갈 수 있는 길 자체는 전부 개발자가 미리 그려 뒀거든요.</p>
     </section>
     <h2 id="analogy"><span class="hl">비유</span> — 시식 담당이 되돌린다</h2>
     <p><a href="langgraph-pattern-orchestrator-worker.html">지난 편</a>의 그 저녁 주방이에요. 내보내기 전에 <strong>시식 담당</strong>이 맛을 봐요. 기준에 못 미치면 조리사에게 되돌리면서 <strong>무엇이 부족한지 적어</strong> 보내요. 조리사는 그 메모를 보고 고쳐요. 세 번을 넘기면 더 붙들지 않고 사장님을 불러요.</p>
@@ -92,7 +92,7 @@
         <tr><td>세 번 넘으면 사장님 호출</td><td><strong>정상 출구</strong> — 상한에만 맡기지 않고 그래프 안에 출구를 그려요</td></tr>
       </tbody>
     </table>
-    <p><strong>핵심 한 줄:</strong> 시식 담당이 정하는 건 바퀴 수뿐이에요 — 조리사가 제멋대로 새 메뉴로 바꿔 버리는 장면은 없고, 그게 바로 에이전트와의 차이예요.</p>
+    <p><strong>핵심 한 줄:</strong> 컴퓨터에서도 같아요. 평가자가 정하는 건 몇 바퀴 돌지뿐이에요. 조리사가 제멋대로 새 메뉴로 바꿔 버리는 장면은 없어요. 그게 바로 에이전트와의 차이예요.</p>
 
     <section class="quiz-box" id="quiz-evaluator">
       <p class="quiz-box-title">이 상황엔 어떤 패턴?</p>
@@ -150,7 +150,8 @@
     <p>상자와 선은 제가 미리 다 그렸어요. 실행할 때 정해지는 건 <strong>바퀴 수</strong>뿐이에요.</p>
 
     <h2 id="evaluator"><span class="hl">통과할 때까지 고쳐 쓰기</span></h2>
-    <p>앞의 넷은 데이터가 앞에서 뒤로만 흘렀어요. 이번엔 처음으로 <strong>되돌아가는 순환</strong>이 생겨요. 한 LLM 호출이 결과를 만들고, 다른 호출이 평가해서 피드백을 주고, 기준을 넘을 때까지 반복해요. 순환에는 <a href="langgraph-state-node-edge.html#build-branch">2편</a>에서 본 위험이 따라와요. 끝나지 않을 수 있다는 거요. <a href="langgraph-branch-drills.html#drill-loop">3편의 무한 반복 실험</a>에서는 되돌아가는 동안 State가 하나도 안 바뀌어서 영원히 돌았는데, 이 패턴은 매 바퀴 초안을 고쳐 쓰니 그 점은 달라요. 대신 고쳐 써도 기준을 영영 못 넘을 수 있어서 상한은 여전히 필요해요.</p>
+    <p>앞의 넷은 데이터가 앞에서 뒤로만 흘렀어요. 이번엔 처음으로 <strong>되돌아가는 순환</strong>이 생겨요. 먼저 한 LLM 호출이 결과를 만들어요. 다른 호출이 그 결과를 평가해서 피드백을 줘요. 이걸 기준을 넘을 때까지 반복해요. 순환에는 <a href="langgraph-state-node-edge.html#build-branch">2편</a>에서 본 위험이 따라와요. 끝나지 않을 수 있다는 거예요. <a href="langgraph-branch-drills.html#drill-loop">3편의 무한 반복 실험</a>에서는 되돌아가는 동안 State(그래프가 들고 다니는 공용 메모장)가 하나도 안 바뀌어서 영원히 돌았어요. 이 패턴은 매 바퀴 초안을 고쳐 쓰니 그 점은 달라요. 대신 고쳐 써도 기준을 영영 못 넘을 수 있어요. 그래서 상한(최대 바퀴 수)은 여전히 필요해요.</p>
+    <p>아래 코드는 초안을 채점하고, 빠진 게 있으면 고쳐 쓰고, 다시 채점하는 순환을 만들어요. 최대 3바퀴까지만 돌고 넘으면 사람에게 넘겨요. 직접 해 볼 수 있어요.</p>
     <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— langgraph 설치 후, API 키 없이 돌아가요 (LLM 자리는 규칙으로 흉내 냈어요)</span></p>
     <pre><code>from typing_extensions import TypedDict
 from langgraph.graph import StateGraph, START, END
@@ -204,13 +205,13 @@ for step in g.stream({"text": "리듀서는 값을 합친다.", "rounds": 0}):
 {'optimize': {'text': '리듀서는 값을 합친다. +용어 정의 +예시'}}
 {'evaluate': {'passed': True, 'feedback': '통과', 'rounds': 3}}</code></pre>
     <ul>
-      <li><strong>반복 상한은 그래프 안에.</strong> 상한에 닿으면 <code>GraphRecursionError</code>로 멈추는데, 이건 예외(실행을 그 자리에서 끊는 에러)라서 그동안 고쳐 온 중간 결과가 다 날아가요(<a href="#loop-stop">바로 아래에서 직접 확인해요</a>). 게다가 langgraph 1.2 이후의 기본 상한은 25가 아니라 10007스텝이라(<a href="langgraph-branch-drills.html#drill-loop">3편에서 직접 확인</a>), 기본값만 믿으면 멈추기 전에 호출 요금부터 쌓여요. 그래서 <code>rounds</code>를 세다가 <code>hand_over</code>로 빠지는 <strong>정상 종료 경로</strong>를 두고, <code>recursion_limit</code>은 이중 안전망으로 남겨요.</li>
-      <li><strong><code>stream()</code>과 <code>invoke()</code></strong> — <code>invoke()</code>는 끝날 때까지 기다렸다가 최종 State만 줘요. <code>stream()</code>은 스텝이 끝날 때마다 "어느 노드가 무엇을 바꿨는지"를 하나씩 내보내요. 루프가 몇 바퀴 돌았는지, 피드백이 어떻게 바뀌었는지는 <code>stream()</code>으로만 보여요. 디버깅엔 <code>stream()</code>, 서비스에서 결과만 필요하면 <code>invoke()</code>예요.</li>
+      <li><strong>반복 상한은 그래프 안에.</strong> 상한에 닿으면 <code>GraphRecursionError</code>로 멈춰요. 이건 예외(실행을 그 자리에서 끊는 에러)라서 그동안 고쳐 온 중간 결과가 다 날아가요(<a href="#loop-stop">바로 아래에서 직접 확인해요</a>). 게다가 langgraph 1.2 이후의 기본 상한은 25가 아니라 10007스텝이에요(<a href="langgraph-branch-drills.html#drill-loop">3편에서 직접 확인</a>). 기본값만 믿으면 멈추기 전에 호출 요금부터 쌓여요. 그래서 <code>rounds</code>를 세다가 <code>hand_over</code>로 빠지는 <strong>정상 종료 경로</strong>를 두고, <code>recursion_limit</code>은 이중 안전망으로 남겨요.</li>
+      <li><strong><code>stream()</code>과 <code>invoke()</code></strong> — <code>invoke()</code>는 끝날 때까지 기다렸다가 최종 State만 줘요. <code>stream()</code>은 스텝(한 단계)이 끝날 때마다 "어느 노드가 무엇을 바꿨는지"를 하나씩 내보내요. 루프가 몇 바퀴 돌았는지, 피드백이 어떻게 바뀌었는지는 <code>stream()</code>으로만 보여요. 오류를 찾을 때(디버깅)는 <code>stream()</code>, 서비스에서 결과만 필요하면 <code>invoke()</code>예요.</li>
       <li><strong>비용은 곱절로 늘어요.</strong> 한 바퀴에 생성 1번 + 평가 1번이니, 3바퀴면 6번이에요. 바퀴를 늘리면 품질이 정말 오르는지 재 보고 상한을 정해요.</li>
     </ul>
 
     <h3 id="loop-stop">상한에만 맡기면 왜 결과를 못 받을까</h3>
-    <p>"예외라서 결과가 날아간다"는 말이 처음엔 잘 와닿지 않았어요. 그래서 채점이 <strong>늘 불합격</strong>을 주는 최악의 경우를 두 가지 방식으로 돌려 봤어요. A는 멈추는 걸 <code>recursion_limit</code>에만 맡기고, B는 위 코드처럼 <code>rounds</code>를 세다가 3이 되면 <code>hand_over</code>로 빠지는 정상 출구를 둬요.</p>
+    <p>"예외라서 결과가 날아간다"는 말이 처음엔 잘 와닿지 않았어요. 그래서 채점이 <strong>늘 불합격</strong>을 주는 최악의 경우를 두 가지 방식으로 돌려 봤어요. A는 멈추는 걸 <code>recursion_limit</code>에만 맡겨요. B는 위 코드처럼 <code>rounds</code>를 세다가 3이 되면 <code>hand_over</code>로 빠지는 정상 출구를 둬요. 아래 코드는 두 방식을 한 번에 돌려 비교해요.</p>
     <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— langgraph 설치 후, API 키 없이 돌아가요</span></p>
     <pre><code>from typing_extensions import TypedDict
 from langgraph.graph import StateGraph, START, END
@@ -255,19 +256,19 @@ print("A result:", result)
 # B. rounds를 세다가 3이 되면 hand_over로 빠지는 정상 출구를 둔다
 b = build(lambda s: "hand_over" if s["rounds"] &gt;= 3 else "optimize", with_exit=True)
 print("B result:", b.invoke({"text": "초안", "rounds": 0}, {"recursion_limit": 8}))</code></pre>
-    <p>처음 보는 문법 둘만 짚을게요. <code>lambda s: ...</code>는 한 줄짜리 이름 없는 함수라서 여기서는 라우터 역할을 해요. <code>try:</code> 아래에서 에러가 나면 프로그램이 멈추는 대신 <code>except</code> 아래 줄로 넘어가요.</p>
+    <p>처음 보는 문법 둘만 짚을게요. <code>lambda s: ...</code>는 한 줄짜리 이름 없는 함수예요. 여기서는 어느 길로 갈지 고르는 라우터 역할을 해요. <code>try:</code> 아래에서 에러가 나면 프로그램이 멈추는 대신 <code>except</code> 아래 줄로 넘어가요.</p>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 위 코드를 실행했을 때 제 화면에 찍힌 출력이에요</span></p>
     <pre><code>A 에러: GraphRecursionError
 A result: 아직 아무것도 안 들어옴
 B result: {'text': '초안 +고침 +고침 (사람에게 넘김)', 'rounds': 3}</code></pre>
-    <p>핵심은 <code>result = a.invoke(...)</code> 한 줄이에요. <code>=</code>는 오른쪽 일이 끝까지 성공해야 왼쪽 <code>result</code>에 값을 넣어요. A는 채점과 수정이 번갈아 8번 돈 뒤 한도에 걸려, <code>invoke</code>가 결과를 돌려주기 전에 에러로 끝났어요. 그래서 <code>result</code>에는 처음에 넣어 둔 "아직 아무것도 안 들어옴"이 그대로 남았고, 네 번이나 고친 초안은 받을 길이 없어요. B는 세 번째 채점에서 <code>hand_over</code>로 빠져 평범하게 끝났고, 고쳐 온 초안을 그대로 받았어요.</p>
-    <p>A가 멈춘 지점도 눈여겨볼 만해요. 노드마다 실행 횟수를 따로 세어 보니 채점 4번, 수정 4번, 모두 8번 실행한 뒤 멈췄어요. 노드는 두 종류뿐인데 한도 8에서 멈췄다는 건, <code>recursion_limit</code>이 노드 개수가 아니라 <strong>실행된 단계 수</strong>를 센다는 뜻이에요. 한도는 <code>invoke()</code>에 두 번째 값으로 <code>{"recursion_limit": 8}</code>처럼 넘겨서 얼마든지 바꿀 수 있고요.</p>
+    <p>핵심은 <code>result = a.invoke(...)</code> 한 줄이에요. <code>=</code>는 오른쪽 일이 끝까지 성공해야 왼쪽 <code>result</code>에 값을 넣어요. A는 채점과 수정이 번갈아 8번 돈 뒤 한도에 걸렸어요. 그래서 <code>invoke</code>가 결과를 돌려주기 전에 에러로 끝났어요. <code>result</code>에는 처음에 넣어 둔 "아직 아무것도 안 들어옴"이 그대로 남았어요. 네 번이나 고친 초안은 받을 길이 없어요. B는 세 번째 채점에서 <code>hand_over</code>로 빠져 평범하게 끝났어요. 고쳐 온 초안을 그대로 받았어요.</p>
+    <p>A가 멈춘 지점도 눈여겨볼 만해요. 노드마다 실행 횟수를 따로 세어 보니 채점 4번, 수정 4번이었어요. 모두 8번 실행한 뒤 멈춘 거예요. 노드는 두 종류뿐인데 한도 8에서 멈췄어요. 그러니 <code>recursion_limit</code>은 노드 개수가 아니라 <strong>실행된 단계 수</strong>를 세는 거예요. 한도는 <code>invoke()</code>에 두 번째 값으로 <code>{"recursion_limit": 8}</code>처럼 넘겨서 바꿀 수 있어요.</p>
     <div class="key-point" id="key-loop-stop">
       <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
       <p>되돌아가는 선이 있는 그래프를 <code>recursion_limit</code> 하나로만 멈추게 하면 안 돼요. 한도에 닿으면 <code>GraphRecursionError</code>라는 예외로 끝나서, 그때까지 만든 중간 결과를 하나도 돌려받지 못해요. 그래서 반복 횟수를 State에 세다가 정해 둔 횟수에서 "사람에게 넘기기" 같은 <strong>정상 출구</strong>로 빠지게 그래프 안에 그려 두고, <code>recursion_limit</code>은 그 설계가 실패했을 때를 대비한 비상용으로만 남겨요.</p>
     </div>
-    <p>여기서 꼭 봐야 할 장면이 있어요. 성의 없는 노트 초안을 이 루프에 넣었더니, 평가 규칙("용어 정의가 있나", "예시 코드가 있나" 등)을 채우는 쪽으로 고쳐 쓰는 동안 <strong>주제가 LangGraph 리듀서에서 자바스크립트 <code>reduce</code>로 옮겨 가 버렸어요</strong>. 평가자는 규칙 목록만 채우는 방향으로 글을 바꿀 뿐, 원래 무엇을 지켜야 했는지는 몰라요. 그래서 <strong>"무엇을 잃으면 안 되는가"</strong>를 <a href="langgraph-pattern-chaining.html#key-gate">체이닝 편의 게이트</a>처럼 코드 검사로 걸어 두는 게 필요해요.</p>
-    <p>평가 기준이 흐리면 피드백이 "더 좋게 써 보세요" 수준으로 겉돌고 반복해도 안 나아져요. 규칙부터 구체적으로 적는 게 먼저예요. 그리고 <strong>평가자가 결정적일 수 있다면 그편이 훨씬 나아요.</strong> 코드를 쓰게 하고 테스트를 돌려 실패 메시지를 피드백으로 돌려주는 루프가 대표적이에요. LLM이 채점하는 방식의 장단점은 <a href="rag-chatbot-llm-judge.html">답변 뒤에 심사위원 하나를 더 둔다 — LLM-as-a-Judge</a>에서, 에이전트 여럿이 같은 모양을 만드는 경우는 <a href="multi-agent-four-structures.html">네 가지 구조</a>의 비평-수정에서 봤어요.</p>
+    <p>여기서 꼭 봐야 할 장면이 있어요. 성의 없는 노트 초안을 이 루프에 넣었어요. 평가 규칙("용어 정의가 있나", "예시 코드가 있나" 등)을 채우는 쪽으로 고쳐 쓰는 동안 <strong>주제가 LangGraph 리듀서에서 자바스크립트 <code>reduce</code>로 옮겨 가 버렸어요</strong>. 평가자는 규칙 목록만 채우는 방향으로 글을 바꿀 뿐이에요. 원래 무엇을 지켜야 했는지는 몰라요. 그래서 <strong>"무엇을 잃으면 안 되는가"</strong>를 <a href="langgraph-pattern-chaining.html#key-gate">체이닝 편의 게이트</a>(통과 여부를 코드로 검사하는 관문)처럼 걸어 두는 게 필요해요.</p>
+    <p>평가 기준이 흐리면 피드백이 "더 좋게 써 보세요" 수준으로 겉돌아요. 그러면 반복해도 안 나아져요. 규칙부터 구체적으로 적는 게 먼저예요. 그리고 <strong>평가자가 결정적일 수 있다면 그편이 훨씬 나아요.</strong> 결정적이라는 건 같은 입력이면 늘 같은 판정이 나온다는 뜻이에요. 코드를 쓰게 하고 테스트를 돌려 실패 메시지를 피드백으로 돌려주는 루프가 대표적이에요. LLM이 채점하는 방식의 장단점은 <a href="rag-chatbot-llm-judge.html">답변 뒤에 심사위원 하나를 더 둔다 — LLM-as-a-Judge</a>에서, 에이전트 여럿이 같은 모양을 만드는 경우는 <a href="multi-agent-four-structures.html">네 가지 구조</a>의 비평-수정에서 봤어요.</p>
 
     <h2 id="evaluator-choice"><span class="hl">나쁜 선택 vs 좋은 선택</span> — 평가 기준을 정할 때</h2>
     <p>노트 초안을 통과할 때까지 고쳐 쓰는 같은 루프로, 평가 기준을 어떻게 적었는지 비교해 볼게요.</p>
@@ -280,7 +281,7 @@ B result: {'text': '초안 +고침 +고침 (사람에게 넘김)', 'rounds': 3}<
         </tr>
       </tbody>
     </table>
-    <p>정리하면 평가자-최적화자에서 물을 건 하나예요. <strong>"기준이 규칙으로 적을 만큼 구체적인가?"</strong> 그렇지 않다면 바퀴 수만 늘어날 뿐, 되돌아가는 구조 자체가 문제를 못 풉니다.</p>
+    <p>정리하면 평가자-최적화자에서 물을 건 하나예요. <strong>"기준이 규칙으로 적을 만큼 구체적인가?"</strong> 그렇지 않다면 바퀴 수만 늘어날 뿐, 되돌아가는 구조 자체가 문제를 풀지 못해요.</p>
 
     <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span></h2>
     <table>
@@ -293,12 +294,13 @@ B result: {'text': '초안 +고침 +고침 (사람에게 넘김)', 'rounds': 3}<
 
     <section class="apply-box" id="apply-blog">
       <p class="apply-box-title">내 파이프라인에 대입하면 — 비유가 안 맞는 것도 코드로는 못 걸러요</p>
-      <p>코드로 못 재는 기준이 이 블로그에도 있어요 — <strong>"그 비유가 이 편 내용에 맞는가"</strong>예요. 안 맞는 비유는 없느니만 못해요, 독자가 개념 대신 비유를 외우게 되니까요. 이건 글자 수나 링크 개수처럼 세어서는 판정이 안 나요. 그래서 다 쓴 글을 다시 읽고 통과·반려를 내는 단계를 두고, 반려면 <strong>어디가 왜 안 맞는지를 함께</strong> 본문 쓰기로 되돌려요. 이유를 안 붙이면 <a href="langgraph-branch-drills.html#apply-blog">3편의 그 반복</a>이 돼요.</p>
+      <p>코드로 못 재는 기준이 이 블로그에도 있어요. <strong>"그 비유가 이 편 내용에 맞는가"</strong>예요. 안 맞는 비유는 없느니만 못해요. 독자가 개념 대신 비유를 외우게 되니까요. 이건 글자 수나 링크 개수처럼 세어서는 판정이 안 나요. 그래서 다 쓴 글을 다시 읽고 통과·반려를 내는 단계를 두었어요. 반려면 <strong>어디가 왜 안 맞는지를 함께</strong> 본문 쓰기로 되돌려요. 이유를 안 붙이면 <a href="langgraph-branch-drills.html#apply-blog">3편의 그 반복</a>이 돼요.</p>
       <p>바퀴마다 호출이 두 번씩 늘어나니 몇 바퀴까지인지가 필요하고, <strong>그 수에 닿았을 때도 그때까지의 최선 원고를 들고 정상 출구로 나가야 해요.</strong> 예외로 끝나면 세 바퀴 돈 원고가 통째로 사라지거든요.</p>
     </section>
     <section class="apply-box apply-box--repo" id="apply-repo">
       <p class="apply-box-title">실제 코드에 대입하면 — 전사가 실패하면 한 번 더, 안 되면 있는 그대로</p>
-      <p><a href="langgraph-pattern-orchestrator-worker.html#apply-repo">자막·타임코드 생성기</a>의 전사 단계에 한 바퀴짜리 평가자-최적화자가 있어요. 말소리가 있는 구간은 따로 세어 두는데, 전사가 내놓은 세그먼트 수가 그 <strong>90%에 못 미치면</strong> 전사가 실패했다고 보고 한 번 더 돌려요.</p>
+      <p><a href="langgraph-pattern-orchestrator-worker.html#apply-repo">자막·타임코드 생성기</a>의 전사(말소리를 글자로 옮기는 일) 단계에 한 바퀴짜리 평가자-최적화자가 있어요. 말소리가 있는 구간은 따로 세어 두어요. 전사가 내놓은 세그먼트(잘게 나눈 조각) 수가 그 <strong>90%에 못 미치면</strong> 전사가 실패했다고 보고 한 번 더 돌려요.</p>
+      <p>아래 코드는 읽기만 해도 돼요. 개수가 모자라면 한 번 더 돌리고, 그래도 안 나아지면 있는 그대로 쓰는 부분이에요.</p>
       <p class="run-tag run-tag--concept">제 저장소 코드 <span class="run-tag-why">— <code>checker/generate.py</code>의 재시도 부분이에요(알림 문구는 줄여서 옮겼어요)</span></p>
       <pre><code>SUSPECT_RATIO = 0.9
 if transcript_cache is None and speech and len(segments) &lt; len(speech) * SUSPECT_RATIO:
@@ -308,7 +310,7 @@ if transcript_cache is None and speech and len(segments) &lt; len(speech) * SUSP
     else:
         say("다시 돌려도 나아지지 않았습니다 — 이번 결과를 그대로 씁니다. ...")</code></pre>
       <p>여기서 볼 게 <code>else</code>예요. 다시 돌려도 안 나아졌을 때 <strong>예외를 던지지 않고 그때까지의 결과를 들고 정상 출구로 나가요.</strong> 위에서 말한 <a href="#key-loop-stop">상한에 닿았을 때도 최선을 들고 나가야 한다</a>가 이 <code>else</code> 한 줄이에요. 여기서 예외로 끝내면 몇십 분 걸린 전사가 통째로 사라지거든요.</p>
-      <p>다만 판정하는 쪽이 모델이 아니라 <strong>개수 비교</strong>예요. 그래서 "전사가 틀렸다"는 못 잡아요 — 엉뚱한 말로 받아썼어도 개수만 맞으면 통과해요. 그게 이 편의 평가자를 LLM으로 두는 이유이고, 동시에 그렇게 바꿨을 때 <strong>판정이 매번 달라질 수 있다</strong>는 값을 치르는 자리예요.</p>
+      <p>다만 판정하는 쪽이 모델이 아니라 <strong>개수 비교</strong>예요. 그래서 "전사가 틀렸다"는 못 잡아요. 엉뚱한 말로 받아썼어도 개수만 맞으면 통과해요. 이게 이 편의 평가자를 LLM으로 두는 이유예요. 동시에 그렇게 바꾸면 <strong>판정이 매번 달라질 수 있다</strong>는 값을 치르게 돼요.</p>
     </section>
 
     <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span></h2>
@@ -328,7 +330,7 @@ if transcript_cache is None and speech and len(segments) &lt; len(speech) * SUSP
         </tr>
       </tbody>
     </table>
-    <p>첫 줄은 시험 삼아 넣은 초안으로는 잘 안 보여요. 몇 바퀴 안에 통과해 버리면 출구가 없어도 멀쩡히 끝나거든요. 루프를 만든 직후에 <strong>늘 불합격인 채점</strong>으로 한 번 돌려 보는 게 가장 싼 확인이에요.</p>
+    <p>첫 줄은 시험 삼아 넣은 초안으로는 잘 안 보여요. 몇 바퀴 안에 통과해 버리면 출구가 없어도 멀쩡히 끝나거든요. 루프를 만든 직후에 <strong>늘 불합격인 채점</strong>으로 한 번 돌려 보는 게 가장 싼 확인이에요. 아래 글을 코딩 에이전트(코드를 대신 짜 주는 AI)에 붙여 넣으면, 되돌아가는 선과 출구가 있는지 표로 보여 줘요. 여기서 막히는 게 정상이에요.</p>
     <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— LangGraph 코드가 있는 프로젝트 폴더에서</span></p>
     <pre><code>이 프로젝트에서 앞 노드로 되돌아가는 선이 있는 곳을 전부 찾아서 표로 보여 줘. 아직 코드는 고치지 마.
 1. 바퀴 수를 세는 State 칸, 라우터 함수가 돌려줄 수 있는 이름 전부
@@ -357,7 +359,7 @@ if transcript_cache is None and speech and len(segments) &lt; len(speech) * SUSP
     </table>
     <p>표를 실제 요구에 대 볼게요. "회의록을 받아, 거기서 나온 할 일 개수만큼(3개일 수도 10개일 수도 있다) 할 일마다 담당자 배정 초안을 만든다." 요약하고, 할 일을 뽑고, 배정하는 순서가 있어 보여서 ① 체이닝을 떠올리기 쉬워요. 하지만 체이닝은 단계가 고정이라 마지막 단계 한 번에 할 일을 몰아서 처리하게 되고, 할 일마다 따로 초안을 만드는 구조가 아니에요. ③ 병렬화는 처리 노드 개수를 미리 알아야 하는데 할 일 개수는 회의록마다 달라요. ② 라우팅은 여러 갈래 중 <strong>하나</strong>만 고르니 할 일 여러 개를 동시에 다루지 못해요. 답은 <a href="langgraph-pattern-orchestrator-worker.html#quiz-orchestrator">④ 오케스트레이터-워커</a>예요.</p>
 
-    <p>그럼 언제 워크플로를 넘어 <strong>에이전트</strong>로 가야 할까요. 기준은 하나예요. <strong>필요한 단계의 조합을 개발자가 미리 늘어놓을 수 없을 때.</strong> 사내 문서로 퀴즈를 만드는 일은 경로가 뻔하니 워크플로가 낫고, "이 저장소의 버그를 찾아 고쳐 줘"는 어떤 파일을 몇 번 읽을지 경우의 수가 끝이 없으니 도구를 쥔 자율 에이전트가 필요해요. 대신 비용을 미리 계산할 수 없고, 같은 입력에 다른 길로 가서 테스트가 어렵고, 틀렸을 때 어디가 틀렸는지 짚기 어려워요. 그래서 <strong>워크플로로 먼저 해 보고, 안 된다는 증거가 나왔을 때만</strong> 옮겨요.</p>
+    <p>그럼 언제 워크플로를 넘어 <strong>에이전트</strong>(AI가 스스로 다음 걸음을 정하는 방식)로 가야 할까요. 기준은 하나예요. <strong>필요한 단계의 조합을 개발자가 미리 늘어놓을 수 없을 때.</strong> 사내 문서로 퀴즈를 만드는 일은 경로가 뻔해서 워크플로가 나아요. "이 저장소의 버그를 찾아 고쳐 줘"는 어떤 파일을 몇 번 읽을지 경우의 수가 끝이 없어요. 그래서 도구를 쥔 자율 에이전트가 필요해요. 대신 세 가지 값을 치러요. 비용을 미리 계산할 수 없어요. 같은 입력에 다른 길로 가서 테스트가 어려워요. 틀렸을 때 어디가 틀렸는지 짚기 어려워요. 그래서 <strong>워크플로로 먼저 해 보고, 안 된다는 증거가 나왔을 때만</strong> 옮겨요.</p>
 
     <h3 id="agent-evidence">"워크플로로는 안 된다"는 증거는 어떤 모습일까</h3>
     <p>"증거가 나왔을 때만"이라는 말은, 뒤집으면 그 증거를 알아볼 수 있어야 한다는 뜻이에요. 구체적인 모습은 각자 적어 봐야 하는데, 아래는 제가 떠올린 신호예요. 기준이 "필요한 단계의 조합을 미리 늘어놓을 수 없을 때"였으니, 증거도 결국 <strong>미리 그린 길로는 감당이 안 되는 장면</strong>이에요. <a href="langgraph-pattern-parallelization.html#langsmith">LangSmith</a> 같은 실행 기록에서 이런 모습이 되풀이되면 신호로 봐요.</p>

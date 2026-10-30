@@ -75,19 +75,22 @@
       <span class="post-nav-title">같은 버그를 세 방식으로 — 기준선·워크플로·오케스트레이션 실행</span>
     </a>
 
-    <p><a href="multi-agent-three-runs-abc.html">3편</a>에서 기준선 실행(A)·워크플로 실행(B)·오케스트레이션 실행(C)을 돌려 결과 파일을 쌓았어요. 이제 그걸 읽을 차례인데, 여기서 제가 가장 크게 고쳐 먹은 생각이 있어요. "테스트 통과했으니 성공"이 아니라는 거예요. 통과했지만 근거 없이 찍어 맞힌 실행과, 실패했지만 어디서 막혔는지 또렷하게 남긴 실행은 <strong>다음에 무엇을 고칠지</strong>가 완전히 달라요. 그래서 채점을 두 층으로 나눠요.</p>
+    <p><a href="multi-agent-three-runs-abc.html">3편</a>에서 기준선 실행(A)·워크플로 실행(B)·오케스트레이션 실행(C)을 돌려 결과 파일을 쌓았어요. A는 AI 하나가 처음부터 끝까지 하는 방식이고, B와 C는 일을 나눠 맡기는 방식이었어요. 이제 그 파일을 읽을 차례예요.</p>
+    <p>여기서 제가 가장 크게 고쳐 먹은 생각이 있어요. "테스트 통과했으니 성공"이 아니라는 거예요. 통과했지만 근거 없이 찍어 맞힌 실행과, 실패했지만 어디서 막혔는지 또렷하게 남긴 실행은 <strong>다음에 무엇을 고칠지</strong>가 완전히 달라요. 그래서 채점을 두 층으로 나눠요.</p>
 
     <h2><span class="hl">첫번째 층</span> — 테스트가 통과했는가, 결정론으로 남긴다</h2>
     <ul>
       <li>첫 층은 <strong>결정론적</strong>이에요. 같은 입력이면 항상 같은 답이 나온다는 뜻이에요.</li>
-      <li>채점 코드가 정답 커밋의 테스트를 수정본에 적용해 실행하고, 통과 여부를 <code>resolved</code>에 남겨요.</li>
+      <li>채점 코드가 정답 커밋(코드 변경을 저장한 기록 한 묶음)의 테스트를 수정본에 적용해 실행하고, 통과 여부를 <code>resolved</code>에 남겨요.</li>
       <li>테스트 파일 자체를 건드렸는지는 <code>invalid</code>로 따로 남겨요. 테스트를 고쳐서 통과시키는 건 문제를 푼 게 아니니까요.</li>
       <li>에이전트의 설명이 아무리 좋아도 테스트 통과 판정을 대신할 수 없어요.</li>
     </ul>
-    <p>이 층에는 작은 함정이 하나 있어요. 먼저 용어 둘. <strong>pytest</strong>는 파이썬 테스트를 실행해 주는 도구이고, <strong>종료 코드</strong>는 명령이 끝나며 남기는 숫자예요(0이면 성공, 나머지는 실패). 터미널에서 <code>pytest | tail</code>처럼 파이프(<code>|</code>, 앞 명령의 출력을 뒤 명령에 넘기는 기호)로 연결해 출력을 줄이면, pytest가 실패해도 마지막 명령인 tail의 종료 코드 0이 앞을 가려 버려요. (셸 기호들은 <a href="reading-python-code-basics.html">파이썬 코드 눈으로 읽기</a> 9번에 모아 뒀어요.) 그래서 이 실험은 그 방식으로 판정하지 않아요. <strong>실패를 보기 좋게 줄이는 출력 처리</strong>와 <strong>실패를 판정하는 종료 코드 처리</strong>는 분리해요.</p>
+    <p>이 층에는 작은 함정이 하나 있어요. 먼저 용어 둘이에요. <strong>pytest</strong>는 파이썬 테스트를 실행해 주는 도구이고, <strong>종료 코드</strong>는 명령이 끝나며 남기는 숫자예요(0이면 성공, 나머지는 실패).</p>
+    <p>터미널에서 <code>pytest | tail</code>처럼 파이프(<code>|</code>, 앞 명령의 출력을 뒤 명령에 넘기는 기호)로 연결해 출력을 줄인다고 해 봐요. 그러면 pytest가 실패해도 마지막 명령인 tail의 종료 코드 0이 앞을 가려 버려요. (셸 기호들은 <a href="reading-python-code-basics.html">파이썬 코드 눈으로 읽기</a> 9번에 모아 뒀어요.) 그래서 이 실험은 그 방식으로 판정하지 않아요. <strong>실패를 보기 좋게 줄이는 출력 처리</strong>와 <strong>실패를 판정하는 종료 코드 처리</strong>는 따로 해요.</p>
 
     <h2><span class="hl">두번째 층</span> — 행동 기록을 읽는 LLM 판정</h2>
-    <p>첫 층만으로는 통과하지 못한 실행이 <strong>어떤 방식으로</strong> 실패했는지 알 수 없어요. 두번째 층에서는 <strong>LLM judge</strong>(언어 모델이 정해진 기준에 따라 기록을 평가하는 방식, <a href="rag-chatbot-llm-judge.html">LLM-as-a-Judge</a>에서 처음 만든 그 심사위원)가 세션 전사를 읽어요. 세션 전사는 SDK가 남기는 JSONL 파일로, 도구 호출과 응답이 순서대로 적혀 있어요. JSONL은 "한 줄에 기록 하나"씩 쌓는 텍스트 파일 형식이에요. 메모장으로도 열려요.</p>
+    <p>첫 층만으로는 통과하지 못한 실행이 <strong>어떤 방식으로</strong> 실패했는지 알 수 없어요. 그래서 두번째 층에서는 <strong>LLM judge</strong>가 세션 전사를 읽어요. LLM judge는 언어 모델이 정해진 기준에 따라 기록을 평가하는 방식이에요(<a href="rag-chatbot-llm-judge.html">LLM-as-a-Judge</a>에서 처음 만든 그 심사위원이에요).</p>
+    <p>세션 전사는 SDK(AI 프로그램을 만들 때 쓰는 도구 모음)가 남기는 JSONL 파일로, 도구 호출과 응답이 순서대로 적혀 있어요. JSONL은 "한 줄에 기록 하나"씩 쌓는 텍스트 파일 형식이에요. 메모장으로도 열려요.</p>
     <p>Anthropic이 연구 시스템을 평가한 루브릭(점수를 매기는 기준표)은 사실 정확성, 인용 정확성, 완결성, 출처 품질, 도구 효율성 다섯 가지예요 [벤더]. 이번 실험은 버그 수정 기록에 맞춰 이를 세 가지로 좁혀요. 각각 0·1·2점이에요.</p>
     <table>
       <thead><tr><th>이번 실험의 점수</th><th>묻는 것</th><th>Anthropic 루브릭과의 대응</th></tr></thead>
@@ -100,8 +103,9 @@
     <p>결과(첫 층)와 그 결과에 이른 행동(두번째 층)을 함께 보는 이 태도는 <a href="harness-evaluation-and-comparison.html">결과와 궤적을 함께 본다</a>에서 다룬 평가 루프와 같은 결이에요.</p>
 
     <h2><span class="hl">인용이 없으면 점수도 없다</span> — 구조화 출력의 역할</h2>
-    <p>이 judge에게는 자유 서술을 시키지 않아요. <code>output_format</code>의 <code>json_schema</code>(모델의 답이 반드시 갖춰야 할 칸을 미리 정한 틀, <a href="output-format-and-metrics.html">답의 모양과 채점법</a>에서 다룬 그 구조화 출력)가 세 점수, 실패 분류, 그리고 <code>evidence_quote</code>를 요구해요. <code>evidence_quote</code>에는 판정 근거가 된 전사 구절이 들어가야 하고, 인용이 없으면 스키마가 결과 자체를 허용하지 않아요. 그러니까 <strong>"검증을 했다"는 말만으로는 점수를 얻을 수 없어요.</strong> 실패 분류는 정해진 목록 중 하나만 고르게 돼 있고(이런 "정해진 값 목록"을 enum이라고 불러요), 턴_소진, 무근거_편집, 과잉_편집, 검증_생략 같은 항목이 있어요. <a href="multi-agent-three-runs-abc.html">3편</a>에서 기준선이 25턴을 모두 쓴 기록도 이렇게 분류의 근거가 돼요.</p>
-    <p>판정 모델은 실험 모델(haiku)과 <strong>다른 모델</strong>로 둬요. 같은 모델이 자기 행동을 채점하면 자기 설명에 끌릴 수 있거든요. 같은 판정 기록을 두고 좋은 예와 나쁜 예를 나란히 놓으면 이래요.</p>
+    <p>이 judge에게는 자유 서술을 시키지 않아요. <code>output_format</code>의 <code>json_schema</code>가 세 점수, 실패 분류, 그리고 <code>evidence_quote</code>를 요구해요. json_schema는 모델의 답이 반드시 갖춰야 할 칸을 미리 정한 틀이에요(<a href="output-format-and-metrics.html">답의 모양과 채점법</a>에서 다룬 그 구조화 출력이에요).</p>
+    <p><code>evidence_quote</code>에는 판정 근거가 된 전사 구절이 들어가야 해요. 인용이 없으면 스키마가 결과 자체를 허용하지 않아요. 그러니까 <strong>"검증을 했다"는 말만으로는 점수를 얻을 수 없어요.</strong> 실패 분류는 정해진 목록 중 하나만 고르게 돼 있어요(이런 "정해진 값 목록"을 enum이라고 불러요). 턴_소진, 무근거_편집, 과잉_편집, 검증_생략 같은 항목이 있어요. <a href="multi-agent-three-runs-abc.html">3편</a>에서 기준선이 25턴을 모두 쓴 기록도 이렇게 분류의 근거가 돼요.</p>
+    <p>판정 모델은 실험 모델(haiku, 작고 빠른 모델 이름)과 <strong>다른 모델</strong>로 둬요. 같은 모델이 자기 행동을 채점하면 자기 설명에 끌릴 수 있거든요. 같은 판정 기록을 두고 좋은 예와 나쁜 예를 나란히 놓으면 이래요.</p>
     <table class="choice-table">
       <thead><tr><th></th><th>나쁜 판정 기록</th><th>좋은 판정 기록</th></tr></thead>
       <tbody>
@@ -113,13 +117,14 @@
     <p>왼쪽은 에이전트의 <strong>말</strong>을 믿었고, 오른쪽은 에이전트의 <strong>행동</strong>을 봤어요. <code>evidence_quote</code>가 실제 전사에 없는 문장이라면 그 점수는 신뢰할 수 없으니 원래 기록으로 돌아가 확인해야 해요.</p>
 
     <h2><span class="hl">한 흐름으로 읽기</span> — 결과 → 수정 → 행동 → 판정</h2>
-    <p>비교는 기억에 의존하지 않아요. 러너가 실행마다 남긴 파일들은 사람이 빈칸을 채운 메모가 아니라 <strong>실행이 끝날 때 코드가 만든 산물</strong>이에요. 파일들을 이 순서로 이어 읽어요.</p>
+    <p>비교는 기억에 의존하지 않아요. 러너(실험을 자동으로 돌려 주는 프로그램)가 실행마다 남긴 파일들은 사람이 빈칸을 채운 메모가 아니에요. <strong>실행이 끝날 때 코드가 만든 산물</strong>이에요. 파일들을 이 순서로 이어 읽어요.</p>
     <ol>
       <li><strong><code>result.json</code></strong> — <code>resolved</code>(대상 테스트 종료 코드가 0인가), <code>invalid</code>(tests/ 아래를 바꿨나), <code>num_turns</code>·<code>cost_usd</code>·<code>wall_s</code>. 이 값들은 서로 다른 질문에 답해요. 통과 여부가 같아도 턴 소진, 비용, 시간, 수정 범위는 다를 수 있어요.</li>
-      <li><strong><code>changes.diff</code></strong> — 실제 수정. B라면 locator의 진단이 이 수정 위치와 이어지는지, C라면 리드의 판단이 실제 수정으로 이어졌는지 봐요.</li>
+      <li><strong><code>changes.diff</code></strong> — 실제 수정(바뀐 줄을 모아 보여 주는 파일). B라면 locator의 진단이 이 수정 위치와 이어지는지, C라면 리드의 판단이 실제 수정으로 이어졌는지 봐요.</li>
       <li><strong>세션 전사</strong> — 도구 호출 순서. 실패했다면 원인이 탐색 부족인지, 무근거 편집인지, 검증 생략인지 여기서 갈려요. <code>tail</code>·<code>error</code>·<code>final_text</code>도 같이 읽어요.</li>
       <li><strong><code>judgment.json</code></strong>과 집계표 — 두번째 층의 점수·분류·인용. <code>evidence_quote</code>는 3번의 전사로 다시 확인해요.</li>
     </ol>
+    <p>아래 명령은 결과 파일을 차례로 열어 보는 거예요. 첫 줄은 파일을 찾고, 둘째 줄은 내용을 화면에 보여 줘요. 셋째·넷째 줄은 판정을 실행하고 모아요. 직접 해 보는 명령이라, 실험 폴더에서 실행해요.</p>
     <p class="run-tag">실행: 로컬 터미널</p>
     <pre><code>find runs -name result.json -print       # runs 폴더 아래 result.json을 전부 찾아 경로 출력
 cat runs/A-sympy__sympy-24909/result.json  # 파일 내용을 화면에 출력
@@ -132,7 +137,7 @@ cat grading.jsonl</code></pre>
     <p>기록이 없는 실행에 사후 설명을 덧붙이지 않아요. 결과 파일과 전사에서 확인되는 근거만으로 판단해요.</p>
 
     <h2><span class="hl">세 결과표를 나란히</span> — 고정한 것과 달라진 것을 가른다</h2>
-    <p>비교의 출발점은 다시 "다음 행동을 누가 정했는가"예요. 표를 읽기 전에 먼저 <strong>고정한 조건</strong>(같은 문제, 같은 모델 별칭, 같은 저장소 준비, 같은 채점)이 정말 고정됐는지 확인하고, 그다음 <strong>달라진 조건</strong>(조율 방식, 턴 예산)을 따로 표시해요. 이 구분이 없으면 표의 차이가 방식에서 왔는지 실행 조건에서 왔는지 알 수 없어요.</p>
+    <p>비교의 출발점은 다시 "다음 행동을 누가 정했는가"예요. 표를 읽기 전에 두 가지를 해요. 먼저 <strong>고정한 조건</strong>(같은 문제, 같은 모델 별칭, 같은 저장소 준비, 같은 채점)이 정말 고정됐는지 확인해요. 그다음 <strong>달라진 조건</strong>(조율 방식, 턴 예산)을 따로 표시해요. 이 구분이 없으면 표의 차이가 방식에서 왔는지 실행 조건에서 왔는지 알 수 없어요. 턴은 AI가 한 번씩 주고받는 횟수예요.</p>
     <table>
       <thead><tr><th>구분</th><th>내용</th></tr></thead>
       <tbody>
@@ -142,7 +147,8 @@ cat grading.jsonl</code></pre>
         <tr><td><strong>같이 달라진 것</strong>(주의)</td><td>턴 예산: A 25 / B 12+18 / C 40</td></tr>
       </tbody>
     </table>
-    <p>마지막 행 때문에 이 실험에서 얻는 결론은 <strong>한정적</strong>이에요. 턴 예산이 다르니 해결 여부·비용·시간만 나란히 놓고 "구조의 효과"라고 말할 수 없어요. 말할 수 있는 건 "세 SymPy 인스턴스와 이 실행 조건에서 남은 기록이 무엇을 보이는가"까지예요. 다른 문제나 다른 예산에서도 같다고 말하려면 그 조건으로 다시 돌리고 같은 방식으로 읽어야 해요.</p>
+    <p>마지막 행 때문에 이 실험에서 얻는 결론은 <strong>한정적</strong>이에요. 턴 예산이 다르니 해결 여부·비용·시간만 나란히 놓고 "구조의 효과"라고 말할 수 없어요.</p>
+    <p>말할 수 있는 건 "세 SymPy 인스턴스(SymPy는 수학 계산용 파이썬 도구예요, 인스턴스는 실험에 쓴 문제 하나)와 이 실행 조건에서 남은 기록이 무엇을 보이는가"까지예요. 다른 문제나 다른 예산에서도 같다고 말하려면 그 조건으로 다시 돌리고 같은 방식으로 읽어야 해요.</p>
 
     <h2><span class="hl">채택·축소·폐기</span> — 판정문은 한 문장으로</h2>
     <p>이 실험의 마지막은 이 조건에서 멀티 에이전트 구성을 <strong>채택</strong>할지, 범위를 줄여 <strong>축소</strong>할지, <strong>폐기</strong>할지 고르는 거예요. 판정문은 한 문장 틀에 맞춰 써요.</p>
@@ -154,13 +160,19 @@ cat grading.jsonl</code></pre>
         <tr><td>왜</td><td class="choice-bad">근거 파일이 없고, 조건 밖으로 일반화함</td><td class="choice-good">결과 파일의 행을 가리키고, 한계를 밝히고, 결론을 조건 안에 가둠</td></tr>
       </tbody>
     </table>
-    <p>판정문이 갖춰야 할 세 가지는 이거예요. 고정·조작·측정이 분리돼 있을 것, 결과 파일의 근거(<code>result.json</code>, <code>grading.jsonl</code>, <code>results-table.md</code>의 행이나 인용)가 판정문과 연결돼 있을 것, 그리고 턴 예산 차이와 경량 평가라는 한계를 밝히고 <strong>이 조건에서만</strong> 결론을 말할 것. 표에 적힌 실측값도 그대로 믿지 말고 각 행을 원본 파일로 거슬러 확인해요.</p>
+    <p>판정문이 갖춰야 할 세 가지는 이거예요.</p>
+    <ul>
+      <li>고정·조작·측정이 분리돼 있을 것</li>
+      <li>결과 파일의 근거(<code>result.json</code>, <code>grading.jsonl</code>, <code>results-table.md</code>의 행이나 인용)가 판정문과 연결돼 있을 것</li>
+      <li>턴 예산 차이와 경량 평가라는 한계를 밝히고 <strong>이 조건에서만</strong> 결론을 말할 것</li>
+    </ul>
+    <p>표에 적힌 실측값도 그대로 믿지 말고 각 행을 원본 파일로 거슬러 확인해요.</p>
 
     <h2><span class="hl">직접 해보기</span></h2>
-    <p>세 실행 중 하나의 <code>judgment.json</code>을 열어 <code>evidence_quote</code>를 복사한 뒤, 그 문장이 세션 전사에 <strong>정말 있는지</strong> 검색해 보세요. 있으면 점수를 받아들이고, 없으면 그 행의 점수를 빈칸으로 두고 왜 그런지 한 줄 적어요. 그다음 위 틀로 판정문 한 문장을 써 보세요. 오늘 익힐 것은 일을 많이 나누는 법이 아니라, <strong>나눠서 얻은 이득과 치른 비용을 같은 조건의 기록으로 판정하는 법</strong>이에요.</p>
+    <p>세 실행 중 하나의 <code>judgment.json</code>을 열어 <code>evidence_quote</code>를 복사해 보세요. 그 문장이 세션 전사에 <strong>정말 있는지</strong> 검색해요. 있으면 점수를 받아들여요. 없으면 그 행의 점수를 빈칸으로 두고 왜 그런지 한 줄 적어요. 그다음 위 틀로 판정문 한 문장을 써 보세요. 오늘 익힐 것은 일을 많이 나누는 법이 아니에요. <strong>나눠서 얻은 이득과 치른 비용을 같은 조건의 기록으로 판정하는 법</strong>이에요.</p>
 
     <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — "통과"와 "만점"이 찍힌 기록을 받았을 때</h2>
-    <p>채점의 실수는 실패가 아니라 <strong>성공처럼 보이는 기록</strong>으로 나타나요. <code>resolved</code>가 참이고 점수도 높으니 아무도 전사를 열지 않거든요. 그래서 좋은 숫자를 받은 순간이 오히려 한 번 거슬러 올라가 볼 때예요.</p>
+    <p>채점의 실수는 실패가 아니라 <strong>성공처럼 보이는 기록</strong>으로 나타나요. <code>resolved</code>가 참이고 점수도 높으니 아무도 전사를 열지 않거든요. 그래서 좋은 숫자를 받은 순간이 오히려 한 번 거슬러 올라가 볼 때예요. 아래 표는 읽고 참고하는 용도예요.</p>
     <p>증상이 아직 없어도, <strong>AI에게 이런 부탁을 한 직후</strong>라면 한 번 확인하고 넘어가요.</p>
     <ul>
       <li>"채점도 AI로 해 줘" — 판정 모델이 실험 모델(haiku)과 다른지, <code>evidence_quote</code>가 빠질 수 없는 칸으로 잡혀 있는지</li>
@@ -192,7 +204,7 @@ cat grading.jsonl</code></pre>
       </tbody>
     </table>
     <p>넷째 줄이 제일 늦게 드러나요. 파이프는 출력을 보기 좋게 줄이려고 넣은 한 글자라, 통과로 찍히면 아무도 출력을 끝까지 안 읽거든요. 채점 코드를 AI에게 맡겼다면 첫 채점을 돌리기 전에 테스트 명령 줄부터 봐요. 표의 비용·시간 차이를 방식의 효과로 적고 싶어질 때는 <a href="multi-agent-three-runs-abc.html#suspect-budget-compare">3편의 턴 예산 줄</a>을 먼저 봐요.</p>
-    <p>기록이 많으면 에이전트에게 대조를 맡겨도 돼요. 이때 <strong>다시 채점하지 말고 있는 파일끼리 맞춰 보게</strong> 해요. 다시 돌리면 대조하려던 원래 판정이 바뀌어 버려요.</p>
+    <p>기록이 많으면 에이전트에게 대조를 맡겨도 돼요. 이때 <strong>다시 채점하지 말고 있는 파일끼리 맞춰 보게</strong> 해요. 다시 돌리면 대조하려던 원래 판정이 바뀌어 버려요. 아래 프롬프트는 직접 붙여 넣어 쓰는 거예요. 파일을 읽어서 표로 보여 주기만 해요.</p>
     <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— runs 폴더와 judge.py가 있는 실험 폴더에서</span></p>
     <pre><code>이 실험 폴더에서 아래를 찾아 표로 보여 줘. 코드는 고치지 말고, 실험이나 judge.py도 다시 돌리지 마.
 1. 테스트를 실행해 resolved를 정하는 코드 줄(파일 이름과 줄 번호), 그 명령에 파이프(|)가 있는지, 통과를 무엇의 종료 코드로 정하는지
@@ -200,7 +212,7 @@ cat grading.jsonl</code></pre>
 3. judgment.json마다 evidence_quote가 그 실행의 세션 전사(JSONL)에 글자 그대로 있는지, 있다면 도구 호출 줄인지 에이전트가 말한 줄인지
 4. 판정에 쓴 모델 이름과 실험에 쓴 모델 이름</code></pre>
 
-    <p>실험을 끝내고 나면 남는 어려움이 넷 있어요. 컨텍스트가 끊기고, 재현이 안 되고, 모델을 나눌 수 없고, 상태가 안 보여요. 다음 편에서는 이 넷을 겨냥한 실제 도구들을 봐요.</p>
+    <p>실험을 끝내고 나면 남는 어려움이 넷 있어요. 컨텍스트(AI가 한 번에 기억하는 대화 내용)가 끊겨요. 재현이 안 돼요. 모델을 나눌 수 없어요. 상태가 안 보여요. 다음 편에서는 이 넷을 겨냥한 실제 도구들을 봐요.</p>
 
     <a class="post-nav" href="multi-agent-ecosystem-tools.html">
       <span class="post-nav-label">다음 편 →</span>
