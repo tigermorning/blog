@@ -81,17 +81,22 @@
       <ul>
         <li><strong>패키지</strong> — <code>pip install langgraph langchain-openai pydantic scikit-learn</code>. 마지막 것은 지표 계산용이에요.</li>
         <li><strong>API 키</strong> — 모델은 <a href="langgraph-branches-and-tool-loop.html">4편</a>부터 써 온 <code>gpt-4o-mini</code>를 그대로 쓰면 돼요. 키가 안 읽히면 <a href="langgraph-env-troubleshooting.html">5편</a>에 원인 네 가지가 있어요.</li>
-        <li><strong>문의 데이터</strong> — 저는 강의에서 받은 193건을 썼지만 없어도 돼요. <a href="#evalset">아래 모양</a>대로 <strong>스무 줄만 직접 적어도</strong> 이 글의 절차가 그대로 돌아갑니다.</li>
+        <li><strong>문의 데이터</strong> — 저는 따로 받은 193건을 썼지만 없어도 돼요. <a href="#evalset">아래 모양</a>대로 <strong>스무 줄만 직접 적어도</strong> 이 글의 절차가 그대로 돌아갑니다.</li>
         <li><strong>업무 문서</strong> — 갈래를 가져올 곳이요. 회사 매뉴얼이 없으면 자주 쓰는 쇼핑몰의 고객센터 FAQ 목차로 대신해도 됩니다.</li>
       </ul>
-      <p>강의에서 받은 매뉴얼과 데이터셋은 제3자 자료라 여기 싣지 못해요. 그래서 이 글에 나오는 자료는 전부 <strong>구조만 같게 줄여 놓은 샘플</strong>로 보여 드립니다. 마지막 <a href="#try-it">직접 해 보기</a>는 그 샘플만으로 끝까지 갈 수 있게 짜 뒀어요.</p>
+      <p>제가 받은 매뉴얼과 데이터셋은 제3자 자료라 여기 싣지 못해요. 그래서 이 글에 나오는 자료는 전부 <strong>구조만 같게 줄여 놓은 샘플</strong>로 보여 드립니다. 마지막 <a href="#try-it">직접 해 보기</a>는 그 샘플만으로 끝까지 갈 수 있게 짜 뒀어요.</p>
     </div>
 
     <h2><span class="hl">상담은 한 가지 일이 아니에요</span></h2>
-    <p>쇼핑몰에 들어오는 문의는 겉보기엔 다 비슷한 한 줄짜리 질문이에요. "배송비 얼마예요?", "반품하고 싶어요", "이 세트에서 하나만 살 수 있나요?" 그런데 상담원이 실제로 하는 일은 문의마다 전혀 달라요.</p>
-    <p>배송비 문의라면 상품 카테고리를 확인하고 무료배송 기준을 관리자 화면에서 찾아야 해요. 반품 문의라면 주문번호로 진행 상태를 열어 봐야 하고요. 매장 위치를 묻는다면, 온라인 전용 쇼핑몰에는 답할 것이 아예 없어요.</p>
-    <p>그러니까 상담은 세 가지를 순서대로 하는 일이에요. <strong>무슨 문의인지 가려내고, 답에 필요한 값을 시스템에서 찾아오고, 회사가 정한 기준대로 안내하는 것.</strong> 성격이 완전히 다른 세 가지예요 — 첫째는 판단, 둘째는 조회, 셋째는 규정 준수죠.</p>
-    <p>이 글은 첫째, <strong>판단</strong>만 다뤄요. 조회와 규정 준수는 <a href="cs-agent-grounding.html">다음 편</a>이에요.</p>
+    <p>쇼핑몰에 들어오는 문의는 겉보기엔 다 비슷한 한 줄짜리 질문이에요. "배송비 얼마예요?", "반품하고 싶어요", "이 세트에서 하나만 살 수 있나요?" 그런데 상담원이 실제로 하는 일은 문의마다 전혀 달라요. 상담은 성격이 완전히 다른 세 가지를 순서대로 하는 일이에요.</p>
+    <table>
+      <thead><tr><th>순서</th><th>하는 일</th><th>문의에 따라 달라지는 모습</th><th>성격</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>무슨 문의인지 가려낸다</td><td>매장 위치를 묻는다면, 온라인 전용 쇼핑몰에는 답할 것이 아예 없는 문의로 가려낸다</td><td>판단 — <strong>이 글</strong></td></tr>
+        <tr><td>2</td><td>답에 필요한 값을 시스템에서 찾아온다</td><td>배송비 문의는 상품 카테고리를 확인해 무료배송 기준을 관리자 화면에서 찾고, 반품 문의는 주문번호로 진행 상태를 연다</td><td>조회 — <a href="cs-agent-grounding.html">다음 편</a></td></tr>
+        <tr><td>3</td><td>회사가 정한 기준대로 안내한다</td><td>찾아온 값을 회사 규정에 맞춰 전한다</td><td>규정 준수 — <a href="cs-agent-grounding.html">다음 편</a></td></tr>
+      </tbody>
+    </table>
 
     <h2 id="analogy"><span class="hl">비유</span> — 주문서를 읽고, 애매하면 셰프를 부른다</h2>
     <p><a href="langgraph-what-and-why.html#analogy">이 시리즈가 쭉 써 온 그 주방</a>이에요. 주문이 몰리면 매니저가 주문서를 읽고 한식·양식·디저트 담당 중 한 명에게 넘기죠. <a href="langgraph-pattern-routing.html#routing">7편에서 본 라우팅</a>이 딱 그 장면이었고요.</p>
@@ -100,7 +105,7 @@
       <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
       <tbody>
         <tr><td>주방 벽에 붙은 업무 분장표</td><td>상담원 업무 매뉴얼 — 갈래 목록과 판단 기준의 출처</td></tr>
-        <tr><td>매니저가 주문서를 읽고 담당 한 명을 고르기</td><td>라우터가 문의를 읽고 라우트 하나를 고르기</td></tr>
+        <tr><td>매니저가 주문서를 읽고 담당 한 명을 고르기</td><td>라우터가 문의를 읽고 라우트(갈래) 하나를 고르기</td></tr>
         <tr><td>매니저가 "이건 확실히 한식"이라고 적은 확신 정도</td><td>확신도(confidence) — 모델이 스스로 매기는 0~1 숫자</td></tr>
         <tr><td>매니저가 셰프에게 주문서를 들고 가기</td><td>이관 — 확신도가 기준에 못 미치면 사람에게 넘기기</td></tr>
         <tr><td>매니저가 "우리 주방에서 안 만드는 메뉴입니다"라고 손님에게 알리기</td><td><code>OTHER</code> — 응대 범위 밖이라는 판정</td></tr>
@@ -135,7 +140,7 @@
       <line x1="368" y1="84" x2="426" y2="126" stroke="var(--muted)" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#csr1)"/>
       <text x="320" y="158" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">점선 = 셋 중 하나만 — 분류는 모델이, 판정은 정책이 한다</text>
     </svg>
-    <p><strong>읽는 법:</strong> 그림에서 <strong>LLM</strong><sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup>이라고 쓴 것은 ChatGPT 같은 것들의 알맹이예요. <a href="pretraining-and-scaling-laws.html">앞 문맥을 보고 다음에 올 법한 낱말을 이어 붙이도록 훈련된 프로그램</a>인데, 이 성질이 이 글과 <a href="cs-agent-grounding.html">다음 편</a> 내내 문제의 원인이 돼요 — 모르는 값도 그럴듯하게 이어 붙이거든요.</p>
+    <p><strong>읽는 법:</strong> 그림에서 <strong>LLM</strong><sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>이라고 쓴 것은 ChatGPT 같은 것들의 알맹이예요. <a href="pretraining-and-scaling-laws.html">앞 문맥을 보고 다음에 올 법한 낱말을 이어 붙이도록 훈련된 프로그램</a>인데, 이 성질이 이 글과 <a href="cs-agent-grounding.html">다음 편</a> 내내 문제의 원인이 돼요 — 모르는 값도 그럴듯하게 이어 붙이거든요.</p>
     <p>위 그림에서 빨간 테두리를 두른 상자 둘 — <strong>분류(LLM)</strong>과 <strong>판정(정책)</strong> — 로 나눠 둔 것이 핵심이에요. 분류는 모델이 하는 일이고, 판정은 회사 정책이 정하는 일이에요. 한 덩어리로 묶어 두면 나중에 모델만 바꾸고 싶을 때 정책까지 건드리게 되거든요.</p>
 
     <h3>부품은 <a href="langgraph-state-node-edge.html">2편의 그래프</a>와 같아요</h3>
@@ -149,10 +154,10 @@ g.add_edge("classify", "gate")
 g.add_edge("gate", END)</code></pre>
     <p>둘로 나눠 둔 값이 이 글에서 바로 나와요. 저는 분류하는 부분을 <strong>규칙 → LLM</strong>으로 갈아 끼우는데, 그때 <strong>그래프를 다시 그리지 않습니다.</strong> 같은 이름의 함수를 다시 정의하고 그래프를 한 번 더 세우면 그 노드만 바뀌거든요.</p>
     <p>이게 왜 중요하냐면, 바뀐 것이 노드 하나뿐이고 평가셋도 지표도 그대로이기 때문에 <strong>점수가 올랐을 때 그 원인이 무엇인지 헷갈릴 일이 없어요.</strong> 만약 분류와 판정이 함수 하나에 섞여 있었다면 "모델을 바꾼 효과인가, 이관 기준을 건드린 효과인가"를 가릴 수 없었을 거예요.</p>
-    <p>그리고 이관 기준값(0.5)만 바꿔 보고 싶을 때는 <code>gate</code>만 고치면 됩니다. <strong>모델을 다시 부를 필요가 없어요</strong> — 분류 결과는 이미 State에 들어 있으니까요.</p>
+    <p>그리고 이관 기준값(0.5)만 바꿔 보고 싶을 때는 <code>gate</code>만 고치면 됩니다. <strong>모델을 다시 부를 필요가 없어요</strong> — 분류 결과는 이미 <a href="langgraph-state-node-edge.html">State</a>에 들어 있으니까요.</p>
 
     <h2 id="routes"><span class="hl">갈래는 몇 개여야 하나</span></h2>
-    <p>제가 받은 데이터는 실제 의류 쇼핑몰 상담 기록의 구조를 본뜬 문의 193건이었어요. 각 문의에는 <code>배송_비용_질문</code> 같은 <strong>인텐트</strong><sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup> 라벨이 붙어 있었고, 종류를 세어 보니 18가지였습니다.</p>
+    <p>제가 받은 데이터는 실제 의류 쇼핑몰 상담 기록의 구조를 본뜬 문의 193건이었어요. 각 문의에는 <code>배송_비용_질문</code> 같은 <strong>인텐트</strong><sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup> 라벨이 붙어 있었고, 종류를 세어 보니 18가지였습니다.</p>
     <p>그럼 갈래도 18개로 만들면 될까요? 안 됩니다. 이유가 둘이에요.</p>
     <ul>
       <li>갈래가 늘수록 갈래마다 정책·조회 도구·평가셋을 따로 관리해야 해요. 18개를 유지하는 비용은 감당하기 어려워요.</li>
@@ -180,8 +185,16 @@ g.add_edge("gate", END)</code></pre>
       </tbody>
     </table>
     <p>네 개로는 부족했어요. 문의 193건 가운데 매장·행사·웹사이트처럼 온라인 전용 쇼핑몰이 답할 수 없는 것이 33건, <strong>여섯 건에 한 건꼴</strong>이었거든요. 그래서 다섯 번째 갈래 <code>OTHER</code>를 뒀습니다.</p>
-    <p><code>OTHER</code>는 "분류 실패"를 담는 쓰레기통이 아니에요. <strong>"네 유형 중 어느 것도 아님이 확인된 상태"</strong>라는 분명한 판정입니다. 쓰레기통으로 쓰면 애매한 문의를 전부 거기 밀어 넣게 되고, 그러면 답할 수 있었던 문의까지 사람에게 넘어가요. 반대로 <code>OTHER</code>가 없으면 답할 수 없는 문의에 모델이 억지로 답을 만들어 냅니다.</p>
-    <p>억지로 답한다는 게 실제로 어떤 모습인지 볼게요. "매장 가서 교환해도 되나요?"가 <code>RETURN_REFUND</code>로 들어가면, 프롬프트에는 교환·반품 규정만 들어 있으니 모델은 그 규정을 근거로 "교환 가능합니다"라고 답하기 쉬워요. 온라인 전용 쇼핑몰에는 갈 매장이 없는데요. "이번 주말 행사 있나요?"가 <code>ORDER_PLACE</code>로 들어가면 주문 규정을 들고 할인 조건을 지어내기 쉽고요. <strong>문장은 멀쩡한데, 회사가 한 적 없는 약속이 고객에게 나갑니다.</strong></p>
+    <p><code>OTHER</code>는 "분류 실패"를 담는 쓰레기통이 아니에요. <strong>"네 유형 중 어느 것도 아님이 확인된 상태"</strong>라는 분명한 판정입니다. 쓰레기통으로 쓰면 애매한 문의를 전부 거기 밀어 넣게 되고, 그러면 답할 수 있었던 문의까지 사람에게 넘어가요.</p>
+    <p><code>OTHER</code>가 없으면 억지로 답하게 되는데, 실제로 어떤 모습인지 볼게요. 프롬프트에는 들어간 갈래의 규정만 들어 있으니, 모델은 그 규정을 근거로 답을 만들기 쉬워요.</p>
+    <table>
+      <thead><tr><th>문의</th><th>억지로 들어간 갈래</th><th>모델이 하기 쉬운 답</th></tr></thead>
+      <tbody>
+        <tr><td>"매장 가서 교환해도 되나요?"</td><td><code>RETURN_REFUND</code></td><td>교환·반품 규정만 보고 "교환 가능합니다" — 온라인 전용 쇼핑몰에는 갈 매장이 없는데요</td></tr>
+        <tr><td>"이번 주말 행사 있나요?"</td><td><code>ORDER_PLACE</code></td><td>주문 규정을 들고 할인 조건을 지어낸다</td></tr>
+      </tbody>
+    </table>
+    <p><strong>문장은 멀쩡한데, 회사가 한 적 없는 약속이 고객에게 나갑니다.</strong></p>
     <p>제가 받은 매뉴얼은 맨 앞에 <strong>온라인 전용이고 오프라인 매장이 없다</strong>고 못 박아 뒀어요. 다른 오픈마켓에서 산 주문이나 제조사 A/S처럼 이 쇼핑몰에서 확인할 수 없는 문의는 <strong>추측하지 말고 해당 사이트·제조사 고객센터로 안내하라</strong>는 장도 따로 있고, 분류 우선순위에서도 <strong>범위 밖인지를 네 유형보다 먼저</strong> 보게 돼 있어요. <code>OTHER</code>는 이런 규정이 코드 안에 들어갈 자리예요.</p>
     <div class="key-point" id="key-other-is-a-verdict">
       <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
@@ -190,7 +203,7 @@ g.add_edge("gate", END)</code></pre>
 
     <h2 id="evalset"><span class="hl">모델보다 평가셋이 먼저예요</span></h2>
     <p>많은 사람이 프롬프트부터 씁니다. 그리고 질문 몇 개 던져 보고 "잘 되는 것 같다"고 판단해요. 이 방식의 문제는 <strong>좋아졌는지 나빠졌는지 말할 수 없다</strong>는 거예요. 고친 뒤에 다시 몇 개 던져 보고 "이제 더 낫다"고 느끼지만, 그건 방금 던진 그 몇 개에 대한 이야기일 뿐이거든요.</p>
-    <p>그래서 만들기 전에 <strong>평가셋</strong><sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>을 확정합니다. 자를 먼저 만들고 물건을 만드는 것과 같아요. 제가 쓴 정답표 193건은 세 갈래로 나뉘어 있었어요.</p>
+    <p>그래서 만들기 전에 <strong>평가셋</strong><sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>을 확정합니다. 자를 먼저 만들고 물건을 만드는 것과 같아요. 제가 쓴 정답표 193건은 세 갈래로 나뉘어 있었어요.</p>
     <table>
       <thead><tr><th>구분</th><th>건수</th><th>쓰임</th></tr></thead>
       <tbody>
@@ -204,7 +217,7 @@ g.add_edge("gate", END)</code></pre>
 {"id": "q018", "text": "매장 주소 알려주세요", "label": "OTHER", "split": "outscope"}
 {"id": "q019", "text": "낱개 구매 되나요?", "label": "PRODUCT_INFO", "split": "fewshot"}</code></pre>
     <p>칸은 넷이면 충분해요 — <strong>문장·정답 갈래·어디에 쓸지</strong>, 그리고 나중에 실패한 건을 다시 찾아갈 <strong>번호</strong>. 번호가 없으면 "3번이 또 틀렸다"를 말할 수 없어서 실패 분석이 안 돼요.</p>
-    <p>왜 떼어 놓느냐면, <strong>모델에게 보여준 문제로 시험을 치르면 점수가 실제 실력보다 높게 나오기 때문</strong>이에요. 이걸 <strong>데이터 누수</strong><sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>라고 부릅니다. 부풀려진 숫자를 믿고 서비스에 내보내면 현장에서 무너지죠.</p>
+    <p>왜 떼어 놓느냐면, <strong>모델에게 보여준 문제로 시험을 치르면 점수가 실제 실력보다 높게 나오기 때문</strong>이에요. 이걸 <strong>데이터 누수</strong><sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>라고 부릅니다. 부풀려진 숫자를 믿고 서비스에 내보내면 현장에서 무너지죠.</p>
     <div class="key-point" id="key-no-leak">
       <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
       <p>예시 40건과 평가 120건은 같은 기준으로 뽑은 문항이에요. 그런데도 나눠 두는 이유는 하나 — <strong>모델에게 답을 보여 준 문항으로는 실력을 잴 수 없기 때문</strong>이에요.</p>
@@ -236,12 +249,12 @@ g.add_edge("gate", END)</code></pre>
       <p><strong>정확도</strong>(전체 중 맞힌 비율)는 건수가 한쪽으로 쏠려 있을 때 속여요. 가령 문의 100건 중 80건이 반품이라면, 무엇이 들어오든 전부 반품으로 보내는 라우터도 정확도 80%를 받습니다. 나머지 네 갈래는 한 건도 못 맞히는데요.</p>
       <p>정확도가 틀리게 계산되는 게 아니라, <strong>많은 갈래의 성적이 점수를 대신 채워 줄 뿐</strong>이에요. 그래서 갈래마다 같은 무게를 주는 macro F1을 보고, 어느 갈래가 어느 갈래로 새는지는 아래 혼동 행렬로 따로 봅니다. 정확도가 높아도 그 정보는 혼동 행렬에만 있어요.</p>
     </div>
-    <p>그리고 <a href="confusion-matrix-and-metrics.html#matrix"><strong>혼동 행렬</strong></a><sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>을 봅니다. 행이 정답, 열이 예측인 표예요. 대각선을 벗어난 숫자가 틀린 것인데, 중요한 건 <strong>어디로 벗어났는지</strong>예요.</p>
+    <p>그리고 <a href="confusion-matrix-and-metrics.html#matrix"><strong>혼동 행렬</strong></a><sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>을 봅니다. 행이 정답, 열이 예측인 표예요. 대각선을 벗어난 숫자가 틀린 것인데, 중요한 건 <strong>어디로 벗어났는지</strong>예요.</p>
     <p>"정확도 60%"만으로는 무엇을 해야 할지 알 수 없지만, "주문·구매의 절반이 상품 문의로 흘러간다"를 알면 <strong>프롬프트에 그 둘의 구분 기준을 명시하면 된다</strong>는 결론이 바로 나옵니다.</p>
 
     <h2 id="llm-router"><span class="hl">LLM으로 갈아 끼우고, 같은 자로 잰다</span></h2>
     <p>규칙이 실패하는 지점이 문제의 본질을 드러냈어요. "낱개로도 구매 가능한가요?"와 "이 반지 남성용만 따로 구매 가능한지 알려주세요"는 어휘가 거의 같은데 정답 갈래가 다릅니다. <strong>키워드는 표면이고, 분류는 의도에 관한 판단</strong>이라 어휘 규칙으로는 원리적으로 못 가려요.</p>
-    <p>키워드를 더 넣으면 되지 않을까요? 안 돼요. 제가 받은 매뉴얼이 든 한 쌍을 보면 분명해요. "이 목걸이에 달린 펜던트만 따로 살 순 없어요?"는 <strong>지금 사려는 것</strong>이라 주문이고, "이 스킨이랑 로션은 꼭 세트로만 살 수 있나요?"는 <strong>구성을 알고 싶은 것</strong>이라 상품 문의예요. 두 문장 모두 <code>살 수</code>를 품고 있어서, 이 낱말을 주문 쪽 규칙에 두면 뒤 문장이 틀리고 상품 문의 쪽으로 옮기면 앞 문장이 틀려요. <strong>두 갈래가 같은 낱말을 쓰는 한, 그 낱말을 어느 쪽에 두든 한쪽은 틀립니다.</strong> 갈리는 지점은 낱말이 아니라 <strong>지금 사려는 건지, 살지 말지 정하려고 묻는 건지</strong>예요.</p>
+    <p>키워드를 더 넣으면 되지 않을까요? 안 돼요. 제가 받은 매뉴얼이 든 한 쌍을 보면 분명해요. "이 목걸이에 달린 펜던트만 따로 살 순 없어요?"는 <strong>지금 사려는 것</strong>이라 주문이고, "이 스킨이랑 로션은 꼭 세트로만 살 수 있나요?"는 <strong>구성을 알고 싶은 것</strong>이라 상품 문의예요. 두 문장 모두 <code>살 수</code>를 품고 있어서, 이 낱말을 주문 쪽 규칙에 두면 뒤 문장이 틀리고 상품 문의 쪽으로 옮기면 앞 문장이 틀려요. 갈리는 지점은 낱말이 아니라 <strong>지금 사려는 건지, 살지 말지 정하려고 묻는 건지</strong>예요.</p>
     <p>규칙에는 순서 문제도 따라와요. 규칙은 위에서부터 검사하니 "반품 배송비 얼마예요?"는 반품 규칙이 위에 있으면 반품, 배송 규칙이 위에 있으면 배송이 됩니다. 어느 쪽이 맞는지는 <a href="#routes">위 매뉴얼 발췌</a>의 ※ 줄이 정해 뒀죠 — 교환·반품·환불이에요. <strong>규칙의 순서조차 회사 문서에 근거가 있어야 한다</strong>는 뜻이에요.</p>
     <div class="key-point" id="key-keyword-surface">
       <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
@@ -251,7 +264,7 @@ g.add_edge("gate", END)</code></pre>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 직접 실행하는 코드 아니에요</span></p>
     <pre><code>"이 문의는 배송에 관한 질문으로 보입니다. 따라서 SHIPPING 라우트가 적절하겠습니다."</code></pre>
     <p>사람이 읽기엔 좋지만 프로그램이 쓰기엔 곤란해요. 갈래 이름을 뽑아내려면 문자열을 잘라 내야 하고, 다음번에 <em>"배송 문의네요!"</em>라고 답하면 그 코드가 깨집니다.</p>
-    <p>그래서 <strong>구조화된 출력</strong><sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>을 씁니다. 원하는 출력의 형태를 미리 정의해 넘기면 모델이 그 형태에 맞는 값만 내놓게 강제돼요. 세 칸을 받았습니다.</p>
+    <p>그래서 <strong>구조화된 출력</strong><sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup>을 씁니다. 원하는 출력의 형태를 미리 정의해 넘기면 모델이 그 형태에 맞는 값만 내놓게 강제돼요. 세 칸을 받았습니다.</p>
     <table>
       <thead><tr><th>칸</th><th>무엇을 받나</th><th>왜 필요한가</th></tr></thead>
       <tbody>
@@ -356,7 +369,7 @@ def gate(state):                           # 그래프의 둘째 노드
         <li>혼동 행렬을 찍어 <strong>어느 갈래가 어느 갈래로</strong> 흘렀는지 보고, 그 두 갈래의 구분 기준만 프롬프트에 한 줄 더해 다시 재요.</li>
         <li>마지막으로 <code>THRESHOLD</code>를 0.5에서 0.8로 올려 한 번 더 재요. 자동화율이 떨어지고 처리된 건의 정확도가 오르는 <a href="#threshold">그 교환 관계</a>가 숫자로 보입니다.</li>
       </ol>
-      <p>스무 줄짜리 평가셋은 한 건이 5%p를 움직여요. 그래서 이 축소판에서는 <strong>작은 차이를 성과로 읽지 않는 연습</strong>도 같이 하게 됩니다 — <a href="cs-agent-improve.html#noise">19편</a>에서 다시 만날 문제예요.</p>
+      <p>평가에 쓰는 열다섯 건은 한 건이 약 7%p를 움직여요. 그래서 이 축소판에서는 <strong>작은 차이를 성과로 읽지 않는 연습</strong>도 같이 하게 됩니다 — <a href="cs-agent-improve.html#noise">19편</a>에서 다시 만날 문제예요.</p>
     </div>
 
     <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 분류기를 세울 때 정해야 하는 값들</h2>
@@ -368,7 +381,6 @@ def gate(state):                           # 그래프의 둘째 노드
         <tr><td>평가셋 크기 / 갈래당</td><td>120건 / 30건</td><td>갈래마다 같은 건수로 맞춰야 작은 갈래의 실패가 점수에 드러난다</td></tr>
         <tr><td>예시용으로 떼어 둔 건수</td><td>40건</td><td>프롬프트에 넣을 예시는 여기서만 뽑는다. 평가셋에서 뽑으면 점수가 거짓말이 된다</td></tr>
         <tr><td>갈래 수</td><td>5 (4 + <code>OTHER</code>)</td><td>원본 인텐트 18종을 그대로 쓰지 않는다. 갈래마다 정책·도구·평가셋 관리 비용이 붙는다</td></tr>
-        <tr><td>응대 범위 밖 비율</td><td>17.1% (33/193)</td><td>현실 데이터에는 서비스 범위와 어긋난 문의가 항상 섞인다. 받아 낼 갈래를 미리 만든다</td></tr>
         <tr><td>주 지표</td><td>macro F1</td><td>weighted가 아니라 macro. 건수 많은 갈래가 점수를 대신 올려 주면 안 된다</td></tr>
       </tbody>
     </table>
@@ -426,12 +438,12 @@ def gate(state):                           # 그래프의 둘째 노드
 
     <section class="footnotes">
       <ol>
-        <li id="fn1">인텐트(intent) — 고객 발화가 무엇을 하려는 것인지를 미리 정해 둔 이름표로 분류한 값이에요. <a href="#fnref1">↩</a></li>
-        <li id="fn2">평가셋(evaluation set) — 정답이 붙어 있는 입력들의 모음으로, 언제나 같은 방식으로 성능을 계산할 수 있게 해 주는 기준자예요. <a href="#fnref2">↩</a></li>
-        <li id="fn3">데이터 누수(data leakage) — 학습이나 예시에 쓴 데이터가 평가에도 섞여 들어가 점수가 실제 실력보다 높게 나오는 현상이에요. <a href="#fnref3">↩</a></li>
-        <li id="fn4">혼동 행렬(confusion matrix) — 행에 정답, 열에 예측을 놓아 어느 갈래를 어느 갈래로 착각했는지 건수로 보여 주는 표예요. <a href="#fnref4">↩</a></li>
-        <li id="fn5">구조화된 출력(structured output) — 원하는 출력의 형태를 미리 정의해 모델이 그 형태에 맞는 값만 내놓도록 강제하는 기능이에요. <a href="#fnref5">↩</a></li>
-        <li id="fn6">LLM(대규모 언어 모델) — 아주 많은 글로 훈련해 <a href="pretraining-and-scaling-laws.html">앞 문맥을 보고 다음에 올 법한 낱말을 확률로 골라 잇는</a> 프로그램이에요. <a href="#fnref6">↩</a></li>
+        <li id="fn1">LLM(대규모 언어 모델) — 아주 많은 글로 훈련해 <a href="pretraining-and-scaling-laws.html">앞 문맥을 보고 다음에 올 법한 낱말을 확률로 골라 잇는</a> 프로그램이에요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">인텐트(intent) — 고객 발화가 무엇을 하려는 것인지를 미리 정해 둔 이름표로 분류한 값이에요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">평가셋(evaluation set) — 정답이 붙어 있는 입력들의 모음으로, 언제나 같은 방식으로 성능을 계산할 수 있게 해 주는 기준자예요. <a href="#fnref3">↩</a></li>
+        <li id="fn4">데이터 누수(data leakage) — 학습이나 예시에 쓴 데이터가 평가에도 섞여 들어가 점수가 실제 실력보다 높게 나오는 현상이에요. <a href="#fnref4">↩</a></li>
+        <li id="fn5">혼동 행렬(confusion matrix) — 행에 정답, 열에 예측을 놓아 어느 갈래를 어느 갈래로 착각했는지 건수로 보여 주는 표예요. <a href="#fnref5">↩</a></li>
+        <li id="fn6">구조화된 출력(structured output) — 원하는 출력의 형태를 미리 정의해 모델이 그 형태에 맞는 값만 내놓도록 강제하는 기능이에요. <a href="#fnref6">↩</a></li>
       </ol>
     </section>
 
