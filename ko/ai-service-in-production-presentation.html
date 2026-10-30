@@ -28,12 +28,12 @@
     <p class="post-date">※ 이 글은 모두의연구소(모두연) 학습 자료를 제 나름의 말로 다시 정리한 글이에요.</p>
 
 
-    <p class="one-liner">AI 서비스를 사용자에게 내보내는 일은 «어떤 버전이 나갔는지, 사용자가 오류 없이 썼는지, 이전 버전으로 돌릴 수 있는지»를 숫자로 말할 수 있게 만드는 일이에요.</p>
+    <p class="one-liner">AI 서비스를 사용자에게 내보내는 일은 «어떤 버전이 나갔는지, 사용자에게 오류가 보였는지, 이전 버전으로 돌릴 수 있는지»를 숫자로 말할 수 있게 만드는 일이에요.</p>
 
 
  <h2 id="flow"><span class="hl">한 장 그림</span> — 전체 지도</h2>
     <figure>
-    <svg viewBox="0 0 760 306" role="img" aria-label="전체 지도: 설계에서 출발한 변경이 합치기, 테스트, 이미지 만들기, 시험 서버, 전환을 차례로 지나 Cloud Run에 도착한다. 아래에는 어떤 버전이 나갔나, 사용자가 오류 없이 썼나, 이전 버전으로 돌릴 수 있나 세 질문이 있다" style="width:100%;height:auto;">
+    <svg viewBox="0 0 760 306" role="img" aria-label="전체 지도: 설계에서 출발한 변경이 합치기, 테스트, 이미지 만들기, 시험 서버, 전환을 차례로 지나 Cloud Run에 도착한다. 아래에는 어떤 버전이 나갔나, 사용자에게 오류가 보였나, 이전 버전으로 돌릴 수 있나 세 질문이 있다" style="width:100%;height:auto;">
       <style>
         .hl{fill:var(--c);fill-opacity:0;stroke:var(--border);stroke-width:2;animation-duration:21s;animation-iteration-count:infinite;animation-timing-function:linear;}
         .pk{animation:k_pk 21s infinite ease-in-out;}
@@ -106,7 +106,7 @@
       <text x="82" y="263" text-anchor="start" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">어떤 버전이 나갔나</text>
       <rect class="hl qs2" x="265" y="226" width="230" height="64" rx="12" style="--c:var(--accent)"/>
       <circle cx="303" cy="258" r="12" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="299" cy="255" r="1.5" fill="var(--ink)"/><circle cx="307" cy="255" r="1.5" fill="var(--ink)"/><path d="M297,261Q303,267 309,261" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
-      <text x="327" y="263" text-anchor="start" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">사용자가 오류 없이 썼나</text>
+      <text x="327" y="263" text-anchor="start" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">사용자에게 오류가 보였나</text>
       <rect class="hl qs3" x="510" y="226" width="230" height="64" rx="12" style="--c:var(--accent)"/>
       <path d="M558,266C560,254 546,252 540,254" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /><path d="M545,248L539,254L546,258" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
       <text x="572" y="263" text-anchor="start" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">이전 버전으로 돌릴 수 있나</text>
@@ -258,17 +258,17 @@
     </figure>
     <ul style="list-style:none;padding-left:0;">
       <li style="margin:.5rem 0;"><span style="display:inline-block;width:1.5rem;height:1.5rem;line-height:1.5rem;border-radius:50%;background:var(--accent);color:#fff;text-align:center;font-weight:700;font-size:.85rem;">1</span> <strong>어떤 버전이 나갔나</strong> — 배포 실행(<code>deploy #19</code>)마다 코드 버전 번호(커밋 <code>1a816a4</code>)가 남아요.</li>
-      <li style="margin:.5rem 0;"><span style="display:inline-block;width:1.5rem;height:1.5rem;line-height:1.5rem;border-radius:50%;background:var(--accent);color:#fff;text-align:center;font-weight:700;font-size:.85rem;">2</span> <strong>사용자가 오류 없이 썼나</strong> — 합쳐 달라는 요청(PR)마다 테스트(<code>ci</code>)가 자동으로 돌고, 통과는 초록 체크, 실패는 빨간 ×로 보여요.</li>
+      <li style="margin:.5rem 0;"><span style="display:inline-block;width:1.5rem;height:1.5rem;line-height:1.5rem;border-radius:50%;background:var(--accent);color:#fff;text-align:center;font-weight:700;font-size:.85rem;">2</span> <strong>사용자에게 오류가 보였나</strong> — 합쳐 달라는 요청(PR)마다 테스트(<code>ci</code>)가 자동으로 돌고, 통과는 초록 체크, 실패는 빨간 ×로 보여요.</li>
       <li style="margin:.5rem 0;"><span style="display:inline-block;width:1.5rem;height:1.5rem;line-height:1.5rem;border-radius:50%;background:var(--accent);color:#fff;text-align:center;font-weight:700;font-size:.85rem;">3</span> <strong>이전 버전으로 돌릴 수 있나</strong> — <code>rollback</code>을 버튼으로 직접 실행해 이전 버전으로 돌려요(#3, 38초).</li>
     </ul>
     <table>
-      <thead><tr><th></th><th>어떤 버전이 나갔나</th><th>사용자가 오류 없이 썼나</th><th>이전 버전으로 돌릴 수 있나</th></tr></thead>
+      <thead><tr><th></th><th>어떤 버전이 나갔나</th><th>사용자에게 오류가 보였나</th><th>이전 버전으로 돌릴 수 있나</th></tr></thead>
       <tbody>
         <tr><td><strong style="color:var(--accent)">✖ 비어 있는 곳</strong></td><td>GitHub Pages가 저장소 전체를 공개해서 시험 파일(tests 폴더)까지 보여요.</td><td>살아 있다는 것까지만 알아요. 도우미가 엉뚱한 답을 하는지는 사람이 물어봐야 알아요.</td><td>main 브랜치(서비스가 되는 코드 줄기)에 보호 규칙이 없어서, 테스트가 실패해도 합칠 수 있어요.</td></tr>
         <tr><td><strong style="color:var(--folder-1)">➜ 다음에 할 일</strong></td><td>공개할 파일만 남기도록 공개 범위를 정리해요.</td><td>배포 뒤 대표 질문 몇 개를 자동으로 보내, 규칙을 어긴 횟수를 세요.</td><td>테스트를 통과해야만 합치도록 main에 필수 검사를 걸어요.</td></tr>
       </tbody>
     </table>
-    <p><strong>정리하면</strong> 비어 있는 곳은 «사용자가 오류 없이 썼나»에 몰려 있어요. 서비스가 떠 있는지는 기계가 확인하지만, 답이 맞는지는 아직 사람이 확인해요. 가장 먼저 자동화할 곳이에요.</p>
+    <p><strong>정리하면</strong> 비어 있는 곳은 «사용자에게 오류가 보였나»에 몰려 있어요. 서비스가 떠 있는지는 기계가 확인하지만, 답이 맞는지는 아직 사람이 확인해요. 가장 먼저 자동화할 곳이에요.</p>
   </main>
   </div>
 
