@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>알렉스 카프 — 가치는 분포 밖에 있다 - Tigermorning</title>
+  <meta name="description" content="팔란티어 CEO 알렉스 카프가 씨티그룹 쪽 진행자와 나눈 36분 대담을 여덟 가지 생각으로 정리했습니다. 분포 밖 인재, 리더십, 올리브 병, 기업 AI가 두 번 내는 비용, 게릴라전 보안, 정치 리스크, 부유세와 감시 국가, 미·중 AI 경쟁.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="알렉스 카프 — 가치는 분포 밖에 있다">
+  <meta property="og:description" content="기업이 AI에 내는 진짜 비용은 토큰값과 함께 넘어간 지식재산이라는 카프의 주장과, 분포 밖 인재·보안·미중 경쟁에 대한 생각.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/alex-karp-palantir-citi-talk.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">알렉스 카프</span> — 가치는 분포 밖에 있다</h1>
+    <p class="post-date">2026. 11. 01.</p>
+    <p class="post-date">※ 이 글은 팔란티어 공식 채널의 원본 대담 <a href="https://www.youtube.com/watch?v=NDHeUx7nUbs" target="_blank" rel="noopener">"Palantir CEO Alex Karp on Life, Art, and Technology"</a>(Palantir, 35분 52초)를 보고 핵심만 제 나름의 언어로 줄인 것입니다. 처음 받은 링크는 AgentOS의 한국어 해설 영상 <a href="https://www.youtube.com/watch?v=Q6UW1HKfBMo" target="_blank" rel="noopener">(클립 14개)</a>인데 채널 멤버 전용이라 영상 내용은 보지 못했고, 그 설명란의 소개·목차(8가지 생각)만 참고했어요. 목차의 시각은 해설 영상 기준이라, 아래 시각 링크는 모두 원본 대담에서 해당 대목을 다시 찾아 건 것이에요. 화면은 처음부터 끝까지 두 사람이 마주 앉은 대담 장면뿐이고 이름표·자막 카드 같은 글자는 나오지 않아서, 내용의 구조를 그림으로 옮겼어요.</p>
+
+    <div class="video-embed"><iframe src="https://www.youtube-nocookie.com/embed/NDHeUx7nUbs" title="Palantir CEO Alex Karp on Life, Art, and Technology" loading="lazy" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe></div>
+
+    <p class="one-liner">이 대담은 팔란티어 CEO 알렉스 카프가 "가치는 분포 밖에 있는 것을 분포 안으로 가져올 때 생긴다"는 생각에서 출발해, 들쭉날쭉한 인재를 다루는 법, 기업이 AI에 토큰값과 지식재산을 함께 내주는 구조, 보안·정치·미중 경쟁에 대한 자기 주장을 차례로 펴는 자리다.</p>
+
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>어디쯤인가</dt>
+        <dd><a href="posts.html#cat-future-talks">AI 시대 스크랩</a> — 단독 글이에요.</dd>
+        <dt>이런 게 궁금했다면</dt>
+        <dd>
+          <ul>
+            <li>회사에서 외부 AI 모델을 쓸 때, 비용은 토큰값이 전부일까요?</li>
+            <li>팔란티어는 컨설팅 회사나 소프트웨어 회사와 무엇이 다르다고 스스로 말할까요?</li>
+          </ul>
+        </dd>
+        <dt>읽고 나면 할 수 있는 것</dt>
+        <dd>
+          <ul>
+            <li>AI 도입 비용을 "낸 돈"과 "잃은 것" 두 칸으로 나눠 볼 수 있어요.</li>
+            <li>카프가 왜 AI 경쟁의 가장 큰 위험을 기술이 아니라 정치로 보는지 그 논리 순서를 짚을 수 있어요.</li>
+          </ul>
+        </dd>
+        <dt>모르면 이런 일이 생겨요</dt>
+        <dd>
+          <ul>
+            <li>AI 비용 보고에 토큰값만 있고, 무엇이 밖으로 나갔는지는 아무도 몰라요. <a class="suspect-jump" href="#suspect-ip">언제 의심하나 ↓</a></li>
+            <li>보안 목표를 "100% 차단"으로만 잡아, 뚫린 뒤 얼마나 빨리 고치는지는 재지 않아요. <a class="suspect-jump" href="#suspect-patch">언제 의심하나 ↓</a></li>
+          </ul>
+        </dd>
+        <dt>어디에 쓰나</dt>
+        <dd>
+          <ul>
+            <li><strong>회사 데이터를 외부 모델에 넣을지 정할 때.</strong> 공급망이나 핵심 협력사 정보처럼 경쟁사가 알면 곤란한 것과, 넘어가도 상관없는 일을 먼저 나눠요.</li>
+            <li>뉴스에서 "AI 패권 경쟁", "소버린 AI" 같은 말을 들었을 때 한쪽 당사자의 주장으로 읽을 때</li>
+          </ul>
+        </dd>
+      </dl>
+    </div>
+
+    <p>진행자는 씨티그룹과 팔란티어의 관계에 감사 인사를 하며 대담을 열어요. 설명란은 씨티그룹 글로벌 뱅킹 회장 레온 칼바리아라고 소개하지만, 대담과 화면에는 진행자 이름이 나오지 않아요. 진행자가 소개한 카프의 이력은 이래요. 필라델피아에서 화가와 소아과 의사 사이에서 자랐고, 해버퍼드에서 철학, 스탠퍼드에서 법을 공부한 뒤 프랑크푸르트에서 사회이론 박사 학위를 받았어요. 유럽 가문들의 돈을 굴리다가 2003년 피터 틸과 함께 팔란티어를 세웠고, 『기술 공화국(The Technological Republic)』을 함께 썼다고 해요.</p>
+    <p>"하고 싶은 말을 그대로 하는 리더"라는 소개에 카프는 <a href="https://www.youtube.com/watch?v=NDHeUx7nUbs&t=89s" target="_blank" rel="noopener">고쳐서 말한다</a>고 답해요. 걸러 내는 기준은 "엄마가 들으면 책상 밑으로 숨을까, 살짝 민망해할까"래요. 그렇게 걸러도 나오는 말이 평균에서 멀 뿐이라고요. 대담은 여덟 가지 생각으로 나눌 수 있어요.</p>
+
+    <figure class="motion">
+    <svg viewBox="0 0 600 500" role="img" aria-label="대담에 나온 여덟 가지 생각을 원본 시각 순서로 세로로 늘어놓은 그림이다. 사람 묶음에 1 분포 밖의 인재와 2 리더십, 고객과 기업 묶음에 3 올리브 병, 4 두 번 내는 돈, 5 게릴라전 보안, 사회와 국가 묶음에 6 정치 리스크, 7 부유세와 감시 국가, 8 미중 AI 경쟁이 있다.">
+      <line x1="44" y1="40" x2="44" y2="480" stroke="var(--border)" stroke-width="3" pathLength="1" class="mo-draw"/>
+      <text x="80" y="30" font-family="var(--font-heading)" font-size="14" fill="var(--muted)" class="mo-fade">사람</text>
+      <g class="mo-rise" style="--d:0.2s">
+        <circle cx="44" cy="62" r="16" fill="var(--bg)" stroke="var(--accent)" stroke-width="2.5"/>
+        <text x="44" y="67" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">1</text>
+        <a href="https://www.youtube.com/watch?v=NDHeUx7nUbs&t=204s" target="_blank" rel="noopener"><text x="80" y="67" font-family="var(--font-body)" font-size="13" fill="var(--muted)" text-decoration="underline">3:24</text></a>
+        <text x="130" y="67" font-family="var(--font-body)" font-size="15" fill="var(--ink)">분포 밖의 인재 — 들쭉날쭉한 사람</text>
+      </g>
+      <g class="mo-rise" style="--d:0.4s">
+        <circle cx="44" cy="112" r="16" fill="var(--bg)" stroke="var(--accent)" stroke-width="2.5"/>
+        <text x="44" y="117" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">2</text>
+        <a href="https://www.youtube.com/watch?v=NDHeUx7nUbs&t=372s" target="_blank" rel="noopener"><text x="80" y="117" font-family="var(--font-body)" font-size="13" fill="var(--muted)" text-decoration="underline">6:12</text></a>
+        <text x="130" y="117" font-family="var(--font-body)" font-size="15" fill="var(--ink)">리더십 — 나보다 뛰어난 사람 받아들이기</text>
+      </g>
+      <text x="80" y="168" font-family="var(--font-heading)" font-size="14" fill="var(--muted)" class="mo-fade" style="--d:0.6s">고객·기업</text>
+      <g class="mo-rise" style="--d:0.8s">
+        <circle cx="44" cy="200" r="16" fill="var(--bg)" stroke="var(--accent)" stroke-width="2.5"/>
+        <text x="44" y="205" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">3</text>
+        <a href="https://www.youtube.com/watch?v=NDHeUx7nUbs&t=668s" target="_blank" rel="noopener"><text x="80" y="205" font-family="var(--font-body)" font-size="13" fill="var(--muted)" text-decoration="underline">11:08</text></a>
+        <text x="130" y="205" font-family="var(--font-body)" font-size="15" fill="var(--ink)">올리브 병 — 고객의 입맛을 바꾸기</text>
+      </g>
+      <g class="mo-rise" style="--d:1.0s">
+        <circle cx="44" cy="250" r="16" fill="var(--accent)" stroke="var(--accent)" stroke-width="2.5"/>
+        <text x="44" y="255" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--bg)">4</text>
+        <a href="https://www.youtube.com/watch?v=NDHeUx7nUbs&t=797s" target="_blank" rel="noopener"><text x="80" y="255" font-family="var(--font-body)" font-size="13" fill="var(--muted)" text-decoration="underline">13:17</text></a>
+        <text x="130" y="255" font-family="var(--font-body)" font-size="15" fill="var(--ink)">기업 AI는 돈을 두 번 낸다 — 토큰값과 IP</text>
+      </g>
+      <g class="mo-rise" style="--d:1.2s">
+        <circle cx="44" cy="300" r="16" fill="var(--bg)" stroke="var(--accent)" stroke-width="2.5"/>
+        <text x="44" y="305" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">5</text>
+        <a href="https://www.youtube.com/watch?v=NDHeUx7nUbs&t=1018s" target="_blank" rel="noopener"><text x="80" y="305" font-family="var(--font-body)" font-size="13" fill="var(--muted)" text-decoration="underline">16:58</text></a>
+        <text x="130" y="305" font-family="var(--font-body)" font-size="15" fill="var(--ink)">보안은 게릴라전</text>
+      </g>
+      <text x="80" y="356" font-family="var(--font-heading)" font-size="14" fill="var(--muted)" class="mo-fade" style="--d:1.4s">사회·국가</text>
+      <g class="mo-rise" style="--d:1.6s">
+        <circle cx="44" cy="388" r="16" fill="var(--bg)" stroke="var(--accent)" stroke-width="2.5"/>
+        <text x="44" y="393" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">6</text>
+        <a href="https://www.youtube.com/watch?v=NDHeUx7nUbs&t=1101s" target="_blank" rel="noopener"><text x="80" y="393" font-family="var(--font-body)" font-size="13" fill="var(--muted)" text-decoration="underline">18:21</text></a>
+        <text x="130" y="393" font-family="var(--font-body)" font-size="15" fill="var(--ink)">AI 경쟁의 진짜 위험은 정치</text>
+      </g>
+      <g class="mo-rise" style="--d:1.8s">
+        <circle cx="44" cy="438" r="16" fill="var(--bg)" stroke="var(--accent)" stroke-width="2.5"/>
+        <text x="44" y="443" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">7</text>
+        <a href="https://www.youtube.com/watch?v=NDHeUx7nUbs&t=1234s" target="_blank" rel="noopener"><text x="80" y="443" font-family="var(--font-body)" font-size="13" fill="var(--muted)" text-decoration="underline">20:34</text></a>
+        <text x="130" y="443" font-family="var(--font-body)" font-size="15" fill="var(--ink)">부유세와 감시 국가</text>
+      </g>
+      <g class="mo-rise" style="--d:2.0s">
+        <circle cx="44" cy="480" r="16" fill="var(--bg)" stroke="var(--accent)" stroke-width="2.5"/>
+        <text x="44" y="485" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">8</text>
+        <a href="https://www.youtube.com/watch?v=NDHeUx7nUbs&t=1705s" target="_blank" rel="noopener"><text x="80" y="485" font-family="var(--font-body)" font-size="13" fill="var(--muted)" text-decoration="underline">28:25</text></a>
+        <text x="130" y="485" font-family="var(--font-body)" font-size="15" fill="var(--ink)">미·중 AI 경쟁 — 하루가 남들의 100일</text>
+      </g>
+    </svg>
+    <figcaption>여덟 가지 생각의 제목은 해설 영상 설명란의 목차를 따랐고, 시각은 원본 대담 기준이에요(누르면 그 대목으로 가요). 세 묶음은 제가 나눈 것이고, 색을 채운 4번이 이 글에서 가장 길게 다루는 대목이에요.</figcaption>
+    </figure>
+
+    <div class="key-point" id="key-three">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>세 줄 요약</p>
+      <ol>
+        <li><strong>가치는 분포 밖에 있다.</strong> 남들이 처리 못 하는 것을 처리해 쓸모 있게 만들 때 가치가 생기고, 그래서 한 분야만 남다른 사람을 찾아 키운다.</li>
+        <li><strong>기업 AI는 돈을 두 번 낸다.</strong> 토큰값을 내고, 그 토큰을 얻느라 회사의 지식재산 일부를 넘긴다. 진짜 비용은 "낸 돈 + 잃은 것"이다.</li>
+        <li><strong>가장 큰 위험은 정치다.</strong> AI가 만드는 부의 쏠림을 설명하지 못하면 극단적 해법(부유세 등)이 힘을 얻고, 그 해법은 감시 국가로 이어진다는 것이 카프의 주장이다.</li>
+      </ol>
+    </div>
+
+    <h2 id="distribution"><span class="hl">1. 분포 밖(out of distribution)</span> 인재 — 들쭉날쭉한 사람</h2>
+    <p>순수 기술 배경도 없이 어떻게 이런 회사를 만들었냐는 질문에, 카프는 <a href="https://www.youtube.com/watch?v=NDHeUx7nUbs&t=204s" target="_blank" rel="noopener">자기를 실행가보다 창작하는 사람</a>이라고 소개해요. 그리고 최근까지 숨겨 왔다며 자신이 심한 난독증이라고 밝혀요. 이 장애의 좋은 면은 더 빨리, 더 창의적으로, 자기에게 더 정직하게 일하고, <strong>분포 밖</strong><sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>에 있는 것을 다룰 수 있게 해 준 점이라고 해요. 이어서 이 대담 전체를 꿰는 한 문장을 말해요. 어떤 것의 가치는 그것이 분포 밖에 있는지, 그리고 그것을 분포 안으로 가져올 수 있는지와 꽤 맞물려 있다는 거예요.</p>
+    <p>진행자가 팔란티어를 "예술가 마을(artist colony)"이라고 부르는 이유를 묻자 이 생각이 사람 뽑기로 이어져요. 팔란티어는 <a href="https://www.youtube.com/watch?v=NDHeUx7nUbs&t=298s" target="_blank" rel="noopener">유난히 들쭉날쭉한(jagged) 사람</a>을 찾고, 그 사람이 남다른 바로 그 지점에 배치해 키운다고 해요. 관리하기 매우 어려운 환경이라 위계를 평평하게 둔다고요. 그런 사람의 "n이 1이거나 아주 작은" 재능을 회사 안의 중요한 일과 맞물리게 하면, 아무도 못 만드는 것을 만든다는 게 카프의 설명이에요.</p>
+
+    <figure class="motion">
+    <svg viewBox="0 0 640 320" role="img" aria-label="왼쪽은 종 모양 분포 곡선이다. 오른쪽 끝 꼬리가 칠해지고, 꼬리에서 가운데로 화살표가 그려지며 분포 안으로 가져오면 가치가 생긴다고 적혀 있다. 오른쪽은 막대 여섯 개로 된 능력 모양이다. 대부분 평균선 근처인데 하나만 훨씬 높이 솟아 있고, 그 막대를 중요한 일에 배치한다고 적혀 있다.">
+      <defs>
+        <marker id="kp-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/>
+        </marker>
+      </defs>
+      <text x="160" y="26" text-anchor="middle" font-family="var(--font-heading)" font-size="15" fill="var(--ink)">가치가 생기는 곳</text>
+      <line x1="20" y1="250" x2="300" y2="250" stroke="var(--muted)" stroke-width="2"/>
+      <path d="M20,248 C90,248 110,70 160,70 C210,70 230,248 300,248" fill="none" stroke="var(--ink)" stroke-width="3" pathLength="1" class="mo-draw"/>
+      <path d="M248,208 C262,228 280,248 300,248 L248,248 Z" fill="var(--accent)" class="mo-pop" style="--d:1.1s"/>
+      <text x="276" y="196" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--accent)" class="mo-fade" style="--d:1.2s">분포 밖</text>
+      <path d="M262,184 C240,130 205,112 172,118" fill="none" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#kp-arrow)" pathLength="1" class="mo-draw" style="--d:1.5s"/>
+      <text x="160" y="278" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)" class="mo-fade" style="--d:2.1s">분포 밖의 것을 분포 안으로</text>
+      <text x="160" y="298" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)" class="mo-fade" style="--d:2.1s">가져오면 가치가 된다</text>
+
+      <text x="480" y="26" text-anchor="middle" font-family="var(--font-heading)" font-size="15" fill="var(--ink)">들쭉날쭉한(jagged) 사람</text>
+      <line x1="350" y1="250" x2="620" y2="250" stroke="var(--muted)" stroke-width="2"/>
+      <line x1="350" y1="190" x2="620" y2="190" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="5 4"/>
+      <text x="616" y="183" text-anchor="end" font-family="var(--font-body)" font-size="12" fill="var(--muted)">평균</text>
+      <rect x="362" y="200" width="30" height="50" fill="var(--muted)" class="mo-grow" style="--d:0.3s"/>
+      <rect x="404" y="185" width="30" height="65" fill="var(--muted)" class="mo-grow" style="--d:0.4s"/>
+      <rect x="446" y="70" width="30" height="180" fill="var(--accent)" class="mo-grow" style="--d:0.6s"/>
+      <rect x="488" y="205" width="30" height="45" fill="var(--muted)" class="mo-grow" style="--d:0.5s"/>
+      <rect x="530" y="195" width="30" height="55" fill="var(--muted)" class="mo-grow" style="--d:0.5s"/>
+      <rect x="572" y="210" width="30" height="40" fill="var(--muted)" class="mo-grow" style="--d:0.6s"/>
+      <text x="486" y="62" font-family="var(--font-body)" font-size="13" fill="var(--accent)" class="mo-fade" style="--d:1.4s">남다른 한 곳 (n=1)</text>
+      <text x="485" y="278" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)" class="mo-fade" style="--d:1.8s">그 한 곳을 회사의</text>
+      <text x="485" y="298" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)" class="mo-fade" style="--d:1.8s">중요한 일에 맞물린다</text>
+    </svg>
+    <figcaption>왼쪽은 카프가 말한 "분포 밖 → 분포 안", 오른쪽은 그가 찾는 사람의 모양이에요. 막대 높이는 모양을 보이려는 예시이고, 카프가 든 수치가 아니에요.</figcaption>
+    </figure>
+
+    <h2 id="leadership"><span class="hl">2. 리더십</span> — 나보다 뛰어난 사람을 받아들이는 굴욕</h2>
+    <p>진행자는 예술가 마을이란 결국 <a href="https://www.youtube.com/watch?v=NDHeUx7nUbs&t=372s" target="_blank" rel="noopener">남이 나는 못 하는 것을 하도록 받아들이는 것</a> 아니냐고 묻고, 카프는 그렇다며 대부분의 조직이 이걸 잘 못한다고 해요. 튀는 사람, 무언가를 더 잘하는 사람은 특히 바른말을 하면 잘린다는 거예요. 그는 교육 기관이 굴러가는 모습, 유럽이 왜 새롭고 창의적인 것을 내기 어려워하는지를 예로 들어요.</p>
+    <p>이유로 든 건 사람의 마음이에요. 같이 일하는 누군가가 나보다 너무 뛰어나서 그가 하는 일을 겨우 이해할 정도라는 걸 받아들이기는 매우 어렵고, 거기에는 <a href="https://www.youtube.com/watch?v=NDHeUx7nUbs&t=462s" target="_blank" rel="noopener">굴욕이 따른다</a>고요. 그래도 그 재능을 잘 엮어 쓰는 것이 서방이 잘할 때 가장 잘하는 일이고, 미국과 유럽의 유일한 강점이라고 말해요. 팔란티어가 사람들에게 가르치는 것 하나는 "기분이 좋은가 나쁜가"로 판단하지 않는 것이래요. 모든 약은 어느 정도 독이니까요.</p>
+    <p>"다들 그렇게 말은 한다"는 지적도 붙여요. 비트겐슈타인<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>의 말을 빌려, <a href="https://www.youtube.com/watch?v=NDHeUx7nUbs&t=517s" target="_blank" rel="noopener">규칙을 따르고 있다고 믿는 것은 규칙을 따르는 것이 아니다</a>라고 해요. 열두 살처럼 보이는 직원이 "카프 박사님, 하신 일은 거의 다 틀렸어요" 하고 나설 때, 그 사람도 늘 옳지는 않으니 걸러 내되 그 재능을 망가뜨리지 않고 끌어올리는 것, 그게 실제로 해야 하는 일이라고요.</p>
+
+    <h2 id="olive"><span class="hl">3. 도입 설계</span> — 올리브 병에서 첫 올리브 꺼내기</h2>
+    <p>진행자는 이제 그 예술가 마을의 결과물을 미국 전쟁부의 메이븐(Maven) 같은 <a href="https://www.youtube.com/watch?v=NDHeUx7nUbs&t=567s" target="_blank" rel="noopener">무거운 현장</a>에 넣어 왔다고 짚어요. 카프는 유럽의 대테러 활동, 우크라이나, 이스라엘 일부를 들며, 맡은 역할이 커서 보안상 말할 수 없는 게 많다고 해요.</p>
+    <p>진행자의 질문은 이거예요. 예술가 마을이 가치를 만드는 건 알겠는데, 수십 년 같은 방식으로 일해 온 조직이 그걸 받아들이게 하는 건 또 다른 큰 도약 아니냐. 카프는 두 세계를 잇는 <strong>전달 장치</strong>가 필요하고, 그 장치가 무엇을 만들지도 정한다고 답해요. 그래서 나온 것이 FDE<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>와, 자신이 직접 최전선에서 고객을 만나는 방식이래요. 여기서 한 산업계 거물(전사에는 "크라운 가문의 가장"으로 들려요)에게 받은 질문을 꺼내요.</p>
+    <p>"<a href="https://www.youtube.com/watch?v=NDHeUx7nUbs&t=668s" target="_blank" rel="noopener">병에서 첫 올리브는 어떻게 꺼냈소?</a>" 카프의 답은 올리브를 갖고 있는 것과, 사람들이 그걸 집어 먹게 하는 것은 다르다는 거예요. 진짜 요령은 올리브를 먹게 하는 데서 그치지 않고, <strong>좋은 올리브의 맛을 알아보도록 입맛을 바꾸는 것</strong>이라고요. 어떻게 하는지는 정확히 모르지만 할 줄은 안다고 덧붙여요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>대담 속 실제</th></tr></thead>
+      <tbody>
+        <tr><td>꽉 닫힌 올리브 병</td><td>수십 년 같은 방식으로 일해 온 고객 조직</td></tr>
+        <tr><td>첫 올리브를 꺼내 먹게 하기</td><td>고객이 팔란티어 제품을 처음 쓰게 하기</td></tr>
+        <tr><td>좋은 올리브 맛을 알게 하기</td><td>고객이 "좋은 품질이 이런 것"임을 알아보게 바꾸기</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 도입은 제품을 써 보게 하는 데서 끝나지 않고, 고객이 품질을 보는 눈을 바꿔야 끝난다.</p>
+    <p>다만 비유가 끊기는 점이 있어요. 올리브는 먹는 사람이 맛을 혼자 판단하지만, 카프가 말하는 도입은 FDE가 고객 곁에서 일하며 제품 자체를 함께 고쳐 가는 과정이에요.</p>
+
+    <h2 id="two-costs"><span class="hl">4. 소버린 AI(sovereign AI)</span> — 기업 AI는 돈을 두 번 낸다</h2>
+    <p>액센추어·SAP·맥킨지·마이크로소프트와 무엇이 다르냐는 질문에, 카프는 고객에 따라 다르다며 <a href="https://www.youtube.com/watch?v=NDHeUx7nUbs&t=722s" target="_blank" rel="noopener">단계</a>를 나눠요.</p>
+    <ul>
+      <li><strong>기본.</strong> 파운드리(Foundry)로 흩어진 데이터를 하나로 묶는 일. 많은 회사가 아직 이 단계를 못 거쳤고, 2017년 무렵까지 주로 하던 일이래요.</li>
+      <li><strong>그다음.</strong> 회사 위에서 아이디어를 굴리는 더 복잡한 일.</li>
+      <li><strong>지금 끝단.</strong> <strong>소버린 아키텍처</strong><sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>. 회사가 만든 모델을 회사가 소유하고, 원하면 골라서 남에게 공유하거나 자기 이름을 붙여 팔 수 있게 하는 것. 회사의 "부족 지식(tribal knowledge)"을 잃지 않고 제품 안에 심는 것이라고 해요.</li>
+    </ul>
+    <p>그리고 이 대담에서 가장 구체적인 주장이 나와요. 비용이라는 말은 <a href="https://www.youtube.com/watch?v=NDHeUx7nUbs&t=797s" target="_blank" rel="noopener">두 가지를 뜻한다</a>는 거예요. <strong>무엇을 냈나</strong>, 그리고 <strong>무엇을 잃었나</strong>. 토큰값만이 비용이 아니라, 그 토큰을 얻으려고 회사 지식재산(IP)의 몇 퍼센트를 넘겼느냐도 비용이라고요.</p>
+
+    <figure class="motion">
+    <svg viewBox="0 0 660 340" role="img" aria-label="두 칸 비교 그림이다. 왼쪽은 토큰만 사서 쓸 때로, 우리 회사가 외부 모델에 토큰값을 내고, 외부 모델을 거쳐 지식재산이 경쟁사로 넘어가는 화살표가 그려진다. 비용은 낸 돈과 잃은 것의 합이다. 오른쪽은 소버린 구조로 쓸 때로, 점선 경계인 회사 안에 공급망과 협력사 지식, 우리가 소유한 모델이 함께 있고, 마케팅처럼 넘어가도 괜찮은 일만 외부 모델로 나간다.">
+      <defs>
+        <marker id="kp-arrow2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/>
+        </marker>
+        <marker id="kp-arrow3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <line x1="330" y1="16" x2="330" y2="330" stroke="var(--border)" stroke-width="2"/>
+      <text x="165" y="32" text-anchor="middle" font-family="var(--font-heading)" font-size="15" fill="var(--ink)">토큰만 사서 쓸 때</text>
+      <text x="495" y="32" text-anchor="middle" font-family="var(--font-heading)" font-size="15" fill="var(--ink)">소버린 구조로 쓸 때</text>
+
+      <rect x="16" y="70" width="128" height="48" rx="8" fill="none" stroke="var(--ink)" stroke-width="2"/>
+      <text x="80" y="99" text-anchor="middle" font-family="var(--font-body)" font-size="14" fill="var(--ink)">우리 회사</text>
+      <rect x="188" y="70" width="128" height="48" rx="8" fill="none" stroke="var(--ink)" stroke-width="2"/>
+      <text x="252" y="99" text-anchor="middle" font-family="var(--font-body)" font-size="14" fill="var(--ink)">외부 모델</text>
+      <rect x="188" y="200" width="128" height="48" rx="8" fill="none" stroke="var(--muted)" stroke-width="2"/>
+      <text x="252" y="229" text-anchor="middle" font-family="var(--font-body)" font-size="14" fill="var(--muted)">경쟁사</text>
+      <line x1="144" y1="94" x2="184" y2="94" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#kp-arrow2)" pathLength="1" class="mo-draw" style="--d:0.3s"/>
+      <text x="80" y="146" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--accent)" class="mo-fade" style="--d:0.6s">① 토큰값을 냄</text>
+      <line x1="252" y1="118" x2="252" y2="196" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#kp-arrow2)" pathLength="1" class="mo-draw" style="--d:1.1s"/>
+      <text x="40" y="250" font-family="var(--font-body)" font-size="13" fill="var(--accent)" class="mo-fade mo-pulse" style="--d:1.6s">② IP 일부가 넘어감</text>
+      <text x="165" y="296" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)" class="mo-rise" style="--d:2.0s">비용 = 낸 돈 + 잃은 것</text>
+
+      <rect x="344" y="56" width="200" height="200" rx="10" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="7 5" class="mo-fade" style="--d:0.3s"/>
+      <text x="354" y="76" font-family="var(--font-body)" font-size="13" fill="var(--accent)" class="mo-fade" style="--d:0.3s">회사 안 (회사가 소유)</text>
+      <rect x="360" y="90" width="168" height="48" rx="8" fill="none" stroke="var(--ink)" stroke-width="2" class="mo-pop" style="--d:0.6s"/>
+      <text x="444" y="112" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)" class="mo-pop" style="--d:0.6s">공급망·핵심 협력사</text>
+      <text x="444" y="129" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)" class="mo-pop" style="--d:0.6s">지식</text>
+      <rect x="360" y="180" width="168" height="48" rx="8" fill="none" stroke="var(--ink)" stroke-width="2" class="mo-pop" style="--d:0.9s"/>
+      <text x="444" y="209" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)" class="mo-pop" style="--d:0.9s">우리가 소유한 모델</text>
+      <line x1="444" y1="138" x2="444" y2="176" stroke="var(--ink)" stroke-width="2" marker-end="url(#kp-arrow3)" pathLength="1" class="mo-draw" style="--d:1.2s"/>
+      <rect x="556" y="180" width="94" height="48" rx="8" fill="none" stroke="var(--muted)" stroke-width="2"/>
+      <text x="603" y="209" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--muted)">외부 모델</text>
+      <path d="M520,262 C560,262 600,250 603,232" fill="none" stroke="var(--muted)" stroke-width="2" marker-end="url(#kp-arrow3)" pathLength="1" class="mo-draw" style="--d:1.5s"/>
+      <text x="420" y="276" font-family="var(--font-body)" font-size="13" fill="var(--muted)" class="mo-fade" style="--d:1.5s">넘어가도 괜찮은 일만 밖으로</text>
+      <text x="495" y="296" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)" class="mo-rise" style="--d:2.0s">비용 = 낸 돈, 지식은 남음</text>
+    </svg>
+    <figcaption>카프가 말로 설명한 구조를 그린 것이에요. "공급망·핵심 협력사"와 "넘어가도 괜찮은 일(예: 아르헨티나 마케팅)"은 그가 든 예시예요.</figcaption>
+    </figure>
+
+    <p>구분하는 기준도 예로 들어요. 아르헨티나에서 하는 마케팅을 남이 알아도 아무도 신경 쓰지 않으니, 그런 일에는 사실상 내용이 넘어가는 모델을 써도 괜찮다고 해요. 반대로 공급망을 어떻게 짰는지, 어떤 협력사를 훌륭하다고 보는지는 경쟁사가 알면 곤란하니 회사 안에 남아야 한다고요. 가치 쪽도 같이 재야 하는데, 가치는 "이게 있을 때와 없을 때 할 수 있는 일의 차이"로 정해진다고 해요. 낸 것·잃은 것과 얻은 차이를 함께 다루려면 애플리케이션 플랫폼이 필요하고, 지금 그 규모로 쓸 수 있는 건 자기네 온톨로지<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>뿐이라는 게 카프의 주장이에요.</p>
+    <p>진행자가 "CEO들이 가치 없는 토큰값을 내느라 분노한다"는 카프의 예전 말을 꺼내자, 그는 <a href="https://www.youtube.com/watch?v=NDHeUx7nUbs&t=894s" target="_blank" rel="noopener">한 겹 더</a> 고쳐요. 가치 없는 토큰에 돈을 내면서, IP 일부가 경쟁사로 옮겨 가 <strong>돈을 두 번 내고 있어서</strong> 분노한다는 거예요. 소버린 플랫폼으로 핵심을 계속 쥘 수 있다는 걸 보고 나서는 덜 화낸다고 덧붙여요.</p>
+
+    <h2 id="security"><span class="hl">5. 보안</span> — 100% 차단이 아니라 게릴라전</h2>
+    <p>진행자는 자산의 주권과 함께, 끊임없이 들어오는 침입에서 자신을 지키는 일도 기본이 될 거라고 해요. 카프는 새 모델들 때문에 보안이 <a href="https://www.youtube.com/watch?v=NDHeUx7nUbs&t=1018s" target="_blank" rel="noopener">게릴라전에 가까워진다</a>고 답해요. 모델이 이미 사람이 감당 못 할 규모로 보안 허점을 드러내고 있고, 사람이라면 찾지 못했을 공격 경로를 아주 능숙하게 찾아낸다는 거예요.</p>
+    <ul>
+      <li><strong>질문이 바뀐다.</strong> "얼마나 빨리 막고, 얼마나 빨리 되받아치느냐"의 환경이 된다고 해요.</li>
+      <li><strong>목표가 바뀐다.</strong> 진행자가 "목표는 100% 안전"이라고 하자, 카프는 사회 전체로는 100% 보호란 없다는 걸 받아들이고, 몰랐던 침투 경로를 <strong>뚫리기 전에 더 빨리 찾아 고치는</strong> 쪽으로 가야 한다고 말해요. 곳마다 다른 보안 수준을 두는 것도 함께요.</li>
+    </ul>
+
+    <h2 id="politics"><span class="hl">6. 정치 리스크</span> — AI 경쟁의 진짜 위험</h2>
+    <p>진행자는 AI 경쟁이 모델이 아니라 에너지·반도체·데이터센터 같은 기반 시설의 문제라는 시각을 소개하며, 미국에서 약 1,500억 달러 규모의 <a href="https://www.youtube.com/watch?v=NDHeUx7nUbs&t=1101s" target="_blank" rel="noopener">AI 데이터센터가 지역 단체들에 막혔다</a>고 말해요. 카프는 먼저 "모델이 아니라 모델로 무엇을 하느냐"라고 짚은 뒤, 미국에 가장 큰 위험은 <strong>정치</strong>라고 답해요.</p>
+    <p>그의 논리는 이래요. AI는 이기든 지든 부를 만드는 장치인데, 예를 들어 카프 자신이 지금보다 20배 부자가 되는 것은 사회 문제라는 거예요. 같은 생각을 가진 사람들은 "다른 사람 재산도 해마다 4%씩 늘 것"이라고 답하지만, 그걸로는 미국 국민에게도 다른 서방 민주국가에도 설명이 안 된다고요. 자기는 팬층이 반대층보다 열 배쯤 크다고 보는 인기 있는 CEO인데도 팬들에게 설명할 방법을 모르겠다며, 이 문제를 미루는 척하면 극단주의자만 돕는다고 말해요.</p>
+
+    <h2 id="wealth-tax"><span class="hl">7. 부유세와 감시 국가</span> — 카프가 편 주장의 순서</h2>
+    <p>카프는 극단 쪽 해법의 예로 <strong>부유세</strong>를 들어요. 그의 주장으로는, 부유세는 혁신을 끄고 스타트업을 죽이며, 정작 자기 같은 사람은 세금을 내고 버틸 수 있으니 자기와 경쟁할 스타트업만 짓눌린다는 거예요. 부를 나누는 실질적 문제는 풀지 못하고, 엄청난 부자를 아프게 하는 정치적 문제만 푼다고요.</p>
+    <p>공익법인(PBC)<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup> 쪽으로 가려는 움직임에도 회의적이에요. 우선 "공익"이 무엇인지부터 합의해야 하는데, 자신이 크게 존중하고 자주 대화하는 <a href="https://www.youtube.com/watch?v=NDHeUx7nUbs&t=1307s" target="_blank" rel="noopener">다리오</a>와도 공익의 정의에는 합의하지 못할 거라고 해요. 서로를 각자 믿는 방향으로는 정직한 사람이라고 보면서도요. 그가 여러 번 강조하는 구분은 <strong>정치적 문제</strong>와 <strong>실질적 문제</strong>는 같지 않고 같은 방법으로 풀리지 않는다는 거예요. 서방은 정치적 문제를 실질적 문제처럼, 실질적 문제를 정치적 문제처럼 풀려 한다고요. 가난한 사람을 돕는 데 보편적으로 효과가 있었던 건 교육뿐이라는 말도 이 대목에서 나와요.</p>
+    <p>그는 독일 이민 정책을 두고 독일 인사들에게 해 온 경고를 같은 구조의 예로 들어요. 첫 번째 주장(정책 자체)에 대해서는 다툴 수 있어도, 다루지 않고 두면 문제를 풀려는 사람에게서 문제를 만드는 사람에게로 힘이 넘어간다는 <a href="https://www.youtube.com/watch?v=NDHeUx7nUbs&t=1432s" target="_blank" rel="noopener">"두 번째 도함수"</a>는 지난 10~15년 그렇게 흘러왔다는 게 그의 주장이에요. 부유세에서 감시로 이어지는 순서는 아래와 같아요.</p>
+
+    <figure class="motion">
+    <svg viewBox="0 0 620 420" role="img" aria-label="카프가 편 부유세 주장의 순서를 위에서 아래로 그린 흐름도다. 초고액 자산가에 대한 부유세 도입, 결국 순자산 100만 달러 수준까지 과세, 모든 자산을 실시간으로 보고 값을 매겨야 함, 호텔비 선물 시계까지 돈의 흐름 감시, 한번 열면 닫기 어려운 사생활 침해의 판도라 상자 순서다. 첫 단계 옆에는 혁신과 스타트업이 위축된다는 갈래가 있다.">
+      <defs>
+        <marker id="kp-arrow4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/>
+        </marker>
+      </defs>
+      <g class="mo-rise">
+        <rect x="20" y="16" width="370" height="50" rx="8" fill="none" stroke="var(--ink)" stroke-width="2"/>
+        <text x="205" y="47" text-anchor="middle" font-family="var(--font-body)" font-size="15" fill="var(--ink)">초고액 자산가에게 부유세</text>
+      </g>
+      <line x1="390" y1="41" x2="430" y2="41" stroke="var(--muted)" stroke-width="2" pathLength="1" class="mo-draw" style="--d:0.5s"/>
+      <g class="mo-rise" style="--d:0.6s">
+        <rect x="432" y="16" width="176" height="50" rx="8" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 4"/>
+        <text x="520" y="38" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--muted)">혁신·스타트업</text>
+        <text x="520" y="56" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--muted)">먼저 위축</text>
+      </g>
+      <line x1="205" y1="66" x2="205" y2="96" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#kp-arrow4)" pathLength="1" class="mo-draw" style="--d:0.8s"/>
+      <g class="mo-rise" style="--d:1.0s">
+        <rect x="20" y="100" width="370" height="50" rx="8" fill="none" stroke="var(--ink)" stroke-width="2"/>
+        <text x="205" y="131" text-anchor="middle" font-family="var(--font-body)" font-size="15" fill="var(--ink)">결국 순자산 100만 달러 수준까지</text>
+      </g>
+      <line x1="205" y1="150" x2="205" y2="180" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#kp-arrow4)" pathLength="1" class="mo-draw" style="--d:1.3s"/>
+      <g class="mo-rise" style="--d:1.5s">
+        <rect x="20" y="184" width="370" height="50" rx="8" fill="none" stroke="var(--ink)" stroke-width="2"/>
+        <text x="205" y="215" text-anchor="middle" font-family="var(--font-body)" font-size="15" fill="var(--ink)">모든 자산을 실시간으로 보고 값 매기기</text>
+      </g>
+      <line x1="205" y1="234" x2="205" y2="264" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#kp-arrow4)" pathLength="1" class="mo-draw" style="--d:1.8s"/>
+      <g class="mo-rise" style="--d:2.0s">
+        <rect x="20" y="268" width="370" height="50" rx="8" fill="none" stroke="var(--ink)" stroke-width="2"/>
+        <text x="205" y="299" text-anchor="middle" font-family="var(--font-body)" font-size="15" fill="var(--ink)">호텔비·선물·시계까지 돈 흐름 감시</text>
+      </g>
+      <line x1="205" y1="318" x2="205" y2="348" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#kp-arrow4)" pathLength="1" class="mo-draw" style="--d:2.3s"/>
+      <g class="mo-pop" style="--d:2.5s">
+        <rect x="20" y="352" width="370" height="54" rx="8" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <text x="205" y="377" text-anchor="middle" font-family="var(--font-body)" font-size="15" fill="var(--accent)">사생활 침해 — 판도라 상자</text>
+        <text x="205" y="397" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--accent)">한번 열면 닫기 어렵다</text>
+      </g>
+      <text x="432" y="300" font-family="var(--font-body)" font-size="13" fill="var(--muted)" class="mo-fade" style="--d:2.8s">카프: 우리 제품도</text>
+      <text x="432" y="318" font-family="var(--font-body)" font-size="13" fill="var(--muted)" class="mo-fade" style="--d:2.8s">아마 할 수 있지만</text>
+      <text x="432" y="336" font-family="var(--font-body)" font-size="13" fill="var(--muted)" class="mo-fade" style="--d:2.8s">관여하고 싶지 않다</text>
+    </svg>
+    <figcaption>카프가 <a href="https://www.youtube.com/watch?v=NDHeUx7nUbs&t=1554s" target="_blank" rel="noopener">25:54부터</a> 편 주장을 순서대로 옮긴 것이에요. 각 단계는 그의 예측이고, 이 글이 평가하지는 않아요.</figcaption>
+    </figure>
+    <p>순자산을 그 정도로 잘게 알려면 모든 자산을 실시간으로 들여다보고 값을 매기는 아주 강력한 제품이 필요하다는 것이 그가 감시 국가로 이어진다고 보는 이유예요. 사람들은 자기가 권력을 키운다고 여기지만 자신은 오히려 반(反)권력 쪽이라고 말해요. 그리고 이런 감시가 미국 수정헌법 1조·4조<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup>, 독일 헌법의 핵심 같은 보호 장치를 넘어서게 될 것을 이 정치 흐름의 가장 큰 위험으로 꼽아요.</p>
+
+    <h2 id="us-china"><span class="hl">8. 미·중 AI 경쟁</span> — 하루가 남들의 100일</h2>
+    <p>마지막 질문은 <a href="https://www.youtube.com/watch?v=NDHeUx7nUbs&t=1705s" target="_blank" rel="noopener">미국과 중국의 AI 경쟁</a>이에요. 카프는 이것이 가장 중요한 질문이라며, 기술 싸움에서 이긴 쪽이 세계를 가졌다는 당연한 사실을 우리가 잊었다고 해요. 예로 일본과 중국의 역사를 들어요. 600년 무렵까지는 중국이 문자 문화, 무너지지 않는 큰 사찰을 짓는 건축 등 모든 면에서 크게 앞서 있었고 그것이 한국을 거쳐 일본으로 들어갔는데, 일본이 낮은 부패와 아시아 밖에서 잘 되는 것(산업·수학·과학)을 받아들이는 태도로 군사적 우위에 섰다는 해석이에요. 독일 역사에서도 비슷한 결론을 봤다며, 이 경주에서 이긴 나라가 한참 뒤의 일까지 좌우한다고 말해요.</p>
+    <p>그가 보는 판은 미국 아니면 중국이고, 작은 예외로 이스라엘을 들어요. 유럽이 이 판에 없다는 데 몹시 화가 난다고 하면서요. 판을 이루는 층을 <a href="https://www.youtube.com/watch?v=NDHeUx7nUbs&t=1948s" target="_blank" rel="noopener">아래부터 쌓아</a> 설명해요.</p>
+
+    <figure class="motion">
+    <svg viewBox="0 0 640 420" role="img" aria-label="카프가 말한 AI 판의 층을 아래에서 위로 쌓은 그림이다. 칩, 연산을 다루는 소프트웨어, 데이터 위의 소프트웨어와 통합 층, 애플리케이션 층, IP를 지키며 설치하는 방식, 소버린 버전, 그리고 맨 위에 그것을 다루는 창의력이 있다. 오른쪽 괄호에 지금 이 전부를 가진 곳은 미국과 중국이라고 적혀 있고, 아래에 앞선 정도 약 6개월, 이 경쟁이 이어지는 하루는 다른 곳의 100일이라고 적혀 있다.">
+      <rect x="40" y="290" width="420" height="38" rx="6" fill="var(--accent)" opacity="0.25" class="mo-growx"/>
+      <text x="56" y="315" font-family="var(--font-body)" font-size="14" fill="var(--ink)" class="mo-fade">1 칩 (연산)</text>
+      <rect x="40" y="248" width="420" height="38" rx="6" fill="var(--accent)" opacity="0.32" class="mo-growx" style="--d:0.2s"/>
+      <text x="56" y="273" font-family="var(--font-body)" font-size="14" fill="var(--ink)" class="mo-fade" style="--d:0.2s">2 연산을 다루는 소프트웨어</text>
+      <rect x="40" y="206" width="420" height="38" rx="6" fill="var(--accent)" opacity="0.39" class="mo-growx" style="--d:0.4s"/>
+      <text x="56" y="231" font-family="var(--font-body)" font-size="14" fill="var(--ink)" class="mo-fade" style="--d:0.4s">3 데이터 위 소프트웨어 · 통합 층</text>
+      <rect x="40" y="164" width="420" height="38" rx="6" fill="var(--accent)" opacity="0.46" class="mo-growx" style="--d:0.6s"/>
+      <text x="56" y="189" font-family="var(--font-body)" font-size="14" fill="var(--ink)" class="mo-fade" style="--d:0.6s">4 애플리케이션 층</text>
+      <rect x="40" y="122" width="420" height="38" rx="6" fill="var(--accent)" opacity="0.53" class="mo-growx" style="--d:0.8s"/>
+      <text x="56" y="147" font-family="var(--font-body)" font-size="14" fill="var(--ink)" class="mo-fade" style="--d:0.8s">5 IP를 지키며 설치하는 방식</text>
+      <rect x="40" y="80" width="420" height="38" rx="6" fill="var(--accent)" opacity="0.6" class="mo-growx" style="--d:1.0s"/>
+      <text x="56" y="105" font-family="var(--font-body)" font-size="14" fill="var(--ink)" class="mo-fade" style="--d:1.0s">6 소버린 버전 (IP를 골라 공유)</text>
+      <rect x="40" y="38" width="420" height="38" rx="6" fill="none" stroke="var(--accent)" stroke-width="2.5" class="mo-pop" style="--d:1.3s"/>
+      <text x="56" y="63" font-family="var(--font-body)" font-size="14" fill="var(--ink)" class="mo-pop" style="--d:1.3s">7 그것을 다루는 창의력 (ingenuity)</text>
+      <path d="M476,40 L492,40 L492,326 L476,326" fill="none" stroke="var(--ink)" stroke-width="2" pathLength="1" class="mo-draw" style="--d:1.6s"/>
+      <text x="504" y="170" font-family="var(--font-heading)" font-size="14" fill="var(--ink)" class="mo-fade" style="--d:2.0s">지금 전부를</text>
+      <text x="504" y="190" font-family="var(--font-heading)" font-size="14" fill="var(--ink)" class="mo-fade" style="--d:2.0s">가진 곳:</text>
+      <text x="504" y="212" font-family="var(--font-heading)" font-size="14" fill="var(--accent)" class="mo-fade" style="--d:2.0s">미국(서방)·중국</text>
+      <text x="40" y="366" font-family="var(--font-body)" font-size="14" fill="var(--ink)" class="mo-fade" style="--d:2.4s">미국이 앞선 정도: 약 6개월 (카프 추정)</text>
+      <text x="40" y="396" font-family="var(--font-body)" font-size="14" fill="var(--accent)" class="mo-fade mo-pulse" style="--d:2.7s">이 경쟁이 이어지는 하루 = 다른 곳의 100일</text>
+    </svg>
+    <figcaption>층의 이름과 순서는 카프가 말한 그대로예요. 나머지 나라는 이 층을 다 갖지 못한 "파생물"이라 경쟁할 수 없다는 게 그의 주장이에요.</figcaption>
+    </figure>
+    <ul>
+      <li><strong>앞선 정도.</strong> 미국이 앞서 있다고 해도 6개월 정도라고 봐요. 중국이 더 적은 연산으로 돌도록 모델을 고쳐 짜는 능력, 가격을 낮추는 능력, 증류<sup class="fn-ref"><a href="#fn8" id="fnref8">8</a></sup> 관행, 전반적인 역량은 사라지지 않을 거라고요.</li>
+      <li><strong>강점.</strong> 미국의 강점은 창의성, 중국의 강점은 규모라고 하면서도, 미국 강점이 절대적이지 않다고 덧붙여요. "미국은 창의적인 카우보이, 중국은 규모는 크지만 창의적이지 않다"는 <a href="https://www.youtube.com/watch?v=NDHeUx7nUbs&t=2030s" target="_blank" rel="noopener">고정관념이 AI에서는 맞지 않는다</a>며, 중국의 대응이 훨씬 창의적이었다고 해요. 진씨 태극권을 13~14년쯤 수련했다는 자기 경험도 중국 문화를 보는 배경으로 들어요.</li>
+      <li><strong>안전 논의.</strong> 미국의 안전 논의 상당수는 경쟁, 특히 전장이라는 틀에 놓이지 않아서 통하지 않는다고 봐요. 군사에서도 민간에서도 최소한 앞서려고 해야 한다고요.</li>
+      <li><strong>시간.</strong> 마지막 말은 <a href="https://www.youtube.com/watch?v=NDHeUx7nUbs&t=2122s" target="_blank" rel="noopener">시간 함수</a>예요. 이 경쟁이 이어지는 하루하루, 미국은 중국을 뺀 다른 모두보다 100일씩 앞으로 나간다며 기하급수적이라고 표현해요.</li>
+    </ul>
+
+    <h2 id="choice"><span class="hl">나쁜 선택 vs 좋은 선택</span> — 회사 데이터를 외부 모델에 넣을 때</h2>
+    <p>제조 회사의 기획팀이 외부 AI 모델로 업무를 자동화하려는 장면이에요. 올리브 병으로 치면, 첫 올리브를 꺼내기 전에 무엇을 병 밖에 내놓을지 정하는 순간이에요.</p>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">마케팅 문구든 협력사 평가표든 가리지 않고 외부 모델에 넣고, 비용은 월 토큰 청구서로만 잰다 → 청구서는 싸 보여도, 어떤 협력사를 좋게 보는지 같은 지식이 회사 밖으로 나간 양은 아무도 모른다.</td>
+          <td class="choice-good">먼저 "경쟁사가 알면 곤란한가"로 데이터를 나눈다. 공급망·협력사 평가는 회사가 쥔 환경에 두고, 마케팅 초안처럼 넘어가도 괜찮은 일만 외부 모델에 맡긴다 → 비용 보고에 "낸 돈"과 "밖으로 나간 것"이 함께 적힌다.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 인용하기 전에</h2>
+    <p>대담과 설명란에 나온 값이에요. 저는 이 숫자들을 따로 검증하지 않았어요.</p>
+    <table>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
+      <tbody>
+        <tr><td>상장 당시 시가총액</td><td>약 150~160억 달러</td><td>진행자가 "15, 16 billion"이라고 말했고, 설명란은 약 160억 달러로 적었어요. 2020년 9월 직상장 기준이라는 시점은 설명란에만 있어요</td></tr>
+        <tr><td>2026년 10월 말 시가총액</td><td>약 4,700억 달러</td><td>대담에는 없고 설명란에만 있는 값이에요. 설명란이 근거로 팔란티어 2026년 2분기 실적 발표(SEC 8-K) 링크를 달았지만 직접 확인하지 않았어요</td></tr>
+        <tr><td>6년 사이 기업가치 증가</td><td>약 30배</td><td>설명란이 위 두 값으로 계산한 배수예요</td></tr>
+        <tr><td>지역 반대로 막힌 미국 AI 데이터센터</td><td>약 1,500억 달러</td><td>진행자의 말이에요. 설명란은 데이터센터 워치의 2026년 1분기 자료를 근거로 링크했어요</td></tr>
+        <tr><td>미국이 중국보다 앞선 정도</td><td>약 6개월</td><td>카프의 추정이에요</td></tr>
+        <tr><td>경쟁 속 하루의 무게</td><td>남들의 100일</td><td>측정값이 아니라 카프의 비유예요</td></tr>
+        <tr><td>카프의 재산·팬층 예시</td><td>20배 · 연 4% · 10배</td><td>"지금보다 20배 부자", "남들 재산은 연 4% 증가"라는 반론, "팬층이 반대층의 10배"는 모두 논리를 펴려고 든 예시나 그의 체감이에요</td></tr>
+        <tr><td>원본 대담 길이</td><td>35분 52초</td><td>설명란은 2026년 10월 23일 공개라고 적었어요</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 회사에 AI를 들일 때</h2>
+    <p>카프가 말한 두 가지 비용과 게릴라전 보안은 회의실보다 보고서 한 장에서 먼저 드러나요. 아래 증상이 보이면 이 자리부터 열어 봐요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-ip">
+          <td>AI 비용 보고에 <strong>토큰값만</strong> 있고, 어떤 데이터가 외부 모델로 나갔는지는 칸이 없어요</td>
+          <td>외부 모델로 보내는 요청의 데이터 목록과 각 데이터의 성격</td>
+          <td>보낸 데이터를 "경쟁사가 알면 곤란한가"로 나눠 보고, 곤란한 쪽이 섞여 있으면 그 일부터 회사가 쥔 환경으로 옮겨요(<a href="#two-costs">돈을 두 번 낸다</a>)</td>
+        </tr>
+        <tr id="suspect-patch">
+          <td>보안 목표가 <strong>"100% 차단"</strong> 하나뿐이고, 뚫렸을 때 몇 시간 안에 고치는지는 아무도 몰라요</td>
+          <td>최근 발견된 취약점마다 발견 시각과 고친 시각</td>
+          <td>두 시각 사이의 간격을 재 봐요. 카프의 기준으로는 그 간격이 공격자가 뚫는 시간보다 짧아야 해요(<a href="#security">게릴라전</a>)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2><span class="hl">함께 보기</span></h2>
+    <ul>
+      <li><a href="hapseok10-ai-economy-talk.html">김대식x오건영 지식인사이드 대담 — 전략무기가 된 AI</a> — AI를 국가 간 전략무기로 보는 시각으로, 이 글의 미·중 경쟁 대목과 이어져요.</li>
+      <li><a href="cost-and-control-of-local-llm.html">비용과 통제권 — 손익분기 계산과 누가 바꾸는가</a> — 모델을 직접 쥘 때의 비용과 통제권을 계산하는 글로, "낸 돈과 잃은 것"을 실제 숫자로 따져 볼 때 이어 읽어요.</li>
+      <li><a href="ai-code-security-basics.html">AI가 짠 백엔드 코드에서 반드시 확인할 것들</a> — 허점을 빨리 찾아 고치는 쪽의 기본 점검 목록이에요.</li>
+    </ul>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">분포 밖(out of distribution) — 통계나 머신러닝에서, 지금까지 보던 데이터의 흔한 범위를 벗어난 것을 가리키는 말이에요. 카프는 이 말을 "남들이 잘 다루지 못하는 드문 것"이라는 뜻으로 써요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">비트겐슈타인 — 언어와 규칙을 깊이 다룬 오스트리아 출신 철학자예요. 카프는 이 말이 독일어로 특히 간결하다고 덧붙여요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">FDE(forward deployed engineer) — 고객 현장에 나가 고객의 문제에 맞춰 제품을 붙이고 고치는 엔지니어예요. 카프는 이들을 예술가 마을과 고객 조직을 잇는 전달 장치로 설명해요. <a href="#fnref3">↩</a></li>
+        <li id="fn4">소버린(sovereign) AI·아키텍처 — 모델과 데이터를 남의 것에 맡기지 않고 그 조직이나 나라가 직접 소유·통제하는 방식이에요. 진행자는 카프가 이 흐름을 시작했다고 소개해요. <a href="#fnref4">↩</a></li>
+        <li id="fn5">온톨로지(ontology) — 팔란티어가 자기 플랫폼의 한 부분을 부르는 이름이에요. 대담에서는 비용과 가치를 함께 다루는 "애플리케이션 플랫폼"으로 소개돼요. <a href="#fnref5">↩</a></li>
+        <li id="fn6">공익법인(public benefit corporation, PBC) — 이익을 내는 회사이면서 정관에 공익 목적을 함께 적어 두는 미국의 회사 형태예요. <a href="#fnref6">↩</a></li>
+        <li id="fn7">미국 수정헌법 1조·4조 — 1조는 표현·종교·집회의 자유를, 4조는 부당한 수색과 압수를 받지 않을 권리를 다뤄요. <a href="#fnref7">↩</a></li>
+        <li id="fn8">증류(distillation) — 큰 모델의 답을 모아 작은 모델을 가르쳐, 비슷한 능력을 싸게 얻는 방법이에요. 남의 모델 답을 허락 없이 모아 쓰는 경우가 문제로 거론돼요. <a href="#fnref8">↩</a></li>
+      </ol>
+    </section>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="motion.js"></script>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>

@@ -1899,3 +1899,45 @@ sup.table-note-mark {
 .py-post-summary::-webkit-details-marker { display: none; }
 .py-post-summary a { flex: 1 1 auto; }
 .py-post-children { margin-top: 0.3rem; padding-left: 1.4rem; }
+
+/* 움직이는 도식(.mo-js 는 motion.js 가 붙임 — JS 없으면 처음부터 다 보임): figure.motion 이 화면에 들어오면 motion.js 가 .is-on 을 붙여 한 번 재생한다.
+   --d 로 요소마다 시작을 늦춰 순서를 보여 준다. 누르면 다시 재생. */
+figure.motion { cursor: pointer; }
+figure.motion .mo-grow { transform-box: fill-box; transform-origin: 50% 100%; }
+figure.motion .mo-growx { transform-box: fill-box; transform-origin: 0 50%; }
+.mo-js figure.motion .mo-fade,
+.mo-js figure.motion .mo-rise,
+.mo-js figure.motion .mo-grow,
+.mo-js figure.motion .mo-pop { opacity: 0; }
+.mo-js figure.motion .mo-draw { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.mo-js figure.motion .mo-grow { transform: scaleY(0); }
+.mo-js figure.motion .mo-growx { transform: scaleX(0); }
+figure.motion .mo-pop { transform-box: fill-box; transform-origin: center; }
+figure.motion.is-on .mo-fade { animation: mo-fade 0.6s ease-out forwards; animation-delay: var(--d, 0s); }
+figure.motion.is-on .mo-rise { animation: mo-rise 0.7s ease-out forwards; animation-delay: var(--d, 0s); }
+figure.motion.is-on .mo-draw { animation: mo-draw 1.2s ease-in-out forwards; animation-delay: var(--d, 0s); }
+figure.motion.is-on .mo-grow { animation: mo-grow 0.9s ease-out forwards; animation-delay: var(--d, 0s); }
+figure.motion.is-on .mo-growx { animation: mo-growx 0.9s ease-out forwards; animation-delay: var(--d, 0s); }
+figure.motion.is-on .mo-pop { animation: mo-pop 0.5s cubic-bezier(.3,1.6,.6,1) forwards; animation-delay: var(--d, 0s); }
+figure.motion.is-on .mo-pulse { animation: mo-pulse 1.6s ease-in-out infinite; animation-delay: var(--d, 0s); }
+figure.motion.is-on .mo-flow { stroke-dasharray: 6 6; animation: mo-flow 1s linear infinite; }
+@keyframes mo-fade { to { opacity: 1; } }
+@keyframes mo-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes mo-draw { to { stroke-dashoffset: 0; } }
+@keyframes mo-grow { from { opacity: 1; transform: scaleY(0); } to { opacity: 1; transform: scaleY(1); } }
+@keyframes mo-growx { to { transform: scaleX(1); } }
+@keyframes mo-pop { from { opacity: 0; transform: scale(0.4); } to { opacity: 1; transform: scale(1); } }
+@keyframes mo-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+@keyframes mo-flow { to { stroke-dashoffset: -12; } }
+figure.motion .mo-replay { display: block; margin-top: 0.3rem; font-size: 0.8rem; color: var(--muted); text-align: right; }
+@media (prefers-reduced-motion: reduce) {
+  figure.motion .mo-fade, figure.motion .mo-rise, figure.motion .mo-grow, figure.motion .mo-pop { opacity: 1 !important; transform: none !important; animation: none !important; }
+  figure.motion .mo-growx { transform: none !important; animation: none !important; }
+  figure.motion .mo-draw { stroke-dashoffset: 0 !important; animation: none !important; }
+  figure.motion .mo-pulse, figure.motion .mo-flow { animation: none !important; }
+  figure.motion .mo-replay { display: none; }
+}
+
+/* 유튜브 임베드: 16:9 반응형 */
+.video-embed { position: relative; width: 100%; aspect-ratio: 16 / 9; margin: 1.2rem 0; border: 3px solid var(--border); border-radius: 12px; overflow: hidden; background: #000; }
+.video-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
