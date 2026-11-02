@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>실습 문제 10개 — 초급·중급·고급으로 파일 읽고 쓰기 코드 읽고 결과 예측하기 - Tigermorning</title>
+<meta name="description" content="왕초보를 위한 Python 6장 파일(6.1~6.3) 범위로 만든 초급 3·중급 4·고급 3 코드 읽기 실습 10문제. 코드를 읽고 실행 결과를 예측해요.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=JetBrains+Mono:wght@400;600&family=Nanum+Gothic+Coding:wght@400;700&display=swap">
+<style>
+:root {
+  --ground: #F3F6F5;
+  --surface: #FFFFFF;
+  --sunken: #E8EEEC;
+  --ink: #18221F;
+  --ink-soft: #4B5A56;
+  --ink-faint: #7C8A86;
+  --line: #D3DCD9;
+  --accent: #2B5B84;
+  --accent-ink: #FFFFFF;
+  --memo: #FFF6D1;
+  --memo-line: #E3C75A;
+  --lv-basic: #2A7563;
+  --lv-basic-bg: #DDEFE9;
+  --lv-mid: #2B5B84;
+  --lv-mid-bg: #DCE8F3;
+  --lv-adv: #7A3E6E;
+  --lv-adv-bg: #F0E0EC;
+  --code-bg: #1C2724;
+  --code-ink: #DCE5E1;
+  --c-kw: #F2C94C;
+  --c-str: #9FD8A8;
+  --c-num: #F4A37A;
+  --c-com: #7F938D;
+  --c-fn: #8CC4F2;
+  --c-meta: #6F827C;
+  --font-display: "Hahmlet", "Noto Serif KR", "Batang", serif;
+  --font-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Nanum Gothic Coding", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #111816;
+    --surface: #18211F;
+    --sunken: #1F2A27;
+    --ink: #E2EAE7;
+    --ink-soft: #A7B5B0;
+    --ink-faint: #74847F;
+    --line: #2C3935;
+    --accent: #7FB2E0;
+    --accent-ink: #0E1A24;
+    --memo: #2A2717;
+    --memo-line: #8C7A33;
+    --lv-basic: #7ACCB5;
+    --lv-basic-bg: #1B322B;
+    --lv-mid: #8DBBE6;
+    --lv-mid-bg: #1C2B38;
+    --lv-adv: #D9A3CC;
+    --lv-adv-bg: #33222F;
+    --code-bg: #0B110F;
+    --code-ink: #D6E0DC;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #111816;
+  --surface: #18211F;
+  --sunken: #1F2A27;
+  --ink: #E2EAE7;
+  --ink-soft: #A7B5B0;
+  --ink-faint: #74847F;
+  --line: #2C3935;
+  --accent: #7FB2E0;
+  --accent-ink: #0E1A24;
+  --memo: #2A2717;
+  --memo-line: #8C7A33;
+  --lv-basic: #7ACCB5;
+  --lv-basic-bg: #1B322B;
+  --lv-mid: #8DBBE6;
+  --lv-mid-bg: #1C2B38;
+  --lv-adv: #D9A3CC;
+  --lv-adv-bg: #33222F;
+  --code-bg: #0B110F;
+  --code-ink: #D6E0DC;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15.5px;
+  line-height: 1.7;
+  padding-inline: 20px;
+  padding-block: 0 80px;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+.wrap {
+  max-width: 1100px;
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 48px;
+}
+
+/* ---------- header ---------- */
+.masthead {
+  grid-column: 1 / -1;
+  padding-block: 48px 8px;
+  display: grid;
+  gap: 14px;
+  max-width: 760px;
+}
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+}
+.eyebrow b { color: var(--ink-soft); font-weight: 600; }
+h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(30px, 5vw, 44px);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin: 0;
+  text-wrap: balance;
+}
+h1 .prompt { font-family: var(--font-mono); color: var(--accent); font-weight: 600; font-size: 0.7em; vertical-align: 0.12em; margin-right: 0.3em; }
+.lead { margin: 0; color: var(--ink-soft); max-width: 62ch; }
+.counts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.count {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}
+.count.basic { background: var(--lv-basic-bg); color: var(--lv-basic); }
+.count.mid { background: var(--lv-mid-bg); color: var(--lv-mid); }
+.count.adv { background: var(--lv-adv-bg); color: var(--lv-adv); }
+.count.all { background: var(--sunken); color: var(--ink-soft); }
+
+/* ---------- sidebar ---------- */
+.toc {
+  position: sticky;
+  top: 24px;
+  align-self: start;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  padding-block: 8px;
+  font-size: 13.5px;
+}
+.toc h2 {
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+  font-weight: 600;
+  margin: 18px 0 6px;
+}
+.toc h2:first-child { margin-top: 0; }
+.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; }
+.toc a {
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  gap: 6px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  padding: 3px 8px;
+  border-radius: 6px;
+  line-height: 1.45;
+}
+.toc a:hover { background: var(--sunken); color: var(--ink); }
+.toc a .n { font-family: var(--font-mono); font-size: 12px; color: var(--ink-faint); font-variant-numeric: tabular-nums; padding-top: 1px; }
+.toc .grp-basic h2 { color: var(--lv-basic); }
+.toc .grp-mid h2 { color: var(--lv-mid); }
+.toc .grp-adv h2 { color: var(--lv-adv); }
+
+main { min-width: 0; display: grid; gap: 56px; }
+
+/* ---------- toolbar ---------- */
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--ground);
+  padding-block: 12px;
+  margin-block: -12px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid var(--line);
+}
+.seg { display: flex; flex-wrap: wrap; gap: 4px; }
+.seg button, .ghost {
+  font: 500 13.5px/1 var(--font-body);
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid var(--line);
+  padding: 8px 13px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.seg button:hover, .ghost:hover { color: var(--ink); border-color: var(--ink-faint); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--ground); border-color: var(--ink); }
+
+/* ---------- intro blocks ---------- */
+.intro { display: grid; gap: 28px; }
+h2.sec {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 22px;
+  margin: 0 0 12px;
+  text-wrap: balance;
+}
+.howto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+.howto div {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: grid;
+  gap: 6px;
+  align-content: start;
+}
+.howto .k { font-family: var(--font-mono); font-size: 12.5px; font-weight: 600; color: var(--accent); }
+.howto ul, .p-body ul, .sol ul { margin: 0; padding-left: 1.1em; display: grid; gap: 3px; }
+.howto li { font-size: 14px; color: var(--ink-soft); }
+.note { font-size: 14px; color: var(--ink-soft); margin: 12px 0 0; }
+
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 8px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+th { font-size: 12px; letter-spacing: 0.05em; color: var(--ink-faint); font-weight: 600; background: var(--sunken); }
+td.src { color: var(--ink-faint); font-size: 13px; white-space: nowrap; }
+.table-scroll.fill td, .table-scroll.fill th { text-align: center; font-variant-numeric: tabular-nums; font-family: var(--font-mono); font-size: 13px; }
+.table-scroll.fill td:first-child, .table-scroll.fill th:first-child { text-align: left; }
+
+code { font-family: var(--font-mono); font-size: 0.88em; background: var(--sunken); padding: 1px 5px; border-radius: 4px; }
+pre { margin: 0; }
+pre code {
+  display: block;
+  background: var(--code-bg);
+  color: var(--code-ink);
+  padding: 14px 18px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  line-height: 1.65;
+  overflow-x: auto;
+  tab-size: 4;
+}
+pre.out code { background: var(--sunken); color: var(--ink); border: 1px dashed var(--line); }
+pre.out { position: relative; }
+pre.out::before {
+  content: "출력";
+  position: absolute; top: 6px; right: 10px;
+  font: 600 10.5px/1 var(--font-body); letter-spacing: 0.08em; color: var(--ink-faint);
+}
+.hljs-keyword, .hljs-literal { color: var(--c-kw); }
+.hljs-string { color: var(--c-str); }
+.hljs-number { color: var(--c-num); }
+.hljs-comment { color: var(--c-com); font-style: italic; }
+.hljs-built_in, .hljs-title { color: var(--c-fn); }
+.hljs-meta { color: var(--c-meta); }
+
+/* ---------- level sections ---------- */
+.level { display: grid; gap: 18px; }
+/* display:grid가 hidden 속성을 덮어쓰지 않게 — 난이도 필터가 이 속성으로 숨긴다 */
+[data-level][hidden] { display: none; }
+.level-head { display: grid; gap: 4px; padding-bottom: 4px; }
+.level-head .tag {
+  justify-self: start;
+  font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+  padding: 2px 10px; border-radius: 999px;
+}
+.level-head h2 { font-family: var(--font-display); font-weight: 700; font-size: 28px; margin: 0; text-wrap: balance; }
+.level-head p { margin: 0; color: var(--ink-soft); max-width: 62ch; }
+.level.basic { --lv: var(--lv-basic); --lv-bg: var(--lv-basic-bg); }
+.level.mid { --lv: var(--lv-mid); --lv-bg: var(--lv-mid-bg); }
+.level.adv { --lv: var(--lv-adv); --lv-bg: var(--lv-adv-bg); }
+.level-head .tag { background: var(--lv-bg); color: var(--lv); }
+
+/* ---------- problem ---------- */
+.problem {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 22px 24px;
+  display: grid;
+  gap: 14px;
+}
+.p-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px; }
+.p-id { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--lv); font-variant-numeric: tabular-nums; }
+.p-type {
+  font-size: 12px; font-weight: 600; letter-spacing: 0.02em;
+  color: var(--ink-soft); border: 1px solid var(--line); border-radius: 5px; padding: 0 7px;
+}
+.problem h3 { font-family: var(--font-display); font-weight: 500; font-size: 19px; margin: 0; flex-basis: 100%; line-height: 1.4; text-wrap: balance; }
+.p-body { display: grid; gap: 12px; max-width: 70ch; }
+.p-body p { margin: 0; }
+.p-body li, .sol li { padding-left: 2px; }
+.spec { font-size: 14px; color: var(--ink-soft); }
+
+.memo { display: grid; gap: 6px; }
+.memo label { font-size: 12.5px; font-weight: 600; color: var(--ink-soft); display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.memo label span { font-weight: 400; color: var(--ink-faint); }
+.memo textarea {
+  width: 100%;
+  min-height: 72px;
+  resize: vertical;
+  font: 13.5px/1.6 var(--font-mono);
+  color: var(--ink);
+  background: var(--memo);
+  border: 1px dashed var(--memo-line);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+details.sol { border-top: 1px solid var(--line); padding-top: 12px; }
+details.sol summary {
+  cursor: pointer;
+  list-style: none;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-weight: 600; font-size: 14px; color: var(--lv);
+  padding: 4px 0;
+}
+details.sol summary::-webkit-details-marker { display: none; }
+details.sol summary::before {
+  content: "";
+  width: 7px; height: 7px;
+  border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform .15s;
+}
+details.sol[open] summary::before { transform: rotate(45deg); }
+@media (prefers-reduced-motion: reduce) { details.sol summary::before { transition: none; } }
+.sol-body { display: grid; gap: 12px; padding-top: 10px; max-width: 70ch; }
+.sol-body p { margin: 0; }
+.sol-body h4 { margin: 4px 0 0; font-size: 13px; letter-spacing: 0.04em; color: var(--ink-faint); font-weight: 600; }
+.sol-body .real { background: var(--lv-bg); border-radius: 8px; padding: 10px 14px; font-size: 14.5px; }
+.sol-body .real b { color: var(--lv); }
+
+footer { grid-column: 1 / -1; color: var(--ink-faint); font-size: 13px; border-top: 1px solid var(--line); padding-top: 18px; }
+
+@media (max-width: 860px) {
+  .wrap { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .toc { display: none; }
+  .masthead { padding-top: 32px; }
+  .problem { padding: 18px 16px; }
+  pre code { font-size: 13px; padding: 12px 14px; }
+}
+body { margin: 0; }
+.backlink { font-family: var(--font-body); font-size: 13px; text-decoration: none; }
+.backlink:hover { text-decoration: underline; }
+
+details.hint { border-top: 1px solid var(--line); padding-top: 12px; }
+details.hint summary {
+  cursor: pointer; list-style: none;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-weight: 600; font-size: 14px; color: var(--ink-soft);
+  padding: 4px 0;
+}
+details.hint summary::-webkit-details-marker { display: none; }
+details.hint summary::before {
+  content: ""; width: 7px; height: 7px;
+  border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg); transition: transform .15s;
+}
+details.hint[open] summary::before { transform: rotate(45deg); }
+main, .problem, .p-body, .sol-body, .level { min-width: 0; }
+.p-body pre, .sol-body pre { max-width: 100%; overflow-x: auto; }
+.p-body p { margin: 0; }
+.p-body .table-scroll, .sol-body .table-scroll { overflow-x: auto; }
+</style>
+</head>
+
+<body>
+
+<div class="wrap">
+  <header class="masthead">
+    <a class="backlink" href="posts.html#python-basics-books">← Tigermorning 블로그 · 파이썬 스터디 › 왕초보를 위한 Python</a>
+    <a class="backlink" href="beginner-python-ch06-answers.html">← 이전 편: 문제 해설 — 밴드 이름·비밀 메시지·끝말 잇기·영어 퀴즈·애국가</a>
+    <div class="eyebrow"><b>왕초보를 위한 Python</b> · 6장 파일 · 6.1 – 6.3</div>
+    <h1><span class="prompt">&gt;&gt;&gt;</span>6장 파일 코드 읽기 실습</h1>
+    <p class="lead">코드를 짜지 않고 <b>완성된 코드를 읽고 실행 결과를 예측</b>하는 문제집. 문제마다 <b>힌트 보기</b>와 <b>정답·해설 보기</b>가 따로 접혀 있으니, 먼저 힌트를 보고 그래도 안 풀리면 정답을 펼쳐요. 코드 실행 결과는 파이썬 3.12.10(윈도우)로 실제로 돌려서 넣었고, 파일은 문제마다 새로 만든 폴더에서 시작해요.</p>
+    <div class="counts">
+      <span class="count all">10문제</span>
+      <span class="count basic">초급 3</span><span class="count mid">중급 4</span><span class="count adv">고급 3</span>
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="문제 목록">
+<div class="grp-basic"><h2>초급</h2><ol><li><a href="#b1"><span class="n">1</span>write 는 줄을 바꿔 주지 않는다</a></li><li><a href="#b2"><span class="n">2</span>'w' 는 지우고 'a+' 는 이어 쓴다</a></li><li><a href="#b3"><span class="n">3</span>readline 은 부를 때마다 다음 줄</a></li></ol></div>
+<div class="grp-mid"><h2>중급</h2><ol><li><a href="#m1"><span class="n">1</span>다 읽으면 빈 글자 — seek 로 되돌리기</a></li><li><a href="#m2"><span class="n">2</span>슬라이싱과 end 로 줄 바꿈 조절</a></li><li><a href="#m3"><span class="n">3</span>빈 줄로 자르면 몇 덩어리</a></li><li><a href="#m4"><span class="n">4</span>pickle 은 같은 값을 새로 만든다</a></li></ol></div>
+<div class="grp-adv"><h2>고급</h2><ol><li><a href="#a1"><span class="n">1</span>glob 패턴과 폴더 가려내기</a></li><li><a href="#a2"><span class="n">2</span>줄 수·낱말 수·글자 수를 세는 길</a></li><li><a href="#a3"><span class="n">3</span>한글 파일을 인코딩 없이 열면 (윈도우 기준)</a></li></ol></div>
+  </nav>
+
+  <main>
+    <div class="toolbar">
+      <div class="seg" role="group" aria-label="난이도 필터">
+        <button type="button" id="f-all" data-filter="all" aria-pressed="true">전체</button>
+        <button type="button" id="f-basic" data-filter="basic" aria-pressed="false">초급</button><button type="button" id="f-mid" data-filter="mid" aria-pressed="false">중급</button><button type="button" id="f-adv" data-filter="adv" aria-pressed="false">고급</button>
+      </div>
+      <button type="button" class="ghost" id="toggle-sol">정답·해설 모두 펼치기</button>
+    </div>
+
+    <section class="level basic" data-level="basic">
+      <div class="level-head">
+        <span class="tag">초급</span>
+        <h2>6.1 기본기 — 쓰기·덧붙이기·한 줄 읽기</h2>
+        <p>write 와 줄 바꿈, 'w' 와 'a+' 의 차이, readline 이 줄을 넘어가는 모습을 한 문제에 한 가지씩 확인해요.</p>
+      </div>
+
+      <article class="problem" id="b1">
+        <div class="p-head"><span class="p-id">초급 1</span><span class="p-type">읽기</span><h3>write 는 줄을 바꿔 주지 않는다</h3></div>
+        <div class="p-body">
+<p><code>write()</code>는 준 글자를 그대로 써요. 줄 바꿈이 필요하면 <code>\n</code>을 직접 넣어야 해요.</p>
+<pre><code class="language-python">f = open('memo.txt', 'w')             # f 에 memo.txt 를 쓰기용으로 열어 담아 주세요
+f.write('apple')                      # f 에 'apple' 을 써 주세요
+f.write('banana\n')                   # f 에 'banana' 와 줄 바꿈을 써 주세요
+f.write('cherry')                     # f 에 'cherry' 를 써 주세요
+f.close()                             # f 를 닫아 주세요
+
+print(repr(open('memo.txt').read()))  # memo.txt 의 내용을 보이는 모양 그대로 화면에 보여 주세요
+print(open('memo.txt').read())        # memo.txt 의 내용을 읽어 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 무엇이 출력될까요?</p><div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr></tbody></table></div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+<p><code>write('apple')</code> 바로 다음에 <code>write('banana\n')</code>를 하면 두 글자가 이어져서 한 덩어리가 돼요. 줄이 바뀌는 곳은 <code>\n</code>이 있는 곳뿐이에요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-b1">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b1"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">'applebanana\ncherry'
+applebanana
+cherry</code></pre>
+    <p><b>한 문장으로:</b> <code>write</code>를 세 번 해도 <code>\n</code>이 있는 곳에서만 줄이 바뀌어서, 파일에는 <code>applebanana</code>와 <code>cherry</code> 두 줄이 생겨요.</p>
+    <h4>왜 이런 결과가 나올까요</h4><p>파일에 쓴 글자는 <code>apple</code> + <code>banana\n</code> + <code>cherry</code> 순서로 이어진 하나의 글자예요. 첫 번째 출력(<code>repr</code>)은 그 글자를 <code>\n</code>이 보이는 모양으로, 두 번째 출력은 줄 바꿈을 적용해 보여 줘요.</p>
+    <h4>헷갈리기 쉬운 곳</h4><ul><li><code>print</code>는 자기 줄 끝에 줄 바꿈을 하나 더해요. 파일에 쓰는 <code>write</code>는 그러지 않으니 <code>print</code> 습관대로 줄이 바뀔 거라고 생각하면 안 돼요.</li></ul>
+    <p><b>핵심 한 줄:</b> <code>write</code>는 준 글자만 쓰고, 줄 바꿈은 <code>\n</code>으로 직접 넣어요.</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="b2">
+        <div class="p-head"><span class="p-id">초급 2</span><span class="p-type">읽기</span><h3>'w' 는 지우고 'a+' 는 이어 쓴다</h3></div>
+        <div class="p-body">
+<p>같은 파일을 모드를 바꿔 가며 열어요. 매번 열기 전의 내용이 남아 있는지가 핵심이에요.</p>
+<pre><code class="language-python">with open('a.txt', 'w') as f:      # a.txt 를 쓰기용으로 열어 f 라 불러 주세요
+    f.write('one\n')               # f 에 'one' 과 줄 바꿈을 써 주세요
+with open('a.txt', 'a+') as f:     # a.txt 를 덧붙이기용으로 열어 f 라 불러 주세요
+    f.write('two\n')               # f 에 'two' 와 줄 바꿈을 써 주세요
+print(repr(open('a.txt').read()))  # a.txt 의 내용을 보이는 모양 그대로 화면에 보여 주세요
+
+with open('a.txt', 'w') as f:      # a.txt 를 쓰기용으로 다시 열어 f 라 불러 주세요
+    f.write('three\n')             # f 에 'three' 와 줄 바꿈을 써 주세요
+print(repr(open('a.txt').read()))  # a.txt 의 내용을 보이는 모양 그대로 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 무엇이 출력될까요?</p><div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr></tbody></table></div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+<p><code>'a+'</code>는 기존 내용 뒤에 이어 쓰고, <code>'w'</code>는 열자마자 파일을 비워요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-b2">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b2"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">'one\ntwo\n'
+'three\n'</code></pre>
+    <p><b>한 문장으로:</b> <code>'a+'</code>로 연 뒤에는 <code>one</code>과 <code>two</code>가 함께 있고, <code>'w'</code>로 다시 열면 앞의 것이 모두 사라지고 <code>three</code>만 남아요.</p>
+    <h4>왜 이런 결과가 나올까요</h4><p>첫 줄은 <code>'w'</code>로 새로 만들며 <code>one</code>을 쓰고, 둘째 <code>with</code>는 <code>'a+'</code>라 끝에 <code>two</code>를 이어 써서 두 줄이 돼요. 마지막 <code>with</code>는 다시 <code>'w'</code>라서 열 때 파일이 비워지고 <code>three</code>만 쓰여요.</p>
+    <h4>헷갈리기 쉬운 곳</h4><ul><li><code>'w'</code>는 <b>쓰기 시작할 때가 아니라 여는 순간</b> 내용을 지워요. 아무것도 안 쓰고 열었다가 닫기만 해도 파일이 비어요.</li></ul>
+    <p><b>핵심 한 줄:</b> <code>'w'</code>는 지우고 새로, <code>'a+'</code>는 뒤에 이어서 써요.</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="b3">
+        <div class="p-head"><span class="p-id">초급 3</span><span class="p-type">읽기</span><h3>readline 은 부를 때마다 다음 줄</h3></div>
+        <div class="p-body">
+<p><code>lines.txt</code>에는 <code>1번째 줄</code>부터 <code>15번째 줄</code>까지 한 줄에 하나씩 들어 있어요.</p>
+<pre><code class="language-python">f = open('lines.txt', encoding='utf-8')  # f 에 lines.txt 를 UTF-8 읽기용으로 열어 담아 주세요
+a = f.readline()                         # a 에 f 의 한 줄을 담아 주세요
+b = f.readline()                         # b 에 f 의 다음 한 줄을 담아 주세요
+print(a == b)                            # a 와 b 가 같은지 화면에 보여 주세요
+print(a.strip(), b.strip())              # a 와 b 의 줄 끝을 지워 화면에 보여 주세요
+print(len(a))                            # a 의 글자 수를 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 무엇이 출력될까요?</p><div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr></tbody></table></div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+<p><code>readline()</code>은 부를 때마다 읽던 자리 다음 줄을 줘요. 글자 수를 셀 때는 줄 끝의 <code>\n</code>도 한 글자예요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-b3">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-b3"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">False
+1번째 줄 2번째 줄
+6</code></pre>
+    <p><b>한 문장으로:</b> 두 번 읽으면 서로 다른 줄(<code>1번째 줄</code>, <code>2번째 줄</code>)이고, 줄 끝의 <code>\n</code>까지 세서 글자 수는 6이에요.</p>
+    <h4>왜 이런 결과가 나올까요</h4><p><code>a</code>는 첫 줄, <code>b</code>는 그 다음 줄이라 둘은 달라요. <code>a</code>의 실제 값은 <code>'1번째 줄\n'</code>이라서 <code>1</code>·<code>번</code>·<code>째</code>·공백·<code>줄</code>·<code>\n</code> 여섯 글자예요.</p>
+    <h4>헷갈리기 쉬운 곳</h4><ul><li>눈에 보이는 글자는 다섯 개라 5라고 답하기 쉬워요. 줄 끝의 <code>\n</code>은 화면에 안 보이지만 글자 수에 들어가요.</li></ul>
+    <p><b>핵심 한 줄:</b> <code>readline()</code>은 부를 때마다 다음 줄이고, 줄 끝 <code>\n</code>도 글자예요.</p>
+          </div>
+        </details>
+      </article>
+
+    </section>
+
+    <section class="level mid" data-level="mid">
+      <div class="level-head">
+        <span class="tag">중급</span>
+        <h2>6.2 ~ 6.3 읽은 자리·슬라이싱·split·pickle</h2>
+        <p>읽던 자리, 줄 끝 \n 과 print, 빈 줄로 자르기, pickle 로 값 되살리기를 읽어요.</p>
+      </div>
+
+      <article class="problem" id="m1">
+        <div class="p-head"><span class="p-id">중급 1</span><span class="p-type">읽기</span><h3>다 읽으면 빈 글자 — seek 로 되돌리기</h3></div>
+        <div class="p-body">
+<p>파일에는 "어디까지 읽었나"를 기억하는 자리가 하나 있어요. <code>Python_for_Fun.txt</code> 전체는 61글자예요.</p>
+<pre><code class="language-python">f = open('Python_for_Fun.txt')  # f 에 Python_for_Fun.txt 를 읽기용으로 열어 담아 주세요
+first = f.readline()            # first 에 f 의 첫 줄을 담아 주세요
+rest = f.read()                 # rest 에 f 의 나머지 전부를 글자 하나로 담아 주세요
+again = f.read()                # again 에 f 를 한 번 더 읽은 것을 담아 주세요
+print(repr(first))              # first 를 보이는 모양 그대로 화면에 보여 주세요
+print(len(rest))                # rest 의 글자 수를 화면에 보여 주세요
+print(repr(again))              # again 을 보이는 모양 그대로 화면에 보여 주세요
+f.seek(0)                       # f 의 읽는 자리를 맨 앞으로 돌려 주세요
+print(f.readline() == first)    # f 의 첫 줄이 first 와 같은지 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 무엇이 출력될까요?</p><div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr><tr><td>4번째 줄</td><td>?</td></tr></tbody></table></div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+<p>전체 61글자 중 첫 줄이 몇 글자인지 세어 보세요. <code>rest</code>는 나머지예요. 그리고 다 읽은 뒤에 읽으면 무엇이 남아 있을까요?</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-m1">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m1"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">'Programming is fun.\n'
+41
+''
+True</code></pre>
+    <p><b>한 문장으로:</b> 첫 줄을 읽고 남은 41글자를 <code>read()</code>가 가져가서, 다시 읽으면 빈 글자이고, <code>seek(0)</code> 뒤에는 다시 첫 줄부터 읽혀요.</p>
+    <h4>왜 이런 결과가 나올까요</h4><p>첫 줄 <code>'Programming is fun.\n'</code>은 20글자라 나머지는 61 − 20 = 41글자예요. <code>read()</code>가 끝까지 읽은 뒤에는 읽을 것이 없어서 <code>again</code>은 빈 글자예요. <code>seek(0)</code>으로 자리를 맨 앞으로 되돌리면 <code>readline()</code>이 다시 첫 줄을 줘서 <code>first</code>와 같아요.</p>
+    <h4>헷갈리기 쉬운 곳</h4><ul><li>파일을 한 번 읽고 나서 같은 파일 객체로 다시 <code>read()</code>하면 에러 없이 빈 글자만 돌아와요. 아무 일도 없다는 듯 조용해서 알아차리기 어려워요.</li><li>이미 읽은 내용이 필요하면 변수에 담아 두거나, <code>seek(0)</code>으로 되돌리거나, 파일을 새로 열어요.</li></ul>
+    <p><b>핵심 한 줄:</b> 파일은 읽은 만큼 앞으로 가고, 끝까지 읽으면 빈 글자만 나와요. <code>seek(0)</code>이 맨 앞으로 되돌려요.</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="m2">
+        <div class="p-head"><span class="p-id">중급 2</span><span class="p-type">읽기</span><h3>슬라이싱과 end 로 줄 바꿈 조절</h3></div>
+        <div class="p-body">
+<p>읽어 온 줄 끝에는 <code>\n</code>이 붙어 있어서, <code>print</code>를 어떻게 쓰느냐에 따라 빈 줄이 생겨요. 출력에서 <b>빈 줄도 한 줄로 세세요</b>.</p>
+<pre><code class="language-python">lines = open('lines.txt', encoding='utf-8').readlines()  # lines 에 lines.txt 의 모든 줄을 리스트로 담아 주세요
+print(len(lines))                                        # lines 의 원소 개수를 화면에 보여 주세요
+for l in lines[-2:]:                                     # lines 의 뒤에서 두 개를 하나씩 l 이라 부르며 아래를 반복해 주세요
+    print(l)                                             # l 을 화면에 보여 주세요
+for l in lines[:2]:                                      # lines 의 앞 두 개를 하나씩 l 이라 부르며 아래를 반복해 주세요
+    print(l, end='')                                     # l 을 줄 바꿈을 더하지 않고 화면에 보여 주세요
+print(lines[0][:-1])                                     # lines 의 첫 줄에서 마지막 글자를 뺀 것을 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 무엇이 출력될까요?</p><div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr><tr><td>4번째 줄</td><td>?</td></tr><tr><td>5번째 줄</td><td>?</td></tr><tr><td>6번째 줄</td><td>?</td></tr><tr><td>7번째 줄</td><td>?</td></tr><tr><td>8번째 줄</td><td>?</td></tr></tbody></table></div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+<p><code>print(l)</code>은 <code>l</code> 끝의 <code>\n</code>에 <code>print</code>가 줄 바꿈을 하나 더해서 두 번 바뀌어요. <code>[:-1]</code>은 마지막 글자만 빼요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-m2">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m2"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">15
+14번째 줄
+
+15번째 줄
+
+1번째 줄
+2번째 줄
+1번째 줄</code></pre>
+    <p><b>한 문장으로:</b> 뒤에서 두 줄은 줄 바꿈이 두 번씩이라 사이사이 빈 줄이 생기고, 앞 두 줄은 <code>end=''</code>라 빈 줄 없이 붙어요.</p>
+    <h4>왜 이런 결과가 나올까요</h4><p><code>15</code> 다음에 <code>lines[-2:]</code>의 두 줄을 <code>print(l)</code>로 출력해서 <code>14번째 줄</code>, 빈 줄, <code>15번째 줄</code>, 빈 줄이 나와요. 이어서 앞 두 줄은 <code>end=''</code>라서 <code>1번째 줄</code>, <code>2번째 줄</code>이 바로 붙어 나오고, 마지막 <code>lines[0][:-1]</code>은 <code>'1번째 줄\n'</code>에서 <code>\n</code>을 뺀 <code>1번째 줄</code>이에요.</p>
+    <h4>헷갈리기 쉬운 곳</h4><ul><li>마지막 <code>print(lines[0][:-1])</code>은 <code>strip()</code>과 비슷하지만, 마지막 글자가 <code>\n</code>이 아니면(파일의 마지막 줄에 줄 바꿈이 없을 때) 엉뚱한 글자가 지워져요. 줄 끝 정리는 <code>strip()</code>이 안전해요.</li></ul>
+    <p><b>핵심 한 줄:</b> 읽은 줄 끝에는 <code>\n</code>이 있어서, <code>print(l, end='')</code>나 <code>strip()</code>으로 다뤄요.</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="m3">
+        <div class="p-head"><span class="p-id">중급 3</span><span class="p-type">읽기</span><h3>빈 줄로 자르면 몇 덩어리</h3></div>
+        <div class="p-body">
+<p><code>postcard.txt</code>는 머리말(두 줄) · 빈 줄 · 본문(여섯 줄) · 빈 줄 · 꼬리말(두 줄)로 이뤄진 열두 줄 파일이고, 마지막 줄 끝에도 <code>\n</code>이 있어요.</p>
+<pre><code class="language-python">text = open('postcard.txt').read()   # text 에 postcard.txt 의 내용 전부를 글자 하나로 담아 주세요
+parts = text.split('\n\n')           # parts 에 text 를 빈 줄에서 잘라 리스트로 담아 주세요
+print(len(parts))                    # parts 의 원소 개수를 화면에 보여 주세요
+print(len(text.splitlines()))        # text 의 줄 수를 화면에 보여 주세요
+print(parts[1].count('\n'))          # parts 의 1번 자리 안에 줄 바꿈이 몇 번 나오는지 화면에 보여 주세요
+print(parts[2].strip().split()[-1])  # parts 의 2번 자리를 낱말로 나눈 것의 마지막 낱말을 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 무엇이 출력될까요?</p><div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr><tr><td>4번째 줄</td><td>?</td></tr></tbody></table></div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+<p>빈 줄은 줄 바꿈 두 번이에요. 본문이 여섯 줄이면 그 안의 줄 바꿈은 몇 번일까요? (마지막 줄 끝은 다음 빈 줄과 함께 잘렸어요.)</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-m3">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m3"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">3
+12
+5
+Jonelis</code></pre>
+    <p><b>한 문장으로:</b> 빈 줄 두 개가 파일을 세 덩어리로 나누고, 본문 덩어리 안에는 여섯 줄 사이의 줄 바꿈 5번이 남아요.</p>
+    <h4>왜 이런 결과가 나올까요</h4><p>빈 줄 두 개를 기준으로 잘라서 <code>parts</code>는 3개예요. <code>splitlines()</code>는 빈 줄까지 세서 12줄이에요. 본문 <code>parts[1]</code>은 여섯 줄인데, 마지막 줄 끝의 <code>\n</code>은 구분자 <code>\n\n</code>에 먹혀서 안에는 <code>\n</code>이 5번만 남아요. 꼬리말 <code>parts[2]</code>는 <code>(signed)</code>와 이름 <code>Frank G. Jonelis</code>라서 마지막 낱말은 <code>Jonelis</code>예요.</p>
+    <h4>헷갈리기 쉬운 곳</h4><ul><li>구분자 <code>\n\n</code>은 글자 두 개짜리라서, 잘리는 곳의 줄 바꿈 두 번이 다 사라져요. 그래서 잘린 앞 덩어리들(<code>parts[0]</code>, <code>parts[1]</code>)의 끝에는 <code>\n</code>이 안 남아요. 마지막 덩어리 <code>parts[2]</code>는 잘린 자리가 아니라서 파일 끝의 <code>\n</code>이 남아 있어요.</li></ul>
+    <p><b>핵심 한 줄:</b> <code>split('\n\n')</code>은 빈 줄에서 자르고, 덩어리 끝의 줄 바꿈은 구분자와 함께 사라져요.</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="m4">
+        <div class="p-head"><span class="p-id">중급 4</span><span class="p-type">읽기</span><h3>pickle 은 같은 값을 새로 만든다</h3></div>
+        <div class="p-body">
+<p><code>pickle</code>로 저장했다 불러오면 값이 같아지는지, 같은 대상인지 확인해요.</p>
+<pre><code class="language-python">import pickle                      # pickle 모듈을 가져와 주세요
+data = {'a': [1, 2], 'b': (3, 4)}  # data 에 리스트와 튜플이 든 딕셔너리를 담아 주세요
+with open('d.bin', 'wb') as f:     # d.bin 을 바이트 쓰기용으로 열어 f 라 불러 주세요
+    pickle.dump(data, f)           # data 를 f 에 저장해 주세요
+with open('d.bin', 'rb') as f:     # d.bin 을 바이트 읽기용으로 열어 f 라 불러 주세요
+    back = pickle.load(f)          # back 에 f 에서 되살린 값을 담아 주세요
+print(back)                        # back 을 화면에 보여 주세요
+print(back == data)                # back 이 data 와 같은지 화면에 보여 주세요
+print(back is data)                # back 과 data 가 같은 대상인지 화면에 보여 주세요
+print(type(back['b']))             # back 의 'b' 자리의 자료형을 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 무엇이 출력될까요?</p><div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr><tr><td>4번째 줄</td><td>?</td></tr></tbody></table></div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+<p><code>==</code>는 "내용이 같은가", <code>is</code>는 "같은 대상인가"를 물어요. 파일을 거쳐 온 값은 새로 만들어진 값이에요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-m4">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-m4"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">{'a': [1, 2], 'b': (3, 4)}
+True
+False
+&lt;class 'tuple'&gt;</code></pre>
+    <p><b>한 문장으로:</b> <code>pickle</code>은 내용이 같은 새 값을 만들어 주고, 리스트는 리스트로 튜플은 튜플로 그대로 되살려요.</p>
+    <h4>왜 이런 결과가 나올까요</h4><p>되살린 <code>back</code>은 <code>data</code>와 모양이 같아서 <code>==</code>는 <code>True</code>예요. 하지만 파일에서 새로 만든 값이라 <code>data</code> 자체와는 다른 대상이라 <code>is</code>는 <code>False</code>예요. 튜플 <code>(3, 4)</code>는 리스트로 바뀌지 않고 튜플로 돌아와요.</p>
+    <h4>헷갈리기 쉬운 곳</h4><ul><li>글자로 저장하는 방식(예: 파일에 <code>str(data)</code>를 쓰기)은 되살릴 때 글자만 나와요. <code>pickle</code>은 자료형까지 그대로 되살려요.</li><li>내가 저장한 파일만 불러와요. 출처를 모르는 pickle 파일은 불러올 때 코드가 실행될 수 있어요.</li></ul>
+    <p><b>핵심 한 줄:</b> <code>pickle.dump</code>와 <code>pickle.load</code>는 자료형까지 같은 새 값을 되살려요.</p>
+          </div>
+        </details>
+      </article>
+
+    </section>
+
+    <section class="level adv" data-level="adv">
+      <div class="level-head">
+        <span class="tag">고급</span>
+        <h2>읽고 추리하기 — glob·세기·인코딩</h2>
+        <p>glob 패턴, 줄·낱말을 세는 여러 길, 윈도우의 인코딩 오류를 읽어요.</p>
+      </div>
+
+      <article class="problem" id="a1">
+        <div class="p-head"><span class="p-id">고급 1</span><span class="p-type">읽기</span><h3>glob 패턴과 폴더 가려내기</h3></div>
+        <div class="p-body">
+<p>비어 있는 폴더에서 시작해요. <code>open(이름, 'w').close()</code>는 아무것도 쓰지 않고 빈 파일만 만들어요. 패턴에서 <code>*</code>는 아무 글자 여러 개, <code>?</code>는 아무 글자 딱 하나예요.</p>
+<pre><code class="language-python">import os                                                  # os 모듈을 가져와 주세요
+from glob import glob                                      # glob 모듈에서 glob 을 가져와 주세요
+os.mkdir('logs')                                           # logs 라는 폴더를 만들어 주세요
+for n in ['b.txt', 'a.txt', 'c.log']:                      # 이름 세 개를 하나씩 n 이라 부르며 아래를 반복해 주세요
+    open(n, 'w').close()                                   # n 이라는 빈 파일을 만들어 주세요
+print(sorted(glob('*.txt')))                               # .txt 로 끝나는 이름들을 정렬해 화면에 보여 주세요
+print(sorted(glob('?.*')))                                 # 한 글자 뒤에 점이 오는 이름들을 정렬해 화면에 보여 주세요
+print(len(glob('*')))                                      # 폴더 안 모든 이름의 개수를 화면에 보여 주세요
+print([x for x in sorted(glob('*')) if os.path.isdir(x)])  # 이름들 중 폴더인 것만 정렬해 리스트로 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 무엇이 출력될까요?</p><div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr><tr><td>4번째 줄</td><td>?</td></tr></tbody></table></div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+<p><code>logs</code>는 폴더지만 이름에는 <code>.txt</code>도 점도 없어요. 패턴이 이름 전체와 맞아야 해요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-a1">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a1"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">['a.txt', 'b.txt']
+['a.txt', 'b.txt', 'c.log']
+4
+['logs']</code></pre>
+    <p><b>한 문장으로:</b> <code>glob</code>은 패턴에 맞는 이름만 골라 주고, 폴더도 파일과 같은 "이름"이라 <code>isdir</code>로 따로 가려내요.</p>
+    <h4>왜 이런 결과가 나올까요</h4><p><code>*.txt</code>는 <code>.txt</code>로 끝나는 <code>a.txt</code>와 <code>b.txt</code>예요. <code>?.*</code>는 한 글자 뒤에 점이 오는 <code>a.txt</code>, <code>b.txt</code>, <code>c.log</code>이고 <code>logs</code>는 점이 없어서 빠져요. <code>*</code>는 파일 세 개와 폴더 하나, 모두 4개예요. 그중 <code>isdir</code>가 참인 것은 <code>logs</code> 하나예요.</p>
+    <h4>헷갈리기 쉬운 곳</h4><ul><li><code>glob('*.txt')</code>의 결과 순서는 정해져 있지 않아서, <code>sorted()</code>를 안 붙이면 컴퓨터마다 순서가 다를 수 있어요.</li><li><code>glob</code>의 결과에는 폴더도 섞여서 나와요. 파일만 필요하면 <code>isdir</code>나 <code>os.path.isfile</code>로 거르세요.</li></ul>
+    <p><b>핵심 한 줄:</b> <code>glob</code> 패턴은 이름 전체와 맞아야 하고, 폴더도 이름 목록에 섞여 나와요.</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="a2">
+        <div class="p-head"><span class="p-id">고급 2</span><span class="p-type">읽기</span><h3>줄 수·낱말 수·글자 수를 세는 길</h3></div>
+        <div class="p-body">
+<p><code>postcard.txt</code>(열두 줄, 마지막 줄 끝에도 <code>\n</code>)로 같은 대상을 세 가지 길로 세요. 두 번째 줄 출력에서 앞 숫자는 줄 수, 뒤 숫자는 낱말 수예요.</p>
+<pre><code class="language-python">with open('postcard.txt') as f:                                     # postcard.txt 를 읽기용으로 열어 f 라 불러 주세요
+    lines = f.readlines()                                           # lines 에 f 의 모든 줄을 리스트로 담아 주세요
+words = 0                                                           # words 에 0 을 담아 주세요
+for line in lines:                                                  # lines 의 줄을 하나씩 line 이라 부르며 아래를 반복해 주세요
+    words += len(line.split())                                      # words 에 line 의 낱말 개수를 더해 주세요
+print(len(lines), words)                                            # lines 의 개수와 words 를 화면에 보여 주세요
+text = open('postcard.txt').read()                                  # text 에 postcard.txt 의 내용 전부를 글자 하나로 담아 주세요
+print(len(text.split()), len(text.splitlines()), text.count('\n'))  # text 의 낱말 수, 줄 수, 줄 바꿈 수를 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 무엇이 출력될까요?</p><div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr></tbody></table></div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+<p>줄 하나에 줄 바꿈이 하나씩 있어요. 빈 줄은 낱말이 0개인 줄이에요. 낱말 수는 어느 길로 세도 같아요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-a2">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a2"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">12 34
+34 12 12</code></pre>
+    <p><b>한 문장으로:</b> 줄을 먼저 읽어 세든 글 전체를 한 번에 읽어 세든 낱말은 같은 수이고, 줄 바꿈 수는 줄 수와 같아요.</p>
+    <h4>왜 이런 결과가 나올까요</h4><p><code>readlines()</code>로 읽으면 12줄이고, 각 줄의 낱말을 더하면 전체 낱말 수가 나와요. 글 전체를 <code>split()</code>해도 같은 낱말 수가 나와요. <code>splitlines()</code>의 줄 수 12와 <code>count('\n')</code>의 12가 같은 건, 모든 줄 끝(마지막 줄 포함)에 줄 바꿈이 있기 때문이에요.</p>
+    <h4>헷갈리기 쉬운 곳</h4><ul><li>마지막 줄 끝에 <code>\n</code>이 없는 파일이면 <code>count('\n')</code>이 줄 수보다 1 적어요. 줄 수를 셀 때는 <code>splitlines()</code>나 <code>readlines()</code>가 안전해요.</li></ul>
+    <p><b>핵심 한 줄:</b> 낱말 수는 줄로 세든 통째로 세든 같고, 줄 바꿈 수는 줄 수와 (마지막 줄 끝에 있으면) 같아요.</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="a3">
+        <div class="p-head"><span class="p-id">고급 3</span><span class="p-type">읽기</span><h3>한글 파일을 인코딩 없이 열면 (윈도우 기준)</h3></div>
+        <div class="p-body">
+<p>이 문제의 결과는 <b>한국어 윈도우에서 돌렸을 때</b>예요. 이 컴퓨터에서는 파일을 열 때의 기본 글자 규칙이 cp949라서 UTF-8과 달라요. <code>try</code>/<code>except</code>는 오류가 나도 프로그램을 멈추지 않고 <code>except</code> 아래로 넘어가게 해요.</p>
+<pre><code class="language-python">with open('k.txt', 'w', encoding='utf-8') as f:  # k.txt 를 UTF-8 쓰기용으로 열어 f 라 불러 주세요
+    f.write('안녕하세요')                             # f 에 '안녕하세요' 를 써 주세요
+try:                                             # 아래를 시도해 주세요
+    print(open('k.txt').read())                  # k.txt 를 인코딩 없이 읽어 화면에 보여 주세요
+except UnicodeDecodeError:                       # 글자를 읽는 규칙이 안 맞는 오류가 나면
+    print('읽기 실패')                               # '읽기 실패' 를 화면에 보여 주세요
+print(open('k.txt', encoding='utf-8').read())    # k.txt 를 UTF-8 로 읽어 화면에 보여 주세요</code></pre>
+    <p>이 코드를 실행하면 무엇이 출력될까요?</p><div class="table-scroll"><table><thead><tr><th>출력</th><th>예측</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr></tbody></table></div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+<p>파일은 UTF-8로 썼어요. 인코딩을 안 적고 읽으면 윈도우는 UTF-8이 아닌 규칙으로 읽으려 해요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-a3">내 예측 <span>이 브라우저에만 저장</span></label><textarea id="memo-a3"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<pre class="out"><code class="nohighlight">읽기 실패
+안녕하세요</code></pre>
+    <p><b>한 문장으로:</b> 글자를 쓸 때와 읽을 때의 인코딩이 다르면 읽기 단계에서 <code>UnicodeDecodeError</code>가 나고, 둘을 같게 맞추면 읽혀요.</p>
+    <h4>왜 이런 결과가 나올까요</h4><p>쓸 때 <code>encoding='utf-8'</code>을 지정했는데 읽을 때 빼면 윈도우는 기본 규칙으로 읽으려다 <code>UnicodeDecodeError</code>가 나서 <code>except</code> 쪽이 실행돼요. 마지막 줄은 읽을 때도 <code>encoding='utf-8'</code>을 적었으니 정상으로 읽혀요.</p>
+    <h4>헷갈리기 쉬운 곳</h4><ul><li>맥이나 리눅스는 기본 규칙이 UTF-8이라 인코딩을 안 적어도 읽히는 일이 많아요. 같은 코드가 한 컴퓨터에서만 오류가 나면 인코딩을 의심해요.</li><li>글자가 영어뿐인 파일은 이 차이가 드러나지 않아서, 한글이 들어간 뒤에야 오류가 나는 경우가 많아요.</li></ul>
+    <p><b>핵심 한 줄:</b> 한글 파일은 쓸 때도 읽을 때도 <code>encoding='utf-8'</code>을 적어요.</p>
+          </div>
+        </details>
+      </article>
+
+    </section>
+
+  </main>
+
+  <footer>같은 시리즈: <a href="beginner-python-ch06-notes.html">(1) 정리</a> · <a href="beginner-python-ch06-answers.html">(2) 문제 해설</a> · (3) 이 글 · 교재: <a href="https://wikidocs.net/book/2" target="_blank" rel="noopener">왕초보를 위한 Python (위키독스)</a></footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>
+(function () {
+  if (window.hljs) {
+    hljs.configure({ ignoreUnescapedHTML: true });
+    document.querySelectorAll('pre code:not(.nohighlight)').forEach(function (el) {
+      if (!hljs.getLanguage('python-repl') && el.classList.contains('language-python-repl')) {
+        el.classList.replace('language-python-repl', 'language-python');
+      }
+      hljs.highlightElement(el);
+    });
+  }
+
+  // 메모: 이 브라우저에만 저장
+  var store = null;
+  try { store = window.localStorage; store.getItem('x'); } catch (e) { store = null; }
+  document.querySelectorAll('.memo textarea').forEach(function (ta) {
+    var key = 'py-ch06:' + ta.id;
+    try { var v = store && store.getItem(key); if (v) ta.value = v; } catch (e) {}
+    ta.addEventListener('input', function () {
+      try { store && store.setItem(key, ta.value); } catch (e) {}
+    });
+  });
+
+  // 난이도 필터
+  var buttons = document.querySelectorAll('.seg button');
+  var sections = document.querySelectorAll('[data-level]');
+  buttons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var f = btn.dataset.filter;
+      buttons.forEach(function (b) { b.setAttribute('aria-pressed', String(b === btn)); });
+      var picked = null;
+      sections.forEach(function (s) {
+        var lv = s.dataset.level;
+        s.hidden = !(f === 'all' || lv === f);
+        if (lv === f) picked = s;
+      });
+      // 고른 난이도의 첫머리로 옮긴다. 전체면 맨 위로.
+      if (picked) picked.scrollIntoView({ block: 'start' });
+      else window.scrollTo({ top: 0 });
+    });
+  });
+
+  // 목차 링크를 누르면 필터 해제
+  document.querySelectorAll('.toc a').forEach(function (a) {
+    a.addEventListener('click', function () {
+      var target = document.querySelector(a.getAttribute('href'));
+      var sec = target && target.closest('[data-level]');
+      if (sec && sec.hidden) document.getElementById('f-all').click();
+    });
+  });
+
+  // 해설 모두 펼치기 / 접기
+  var toggle = document.getElementById('toggle-sol');
+  toggle.addEventListener('click', function () {
+    var all = document.querySelectorAll('details.sol');
+    var open = toggle.dataset.open === '1';
+    all.forEach(function (d) { d.open = !open; });
+    toggle.dataset.open = open ? '0' : '1';
+    toggle.textContent = open ? '정답·해설 모두 펼치기' : '정답·해설 모두 접기';
+  });
+})();
+</script>
+</body>
+</html>
