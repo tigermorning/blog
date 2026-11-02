@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Claude Code 팀 — AI 코드 리뷰 일곱 겹 - Tigermorning</title>
+  <meta name="description" content="앤트로픽 Claude Code 팀이 공개한 코드 리뷰 방식을 정리했습니다. 변경 하나가 사용자에게 닿기까지 거치는 일곱 겹, 리뷰 에이전트가 밤새 50라운드를 돈 사건과 그 뒤 바뀐 규칙, 위험도별 사람 승인, 내 팀에 옮기는 순서까지.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Claude Code 팀 — AI 코드 리뷰 일곱 겹">
+  <meta property="og:description" content="합친 PR은 두 배 넘게 늘고 되돌림 비율은 40% 넘게 줄었어요. 읽는 일은 기계에, 사람의 시간은 위험한 곳과 빠른 복구에.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/claude-code-team-code-review-seven-layers.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">Claude Code 팀</span> — AI 코드 리뷰 일곱 겹</h1>
+    <p class="post-date">2026. 11. 02.</p>
+    <p class="post-date">※ 이 글은 한국어 해설 영상 <a href="https://www.youtube.com/watch?v=YQGBu9MwmDY" target="_blank" rel="noopener">"앤트로픽 Claude Code 팀이 공개한 AI 코드 리뷰 7겹 — PR은 2배 늘리고 되돌림은 40% 줄인 방법"</a>(AgentOS, 9분 22초)을 보고 핵심만 제 나름의 언어로 줄인 것입니다. 해설 영상의 원문은 앤트로픽 엔지니어링 글 <a href="https://claude.dev/blog/solving-code-review-at-anthropic/" target="_blank" rel="noopener">「How the Claude Code team does code review」</a>(Addy Osmani, Morgan Westlee Lunt, Qing Wang, 2026-10-15)이고, 원문도 함께 읽어 영상이 줄인 대목은 "원문에 따르면"으로 덧붙였어요.</p>
+
+    <div class="video-embed"><iframe src="https://www.youtube-nocookie.com/embed/YQGBu9MwmDY" title="앤트로픽 Claude Code 팀이 공개한 AI 코드 리뷰 7겹 (AgentOS)" loading="lazy" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe></div>
+
+    <p class="one-liner">Claude Code 팀의 코드 리뷰는 "사람이 이 코드를 읽었나" 대신 "이 변경에서 무엇이 잘못될 수 있고 어느 검사가 그걸 잡나"를 묻는 일곱 겹의 체이고, 읽는 일은 대부분 기계가 맡고 사람의 시간은 위험한 변경과 빠른 되돌리기에 쓴다.</p>
+
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>어디쯤인가</dt>
+        <dd><a href="posts.html#cat-future-talks">AI 시대 스크랩</a> — 단독 글이에요. <a href="pr-bottleneck-review-layers.html">PR 병목 고치기</a>의 "브레이크 세 겹"을 실제 회사가 일곱 겹으로 굴린 사례로 읽어도 돼요.</dd>
+        <dt>이런 게 궁금했다면</dt>
+        <dd>
+          <ul>
+            <li>에이전트가 PR을 하루에 수십 개씩 올리면 사람은 그걸 다 읽어야 할까요?</li>
+            <li>리뷰 에이전트를 붙였더니 작성 에이전트와 끝없이 주고받기만 하는데, 어디서 끊어야 할까요?</li>
+          </ul>
+        </dd>
+        <dt>읽고 나면 할 수 있는 것</dt>
+        <dd>
+          <ul>
+            <li>내 저장소의 변경을 위험도 세 등급으로 나누고 등급마다 사람 승인 수를 정할 수 있어요.</li>
+            <li>AI 리뷰에 라운드 상한과 "새로 바뀐 부분만 다시 보기" 규칙을 걸 수 있어요.</li>
+          </ul>
+        </dd>
+        <dt>모르면 이런 일이 생겨요</dt>
+        <dd>
+          <ul>
+            <li>리뷰 에이전트와 작성 에이전트가 밤새 수십 라운드를 돌며 옛날 버그만 계속 찾아요. <a class="suspect-jump" href="#suspect-loop">언제 의심하나 ↓</a></li>
+            <li>각자 검사를 통과한 PR 두 개를 합쳤는데 main이 깨져요. <a class="suspect-jump" href="#suspect-queue">언제 의심하나 ↓</a></li>
+          </ul>
+        </dd>
+        <dt>어디에 쓰나</dt>
+        <dd>
+          <ul>
+            <li><strong>코딩 에이전트에게 PR을 맡기기 시작한 팀이나 1인 저장소.</strong> 어디까지 자동으로 합치고 어디서 사람이 볼지 정할 때 써요.</li>
+            <li>CLAUDE.md·REVIEW.md 같은 지시 파일에 무엇을 적을지 정할 때</li>
+          </ul>
+        </dd>
+      </dl>
+    </div>
+
+    <p>원문에 따르면 Claude Code 코드의 약 90%를 Claude가 써요. 앤트로픽 사내 모노레포<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>에 하루에 합쳐지는 변경은 올해 5월 약 2,500건에서 9월 3만 건을 넘었어요. 사람이 한 줄씩 읽을 수 없는 양이에요. 그런데 Claude Code 팀은 6월부터 9월까지 합친 PR<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>이 두 배 넘게 늘었는데도 되돌려야 했던 비율은 40% 넘게 줄었다고 해요. 해설 영상은 첫 화면에서 이렇게 못 박아요. <strong>리뷰를 없앤 게 아니다.</strong></p>
+
+    <div class="key-point" id="key-three">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>세 줄 요약</p>
+      <ol>
+        <li><strong>질문을 바꾼다.</strong> "사람이 읽었나"가 아니라 "무엇이 잘못될 수 있고, 그걸 자동 검사와 사람 중 누가 잡나"를 묻는다.</li>
+        <li><strong>겹을 쌓는다.</strong> PR 전 검증부터 되돌리기까지 일곱 겹이 서로 다른 문제를 잡고, 사람이 판단하는 겹은 위험도별 승인 하나다.</li>
+        <li><strong>놓치면 검사를 고친다.</strong> 리뷰가 놓친 문제는 "그때 모델 앞에 무엇이 없었나"를 물어 CLAUDE.md·스킬·새 검사로 옮긴다.</li>
+      </ol>
+    </div>
+
+    <h2 id="question"><span class="hl">1. 질문 바꾸기</span> — 사람이 읽었나 대신 무엇이 잘못될 수 있나</h2>
+    <p>예전 리뷰는 길 끝의 관문이었어요. 코드를 짜고, PR을 올리고, 동료를 기다려요. 해설 영상은 지금 이 팀의 리뷰를 <a href="https://www.youtube.com/watch?v=YQGBu9MwmDY&t=59s" target="_blank" rel="noopener">글을 쓰는 동안 계속 돌아가는 맞춤법 검사</a>에 빗대요. 사람이 보기 전에 대부분의 변경은 이미 Claude가 한 번 이상 리뷰하고 고친 상태예요.</p>
+    <p>이 팀이 아끼려는 건 <strong>사람의 시간과 주의력</strong>이에요. 사람 시간은 두 가지예요. 리뷰하는 시간, 그리고 나쁜 코드가 망가뜨린 걸 고치는 시간. 앞의 것을 줄였는데 뒤의 것이 늘면 아낀 게 아니라 옮긴 거예요. 그래서 목표는 이래요.</p>
+    <ul>
+      <li><strong>목표:</strong> PR 대부분을 사람 최대 한 명(그 한 명이 작성자 본인이어도 됨)만 거쳐 합친다.</li>
+      <li><strong>가드레일:</strong> 되돌림 비율과 장애 비율이 예전보다 나빠지지 않는다.</li>
+    </ul>
+    <figure class="motion">
+    <svg viewBox="0 0 700 300" role="img" aria-label="왼쪽은 앤트로픽 모노레포에 하루 합쳐지는 변경으로, 2026년 5월 약 2,500건에서 9월 3만 건 이상으로 막대가 길어진다. 오른쪽은 Claude Code 팀의 6월과 9월 비교로, 합친 PR은 두 배 이상으로 늘고 되돌린 비율은 40% 이상 줄었다.">
+      <text x="20" y="32" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">앤트로픽 모노레포 · 하루 합쳐지는 변경</text>
+      <line x1="110" y1="56" x2="110" y2="176" stroke="var(--muted)" stroke-width="1.5"/>
+      <text x="100" y="94" text-anchor="end" font-family="var(--font-body)" font-size="13" fill="var(--ink)">2026년 5월</text>
+      <rect class="mo-growx" style="--d:0.1s" x="110" y="74" width="23" height="28" fill="var(--muted)"/>
+      <text class="mo-fade" style="--d:0.6s" x="141" y="94" font-family="var(--font-body)" font-size="13" fill="var(--ink)">약 2,500건</text>
+      <text x="100" y="152" text-anchor="end" font-family="var(--font-body)" font-size="13" fill="var(--ink)">9월</text>
+      <rect class="mo-growx" style="--d:0.5s" x="110" y="132" width="270" height="28" fill="var(--accent)"/>
+      <text class="mo-fade mo-pulse" style="--d:1.4s" x="300" y="196" font-family="var(--font-body)" font-size="13" fill="var(--accent)">3만 건 이상 (약 12배)</text>
+      <text x="20" y="240" font-family="var(--font-body)" font-size="12" fill="var(--muted)">막대 길이는 건수에 비례</text>
+      <line x1="440" y1="20" x2="440" y2="280" stroke="var(--border)" stroke-width="1.5"/>
+      <text x="570" y="32" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">Claude Code 팀 · 6월 → 9월</text>
+      <line x1="460" y1="240" x2="690" y2="240" stroke="var(--muted)" stroke-width="2"/>
+      <rect class="mo-grow" style="--d:1.6s" x="470" y="180" width="40" height="60" fill="var(--muted)"/>
+      <rect class="mo-grow" style="--d:1.9s" x="518" y="120" width="40" height="120" fill="var(--accent)"/>
+      <text class="mo-fade" style="--d:2.4s" x="538" y="110" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--accent)">2배+</text>
+      <rect class="mo-grow" style="--d:2.2s" x="590" y="140" width="40" height="100" fill="var(--muted)"/>
+      <rect class="mo-grow" style="--d:2.5s" x="638" y="180" width="40" height="60" fill="var(--accent)"/>
+      <text class="mo-fade" style="--d:3s" x="658" y="170" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--accent)">−40%+</text>
+      <text x="490" y="258" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">6월</text>
+      <text x="538" y="258" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">9월</text>
+      <text x="610" y="258" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">6월</text>
+      <text x="658" y="258" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">9월</text>
+      <text x="514" y="280" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)">합친 PR</text>
+      <text x="634" y="280" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)">되돌린 비율</text>
+    </svg>
+    <figcaption>해설 영상 첫 화면 "하루 3만 건"과 원문 수치를 다시 그린 것이에요. 오른쪽은 원문이 절대값 없이 "두 배 넘게", "40% 넘게"로만 밝혀서 6월을 기준으로 한 상대 높이로 그렸어요.</figcaption>
+    </figure>
+
+    <h2 id="analogy"><span class="hl">여러 겹의 체</span> — 한 장으로는 다 못 거른다</h2>
+    <p>해설 영상이 쓰는 비유예요. 고운 가루를 거를 때 <strong>체 한 장</strong>으로 다 거르려 하지 않고 눈 크기가 다른 체를 여러 장 겹쳐요. 한 장에 구멍이 있어도 다음 장이 받아요. 모든 체의 구멍이 한 줄로 맞아 끝까지 빠져나가는 알갱이는 드물고, 그래도 빠져나간 건 맨 아래 받침이 받아요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>체 한 장</td><td>검사 하나(자동 검사, AI 리뷰, 보안 리뷰, 사람 승인…)</td></tr>
+        <tr><td>체마다 다른 눈 크기</td><td>겹마다 잡는 문제와 놓치는 문제가 다름</td></tr>
+        <tr><td>끝까지 빠져나간 알갱이</td><td>모든 겹을 통과한 버그</td></tr>
+        <tr><td>맨 아래 받침</td><td>기능 플래그<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>·되돌리기·단계적 배포</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 한 겹을 완벽하게 만드는 대신, 서로 다른 구멍을 가진 겹을 여러 장 쌓고 맨 아래에 받침을 둔다.</p>
+    <p>다만 여기서 비유가 끊기는 점이 있어요. 체는 가만히 있지만 이 팀의 겹은 <strong>놓친 문제를 먹고 자라요</strong>. 장애가 나면 어느 겹이 잡았어야 했는지 따지고, 그 겹을 고쳐요.</p>
+    <p>이 블로그의 <a href="pr-bottleneck-review-layers.html#layers">PR 병목 고치기</a>가 세운 브레이크는 자동 검사·자동 리뷰·사람 리뷰 세 겹이었어요. Claude Code 팀의 일곱 겹은 그 앞에 "PR 전 검증"을, 사이에 "보안 리뷰"를, 뒤에 "머지 큐·배포"와 "되돌리기"를 더 끼운 모양이에요.</p>
+
+    <h2 id="flow"><span class="hl">전체 흐름</span> — 변경 하나가 지나는 일곱 겹</h2>
+    <p>변경 하나가 개발자 노트북에서 사용자에게 닿기까지 지나는 겹이에요. 해설 영상에 따르면 원문 도표에서 <strong>사람이 판단하는 칸</strong>으로 표시된 건 다섯 번째 위험도별 승인 하나이고, 나머지는 자동 검사와 복구 쪽이에요.</p>
+    <figure class="motion">
+    <svg viewBox="0 0 700 580" role="img" aria-label="변경 하나가 위에서 아래로 일곱 겹을 지난다. 1 PR 전 검증, 2 필수 자동 검사, 3 AI 코드 리뷰, 4 보안 리뷰, 5 위험도별 사람 승인, 6 머지 큐와 단계적 배포를 지나고, 맨 아래 7 빠른 감지와 되돌리기가 빠져나간 문제를 받친다. 다섯 번째 겹만 사람이 판단하는 겹으로 강조되어 있다.">
+      <text x="60" y="24" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">노트북</text>
+      <line class="mo-flow" x1="60" y1="34" x2="60" y2="540" stroke="var(--accent)" stroke-width="2"/>
+      <text x="60" y="566" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">사용자</text>
+
+      <g class="mo-rise" style="--d:0.1s">
+        <rect x="90" y="40" width="590" height="54" rx="8" fill="none" stroke="var(--muted)" stroke-width="2"/>
+        <text x="106" y="72" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">1 PR 전 검증</text>
+        <text x="300" y="72" font-family="var(--font-body)" font-size="13" fill="var(--muted)">테스트·빌드·스크린샷, 새 맥락 서브에이전트</text>
+      </g>
+      <g class="mo-rise" style="--d:0.5s">
+        <rect x="90" y="108" width="590" height="54" rx="8" fill="none" stroke="var(--muted)" stroke-width="2"/>
+        <text x="106" y="140" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">2 필수 자동 검사</text>
+        <text x="300" y="140" font-family="var(--font-body)" font-size="13" fill="var(--muted)">린트·타입·모든 플랫폼 테스트·빌드</text>
+      </g>
+      <g class="mo-rise" style="--d:0.9s">
+        <rect x="90" y="176" width="590" height="54" rx="8" fill="none" stroke="var(--muted)" stroke-width="2"/>
+        <text x="106" y="208" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">3 AI 코드 리뷰</text>
+        <text x="300" y="208" font-family="var(--font-body)" font-size="13" fill="var(--muted)">여러 에이전트가 찾고 투표로 거름</text>
+      </g>
+      <g class="mo-rise" style="--d:1.3s">
+        <rect x="90" y="244" width="590" height="54" rx="8" fill="none" stroke="var(--muted)" stroke-width="2"/>
+        <text x="106" y="276" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">4 보안 리뷰</text>
+        <text x="300" y="276" font-family="var(--font-body)" font-size="13" fill="var(--muted)">열린 지적이 하나라도 있으면 머지 불가</text>
+      </g>
+      <g class="mo-rise" style="--d:1.7s">
+        <rect x="90" y="312" width="590" height="54" rx="8" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <text x="106" y="344" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">5 위험도별 사람 승인</text>
+        <text x="300" y="344" font-family="var(--font-body)" font-size="13" fill="var(--ink)">낮음 0명 · 중간 1명 · 높음 2명</text>
+        <text class="mo-pulse" x="664" y="344" text-anchor="end" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">사람</text>
+      </g>
+      <g class="mo-rise" style="--d:2.1s">
+        <rect x="90" y="380" width="590" height="54" rx="8" fill="none" stroke="var(--muted)" stroke-width="2"/>
+        <text x="106" y="412" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">6 머지 큐·단계적 배포</text>
+        <text x="300" y="412" font-family="var(--font-body)" font-size="13" fill="var(--muted)">최신 main 재검사 → 직원 → latest → stable</text>
+      </g>
+      <g class="mo-rise" style="--d:2.5s">
+        <rect x="90" y="462" width="590" height="62" rx="8" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 4"/>
+        <text x="106" y="490" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">7 빠른 감지·되돌리기</text>
+        <text x="300" y="490" font-family="var(--font-body)" font-size="13" fill="var(--ink)">플래그 끄기, 한 번에 되돌리기</text>
+        <text x="300" y="512" font-family="var(--font-body)" font-size="13" fill="var(--muted)">위 겹을 다 빠져나간 문제를 받침</text>
+      </g>
+
+      <circle class="mo-pop" style="--d:0.3s" cx="60" cy="67" r="7" fill="var(--accent)"/>
+      <circle class="mo-pop" style="--d:0.7s" cx="60" cy="135" r="7" fill="var(--accent)"/>
+      <circle class="mo-pop" style="--d:1.1s" cx="60" cy="203" r="7" fill="var(--accent)"/>
+      <circle class="mo-pop" style="--d:1.5s" cx="60" cy="271" r="7" fill="var(--accent)"/>
+      <circle class="mo-pop" style="--d:1.9s" cx="60" cy="339" r="9" fill="var(--accent)"/>
+      <circle class="mo-pop" style="--d:2.3s" cx="60" cy="407" r="7" fill="var(--accent)"/>
+      <circle class="mo-pop" style="--d:2.7s" cx="60" cy="493" r="7" fill="var(--accent)"/>
+    </svg>
+    <figcaption>해설 영상의 겹 이름과 순서(0:47 "여러 겹의 체", 8:54 "같은 실수가 저절로")를 따랐어요. 원문 본문은 2~4번을 AI 리뷰·보안 리뷰·자동 검사 순서로 번호 매기지만, 원문의 "변경의 생애" 도표는 필수 CI → Claude 코드 리뷰 → 보안 리뷰 순으로 흘러요.</figcaption>
+    </figure>
+
+    <h2 id="before-pr"><span class="hl">겹 1·2 PR 전 검증과 필수 자동 검사</span> — 다 했다는 말 대신 실행 결과</h2>
+    <p>첫 겹은 <a href="https://www.youtube.com/watch?v=YQGBu9MwmDY&t=115s" target="_blank" rel="noopener">PR이 생기기도 전</a>에 시작돼요.</p>
+    <ul>
+      <li><strong>스스로 돌려 볼 수단을 준다.</strong> 테스트, 빌드, 디자인과 비교할 스크린샷처럼 Claude가 직접 실행해 볼 수 있는 걸 주고, "다 했어요" 대신 <strong>실행 결과를 보여 달라</strong>고 해요.</li>
+      <li><strong>빈 맥락에서 다시 본다.</strong> 그다음 맥락이 비어 있는 서브에이전트가 변경분을 다시 리뷰해요. 원문에 따르면 버그 찾기, 변경 단순화, 끝까지 동작 점검을 하는 사내 스킬도 이 단계에서 써요.</li>
+      <li><strong>같은 지적은 근원을 고친다.</strong> 리뷰어가 같은 걸 세 번 지적하면 세 번 고치는 대신 스킬을 고치거나, 린트 규칙을 만들거나, 지시 파일을 고쳐요.</li>
+    </ul>
+    <p>Claude Code를 만든 보리스 체르니(Boris Cherny)는 <a href="https://www.youtube.com/watch?v=YQGBu9MwmDY&t=129s" target="_blank" rel="noopener">Claude에게 스스로 검증할 수단을 주는 것</a>이 아마 가장 중요한 일이라며, 그러면 최종 결과가 두세 배 좋아진다고 추정했어요.</p>
+    <p>지시 파일은 둘이에요.</p>
+    <table>
+      <thead><tr><th>파일</th><th>누가 쓰나</th><th>무엇을 적나</th></tr></thead>
+      <tbody>
+        <tr><td>CLAUDE.md</td><td>프로젝트 팀</td><td>프로젝트가 무엇인지, 스택과 관례, 목표와 비목표, 에이전트가 돌릴 검사. 짧게 두고 다른 문서를 가리켜요</td></tr>
+        <tr><td>REVIEW.md</td><td>코드 오너<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup></td><td>자기 영역에서 실패가 어떤 모습인지(문서라면 "거짓말하기", 설정이라면 "엉뚱한 곳으로 보내기"), 이름만 보고 추측하지 말고 파일과 줄 번호를 근거로 대라는 요구</td></tr>
+      </tbody>
+    </table>
+    <p>원문에 따르면 REVIEW.md에는 사소한 지적의 개수 제한, 건너뛸 경로, 그리고 "지적이 몇 개인지로 시작하고 문제가 없으면 없다고 분명히 말하는 요약"도 적어요.</p>
+    <p>두 번째 겹은 익숙한 <a href="https://www.youtube.com/watch?v=YQGBu9MwmDY&t=161s" target="_blank" rel="noopener">필수 자동 검사</a>예요. 린트, 타입 검사, 모든 플랫폼의 테스트, 빌드. 평범한 CLI PR 하나가 사람이 보기 전에 수십 개 검사를 거치기도 해요. PR 템플릿은 <strong>어떻게 테스트했는지, 위험은 무엇인지, 어떻게 되돌리는지</strong>를 묻고, 그 칸은 Claude가 채워도 서명은 변경을 요청한 사람이 해요.</p>
+
+    <h2 id="ai-review"><span class="hl">겹 3 AI 코드 리뷰</span> — 지적을 거르는 투표</h2>
+    <p>세 번째 겹은 모든 PR에 붙는 AI 리뷰예요. 사람보다 Claude가 먼저 봐요. 변경분을 저장소 전체와 PR의 의도에 비춰 읽고, 이 변경이 문제를 풀었는지, 시스템에 맞는지, 다른 걸 깨뜨리지 않는지 물어요. 원문에 따르면 버그 수정이면 근본 원인을 찾았는지도 봐요.</p>
+    <p>리서치 프리뷰를 시작했을 때 <a href="https://www.youtube.com/watch?v=YQGBu9MwmDY&t=188s" target="_blank" rel="noopener">실질적인 리뷰 코멘트를 받는 사내 PR 비율이 16%에서 54%</a>로 올랐어요. 1,000줄이 넘는 PR은 대부분 지적을 받고, 작은 PR은 대부분 지적 없이 통과해요.</p>
+    <p>해설 영상이 "흥미롭다"고 짚는 건 지적을 거르는 방식이에요.</p>
+    <figure class="motion">
+    <svg viewBox="0 0 700 330" role="img" aria-label="왼쪽 찾는 에이전트 셋이 지적 여섯 개를 낸다. 가운데 투표 에이전트 그룹이 지적마다 투표해 스타일, 정리, 근거 약한 추측은 버린다. 충분히 동의를 얻은 세 지적만 오른쪽 PR에 중요, 사소함, 원래 있던 문제 꼬리표를 달고 올라간다.">
+      <defs>
+        <marker id="ccr-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/>
+        </marker>
+      </defs>
+      <text x="80" y="24" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">찾는 에이전트</text>
+      <rect class="mo-fade" x="20" y="60" width="120" height="44" rx="8" fill="none" stroke="var(--ink)" stroke-width="2"/>
+      <text class="mo-fade" x="80" y="87" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)">에이전트 A</text>
+      <rect class="mo-fade" x="20" y="143" width="120" height="44" rx="8" fill="none" stroke="var(--ink)" stroke-width="2"/>
+      <text class="mo-fade" x="80" y="170" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)">에이전트 B</text>
+      <rect class="mo-fade" x="20" y="226" width="120" height="44" rx="8" fill="none" stroke="var(--ink)" stroke-width="2"/>
+      <text class="mo-fade" x="80" y="253" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)">에이전트 C</text>
+
+      <g font-family="var(--font-body)" font-size="13">
+        <rect class="mo-pop" style="--d:0.4s" x="165" y="36" width="190" height="34" rx="6" fill="none" stroke="var(--muted)" stroke-width="1.5"/>
+        <text class="mo-pop" style="--d:0.4s" x="177" y="58" fill="var(--ink)">버그: 경계값 누락</text>
+        <rect class="mo-pop" style="--d:0.55s" x="165" y="80" width="190" height="34" rx="6" fill="none" stroke="var(--muted)" stroke-width="1.5"/>
+        <text class="mo-pop" style="--d:0.55s" x="177" y="102" fill="var(--ink)">스타일: 변수 이름</text>
+        <rect class="mo-pop" style="--d:0.7s" x="165" y="124" width="190" height="34" rx="6" fill="none" stroke="var(--muted)" stroke-width="1.5"/>
+        <text class="mo-pop" style="--d:0.7s" x="177" y="146" fill="var(--ink)">버그: 오류 문구 틀림</text>
+        <rect class="mo-pop" style="--d:0.85s" x="165" y="168" width="190" height="34" rx="6" fill="none" stroke="var(--muted)" stroke-width="1.5"/>
+        <text class="mo-pop" style="--d:0.85s" x="177" y="190" fill="var(--ink)">정리: 안 쓰는 import</text>
+        <rect class="mo-pop" style="--d:1s" x="165" y="212" width="190" height="34" rx="6" fill="none" stroke="var(--muted)" stroke-width="1.5"/>
+        <text class="mo-pop" style="--d:1s" x="177" y="234" fill="var(--ink)">버그: PR 전부터 있음</text>
+        <rect class="mo-pop" style="--d:1.15s" x="165" y="256" width="190" height="34" rx="6" fill="none" stroke="var(--muted)" stroke-width="1.5"/>
+        <text class="mo-pop" style="--d:1.15s" x="177" y="278" fill="var(--ink)">근거 약한 추측</text>
+      </g>
+
+      <rect class="mo-rise" style="--d:1.5s" x="380" y="36" width="100" height="254" rx="10" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-width="2"/>
+      <text class="mo-rise" style="--d:1.5s" x="430" y="150" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">투표</text>
+      <text class="mo-rise" style="--d:1.5s" x="430" y="172" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">다른 에이전트</text>
+      <text class="mo-rise" style="--d:1.5s" x="430" y="188" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">그룹</text>
+
+      <line class="mo-draw" style="--d:2.1s" pathLength="1" x1="170" y1="97" x2="350" y2="97" stroke="var(--accent)" stroke-width="2.5"/>
+      <line class="mo-draw" style="--d:2.2s" pathLength="1" x1="170" y1="185" x2="350" y2="185" stroke="var(--accent)" stroke-width="2.5"/>
+      <line class="mo-draw" style="--d:2.3s" pathLength="1" x1="170" y1="273" x2="350" y2="273" stroke="var(--accent)" stroke-width="2.5"/>
+      <text class="mo-fade" style="--d:2.4s" x="260" y="318" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">스타일·정리·동의 부족은 버림</text>
+
+      <text x="610" y="24" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">PR에 올라가는 지적</text>
+      <path class="mo-draw" style="--d:2.7s" pathLength="1" d="M 482 120 L 528 120" fill="none" stroke="var(--accent)" stroke-width="2" marker-end="url(#ccr-arr)"/>
+      <path class="mo-draw" style="--d:2.7s" pathLength="1" d="M 482 180 L 528 180" fill="none" stroke="var(--accent)" stroke-width="2" marker-end="url(#ccr-arr)"/>
+      <path class="mo-draw" style="--d:2.7s" pathLength="1" d="M 482 240 L 528 240" fill="none" stroke="var(--accent)" stroke-width="2" marker-end="url(#ccr-arr)"/>
+      <g font-family="var(--font-body)" font-size="13">
+        <rect class="mo-pop" style="--d:3s" x="535" y="98" width="150" height="44" rx="6" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        <text class="mo-pop" style="--d:3s" x="547" y="116" fill="var(--accent)">중요</text>
+        <text class="mo-pop" style="--d:3s" x="547" y="134" fill="var(--ink)">경계값 누락</text>
+        <rect class="mo-pop" style="--d:3.2s" x="535" y="158" width="150" height="44" rx="6" fill="none" stroke="var(--muted)" stroke-width="2"/>
+        <text class="mo-pop" style="--d:3.2s" x="547" y="176" fill="var(--muted)">사소함</text>
+        <text class="mo-pop" style="--d:3.2s" x="547" y="194" fill="var(--ink)">오류 문구 틀림</text>
+        <rect class="mo-pop" style="--d:3.4s" x="535" y="218" width="150" height="44" rx="6" fill="none" stroke="var(--muted)" stroke-width="2"/>
+        <text class="mo-pop" style="--d:3.4s" x="547" y="236" fill="var(--muted)">원래 있던 문제</text>
+        <text class="mo-pop" style="--d:3.4s" x="547" y="254" fill="var(--ink)">PR 전부터 있음</text>
+      </g>
+    </svg>
+    <figcaption>해설 영상 "AI 리뷰 · 지적 거르기" 화면(3:18~3:39)의 흐름을 다시 그렸어요. 꼬리표 세 가지는 원문의 Important·Nit·Pre-existing이고, 여섯 개의 지적 내용은 흐름을 보이려고 만든 예시예요.</figcaption>
+    </figure>
+    <ul>
+      <li><strong>찾기와 거르기를 나눈다.</strong> 여러 에이전트가 동시에 버그를 찾고, 다른 에이전트 그룹이 지적 하나하나에 투표해요. 충분히 많이 "진짜"라고 동의해야만 PR에 올라가요. 스타일이나 정리 수준의 지적은 버려요. 원문에 따르면 이 거름 규칙은 자기네 PR로 A/B 테스트를 해 본 뒤에 남겼어요.</li>
+      <li><strong>꼬리표를 단다.</strong> 남은 지적엔 중요·사소함·원래 있던 문제 중 하나가 붙어요. 이 PR이 만든 버그가 아니면 작성자 잘못처럼 보이지 않게 하려는 거예요.</li>
+      <li><strong>모든 지적에 답한다.</strong> 고치거나, 이유를 달고 닫아요. 밤사이 에이전트가 수정을 가져가는 경우가 많아서, 작성자가 아침에 오면 PR이 이미 한 라운드를 더 돈 상태예요.</li>
+    </ul>
+    <p>원문에 따르면 이 리뷰는 제품으로도 나와 있어요. Team·Enterprise 플랜의 <strong>Code Review for Claude Code</strong>와, 로컬에서 돌리는 가벼운 <code>/code-review</code> 명령이에요. 저장소마다 Quick·Standard·Deep 세 단계로 깊이를 정하고, 놓친 버그 하나의 값이 비싼 곳에 Deep을 써요.</p>
+
+    <h2 id="fifty-rounds"><span class="hl">밤새 50라운드</span> — 끝나지 않는 리뷰와 바뀐 네 가지</h2>
+    <p>그런데 바로 이 구조에서 문제가 터졌어요. 작성도 에이전트, 리뷰도 에이전트면 지적하고 고치고 또 지적하고 또 고치는 일이 끝없이 이어질 수 있어요. 실제로 CLI 쪽 PR 하나가 <a href="https://www.youtube.com/watch?v=YQGBu9MwmDY&t=227s" target="_blank" rel="noopener">밤새 리뷰와 수정을 50라운드 넘게</a> 돌았어요. 작성자가 멈출 때까지요.</p>
+    <p>리뷰어가 계속 지적한 부분을 git blame<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>으로 따져 보니 <strong>약 59%가 리뷰어의 첫 리뷰 때부터 이미 있던 코드</strong>였어요. 새 버그는 거의 못 찾고, 옛날 버그를 라운드마다 몇 개씩 더 찾고 있었던 거예요.</p>
+    <p>노이즈 문제이기도 해요. 사람은 사소한 지적을 몇 초 만에 넘기지만 에이전트는 그걸 고쳐요. 고치면 커밋이 하나 더 생기고, 커밋이 생기면 리뷰가 한 번 더 돌아요. 팀은 라운드마다 뭔가 새로 걸리니까 여러 라운드를 기본으로 돌리는 데 익숙해져 있었다고, 스스로 일을 키웠다고 인정해요. 그래서 <a href="https://www.youtube.com/watch?v=YQGBu9MwmDY&t=264s" target="_blank" rel="noopener">네 가지를 바꿨어요</a>.</p>
+    <ol>
+      <li><strong>라운드 상한.</strong> 3라운드가 넘으면 리뷰어가 작성자에게 한발 물러서서 접근 자체를 다시 생각하라고 해요.</li>
+      <li><strong>새로 바뀐 부분만.</strong> 처음 몇 번 이후엔 새 변경분만 다시 봐요.</li>
+      <li><strong>버그 유형 단위.</strong> 한 줄이 아니라 버그의 유형을 짚어서, 같은 유형을 한 번에 다 고치게 해요.</li>
+      <li><strong>반복 금지.</strong> 이미 올린 지적은 다시 올리지 않아요.</li>
+    </ol>
+    <figure class="motion">
+    <svg viewBox="0 0 700 340" role="img" aria-label="수렴 개선 전후 사내 PR 비교. 한 번의 리뷰와 수정으로 통과하는 PR은 65%에서 78%로 늘었다. 5라운드 이상 걸리는 PR은 8.9%에서 1.5%로 줄었다. 통과까지 평균 리뷰 횟수는 2.08번에서 1.32번으로 줄었다.">
+      <text x="20" y="30" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">사내 PR · 네 가지를 바꾸기 전 → 후</text>
+      <text x="20" y="66" font-family="var(--font-body)" font-size="13" fill="var(--ink)">한 번의 리뷰·수정으로 통과</text>
+      <text x="120" y="92" text-anchor="end" font-family="var(--font-body)" font-size="12" fill="var(--muted)">전</text>
+      <rect class="mo-growx" style="--d:0.1s" x="130" y="78" width="292" height="20" fill="var(--muted)"/>
+      <text class="mo-fade" style="--d:0.8s" x="430" y="93" font-family="var(--font-body)" font-size="13" fill="var(--ink)">65%</text>
+      <text x="120" y="118" text-anchor="end" font-family="var(--font-body)" font-size="12" fill="var(--muted)">후</text>
+      <rect class="mo-growx" style="--d:0.4s" x="130" y="104" width="351" height="20" fill="var(--accent)"/>
+      <text class="mo-fade" style="--d:1.1s" x="489" y="119" font-family="var(--font-body)" font-size="13" fill="var(--accent)">78%</text>
+
+      <text x="20" y="160" font-family="var(--font-body)" font-size="13" fill="var(--ink)">5라운드 이상 걸림</text>
+      <text x="120" y="186" text-anchor="end" font-family="var(--font-body)" font-size="12" fill="var(--muted)">전</text>
+      <rect class="mo-growx" style="--d:1.3s" x="130" y="172" width="40" height="20" fill="var(--muted)"/>
+      <text class="mo-fade" style="--d:2s" x="178" y="187" font-family="var(--font-body)" font-size="13" fill="var(--ink)">8.9%</text>
+      <text x="120" y="212" text-anchor="end" font-family="var(--font-body)" font-size="12" fill="var(--muted)">후</text>
+      <rect class="mo-growx" style="--d:1.6s" x="130" y="198" width="7" height="20" fill="var(--accent)"/>
+      <text class="mo-fade" style="--d:2.3s" x="145" y="213" font-family="var(--font-body)" font-size="13" fill="var(--accent)">1.5%</text>
+      <text x="460" y="200" font-family="var(--font-body)" font-size="12" fill="var(--muted)">위 두 줄: 막대 길이는 %에 비례</text>
+
+      <line x1="20" y1="238" x2="680" y2="238" stroke="var(--border)" stroke-width="1.5"/>
+      <text x="20" y="266" font-family="var(--font-body)" font-size="13" fill="var(--ink)">통과까지 평균 리뷰 횟수</text>
+      <text x="120" y="292" text-anchor="end" font-family="var(--font-body)" font-size="12" fill="var(--muted)">전</text>
+      <rect class="mo-growx" style="--d:2.5s" x="130" y="278" width="312" height="20" fill="var(--muted)"/>
+      <text class="mo-fade" style="--d:3.2s" x="450" y="293" font-family="var(--font-body)" font-size="13" fill="var(--ink)">2.08번</text>
+      <text x="120" y="318" text-anchor="end" font-family="var(--font-body)" font-size="12" fill="var(--muted)">후</text>
+      <rect class="mo-growx" style="--d:2.8s" x="130" y="304" width="198" height="20" fill="var(--accent)"/>
+      <text class="mo-fade mo-pulse" style="--d:3.5s" x="336" y="319" font-family="var(--font-body)" font-size="13" fill="var(--accent)">1.32번</text>
+    </svg>
+    <figcaption>해설 영상 "수렴 개선 결과" 화면(4:45)과 원문 그림 D의 값을 옮겼어요. 아래 묶음은 횟수라 위 두 묶음과 막대 길이를 견주면 안 돼요.</figcaption>
+    </figure>
+    <p>리뷰어 자체도 <a href="https://www.youtube.com/watch?v=YQGBu9MwmDY&t=293s" target="_blank" rel="noopener">이렇게 다듬어요</a>.</p>
+    <ul>
+      <li><strong>장애가 곧 평가 세트.</strong> 과거에 장애를 낸 PR(원문에 따르면 그 뒤의 앞으로 고치기·되돌리기 PR까지)을 모으고, 그 코드를 잘 아는 엔지니어가 버그와 위치를 확인해요. 리뷰어를 매일 이 세트에 돌리고, 프롬프트든 도구든 모델이든 리뷰어를 바꾸면 전체 세트로 다시 채점해요. 원문에 따르면 점수가 오르면 남기고 아니면 버려요.</li>
+      <li><strong>노이즈도 잰다.</strong> 지적마다 사람이 어떻게 반응했는지(고쳤다, 틀렸다고 했다, 의도한 거라고 했다, 상관없다고 했다)로 나눠요. 원문에 따르면 깨끗하다고 알려진 PR에도 돌려서 엉뚱한 보고가 얼마나 나오는지 세고, 우선순위는 <strong>진짜 버그 잡기가 먼저, 라운드 줄이기가 그다음</strong>이에요.</li>
+      <li>원문에 따르면 리뷰 에이전트는 밤마다 기존 코드에도 돌아서 옛날 버그를 다른 데서 터지기 전에 잡아요.</li>
+    </ul>
+
+    <h2 id="approval"><span class="hl">겹 4·5 보안 리뷰와 위험도별 승인</span> — 등급은 작성자가 아니라 변경이 정한다</h2>
+    <p>네 번째 겹은 <a href="https://www.youtube.com/watch?v=YQGBu9MwmDY&t=313s" target="_blank" rel="noopener">보안 리뷰</a>예요. 버그 리뷰든 보안 리뷰든 열린 지적이 하나라도 있으면 머지가 안 돼요. 오탐이면 짧은 이유를 달고 닫으면 되고, 나중 커밋이 문제를 고치면 지적은 저절로 풀려요. 원문에 따르면 도구는 오픈소스 security review GitHub Action과 <code>/security-review</code> 명령이에요.</p>
+    <p>다섯 번째 겹에서 드디어 사람이 등장해요. 문서 수정과 자동 업데이터 변경은 위험이 다르니까 리뷰도 달라요.</p>
+    <figure class="motion">
+    <svg viewBox="0 0 700 320" role="img" aria-label="왼쪽 분류기가 변경을 읽고 세 갈래로 보낸다. 낮음은 문서·문구·사내 전용·플래그 뒤 추가 변경으로 사람 승인 0명, 중간은 일반 제품 변경과 캐싱·자동 업데이터·시스템 프롬프트로 1명, 높음은 가장 위험한 코드와 항상 두 명이 보는 경로로 2명이다. 아래에 오너가 지정한 민감 경로와 CI 워크플로 파일은 무조건 사람이 본다고 적혀 있다.">
+      <defs>
+        <marker id="ccr-arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <rect x="20" y="105" width="140" height="70" rx="10" fill="none" stroke="var(--ink)" stroke-width="2"/>
+      <text x="90" y="135" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">분류기</text>
+      <text x="90" y="157" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">변경을 읽고 등급</text>
+      <path class="mo-draw" style="--d:0.2s" pathLength="1" d="M 160 125 C 200 125 200 50 236 50" fill="none" stroke="var(--muted)" stroke-width="2" marker-end="url(#ccr-arr2)"/>
+      <path class="mo-draw" style="--d:0.5s" pathLength="1" d="M 160 140 L 236 140" fill="none" stroke="var(--muted)" stroke-width="2" marker-end="url(#ccr-arr2)"/>
+      <path class="mo-draw" style="--d:0.8s" pathLength="1" d="M 160 155 C 200 155 200 230 236 230" fill="none" stroke="var(--accent)" stroke-width="2" marker-end="url(#ccr-arr2)"/>
+
+      <g class="mo-rise" style="--d:0.8s">
+        <rect x="244" y="22" width="436" height="58" rx="8" fill="none" stroke="var(--muted)" stroke-width="2"/>
+        <text x="258" y="46" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">낮음</text>
+        <text x="258" y="68" font-family="var(--font-body)" font-size="12" fill="var(--muted)">문서·문구·사내 전용·플래그 뒤 추가 변경</text>
+        <text x="666" y="56" text-anchor="end" font-family="var(--font-heading)" font-size="15" fill="var(--ink)">사람 0명</text>
+      </g>
+      <g class="mo-rise" style="--d:1.1s">
+        <rect x="244" y="111" width="436" height="58" rx="8" fill="none" stroke="var(--muted)" stroke-width="2"/>
+        <text x="258" y="135" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">중간</text>
+        <text x="258" y="157" font-family="var(--font-body)" font-size="12" fill="var(--muted)">일반 제품 변경, 캐싱·자동 업데이터·시스템 프롬프트</text>
+        <text x="666" y="145" text-anchor="end" font-family="var(--font-heading)" font-size="15" fill="var(--ink)">1명</text>
+      </g>
+      <g class="mo-rise" style="--d:1.4s">
+        <rect x="244" y="200" width="436" height="58" rx="8" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+        <text x="258" y="224" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">높음</text>
+        <text x="258" y="246" font-family="var(--font-body)" font-size="12" fill="var(--muted)">가장 위험한 코드, 항상 두 명이 보는 경로</text>
+        <text x="666" y="234" text-anchor="end" font-family="var(--font-heading)" font-size="15" fill="var(--accent)">2명</text>
+      </g>
+      <text class="mo-fade mo-pulse" style="--d:2s" x="350" y="296" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--accent)">오너 지정 민감 경로 · CI 워크플로 파일 → 등급과 상관없이 사람</text>
+    </svg>
+    <figcaption>해설 영상 "위험도별 승인" 화면(5:45, 분류기 → tier/low·mid·high)과 원문 표를 옮겼어요. 낮음 등급은 자동 리뷰와 보안 검사가 초록불일 때만 사람 승인 없이 통과해요.</figcaption>
+    </figure>
+    <p>여기에 <a href="https://www.youtube.com/watch?v=YQGBu9MwmDY&t=348s" target="_blank" rel="noopener">규칙 네 개</a>가 붙어요.</p>
+    <ol>
+      <li><strong>등급은 변경이 정한다.</strong> 작성자가 아니라 분류기가 변경을 읽고 등급을 고르고, 두 번째 분류기가 그래도 사람이 필요한지 한 번 더 물어요. 오너가 민감하다고 적어 둔 경로와 CI 워크플로 파일은 무조건 사람이 봐요.</li>
+      <li><strong>가벼운 길은 신뢰 목록 작성자만.</strong> 원문에 따르면 신뢰 목록은 주로 그 저장소를 맡은 팀이고, 그 밖의 작성자는 사람 승인이 하나 더 필요해요. 에이전트의 승인은 절대 사람의 승인으로 치지 않아요.</li>
+      <li><strong>지시한 사람이 필수 리뷰어.</strong> 에이전트가 쓴 PR이면 그 에이전트에게 지시한 사람이 필수 리뷰어 중 한 명이에요. 직접 타이핑한 것과 똑같이 책임져요.</li>
+      <li><strong>승인은 그 커밋에만.</strong> 시스템이 보증할 수 없는 새 커밋(에이전트의 새 푸시, 사람이 손으로 푼 충돌)이 들어오면 승인을 다시 받아야 해요.</li>
+    </ol>
+
+    <h2 id="merge"><span class="hl">겹 6·7 머지 큐·단계적 배포·되돌리기</span> — 느려지는 대신 빨리 고친다</h2>
+    <p>다 통과한 PR 두 개가 <a href="https://www.youtube.com/watch?v=YQGBu9MwmDY&t=380s" target="_blank" rel="noopener">동시에 들어오면</a> 어떻게 될까요? PR A도 B도 모든 검사를 통과했는데, 둘이 합쳐지는 순간 main이 깨질 수 있어요. 각자는 예전 main 위에서 테스트됐거든요. 해설 영상은 각자는 탑에 잘 맞는데 동시에 올리면 탑이 기우는 블록 두 개에 빗대요.</p>
+    <ul>
+      <li><strong>머지 큐<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup>.</strong> 변경을 최신 main 위에 얹은 상태로 모든 검사를 다시 돌려요. 따로 통과한 두 PR이 합쳐져 main을 깨뜨릴 수 없어요.</li>
+      <li><strong>직원이 먼저.</strong> 합친 뒤에도 바로 모두에게 가지 않아요. 새 기능은 보통 플래그 뒤에 숨겨 앤트로픽 직원들이 먼저 쓰고, 워낙 많이 써서 사용자보다 먼저 문제를 찾는 경우가 많대요.</li>
+      <li><strong>채널을 나눠 배포.</strong> 공개 배포는 latest 채널이 먼저, stable 채널이 그 뒤를 따라가요.</li>
+    </ul>
+    <p>마지막 일곱 번째 겹은 <a href="https://www.youtube.com/watch?v=YQGBu9MwmDY&t=414s" target="_blank" rel="noopener">빨리 알아채고 빨리 되돌리기</a>예요. 플래그는 배포 없이 끌 수 있어요. 장애 대응 담당을 일주일씩 돌아가며 맡고, 장애가 나면 <strong>어느 겹이 잡았어야 했는지</strong>를 따져요. 한계도 밝혀요. 되돌림·사고 수치가 늘면 자동으로 사람 승인을 더 받게 하는 장치(원문 표현으로 circuit breaker)는 아직 없고, 원문에 따르면 엔지니어들은 사람 없이 합치는 변경이 더 늘기 전에 그걸 원해요.</p>
+    <p>원문이 전한 한 동료의 말이 이 겹의 이유예요. 속도를 늦추면 오류율이 떨어지긴 하지만, 그건 대부분 <strong>모든 일을 덜 해서</strong>라는 거예요. 이 팀은 느려지는 대신 문제를 알아채고 고치는 속도를 올리는 쪽을 골랐어요.</p>
+
+    <h2 id="humans"><span class="hl">사람이 남는 곳</span> — 다섯 가지와 "네가 합쳤으면 네가 고친다"</h2>
+    <p>그럼 일곱 겹에서 사람은 뭘 할까요? <a href="https://www.youtube.com/watch?v=YQGBu9MwmDY&t=437s" target="_blank" rel="noopener">원문은 다섯 가지</a>를 꼽아요.</p>
+    <table>
+      <thead><tr><th>사람의 일</th><th>무엇을 하나</th></tr></thead>
+      <tbody>
+        <tr><td>만들지 말지 정하기</td><td>방향·취향·범위. 원문에 따르면 리뷰 병목을 풀었다는 팀도 다른 팀이 보낸 변경에는 "이걸 해야 하나"를 묻는 사람 리뷰를 남겨 둬요</td></tr>
+        <tr><td>위험한 코드 리뷰</td><td>결제, 자동 업데이터, CI 워크플로</td></tr>
+        <tr><td>설계 리뷰</td><td>다른 사람들이 따라 할 패턴을 정하는 변경</td></tr>
+        <tr><td>증거 읽기</td><td>테스트 출력, 실행한 명령과 결과, 스크린샷, 리뷰어의 지적. 검사를 다 통과했어도 어디가 빈틈인지 말할 수 없으면 승인 버튼만 누르지 말고 코드를 직접 읽는 리뷰를 요청해요</td></tr>
+        <tr><td>결과에 대한 책임</td><td>누가 타이핑했든 배포되는 모든 변경에는 책임지는 사람이 한 명 있어요</td></tr>
+      </tbody>
+    </table>
+    <p>문화 규칙도 하나 있어요. <strong>"네가 합쳤으면, 네가 고친다."</strong> 작거나 중간 크기의 변경이 문제를 일으키면 보통 합친 사람이 고쳐요. 가혹하지 않은 이유는 변경이 작아서 되돌리기 쉽고, 플래그·되돌리기·단계적 배포로 대부분의 실수가 몇 분 안에 풀리기 때문이에요. 탓하는 것도 아니에요. 장애 리뷰는 사람이 아니라 시스템을 봐요.</p>
+    <p>코드 리뷰엔 원래 <a href="https://www.youtube.com/watch?v=YQGBu9MwmDY&t=481s" target="_blank" rel="noopener">역할이 하나 더</a> 있었어요. 동료의 변경을 읽으며 팀 전체가 코드를 이해하는 거예요. 기계가 대부분 읽으면 그건 어떻게 할까요? 이 팀은 필요할 때 Claude에게 <strong>딱 그 부분만 설명하는 글</strong>을 써 달라고 해요. 몇 분이면 되고 오늘의 코드를 그대로 반영해요. 한 줄짜리 문구 수정을 리뷰하며 배우는 것보다, 지금 고치려는 모듈의 설명서 한 편이 훨씬 많이 가르쳐 준다는 거예요. 원문에 따르면 그 부분을 그림으로 보여 주는 작은 아티팩트를 만들게 하는 사람도 있어요.</p>
+
+    <h2 id="adopt"><span class="hl">내 팀에 옮기는 순서</span> — PR 전 · PR · 승인 · 합친 뒤</h2>
+    <p>해설 영상 <a href="https://www.youtube.com/watch?v=YQGBu9MwmDY&t=500s" target="_blank" rel="noopener">8:20</a>의 네 칸 화면과 원문 "Adopting this on your team"을 합쳐 옮겼어요.</p>
+    <table>
+      <thead><tr><th>단계</th><th>할 것</th></tr></thead>
+      <tbody>
+        <tr><td>PR 전</td><td>짧은 CLAUDE.md에 에이전트가 직접 돌릴 검사를 적는다 · 포매터와 린터는 훅으로 건다 · 로컬에서 <code>/code-review</code>·<code>/security-review</code>를 돌리거나 새 맥락 서브에이전트로 리뷰한다 · 반복되는 리뷰 코멘트는 REVIEW.md로 옮긴다</td></tr>
+        <tr><td>PR</td><td>CI를 필수로 한다 · 템플릿에 테스트·위험·되돌리는 법 칸을 넣는다 · AI 리뷰어는 저장소 하나에 먼저 붙여 REVIEW.md를 몇 주 다듬은 뒤 넓힌다 · 자동 보안 리뷰를 더하고 모든 리뷰 스레드가 닫혀야 합치게 한다 · 리뷰 깊이를 위험에 맞춘다(Quick·Standard·Deep) · 리뷰 라운드에 상한을 두고 처음 몇 번 뒤엔 새 변경분만 다시 본다</td></tr>
+        <tr><td>승인</td><td>위험 등급을 변경 기준으로 문서에 적고, 엄격하게 시작해 증거가 쌓이면 푼다 · 가벼운 길은 신뢰하는 작성자만 · CODEOWNERS와 브랜치 보호로 인증·결제·CI·릴리스 워크플로·설치 프로그램은 항상 사람이 보게 한다 · 봇 승인이 사람의 필수 승인을 대신하지 않게 하고, 새 커밋이 들어오면 승인을 풀어 버린다</td></tr>
+        <tr><td>합친 뒤</td><td>머지 큐 · 기능 플래그 · 사내 사용 먼저 · 단계적 배포 · 한 번에 되돌리기 · 장애와 되돌림을 평가 세트로 만들고 리뷰어를 바꿀 때마다 다시 채점한다 · 사람 시간을 재고 되돌림·장애 비율을 가드레일로 둔다</td></tr>
+      </tbody>
+    </table>
+    <p>해설 영상이 원문 끝에서 뽑은 요약은 이래요. 리뷰가 뭔가를 놓치면 <strong>그때 모델 앞에 무엇이 없었는지</strong>를 묻고, 그 답을 CLAUDE.md나 스킬이나 새 검사에 넣는다. 사람이 더 열심히 읽는 게 아니라 같은 실수가 다음엔 저절로 걸리게 만드는 거예요. <a href="pr-bottleneck-review-layers.html#retro">PR 병목 글의 retro</a>가 하는 일과 같은 방향이에요. 목표는 그대로예요. 변경 하나에 드는 사람 시간은 줄이고, 되돌림은 예전보다 늘리지 않는 것.</p>
+
+    <h2 id="choice"><span class="hl">나쁜 선택 vs 좋은 선택</span> — 리뷰 에이전트가 작성 에이전트와 맞물릴 때</h2>
+    <p>작성 에이전트가 올린 PR에 리뷰 에이전트를 붙여 밤새 돌리기로 한 장면이에요.</p>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">리뷰어가 낸 지적을 작성 에이전트가 전부 고치게 하고, 고칠 때마다 PR 전체를 다시 리뷰한다 → 사소한 지적도 커밋이 되고 커밋마다 리뷰가 돌아, 아침에 보면 수십 라운드째 옛날 버그를 하나씩 고치고 있다.</td>
+          <td class="choice-good">투표로 걸러 스타일·정리 지적은 버리고, 3라운드가 넘으면 접근을 다시 생각하게 하고, 그 뒤엔 새 변경분만 보며 같은 버그 유형은 한 번에 고치게 한다 → 대부분 한두 라운드에 끝나고, 원래 있던 문제는 꼬리표를 달아 따로 다룬다.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 출처는 모두 원문</h2>
+    <p>아래 값은 해설 영상 화면과 원문에서 같은 값으로 확인했어요. 모두 앤트로픽이 자기 저장소에서 잰 값이고, 측정 방법의 세부(기간 정의, 모수)는 원문에서 찾지 못했어요.</p>
+    <table>
+      <thead><tr><th>무엇</th><th>값</th><th>알아 둘 것</th></tr></thead>
+      <tbody>
+        <tr><td>모노레포 하루 합쳐지는 변경</td><td>약 2,500건(5월) → 3만 건 이상(9월)</td><td>Claude Code 저장소가 아니라 앤트로픽 사내 모노레포 전체예요</td></tr>
+        <tr><td>Claude Code 팀 합친 PR</td><td>6월~9월 두 배 넘게 증가</td><td>절대 건수는 밝히지 않았어요</td></tr>
+        <tr><td>되돌린 비율</td><td>같은 기간 40% 넘게 감소</td><td>비율의 감소율이에요(예: 10%였다면 6% 아래로)</td></tr>
+        <tr><td>Claude가 쓰는 코드 비율</td><td>Claude Code 코드의 약 90%</td><td>원문이 "전에 말한 적 있다"며 든 값이에요. 영상엔 없어요</td></tr>
+        <tr><td>실질 리뷰 코멘트를 받는 사내 PR</td><td>16% → 54%</td><td>Code Review 리서치 프리뷰를 시작했을 때예요</td></tr>
+        <tr><td>밤새 리뷰·수정 라운드</td><td>50라운드 이상</td><td>CLI 쪽 PR 한 건의 사례예요</td></tr>
+        <tr><td>계속 지적된 코드 중 첫 리뷰 때부터 있던 것</td><td>약 59%</td><td>git blame으로 따진 값이에요</td></tr>
+        <tr><td>한 번에 통과 / 5라운드 이상 / 평균 리뷰 횟수</td><td>65→78% / 8.9→1.5% / 2.08→1.32번</td><td>사내 PR, 네 가지 수렴 개선 전후예요</td></tr>
+        <tr><td>스스로 검증할 수단을 줄 때</td><td>최종 결과 2~3배 향상</td><td>보리스 체르니의 추정이에요. 측정값이 아니에요</td></tr>
+        <tr><td>라운드 상한</td><td>3라운드</td><td>해설 영상 화면 "3라운드 넘으면 → 접근 재검토", 원문 "After three rounds"</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 에이전트 PR을 리뷰하고 합칠 때</h2>
+    <p>겹이 하나 빠지거나 겹끼리 맞물려 헛돌면 증상으로 먼저 보여요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-loop">
+          <td>리뷰 봇과 작성 에이전트가 <strong>밤새 수십 라운드</strong>를 주고받았는데 PR이 아직 안 끝났어요</td>
+          <td>PR의 리뷰 라운드 수, 지적이 가리키는 줄의 작성 시점</td>
+          <td>지적된 줄을 <code>git blame</code>으로 봐서 이 PR 전부터 있던 코드면 "원래 있던 문제"로 따로 빼요. 라운드 상한과 새 변경분만 다시 보기를 걸어요(<a href="#fifty-rounds">밤새 50라운드</a>)</td>
+        </tr>
+        <tr id="suspect-queue">
+          <td>각자 <strong>초록불이던 PR 두 개</strong>를 합쳤더니 main 빌드가 깨졌어요</td>
+          <td>두 PR이 테스트된 기준 커밋(base). 둘 다 예전 main 위였는지</td>
+          <td>머지 큐를 켜서 최신 main 위에 얹은 상태로 검사를 다시 돌린 뒤에만 합쳐지게 해요(<a href="#merge">머지 큐</a>)</td>
+        </tr>
+        <tr>
+          <td>승인받은 뒤 에이전트가 <strong>새 커밋을 푸시</strong>했는데 그대로 합쳐졌어요</td>
+          <td>브랜치 보호 설정의 "새 커밋이 오면 승인 해제" 항목, 봇 승인이 필수 승인으로 세어지는지</td>
+          <td>새 커밋이 오면 승인을 풀고, 봇 승인은 필수 승인 수에서 빼요(<a href="#approval">규칙 네 개</a>)</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="run-tag">실행: 저장소 루트의 REVIEW.md 뼈대 — 원문이 REVIEW.md에 넣으라고 한 항목을 옮긴 예시</p>
+<pre><code># REVIEW.md — (영역 이름) 리뷰 기준
+
+## 이 영역에서 실패는 이런 모습이다
+- (예: 문서) 코드와 다른 내용을 사실처럼 적는다
+- (예: 설정) 요청을 엉뚱한 곳으로 보낸다
+
+## 지적 규칙
+- 이름만 보고 추측하지 말고 파일과 줄 번호를 근거로 댄다
+- 사소한 지적(nit)은 최대 3개까지만 올린다
+- 이 PR 전부터 있던 문제는 "원래 있던 문제"로 표시한다
+
+## 건너뛸 경로
+- (예: 생성된 파일, 벤더 코드)
+
+## 요약 형식
+- 첫 줄은 지적 개수로 시작한다
+- 문제가 없으면 "문제 없음"이라고 분명히 쓴다</code></pre>
+    <p>사소한 지적 3개는 제가 예시로 둔 값이에요. 원문은 개수를 제한하라고만 하고 숫자는 밝히지 않았어요.</p>
+
+    <h2><span class="hl">함께 보기</span></h2>
+    <ul>
+      <li><a href="pr-bottleneck-review-layers.html">PR 병목 고치기 — 에이전트 PR을 사람이 다 읽지 않아도 되는 조건</a> — 자동 검사·자동 리뷰·사람 리뷰 세 겹과 one-way door 기준, 반복 지적을 검사로 옮기는 retro가 이 글의 일곱 겹·위험도별 승인·"모델 앞에 무엇이 없었나"와 이어져요.</li>
+      <li><a href="ci-tests-and-staging.html">합치기 전에 테스트하고 내보내기 전에 먼저 본다 — CI 테스트와 staging 환경 (5)</a> — 필수 자동 검사와, 모두에게 내보내기 전에 먼저 보는 단계의 기본이에요.</li>
+      <li><a href="agents-md-and-cache-economics.html">AGENTS.md와 캐싱 경제학 (5)</a> — CLAUDE.md를 짧게 두고 다른 문서를 가리키라는 이유와 이어져요.</li>
+      <li><a href="multi-agent-judging-records.html">통과했다는 말로는 부족하다 — 두 층 채점과 채택·축소·폐기 판정 (4)</a> — 리뷰어를 바꿀 때마다 평가 세트로 다시 채점하고 오르면 남기는 방식과 같은 질문이에요.</li>
+      <li><a href="kent-beck-features-and-futures.html">켄트 벡 — 기능 사이에서 멈춰 여지를 되찾는 법</a> — 에이전트가 쏟아내는 변경을 사람 쪽에서 감당하는 또 다른 시각이에요.</li>
+    </ul>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">모노레포 — 회사의 여러 프로젝트 코드를 저장소 하나에 모아 둔 방식이에요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">PR(pull request) — 내가 고친 코드를 본래 코드에 합쳐 달라고 올리는 요청이에요. 리뷰와 검사가 이 단위로 돌아요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">기능 플래그 — 새 기능을 코드에는 넣어 두고 켜고 끄는 스위치로 감싸 두는 방법이에요. 배포를 다시 하지 않고도 끌 수 있어요. <a href="#fnref3">↩</a></li>
+        <li id="fn4">코드 오너 — 저장소의 특정 경로를 책임지는 사람이나 팀이에요. GitHub에서는 CODEOWNERS 파일로 정하고, 그 경로가 바뀌면 리뷰를 요구할 수 있어요. <a href="#fnref4">↩</a></li>
+        <li id="fn5">git blame — 파일의 줄마다 마지막으로 바꾼 커밋과 시점을 보여 주는 git 명령이에요. 어떤 줄이 이번 PR에서 생겼는지, 그 전부터 있었는지 가릴 때 써요. <a href="#fnref5">↩</a></li>
+        <li id="fn6">머지 큐 — 합칠 PR을 줄 세운 뒤, 앞선 PR까지 반영된 최신 main 위에서 검사를 다시 돌리고 통과한 것만 차례로 합치는 장치예요. <a href="#fnref6">↩</a></li>
+      </ol>
+    </section>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="motion.js"></script>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
