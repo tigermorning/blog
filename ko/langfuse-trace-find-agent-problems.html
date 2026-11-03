@@ -35,7 +35,7 @@
       <p class="why-read-title">이 글을 읽기 전에</p>
       <dl>
         <dt>어디쯤인가</dt>
-        <dd>9단계 › AI 서비스로 내놓기 — 11번째 글 (전 11편)</dd>
+        <dd>9단계 › AI 서비스로 내놓기 — 11번째 글 (전 12편)</dd>
         <dt>이런 게 궁금했다면</dt>
         <dd>
           <ul>
@@ -79,6 +79,11 @@
     <a class="post-nav" href="ai-service-in-production-wrap-up.html">
       <span class="post-nav-label">← 이전 편</span>
       <span class="post-nav-title">아홉 개 노드를 한 번에 — AI 서비스를 프로덕션에 올리기까지 돌아보기 (10)</span>
+    </a>
+
+    <a class="post-nav" href="langfuse-dataset-eval-prompt-versions.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">규칙 한 줄을 넣었더니 나아졌다는 증거 — Langfuse로 에이전트 품질 지키기 (12)</span>
     </a>
 
     <p><a href="ai-service-in-production-wrap-up.html">앞 편</a>까지는 코드를 고쳐 사용자에게 내보내는 길을 만들었어요. 테스트를 거치고, 같은 이미지를 그대로 보내고, 배포하는 동안에도 오류가 나지 않게요. 이번 편부터는 <strong>내보낸 뒤</strong>의 이야기예요. 서비스는 잘 떠 있고 요청도 성공으로 끝나는데, 사용자는 답이 이상하다고 말하는 상황이요. 이 글은 문제를 세우는 데까지 다뤄요. 무엇이 안 보이는지, 그래서 무엇을 남겨야 하는지요. 비유는 <a href="ai-service-design-before-code.html">1편</a>부터 쓰던 식당을 이어 써요.</p>
@@ -177,7 +182,7 @@
       <li><strong>단계 기록(트레이스):</strong> 정답이 없어도 "어느 상자에서 무엇이 들어가고 무엇이 나왔나"는 볼 수 있어요. 분류가 이상했는지, 도구가 빈 값을 돌려줬는지, 모델이 받은 값을 무시했는지 가를 수 있어요.</li>
       <li><strong>사용자 반응(점수):</strong> 화면의 좋아요, 별로예요, 신고 버튼을 Langfuse의 점수로 모으면, 수백 개 트레이스 가운데 <strong>먼저 열어 볼 것</strong>을 고를 수 있어요. "언제였는지 기억 못 하는 별로인 답"을 찾는 길이 이거예요.</li>
     </ul>
-    <p>운영 중에 찾은 실패 사례는 다시 개발 쪽 정답지로 돌아가요. 이상했던 문의를 정답과 함께 평가셋에 더해 두면, 다음에 고칠 때 같은 실수가 돌아왔는지 숫자로 잡을 수 있어요.</p>
+    <p>운영 중에 찾은 실패 사례는 다시 개발 쪽 정답지로 돌아가요. 이상했던 문의를 정답과 함께 평가셋에 더해 두면, 다음에 고칠 때 같은 실수가 돌아왔는지 숫자로 잡을 수 있어요. 그 순서는 <a href="langfuse-dataset-eval-prompt-versions.html">Langfuse로 에이전트 품질 지키기</a>에서 이어 가요.</p>
 
     <h2 id="whiteboard"><span class="hl">분류 단계에서 미리 볼 것들</span> — 무엇을 칸으로 남길까</h2><details class="deep"><summary>▼ 자세히 보기</summary>
     <p>고객 응대 에이전트의 워크플로를 어떻게 짜면 좋을지 이야기하며 나온 생각들을, 위 그림의 상자별로 모았어요. 이 생각들이 곧 "공정표에 어떤 칸을 둘까"의 후보예요.</p>
@@ -330,6 +335,10 @@
       <span class="post-nav-title">아홉 개 노드를 한 번에 — AI 서비스를 프로덕션에 올리기까지 돌아보기</span>
     </a>
     <p class="post-date">(11) 로그에는 200만 찍혔는데 사용자는 엉뚱한 답을 봤다 — Langfuse로 에이전트 문제 찾기 (이 글)</p>
+    <a class="post-nav" href="langfuse-dataset-eval-prompt-versions.html">
+      <span class="post-nav-label">(12)</span>
+      <span class="post-nav-title">규칙 한 줄을 넣었더니 나아졌다는 증거 — Langfuse로 에이전트 품질 지키기</span>
+    </a>
 
     <a class="post-nav" href="ai-service-in-production-wrap-up.html">
       <span class="post-nav-label">← 이전 편</span>
