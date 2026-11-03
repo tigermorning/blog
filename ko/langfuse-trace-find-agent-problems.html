@@ -12,6 +12,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="../style.css">
   <link rel="stylesheet" href="two-layer.css">
+  <link rel="stylesheet" href="flow-motion.css">
 </head>
 <body>
   <header class="site-header">
@@ -117,49 +118,46 @@
 
     <h2 id="flow"><span class="hl">한 턴을 단계로 그리기</span> — 고객 응대 에이전트의 예</h2>
     <p>공정표에 칸을 나누려면 먼저 에이전트의 한 턴이 몇 단계인지 그려 봐야 해요. 여기서는 <a href="cs-agent-routing-eval.html">고객 문의를 갈래로 나누는 고객 응대 에이전트</a>를 예로 그렸어요. 가상의 쇼핑몰 «모두몰»에 들어온 문의 한 줄이 지나는 길이에요.</p>
+    <p>그림 전체가 <strong>트레이스 한 개(문의 한 턴)</strong>이고, 상자 하나하나가 <strong>관찰 단위 하나</strong>예요.</p>
     <figure>
-    <svg viewBox="0 0 760 360" role="img" aria-label="고객 문의 한 턴의 흐름. 질문 분류를 지나 답변 생성으로 가고, 답변 생성은 매뉴얼 목록 조회(도구 호출)와 답변에 필요한 정보 수집(주문번호, 상품 ID, 여러 번 되묻기)을 오가며, 그 뒤 검증을 거쳐 대화가 끝난다. 이 한 턴 전체가 트레이스 하나이고, 각 상자가 관찰 단위 하나다.">
+    <svg class="flow-motion" viewBox="0 0 460 344" style="max-width:600px;margin:0 auto" role="img" aria-label="고객 문의 한 턴의 흐름. 위에서 아래로 질문 분류, 답변 생성, 검증, 대화 끝 순서로 지나고, 답변 생성은 오른쪽의 매뉴얼 목록 조회(도구 호출)와 필요한 정보 수집(주문번호, 상품 ID, 되묻기)을 필요할 때 오간다. 이 한 턴 전체가 트레이스 하나이고, 각 상자가 관찰 단위 하나다.">
       <defs>
-        <marker id="lf-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/></marker>
+        <marker id="lf-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/></marker>
       </defs>
-      <rect x="6" y="6" width="748" height="348" rx="12" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="6 5"/>
-      <text x="22" y="30" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">트레이스 한 개 = 문의 한 턴</text>
+      <!-- 왼쪽 세로줄: 모든 문의가 지나는 길. 상자 210×64, 화살표 길이 20으로 모두 같게 -->
+      <rect x="16" y="10" width="210" height="64" rx="10" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="121" y="37" text-anchor="middle" font-family="var(--font-heading)" font-size="15" fill="var(--ink)">① 질문 분류</text>
+      <text x="121" y="59" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">어느 갈래? 답할 수 있나?</text>
+      <line x1="121" y1="77" x2="121" y2="97" stroke="var(--muted)" stroke-width="2" marker-end="url(#lf-a)"/>
 
-      <rect x="24" y="70" width="150" height="74" rx="10" fill="none" stroke="var(--border)" stroke-width="2"/>
-      <text x="99" y="100" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">① 질문 분류</text>
-      <text x="99" y="122" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">어느 갈래? 답할 수 있나?</text>
-      <line x1="176" y1="107" x2="222" y2="107" stroke="var(--muted)" stroke-width="2" marker-end="url(#lf-a)"/>
+      <rect x="16" y="100" width="210" height="64" rx="10" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+      <text x="121" y="127" text-anchor="middle" font-family="var(--font-heading)" font-size="15" fill="var(--accent)">② 답변 생성</text>
+      <text x="121" y="149" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">모델 호출 (generation)</text>
 
-      <rect x="224" y="70" width="150" height="74" rx="10" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
-      <text x="299" y="100" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">② 답변 생성</text>
-      <text x="299" y="122" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">모델 호출 (generation)</text>
-      <line x1="376" y1="107" x2="422" y2="107" stroke="var(--muted)" stroke-width="2" marker-end="url(#lf-a)"/>
+      <!-- 오른쪽: ②가 필요할 때만 들르는 곳. 가지 모양 직선, 양 끝 화살촉 = 갔다가 돌아온다 -->
+      <rect x="271" y="50" width="180" height="64" rx="10" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="361" y="77" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">②-1 매뉴얼 목록 조회</text>
+      <text x="361" y="99" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">도구 호출 · 정해진 답?</text>
+      <rect x="271" y="150" width="180" height="64" rx="10" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="361" y="177" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">②-2 필요한 정보 수집</text>
+      <text x="361" y="199" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">주문번호·상품 ID 되묻기</text>
+      <line x1="229" y1="132" x2="248" y2="132" stroke="var(--muted)" stroke-width="2" marker-start="url(#lf-a)"/>
+      <line x1="248" y1="82" x2="248" y2="182" stroke="var(--muted)" stroke-width="2"/>
+      <line x1="248" y1="82" x2="268" y2="82" stroke="var(--muted)" stroke-width="2" marker-end="url(#lf-a)"/>
+      <line x1="248" y1="182" x2="268" y2="182" stroke="var(--muted)" stroke-width="2" marker-end="url(#lf-a)"/>
 
-      <rect x="424" y="70" width="150" height="74" rx="10" fill="none" stroke="var(--border)" stroke-width="2"/>
-      <text x="499" y="100" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">③ 검증</text>
-      <text x="499" y="122" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">근거·규정에 맞나</text>
-      <line x1="576" y1="107" x2="622" y2="107" stroke="var(--muted)" stroke-width="2" marker-end="url(#lf-a)"/>
+      <line x1="121" y1="167" x2="121" y2="187" stroke="var(--muted)" stroke-width="2" marker-end="url(#lf-a)"/>
+      <rect x="16" y="190" width="210" height="64" rx="10" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="121" y="217" text-anchor="middle" font-family="var(--font-heading)" font-size="15" fill="var(--ink)">③ 검증</text>
+      <text x="121" y="239" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">근거·규정에 맞나</text>
+      <line x1="121" y1="257" x2="121" y2="277" stroke="var(--muted)" stroke-width="2" marker-end="url(#lf-a)"/>
 
-      <rect x="624" y="70" width="118" height="74" rx="37" fill="none" stroke="var(--border)" stroke-width="2"/>
-      <text x="683" y="112" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">대화 끝</text>
-
-      <rect x="60" y="214" width="230" height="74" rx="10" fill="none" stroke="var(--border)" stroke-width="2"/>
-      <text x="175" y="242" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">매뉴얼 목록 조회</text>
-      <text x="175" y="264" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">도구 호출 — 정해진 답이 있는 문의인가</text>
-      <rect x="330" y="214" width="250" height="74" rx="10" fill="none" stroke="var(--border)" stroke-width="2"/>
-      <text x="455" y="242" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">답변에 필요한 정보 수집</text>
-      <text x="455" y="264" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">주문번호·상품 ID — 없으면 되묻기(멀티턴)</text>
-
-      <line x1="262" y1="146" x2="200" y2="210" stroke="var(--muted)" stroke-width="2" marker-end="url(#lf-a)"/>
-      <line x1="225" y1="212" x2="285" y2="148" stroke="var(--muted)" stroke-width="2" marker-end="url(#lf-a)"/>
-      <line x1="320" y1="146" x2="420" y2="210" stroke="var(--muted)" stroke-width="2" marker-end="url(#lf-a)"/>
-      <line x1="395" y1="212" x2="335" y2="148" stroke="var(--muted)" stroke-width="2" marker-end="url(#lf-a)"/>
-
-      <text x="380" y="326" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">상자 하나 = 관찰 단위 하나. 아래 두 상자는 답변 생성 안에서 필요할 때마다 여러 번 오가요.</text>
+      <rect x="16" y="280" width="210" height="56" rx="28" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="121" y="313" text-anchor="middle" font-family="var(--font-heading)" font-size="15" fill="var(--ink)">대화 끝</text>
     </svg>
-    <figcaption>고객 응대 에이전트의 한 턴. 상자마다 시간·입력·결과를 남기면, 문제가 처음 생긴 상자를 찾아갈 수 있어요.</figcaption>
+    <figcaption>고객 응대 에이전트의 한 턴. 상자가 빛나는 순서가 한 턴이 지나는 순서예요. 상자마다 시간·입력·결과를 남기면, 문제가 처음 생긴 상자를 찾아갈 수 있어요.</figcaption>
     </figure>
-    <p><strong>읽는 법:</strong> 위 줄 ①→②→③은 모든 문의가 지나는 길이에요. 아래 두 상자는 ② 답변 생성이 필요할 때만 들르는 곳이라 화살표가 왕복이에요. 매뉴얼에 정해진 답이 있는 문의면 목록을 조회해서(tool calling<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>) 고민 없이 답하고, 주문번호나 상품 ID가 필요하면 고객에게 되물어서 모은 뒤에 답해요. 되묻는 동안은 대화가 여러 턴으로 이어지니(멀티턴<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>), 턴마다 트레이스가 하나씩 생기고 그 트레이스들을 한 대화로 묶는 표시가 따로 필요해요.</p>
+    <p><strong>읽는 법:</strong> 왼쪽 세로줄 ①→②→③→대화 끝은 모든 문의가 지나는 길이에요. 오른쪽 두 상자는 ② 답변 생성이 필요할 때만 들르는 곳이라, ②와 잇는 가지 양 끝에 화살촉이 있어요(갔다가 결과를 들고 돌아와요). 매뉴얼에 정해진 답이 있는 문의면 목록을 조회해서(tool calling<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>) 고민 없이 답하고, 주문번호나 상품 ID가 필요하면 고객에게 되물어서 모은 뒤에 답해요. 되묻는 동안은 대화가 여러 턴으로 이어지니(멀티턴<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>), 턴마다 트레이스가 하나씩 생기고 그 트레이스들을 한 대화로 묶는 표시가 따로 필요해요.</p>
     <p>이렇게 그려 두면 앞의 여섯 가지 말이 어느 상자를 봐야 하는지로 바뀌어요. 엉뚱한 답은 ①의 분류 결과나 아래 두 상자가 돌려준 값부터, 느린 답은 상자마다 걸린 시간에서, 늘어난 요금은 ②가 한 턴에 몇 번 불렸는지에서 찾기 시작해요.</p>
 
     <h2 id="dev-vs-prod"><span class="hl">개발 중에는 정답지, 운영 중에는?</span> — 같은 에이전트, 다른 자</h2>
@@ -344,6 +342,7 @@
     &copy; 2026 Tigermorning
   </footer>
   <script src="two-layer.js"></script>
+  <script src="flow-motion.js"></script>
   <script src="fit-title.js"></script>
   <script src="sidebar-loader.js"></script>
 </body>
