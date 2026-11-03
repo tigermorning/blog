@@ -35,7 +35,7 @@
       <p class="why-read-title">이 글을 읽기 전에</p>
       <dl>
         <dt>어디쯤인가</dt>
-        <dd>9단계 › AI 서비스로 내놓기 — 3번째 글 (전 10편)</dd>
+        <dd>9단계 › AI 서비스로 내놓기 — 3번째 글 (전 11편)</dd>
         <dt>이런 게 궁금했다면</dt>
         <dd>
           <ul>
@@ -115,6 +115,7 @@
 <pre><code>gcloud run services update friend-agent --region us-central1 --update-env-vars LLM_PROVIDER=unknown</code></pre>
     <p>터미널은 "컨테이너가 포트 8080을 열지 못했다. 포트 설정이 틀렸거나 타임아웃이 짧을 수 있다"고 말했어요. 이것만 보면 <strong>포트나 타임아웃 설정</strong>을 의심하기 쉬워요. 여기서 헷갈리는 게 정상이에요. 로그를 시간순으로 모으니 순서가 보였어요. 새 인스턴스가 켜지고 → 앱이 <strong>"LLM_PROVIDER 값 'unknown' 를 알 수 없어 앱을 시작하지 않습니다"라는 ERROR를 남기고 꺼지고</strong> → 플랫폼이 시작 실패를 기록하고 → 터미널에는 마지막 결과만 나왔어요. <strong>터미널 메시지는 결과이고, 원인은 앞선 컨테이너 로그의 ERROR 줄에 있었어요.</strong> 환경변수를 지워 되돌렸고, 실패하는 동안에도 서비스는 이전 리비전으로 계속 답했어요.</p>
     <p>원인을 코딩 에이전트와 고칠 때도 짐작이 아니라 <strong>근거</strong>(증상, 시간 범위, 리비전, 찾은 로그 줄)를 건네요.</p>
+    <p>다만 서버 로그는 요청이 성공했는지까지만 말해 줘요. 요청은 200으로 끝났는데 답이 엉뚱했다면, 요청 한 건 안에서 거친 단계를 따로 남겨야 해요. 그 이야기는 <a href="langfuse-trace-find-agent-problems.html">Langfuse로 에이전트 문제 찾기</a>에서 이어 가요.</p>
 
     <h2 id="not-done"><span class="hl">해 보지 못한 것</span></h2>
     <ul>
@@ -182,6 +183,10 @@
     <a class="post-nav" href="ai-service-in-production-wrap-up.html">
       <span class="post-nav-label">(10)</span>
       <span class="post-nav-title">아홉 개 노드를 한 번에 — AI 서비스를 프로덕션에 올리기까지 돌아보기</span>
+    </a>
+    <a class="post-nav" href="langfuse-trace-find-agent-problems.html">
+      <span class="post-nav-label">(11)</span>
+      <span class="post-nav-title">로그에는 200만 찍혔는데 사용자는 엉뚱한 답을 봤다 — Langfuse로 에이전트 문제 찾기</span>
     </a>
   </main>
   </div>

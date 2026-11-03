@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>로그에는 200만 찍혔는데 사용자는 엉뚱한 답을 봤다 — Langfuse로 에이전트 문제 찾기 (11) - Tigermorning</title>
+  <meta name="description" content="서버 로그에는 POST /api/chat 200만 수백 줄 남는데, 동료들은 엉뚱한 답·느린 답·잊어버린 대화를 말하고 요금은 메시지 수보다 많이 나왔어요. 메시지 하나가 에이전트 안에서 거친 단계를 트레이스로 남겨야 하는 이유를, 고객 응대 에이전트의 한 턴을 단계로 나눠 보며 정리했어요.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="로그에는 200만 찍혔는데 사용자는 엉뚱한 답을 봤다 — Langfuse로 에이전트 문제 찾기 (11)">
+  <meta property="og:description" content="개발 중에는 정답지로 채점하면 되지만, 운영 중에 들어온 문의에는 정답지가 없어요. 그때 무엇을 남겨 둬야 원인을 찾을 수 있는지 정리했어요.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/langfuse-trace-find-agent-problems.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="two-layer.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">로그에는 200만 찍혔는데 사용자는 엉뚱한 답을 봤다</span> — Langfuse로 에이전트 문제 찾기 (11)</h1>
+    <p class="post-date">2026. 11. 3.</p>
+    <p class="post-date">※ 이 글은 모두의연구소(모두연) 학습 자료를 제 나름의 말로 다시 정리한 글이에요.</p>
+
+    <p class="one-liner">트레이스는 사용자 메시지 하나가 에이전트 안에서 거친 단계(문의 분류, 모델 호출, 도구 호출, 검증)를 순서대로 남긴 기록이라서, 서버 로그의 «200 성공» 한 줄로는 안 보이는 «어느 단계에서 틀렸고, 느렸고, 돈을 썼나»를 보여 줘요.</p>
+
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>어디쯤인가</dt>
+        <dd>9단계 › AI 서비스로 내놓기 — 11번째 글 (전 11편)</dd>
+        <dt>이런 게 궁금했다면</dt>
+        <dd>
+          <ul>
+            <li>"사용자는 답이 이상했다는데, 서버 로그에는 전부 성공(200)이라고 찍혀 있어요. 뭘 봐야 하죠?"</li>
+            <li>개발할 때는 정답지로 점수를 냈는데, 서비스에 내놓은 뒤에는 무엇으로 잘하고 있는지 알 수 있나요?</li>
+            <li>요금이 보낸 메시지 수보다 많이 나왔어요. 메시지 하나에 모델을 몇 번 부른 걸까요?</li>
+          </ul>
+        </dd>
+        <dt>읽고 나면 할 수 있는 것</dt>
+        <dd>
+          <ul>
+            <li>사용자가 말한 문제 하나를 보고, 원인을 찾으려면 어떤 기록이 필요한지와 지금 그 기록이 어디 있는지(또는 없는지) 말할 수 있어요.</li>
+            <li>에이전트의 한 턴을 단계로 나눠 그리고, 각 단계에 무엇을 남길지 정할 수 있어요.</li>
+            <li>개발 중의 채점(정답지)과 운영 중의 확인(단계 기록·사용자 반응)이 왜 따로 필요한지 설명할 수 있어요.</li>
+          </ul>
+        </dd>
+        <dt>모르면 이런 일이 생겨요</dt>
+        <dd>
+          <ul>
+            <li>"엉뚱한 답이 나왔다"는 제보를 받아도 어느 요청이었는지조차 못 찾고, 같은 질문을 다시 던져 보며 재현될 때까지 기다리게 돼요. <a class="suspect-jump" href="#suspect-wrong">언제 의심하나 ↓</a></li>
+            <li>요금이 늘어도 어느 단계가 모델을 몇 번 불렀는지 몰라서, 줄일 곳을 짐작으로 고르게 돼요. <a class="suspect-jump" href="#suspect-cost">언제 의심하나 ↓</a></li>
+            <li>"업데이트한 뒤로 느려졌다"는 말이 맞는지 틀린지 가를 수 없어요. 어느 기록이 새 버전에서 나왔는지 표시가 없거든요. <a class="suspect-jump" href="#suspect-slow">언제 의심하나 ↓</a></li>
+          </ul>
+        </dd>
+        <dt>어디에 쓰나</dt>
+        <dd>
+          <ul>
+            <li><strong>만든 챗봇을 다른 사람에게 처음 써 보게 했을 때.</strong> 일주일쯤 지나면 단체 대화방에 "가끔 한참 있다가 답해요", "말한 걸 기억을 못 해요" 같은 말이 모이기 시작해요.</li>
+            <li>코딩 에이전트에게 "관측 도구를 붙여 줘"라고 맡기기 전에, 어떤 단계를 어떤 단위로 남길지 먼저 정하는 기준으로 써요.</li>
+          </ul>
+        </dd>
+      </dl>
+    </div>
+
+    <div class="deep-toc">
+      <p><strong>이 글의 길</strong> — 위쪽은 핵심, 아래쪽은 접혀 있는 «자세히 보기»예요. <button type="button" id="deep-all" style="cursor:pointer">모두 펼치기</button></p>
+      <p><strong>핵심</strong> <a href="#situation">일주일 뒤 모인 말들</a> · <a href="#analogy">비유로 먼저</a> · <a href="#flow">한 턴을 단계로 그리기</a> · <a href="#dev-vs-prod">개발 중에는 정답지, 운영 중에는?</a> · <a href="#choice">나쁜 선택 vs 좋은 선택</a> · <a href="#suspect">이럴 때 의심하세요</a></p>
+      <p><strong>자세히</strong> <a href="#whiteboard">분류 단계에서 미리 볼 것들</a> · <a href="#data-model">Langfuse가 남기는 단위</a> · <a href="#next">이 노드에서 이어서 할 일</a></p>
+    </div>
+
+    <a class="post-nav" href="ai-service-in-production-wrap-up.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">아홉 개 노드를 한 번에 — AI 서비스를 프로덕션에 올리기까지 돌아보기 (10)</span>
+    </a>
+
+    <p><a href="ai-service-in-production-wrap-up.html">앞 편</a>까지는 코드를 고쳐 사용자에게 내보내는 길을 만들었어요. 테스트를 거치고, 같은 이미지를 그대로 보내고, 배포하는 동안에도 오류가 나지 않게요. 이번 편부터는 <strong>내보낸 뒤</strong>의 이야기예요. 서비스는 잘 떠 있고 요청도 성공으로 끝나는데, 사용자는 답이 이상하다고 말하는 상황이요. 이 글은 문제를 세우는 데까지 다뤄요. 무엇이 안 보이는지, 그래서 무엇을 남겨야 하는지요. 비유는 <a href="ai-service-design-before-code.html">1편</a>부터 쓰던 식당을 이어 써요.</p>
+
+    <h2 id="situation"><span class="hl">일주일 뒤 모인 말들</span> — 그리고 손에 있는 것</h2>
+    <p>지금까지 만든 AI 친구 에이전트를 동료 다섯 명에게 일주일 동안 써 보게 했다고 해 볼게요. 단체 대화방에 이런 말이 모였어요. 그리고 LLM 제공사의 청구 화면을 열어 보니 이번 주 요금이 보낸 메시지 수에 비해 많이 나와 있었어요.</p>
+    <p>손에 있는 건 <a href="cloud-run-operating-ai-service.html#logs">3편에서 읽어 본 Cloud Run 서버 로그</a>뿐이에요. 로그에는 <code>POST /api/chat 200</code>이 수백 줄 찍혀 있어요. 200은 "요청을 받아서 답을 돌려줬다"는 뜻이지, "답이 맞았다"는 뜻이 아니에요. 게다가 대화 원문은 개인정보라서 로그에 남기지 않기로 했어요. 아래 표는 동료들의 말마다 원인을 찾으려면 무엇이 필요한지, 지금 서버 로그로 그걸 알 수 있는지를 제가 따져 본 거예요.</p>
+    <table>
+      <thead><tr><th>들어온 말</th><th>원인을 찾으려면 필요한 것</th><th>지금 서버 로그로?</th></tr></thead>
+      <tbody>
+        <tr><td>"어제 저녁에 도쿄 날씨를 물었는데 엉뚱한 답이 나왔어요"</td><td>그 동료의 그 요청, 모델이 고른 도구와 도구가 돌려준 값, 모델이 그걸 보고 만든 답</td><td>없어요. 어느 줄이 그 동료의 요청인지 모르고, 도구 선택·입력·결과는 안 남아요</td></tr>
+        <tr><td>"답이 가끔 한참 있다가 와요"</td><td>한 요청 안에서 단계마다 걸린 시간</td><td>요청 전체 시간은 있지만, 그 안의 어느 단계가 오래 걸렸는지는 없어요</td></tr>
+        <tr><td>"다음 주에 이사 간다고 말했는데 기억을 못 해요"</td><td>같은 사람의 앞뒤 대화를 이어서 보기, 그때 모델에게 앞 대화가 들어갔는지</td><td>없어요. 요청끼리 같은 대화인지 묶는 표시가 없어요</td></tr>
+        <tr><td>"어제 업데이트한 뒤로 답이 느려진 것 같아요"</td><td>업데이트 전 버전과 후 버전의 응답 시간 비교</td><td>시간으로 대강 가를 수는 있지만, 어느 요청이 어느 버전에서 나왔는지 표시는 없어요</td></tr>
+        <tr><td>"별로인 답이 몇 번 있었어요" (언제였는지는 모름)</td><td>사용자가 그 자리에서 남긴 반응(좋아요·별로예요)과 그 반응이 붙은 요청</td><td>없어요. 반응을 받는 칸 자체가 없어요</td></tr>
+        <tr><td>요금이 메시지 수에 비해 많이 나옴</td><td>메시지 하나마다 모델을 몇 번 불렀고 토큰<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>을 얼마나 썼는지</td><td>없어요. 청구 화면은 합계만 보여 줘요</td></tr>
+      </tbody>
+    </table>
+    <p>여섯 줄 모두 같은 데서 막혀요. <strong>요청 한 건 안에서 무슨 일이 있었는지</strong>가 안 남아 있어요. 일반 프로그램이라면 같은 입력에 같은 결과가 나오니 다시 돌려 보면 되지만, LLM이 낀 서비스는 같은 질문에도 답이 달라질 수 있고 오류 없이 이상한 답을 내요. 그래서 LLM 서비스를 운영하는 일을 따로 LLMOps<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>라고 부르고, 그 첫 도구로 메시지 하나가 거친 단계를 트레이스<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>로 남기는 LLM 관측 도구 <strong>Langfuse</strong>를 붙여요.</p>
+
+    <h2 id="analogy"><span class="hl">비유로 먼저</span> — 주문표만 남는 주방, 공정표가 남는 주방</h2>
+    <p>식당에서 손님이 "어제 먹은 파스타가 이상했어요"라고 해요. 사장 손에 있는 건 계산대 영수증뿐이에요. 영수증에는 "파스타 1, 결제 완료"만 찍혀 있죠. 그 접시를 누가 받았는지, 어느 칸에서 무엇을 꺼냈는지, 간을 누가 봤는지는 안 남아요. 그래서 사장은 주방에 <strong>공정표</strong>를 붙이기로 해요. 주문 하나마다 한 장씩, 주문을 받은 직원이 분류한 메뉴, 냉장고에서 꺼낸 재료, 셰프가 조리한 시간, 검수대에서 통과시킨 사람을 차례로 적어요. 표 맨 위에는 테이블 번호와 그날 쓴 레시피 판 번호를 적어 두고요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>계산대 영수증 "파스타 1, 결제 완료"</td><td>서버 로그 한 줄 <code>POST /api/chat 200</code></td></tr>
+        <tr><td>주문 하나마다 붙는 공정표 한 장</td><td>트레이스 — 사용자 메시지 하나(한 턴)에 대한 기록</td></tr>
+        <tr><td>공정표의 한 칸 (분류, 재료 꺼내기, 조리, 검수)</td><td>관찰 단위(observation) — 트레이스 안의 단계 하나</td></tr>
+        <tr><td>셰프가 조리한 칸</td><td>generation — 모델을 부른 단계</td></tr>
+        <tr><td>공정표 맨 위의 테이블 번호</td><td>사용자·세션 표시 — 누구의 몇 번째 대화인지</td></tr>
+        <tr><td>그날 쓴 레시피 판 번호</td><td>버전(release) 표시 — 어느 배포에서 나온 기록인지</td></tr>
+        <tr><td>손님이 남긴 "맛있어요 / 별로예요" 카드</td><td>점수(score) — 사용자 반응을 그 트레이스에 붙인 값</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 영수증은 "팔렸다"만 말해 주고, 무엇이 잘못됐는지는 주문마다 붙은 공정표의 어느 칸에서 처음 어긋났는지를 봐야 알 수 있어요.</p>
+    <p>다만 여기서 비유가 끊기는 점이 있어요. 공정표는 직원이 손으로 적지만, 트레이스는 코드가 단계마다 자동으로 남겨요. 그래서 <strong>어느 칸을 남길지는 코드를 짜기 전에 정해 둬야</strong> 해요. 나중에 "그 칸도 적어 둘걸" 해도 지난 주문의 공정표는 다시 쓸 수 없어요.</p>
+
+    <h2 id="flow"><span class="hl">한 턴을 단계로 그리기</span> — 고객 응대 에이전트의 예</h2>
+    <p>공정표에 칸을 나누려면 먼저 에이전트의 한 턴이 몇 단계인지 그려 봐야 해요. 여기서는 <a href="cs-agent-routing-eval.html">고객 문의를 갈래로 나누는 고객 응대 에이전트</a>를 예로 그렸어요. 가상의 쇼핑몰 «모두몰»에 들어온 문의 한 줄이 지나는 길이에요.</p>
+    <figure>
+    <svg viewBox="0 0 760 360" role="img" aria-label="고객 문의 한 턴의 흐름. 질문 분류를 지나 답변 생성으로 가고, 답변 생성은 매뉴얼 목록 조회(도구 호출)와 답변에 필요한 정보 수집(주문번호, 상품 ID, 여러 번 되묻기)을 오가며, 그 뒤 검증을 거쳐 대화가 끝난다. 이 한 턴 전체가 트레이스 하나이고, 각 상자가 관찰 단위 하나다.">
+      <defs>
+        <marker id="lf-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/></marker>
+      </defs>
+      <rect x="6" y="6" width="748" height="348" rx="12" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="6 5"/>
+      <text x="22" y="30" font-family="var(--font-heading)" font-size="13" fill="var(--accent)">트레이스 한 개 = 문의 한 턴</text>
+
+      <rect x="24" y="70" width="150" height="74" rx="10" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="99" y="100" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">① 질문 분류</text>
+      <text x="99" y="122" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">어느 갈래? 답할 수 있나?</text>
+      <line x1="176" y1="107" x2="222" y2="107" stroke="var(--muted)" stroke-width="2" marker-end="url(#lf-a)"/>
+
+      <rect x="224" y="70" width="150" height="74" rx="10" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+      <text x="299" y="100" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">② 답변 생성</text>
+      <text x="299" y="122" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--ink)">모델 호출 (generation)</text>
+      <line x1="376" y1="107" x2="422" y2="107" stroke="var(--muted)" stroke-width="2" marker-end="url(#lf-a)"/>
+
+      <rect x="424" y="70" width="150" height="74" rx="10" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="499" y="100" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">③ 검증</text>
+      <text x="499" y="122" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">근거·규정에 맞나</text>
+      <line x1="576" y1="107" x2="622" y2="107" stroke="var(--muted)" stroke-width="2" marker-end="url(#lf-a)"/>
+
+      <rect x="624" y="70" width="118" height="74" rx="37" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="683" y="112" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)">대화 끝</text>
+
+      <rect x="60" y="214" width="230" height="74" rx="10" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="175" y="242" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">매뉴얼 목록 조회</text>
+      <text x="175" y="264" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">도구 호출 — 정해진 답이 있는 문의인가</text>
+      <rect x="330" y="214" width="250" height="74" rx="10" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <text x="455" y="242" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)">답변에 필요한 정보 수집</text>
+      <text x="455" y="264" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">주문번호·상품 ID — 없으면 되묻기(멀티턴)</text>
+
+      <line x1="262" y1="146" x2="200" y2="210" stroke="var(--muted)" stroke-width="2" marker-end="url(#lf-a)"/>
+      <line x1="225" y1="212" x2="285" y2="148" stroke="var(--muted)" stroke-width="2" marker-end="url(#lf-a)"/>
+      <line x1="320" y1="146" x2="420" y2="210" stroke="var(--muted)" stroke-width="2" marker-end="url(#lf-a)"/>
+      <line x1="395" y1="212" x2="335" y2="148" stroke="var(--muted)" stroke-width="2" marker-end="url(#lf-a)"/>
+
+      <text x="380" y="326" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)">상자 하나 = 관찰 단위 하나. 아래 두 상자는 답변 생성 안에서 필요할 때마다 여러 번 오가요.</text>
+    </svg>
+    <figcaption>고객 응대 에이전트의 한 턴. 상자마다 시간·입력·결과를 남기면, 문제가 처음 생긴 상자를 찾아갈 수 있어요.</figcaption>
+    </figure>
+    <p><strong>읽는 법:</strong> 위 줄 ①→②→③은 모든 문의가 지나는 길이에요. 아래 두 상자는 ② 답변 생성이 필요할 때만 들르는 곳이라 화살표가 왕복이에요. 매뉴얼에 정해진 답이 있는 문의면 목록을 조회해서(tool calling<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>) 고민 없이 답하고, 주문번호나 상품 ID가 필요하면 고객에게 되물어서 모은 뒤에 답해요. 되묻는 동안은 대화가 여러 턴으로 이어지니(멀티턴<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>), 턴마다 트레이스가 하나씩 생기고 그 트레이스들을 한 대화로 묶는 표시가 따로 필요해요.</p>
+    <p>이렇게 그려 두면 앞의 여섯 가지 말이 어느 상자를 봐야 하는지로 바뀌어요. 엉뚱한 답은 ①의 분류 결과나 아래 두 상자가 돌려준 값부터, 느린 답은 상자마다 걸린 시간에서, 늘어난 요금은 ②가 한 턴에 몇 번 불렸는지에서 찾기 시작해요.</p>
+
+    <h2 id="dev-vs-prod"><span class="hl">개발 중에는 정답지, 운영 중에는?</span> — 같은 에이전트, 다른 자</h2>
+    <p>개발(Dev) 환경에서는 정답지를 기준으로 재면 돼요. 고객 응대 에이전트를 만들 때 쓰는 데이터 폴더에는 이런 파일들이 들어 있어요.</p>
+    <table>
+      <thead><tr><th>파일</th><th>이 글에서 확인한 것</th></tr></thead>
+      <tbody>
+        <tr><td><code>routing_answers.csv</code></td><td><strong>라우팅<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup> 정답지</strong> — 문의마다 어느 갈래로 보내야 맞는지 적힌 표예요. ① 질문 분류 상자의 채점표예요</td></tr>
+        <tr><td><code>answer_goldenset_multiturn.json</code></td><td>이름에 «골든셋(정답 묶음)»과 «멀티턴»이 붙어 있어요. 되묻기가 섞인 대화의 답을 채점하는 용도로 읽혀요(파일 내용은 열어 보지 않았어요)</td></tr>
+        <tr><td><code>customer_inquiries.csv</code> · <code>hard_cases.csv</code></td><td>이름으로는 고객 문의 모음과 어려운 사례 모음이에요(내용은 열어 보지 않았어요)</td></tr>
+        <tr><td><code>policy_modumall.md</code> · <code>mockdata_modumall.json</code></td><td>이름으로는 모두몰 규정 문서와 가짜 주문·상품 데이터예요(내용은 열어 보지 않았어요)</td></tr>
+      </tbody>
+    </table>
+    <p>정답지가 있으면 채점은 간단해요. <a href="cs-agent-routing-eval.html#evalset">평가셋을 먼저 만들어 두는 이유</a>도 이거였어요. 고친 뒤에 같은 문항을 다시 돌려 맞은 개수를 세면, 좋아졌는지 나빠졌는지 숫자로 말할 수 있으니까요.</p>
+    <p>그런데 서비스에 내놓은 뒤 들어오는 문의에는 정답지가 없어요. 동료가 물은 "도쿄 날씨"의 맞는 답은 아무 파일에도 미리 적혀 있지 않아요. 그래서 운영 중에는 자가 두 개로 바뀌어요.</p>
+    <ul>
+      <li><strong>단계 기록(트레이스):</strong> 정답이 없어도 "어느 상자에서 무엇이 들어가고 무엇이 나왔나"는 볼 수 있어요. 분류가 이상했는지, 도구가 빈 값을 돌려줬는지, 모델이 받은 값을 무시했는지 가를 수 있어요.</li>
+      <li><strong>사용자 반응(점수):</strong> 화면의 좋아요, 별로예요, 신고 버튼을 Langfuse의 점수로 모으면, 수백 개 트레이스 가운데 <strong>먼저 열어 볼 것</strong>을 고를 수 있어요. "언제였는지 기억 못 하는 별로인 답"을 찾는 길이 이거예요.</li>
+    </ul>
+    <p>운영 중에 찾은 실패 사례는 다시 개발 쪽 정답지로 돌아가요. 이상했던 문의를 정답과 함께 평가셋에 더해 두면, 다음에 고칠 때 같은 실수가 돌아왔는지 숫자로 잡을 수 있어요.</p>
+
+    <h2 id="whiteboard"><span class="hl">분류 단계에서 미리 볼 것들</span> — 무엇을 칸으로 남길까</h2><details class="deep"><summary>▼ 자세히 보기</summary>
+    <p>고객 응대 에이전트의 워크플로를 어떻게 짜면 좋을지 이야기하며 나온 생각들을, 위 그림의 상자별로 모았어요. 이 생각들이 곧 "공정표에 어떤 칸을 둘까"의 후보예요.</p>
+    <table>
+      <thead><tr><th>상자</th><th>미리 볼 것</th><th>남겨 두면 좋은 이유</th></tr></thead>
+      <tbody>
+        <tr><td>① 질문 분류</td><td>문의의 목적이 어느 카테고리인지</td><td>라우팅 정답지와 바로 비교할 수 있는 값이에요</td></tr>
+        <tr><td>① 질문 분류</td><td>같은 걸 다시 묻는 재질문인지</td><td>재질문이 많으면 앞 답이 부족했다는 신호예요</td></tr>
+        <tr><td>① 질문 분류</td><td>실제로 답할 수 있는 질문인지</td><td>답할 수 없는 문의를 억지로 답하면 엉뚱한 답이 나와요. <a href="cs-agent-routing-eval.html">갈래를 나누는 글</a>의 «모르면 모른다고 말할 자리»와 같은 이야기예요</td></tr>
+        <tr><td>① 질문 분류</td><td>고객 정보 없이도 답할 수 있는지, 회원인지 비회원인지</td><td>고객 정보가 필요 없는 문의는 조회를 건너뛰고 빨리 답할 수 있어요. 오프라인 매장 문의처럼 이 서비스가 받을 필요가 없는 갈래도 여기서 걸러져요</td></tr>
+        <tr><td>① 질문 분류</td><td>고객이 지금 화가 났는지, 얼마나 났는지</td><td>화난 정도에 따라 답의 말투나 사람에게 넘길지가 달라질 수 있어요</td></tr>
+        <tr><td>② 답변 생성 아래</td><td>매뉴얼대로 바로 답할 수 있는 문의 목록에 있는지</td><td>자주 들어오는 문의가 쌓이면 사실상 FAQ가 만들어져요</td></tr>
+        <tr><td>② 답변 생성 아래</td><td>답에 필요한 정보(주문번호, 상품 ID)가 모였는지</td><td>고객은 자기가 무엇을 원하는지 정확히 말하지 못할 때가 많아서, 되묻는 횟수가 품질 신호가 돼요</td></tr>
+        <tr><td>턴 전체</td><td>어떤 유형의 고객이 무엇을 자주 묻는지</td><td>사용자 표시가 붙어 있어야 이런 데이터가 쌓여요</td></tr>
+      </tbody>
+    </table>
+    <p>화난 정도를 칸으로 남기자는 이야기에는 재미있는 경험담이 곁들여졌어요. 코딩 에이전트와 일하다 답답해서 느낌표를 몇 개 붙였더니, 그 에이전트가 다른 에이전트에게 «사용자가 크게 화가 났으니 주의하라»는 메시지를 남기더라는 거예요. 모델은 이미 말투에서 감정을 읽고 있다는 뜻이고, 그렇다면 그 판단을 기록으로 남겨 두는 편이 나중에 대화를 다시 읽을 때 도움이 돼요.</p>
+    <p>모든 칸을 처음부터 다 둘 필요는 없어요. 다만 <strong>분류 결과</strong>처럼 정답지와 비교할 수 있는 값, <strong>사용자·대화 표시</strong>처럼 나중에 묶어 볼 때 꼭 필요한 값은 처음부터 남겨야 해요. 지난 기록에는 칸을 더할 수 없거든요.</p>
+    </details>
+
+    <h2 id="data-model"><span class="hl">Langfuse가 남기는 단위</span> — 트레이스, 관찰 단위, 세션</h2><details class="deep"><summary>▼ 자세히 보기</summary>
+    <p>Langfuse 공식 문서의 데이터 모델 페이지를 읽고, 위 비유와 이어지는 낱말만 추렸어요.</p>
+    <table>
+      <thead><tr><th>Langfuse의 말</th><th>뜻</th><th>고객 응대 에이전트에서는</th></tr></thead>
+      <tbody>
+        <tr><td>trace</td><td>요청이나 작업 한 건. 챗봇이라면 질문 하나부터 마지막 답까지예요</td><td>문의 한 턴</td></tr>
+        <tr><td>observation</td><td>트레이스 안의 개별 단계 — 모델 호출, 도구 호출, 검색 같은 것</td><td>그림의 상자 하나하나</td></tr>
+        <tr><td>span</td><td>관찰 단위의 한 종류로, 일반적인 단계 하나를 뜻해요<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup></td><td>① 질문 분류, ③ 검증</td></tr>
+        <tr><td>generation</td><td>LLM 전용 관찰 단위의 한 종류로, 모델 호출을 남겨요</td><td>② 답변 생성</td></tr>
+        <tr><td>session</td><td>같은 사용자와의 한 번의 대화(채팅 화면의 한 스레드)에 속한 트레이스들을 묶는 단위</td><td>되묻기로 이어진 여러 턴</td></tr>
+        <tr><td>user_id</td><td>어느 사용자가 그 트레이스를 일으켰는지</td><td>"그 동료의 요청"을 찾는 열쇠</td></tr>
+        <tr><td>environment</td><td><code>production</code>, <code>staging</code>, <code>development</code>처럼 배포 환경별로 기록을 나누는 표시</td><td><a href="ci-tests-and-staging.html">5편의 staging</a>에서 나온 시험 기록이 실제 사용자 기록에 섞이지 않게 해요</td></tr>
+        <tr><td>release / version</td><td>앱 버전과 구성 요소의 변경을 추적하는 표시</td><td>"업데이트 뒤로 느려졌다"를 전후로 가르는 열쇠</td></tr>
+      </tbody>
+    </table>
+    <p>하나 더 알아 둘 것이 있어요. Langfuse는 기록이 생기는 순간 바로 보내지 않고, <strong>내 프로그램 안에 모아 뒀다가 뒤에서 한꺼번에</strong> 보내요. 오래 떠 있는 서버라면 신경 쓸 일이 없지만, 잠깐 돌고 끝나는 스크립트는 끝나기 전에 <code>flush()</code><sup class="fn-ref"><a href="#fn8" id="fnref8">8</a></sup>를 직접 불러야 모아 둔 기록이 전송돼요.</p>
+    </details>
+
+    <h2 id="choice"><span class="hl">나쁜 선택 vs 좋은 선택</span> — "별로인 답이 있었다"는 말을 들었을 때</h2>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">서버 로그에 대화 원문을 통째로 찍기 시작한다 → 개인정보가 로그에 쌓이고, 원문이 있어도 어느 단계에서 틀렸는지는 여전히 안 보여요. 지난 일주일 치는 이미 사라졌고요.</td>
+          <td class="choice-good">한 턴을 단계로 나눠 무엇을 남기고 무엇을 가릴지 먼저 정하고, 사용자·대화·버전 표시를 붙여 트레이스로 남긴다. 화면에 좋아요·별로예요를 두어 점수로 모은다 → 다음에 같은 말이 오면 "별로예요"가 붙은 트레이스부터 열어, 처음 어긋난 상자를 찾아가요.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>식당으로 말하면, 왼쪽은 영수증에 손님 대화를 받아 적는 것이고, 오른쪽은 주문마다 공정표를 붙이고 테이블에 "맛있어요 / 별로예요" 카드를 두는 거예요.</p>
+    <p>이 글에는 따로 모을 숫자가 없어 «이 글에 나온 숫자» 표는 넣지 않았어요.</p>
+
+    <h2 id="next"><span class="hl">이 노드에서 이어서 할 일</span> — 문제를 세운 다음</h2><details class="deep"><summary>▼ 자세히 보기</summary>
+    <p>여기까지는 무엇이 안 보이는지를 정리했어요. 이 노드는 이어서 아래 일을 해요. 이 글은 그 출발점까지만 다뤘어요.</p>
+    <ul>
+      <li>들어온 문제를 보고 Langfuse의 어느 화면과 기능으로 확인할지, 그러려면 무엇을 미리 기록해 둬야 하는지 고르기</li>
+      <li>한 턴의 단계를 어떤 관찰 단위로 남기고 무엇을 가릴지 계측 구조를 먼저 정한 뒤, 코딩 에이전트에게 그 구조대로 계측을 맡기기</li>
+      <li>트레이스를 거슬러 올라가며 엉뚱한 답, 느린 답, 늘어난 비용이 처음 생긴 단계를 찾기</li>
+      <li>사용자, 세션, 환경, 버전을 붙여 한 사람의 대화와 배포 버전별 트레이스를 나눠 보기</li>
+      <li>좋아요, 별로예요, 신고를 점수로 모아 먼저 읽을 트레이스를 고르기</li>
+    </ul>
+    </details>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 서비스를 내놓은 뒤</h2>
+    <p>운영 중의 문제는 오류 메시지로 오지 않고 사용자의 말이나 청구서로 먼저 와요. 아래 증상이 보이면 "로그가 200이니 괜찮다"에서 멈추지 말고 단계 기록을 열어요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-wrong">
+          <td>사용자는 <strong>엉뚱한 답</strong>을 봤다는데, 서버 로그에는 그 시간대 요청이 전부 <code>200</code>이에요.</td>
+          <td>그 사용자의 그 턴 트레이스 — ① 분류 결과와 도구가 돌려준 값. 서버 로그는 범인이 아니라 "답을 돌려줬다"는 기록일 뿐이에요.</td>
+          <td>사용자 표시로 그 사람의 트레이스를 찾고, 상자를 앞에서부터 열어 처음 이상해진 곳을 찾아요. 사용자 표시를 안 붙였다면 지금부터라도 붙여요 — <a href="#flow">한 턴을 단계로 그리기</a></td>
+        </tr>
+        <tr id="suspect-cost">
+          <td>LLM 제공사 <strong>청구 화면의 요금</strong>이 보낸 메시지 수에 비해 많아요.</td>
+          <td>턴마다 generation(모델 호출)이 몇 개인지, 각각 토큰을 얼마나 썼는지. 청구 화면은 합계만 보여 줘서 범인을 못 가리켜요.</td>
+          <td>트레이스 몇 개를 열어 한 턴의 모델 호출 수를 세요. 되묻기나 검증 단계가 모델을 한 번 더 부르고 있지 않은지 봐요 — <a href="#data-model">Langfuse가 남기는 단위</a></td>
+        </tr>
+        <tr id="suspect-slow">
+          <td>"<strong>업데이트한 뒤로 느려졌다</strong>"는 말이 들려요.</td>
+          <td>트레이스에 붙은 버전(release) 표시와 상자별 걸린 시간.</td>
+          <td>버전별로 나눠 같은 단계의 시간을 비교해요. 버전 표시가 없으면 전후를 가를 수 없으니, 배포할 때 커밋 번호를 버전으로 넘기게 만들어요(<a href="build-once-promote-image.html">7편</a>에서 이미지에 커밋 번호를 붙인 것과 같은 생각이에요).</td>
+        </tr>
+        <tr id="suspect-flush">
+          <td>시험용 스크립트를 돌렸는데 <strong>Langfuse 화면에 트레이스가 하나도 안 보여요</strong>.</td>
+          <td>스크립트 마지막 줄. 키나 주소 설정보다 먼저 볼 곳이에요.</td>
+          <td>잠깐 돌고 끝나는 스크립트는 기록을 모아 두기만 하고 끝날 수 있어요. 끝나기 전에 <code>flush()</code>를 부르는지 봐요 — <a href="#data-model">Langfuse가 남기는 단위</a></td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등</p>
+    <pre><code>이 프로젝트에서 사용자 메시지 하나가 처리되는 경로를 따라가, 거치는 단계(분류, 모델 호출, 도구 호출, 검증 등)를 순서대로 표로 정리해 줘.
+단계마다 파일 이름과 줄 번호, 그 단계의 입력과 출력이 무엇인지 적어 줘.
+그리고 지금 서버 로그에 무엇이 남고 무엇이 안 남는지도 적어 줘.
+아직 코드는 고치지 마.</code></pre>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">토큰 — 모델이 글을 잘라 읽는 단위로, LLM 요금은 대개 주고받은 토큰 수로 매겨져요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">LLMOps — 같은 입력에도 답이 달라지고 오류 없이 이상한 답을 내는 LLM 서비스를 기록·평가·개선하며 운영하는 일이에요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">트레이스 — 요청 한 건이 처리되는 동안 거친 단계들을 순서대로 묶어 남긴 기록이에요. <a href="#fnref3">↩</a></li>
+        <li id="fn4">tool calling(도구 호출) — 모델이 정해진 함수를 골라 부르게 해서 값을 지어내지 않고 조회하게 하는 방식으로, <a href="cs-agent-grounding.html">값을 말하지 말고 조회하게 한다</a>에서 다뤘어요. <a href="#fnref4">↩</a></li>
+        <li id="fn5">멀티턴 — 한 번의 질문과 답으로 끝나지 않고 여러 번 주고받으며 이어지는 대화예요. <a href="#fnref5">↩</a></li>
+        <li id="fn6">라우팅 — 들어온 문의를 읽고 미리 정한 갈래 중 하나로 보내는 분류로, <a href="cs-agent-routing-eval.html">문의 한 줄을 다섯 갈래로</a>에서 처음 다뤘어요. <a href="#fnref6">↩</a></li>
+        <li id="fn7">span — 원래 분산 추적에서 단계 하나를 부르는 말이고, Langfuse는 관찰 단위를 통틀어 span이라고도 부르면서 그중 일반 단계를 뜻하는 종류의 이름으로도 써요. <a href="#fnref7">↩</a></li>
+        <li id="fn8"><code>flush()</code> — 프로그램 안에 모아 둔 기록을 기다리지 않고 지금 바로 내보내게 하는 함수예요. <a href="#fnref8">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <h3>"AI 서비스로 내놓기" 시리즈</h3>
+    <a class="post-nav" href="ai-service-design-before-code.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">AI 기능을 서비스로 설계한다는 것 — 코딩 에이전트에게 맡기기 전에 정할 것</span>
+    </a>
+    <a class="post-nav" href="cloud-run-source-deploy-meaning.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">Cloud Run에 소스를 배포한다는 것 — 코드 폴더 하나가 공개 주소가 되기까지</span>
+    </a>
+    <a class="post-nav" href="cloud-run-operating-ai-service.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">배포한 AI 서비스가 말없이 틀리는 순간 — 타임아웃, 인스턴스, 비용, 로그</span>
+    </a>
+    <a class="post-nav" href="github-actions-auto-deploy.html">
+      <span class="post-nav-label">(4)</span>
+      <span class="post-nav-title">코드를 머지하면 서비스가 저절로 바뀌는 길 — GitHub Actions로 자동 배포하기</span>
+    </a>
+    <a class="post-nav" href="ci-tests-and-staging.html">
+      <span class="post-nav-label">(5)</span>
+      <span class="post-nav-title">합치기 전에 테스트하고 내보내기 전에 먼저 본다 — CI 테스트와 staging 환경</span>
+    </a>
+    <a class="post-nav" href="dockerfile-fixing-runtime-environment.html">
+      <span class="post-nav-label">(6)</span>
+      <span class="post-nav-title">로컬에서는 되는데 서버에서만 안 되는 이유 — Dockerfile로 실행 환경 정하기</span>
+    </a>
+    <a class="post-nav" href="build-once-promote-image.html">
+      <span class="post-nav-label">(7)</span>
+      <span class="post-nav-title">시험한 이미지와 내보낸 이미지가 같다는 증거 — 이미지를 한 번만 만들어 그대로 보내기</span>
+    </a>
+    <a class="post-nav" href="load-balancer-zero-downtime.html">
+      <span class="post-nav-label">(8)</span>
+      <span class="post-nav-title">새 버전으로 바뀌는 몇 초 동안 — 로드밸런서로 무중단 배포 구성하기</span>
+    </a>
+    <a class="post-nav" href="cloud-run-zero-downtime-deploy.html">
+      <span class="post-nav-label">(9)</span>
+      <span class="post-nav-title">배포하는 동안 사용자는 오류를 봤을까 — Cloud Run으로 무중단 배포하기</span>
+    </a>
+    <a class="post-nav" href="ai-service-in-production-wrap-up.html">
+      <span class="post-nav-label">(10)</span>
+      <span class="post-nav-title">아홉 개 노드를 한 번에 — AI 서비스를 프로덕션에 올리기까지 돌아보기</span>
+    </a>
+    <p class="post-date">(11) 로그에는 200만 찍혔는데 사용자는 엉뚱한 답을 봤다 — Langfuse로 에이전트 문제 찾기 (이 글)</p>
+
+    <a class="post-nav" href="ai-service-in-production-wrap-up.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">아홉 개 노드를 한 번에 — AI 서비스를 프로덕션에 올리기까지 돌아보기 (10)</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="two-layer.js"></script>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
