@@ -88,7 +88,7 @@
     </div>
     <div class="deep-toc">
       <p><strong>이 글의 길</strong> — 위쪽은 핵심, 아래쪽은 접혀 있는 «자세히 보기»예요. <button type="button" id="deep-all" style="cursor:pointer">모두 펼치기</button></p>
-      <p><strong>핵심</strong> <a href="#analogy">비유로 먼저</a> · <a href="#flow">전체 흐름</a> · <a href="#why-once">왜 한 번만 만드나</a> · <a href="#tag-digest">태그와 다이제스트</a> · <a href="#chain">커밋에서 화면까지</a> · <a href="#promote">승격</a> · <a href="#choice">나쁜 선택 vs 좋은 선택</a> · <a href="#numbers">이 글에 나온 숫자</a> · <a href="#suspect">이럴 때 의심하세요</a> · <a href="#not-done">확인 범위와 해 보지 못한 것</a></p>
+      <p><strong>핵심</strong> <a href="#analogy">비유로 먼저</a> · <a href="#flow">전체 흐름</a> · <a href="#why-once">왜 한 번만 만드나</a> · <a href="#tag-digest">태그와 다이제스트</a> · <a href="#chain">커밋에서 화면까지</a> · <a href="#promote">승격</a> · <a href="#choice">나쁜 선택 vs 좋은 선택</a> · <a href="#my-service">직접 해 본 기록</a> · <a href="#numbers">이 글에 나온 숫자</a> · <a href="#suspect">이럴 때 의심하세요</a> · <a href="#not-done">확인 범위와 해 보지 못한 것</a></p>
       <p><strong>자세히</strong> <a href="#where">이미지를 누가 만드나</a> · <a href="#rollback">롤백</a> · <a href="#cleanup">저장 공간 정리</a> · <a href="#size">이미지 크기</a> · <a href="#broken">고장 난 Dockerfile 고쳐 보기</a></p>
     </div>
 
@@ -259,7 +259,7 @@
     <p><strong>한 줄 요약:</strong> 이름이 비슷한 SHA 두 개는 대상이 달라요. 커밋 SHA는 코드, 다이제스트는 이미지예요. 그리고 리비전 이름(<code>00011-vgr</code>)만으로는 어느 커밋인지 알 수 없어요. 리비전 상세에서 다이제스트를 찾고 Artifact Registry에서 그 다이제스트의 태그를 찾아야 커밋이 나와요.</p>
 
     <h3 id="screen">화면 구석의 <code>v 92d2c86</code>는 어떻게 생기나</h3>
-    <p>노드는 "앱이 <code>/version</code> 주소로 지금 커밋을 알려 준다"고 가정해요. <code>/version</code>은 앱 주소 뒤에 붙여 여는 페이지인데, 앱 개발자가 그 주소를 처리하는 코드를 만들어야 생겨요. 도장판 앱에서 <code>version</code>, <code>COMMIT_SHA</code>, <code>K_REVISION</code>을 코드에서 검색해 보니 일치하는 것이 없었고, 서버가 가진 주소는 <code>/</code>, <code>/health</code>, <code>/api/ocr</code> 세 개뿐이었어요. 그 대신 앱 화면 구석에 작은 글씨 <code>v 92d2c86</code>이 보여요. 이 글자는 배포할 때 컴퓨터가 자동으로 넣은 커밋 앞 7자리예요.</p>
+    <p>보통은 "앱이 <code>/version</code> 주소로 지금 커밋을 알려 준다"고 가정하고 확인해요. <code>/version</code>은 앱 주소 뒤에 붙여 여는 페이지인데, 앱 개발자가 그 주소를 처리하는 코드를 만들어야 생겨요. 도장판 앱에서 <code>version</code>, <code>COMMIT_SHA</code>, <code>K_REVISION</code>을 코드에서 검색해 보니 일치하는 것이 없었고, 서버가 가진 주소는 <code>/</code>, <code>/health</code>, <code>/api/ocr</code> 세 개뿐이었어요. 그 대신 앱 화면 구석에 작은 글씨 <code>v 92d2c86</code>이 보여요. 이 글자는 배포할 때 컴퓨터가 자동으로 넣은 커밋 앞 7자리예요.</p>
     <p>원리는 간단해요. <code>index.html</code>에 <code>var v='__COMMIT__'</code>이라는 자리 표시를 적어 두고, 배포 때 <code>sed</code><sup class="fn-ref"><a href="#fn10" id="fnref10">10</a></sup>(글자를 찾아 바꾸는 명령)가 그 자리 표시를 커밋 앞 7자리로 바꿔요.</p>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 배포 워크플로 안에서 자동으로 도는 줄이에요</span></p>
 <pre><code>sed -i "s/__COMMIT__/${GITHUB_SHA::7}/" index.html
@@ -304,7 +304,7 @@ var v='__COMMIT__'   →   var v='92d2c86'</code></pre>
     </details>
 
     <h2 id="cleanup"><span class="hl">저장 공간 정리</span> — 롤백에 쓸 이미지를 남기는 기준으로</h2><details class="deep"><summary>▼ 자세히 보기</summary>
-    <p>이미지는 배포할 때마다 쌓이고, 노드가 알려 준 무료 저장 공간은 0.5GB예요. 그래서 오래된 이미지를 지우는 정리 정책<sup class="fn-ref"><a href="#fn12" id="fnref12">12</a></sup>을 정해요. 노드의 예시는 「7일 넘으면 삭제, 최근 10개 유지」예요. 두 조건이 겹치면 어떻게 될까요? 이미지가 15개이고 그중 6개가 7일보다 오래됐다고 해 볼게요.</p>
+    <p>이미지는 배포할 때마다 쌓이고, 이 저장소의 무료 저장 공간은 0.5GB예요. 그래서 오래된 이미지를 지우는 정리 정책<sup class="fn-ref"><a href="#fn12" id="fnref12">12</a></sup>을 정해요. 예시로 「7일 넘으면 삭제, 최근 10개 유지」를 써 볼게요. 두 조건이 겹치면 어떻게 될까요? 이미지가 15개이고 그중 6개가 7일보다 오래됐다고 해 볼게요.</p>
     <table>
       <thead><tr><th>번호(오래된 순)</th><th>7일 넘음(삭제 조건)</th><th>최근 10개(유지 조건)</th><th>결과</th></tr></thead>
       <tbody>
@@ -313,7 +313,7 @@ var v='__COMMIT__'   →   var v='92d2c86'</code></pre>
         <tr><td>7~15</td><td>✕</td><td>✓</td><td>유지</td></tr>
       </tbody>
     </table>
-    <p>그래서 지워지는 것은 1~5번의 <strong>5개</strong>예요(제 계산이고, 노드의 제출 해설은 보지 못했어요). 「최근 10개」는 저장소 전체가 아니라 <strong>패키지(이미지 이름)마다</strong> 센다는 점도 공식 문서에서 확인했어요. 남기는 수는 롤백으로 되돌릴 이미지가 남는지를 기준으로 정해요.</p>
+    <p>그래서 지워지는 것은 1~5번의 <strong>5개</strong>예요(제 계산이에요). 「최근 10개」는 저장소 전체가 아니라 <strong>패키지(이미지 이름)마다</strong> 센다는 점도 공식 문서에서 확인했어요. 남기는 수는 롤백으로 되돌릴 이미지가 남는지를 기준으로 정해요.</p>
     <p>실제로 정책을 걸 때는 드라이런<sup class="fn-ref"><a href="#fn13" id="fnref13">13</a></sup>(진짜로 지우지 않고 해 보는 연습)부터 했어요. 정책 파일(7일 삭제, 최근 10개 유지)은 저장소가 아니라 임시 폴더에 만들었어요. 문법 검사를 통과시킨 뒤, 두 저장소에 <code>--dry-run</code>으로 적용했어요. 상태가 「Dry run is disabled」에서 「Dry run is enabled」로 바뀌었고 이미지는 2개와 60개 그대로였어요. 지금 데이터에 대입한 삭제 후보는 0개로 계산돼요(제 계산). 드라이런이 실제로 무엇을 지웠을지는 <strong>하루 뒤 감사 로그</strong>로만 알 수 있어서 오늘은 확인하지 못했고, <code>--no-dry-run</code>은 쓰지 않았어요.</p>
 
     </details>
@@ -334,7 +334,7 @@ var v='__COMMIT__'   →   var v='92d2c86'</code></pre>
     </details>
 
     <h2 id="broken"><span class="hl">고장 난 Dockerfile 고쳐 보기</span> — 증상에서 줄 하나로</h2><details class="deep"><summary>▼ 자세히 보기</summary>
-    <p>같은 노드에서 일부러 고장 낸 Dockerfile을 증상만 보고 찾는 실습도 했어요. 저장소는 건드리지 않고 임시 복사본에서만 했고 이미지는 올리지 않았어요. 정상 이미지는 431MB, 실행 사용자 <code>appuser</code>, <code>/app</code>에 <code>.env</code> 없음이었어요. 그중 두 문제는 아래와 같았어요.</p>
+    <p>이번에는 일부러 고장 낸 Dockerfile을 증상만 보고 찾는 실습도 했어요. 저장소는 건드리지 않고 임시 복사본에서만 했고 이미지는 올리지 않았어요. 정상 이미지는 431MB, 실행 사용자 <code>appuser</code>, <code>/app</code>에 <code>.env</code> 없음이었어요. 그중 두 문제는 아래와 같았어요.</p>
     <table>
       <thead><tr><th>문제</th><th>고장</th><th>증상</th><th>원인</th></tr></thead>
       <tbody>
@@ -359,19 +359,86 @@ var v='__COMMIT__'   →   var v='92d2c86'</code></pre>
     </table>
 
     <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 이미지를 한 번 만들어 보내고 정리할 때 다시 보는 값</h2>
-    <p>이 글을 쓴 <strong>2026년 10월 기준</strong>으로 직접 확인한 값과 노드에서 배운 값을 모았어요. 크기와 시간은 서비스와 컴퓨터마다 달라질 수 있어요.</p>
+    <p>이 글을 쓴 <strong>2026년 10월 기준</strong>으로 직접 확인한 값과 배워서 알게 된 값을 모았어요. 크기와 시간은 서비스와 컴퓨터마다 달라질 수 있어요.</p>
     <table>
       <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
       <tbody>
         <tr><td>다이제스트의 자릿수</td><td><code>sha256:</code> + 64자리</td><td>이미지 내용에서 계산한 값이라 같은 64자리면 같은 이미지예요. 표에서는 앞 12자리만 비교하기도 하는데, 그건 거의 같다는 뜻이지 같음을 증명하지는 않아요</td></tr>
         <tr><td>화면에 새기는 커밋 번호</td><td>앞 7자리 (예: <code>v 92d2c86</code>)</td><td>태그는 커밋 SHA와 같은 글자예요(제가 본 값 <code>92d2c86647dd…</code>). 화면의 7자리는 그 앞부분이라 앞부분이 맞는지로 커밋을 찾아요</td></tr>
         <tr><td>이 글의 실습에서 라이브러리를 설치한 결과</td><td>fastapi 0.162.0 (<code>&gt;=0.115</code>로 적음)</td><td>범위로 적으면 빌드하는 날의 가장 새 버전이 들어와요. 오늘 값이지 고정된 값이 아니에요</td></tr>
-        <tr><td>무료 저장 공간(노드가 알려 준 값)</td><td>0.5GB</td><td>이미지가 쌓이면 넘을 수 있어서 정리 정책을 걸어요. 요금제는 바뀔 수 있으니 직접 확인해요</td></tr>
+        <tr><td>무료 저장 공간</td><td>0.5GB</td><td>이미지가 쌓이면 넘을 수 있어서 정리 정책을 걸어요. 요금제는 바뀔 수 있으니 직접 확인해요</td></tr>
         <tr><td>정리 정책의 예시</td><td>7일 넘으면 삭제, 최근 10개 유지</td><td>두 조건에 모두 걸린 이미지는 유지돼요. 「최근 10개」는 이미지 이름마다 세요</td></tr>
         <tr><td>slim 이미지 / 전체판 이미지(로컬)</td><td>431MB / 1.63GB</td><td>FROM 한 줄 차이로 약 3.8배예요. 이 앱의 값이라 다른 서비스는 달라요</td></tr>
         <tr><td>롤백 / 복구 배포 시간</td><td>24초 / 36초</td><td>배포 명령이 걸린 시간이고 조사 시간은 빠졌어요. 한 번씩 잰 값이에요</td></tr>
       </tbody>
     </table>
+
+    <h2 id="my-service"><span class="hl">직접 해 본 기록</span> — 루틴 도장에서 승격까지, 막혔던 곳과 확인한 값</h2>
+    <p>본문에 다 담지 못한 실습 기록을 모았어요. 실습은 2026년 10월에 제 앱 «루틴 도장»(GitHub 저장소 <code>tigermorning/routine-stamp-trial</code>)으로 했고, GCP 프로젝트 하나에 Cloud Run 서비스 두 개(staging용 <code>routine-stamp-trial-staging</code>, production용 <code>routine-stamp-trial</code>)와 이미지 저장소 하나(Artifact Registry의 <code>friend-agent</code>)를 썼어요. 확인하지 못한 것은 못 했다고 그대로 적었어요.</p>
+
+    <h3>시작 전에 한 준비 — 권한은 필요한 만큼만</h3>
+    <ul>
+      <li>이미지 저장소를 새로 만들었더니 이미지·패키지 0개, 0MB로 시작했어요.</li>
+      <li>배포를 맡은 서비스 계정(<code>github-deployer</code>)에는 <strong>저장소 하나에만</strong> <code>roles/artifactregistry.writer</code> 역할을 줬어요. 프로젝트 전체 권한은 주지 않았어요. 실행 전에 대상이 저장소(repositories)이고 역할이 writer인지 확인했고, 실행 뒤 정책 조회로 다시 확인했어요.</li>
+      <li>GitHub 저장소 변수 <code>AR_REPO</code>를 설정했어요. 다른 저장소의 변수 5개는 그대로였어요.</li>
+      <li>배포 설정을 바꿀 때 제공받은 이미지용 워크플로 틀을 <strong>통째로 복사하지 않았어요.</strong> 통째로 복사하면 화면 구석에 커밋 번호를 새기는 단계와 <code>--no-allow-unauthenticated</code>(로그인 없이 못 열게 하는 옵션)가 사라져서, 기존 워크플로에 필요한 부분만 더했어요.</li>
+    </ul>
+
+    <h3>production을 먼저 읽기 전용으로 확인하고, 손으로 승격했어요</h3>
+    <p>워크플로를 고치기 전에 production 상태부터 읽었어요(바꾸지 않고 읽기만). 그 다음 손으로 승격해 보고, 같은 일을 워크플로로 옮겼어요.</p>
+    <table>
+      <thead><tr><th>단계</th><th>본 것</th></tr></thead>
+      <tbody>
+        <tr><td>staging 연결표 줄 채우기</td><td>커밋 <code>fc01d21e…</code> → 태그 → 다이제스트 <code>64c25be3bf9d</code> → 리비전 <code>00005-5rh</code> → 화면 <code>v='fc01d21'</code></td></tr>
+        <tr><td>production 읽기 전용 확인</td><td>리비전 <code>00008-bt5</code>, 이미지 <code>6d29e8d854f1</code>(소스 배포), 환경변수 3개, IAM(접근 권한) 비어 있음</td></tr>
+        <tr><td>손으로 승격(<code>--image …@sha256:… --update-env-vars COMMIT_SHA=…</code>)</td><td>리비전 <code>00009-7gr</code>. 다이제스트가 staging과 64자리 동일, <code>ENV</code>·<code>OCR_ENABLED</code>·IAM 그대로</td></tr>
+        <tr><td>워크플로로 옮기기</td><td>PR #22를 staging에, PR #23을 main에 머지. main 실행에서 「이미지 만들기」는 건너뛰고 「staging 이미지 찾기」가 실행됨</td></tr>
+        <tr><td>production 승인 뒤 비교</td><td>리비전 <code>00010-bv7</code>, 다이제스트 <code>5d64baf7278c</code>(staging과 동일), <code>COMMIT_SHA</code> 갱신, 환경변수·IAM 그대로</td></tr>
+      </tbody>
+    </table>
+    <p><strong>읽는 법.</strong> 리비전 이름(<code>00011-vgr</code> 같은 것)은 번호일 뿐이라 커밋 정보가 없어요. 그래서 커밋을 찾을 때는 리비전 상세에서 다이제스트를 보고, 이미지 저장소에서 그 다이제스트의 태그(커밋)를 찾아야 했어요. 이 앱에서는 화면 구석의 <code>v</code> 값이 가장 빨랐어요. 처음에는 "콘솔에서 리비전의 이미지 태그를 보면 커밋이 나온다"고 짐작했는데 실제로는 이 순서가 필요했어요.</p>
+    <p>또 서비스가 비공개(<code>--no-allow-unauthenticated</code>)라서 화면 값을 읽으려면 신원 토큰을 붙여 요청해야 했어요. 토큰은 출력하지도 저장하지도 않았어요.</p>
+
+    <h3>막혔던 곳과 푼 방법</h3>
+    <table>
+      <thead><tr><th>막힌 곳</th><th>원인(확인한 것)</th><th>푼 방법</th></tr></thead>
+      <tbody>
+        <tr><td>첫 production 승인 요청이 거절됨(HTTP 400)</td><td>JSON 본문 형식 오류였어요. PowerShell 파이프 인코딩 때문으로 추정했지만 확인하지는 못했어요</td><td>승인되지 않았음을 먼저 확인하고, BOM 없는 UTF-8 파일로 다시 보냈어요</td></tr>
+        <tr><td><code>gcloud run services proxy</code>가 실행되지 않음</td><td><code>cloud-run-proxy</code> 구성요소 설치를 요구하는데 대화 없이는 설치할 수 없었어요</td><td>설치(다운로드)는 하지 않고 신원 토큰으로 <code>GET /</code>를 한 번만 보냈어요</td></tr>
+        <tr><td>종료 코드 255와 <code>NativeCommandError</code>가 자주 보임</td><td>PowerShell 5.1이 gcloud·docker의 진행 메시지(stderr)를 오류로 표시했어요(진짜 실패 아님)</td><td>출력의 <code>Done</code>, <code>Updated …</code> 같은 줄로 성공을 판단했어요</td></tr>
+      </tbody>
+    </table>
+
+    <h3>이 글에 쓴 라이브러리 목록 7줄</h3>
+    <p>도장판 앱의 <code>requirements.txt</code>는 한 줄에 라이브러리 이름과 버전 조건(<code>이름&gt;=최소버전</code>)이 있고, 내 앱 코드는 들어 있지 않아요.</p>
+    <table>
+      <thead><tr><th>줄</th><th>하는 일</th></tr></thead>
+      <tbody>
+        <tr><td><code>fastapi&gt;=0.115</code></td><td>웹 서버 만들기(주소별로 요청 받기)</td></tr>
+        <tr><td><code>uvicorn&gt;=0.30</code></td><td>그 서버를 실제로 띄우는 프로그램(Dockerfile의 <code>CMD</code>가 호출)</td></tr>
+        <tr><td><code>python-multipart&gt;=0.0.9</code></td><td>사진·파일 업로드 받기(일반적인 용도이고, 이 프로젝트에서 따로 확인하지 않았어요)</td></tr>
+        <tr><td><code>pytesseract&gt;=0.3.10</code></td><td>사진 속 글자 읽기(OCR)</td></tr>
+        <tr><td><code>pillow&gt;=10.4</code></td><td>이미지 열기·바꾸기</td></tr>
+        <tr><td><code>pdf2image&gt;=1.17</code></td><td>PDF를 이미지로 바꾸기</td></tr>
+        <tr><td><code>pillow-heif&gt;=0.18</code></td><td>HEIC 사진 열기(일반적인 용도이고, 따로 확인하지 않았어요)</td></tr>
+      </tbody>
+    </table>
+    <p><code>pytesseract</code>와 <code>pdf2image</code>는 운영체제 프로그램(tesseract, poppler)이 따로 필요해서 Dockerfile이 <code>apt-get</code>으로 먼저 설치해요. 앞 편에서 다룬 이유 그대로예요. 또 Dockerfile 3번 주석에는 「requirements.txt만 먼저 복사하면 코드만 바뀐 빌드에서 이 단계를 다시 쓰지 않는다」는 말이 적혀 있어요(저장소 staging 브랜치에서 읽었어요).</p>
+
+    <h3>제가 확인하지 못한 것 두 가지</h3>
+    <ul>
+      <li>staging에서 확인하는 동안 다른 변경이 staging에 머지되면, 확인하지 않은 이미지가 승격될 수 있어요. 이 구조의 남은 약점으로 적어 두고 막는 장치는 만들지 못했어요.</li>
+      <li>롤백 중 staging이 옛 이미지로 정상 응답하는지는 화면 값(<code>v='fc01d21'</code>, HTTP 200)까지만 봤고, OCR 기능은 시험하지 않았어요. 새 리비전으로 바뀌는 순간 사용자가 오류를 보는지도 재지 못했어요.</li>
+    </ul>
+
+    <h3>같은 문제가 다시 생기면 확인할 순서</h3>
+    <ol>
+      <li>화면 값으로 지금 도는 커밋(앞 7자리)을 봐요.</li>
+      <li>리비전 상세에서 다이제스트와 <code>COMMIT_SHA</code>를 봐요.</li>
+      <li>이미지 저장소에서 그 다이제스트의 태그(커밋)를 찾아 GitHub 커밋을 열어요.</li>
+      <li>되돌릴 대상은 직전 리비전의 다이제스트가 저장소에 남아 있는지 봐요.</li>
+      <li>staging과 production의 다이제스트를 64자리까지 비교해요.</li>
+    </ol>
 
     <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 이미지를 환경마다 다르게 만들 때</h2>
     <p>이런 문제는 코드를 읽어서는 보이지 않아요. <strong>시험할 때는 되던 것이 실제 서버에서만 이상해지는 모습</strong>으로 먼저 나타나요. 아래 증상이 보이면 코드를 고치려 들기 전에 이 자리를 열어 봐요. 헷갈리는 게 정상이에요.</p>
@@ -411,9 +478,9 @@ var v='__COMMIT__'   →   var v='92d2c86'</code></pre>
       <li>정리 정책의 드라이런 결과(실제로 무엇이 지워질지)는 하루 뒤 감사 로그로만 알 수 있어서 확인하지 못했어요.</li>
       <li>production에서 실제로 되돌려 보기는 하지 않았어요. 롤백 훈련은 staging에서만 했어요.</li>
       <li>같은 커밋을 날짜를 달리해 두 번 빌드해서 라이브러리 버전이 실제로 달라지는지는 확인하지 못했어요.</li>
-      <li>노드는 내 컴퓨터에서 만든 이미지가 CPU 종류가 달라 Cloud Run에서 실행되지 않을 수 있다고 알려 줬어요. 제 컴퓨터는 x86_64라 Apple Silicon에서의 arm64 실패는 해 보지 못했어요.</li>
+      <li>내 컴퓨터에서 만든 이미지는 CPU 종류가 달라 Cloud Run에서 실행되지 않을 수 있어요. 제 컴퓨터는 x86_64라 Apple Silicon에서의 arm64 실패는 해 보지 못했어요.</li>
       <li>전체판 베이스 이미지를 올렸을 때의 압축 크기와 무료 저장 공간 대비 비율은 재지 못했어요.</li>
-      <li>노드의 과제 2(태그 덮어쓰기 막기)는 하지 않았어요. 표의 커밋 칸은 앞 12자리만 비교했어요.</li>
+      <li>같은 태그를 다른 이미지로 덮어쓰지 못하게 막는 설정은 해 보지 않았어요. 표의 커밋 칸은 앞 12자리만 비교했어요.</li>
     </ul>
 
     <h2><span class="hl">함께 보기</span></h2>
@@ -486,7 +553,7 @@ var v='__COMMIT__'   →   var v='92d2c86'</code></pre>
     </a>
     <a class="post-nav" href="ai-service-in-production-wrap-up.html">
       <span class="post-nav-label">(10)</span>
-      <span class="post-nav-title">아홉 개 노드를 한 번에 — AI 서비스를 프로덕션에 올리기까지 돌아보기</span>
+      <span class="post-nav-title">아홉 편을 한 번에 — AI 서비스를 프로덕션에 올리기까지 돌아보기</span>
     </a>
     <a class="post-nav" href="langfuse-trace-find-agent-problems.html">
       <span class="post-nav-label">(11)</span>

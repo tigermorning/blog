@@ -343,7 +343,7 @@ gcloud run services update-traffic &lt;서비스 이름&gt; --to-latest</code></
     <p>앱에 <code>BROKEN_HEALTH</code>를 넣어 <code>/health</code>가 503을 돌려주는 망가진 버전을 올바른 프로브 경로로 배포했어요. 리비전 <code>00022-fkm</code>이 시작 프로브 검사에 실패해 Ready가 되지 못했고, <code>gcloud run deploy</code>는 종료 코드 1로 끝났어요. 트래픽은 <code>00021-n2k</code> 100%에 그대로 있었어요. 같은 배포를 한 번 더 하며 90초 동안 잰 요청 <strong>217건은 실패 0건</strong>이었고 모두 <code>00021-n2k</code>가 답했어요. <strong>망가진 버전은 사용자에게 가지 못하고 배포가 실패로 끝나요.</strong> 이 시험은 <code>gcloud</code>로 했고, Actions의 <code>deploy.yml</code>로 직접 해 보지는 않았어요.</p>
 
     <h2 id="state"><span class="hl">대화가 남으려면</span> — 무상태와 Supabase (예제 앱 하루친구로 확인)</h2><details class="deep"><summary>▼ 자세히 보기</summary>
-    <p>이 절은 루틴 도장이 아니라 <strong>예제 앱(하루친구)</strong>으로 한 거예요. 루틴 도장에는 Supabase<sup class="fn-ref"><a href="#fn14" id="fnref14">14</a></sup>가 없어요. 대화를 인스턴스의 메모리(작업 중 임시로 기억하는 곳)에 두면, 새 리비전이 뜰 때 사라져요. 두 리비전이 요청을 함께 받으면 서로 다른 대화가 보여요. <a href="load-balancer-zero-downtime.html">앞 편에서 컨테이너 blue와 green</a>이 각자 메모리에 대화를 들고 있다가 전환하자 사라졌던 것과 같은 문제예요. 해결은 서버를 <strong>무상태</strong>로 만들고 대화를 서비스 밖의 공용 저장소(Supabase)에 두는 거예요. 무중단 배포는 아래 두 조건을 <strong>모두</strong> 만족해야 하고, 두 조건은 서로 달라요.</p>
+    <p>이 절은 루틴 도장이 아니라 Supabase를 쓰는 실습용 <strong>예제 앱(하루친구)</strong>으로 한 거예요. 루틴 도장에는 Supabase<sup class="fn-ref"><a href="#fn14" id="fnref14">14</a></sup>가 없어요. 대화를 인스턴스의 메모리(작업 중 임시로 기억하는 곳)에 두면, 새 리비전이 뜰 때 사라져요. 두 리비전이 요청을 함께 받으면 서로 다른 대화가 보여요. <a href="load-balancer-zero-downtime.html">앞 편에서 컨테이너 blue와 green</a>이 각자 메모리에 대화를 들고 있다가 전환하자 사라졌던 것과 같은 문제예요. 해결은 서버를 <strong>무상태</strong>로 만들고 대화를 서비스 밖의 공용 저장소(Supabase)에 두는 거예요. 무중단 배포는 아래 두 조건을 <strong>모두</strong> 만족해야 하고, 두 조건은 서로 달라요.</p>
     <table>
       <thead><tr><th></th><th>요청이 끊기지 않는다</th><th>하던 일이 이어진다</th></tr></thead>
       <tbody>
@@ -366,7 +366,7 @@ gcloud run services update-traffic &lt;서비스 이름&gt; --to-latest</code></
       <li><strong><code>.env</code>와 환경 변수</strong>: 앱은 어느 환경에서든 환경 변수로만 값을 읽어요. 로컬에서는 <code>.env</code> 파일이 그 환경 변수를 채워 주고, Cloud Run에서는 서비스 설정의 환경 변수와 Secret Manager 시크릿이 같은 일을 해요. 그래서 <code>.env</code> 파일은 GitHub에 올리지 않았어요.</li>
       <li><strong>SQL과 스니펫</strong>: production 프로젝트에도 표 6개가 필요해서 <code>0001_init.sql</code>을 Supabase의 SQL Editor에서 실행했어요. SQL은 데이터베이스에 표를 만들고 행(표의 한 줄)을 다루라고 시키는 언어예요. 앱은 Python으로 짠 동작을 REST(주소로 부탁을 보내는 방식)로 Supabase에 요청해요. 그래서 두 언어는 맡은 일이 달라요. SQL Editor에서 쓰던 쿼리를 저장해 둔 것이 스니펫이에요.</li>
       <li><strong>키 섞임 점검</strong>: staging 키로 production 프로젝트를 부르면 401, production 키는 200이었어요.</li>
-      <li><strong>한계(학습 노드가 짚은 부분)</strong>: staging과 production이 같은 런타임 서비스 계정을 쓰고 그 계정이 두 시크릿을 모두 읽을 수 있어요. 데이터는 환경별로 나눴지만 권한은 나누지 않은 상태예요.</li>
+      <li><strong>한계(알아 둘 점)</strong>: staging과 production이 같은 런타임 서비스 계정을 쓰고 그 계정이 두 시크릿을 모두 읽을 수 있어요. 데이터는 환경별로 나눴지만 권한은 나누지 않은 상태예요.</li>
     </ul></details>
 
     <h2 id="blocked"><span class="hl">막힌 점</span> — 어떻게 해결했나</h2><details class="deep"><summary>▼ 자세히 보기</summary>
@@ -402,7 +402,7 @@ gcloud run services update-traffic &lt;서비스 이름&gt; --to-latest</code></
     </ul>
 
     <h2 id="signals"><span class="hl">참고: 롤백을 결정하는 신호 5가지</span> — 배포하기 전에 기준부터</h2><details class="deep"><summary>▼ 자세히 보기</summary>
-    <p>이 절은 노드(모두연 강의)에서 배운 개념을 정리한 것이고, 제가 직접 잰 값이 아니에요. 숫자가 나쁘게 나온 뒤에 정하지 말고 <strong>배포하기 전에</strong> 기준을 정해요. 롤백이란 이전 버전으로 되돌리는 일이에요. 신호는 모두 이전 리비전과 나란히 놓고 비교해요.</p>
+    <p>이 절은 일반적으로 알려진 개념을 정리한 것이고, 제가 직접 잰 값이 아니에요. 숫자가 나쁘게 나온 뒤에 정하지 말고 <strong>배포하기 전에</strong> 기준을 정해요. 롤백이란 이전 버전으로 되돌리는 일이에요. 신호는 모두 이전 리비전과 나란히 놓고 비교해요.</p>
     <table>
       <thead><tr><th>신호</th><th>무엇을 보나</th><th>롤백 기준의 예</th></tr></thead>
       <tbody>
@@ -464,7 +464,7 @@ gcloud run services update-traffic &lt;서비스 이름&gt; --to-latest</code></
     </table>
 
     <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 무중단 배포 설정을 짤 때 다시 보는 값</h2>
-    <p>이 글을 쓴 <strong>2026년 10월 기준</strong>으로, 설정에 직접 쓴 값과 노드에서 배운 값을 모았어요. 실험으로 잰 값(실패 건수, 걸린 시간)은 한 번씩 잰 값이라 서비스마다 달라질 수 있어요.</p>
+    <p>이 글을 쓴 <strong>2026년 10월 기준</strong>으로, 설정에 직접 쓴 값과 일반적으로 쓰는 기준값을 모았어요. 실험으로 잰 값(실패 건수, 걸린 시간)은 한 번씩 잰 값이라 서비스마다 달라질 수 있어요.</p>
     <table>
       <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
       <tbody>
@@ -527,7 +527,6 @@ gcloud run services update-traffic &lt;서비스 이름&gt; --to-latest</code></
       <li>롤백 워크플로 실행 중 요청 실패 수(측정이 끊김), Run workflow 버튼 화면(<code>main</code>에 파일이 없음), 태그 URL의 브라우저 화면(인증이 필요해 열지 않음)은 확인하지 못했어요.</li>
       <li>단계별 선택 과제(알림, 카나리 자동 승격)와 "서로 보여 주기"는 하지 않았어요.</li>
       <li>하루친구의 production Supabase가 서유럽(West EU) 리전이라 생기는 지연은 측정하지 않았어요.</li>
-      <li>원본 기록의 "오늘의 회고" 중 <strong>처음 답(1강 시작 질문)과 비교하는 칸</strong>은 아직 작성 전이라 이 글에 옮기지 못했어요.</li>
       <li>콘솔과 로그 화면 캡처는 프로젝트 번호와 프로젝트 ID가 보이는 부분을 가려서 기록했고, 이 글에는 화면 캡처를 싣지 않았어요.</li>
     </ul>
 
@@ -600,7 +599,7 @@ gcloud run services update-traffic &lt;서비스 이름&gt; --to-latest</code></
     <p class="post-date">(9) 배포하는 동안 사용자는 오류를 봤을까 — Cloud Run으로 무중단 배포하기 (이 글)</p>
     <a class="post-nav" href="ai-service-in-production-wrap-up.html">
       <span class="post-nav-label">(10)</span>
-      <span class="post-nav-title">아홉 개 노드를 한 번에 — AI 서비스를 프로덕션에 올리기까지 돌아보기</span>
+      <span class="post-nav-title">아홉 편을 한 번에 — AI 서비스를 프로덕션에 올리기까지 돌아보기</span>
     </a>
     <a class="post-nav" href="langfuse-trace-find-agent-problems.html">
       <span class="post-nav-label">(11)</span>
@@ -613,7 +612,7 @@ gcloud run services update-traffic &lt;서비스 이름&gt; --to-latest</code></
 
     <a class="post-nav" href="ai-service-in-production-wrap-up.html">
       <span class="post-nav-label">다음 편 →</span>
-      <span class="post-nav-title">아홉 개 노드를 한 번에 — AI 서비스를 프로덕션에 올리기까지 돌아보기 (10)</span>
+      <span class="post-nav-title">아홉 편을 한 번에 — AI 서비스를 프로덕션에 올리기까지 돌아보기 (10)</span>
     </a>
   </main>
   </div>

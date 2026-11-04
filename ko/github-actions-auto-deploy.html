@@ -86,7 +86,7 @@
     </div>
     <div class="deep-toc">
       <p><strong>이 글의 길</strong> — 위쪽은 핵심, 아래쪽은 접혀 있는 «자세히 보기»예요. <button type="button" id="deep-all" style="cursor:pointer">모두 펼치기</button></p>
-      <p><strong>핵심</strong> <a href="#five">노드 핵심 5줄</a> · <a href="#analogy">비유로 먼저</a> · <a href="#flow">머지 한 번에 일어나는 일</a> · <a href="#step2">과정 2. 열쇠 없이 들어가는 길</a> · <a href="#fail">실패와 복구</a> · <a href="#tasks">과제로 내 프로젝트에 적용해 보기</a> · <a href="#learned">배운 점</a> · <a href="#choice">나쁜 선택 vs 좋은 선택</a> · <a href="#numbers">이 글에 나온 숫자</a> · <a href="#suspect">이럴 때 의심하세요</a> · <a href="#not-done">확인 범위와 해 보지 못한 것</a></p>
+      <p><strong>핵심</strong> <a href="#five">핵심 5줄</a> · <a href="#analogy">비유로 먼저</a> · <a href="#flow">머지 한 번에 일어나는 일</a> · <a href="#step2">과정 2. 열쇠 없이 들어가는 길</a> · <a href="#fail">실패와 복구</a> · <a href="#tasks">과제로 내 프로젝트에 적용해 보기</a> · <a href="#learned">배운 점</a> · <a href="#choice">나쁜 선택 vs 좋은 선택</a> · <a href="#numbers">이 글에 나온 숫자</a> · <a href="#suspect">이럴 때 의심하세요</a> · <a href="#not-done">확인 범위와 해 보지 못한 것</a></p>
       <p><strong>자세히</strong> <a href="#step1">과정 1. 로봇에게 일 시키기</a> · <a href="#step3">과정 3. 첫 자동 배포</a> · <a href="#map">개념 → 내 프로젝트 적용 한눈에</a> · <a href="#judgement">내가 직접 판단한 것</a></p>
     </div>
 
@@ -103,7 +103,7 @@
     </ul>
     <p>이 글에서 "로봇"은 <strong>GitHub이 대신 일해 주는 컴퓨터</strong>(GitHub Actions의 러너<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>)를 뜻해요. 비유는 <a href="ai-service-design-before-code.html">1편</a>부터 쓰던 식당을 이어 써요.</p>
 
-    <h2 id="five"><span class="hl">노드 핵심 5줄</span> — 이번 글 전체를 먼저 요약하면</h2>
+    <h2 id="five"><span class="hl">핵심 5줄</span> — 이번 글 전체를 먼저 요약하면</h2>
     <ul>
       <li><strong>워크플로</strong><sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>는 GitHub이 로봇에게 시키는 일 목록이에요(<code>.github/workflows</code> 폴더에 적어요). 언제(이벤트)와 무엇을(일)을 적는 기능이라 배포 전용이 아니에요. PR 점검(<code>hello</code>)도 배포(<code>deploy</code>)도 같은 기능이고, 이벤트와 일만 달라요.</li>
       <li>main에 머지되면 로봇이 자동으로 배포한다.</li>
@@ -313,7 +313,7 @@ permissions:
 
     <h2 id="map"><span class="hl">개념 → 내 프로젝트 적용 한눈에</span></h2><details class="deep"><summary>▼ 자세히 보기</summary>
     <table>
-      <thead><tr><th>노드에서 배운 것</th><th>내 프로젝트에 한 일</th><th>확인한 증거</th></tr></thead>
+      <thead><tr><th>글에서 다룬 개념</th><th>내 프로젝트에 한 일</th><th>확인한 증거</th></tr></thead>
       <tbody>
         <tr><td>워크플로: 이벤트가 오면 로봇이 일한다</td><td><code>hello.yml</code>(PR 또는 손으로 실행)과 <code>deploy.yml</code>(main push)</td><td>PR #1, PR #3 머지. 실행 목록의 <code>event</code> 값이 <code>pull_request</code> / <code>push</code>로 구분됨</td></tr>
         <tr><td>최소 권한</td><td><code>deploy.yml</code>에 <code>contents: read</code>, <code>id-token: write</code>만</td><td><code>deploy.yml</code>의 <code>permissions</code> 블록</td></tr>
@@ -472,7 +472,7 @@ permissions:
     </a>
     <a class="post-nav" href="ai-service-in-production-wrap-up.html">
       <span class="post-nav-label">(10)</span>
-      <span class="post-nav-title">아홉 개 노드를 한 번에 — AI 서비스를 프로덕션에 올리기까지 돌아보기</span>
+      <span class="post-nav-title">아홉 편을 한 번에 — AI 서비스를 프로덕션에 올리기까지 돌아보기</span>
     </a>
     <a class="post-nav" href="langfuse-trace-find-agent-problems.html">
       <span class="post-nav-label">(11)</span>

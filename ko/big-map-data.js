@@ -8050,7 +8050,7 @@ window.BIGMAP = {
   "build-once-promote-image.html": "시험한 이미지와 내보낸 이미지가 같다는 증거 — 이미지를 한 번만 만들어 그대로 보내기 (7)",
   "load-balancer-zero-downtime.html": "새 버전으로 바뀌는 몇 초 동안 — 로드밸런서로 무중단 배포 구성하기 (8)",
   "cloud-run-zero-downtime-deploy.html": "배포하는 동안 사용자는 오류를 봤을까 — Cloud Run으로 무중단 배포하기 (9)",
-  "ai-service-in-production-wrap-up.html": "아홉 개 노드를 한 번에 — AI 서비스를 프로덕션에 올리기까지 돌아보기 (10)",
+  "ai-service-in-production-wrap-up.html": "아홉 편을 한 번에 — AI 서비스를 프로덕션에 올리기까지 돌아보기 (10)",
   "langgraph-hitl-interrupt-resume.html": "멈췄다가 사람 답을 받아 잇는다 — interrupt·resume·체크포인터 (1)",
   "langgraph-hitl-criteria-and-approval-ui.html": "멈출 기준을 정하고 승인 화면을 설계한다 — 개입률·놓침·헛멈춤 (2)",
   "card-news-agent-flow-and-format.html": "고르고 승인하며 완성하는 카드뉴스 — 일곱 단계 흐름과 독자·형식 정하기 (1)",
