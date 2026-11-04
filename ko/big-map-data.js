@@ -7971,7 +7971,7 @@ window.BIGMAP = {
   "rag-chatbot-prompt-streaming.html": "프롬프트는 근거의 경계다 — 프롬프트 조립과 로컬 LLM 스트리밍 (6)",
   "rag-chatbot-llm-judge.html": "답변 뒤에 심사위원 하나를 더 둔다 — LLM-as-a-Judge (7)",
   "rag-chatbot-prompt-experiment.html": "감이 아니라 기록으로 — 나만의 루브릭으로 실험하기 (8)",
-  "rag-chatbot-submission.html": "지도를 접고 첫걸음을 — 배포와 제출 (9)",
+  "rag-chatbot-submission.html": "지도를 접고 직접 시작하기 — 배포와 제출 (9)",
   "mcp-skill-tool-call-anatomy.html": "도구 하나가 호출되기까지 — 정의·파싱·구조화 요청 (1)",
   "mcp-skill-protocol-roles.html": "호스트·클라이언트·서버가 나누는 대화 — MCP 연결 구조와 메시지 (2)",
   "mcp-skill-building-server.html": "업무 기록 서버 직접 만들기 — uv 환경과 Python MCP 서버 (3)",

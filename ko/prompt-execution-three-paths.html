@@ -32,8 +32,6 @@
     <div class="why-read">
       <p class="why-read-title">이 글을 읽기 전에</p>
       <dl>
-        <dt>어디쯤인가</dt>
-        <dd><a href="posts.html#cat-ai-tools">2단계</a> › <a href="posts.html#prompt-agent-concepts">프롬프트와 에이전트 개념</a> — 9번째 글 (전 9편). 중간부터 보셨다면 <a href="what-is-prompt-engineering.html">첫 글</a>부터 보시는 게 편해요.</dd>
         <dt>이런 게 궁금했다면</dt>
         <dd>
           <ul>
@@ -155,7 +153,7 @@ save_run("gemini-with-history.txt", [
     AIMessage("정확한 안내를 위해 주문번호 또는 운송장 번호를 알려 주세요."),
     HumanMessage("주문번호가 없으면 무엇을 확인해야 하나요?"),
 ])</code></pre>
-    <p class="post-date">한 걸음 더: LangChain이 이런 부품(모델 연결·메시지·도구 정의)을 맡는다면, 그 부품을 어떤 순서로 돌릴지는 같은 회사의 LangGraph가 맡아요. 두 도구와 LangSmith의 관계는 <a href="langgraph-what-and-why.html#langchain-family">다음에 어느 코드가 실행될까 — LangGraph와 워크플로·에이전트</a>에서 정리했어요.</p>
+    <p class="post-date">더 알아보기: LangChain이 이런 부품(모델 연결·메시지·도구 정의)을 맡는다면, 그 부품을 어떤 순서로 돌릴지는 같은 회사의 LangGraph가 맡아요. 두 도구와 LangSmith의 관계는 <a href="langgraph-what-and-why.html#langchain-family">다음에 어느 코드가 실행될까 — LangGraph와 워크플로·에이전트</a>에서 정리했어요.</p>
 
     <h2>5. <span class="hl">Ollama</span> — role 딕셔너리 목록</h2>
     <p>Ollama 앱을 실행하고 <code>ollama pull qwen3.5:2b</code>로 모델을 준비한다. pull은 모델 파일을 내 컴퓨터로 내려받는 명령이에요. 그다음 같은 관찰을 role 딕셔너리로 표현했다.</p>
@@ -218,7 +216,7 @@ save_run("ollama-with-history.txt", [
 3. 2에 없는 인자나 다른 경로의 입력 모양을 쓰고 있는 줄</code></pre>
 
     <p class="post-date">코드가 낯설다면: 이 글의 파이썬 블록을 한 줄씩 한국어로 읽는 법은 <a href="reading-python-code-basics.html">파이썬 코드 눈으로 읽기 — 함수·변수·반복·오류·async</a>에 정리해 두었어요.</p>
-    <p class="post-date">한 걸음 더: 여기서 처음 부른 Claude Agent SDK의 query()로 같은 버그를 세 방식(단일·워크플로·오케스트레이션)으로 고쳐 비교한 글이 <a href="multi-agent-three-runs-abc.html">같은 버그를 세 방식으로 — 기준선·워크플로·오케스트레이션 실행</a>이에요. allowed_tools로 읽기 전용 서브에이전트를 만들고 agents= 로 리드에 붙이는 코드가 나와요.</p>
+    <p class="post-date">더 알아보기: 여기서 처음 부른 Claude Agent SDK의 query()로 같은 버그를 세 방식(단일·워크플로·오케스트레이션)으로 고쳐 비교한 글이 <a href="multi-agent-three-runs-abc.html">같은 버그를 세 방식으로 — 기준선·워크플로·오케스트레이션 실행</a>이에요. allowed_tools로 읽기 전용 서브에이전트를 만들고 agents= 로 리드에 붙이는 코드가 나와요.</p>
 
     <a class="post-nav" href="agent-react-loop-and-autogpt.html">
       <span class="post-nav-label">다음 시리즈 →</span>

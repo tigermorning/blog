@@ -32,8 +32,6 @@
     <div class="why-read">
       <p class="why-read-title">이 글을 읽기 전에</p>
       <dl>
-        <dt>어디쯤인가</dt>
-        <dd><a href="posts.html#cat-web-dev">1단계</a> › <a href="posts.html#ai-coding-setup">AI 코딩 환경 세팅</a> — 7번째 글 (전 13편). 중간부터 보셨다면 <a href="what-is-vibe-coding.html">첫 글</a>부터 보시는 게 편해요.</dd>
         <dt>이런 게 궁금했다면</dt>
         <dd>
           <ul>
@@ -80,7 +78,7 @@
 
     <p><a href="ai-agent-dev-environment.html">1편</a>과 <a href="ai-agent-dev-environment-check.html">2편</a>이 작업대를 차리고 확인하는 글이었다면, 이 글은 그 작업대 위에 처음으로 결과물을 올려 보는 글이에요. 처음 만든 건 <code>my-first-web</code> 폴더와 <code>index.html</code> 파일이었어요. 이 첫 단계에서도 실수를 하나 했어요. 그 실수 덕분에 오히려 제대로 이해하게 된 게 있어서 그 얘기부터 해 볼게요.</p>
 
-    <h2><span class="hl">폴더 위치와 touch 명령, 첫 걸음에서 두 번 헛디뎠어요</span></h2>
+    <h2><span class="hl">폴더 위치와 touch 명령, 첫 단계에서 두 번 헛디뎠어요</span></h2>
     <p>따라 한 설치 안내에는 "프로젝트를 모아둘 위치에서 실행하세요. 예를 들어 문서 폴더 아래에 만들고 싶다면 먼저 <code>cd ~/Documents</code>로 이동합니다"라고 적혀 있었어요. 저는 이 <code>~</code>가 뭔지 모른 채로 그냥 건너뛰고 바로 <code>mkdir my-first-web</code>을 쳤어요. (<code>cd</code>는 폴더를 옮기는 명령이고, <code>mkdir</code>은 새 폴더를 만드는 명령이에요.)</p>
     <p>결과는 폴더가 제 계정의 가장 바깥(<code>C:\Users\user</code>) 바로 밑에 만들어진 거였어요. 문서 폴더 안에 만들고 싶었는데, 그게 아니었죠. 알고 보니 <strong><code>~</code>는 "내 홈 폴더"를 가리키는 줄임 기호</strong>였어요. 그러니까 <code>cd ~/Documents</code>는 "내 홈 폴더 안의 Documents 폴더로 이동해라"라는 뜻이고, 이 단계를 건너뛰면 지금 서 있는 곳(이 경우 홈 폴더 바로 밑)에 그냥 만들어지는 거였어요.</p>
     <p>결국 잘못 만든 폴더는 지우고, 이렇게 다시 했어요. 아래 네 줄은 문서 폴더로 들어가서, 새 폴더를 만들고, 그 안으로 들어가서, 지금 위치를 확인하는 명령이에요. 직접 따라 쳐 볼 수 있어요.</p>

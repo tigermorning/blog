@@ -37,8 +37,6 @@
     <div class="why-read" id="why-read">
       <p class="why-read-title">이 글을 읽기 전에</p>
       <dl>
-        <dt>어디쯤인가</dt>
-        <dd><a href="posts.html#cat-agent-system">8단계</a> › <a href="posts.html#langgraph-patterns">에이전트 워크플로 다섯 패턴</a> — 3번째 글 (전 5편). <a href="langgraph-pattern-routing.html">지난 편</a>은 하나만 고르는 라우팅이었고, <a href="langgraph-pattern-orchestrator-worker.html">다음 편</a>부터는 개수를 LLM이 정하는 두 모양이에요.</dd>
         <dt>이런 게 궁금했다면</dt>
         <dd>
           <ul>
@@ -143,8 +141,8 @@
       <text x="415" y="103" text-anchor="middle" font-family="var(--font-body)" font-size="11" fill="var(--muted)">도착 순서는 보장 안 됨</text>
     </svg>
 
-    <h3 id="why-reducer">리듀서라는 말은 왜 나오나 — 세 걸음</h3>
-    <p>동시에 돌리면 시간만 줄고 끝이면 좋겠지만, 두 가지가 따라와요. 이 세 걸음이 병렬화의 전부예요.</p>
+    <h3 id="why-reducer">리듀서라는 말은 왜 나오나 — 세 단계</h3>
+    <p>동시에 돌리면 시간만 줄고 끝이면 좋겠지만, 두 가지가 따라와요. 이 세 단계이 병렬화의 전부예요.</p>
     <ol>
       <li><strong>동시에 출발하니 순서가 꼬여요.</strong> 세 갈래가 같이 떠나면 누가 먼저 끝날지 정해지지 않고, 결과를 합치는 순서도 LangGraph가 따로 정해요. 코드에 적은 순서대로 결과가 쌓일 거라 믿으면 안 돼요.</li>
       <li><strong>합치는 자리에 답이 한꺼번에 들어오면 멈춰요.</strong> 세 결과가 State의 <strong>같은 칸</strong>으로 동시에 오면, LangGraph는 무엇을 남기고 무엇을 버릴지 정할 수 없어서 <code>InvalidUpdateError</code>를 내요.</li>
