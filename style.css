@@ -34,6 +34,10 @@
   --folder-8: #5a5fd4;
   --folder-9: #7a8a99;
   --folder-10: #a1724a;
+  --folder-11: #d4a017;
+  --folder-12: #00a6c8;
+  --folder-13: #7cb342;
+  --folder-14: #b0246a;
 
   /* 크레용으로 대충 문지른 결 — 알약·배지 배경에 soft-light로 얹는다.
      흰 스트로크라 어떤 폴더 색 위에서도 무난하게 먹힌다. */
@@ -876,6 +880,19 @@ body.list-page .site-header {
 .post-group:nth-of-type(9) { --folder-accent: var(--folder-8); }
 .post-group:nth-of-type(10) { --folder-accent: var(--folder-10); }
 .post-group:nth-of-type(11) { --folder-accent: var(--folder-9); }
+/* 대분류는 순서가 아니라 제목 id로 색을 집는다(사이드바 탭 색과 같은 값). 보충수업 책장은
+   소분류도 사이드바와 같은 색을 받는다 — 사이드바에서 본 색 그대로 글 목록에 나온다. */
+.post-group:has(> #cat-book-shelf) { --folder-accent: var(--folder-11); }
+.post-group:has(> #cat-future-talks) { --folder-accent: var(--folder-12); }
+.post-group:has(> #cat-field-work) { --folder-accent: var(--folder-13); }
+.post-subcategory:has(> #ai-news) { --folder-accent: var(--folder-3); }
+.post-subcategory:has(> #agent-talks) { --folder-accent: var(--folder-5); }
+.post-subcategory:has(> #coding-tools) { --folder-accent: var(--folder-1); }
+.post-subcategory:has(> #book-notes) { --folder-accent: var(--folder-7); }
+.post-subcategory:has(> #python-basics-books) { --folder-accent: var(--folder-6); }
+.post-subgroup:has(> #paper-lecture) { --folder-accent: var(--folder-14); }
+.post-subcategory:has(> #paper-notes) { --folder-accent: var(--folder-8); }
+.post-subcategory:has(> #lecture-notes) { --folder-accent: var(--folder-2); }
 
 .post-group-title {
   font-family: var(--font-heading);
@@ -1147,15 +1164,19 @@ body.list-page .site-header {
 .tree-group:has(> summary a[href="posts.html#vibe-coding"]) .tree-subgroup:nth-child(8) { --folder-accent: var(--folder-8); }
 .tree-group:has(> summary a[href="posts.html#vibe-coding"]) .tree-subgroup:nth-child(9) { --folder-accent: var(--folder-10); }
 /* 대분류 탭끼리는 색상환에서 멀리 떨어진 색을 줘서(초록·파랑·주황·보라) 붉은 계열로 뭉치지 않게 한다 */
-.tree-group:has(> summary a[href="posts.html#cat-field-work"]) { --folder-accent: var(--folder-2); }
+.tree-group:has(> summary a[href="posts.html#cat-field-work"]) { --folder-accent: var(--folder-13); }
 .tree-group:has(> summary a[href="posts.html#vibe-coding"]) { --folder-accent: var(--folder-1); }
-.tree-group:has(> summary a[href="posts.html#cat-book-shelf"]) { --folder-accent: var(--folder-4); }
+.tree-group:has(> summary a[href="posts.html#cat-book-shelf"]) { --folder-accent: var(--folder-11); }
 .tree-group:has(> summary a[href="posts.html#cat-book-shelf"]) .tree-subgroup:nth-child(1) { --folder-accent: var(--folder-3); }
 .tree-group:has(> summary a[href="posts.html#cat-book-shelf"]) .tree-subgroup:nth-child(2) { --folder-accent: var(--folder-5); }
 .tree-group:has(> summary a[href="posts.html#cat-book-shelf"]) .tree-subgroup:nth-child(3) { --folder-accent: var(--folder-1); }
 .tree-group:has(> summary a[href="posts.html#cat-book-shelf"]) .tree-subgroup:nth-child(4) { --folder-accent: var(--folder-7); }
 /* AI 시대 스크랩 탭은 보라. 소분류 없이 글이 탭 바로 아래에 붙는다 */
-.tree-group:has(> summary a[href="posts.html#cat-future-talks"]) { --folder-accent: var(--folder-3); }
+.tree-group:has(> summary a[href="posts.html#cat-future-talks"]) { --folder-accent: var(--folder-12); }
+.tree-group:has(> summary a[href="posts.html#cat-book-shelf"]) .tree-subgroup:nth-child(5) { --folder-accent: var(--folder-6); }
+.tree-group:has(> summary a[href="posts.html#cat-book-shelf"]) .tree-subgroup:nth-child(6) { --folder-accent: var(--folder-14); }
+.tree-leaf-group:has(> summary a[href="posts.html#paper-notes"]) { --folder-accent: var(--folder-8); }
+.tree-leaf-group:has(> summary a[href="posts.html#lecture-notes"]) { --folder-accent: var(--folder-2); }
 .tree-children > .tree-leaf-list { margin-top: 0; }
 
 /* 사이드바 잎 항목 안에서 이름만 형광펜으로 긋는다. main 안의 <strong>과 같은
