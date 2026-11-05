@@ -705,27 +705,27 @@ npx expo start --clear</code></pre>
     <h3 id="j9">혼자 풀어 보기 (섞어서)</h3>
     <p>먼저 생각해 보고 눌러서 답을 확인해요.</p>
     <details class="qna">
-      <summary>1. 서버에서 AI의 말투를 바꿨어요. 사용자에게 앱 업데이트를 부탁해야 하나요?</summary>
+      <summary><span>1. 서버에서 AI의 말투를 바꿨어요. 사용자에게 앱 업데이트를 부탁해야 하나요?</span></summary>
       <p>아니요. 서버의 프롬프트는 앱 파일 밖에 있어서 서버만 배포하면 모두에게 바로 적용돼요. (유형 1)</p>
     </details>
     <details class="qna">
-      <summary>2. API의 날짜 필드 이름을 <code>date</code>에서 <code>created_at</code>으로 바꿨어요. 지난달 앱 버전을 쓰는 사용자는 어떻게 되나요?</summary>
+      <summary><span>2. API의 날짜 필드 이름을 <code>date</code>에서 <code>created_at</code>으로 바꿨어요. 지난달 앱 버전을 쓰는 사용자는 어떻게 되나요?</span></summary>
       <p>옛 앱은 <code>date</code>를 찾는데 없어서 날짜가 빈칸이 되거나 오류가 나요. 한동안 두 이름을 함께 내려주는 것이 안전해요. (유형 2)</p>
     </details>
     <details class="qna">
-      <summary>3. 앱에 카카오 로그인을 붙이려고 해요. Expo Go로 시험할 수 있나요?</summary>
+      <summary><span>3. 앱에 카카오 로그인을 붙이려고 해요. Expo Go로 시험할 수 있나요?</span></summary>
       <p>없어요. 회사별 SDK는 Expo Go에 들어 있지 않아서 개발용 빌드가 필요해요. (유형 3)</p>
     </details>
     <details class="qna">
-      <summary>4. 앱 설정에 OpenAI 키를 <code>EXPO_PUBLIC_OPENAI_KEY</code>로 넣었어요. 무엇이 문제인가요?</summary>
+      <summary><span>4. 앱 설정에 OpenAI 키를 <code>EXPO_PUBLIC_OPENAI_KEY</code>로 넣었어요. 무엇이 문제인가요?</span></summary>
       <p>앱 파일 안에 그대로 들어가서, 앱을 받은 누구나 그 키를 꺼내 내 비용으로 LLM을 부를 수 있어요. 키는 백엔드에만 두고 앱은 백엔드를 거쳐서 써요. (유형 4)</p>
     </details>
     <details class="qna">
-      <summary>5. 도장 기록을 화면 상태에만 두면, 앱을 종료했다 다시 열었을 때 도장은 어떻게 되나요?</summary>
+      <summary><span>5. 도장 기록을 화면 상태에만 두면, 앱을 종료했다 다시 열었을 때 도장은 어떻게 되나요?</span></summary>
       <p>사라져요. 제가 만든 루틴 도장은 폰 안 저장소(<code>AsyncStorage</code>)에 저장해서 남았어요. (유형 6)</p>
     </details>
     <details class="qna">
-      <summary>6. OCR이 손글씨를 자꾸 틀려요. 앱 코드를 고쳐야 하나요?</summary>
+      <summary><span>6. OCR이 손글씨를 자꾸 틀려요. 앱 코드를 고쳐야 하나요?</span></summary>
       <p>글자를 읽는 일은 백엔드가 해서, 엔진을 바꾸는 것은 백엔드 쪽이에요. 앱에서 할 일은 «보내기 전에 사람이 확인·수정하게 하는» 정도예요. (유형 5)</p>
     </details>
 
