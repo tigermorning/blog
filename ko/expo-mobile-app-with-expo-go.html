@@ -480,7 +480,7 @@ npx expo start --clear</code></pre>
 
     <h2 id="mine"><span class="hl">내가 직접 해 본 것</span> — 루틴 도장 앱을 내 아이폰에서</h2>
     <p>위 설명을 확인하려고 «루틴 도장»(도장 세 칸을 누르면 도장이 바뀌고 진동이 오는 작은 앱)을 Expo로 만들어 내 아이폰의 Expo Go에서 돌렸어요. 노트북은 Windows이고, 이 앱은 서버 없이 폰 안에만 저장해서 백엔드 템플릿 대신 <code>npx create-expo-app@latest</code>의 기본 프로젝트로 시작했어요. Node는 <code>v24.19.0</code>(요구: 22.13 이상), <code>expo-doctor</code>가 20개 검사를 모두 통과했어요.</p>
-    <p><strong>연결하기.</strong> <code>npx expo start</code>를 켜면 터미널에 <code>Metro: exp://192.168.185.120:8081</code>이 나와요. 폰의 Expo Go 홈에 «DEVELOPMENT SERVERS»로 <code>routine-stamp-mobile</code>이 자동으로 떴고, 눌러서 열었어요. 처음에는 «Expo Go와 Expo CLI 모두 로그인 필요» 오류가 났는데, 노트북은 액세스 토큰(<code>EXPO_TOKEN</code>)으로, 폰은 «Forgot password?»로 비밀번호를 만들어 로그인해서 풀었어요.</p>
+    <p><strong>연결하기.</strong> <code>npx expo start</code>를 켜면 터미널에 <code>Metro: exp://192.168.x.x:8081</code>이 나와요. 폰의 Expo Go 홈에 «DEVELOPMENT SERVERS»로 <code>routine-stamp-mobile</code>이 자동으로 떴고, 눌러서 열었어요. 처음에는 «Expo Go와 Expo CLI 모두 로그인 필요» 오류가 났는데, 노트북은 액세스 토큰(<code>EXPO_TOKEN</code>)으로, 폰은 «Forgot password?»로 비밀번호를 만들어 로그인해서 풀었어요.</p>
     <figure>
     <img src="images/expo-7-connect-steps.png" alt="Expo Go 홈에서 개발 서버를 찾고, 로그인 필요 오류를 풀고, 앱 로딩 후 Welcome to Expo 화면이 열리는 폰 화면 네 장" style="max-width:100%;height:auto;">
     <figcaption>왼쪽부터 순서대로: 개발 서버를 찾고, 로그인 오류를 만나고, 로그인한 뒤 로딩되어 첫 화면이 열렸어요.</figcaption>
@@ -508,15 +508,57 @@ npx expo start --clear</code></pre>
         <tr><td>웹과 앱은 화면 코드가 있는 곳이 다르다</td><td>같은 도장 코드를 폰 Expo Go와 브라우저(<code>localhost:8081</code>)에서 열었어요</td><td>직접 확인</td></tr>
         <tr><td>기억해 두는 곳은 기기마다 따로다</td><td>폰에서 찍은 도장이 브라우저에는 안 보였고, 브라우저 저장소에는 <code>{"2026-11-05":{"water":2}}</code>가 따로 적혔어요</td><td>직접 확인</td></tr>
         <tr><td>앱에는 빌드가 필요하다</td><td>이번에는 앱 파일을 만들지 않고 Expo Go만 썼어요. 그래서 다른 사람 폰에는 설치할 수 없어요</td><td>하지 않음(한계로 정리)</td></tr>
-        <tr><td>개발 중에는 Expo Go가 노트북의 코드를 받아 실행한다</td><td><code>npx expo start</code>를 켜니 폰 Expo Go 홈의 «DEVELOPMENT SERVERS»에 <code>routine-stamp-mobile</code>이 자동으로 떴어요(<code>exp://192.168.185.120:8081</code>)</td><td>직접 확인</td></tr>
+        <tr><td>개발 중에는 Expo Go가 노트북의 코드를 받아 실행한다</td><td><code>npx expo start</code>를 켜니 폰 Expo Go 홈의 «DEVELOPMENT SERVERS»에 <code>routine-stamp-mobile</code>이 자동으로 떴어요(<code>exp://192.168.x.x:8081</code>)</td><td>직접 확인</td></tr>
         <tr><td>코드를 저장하면 폰 화면이 바로 바뀐다</td><td>앱이 열리는 것까지는 확인했고, 저장하자마자 바뀌는 시간은 따로 재지 않았어요</td><td>확인 못 함</td></tr>
         <tr><td>Expo Go로 되는 기능과 안 되는 기능이 있다</td><td>진동(<code>expo-haptics</code>)은 SDK 58 문서에 Expo Go 지원 여부가 적혀 있지 않았는데, 내 iPhone에서 직접 해 보니 됐어요</td><td>직접 확인</td></tr>
-        <tr><td>앱은 화면, 백엔드는 데이터·판단을 맡는다</td><td>루틴 도장은 서버가 없어서 해당 없음. 사진 → OCR 실습에서 노트북 서버로 다룰 예정이에요</td><td>진행 중</td></tr>
+        <tr><td>앱은 화면, 백엔드는 데이터·판단을 맡는다</td><td>손글씨 메모 사진을 폰에서 노트북 서버(<code>/api/ocr</code>)로 올리면 서버가 글자를 읽고, 앱이 사람이 확인·수정한 뒤에 일정으로 반영해요(아래 «이어서 해 본 것»)</td><td>직접 확인(폰)</td></tr>
         <tr><td>숨길 값은 앱 파일에 넣지 않는다</td><td>루틴 도장에는 숨길 값이 없어요. Expo 액세스 토큰은 <code>.env</code>가 아니라 터미널에만 입력했어요</td><td>직접 한 것</td></tr>
         <tr><td>연결이 안 될 때 오류 문구부터 읽는다</td><td>«Expo Go와 Expo CLI 모두 로그인 필요» 오류를 노트북은 액세스 토큰, 폰은 비밀번호 만들기로 풀었어요(아래 «막힌 곳»)</td><td>직접 겪고 해결</td></tr>
       </tbody>
     </table>
-    <p>사진을 찍어 글자를 읽는 OCR과 노트북 서버(백엔드) 실습은 아직 하지 않았어요. 루틴 도장에 «루틴 목록 사진을 도장 칸으로» 만드는 기능을 붙이면서 이어서 해 보고, 끝나면 이 글에 더할 거예요.</p>
+    <p>사진을 찍어 글자를 읽는 OCR과 노트북 서버(백엔드) 실습은 바로 아래에 이어서 적었어요.</p>
+
+    <h3>이어서 해 본 것: 손글씨 메모를 사진으로 찍어 일정으로</h3>
+    <p>«앱은 화면을, 백엔드는 판단을 맡는다»를 내 앱에 직접 적용해 본 실습이에요. 노트북에서 도는 작은 서버가 사진 속 글자를 읽고, 앱은 사진을 보낸 뒤 <strong>읽은 결과를 내가 확인하고 고친 다음에</strong> 반영해요. 아래 표시는 확인 정도예요. <strong>[폰 확인]</strong>은 내 iPhone의 Expo Go에서 직접 해 보고 화면을 확인한 것, <strong>[코드·터미널]</strong>은 노트북의 터미널과 코드로만 확인한 것, <strong>[확인 못 함]</strong>은 확인하지 못한 것이에요.</p>
+    <figure>
+    <img src="images/expo-14-ocr-to-event.gif" alt="손으로 쓴 일정 메모 사진이 서버에서 줄 위치 찾기, 줄마다 읽기, 규칙으로 묶기를 거쳐 사람이 확인한 뒤 캘린더 일정이 되는 움직이는 그림" style="max-width:100%;height:auto;">
+    <figcaption>손으로 쓴 메모 사진이 캘린더 일정이 되기까지예요. 사진 → 줄 위치 찾기 → 줄마다 읽기 → 규칙으로 묶기 → 사람이 확인한 뒤 반영 순서예요.</figcaption>
+    </figure>
+    <p><strong>쓰임새를 두 번 바꿨어요.</strong> 처음에는 «손으로 쓴 루틴 목록을 읽어 도장 칸을 만들기»였는데 써 보니 어색해서 «칸 안에 증거 사진 넣기»로 바꿨고, 실제 메모(날짜가 있는 일회성 일정)를 받아 보고서야 «손으로 적은 일정을 일정 데이터로 옮기기»가 필요하다는 것을 알았어요. 그래서 날짜 일정과 월 달력을 먼저 만들었고, 일정은 도장 기록(<code>routine-stamp:v1</code>)과 다른 저장 이름에 따로 저장해서 이전 도장 기록이 그대로 남아요.</p>
+
+    <p><strong>1. 서버: 글자 읽는 기능 재사용 [코드·터미널].</strong> 서버 저장소에는 이미 <code>POST /api/ocr</code>(사진 필드 이름 <code>photo</code>)이 있어서 새 서버를 만들지 않았어요. 응답에 <code>text</code>(줄을 줄바꿈으로 이은 글)를 더했고, 웹 화면이 쓰는 <code>lines</code>는 그대로 둬서 호환을 지켰어요. 노트북에서 <code>curl -F photo=@사진</code>으로 올려 <code>text</code>가 오는 것을 확인했어요. 폰이 접속하도록 서버를 <code>--host 0.0.0.0</code>으로 켰고, 폰이 같은 와이파이의 노트북 주소로 부르는 구조예요. 배포는 하지 않았어요.</p>
+    <p><strong>2. 앱: 사진 받기와 업로드.</strong> <code>expo-image-picker</code>로 사진첩·카메라에서 사진을 받아요. 권한을 거부해도 앱이 멈추지 않고 안내하도록 만들었지만, 폰에서 권한을 실제로 거부해 본 것은 [확인 못 함]이에요.</p>
+    <figure>
+    <img src="images/expo-11-upload-errors.png" alt="서버 주소가 비어 있을 때 나온 안내와, 사진을 올릴 때 나온 Unsupported FormDataPart implementation 오류를 보여 주는 폰 화면 두 장(서버 내부 주소는 가렸다)" style="max-width:100%;height:auto;">
+    <figcaption>[폰 확인] 왼쪽은 서버 주소를 비워 두고 사진 버튼을 눌렀을 때의 안내, 오른쪽은 사진을 올릴 때 난 오류예요. 서버 주소는 가렸어요.</figcaption>
+    </figure>
+    <p><strong>3. 막힌 곳과 해결.</strong></p>
+    <ul>
+      <li><strong>서버 주소를 먼저 입력하라는 안내.</strong> 주소 칸이 화면 맨 아래에 따로 있어서 눈에 띄지 않았던 것으로 보여요(원인은 추정). 주소 칸을 사진 버튼 바로 위로 옮겼어요.</li>
+      <li><strong><code>Unsupported FormDataPart implementation</code>.</strong> 앱 폴더의 <code>node_modules/expo/src/winter/fetch/convertFormData.ts</code>를 읽어 원인을 찾았어요 [코드·터미널]. 이 Expo 버전의 <code>fetch</code>는 <code>{uri, name, type}</code> 꼴의 파일 항목을 지원하지 않고 <code>bytes()</code>를 가진 객체만 받아요. <code>expo-file-system</code>의 <code>File</code> 객체를 <code>FormData</code>에 넣도록 바꿨고, 그 뒤 폰에서 업로드가 서버까지 갔어요 [폰 확인].</li>
+      <li><strong>처음 엔진(tesseract)이 쓸 수 없는 글을 돌려줌.</strong> 폰에서 올린 사진을 읽자 <code>ee</code>, <code>A |</code> 같은 조각 23줄이 나왔어요 [폰 확인]. 올린 사진은 손글씨가 아니라 서명표로 보여서(추정) 이 비교의 대상은 아니에요.</li>
+    </ul>
+    <p><strong>4. 글자 읽는 모델 바꾸기.</strong> 같은 손글씨 일정 메모 사진 한 장으로 세 가지를 비교했어요 [코드·터미널].</p>
+    <table>
+      <thead><tr><th>줄</th><th>실제로 쓴 글</th><th>tesseract</th><th>EasyOCR</th><th>EasyOCR 검출기 + TrOCR</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>11월 7일</td><td>알아볼 수 없는 기호</td><td><code>1(월 7인</code></td><td><code>11월 7일</code></td></tr>
+        <tr><td>2</td><td>오전 10시 30분</td><td>알아볼 수 없는 기호</td><td><code>안선 1에 30벌</code></td><td><code>8전 10시 30분</code> («오»만 틀림)</td></tr>
+        <tr><td>3</td><td>미용실 예약</td><td><code>HIG otiok</code></td><td><code>미행 예약</code></td><td><code>미용실 예약</code></td></tr>
+      </tbody>
+    </table>
+    <p>마지막 열은 글씨가 있는 줄의 위치를 EasyOCR의 검출기로 찾고, 줄마다 잘라 허깅페이스의 <code>team-lucid/trocr-small-korean</code>(Apache-2.0)으로 읽는 구성이에요. <strong>이미 학습된 모델을 그대로 썼고 파인튜닝은 하지 않았어요.</strong> 줄당 약 0.5초이고 모델을 불러오는 데 처음 한 번 약 37초가 걸려요. «8전»을 «오전»으로 고치는 보정은 모델이 아니라 앱의 규칙 코드가 해요. 이 비교는 사진 <strong>한 장</strong> 기준이라, 서명이나 흘려 쓴 글씨, 다른 종류의 사진은 비교하지 못했어요 [확인 못 함].</p>
+    <figure>
+    <img src="images/expo-12-ocr-before-after.png" alt="왼쪽은 처음 엔진이 읽은 쓸 수 없는 23줄, 오른쪽은 모델을 바꾼 뒤 읽은 11월 7일, 8전 10시 30분, 미용실 예약 세 줄과 날짜 일정 미리보기" style="max-width:100%;height:auto;">
+    <figcaption>[폰 확인] 왼쪽은 처음 엔진의 결과(23줄), 오른쪽은 모델을 바꾼 뒤 읽은 3줄이에요. 서버 주소는 가렸어요. 읽은 글은 목록으로 보여 주고, 내가 고치거나 지운 뒤 «캘린더에 일정 넣기»를 눌러야 반영돼요.</figcaption>
+    </figure>
+    <p><strong>5. 확인·수정 → 일정 추가 → 캘린더 [폰 확인].</strong> 읽은 줄을 목록으로 보여 주고, 고치거나 지운 뒤 버튼을 눌러야 반영돼요. 읽은 글을 바로 반영하지 않는 것이 핵심이에요. 3줄이 <code>2026-11-07 10:30 · 미용실 예약</code> 일정으로 미리보기에 나왔고, 월 달력에서 7일 칸을 누르면 그날의 루틴 3개와 일정이 함께 보여요. 일정 해석 규칙(날짜·시간·요일, 없는 날짜 거르기)은 node로 실행해 확인했어요 [코드·터미널].</p>
+    <figure>
+    <img src="images/expo-13-note-and-calendar.png" alt="왼쪽은 손으로 쓴 일정 메모 원본(11월 7일, 오전 10시 30분, 미용실 예약), 오른쪽은 11월 7일이 선택되어 이날의 루틴 3개와 미용실 예약 일정이 보이는 캘린더 화면" style="max-width:100%;height:auto;">
+    <figcaption>[폰 확인] 왼쪽은 읽은 손글씨 메모 원본, 오른쪽은 일정이 들어간 캘린더예요. 선택한 날의 숫자가 빨간 배경에 묻히는 색 문제는 이 화면에서 보고 고쳤는데, 고친 뒤 폰에서 다시 본 것은 [확인 못 함]이에요.</figcaption>
+    </figure>
+    <p><strong>저장 구조 [코드·터미널].</strong> 도장 기록 <code>routine-stamp:v1</code>은 형식을 바꾸지 않았고, 칸 목록(<code>slots:v1</code>), 일정(<code>events:v1</code>), 칸 안 증거 사진·메모(<code>evidence:v1</code>)를 따로 저장해서 이전 데이터가 그대로 남아요. 증거 사진은 폰의 앱 문서 폴더에만 두고 서버에는 올리지 않아요. 읽기 기능을 쓰는 사진만 서버로 가요.</p>
+    <p><strong>아직 확인 못 한 것.</strong> ① 캘린더에서 일정을 직접 추가·수정·삭제·완료 표시하는 것을 폰에서 눌러 본 것, ② 폰에서 사진·카메라 권한을 실제로 거부해 본 것, ③ 요일 반복 «주간 루틴표» 사진을 폰에서 올려 읽은 것(노트북에서 합성한 활자 이미지로만 해 봤어요), ④ 서명·흘려 쓴 글씨 같은 다른 사진, ⑤ 서버의 TrOCR 엔진은 이 PC의 별도 가상환경에서만 돌고 <code>requirements.txt</code>와 Docker 이미지에는 넣지 않았어요. ⑥ 손글씨 정확도는 사진 한 장 기준이라 «파인튜닝이 필요한가»는 사진이 더 쌓여 틀린 비율을 센 뒤에야 판단할 수 있어요. 알림, 반복 일정, 검색은 아직 없어요.</p>
 
     <h2 id="judgement"><span class="hl">실무에서 이렇게 판단해요</span> — 자주 틀리는 8가지 상황</h2>
     <p>앱 만들기를 배우고 나서 가장 자주 틀리는 것은 개념이 아니라 «이 상황에서 어떻게 하겠는가»예요. 개념은 아는데 상황과 연결돼 있지 않으면, 현장에서는 «이거 앱을 다시 만들어야 하나?»에서 막혀요. 그래서 상황별로 <strong>판단 규칙 한 줄, 비유 한 줄, 사례표</strong>를 모았어요. 제 앱 «루틴 도장»(도장 세 칸을 누르면 도장이 바뀌는 작은 앱)을 Expo Go에서 직접 돌려 본 것은 사례표에 «직접 확인»이라고 적었어요.</p>
