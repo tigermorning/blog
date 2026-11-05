@@ -2,10 +2,10 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>백엔드는 그대로 두고 화면만 새로 — Expo로 휴대폰 앱 만들기 (14) - Tigermorning</title>
+  <title>백엔드는 그대로 쓰고 앱 화면만 새로 만들기 — Expo로 휴대폰 앱 만들기 (14) - Tigermorning</title>
   <meta name="description" content="웹 서비스를 폰 앱으로 가져가는 네 가지 방법을 비교해 Expo를 고르고, 기존 백엔드를 쓰는 대화 앱을 내 폰의 Expo Go로 띄운 뒤, 답 아래 기억 메모와 사진으로 약속 만들기 기능을 붙이는 순서를 정리했어요.">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="백엔드는 그대로 두고 화면만 새로 — Expo로 휴대폰 앱 만들기 (14)">
+  <meta property="og:title" content="백엔드는 그대로 쓰고 앱 화면만 새로 만들기 — Expo로 휴대폰 앱 만들기 (14)">
   <meta property="og:description" content="웹과 앱의 차이, 네 가지 방법의 비교, Expo Go로 내 폰에서 실행하기, 사진으로 약속 만들기까지 정리했어요.">
   <meta property="og:url" content="https://tigermorning.github.io/blog/ko/expo-mobile-app-with-expo-go.html">
   <meta property="og:locale" content="ko_KR">
@@ -25,11 +25,11 @@
   <div id="sidebar-mount"></div>
 
   <main>
-    <h1><span class="hl">백엔드는 그대로 두고 화면만 새로</span> — Expo로 휴대폰 앱 만들기 (14)</h1>
+    <h1><span class="hl">백엔드는 그대로 쓰고 앱 화면만 새로 만들기</span> — Expo로 휴대폰 앱 만들기 (14)</h1>
     <p class="post-date">2026. 11. 5.</p>
     <p class="post-date">※ 이 글은 모두의연구소(모두연) 학습 자료를 제 나름의 말로 다시 정리한 글이에요.</p>
 
-    <p class="one-liner">Expo는 JavaScript(TypeScript) 코드로 안드로이드와 아이폰 앱을 함께 만들고 실행·빌드·배포까지 묶어 주는 도구 모음이라서, 이미 있는 백엔드는 그대로 두고 화면만 새로 만들어 내 폰에서 바로 띄울 수 있어요.</p>
+    <p class="one-liner">Expo는 JavaScript(TypeScript) 코드로 안드로이드와 아이폰 앱을 함께 만들고 실행·빌드·배포까지 묶어 주는 도구 모음이라서, 이미 있는 백엔드는 그대로 쓰고 앱 화면만 새로 만들기 만들어 내 폰에서 바로 띄울 수 있어요.</p>
 
     <div class="why-read">
       <p class="why-read-title">이 글을 읽기 전에</p>
@@ -38,8 +38,8 @@
         <dd>
           <ul>
             <li>"웹으로 잘 돌아가는 서비스를 앱으로 만들려면 처음부터 다시 만들어야 하나요?"</li>
-            <li>"Windows 노트북인데 아이폰 앱도 만들 수 있어요?"</li>
-            <li>"코드를 고쳤는데 폰 화면은 어떻게 바로 바뀌는 거예요?"</li>
+            <li>"폰에서 Expo Go로 앱을 열려는데 열리지 않아요. 어디부터 봐야 하나요?"</li>
+            <li>"앱에서 만든 대화가 웹에는 안 보여요. 데이터가 사라진 건가요?"</li>
           </ul>
         </dd>
         <dt>읽고 나면 할 수 있는 것</dt>
@@ -47,22 +47,15 @@
           <ul>
             <li>PWA·웹 래핑·네이티브·Expo 중에서 내 상황에 맞는 방법을 이유와 함께 고를 수 있어요.</li>
             <li>앱이 켜질 때 백엔드와 어떤 순서로 요청을 주고받는지 그림을 보고 읽을 수 있어요.</li>
-            <li>Expo Go로 내 폰에서 앱을 띄우고, 연결이 안 될 때 표에서 원인을 찾아갈 수 있어요.</li>
+            <li>Windows 노트북에서도 아이폰 앱을 만들 수 있는 이유를 설명하고, Expo Go로 내 폰에 앱을 띄우고, 코드를 고치면 폰 화면이 바로 바뀌는 원리를 말할 수 있어요. 연결이 안 될 때는 표에서 원인을 찾아가요.</li>
           </ul>
         </dd>
-        <dt>모르면 이런 일이 생겨요</dt>
+        <dt>모르면 이런 일이 생겨요 (위 질문과 같은 순서)</dt>
         <dd>
           <ul>
-            <li>앱 설정 파일에 비밀 키를 넣었다가 앱을 받은 누구나 그 키를 꺼내 써요. <a class="suspect-jump" href="#suspect-key">언제 의심하나 ↓</a></li>
-            <li>폰과 Expo Go의 버전이 달라 앱이 열리지 않는데 코드 문제인 줄 알고 몇 시간을 써요. <a class="suspect-jump" href="#suspect-sdk">언제 의심하나 ↓</a></li>
-            <li>앱에서 만든 대화가 웹에는 안 보여서 데이터가 사라졌다고 착각해요. <a class="suspect-jump" href="#suspect-guest">언제 의심하나 ↓</a></li>
-          </ul>
-        </dd>
-        <dt>어디에 쓰나</dt>
-        <dd>
-          <ul>
-            <li><strong>잘 만든 웹 서비스를 폰 홈 화면의 아이콘으로 만들고 싶어졌을 때.</strong> 매일 쓰는 서비스일수록 사용자는 주소를 찾기보다 아이콘을 누르고 싶어 해요. 백엔드를 버리지 않고 그 길을 가는 방법이에요.</li>
-            <li>코딩 에이전트에게 앱을 맡기기 전에, 화면 구조와 데이터가 오는 곳을 먼저 정리하는 기준으로 써요.</li>
+            <li>백엔드에 둬야 할 비밀 키를 앱 설정 파일에 넣어요. 앱을 받은 누구나 그 키를 꺼내 써요. <a class="suspect-jump" href="#suspect-key">언제 의심하나 ↓</a></li>
+            <li>폰의 Expo Go와 프로젝트의 버전(SDK)이 달라 앱이 열리지 않는데, 코드 문제인 줄 알고 몇 시간을 써요. <a class="suspect-jump" href="#suspect-sdk">언제 의심하나 ↓</a></li>
+            <li>앱과 웹이 서로 다른 사용자(게스트)로 로그인된 것을, 데이터가 사라졌다고 착각해요. <a class="suspect-jump" href="#suspect-guest">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
       </dl>
@@ -74,6 +67,10 @@
     </a>
 
     <p><a href="credit-payment-cost-and-checkout.html">앞 편</a>까지 만든 AI 친구 서비스는 웹 주소로만 열려요. 매일 말을 거는 서비스라면 사용자는 브라우저를 열고 주소를 찾는 대신 폰 홈 화면의 아이콘을 누르고 싶어 해요. 그런데 앱을 만들려면 언어를 새로 배우고 개발 도구를 깔아야 하고, 아이폰 앱은 맥에서만 만들 수 있다고들 해요. 이 글은 Windows 노트북으로, 코딩 에이전트와 함께, <strong>지금 있는 백엔드를 그대로 쓰는 앱</strong>을 내 폰에 띄우는 데까지 가는 길을 정리한 거예요. 다른 사람 폰에 설치하고 출시를 준비하는 일은 이 글의 범위가 아니에요.</p>
+    <figure>
+    <img src="images/expo-1-poster.png" alt="이 글의 핵심 세 가지: 웹과 앱의 차이(선생님과 학생 대 가방 속 교과서), 앱의 빌드(원고, 번역, 도장), 개발 중 구동(노트북에서 와이파이로 폰의 Expo Go에)" style="max-width:100%;height:auto;">
+    <figcaption>이 글을 한 장으로 줄인 그림이에요. 아래에서 하나씩 풀어 써요. 색은 청록이 웹·개발, 앰버(주황)가 앱·빌드예요.</figcaption>
+    </figure>
 
     <h2 id="analogy"><span class="hl">비유로 먼저</span> — 수업 시간의 칠판과 가방 속 교과서</h2>
     <p>이 글의 설명은 모두 아래 비유 위에서 해요. 앞 편들의 식당 비유는 «앱을 폰에 설치한다»는 장면을 설명하기에 어색해서, 이 편에서는 학교 수업으로 바꿔서 설명해요. 웹은 <strong>선생님이 수업 때마다 칠판에 적어 주는 것</strong>이에요. 학생(브라우저)은 수업에 들어갈 때마다 선생님(서버)이 적은 내용을 그 자리에서 읽고, 수업이 끝나면 칠판은 지워져요. 선생님이 내용을 고치면 다음 수업에 모든 학생이 새 내용을 봐요. 앱은 <strong>가방에 넣고 다니는 교과서</strong>예요. 열면 바로 읽을 수 있지만, 선생님이 새 내용을 정해도 이미 가진 책은 옛 내용 그대로예요. 새 책을 구해야 바뀌고, 구하지 않은 학생은 옛 책으로 공부해요. 다만 «내 출석과 성적»처럼 사람마다 다르고 계속 쌓이는 정보는 모두에게 같은 내용인 칠판에도 교과서에도 적을 수 없어서, 칠판 수업을 듣는 학생도 교과서를 든 학생도 학교 사무실의 기록에서 확인해요.</p>
@@ -93,7 +90,7 @@
       </tbody>
     </table>
     <p><strong>핵심 한 줄:</strong> 교과서는 가방에서 바로 펼 수 있지만, 내용을 고치려면 새 책을 인쇄해서 나눠 줘야 해요.</p>
-    <p>다만 여기서 비유가 끊기는 점이 있어요. 교과서는 개정판이 나와도 학교가 새 책을 한꺼번에 나눠 줄 수 있지만, 앱은 사용자가 스스로 업데이트해야 해서 옛 책을 든 학생이 오래 남아요. 그래서 «옛 앱이 새 백엔드를 부르는» 문제가 생겨요(바로 아래 «웹과 앱»에서 풀어 설명해요).</p>
+    <p>다만 여기서 비유가 끊기는 점이 있어요. 교과서는 개정판이 나오면 학교가 새 책을 한꺼번에 나눠 줄 수 있지만, 앱은 사용자가 스스로 업데이트해야 해서 옛 책을 든 학생이 오래 남아요. 그래서 «옛 앱이 새 백엔드를 부르는» 문제가 생겨요(바로 아래 «웹과 앱»에서 풀어 설명해요).</p>
 
     <h2 id="web-vs-app"><span class="hl">웹과 앱</span> — 코드가 어디서 실행되나</h2>
     <p>웹 서비스는 주소를 열 때마다 브라우저가 서버에서 화면 코드(HTML, JavaScript)를 받아 그 자리에서 실행하고, 탭을 닫으면 코드가 사라져요. 서버에 새 버전을 올리면 모든 사용자가 바로 새 화면을 봐요.</p>
@@ -128,7 +125,7 @@
     </svg>
     <figcaption>위 칸은 웹, 아래 칸은 앱이에요. 화면 코드를 받아 오는 곳만 달라지고, 데이터를 받는 백엔드(진한 테두리)는 그대로예요. 화살표는 모두 «화면 코드나 데이터가 오는 방향»이에요. 점선은 데이터가 오는 길이고, 웹 줄에서는 웹 서버 상자와 겹치지 않게 아래로 돌려 그렸어요.</figcaption>
     </figure>
-    <p>그래서 화면이 웹에서 앱으로 바뀌어도 백엔드는 그대로 써요. 달라지는 점 하나는 <strong>옛 버전 앱이 폰에 남는다</strong>는 거예요. 앱을 내놓은 뒤에는 업데이트하지 않은 옛 앱이 새 백엔드에 계속 요청을 보내요.</p>
+    <p>정리하면, 웹과 앱은 <strong>화면 코드가 있는 곳</strong>만 다르고 데이터를 받는 백엔드는 같아요. 그래서 웹 서비스를 앱으로 바꿀 때 <strong>백엔드는 새로 만들지 않고 그대로 쓰고, 새로 만드는 것은 앱 화면</strong>이에요. 달라지는 점 하나는 <strong>옛 버전 앱이 폰에 남는다</strong>는 거예요. 앱을 내놓은 뒤에는 업데이트하지 않은 옛 앱이 새 백엔드에 계속 요청을 보내요.</p>
     <p>이때 조심할 것이 <strong>API 응답의 모양</strong>이에요. 앱이 백엔드에 물으면 백엔드는 <code>{"reply": "안녕"}</code>처럼 «이름표: 값» 모양으로 답하고, 앱 코드는 <code>reply</code>라는 이름표로 값을 꺼내 화면에 보여 주게 짜여 있어요. 백엔드가 이름표를 <code>message</code>로 바꾸면 업데이트하지 않은 옛 앱은 여전히 <code>reply</code>를 찾다가 값을 못 꺼내 빈 화면이나 오류가 나요. 이름표를 <strong>더하는</strong> 것은 옛 앱이 모르는 이름표라서 그냥 무시하니 안전하고, 이름을 <strong>바꾸거나 지우는</strong> 것이 위험해요. 그래서 «응답의 모양을 함부로 바꾸지 않는다»고 해요.</p>
     <p>또 하나, <strong>기억해 두는 곳도 기기마다 따로예요.</strong> 껐다 켜도 남길 값(로그인 증표, 도장 기록 같은 것)은 어딘가에 적어 둬야 하는데, ① 폰 안 저장소는 그 폰의 그 앱만, ② 브라우저 저장소는 그 브라우저의 그 사이트만 읽을 수 있어요. 둘은 서로 이어지지 않은 별개의 공책이라서, 같은 서비스를 폰 앱과 웹에서 열어도 각자 자기 공책에 적어요. 같은 계정으로 어느 기기에서든 같은 기록을 보려면 ③ 백엔드 쪽 데이터베이스에 적어야 해요. 아래 «같은 백엔드인데 대화가 달라 보이는 이유»가 이 이야기예요.</p>
 
@@ -177,8 +174,8 @@
     </table>
     <p>일반 React Native 프로젝트는 <code>android/</code>와 <code>ios/</code> 폴더를 저장소에 두고, 카메라 권한 하나를 더할 때도 두 폴더의 설정 파일을 따로 고쳐요. Expo 프로젝트는 권한 설명을 <code>app.json</code>에 한 번 적으면 빌드할 때 Expo가 두 폴더를 새로 만들어요(CNG<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup>). 코딩 에이전트가 고칠 곳이 한 파일로 모이니, 승인할 때 무엇이 바뀌는지 읽기도 쉬워져요.</p>
 
-    <h3>컴파일을 피하는 두 가지 방법</h3>
-    <p>플랫폼 도구로 컴파일해야 하는 것은 앱의 <strong>네이티브 부분</strong>뿐이고, 내 코드는 묶기만 하면 돼요. Expo는 이 컴파일을 내 노트북 밖으로 옮겨요.</p>
+    <h3>컴파일을 내 노트북에서 하지 않는 두 가지 방법</h3>
+    <p>컴파일은 꼭 해야 하는 일이고, 플랫폼 도구로 컴파일해야 하는 것은 앱의 <strong>네이티브 부분</strong>뿐이에요(내 코드는 묶기만 하면 돼요). 다만 그 도구(Android SDK, Xcode)를 내 노트북에 깔고 직접 돌리는 것이 번거로워서, Expo는 컴파일을 <strong>내 노트북 밖에서</strong> 해결해요. 개발할 때는 Expo 팀이 미리 컴파일해 둔 Expo Go를 쓰고, 다른 사람에게 줄 앱 파일은 클라우드 서버가 대신 컴파일해요.</p>
     <figure>
     <svg class="flow-motion" viewBox="0 0 560 300" style="max-width:600px;margin:0 auto" role="img" aria-label="개발할 때는 노트북의 개발 서버가 번들을 Expo Go에 보내 실행하고, 빌드할 때는 클라우드 서버가 컴파일하고 서명해 설치 링크를 주고, 배포할 때는 스토어를 거치는 세 경로">
       <defs>
@@ -217,6 +214,14 @@
     <figcaption>상자가 위에서 아래로 차례로 깜빡이고 화살표 위로 점선이 흘러요(움직임이 불편하면 브라우저의 «동작 줄이기» 설정이 켜진 경우 멈춰요). 화살표는 «결과물이 넘어가는 방향»이에요. 이 글은 ①을 직접 해 보고, ②와 ③은 어떤 길인지만 살펴봐요.</figcaption>
     </figure>
     <p>개발할 때는 Expo Go를 써요. Expo Go는 자주 쓰는 네이티브 부분을 미리 컴파일해 둔 앱이라서, 노트북의 개발 서버가 만든 번들을 와이파이로 받아 바로 실행해요. 코드를 저장하면 폰 화면이 몇 초 안에 바뀌어요. 다른 사람에게 줄 앱 파일은 EAS 빌드로 만들어요. 프로젝트를 Expo 클라우드에 올리면 안드로이드 도구가 깔린 서버와 Xcode가 깔린 맥 서버가 컴파일하고 서명해서 설치 링크를 돌려줘요.</p>
+    <figure>
+    <img src="images/expo-4-save-reload.gif" alt="노트북에서 문구를 고치고 저장하면 개발 서버가 번들로 묶어 와이파이로 보내고 폰의 Expo Go 화면이 바뀌는 움직이는 그림" style="max-width:100%;height:auto;">
+    <figcaption>개발할 때는 코드를 저장하면 개발 서버가 바뀐 번들을 와이파이로 보내고 Expo Go가 화면을 새로 그려요. 앱을 다시 만들지 않아요.</figcaption>
+    </figure>
+    <figure>
+    <img src="images/expo-5-expogo-vs-installed.gif" alt="같은 코드 수정을 해도 Expo Go로 연 앱은 바로 2판이 되고 설치한 앱은 앱 파일 안의 옛 1판이 그대로인 움직이는 그림" style="max-width:100%;height:auto;">
+    <figcaption>같은 수정을 해도 Expo Go(시험 인쇄본)는 곧바로 바뀌고, 설치한 앱(완성된 책)은 다시 빌드해야 바뀌어요.</figcaption>
+    </figure>
 
     <h3>Expo Go로 되는 것과 개발용 빌드가 필요한 것</h3>
     <p>Expo Go에는 미리 컴파일된 네이티브 기능만 들어 있어요. 그 밖의 라이브러리를 쓰려면 내 앱 전용으로 네이티브 부분까지 컴파일한 <strong>개발용 빌드</strong>를 만들어 폰에 설치해야 해요.</p>
@@ -239,13 +244,44 @@
     <table>
       <thead><tr><th>파일</th><th>하는 일</th></tr></thead>
       <tbody>
-        <tr><td><code>src/app/_layout.tsx</code></td><td>앱 전체 틀. 로그인 상태를 모든 화면에 나눠 주고 화면을 쌓아 보여 줌</td></tr>
+        <tr><td><code>src/app/_layout.tsx</code></td><td>앱 전체 틀. 로그인 상태를 모든 화면이 함께 쓰게 해 주고, 새 화면이 앞 화면 위에 겹쳐 올라오게(뒤로 가기를 누르면 걷히게) 관리해요</td></tr>
         <tr><td><code>src/app/index.tsx</code></td><td>대화 화면. 캐릭터가 없으면 캐릭터 화면으로 보냄</td></tr>
         <tr><td><code>src/app/character.tsx</code></td><td>캐릭터 화면</td></tr>
         <tr><td><code>src/lib/api.ts</code></td><td>백엔드 주소, API 호출, 답 스트리밍 읽기</td></tr>
         <tr><td><code>src/lib/session.tsx</code>, <code>src/lib/supabase.ts</code></td><td>앱이 켜질 때 설정 읽기와 익명 로그인</td></tr>
       </tbody>
     </table>
+    <figure>
+    <svg viewBox="0 0 560 330" style="max-width:600px;margin:0 auto" role="img" aria-label="앱 폴더 구조: src/app 폴더의 파일 하나가 화면 하나이고 src/lib 폴더는 화면 밖의 일을 맡는다. 오른쪽은 대화 화면 위에 캐릭터 화면이 겹쳐 올라온 모습">
+      <defs>
+        <marker id="ex-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/></marker>
+      </defs>
+      <g font-family="var(--font-body)" font-size="13" fill="var(--ink)">
+        <text x="16" y="22" font-family="var(--font-heading)" font-size="14" font-weight="700">앱 폴더 (src/)</text>
+        <rect x="16" y="32" width="300" height="150" rx="8" fill="none" stroke="var(--accent)" stroke-width="1.6"/>
+        <text x="28" y="54" font-weight="700">app/  <tspan font-weight="400" fill="var(--muted)">— 파일 하나 = 화면 하나</tspan></text>
+        <text x="44" y="76">_layout.tsx  <tspan fill="var(--muted)">앱 전체 틀</tspan></text>
+        <text x="44" y="98">index.tsx  <tspan fill="var(--muted)">대화 화면</tspan></text>
+        <text x="44" y="120">character.tsx  <tspan fill="var(--muted)">캐릭터 화면</tspan></text>
+        <rect x="16" y="196" width="300" height="122" rx="8" fill="none" stroke="var(--border)" stroke-width="1.6"/>
+        <text x="28" y="218" font-weight="700">lib/  <tspan font-weight="400" fill="var(--muted)">— 화면 밖에서 하는 일</tspan></text>
+        <text x="44" y="242">api.ts  <tspan fill="var(--muted)">백엔드 호출·답 읽기</tspan></text>
+        <text x="44" y="264">session.tsx  <tspan fill="var(--muted)">켜질 때 설정·로그인</tspan></text>
+        <text x="44" y="286">supabase.ts  <tspan fill="var(--muted)">로그인 서비스 연결</tspan></text>
+        <text x="350" y="22" font-family="var(--font-heading)" font-size="14" font-weight="700">폰 화면에서는</text>
+        <rect x="372" y="40" width="170" height="270" rx="18" fill="none" stroke="var(--border)" stroke-width="1.6"/>
+        <rect x="384" y="62" width="146" height="220" rx="8" fill="none" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="4 4"/>
+        <text x="457" y="80" text-anchor="middle" font-size="11" fill="var(--muted)">_layout: 틀</text>
+        <rect x="394" y="92" width="126" height="120" rx="6" fill="none" stroke="var(--border)" stroke-width="1.4"/>
+        <text x="457" y="152" text-anchor="middle">대화 화면</text>
+        <rect x="406" y="164" width="126" height="106" rx="6" fill="var(--bg)" stroke="var(--accent)" stroke-width="1.6"/>
+        <text x="469" y="222" text-anchor="middle">캐릭터 화면</text>
+        <text x="469" y="240" text-anchor="middle" font-size="11" fill="var(--muted)">위에 겹쳐 올라와요</text>
+        <line x1="318" y1="110" x2="370" y2="110" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ex-t)"/>
+      </g>
+    </svg>
+    <figcaption>왼쪽은 파일이 놓인 모습, 오른쪽은 폰에서 보이는 모습이에요. <code>app/</code>의 파일이 화면이 되고, 새 화면(캐릭터)은 앞 화면(대화) 위에 겹쳐 올라와요. 뒤로 가기를 누르면 위에 올라온 화면이 걷혀요. 표에서 «쌓아 보여 준다»는 말이 이 모습이에요. <code>lib/</code>의 파일은 화면에 보이지 않는 일을 맡아요.</figcaption>
+    </figure>
     <p><code>src/app/</code> 폴더는 Expo Router의 규칙을 따라서, 파일 이름이 곧 화면 주소예요. <code>src/app/memories.tsx</code> 를 만들면 <code>/memories</code> 화면이 생겨요. 화면 파일이 <code>fetch</code>를 직접 부르지 않고 <code>api.ts</code>를 거치게 한 이유는, 백엔드 주소와 로그인 토큰을 붙이는 일을 한곳에 모으기 위해서예요.</p>
     <p>앱을 처음 켜서 메시지 하나의 답을 받을 때까지는 이런 순서예요.</p>
     <table>
@@ -258,6 +294,10 @@
         <tr><td>5</td><td>백엔드 → 앱</td><td>답이 한 번에 오지 않고 조각으로 이어서 흘러옴(스트리밍), 한 줄에 이벤트 하나씩: 글자 조각 <code>delta</code>, 약속이 만들어졌을 때 <code>reminder</code>, 기억 정리 결과 <code>memory</code>, 끝을 알리는 <code>done</code></td></tr>
       </tbody>
     </table>
+    <figure>
+    <img src="images/expo-6-app-backend-sequence.png" alt="앱, 백엔드, 로그인 서비스 사이에서 설정 요청, 게스트 로그인, 토큰 받기, 데이터 요청, 메시지 보내기와 조각으로 이어지는 답이 오가는 순서도" style="max-width:100%;height:auto;">
+    <figcaption>위 표를 그림으로 그린 거예요. 앱을 켜면 위에서 아래로 이 순서대로 요청이 오가요.</figcaption>
+    </figure>
     <p>React Native의 기본 <code>fetch</code>는 이렇게 조금씩 오는 응답을 읽지 못해서, 템플릿은 Expo의 <code>expo/fetch</code>로 줄 단위로 읽어 글자를 이어 붙여요. 앱에 넣는 설정은 백엔드 주소(<code>EXPO_PUBLIC_API_URL</code>) 하나뿐이에요.</p>
 
     <h3>앱에 넣으면 안 되는 값</h3>
@@ -376,6 +416,28 @@ npx expo start --clear</code></pre>
         </tr>
       </tbody>
     </table>
+
+    <h2 id="mine"><span class="hl">내가 직접 해 본 것</span> — 루틴 도장 앱을 내 아이폰에서</h2>
+    <p>위 설명을 확인하려고 «루틴 도장»(도장 세 칸을 누르면 도장이 바뀌고 진동이 오는 작은 앱)을 Expo로 만들어 내 아이폰의 Expo Go에서 돌렸어요. 노트북은 Windows이고, 이 앱은 서버 없이 폰 안에만 저장해서 백엔드 템플릿 대신 <code>npx create-expo-app@latest</code>의 기본 프로젝트로 시작했어요. Node는 <code>v24.19.0</code>(요구: 22.13 이상), <code>expo-doctor</code>가 20개 검사를 모두 통과했어요.</p>
+    <p><strong>연결하기.</strong> <code>npx expo start</code>를 켜면 터미널에 <code>Metro: exp://192.168.185.120:8081</code>이 나와요. 폰의 Expo Go 홈에 «DEVELOPMENT SERVERS»로 <code>routine-stamp-mobile</code>이 자동으로 떴고, 눌러서 열었어요. 처음에는 «Expo Go와 Expo CLI 모두 로그인 필요» 오류가 났는데, 노트북은 액세스 토큰(<code>EXPO_TOKEN</code>)으로, 폰은 «Forgot password?»로 비밀번호를 만들어 로그인해서 풀었어요.</p>
+    <figure>
+    <img src="images/expo-7-connect-steps.png" alt="Expo Go 홈에서 개발 서버를 찾고, 로그인 필요 오류를 풀고, 앱 로딩 후 Welcome to Expo 화면이 열리는 폰 화면 네 장" style="max-width:100%;height:auto;">
+    <figcaption>왼쪽부터 순서대로: 개발 서버를 찾고, 로그인 오류를 만나고, 로그인한 뒤 로딩되어 첫 화면이 열렸어요.</figcaption>
+    </figure>
+    <p><strong>도장은 이렇게 움직여요.</strong> ① 칸을 누르면 앱이 그 칸의 오늘 상태를 보고 다음 상태를 정해요(비움 → 진한 도장 → 연한 도장 → 비움). ② 새 상태에 맞는 진동을 울려요(진한 도장은 묵직하게 <code>Heavy</code>, 연한 도장은 가볍게 <code>Light</code>, 비울 때는 짧게 <code>selectionAsync</code>). ③ 화면을 바꾸고, ④ 바뀐 기록을 폰 안 저장소(<code>AsyncStorage</code>, 이름 <code>routine-stamp:v1</code>)에 적어요. ⑤ 앱을 껐다 켜면 시작할 때 저장소에서 읽어 와서 도장이 남아 있어요. 바꾼 파일은 <code>src/lib/stamps.ts</code>(상태 계산·저장), <code>src/components/stamp-board.tsx</code>(도장판과 진동), <code>src/app/index.tsx</code>예요.</p>
+    <figure>
+    <img src="images/expo-9-stamp-press.gif" alt="도장 칸을 누를 때마다 도장이 바뀌고 진동 종류가 표시되는 폰 화면 녹화" style="max-width:100%;height:auto;">
+    <figcaption>도장 칸을 누를 때마다 도장이 바뀌어요. 진동은 영상에 찍히지 않아서, 코드가 정한 진동 종류를 누른 순간에 표시했어요.</figcaption>
+    </figure>
+    <figure>
+    <img src="images/expo-10-persist.gif" alt="앱을 위로 밀어 종료했다가 Expo Go로 다시 열어도 도장이 그대로 남아 있는 폰 화면 녹화" style="max-width:100%;height:auto;">
+    <figcaption>앱을 위로 밀어 종료했다가 Expo Go로 다시 열어도 도장이 그대로예요.</figcaption>
+    </figure>
+    <figure>
+    <img src="images/expo-8-stamp-board.png" alt="빈 도장판, 진한 도장, 연한 도장, 앱을 껐다 켠 뒤의 도장판 폰 화면 네 장" style="max-width:100%;height:auto;">
+    <figcaption>녹화에서 뽑은 장면: 빈 판 → 진한 도장 → 연한 도장 → 껐다 켠 뒤.</figcaption>
+    </figure>
+    <p><strong>확인한 것.</strong> 폰에서 칸을 누르면 진동이 느껴졌고, 앱을 완전히 종료했다 다시 열어도 도장이 남았어요. 노트북 브라우저(<code>localhost:8081</code>)에서도 같은 앱이 열렸고 브라우저 저장소에 <code>{"2026-11-05":{"water":2}}</code>가 적혔는데, 이건 폰의 저장소와 <strong>별개의 공책</strong>이라서 폰에서 찍은 도장은 브라우저에 보이지 않았어요. 진동(<code>expo-haptics</code>)은 SDK 58 문서에 Expo Go 지원 여부가 적혀 있지 않았는데, 내 아이폰의 Expo Go에서 직접 해 보니 느껴졌어요. 한계도 있어요. 안드로이드 폰에서는 해 보지 않았고, 다른 사람 폰에 설치하려면 앱 파일을 빌드해야 하는데 이번에는 하지 않았어요(아이폰에 Expo Go 밖에서 설치하려면 유료 Apple 개발자 계정이 필요해요).</p>
 
     <h2 id="judgement"><span class="hl">실무에서 이렇게 판단해요</span> — 자주 틀리는 8가지 상황</h2>
     <p>앱 만들기를 배우고 나서 가장 자주 틀리는 것은 개념이 아니라 «이 상황에서 어떻게 하겠는가»예요. 개념은 아는데 상황과 연결돼 있지 않으면, 현장에서는 «이거 앱을 다시 만들어야 하나?»에서 막혀요. 그래서 상황별로 <strong>판단 규칙 한 줄, 비유 한 줄, 사례표</strong>를 모았어요. 제 앱 «루틴 도장»(도장 세 칸을 누르면 도장이 바뀌는 작은 앱)을 Expo Go에서 직접 돌려 본 것은 사례표에 «직접 확인»이라고 적었어요.</p>
@@ -653,7 +715,7 @@ npx expo start --clear</code></pre>
       <span class="post-nav-label">(13)</span>
       <span class="post-nav-title">메시지 한 건에 0.75원, 그런데 계정 하나가 한 달에 6만 7천 원 — 원가를 계산하고 크레딧 결제 붙이기</span>
     </a>
-    <p class="post-date">(14) 백엔드는 그대로 두고 화면만 새로 — Expo로 휴대폰 앱 만들기 (이 글)</p>
+    <p class="post-date">(14) 백엔드는 그대로 쓰고 앱 화면만 새로 만들기 — Expo로 휴대폰 앱 만들기 (이 글)</p>
   </main>
   </div>
 
