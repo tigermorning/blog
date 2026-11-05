@@ -55,8 +55,8 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>워커에게 쪽지만 주면 주제를 몰라 엉뚱한 걸 씁니다. <a class="suspect-jump" href="#suspect-worker-off-topic">언제 의심하나 ↓</a></li>
-            <li>호출 수가 미리 정해지지 않습니다. 오케스트레이터가 섹션 20개를 계획하면 호출은 21번이 돼요. <a class="suspect-jump" href="#suspect-call-count">언제 의심하나 ↓</a></li>
+            <li>워커에게 쪽지만 주면 주제를 몰라 엉뚱한 걸 씁니다.</li>
+            <li>호출 수가 미리 정해지지 않습니다. 오케스트레이터가 섹션 20개를 계획하면 호출은 21번이 돼요.</li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -78,18 +78,18 @@
           <tr><td><a href="langgraph-pattern-routing.html">② 라우팅</a></td><td><strong>LLM</strong>이 분류한 갈래로 분기. 셋 중 딱 하나만</td><td>어느 갈래로 갈지</td></tr>
           <tr><td><a href="langgraph-pattern-parallelization.html">③ 병렬화</a></td><td>정해진 갈래를 동시에 진행하고 한 칸에 합치기</td><td>없음 — 갈래 개수가 고정</td></tr>
           <tr class="is-current"><td>④ 오케스트레이터-워커</td><td>오케스트레이터가 워커에게 일을 동적으로 나눠 주기</td><td>워커를 몇 개 부를지</td></tr>
-          <tr><td><a href="langgraph-pattern-evaluator-optimizer.html">⑤ 평가자-최적화자</a></td><td>기준에 못 미치면 앞으로 되돌아가는 순환 구조</td><td>몇 바퀴 돌지</td></tr>
+          <tr><td>⑤ 평가자-최적화자</td><td>기준에 못 미치면 앞으로 되돌아가는 순환 구조</td><td>몇 바퀴 돌지</td></tr>
         </tbody>
       </table>
       <p>위에서 아래로 갈수록 <strong>개발자가 미리 정해 두는 것이 줄고, LLM이 실행 중에 정하는 것이 늘어요.</strong> 그래도 다섯 다 워크플로예요. 갈 수 있는 길 자체는 전부 개발자가 미리 그려 뒀거든요.</p>
     </section>
     <h2><span class="hl">비유</span> — 헤드셰프가 메뉴 수를 정한다</h2>
-    <p><a href="langgraph-what-and-why.html#analogy">그 주방</a>의 저녁, 단체 손님이 들어와요. 인원이 몇인지, 뭘 못 먹는 사람이 있는지는 주문서를 봐야 알아요. 헤드셰프가 주문서를 읽고 <strong>그 자리에서 메뉴 수를 정해요</strong>. "오늘은 다섯 접시." 그리고 요리사마다 쪽지를 한 장씩 건네요. 쪽지에는 자기가 맡은 요리 하나만 적혀 있고, 다른 요리사가 뭘 하는지는 안 적혀 있어요. 다 만들어지면 한 상에 모아 내보내요.</p>
+    <p>그 주방의 저녁, 단체 손님이 들어와요. 인원이 몇인지, 뭘 못 먹는 사람이 있는지는 주문서를 봐야 알아요. 헤드셰프가 주문서를 읽고 <strong>그 자리에서 메뉴 수를 정해요</strong>. "오늘은 다섯 접시." 그리고 요리사마다 쪽지를 한 장씩 건네요. 쪽지에는 자기가 맡은 요리 하나만 적혀 있고, 다른 요리사가 뭘 하는지는 안 적혀 있어요. 다 만들어지면 한 상에 모아 내보내요.</p>
     <table>
       <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
       <tbody>
         <tr><td>헤드셰프가 주문서를 읽고 그 자리에서 메뉴 수를 정하기</td><td><strong>오케스트레이터</strong> — 하위 작업의 <strong>개수</strong>를 LLM이 실행 중에 정해요</td></tr>
-        <tr><td>요리사마다 건네는 쪽지 한 장 (자기 것만 적혀 있음)</td><td><code>Send</code> — 워커는 전표(State) 전체가 아니라 자기 쪽지만 받아요 (<a href="#send-note">아래</a>)</td></tr>
+        <tr><td>요리사마다 건네는 쪽지 한 장 (자기 것만 적혀 있음)</td><td><code>Send</code> — 워커는 전표(State) 전체가 아니라 자기 쪽지만 받아요 (아래)</td></tr>
         <tr><td>다 만들어진 접시를 한 상에 모으기</td><td><strong>신서사이저</strong> — 워커 결과를 리듀서로 모아 합치는 노드</td></tr>
       </tbody>
     </table>
@@ -198,7 +198,7 @@ for n in (6, 12):
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 위 코드를 실행했을 때 제 화면에 찍힌 출력이에요</span></p>
     <pre><code>6 명 → 3 접시: ['전 완성', '잡채 완성', '갈비 완성']
 12 명 → 6 접시: ['전 완성', '잡채 완성', '갈비 완성', '나물 완성', '떡 완성', '식혜 완성']</code></pre>
-    <p>같은 그래프인데 한 번은 요리사가 3명, 한 번은 6명 불렸어요. <code>draw_mermaid()</code>로 찍어 보면 <code>cook</code> 노드는 여전히 하나고 <code>plan -.-&gt; cook</code> 점선 하나뿐이에요. <strong>그림에는 요리사 자리가 하나, 실행할 때 필요한 만큼 불려 나오는</strong> 거예요. 요리사들이 돌려준 <code>plates</code>는 리듀서(<code>operator.add</code>)를 단 칸이라, 세 명이 동시에 적어도 에러 없이 한 목록으로 모여요(<a href="langgraph-pattern-parallelization.html#parallel">③ 병렬화</a>의 그 장치예요). 이렇게 펼쳐서 각자 처리하고 하나로 모으는 구조를 <strong>맵-리듀스<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup></strong>라고도 불러요.</p>
+    <p>같은 그래프인데 한 번은 요리사가 3명, 한 번은 6명 불렸어요. <code>draw_mermaid()</code>로 찍어 보면 <code>cook</code> 노드는 여전히 하나고 <code>plan -.-&gt; cook</code> 점선 하나뿐이에요. <strong>그림에는 요리사 자리가 하나, 실행할 때 필요한 만큼 불려 나오는</strong> 거예요. 요리사들이 돌려준 <code>plates</code>는 리듀서(<code>operator.add</code>)를 단 칸이라, 세 명이 동시에 적어도 에러 없이 한 목록으로 모여요(③ 병렬화의 그 장치예요). 이렇게 펼쳐서 각자 처리하고 하나로 모으는 구조를 <strong>맵-리듀스</strong>라고도 불러요.</p>
 
     <h3 id="send-note">요리사는 전표를 못 봐요 — 쪽지만 받아요</h3>
     <p>여기서 가장 중요한 성질이 있어요. <code>Send</code>로 불린 요리사는 주방의 전표(State) 전체를 받는 게 아니라 <strong>자기 쪽지만</strong> 받아요. 확인하려고 <code>cook</code>이 받은 걸 찍고, 쪽지에 없는 손님 수(<code>guests</code>)까지 읽어 보게 했어요.</p>
@@ -225,7 +225,7 @@ except Exception as e:
     </div>
     <p>"LangGraph의 리듀서와 병렬 실행"이라는 주제를 주고 프롬프트에 "섹션은 3~5개"라는 범위만 줬더니 오케스트레이터가 5개를 골랐어요. 그런데 결과물을 읽어 보면 한계가 드러나요.</p>
     <ul>
-      <li><strong>지어내기</strong> — 쪽지에 섹션 제목만 받은 워커는 주제가 LangGraph라는 걸 몰라요(<a href="#send-note">바로 위에서 본 성질</a>이에요). 그래서 'LangGraph의 리듀서' 대신 학습 데이터에 훨씬 흔한 자바스크립트 Redux의 <code>useReducer</code>를 설명해 버렸어요. 해법은 프롬프트를 다듬는 게 아니라 <strong>주제와 근거 노트를 쪽지에 같이 넣어 주는 것</strong>이에요. <code>Send("write_section", {"section": s, "topic": state["topic"]})</code>처럼요.</li>
+      <li><strong>지어내기</strong> — 쪽지에 섹션 제목만 받은 워커는 주제가 LangGraph라는 걸 몰라요(바로 위에서 본 성질이에요). 그래서 'LangGraph의 리듀서' 대신 학습 데이터에 훨씬 흔한 자바스크립트 Redux의 <code>useReducer</code>를 설명해 버렸어요. 해법은 프롬프트를 다듬는 게 아니라 <strong>주제와 근거 노트를 쪽지에 같이 넣어 주는 것</strong>이에요. <code>Send("write_section", {"section": s, "topic": state["topic"]})</code>처럼요.</li>
       <li><strong>중복</strong> — 계획할 때 섹션의 경계를 안 그어 주면 워커 두 명이 거의 같은 내용을 써요. "이 섹션에서 다루지 않을 것" 칸을 쪽지에 넣는 식으로 막아요.</li>
       <li><strong>격리</strong> — 워커끼리는 서로 뭘 썼는지 몰라요.</li>
     </ul>
@@ -240,16 +240,16 @@ except Exception as e:
         <tr><td>주방에서</td><td>검사 담당 셋을 동선표에 미리 그려 둠</td><td>헤드셰프가 그날 메뉴 수를 보고 요리사를 부름</td></tr>
       </tbody>
     </table>
-    <p>대가도 분명해요. 계획이 나쁘면 아래 워커 전부가 나빠지고(<strong>단일 실패 지점<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup></strong>), 워커 수를 LLM이 정하니 비용도 미리 알 수 없어요. 오케스트레이터가 섹션 20개를 계획하면 호출이 21번이에요. 그래서 <code>state["menu"][:4]</code>(목록에서 앞의 4개만 남기기)처럼 워커 수에 상한을 두고, 잘린 게 있으면 결과에 표시해 둬요.</p>
+    <p>대가도 분명해요. 계획이 나쁘면 아래 워커 전부가 나빠지고(<strong>단일 실패 지점</strong>), 워커 수를 LLM이 정하니 비용도 미리 알 수 없어요. 오케스트레이터가 섹션 20개를 계획하면 호출이 21번이에요. 그래서 <code>state["menu"][:4]</code>(목록에서 앞의 4개만 남기기)처럼 워커 수에 상한을 두고, 잘린 게 있으면 결과에 표시해 둬요.</p>
     <div class="key-point" id="key-parallel-vs-orchestrator">
       <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
       <p>병렬화와 오케스트레이터-워커의 가장 큰 차이는 <strong>하위 작업의 개수와 종류를 누가, 언제 정하느냐</strong>예요. 병렬화는 개발자가 코드를 쓸 때 고정해서 노드를 미리 그려 두고, 오케스트레이터-워커는 LLM이 실행 중에 정해서 <code>Send</code>로 워커를 불러내요.</p>
       <p>그래서 "평가 축 3개로 노트 검수하기"처럼 어떤 입력이 와도 할 일이 늘 같은 작업에 오케스트레이터-워커를 쓰면, 얻는 것 없이 대가만 커져요. 계획용 LLM 호출이 한 번 더 들어 비용과 기다리는 시간이 늘고, 계획이 틀리면(축을 둘만 만들거나 엉뚱한 축을 넣으면) 검수 전체가 망가지고, 실행마다 축이 달라져 결과를 서로 비교할 수도 없어요. 미리 알 수 있는 건 미리 정해 두는 게 맞아요.</p>
     </div>
-    <p>이 모양은 코딩(몇 개 파일을 어떻게 고칠지 요청마다 다름)이나 여러 출처 검색에 잘 맞아요. <a href="multi-agent-four-structures.html">멀티 에이전트 네 가지 구조</a>에서 본 오케스트레이터-워커가 에이전트 여럿의 이야기라면, 여기서는 한 그래프 안의 LLM 호출로 같은 모양을 만든 거예요.</p>
+    <p>이 모양은 코딩(몇 개 파일을 어떻게 고칠지 요청마다 다름)이나 여러 출처 검색에 잘 맞아요. 멀티 에이전트 네 가지 구조에서 본 오케스트레이터-워커가 에이전트 여럿의 이야기라면, 여기서는 한 그래프 안의 LLM 호출로 같은 모양을 만든 거예요.</p>
 
     <h2 id="real-system"><span class="hl">실제 사례</span> — Anthropic 리서치 시스템 그림 읽기</h2>
-    <p>같은 모양을 실제 제품에서 보면 이래요. Anthropic이 자사 리서치 기능의 구조를 공개한 그림을 칸만 줄여 다시 그렸어요<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>. 세로줄 하나가 참여자 하나, 가로 화살표가 주고받는 메시지예요. 위에서 아래로 시간이 흘러요.</p>
+    <p>같은 모양을 실제 제품에서 보면 이래요. Anthropic이 자사 리서치 기능의 구조를 공개한 그림을 칸만 줄여 다시 그렸어요<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>. 세로줄 하나가 참여자 하나, 가로 화살표가 주고받는 메시지예요. 위에서 아래로 시간이 흘러요.</p>
     <figure>
     <svg viewBox="0 0 700 390" role="img" aria-label="User가 질문을 보내면 System이 LeadResearcher를 만들고, LeadResearcher가 계획을 Memory에 저장한 뒤 서브에이전트들에게 과제를 나눠 주고, 결과를 합쳐 더 조사할지 정하는 반복을 거친 다음, System이 CitationAgent로 인용을 넣어 User에게 돌려주는 순서도">
       <defs>
@@ -329,7 +329,7 @@ except Exception as e:
         <tr><td>System</td><td>그래프를 돌리는 코드 (<code>StateGraph</code>)</td><td>리드를 만들고, 반복이 끝나면 인용 단계로 넘기고, 결과를 저장해 돌려줘요. <strong>LLM이 아니에요</strong></td></tr>
         <tr><td>LeadResearcher</td><td>오케스트레이터 (<code>plan</code>)</td><td>계획을 세우고, 서브에이전트를 몇 명 부를지·무엇을 맡길지 정하고, 결과를 합친 뒤 한 바퀴 더 돌지 정해요</td></tr>
         <tr><td>Subagent</td><td>워커 (<code>Send</code>로 불린 <code>cook</code>)</td><td>자기 과제 쪽지만 받아 검색하고, 결과를 생각해 보고, 찾은 것을 리드에게 돌려줘요</td></tr>
-        <tr><td>Memory</td><td>State의 계획 칸</td><td>계획을 따로 적어 둬요. 리드의 컨텍스트가 200,000토큰을 넘으면 앞부분이 잘리거든요 (<a href="multi-agent-split-gains-and-losses.html">나눠서 얻는 것과 잃는 것</a>)</td></tr>
+        <tr><td>Memory</td><td>State의 계획 칸</td><td>계획을 따로 적어 둬요. 리드의 컨텍스트가 200,000토큰을 넘으면 앞부분이 잘리거든요 (나눠서 얻는 것과 잃는 것)</td></tr>
         <tr><td>CitationAgent</td><td>반복 뒤에 붙은 마지막 노드</td><td>보고서와 읽은 문서를 대조해 문장마다 인용 위치를 찾아 넣어요</td></tr>
       </tbody>
     </table>
@@ -338,12 +338,12 @@ except Exception as e:
     <table>
       <thead><tr><th>차이</th><th>요리 코드</th><th>리서치 시스템</th></tr></thead>
       <tbody>
-        <tr><td>되돌아가기</td><td>없음 — 한 번 펼치고 끝</td><td>합친 뒤 "더 조사할까?"를 묻고, 부족하면 서브에이전트를 더 불러요. <a href="langgraph-pattern-evaluator-optimizer.html">다음 편</a>의 반복이 ④ 위에 얹힌 모양이에요</td></tr>
-        <tr><td>워커 안쪽</td><td>LLM 호출 한 번</td><td>검색하고 생각하기를 스스로 여러 번 반복해요. 워커 하나하나가 에이전트라, 전체는 워크플로가 아니라 <a href="multi-agent-four-structures.html">멀티 에이전트</a>예요</td></tr>
+        <tr><td>되돌아가기</td><td>없음 — 한 번 펼치고 끝</td><td>합친 뒤 "더 조사할까?"를 묻고, 부족하면 서브에이전트를 더 불러요. 다음 편의 반복이 ④ 위에 얹힌 모양이에요</td></tr>
+        <tr><td>워커 안쪽</td><td>LLM 호출 한 번</td><td>검색하고 생각하기를 스스로 여러 번 반복해요. 워커 하나하나가 에이전트라, 전체는 워크플로가 아니라 멀티 에이전트예요</td></tr>
         <tr><td>기다리기</td><td><code>cook</code>이 전부 끝나야 <code>serve</code>가 돌아요</td><td>똑같아요. 리드는 한 무리의 서브에이전트가 전부 끝날 때까지 기다린 뒤 다음으로 가요. 가장 느린 서브에이전트 하나가 전체를 붙잡아요</td></tr>
       </tbody>
     </table>
-    <p>그리고 <a href="#send-note">쪽지</a> 이야기가 여기서 그대로 나와요. Anthropic은 서브에이전트에게 주는 과제 설명에 네 가지가 꼭 있어야 한다고 적었어요.</p>
+    <p>그리고 쪽지 이야기가 여기서 그대로 나와요. Anthropic은 서브에이전트에게 주는 과제 설명에 네 가지가 꼭 있어야 한다고 적었어요.</p>
     <table>
       <thead><tr><th>과제 설명에 넣을 것</th><th>요리 쪽지로 치면</th></tr></thead>
       <tbody>
@@ -363,7 +363,7 @@ except Exception as e:
       <tbody>
         <tr>
           <td class="choice-bad"><strong>무엇을 했나:</strong> "유연해 보여서" 오케스트레이터-워커로 짰어요. 헤드셰프 역할 LLM이 매번 접시를 보고 검사 항목을 정한 뒤 <code>Send</code>로 검사원을 불러요.<br><br><strong>무슨 일이 생기나:</strong> 계획 호출이 매번 1번 더 들고, 어떤 날은 항목이 4개로 늘고 어떤 날은 '모양'이 빠져요. 요금은 들쑥날쑥하고, 메뉴끼리 점수를 비교할 수도 없어요.</td>
-          <td class="choice-good"><strong>무엇을 했나:</strong> 검사 항목이 항상 셋이니 <a href="langgraph-pattern-parallelization.html">병렬화</a>로 짰어요. 노드 셋을 고정하고 <code>checks</code> 칸에 리듀서를 달았어요.<br><br><strong>무슨 일이 생기나:</strong> 호출은 늘 3번이고 비용이 예측돼요. 같은 기준의 점수가 쌓이니 메뉴끼리 비교도 돼요. 반대로 "회의록에서 나온 할 일 개수만큼 담당자 초안 만들기"처럼 <strong>개수가 입력마다 다를 때</strong>가 오케스트레이터-워커의 자리예요.</td>
+          <td class="choice-good"><strong>무엇을 했나:</strong> 검사 항목이 항상 셋이니 병렬화로 짰어요. 노드 셋을 고정하고 <code>checks</code> 칸에 리듀서를 달았어요.<br><br><strong>무슨 일이 생기나:</strong> 호출은 늘 3번이고 비용이 예측돼요. 같은 기준의 점수가 쌓이니 메뉴끼리 비교도 돼요. 반대로 "회의록에서 나온 할 일 개수만큼 담당자 초안 만들기"처럼 <strong>개수가 입력마다 다를 때</strong>가 오케스트레이터-워커의 자리예요.</td>
         </tr>
       </tbody>
     </table>
@@ -373,19 +373,19 @@ except Exception as e:
       <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
       <tbody>
         <tr><td>섹션 20개를 계획했을 때의 호출 수</td><td>21번</td><td>오케스트레이터 1 + 워커 20이에요. 프롬프트에 범위를 안 주면 <strong>몇 개를 고를지도 모델이 정해요</strong>. "3~5개"처럼 상한을 적어 두는 게 요금 통제의 전부예요</td></tr>
-        <tr><td>Anthropic 리드에게 준 인원 규칙</td><td>단순 확인 1명 · 비교 2~4명 · 복잡한 조사 10명 초과</td><td>업체가 자사 시스템에 적은 규칙이에요(출처는 <a href="#fn3">각주 3</a>). 숫자보다 <strong>질문 난도에 따라 인원 범위를 미리 정해 뒀다</strong>는 점이 요지예요</td></tr>
+        <tr><td>Anthropic 리드에게 준 인원 규칙</td><td>단순 확인 1명 · 비교 2~4명 · 복잡한 조사 10명 초과</td><td>업체가 자사 시스템에 적은 규칙이에요(출처는 각주 3). 숫자보다 <strong>질문 난도에 따라 인원 범위를 미리 정해 뒀다</strong>는 점이 요지예요</td></tr>
       </tbody>
     </table>
 
     <section class="apply-box" id="apply-blog">
       <p class="apply-box-title">내 파이프라인에 대입하면 — 이 시리즈가 여러 편이 된 이유</p>
-      <p>정리할 원문 열두 단원을 받았을 때 글이 몇 편이 될지는 읽어 보기 전엔 몰라요. 먼저 전체를 훑어 목차를 정하는 단계가 오케스트레이터고, 각 편을 실제로 쓰는 단계가 워커예요. <a href="langgraph-pattern-parallelization.html#apply-blog">병렬화 편</a>과 그림이 닮았지만 갈림점은 하나 — 거기선 검사가 셋이라고 적어 뒀고, 여기선 <strong>편 수를 적어 둘 수가 없어요.</strong> 이 시리즈가 이렇게 여러 편으로 나뉜 것도 그렇게 정해졌어요.</p>
-      <p>그리고 위의 <a href="#send-note">워커는 쪽지만 받는다</a>가 여기서 아주 구체적으로 걸려요. 각 편을 쓰는 쪽은 <strong>그 편이 시리즈에서 몇 번째인지 몰라요.</strong> 편 번호, 앞뒤 편의 제목, 시리즈 전체 목록을 쪽지에 직접 담아 보내야 해요. 안 담아 주면 편마다 시리즈 이름이 조금씩 달라지고, 맨 아래 목록의 편 수가 서로 안 맞아요. 이 글 맨 아래 목록이 어느 편에서 봐도 같은 이유예요.</p>
+      <p>정리할 원문 열두 단원을 받았을 때 글이 몇 편이 될지는 읽어 보기 전엔 몰라요. 먼저 전체를 훑어 목차를 정하는 단계가 오케스트레이터고, 각 편을 실제로 쓰는 단계가 워커예요. 병렬화 편과 그림이 닮았지만 갈림점은 하나 — 거기선 검사가 셋이라고 적어 뒀고, 여기선 <strong>편 수를 적어 둘 수가 없어요.</strong> 이 시리즈가 이렇게 여러 편으로 나뉜 것도 그렇게 정해졌어요.</p>
+      <p>그리고 위의 워커는 쪽지만 받는다가 여기서 아주 구체적으로 걸려요. 각 편을 쓰는 쪽은 <strong>그 편이 시리즈에서 몇 번째인지 몰라요.</strong> 편 번호, 앞뒤 편의 제목, 시리즈 전체 목록을 쪽지에 직접 담아 보내야 해요. 안 담아 주면 편마다 시리즈 이름이 조금씩 달라지고, 맨 아래 목록의 편 수가 서로 안 맞아요. 이 글 맨 아래 목록이 어느 편에서 봐도 같은 이유예요.</p>
     </section>
     <section class="apply-box apply-box--repo" id="apply-repo">
       <p class="apply-box-title">실제 코드에 대입하면 — 자막이 몇 개 나올지는 코드가 모르는데, 그래도 아직 ④가 아니에요</p>
-      <p>이 편은 <a href="langgraph-pattern-chaining.html#apply-repo">교정기</a> 말고 <strong>자막·타임코드 생성기</strong>(<a href="https://github.com/tigermorning/subtitle-tc-generator" target="_blank" rel="noopener">subtitle-tc-generator</a>) 쪽을 볼게요. 교정기는 자막 한 줄을 받아 한 줄을 돌려주는 도구라 <strong>개수가 변하는 자리가 없어요.</strong> ④를 보려면 하나가 여럿이 되는 도구가 필요해서 바꿔요. 이 도구는 영상 하나를 받아 전사 → 대조 → 재분할 → 스포팅으로 초벌 자막을 내요(번역은 따로 붙는 다른 갈래예요).</p>
-      <p><strong>먼저 결론부터.</strong> 전사한 덩어리 하나가 자막 <strong>몇 개로 갈릴지를 코드에 적을 수가 없어요.</strong> 그런데도 이 편의 기준으로 보면 <strong>아직 워크플로예요.</strong> 위의 <a href="#key-parallel-vs-orchestrator">"개수를 누가, 언제 정하나"</a>에서 <em>언제</em>만 실행 때로 옮겨졌고, <em>누가</em>는 그대로 코드거든요 — 자막 하나에 담기는 글자 수는 규정(한 줄 한계 × 줄 수)이 정하고, 덩어리에 글자가 몇 개인지는 영상이 정해요. LLM은 이 계산에 안 끼어요. 이 갈림점이 얼마나 좁은지가 여기서 보여요.</p>
+      <p>이 편은 교정기 말고 <strong>자막·타임코드 생성기</strong>(<a href="https://github.com/tigermorning/subtitle-tc-generator" target="_blank" rel="noopener">subtitle-tc-generator</a>) 쪽을 볼게요. 교정기는 자막 한 줄을 받아 한 줄을 돌려주는 도구라 <strong>개수가 변하는 자리가 없어요.</strong> ④를 보려면 하나가 여럿이 되는 도구가 필요해서 바꿔요. 이 도구는 영상 하나를 받아 전사 → 대조 → 재분할 → 스포팅으로 초벌 자막을 내요(번역은 따로 붙는 다른 갈래예요).</p>
+      <p><strong>먼저 결론부터.</strong> 전사한 덩어리 하나가 자막 <strong>몇 개로 갈릴지를 코드에 적을 수가 없어요.</strong> 그런데도 이 편의 기준으로 보면 <strong>아직 워크플로예요.</strong> 위의 "개수를 누가, 언제 정하나"에서 <em>언제</em>만 실행 때로 옮겨졌고, <em>누가</em>는 그대로 코드거든요 — 자막 하나에 담기는 글자 수는 규정(한 줄 한계 × 줄 수)이 정하고, 덩어리에 글자가 몇 개인지는 영상이 정해요. LLM은 이 계산에 안 끼어요. 이 갈림점이 얼마나 좁은지가 여기서 보여요.</p>
       <p class="run-tag run-tag--concept">제 저장소 코드 <span class="run-tag-why">— <code>checker/resplit.py</code>의 <code>resplit_all()</code>에서 나누는 부분이에요. <code>events</code>가 전사 덩어리 목록이고, <code>out</code>이 최종 자막 목록이에요</span></p>
       <pre><code>out: list[Event] = []
 for ev in events:
@@ -396,7 +396,7 @@ for ev in events:
 for i, ev in enumerate(out, 1):                    # 1번부터 번호 다시 매기기
     ev.index = i
 return out</code></pre>
-      <p><code>append</code>가 아니라 <code>extend</code>인 게 요지예요. 하나 넣으면 하나 나오는 게 아니라 <strong>몇 개 나올지 모르는 것을 쏟아 붓는</strong> 자리라서요. 마지막 두 줄이 결과를 하나로 접는 부분이고요. 그리고 위의 <a href="#send-note">워커는 쪽지만 받는다</a>가 여기서 아주 구체적으로 걸려요. 번호를 다시 매기는 순간 <strong>앞 단계가 "여기 봐야 한다"고 표시해 둔 번호가 엉뚱한 자막을 가리켜요.</strong> 셋째 자막을 가리키던 표시가, 앞의 자막 하나가 셋으로 갈리면 전혀 다른 대사에 붙어요. <code>origins</code>라는 목록이 따로 있는 게 그래서예요 — 새 자막마다 원래 번호가 무엇이었는지를 같이 들고 가요. 워커에게 쪽지로 담아 보내야 하는 정보가 실제로는 이런 모양이에요.</p>
+      <p><code>append</code>가 아니라 <code>extend</code>인 게 요지예요. 하나 넣으면 하나 나오는 게 아니라 <strong>몇 개 나올지 모르는 것을 쏟아 붓는</strong> 자리라서요. 마지막 두 줄이 결과를 하나로 접는 부분이고요. 그리고 위의 워커는 쪽지만 받는다가 여기서 아주 구체적으로 걸려요. 번호를 다시 매기는 순간 <strong>앞 단계가 "여기 봐야 한다"고 표시해 둔 번호가 엉뚱한 자막을 가리켜요.</strong> 셋째 자막을 가리키던 표시가, 앞의 자막 하나가 셋으로 갈리면 전혀 다른 대사에 붙어요. <code>origins</code>라는 목록이 따로 있는 게 그래서예요 — 새 자막마다 원래 번호가 무엇이었는지를 같이 들고 가요. 워커에게 쪽지로 담아 보내야 하는 정보가 실제로는 이런 모양이에요.</p>
     </section>
 
     <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span></h2>
@@ -408,17 +408,17 @@ return out</code></pre>
         <tr id="suspect-worker-off-topic">
           <td>에러는 없는데, 워커가 쓴 섹션 몇 개가 <strong>주제와 다른 이야기</strong>를 해요. LangGraph의 리듀서를 물었는데 Redux의 <code>useReducer</code>를 설명하는 식이에요</td>
           <td>워커를 부르는 <code>Send("워커 이름", {...})</code> 줄의 <strong>두 번째 값</strong>이에요. 워커 프롬프트의 문장은 대개 범인이 아니에요. 워커는 이 딕셔너리 말고는 아무것도 못 보거든요</td>
-          <td>워커 함수 첫 줄에 <code>print(dict(state))</code>를 넣어 워커가 받은 쪽지를 찍어 봐요. 섹션 제목만 있고 주제나 근거 노트가 없으면, 그 칸을 <code>Send</code> 쪽지에 더 담아요 (<a href="#send-note">요리사는 전표를 못 봐요</a>)</td>
+          <td>워커 함수 첫 줄에 <code>print(dict(state))</code>를 넣어 워커가 받은 쪽지를 찍어 봐요. 섹션 제목만 있고 주제나 근거 노트가 없으면, 그 칸을 <code>Send</code> 쪽지에 더 담아요 (요리사는 전표를 못 봐요)</td>
         </tr>
         <tr id="suspect-worker-keyerror">
           <td>워커 노드에서 <code>KeyError: '칸 이름'</code>으로 멈춰요. 그 칸은 메인 State에 분명히 있고, 트레이스백 맨 아래 <code>During task with name '...'</code>에는 <strong>워커 이름</strong>이 찍혀요</td>
           <td>같은 <code>Send</code> 줄이에요. 워커 함수의 타입 힌트를 전체 State로 바꿔 적어도 들어오는 건 쪽지 그대로라 소용없어요</td>
-          <td>에러에 찍힌 칸 이름이 <code>Send</code> 쪽지 딕셔너리에 있는지 봐요. 없으면 그 칸을 쪽지에 담아 보내요 (<a href="#key-send-note">꼭 기억할 것</a>)</td>
+          <td>에러에 찍힌 칸 이름이 <code>Send</code> 쪽지 딕셔너리에 있는지 봐요. 없으면 그 칸을 쪽지에 담아 보내요 (꼭 기억할 것)</td>
         </tr>
         <tr id="suspect-call-count">
           <td>코드는 그대로인데 <strong>입력에 따라</strong> 한 번 돌리는 요금이 몇 배씩 들쑥날쑥해요. API 사용량 화면에 한 번 돌린 것치고 호출이 수십 건 찍혀요</td>
           <td>오케스트레이터가 만든 <strong>계획 목록의 길이</strong>와, 그 목록으로 <code>Send</code>를 만드는 줄이에요. 목록을 자르는 상한(<code>[:4]</code> 같은)이 있는지, 오케스트레이터 프롬프트에 "3~5개" 같은 범위가 있는지 봐요</td>
-          <td>계획 목록의 <code>len()</code>을 찍어요. 호출 수는 오케스트레이터 1번 + 목록 길이만큼이에요. 상한을 두고, 잘린 항목이 있으면 결과에 표시해요 (<a href="#parallel-vs-orchestrator">병렬화와 뭐가 다른가</a>)</td>
+          <td>계획 목록의 <code>len()</code>을 찍어요. 호출 수는 오케스트레이터 1번 + 목록 길이만큼이에요. 상한을 두고, 잘린 항목이 있으면 결과에 표시해요 (병렬화와 뭐가 다른가)</td>
         </tr>
       </tbody>
     </table>
@@ -428,7 +428,7 @@ return out</code></pre>
 2. Send 목록을 만드는 계획 목록에 개수 상한이 있는지, 오케스트레이터 프롬프트에 개수 범위가 적혀 있는지</code></pre>
 
     <h2 id="key-recap"><span class="hl">이 편에서 꼭 기억할 것</span></h2>
-    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요. 다른 편의 같은 목록은 <a href="langgraph-what-and-why.html#key-recap">1편</a> · <a href="langgraph-state-node-edge.html#key-recap">2편</a> · <a href="langgraph-branch-drills.html#key-recap">3편</a> · <a href="langgraph-branches-and-tool-loop.html#key-recap">4편</a> · <a href="langgraph-pattern-chaining.html#key-recap">6편</a> · <a href="langgraph-pattern-routing.html#key-recap">7편</a> · <a href="langgraph-pattern-parallelization.html#key-recap">8편</a>에 있어요.</p>
+    <p>본문에 <span class="key-point-badge">중요</span> 표시를 단 곳만 모았어요.</p>
     <ul class="key-recap">
       <li><a href="#key-send-note"><code>Send</code>로 불린 워커는 자기 쪽지만 봐요</a></li>
       <li><a href="#key-parallel-vs-orchestrator">병렬화와 오케스트레이터-워커는 "개수를 누가, 언제 정하나"로 갈려요</a></li>
@@ -453,9 +453,7 @@ return out</code></pre>
 
     <section class="footnotes">
       <ol>
-        <li id="fn1">맵-리듀스(map-reduce) — 일을 여러 갈래로 펼쳐 각각 처리한 뒤 결과를 하나로 접는 데이터 처리 방식이에요. <a href="#fnref1">↩</a></li>
-        <li id="fn2">단일 실패 지점(single point of failure) — 그 한 곳이 잘못되면 시스템 전체 결과가 망가지는 지점이에요. <a href="#fnref2">↩</a></li>
-        <li id="fn3">Anthropic, <a href="https://www.anthropic.com/engineering/multi-agent-research-system" target="_blank" rel="noopener">"How we built our multi-agent research system"</a> (2025). 그림 속 순서, Memory에 계획을 저장하는 이유(200,000토큰), 과제 설명의 네 요소, 반도체 중복 사례, 인원 규칙, 동기 실행이 모두 이 글에 나와요. <a href="#fnref3">↩</a></li>
+        <li id="fn1">Anthropic, <a href="https://www.anthropic.com/engineering/multi-agent-research-system" target="_blank" rel="noopener">"How we built our multi-agent research system"</a> (2025). 그림 속 순서, Memory에 계획을 저장하는 이유(200,000토큰), 과제 설명의 네 요소, 반도체 중복 사례, 인원 규칙, 동기 실행이 모두 이 글에 나와요. <a href="#fnref1">↩</a></li>
       </ol>
     </section>
 
