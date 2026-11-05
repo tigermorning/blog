@@ -131,17 +131,37 @@
 
     <h2 id="terms"><span class="hl">앱을 이야기할 때 나오는 용어</span> — 플랫폼, 네이티브, 빌드</h2>
     <p>폰은 운영체제<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup> 위에서 앱을 실행해요. 대부분은 애플의 iOS와 구글의 안드로이드(Android)예요. 앱 개발에서는 운영체제와 그 위에서 앱을 만드는 도구, 앱을 올리는 스토어를 묶어 <strong>플랫폼</strong>이라고 불러요.</p>
-    <p>아래 표는 «플랫폼이 실제로 어떤 묶음인지»를 iOS와 안드로이드로 나눠 보여 줘요. 같은 앱이라도 어느 플랫폼용이냐에 따라 쓰는 언어, 개발 도구, 앱 파일 모양이 모두 달라요.</p>
-    <table>
-      <thead><tr><th></th><th>iOS</th><th>Android</th></tr></thead>
-      <tbody>
-        <tr><td>기기</td><td>아이폰·아이패드 (애플만 만듦)</td><td>삼성·구글 등 여러 제조사</td></tr>
-        <tr><td>공식 언어</td><td>Swift</td><td>Kotlin</td></tr>
-        <tr><td>개발 도구</td><td>Xcode — 맥에서만 실행</td><td>Android Studio — Windows·맥·리눅스에서 실행</td></tr>
-        <tr><td>앱 파일</td><td>IPA</td><td>APK(직접 설치용), AAB(스토어 제출용)</td></tr>
-        <tr><td>스토어 밖 설치</td><td>기본적으로 막혀 있음</td><td>사용자가 허용하면 APK를 직접 설치 가능</td></tr>
-      </tbody>
-    </table>
+    <p>아래 그림은 «플랫폼이 실제로 어떤 묶음인지»를 iOS와 안드로이드로 나눠 보여 줘요. 같은 앱이라도 어느 플랫폼용이냐에 따라 쓰는 언어, 개발 도구, 앱 파일 모양이 모두 달라요.</p>
+    <figure>
+    <svg viewBox="0 0 560 300" style="max-width:600px;margin:0 auto" role="img" aria-label="iOS와 안드로이드를 기기, 공식 언어, 개발 도구, 앱 파일, 스토어 밖 설치로 비교한 그림. iOS는 아이폰·아이패드, Swift, 맥에서만 도는 Xcode, IPA, 스토어 밖 설치가 막혀 있고, 안드로이드는 여러 제조사, Kotlin, 어디서나 도는 Android Studio, APK와 AAB, 허용하면 APK 직접 설치가 된다">
+      <g font-family="var(--font-body)" font-size="13" fill="var(--ink)">
+        <rect x="136" y="6" width="200" height="288" rx="8" fill="none" stroke="var(--accent)" stroke-width="1.6"/>
+        <rect x="346" y="6" width="198" height="288" rx="8" fill="none" stroke="var(--border)" stroke-width="1.6"/>
+        <text x="236" y="30" text-anchor="middle" font-family="var(--font-heading)" font-size="14" font-weight="700">iOS</text>
+        <text x="445" y="30" text-anchor="middle" font-family="var(--font-heading)" font-size="14" font-weight="700">Android</text>
+        <text x="16" y="70" font-weight="700">기기</text>
+        <text x="236" y="63" text-anchor="middle">아이폰·아이패드</text><text x="236" y="81" text-anchor="middle" font-size="11.5" fill="var(--muted)">(애플만 만듦)</text>
+        <text x="445" y="63" text-anchor="middle">삼성·구글 등</text><text x="445" y="81" text-anchor="middle" font-size="11.5" fill="var(--muted)">여러 제조사</text>
+        <line x1="16" y1="89" x2="544" y2="89" stroke="var(--border)" stroke-width="0.8" stroke-dasharray="3 3"/>
+        <text x="16" y="120" font-weight="700">공식 언어</text>
+        <text x="236" y="120" text-anchor="middle">Swift</text>
+        <text x="445" y="120" text-anchor="middle">Kotlin</text>
+        <line x1="16" y1="139" x2="544" y2="139" stroke="var(--border)" stroke-width="0.8" stroke-dasharray="3 3"/>
+        <text x="16" y="170" font-weight="700">개발 도구</text>
+        <text x="236" y="163" text-anchor="middle">Xcode</text><text x="236" y="181" text-anchor="middle" font-size="11.5" fill="var(--muted)">맥에서만 실행</text>
+        <text x="445" y="163" text-anchor="middle">Android Studio</text><text x="445" y="181" text-anchor="middle" font-size="11.5" fill="var(--muted)">Windows·맥·리눅스에서 실행</text>
+        <line x1="16" y1="189" x2="544" y2="189" stroke="var(--border)" stroke-width="0.8" stroke-dasharray="3 3"/>
+        <text x="16" y="220" font-weight="700">앱 파일</text>
+        <text x="236" y="220" text-anchor="middle">IPA</text>
+        <text x="445" y="213" text-anchor="middle">APK (직접 설치용)</text><text x="445" y="231" text-anchor="middle" font-size="11.5" fill="var(--muted)">AAB (스토어 제출용)</text>
+        <line x1="16" y1="239" x2="544" y2="239" stroke="var(--border)" stroke-width="0.8" stroke-dasharray="3 3"/>
+        <text x="16" y="270" font-weight="700">스토어 밖 설치</text>
+        <text x="236" y="270" text-anchor="middle">기본적으로 막혀 있음</text>
+        <text x="445" y="263" text-anchor="middle">사용자가 허용하면</text><text x="445" y="281" text-anchor="middle" font-size="11.5" fill="var(--muted)">APK를 직접 설치 가능</text>
+      </g>
+    </svg>
+    <figcaption>같은 앱이라도 어느 플랫폼용이냐에 따라 쓰는 언어, 개발 도구, 앱 파일 모양이 모두 달라요. 회색 작은 글씨는 덧붙이는 설명이에요.</figcaption>
+    </figure>
     <p><strong>네이티브</strong><sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>는 플랫폼이 기본으로 주는 언어와 부품으로 만든 것을 말해요. 아이폰 설정 앱의 스위치와 스크롤, 글자를 칠 때 올라오는 키보드가 그래요. 카메라·위치·알림처럼 운영체제가 열어 주는 기능은 사용자가 권한을 허락해야 쓸 수 있고, 그래서 앱이 처음 카메라를 쓸 때 «허용하시겠습니까» 창이 떠요.</p>
     <p><strong>빌드</strong><sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>는 사람이 쓴 소스 코드를 폰이 설치하고 실행할 수 있는 앱 파일로 만드는 과정이에요. 소스 코드는 사람이 읽기 좋게 쓴 글이라 폰의 두뇌(CPU)가 그대로 읽지 못하고, 폰은 정해진 모양의 파일만 설치하기 때문에 필요한 일이에요. 순서는 이래요. ① 코드를 내려받고, ② 코드가 쓰는 도구(패키지)를 설치하고, ③ 내 코드를 파일 하나(번들)로 묶고, ④ 카메라나 화면 부품을 쓰는 네이티브 부분을 폰이 읽는 숫자 말로 번역하고(컴파일), ⑤ 만든 사람의 키로 도장을 찍어요(서명). 서명이 있어야 폰과 스토어가 «누가 만들었고 중간에 바뀌지 않았는지, 새 버전이 같은 개발자의 것인지»를 확인해요. 한 번 내보낸 앱 파일은 사용자 수만큼의 폰에 설치되므로 되돌릴 수 없어요.</p>
 
@@ -225,17 +245,41 @@
 
     <h3>Expo Go로 되는 것과 개발용 빌드가 필요한 것</h3>
     <p>Expo Go에는 미리 컴파일된 네이티브 기능만 들어 있어요. 그 밖의 라이브러리를 쓰려면 내 앱 전용으로 네이티브 부분까지 컴파일한 <strong>개발용 빌드</strong>를 만들어 폰에 설치해야 해요.</p>
-    <table>
-      <thead><tr><th>쓰려는 기능</th><th>Expo Go</th><th>개발용 빌드</th></tr></thead>
-      <tbody>
-        <tr><td>화면, 서버 호출, 로그인, 스트리밍</td><td>됨</td><td>됨</td></tr>
-        <tr><td>카메라 촬영, 사진첩에서 고르기</td><td>됨</td><td>됨</td></tr>
-        <tr><td>기기 안에서 예약하는 알림(로컬 알림)</td><td>됨</td><td>됨</td></tr>
-        <tr><td>서버가 보내는 푸시 알림(안드로이드)</td><td>안 됨 (SDK 53부터)</td><td>됨. Firebase 설정 따로 필요</td></tr>
-        <tr><td>앱 안 결제, 카카오 로그인 같은 회사별 SDK</td><td>안 됨</td><td>됨</td></tr>
-        <tr><td>홈 화면 위젯, 애플워치 앱</td><td>안 됨</td><td>네이티브 코드를 따로 써야 함</td></tr>
-      </tbody>
-    </table>
+    <figure>
+    <svg viewBox="0 0 560 330" style="max-width:600px;margin:0 auto" role="img" aria-label="쓰려는 기능별로 Expo Go와 개발용 빌드에서 되는지 보여 주는 표 그림. 화면·서버 호출·로그인·스트리밍, 카메라·사진첩, 로컬 알림은 둘 다 되고, 서버 푸시 알림(안드로이드), 회사별 SDK, 위젯·애플워치 앱은 Expo Go에서 안 되고 개발용 빌드에서만 된다">
+      <g font-family="var(--font-body)" font-size="13" fill="var(--ink)">
+        <text x="16" y="22" font-family="var(--font-heading)" font-size="14" font-weight="700">쓰려는 기능</text>
+        <text x="370" y="22" text-anchor="middle" font-family="var(--font-heading)" font-size="14" font-weight="700">Expo Go</text>
+        <text x="480" y="22" text-anchor="middle" font-family="var(--font-heading)" font-size="14" font-weight="700">개발용 빌드</text>
+        <line x1="16" y1="32" x2="544" y2="32" stroke="var(--ink)" stroke-width="1.4"/>
+        <text x="16" y="56">화면, 서버 호출, 로그인, 스트리밍</text>
+        <circle cx="370" cy="52" r="13" fill="none" stroke="var(--accent)" stroke-width="1.8"/><text x="370" y="57" text-anchor="middle" font-size="15" font-weight="700" fill="var(--accent)">✓</text>
+        <circle cx="480" cy="52" r="13" fill="none" stroke="var(--accent)" stroke-width="1.8"/><text x="480" y="57" text-anchor="middle" font-size="15" font-weight="700" fill="var(--accent)">✓</text>
+        <line x1="16" y1="80" x2="544" y2="80" stroke="var(--border)" stroke-width="1"/>
+        <text x="16" y="104">카메라 촬영, 사진첩에서 고르기</text>
+        <circle cx="370" cy="100" r="13" fill="none" stroke="var(--accent)" stroke-width="1.8"/><text x="370" y="105" text-anchor="middle" font-size="15" font-weight="700" fill="var(--accent)">✓</text>
+        <circle cx="480" cy="100" r="13" fill="none" stroke="var(--accent)" stroke-width="1.8"/><text x="480" y="105" text-anchor="middle" font-size="15" font-weight="700" fill="var(--accent)">✓</text>
+        <line x1="16" y1="128" x2="544" y2="128" stroke="var(--border)" stroke-width="1"/>
+        <text x="16" y="152">기기 안에서 예약하는 알림(로컬 알림)</text>
+        <circle cx="370" cy="148" r="13" fill="none" stroke="var(--accent)" stroke-width="1.8"/><text x="370" y="153" text-anchor="middle" font-size="15" font-weight="700" fill="var(--accent)">✓</text>
+        <circle cx="480" cy="148" r="13" fill="none" stroke="var(--accent)" stroke-width="1.8"/><text x="480" y="153" text-anchor="middle" font-size="15" font-weight="700" fill="var(--accent)">✓</text>
+        <line x1="16" y1="176" x2="544" y2="176" stroke="var(--border)" stroke-width="1"/>
+        <text x="16" y="200">서버가 보내는 푸시 알림(안드로이드)</text>
+        <circle cx="370" cy="196" r="13" fill="none" stroke="var(--muted)" stroke-width="1.8"/><text x="370" y="201" text-anchor="middle" font-size="15" font-weight="700" fill="var(--muted)">✕</text><text x="370" y="224" text-anchor="middle" font-size="10.5" fill="var(--muted)">SDK 53부터</text>
+        <circle cx="480" cy="196" r="13" fill="none" stroke="var(--accent)" stroke-width="1.8"/><text x="480" y="201" text-anchor="middle" font-size="15" font-weight="700" fill="var(--accent)">✓</text><text x="480" y="224" text-anchor="middle" font-size="10.5" fill="var(--muted)">Firebase 설정 따로 필요</text>
+        <line x1="16" y1="224" x2="544" y2="224" stroke="var(--border)" stroke-width="1"/>
+        <text x="16" y="248">앱 안 결제, 카카오 로그인 같은 회사별 SDK</text>
+        <circle cx="370" cy="244" r="13" fill="none" stroke="var(--muted)" stroke-width="1.8"/><text x="370" y="249" text-anchor="middle" font-size="15" font-weight="700" fill="var(--muted)">✕</text>
+        <circle cx="480" cy="244" r="13" fill="none" stroke="var(--accent)" stroke-width="1.8"/><text x="480" y="249" text-anchor="middle" font-size="15" font-weight="700" fill="var(--accent)">✓</text>
+        <line x1="16" y1="272" x2="544" y2="272" stroke="var(--border)" stroke-width="1"/>
+        <text x="16" y="296">홈 화면 위젯, 애플워치 앱</text>
+        <circle cx="370" cy="292" r="13" fill="none" stroke="var(--muted)" stroke-width="1.8"/><text x="370" y="297" text-anchor="middle" font-size="15" font-weight="700" fill="var(--muted)">✕</text>
+        <circle cx="480" cy="292" r="13" fill="none" stroke="var(--accent)" stroke-width="1.8"/><text x="480" y="297" text-anchor="middle" font-size="15" font-weight="700" fill="var(--accent)">✓</text><text x="480" y="320" text-anchor="middle" font-size="10.5" fill="var(--muted)">네이티브 코드를 따로 써야 함</text>
+        <line x1="16" y1="320" x2="544" y2="320" stroke="var(--border)" stroke-width="1"/>
+      </g>
+    </svg>
+    <figcaption>✓는 «된다», ✕는 «안 된다»예요. Expo Go에는 자주 쓰는 네이티브 기능만 미리 컴파일돼 있어서, 그 밖의 기능은 개발용 빌드를 따로 만들어야 해요.</figcaption>
+    </figure>
     <p>이 글에서 만드는 대화 앱은 서버를 부르고 화면을 보여 주고 카메라와 사진첩을 쓰는 정도라 Expo Go로 충분해요. 코딩 에이전트가 새 라이브러리를 설치하자고 하면 <strong>그 라이브러리가 Expo Go에서 도는지부터</strong> 확인하게 해요. 패키지는 <code>npx expo install</code>로 설치하는데, 프로젝트의 SDK 버전에 맞는 버전을 골라 주기 때문이에요.</p>
     <p>프로젝트의 SDK 버전은 <code>package.json</code>의 <code>expo</code> 버전으로 정해지고, 폰의 Expo Go가 그 SDK를 지원해야 앱이 열려요. 스토어의 Expo Go는 보통 최신 SDK 하나만 지원해요. 이 글에서는 SDK 58 기준으로 설명하고, Node.js는 22.13 이상이 필요해요.</p>
 
