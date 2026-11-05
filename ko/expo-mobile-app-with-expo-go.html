@@ -167,15 +167,52 @@
 
     <h2 id="options"><span class="hl">휴대폰으로 가져가는 네 가지 방법</span> — 무엇으로 화면을 그리나</h2>
     <p>방법은 화면을 무엇으로 그리는지, 스토어에 올릴 앱 파일을 어디서 만드는지로 갈려요.</p>
-    <table>
-      <thead><tr><th>방법</th><th>무엇인가</th><th>필요한 것·한계</th></tr></thead>
-      <tbody>
-        <tr><td>PWA<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup></td><td>웹 페이지를 브라우저에서 «홈 화면에 추가»로 설치</td><td>빌드가 없어 가장 가볍지만, 스토어에 못 올리고 알림 같은 기능은 브라우저가 허용하는 만큼만</td></tr>
-        <tr><td>웹 래핑 (Capacitor 등)</td><td>웹 페이지를 앱 껍데기에 넣어 스토어용 앱 파일로 만듦</td><td>화면은 여전히 웹. 앱 파일을 만들려면 내 컴퓨터에 Android Studio와 Xcode</td></tr>
-        <tr><td>네이티브 (Swift·Kotlin, Flutter)</td><td>플랫폼별로 만들거나, 한 코드로 두 플랫폼의 네이티브 앱</td><td>폰의 모든 기능을 쓰지만 빌드 도구를 직접 설치. iOS는 맥에서만 빌드</td></tr>
-        <tr><td>React Native + Expo</td><td>JavaScript로 쓰면 폰의 네이티브 화면 요소로 그려 줌. Expo가 만들기·빌드·배포를 묶음</td><td>앱 파일을 클라우드에서 빌드하므로 내 컴퓨터에는 Node.js만. Windows에서도 iOS 앱 파일 가능</td></tr>
-      </tbody>
-    </table>
+    <figure>
+    <svg viewBox="0 0 560 490" style="max-width:600px;margin:0 auto" role="img" aria-label="휴대폰으로 가져가는 네 가지 방법을 앱 파일을 어디서 만드는지로 비교한 그림. PWA는 앱 파일이 없고, 웹 래핑과 네이티브는 내 컴퓨터에서 만들며, React Native와 Expo는 클라우드가 만든다. 각 방법의 무엇인가와 필요한 것·한계를 함께 적었다">
+      <g font-family="var(--font-body)" font-size="12" fill="var(--ink)">
+        <rect x="6" y="6" width="268" height="236" rx="10" fill="none" stroke="var(--border)" stroke-width="1.8"/>
+        <text x="20" y="30" font-family="var(--font-heading)" font-size="14" font-weight="700">PWA</text>
+        <text x="20" y="50" font-size="12.5" font-weight="700" fill="var(--muted)">앱 파일: 없음</text>
+        <text x="20" y="72" font-size="11" fill="var(--muted)">무엇인가</text>
+        <text x="20" y="89">웹 페이지를 브라우저에서 «홈 화면에</text>
+        <text x="20" y="106">추가»로 설치</text>
+        <text x="20" y="130" font-size="11" fill="var(--muted)">필요한 것 · 한계</text>
+        <text x="20" y="147">빌드가 없어 가장 가볍지만, 스토어에 못</text>
+        <text x="20" y="164">올리고 알림 같은 기능은 브라우저가</text>
+        <text x="20" y="181">허용하는 만큼만</text>
+        <rect x="282" y="6" width="268" height="236" rx="10" fill="none" stroke="var(--border)" stroke-width="1.8"/>
+        <text x="296" y="30" font-family="var(--font-heading)" font-size="14" font-weight="700">웹 래핑 (Capacitor 등)</text>
+        <text x="296" y="50" font-size="12.5" font-weight="700" fill="var(--muted)">앱 파일: 내 컴퓨터에서 만듦</text>
+        <text x="296" y="72" font-size="11" fill="var(--muted)">무엇인가</text>
+        <text x="296" y="89">웹 페이지를 앱 껍데기에 넣어 스토어용</text>
+        <text x="296" y="106">앱 파일로 만듦</text>
+        <text x="296" y="130" font-size="11" fill="var(--muted)">필요한 것 · 한계</text>
+        <text x="296" y="147">화면은 여전히 웹. 앱 파일을 만들려면 내</text>
+        <text x="296" y="164">컴퓨터에 Android Studio와 Xcode</text>
+        <rect x="6" y="252" width="268" height="236" rx="10" fill="none" stroke="var(--border)" stroke-width="1.8"/>
+        <text x="20" y="276" font-family="var(--font-heading)" font-size="14" font-weight="700">네이티브 (Swift·Kotlin, Flutter)</text>
+        <text x="20" y="296" font-size="12.5" font-weight="700" fill="var(--muted)">앱 파일: 내 컴퓨터에서 만듦</text>
+        <text x="20" y="318" font-size="11" fill="var(--muted)">무엇인가</text>
+        <text x="20" y="335">플랫폼별로 만들거나, 한 코드로 두</text>
+        <text x="20" y="352">플랫폼의 네이티브 앱</text>
+        <text x="20" y="376" font-size="11" fill="var(--muted)">필요한 것 · 한계</text>
+        <text x="20" y="393">폰의 모든 기능을 쓰지만 빌드 도구를</text>
+        <text x="20" y="410">직접 설치. iOS는 맥에서만 빌드</text>
+        <rect x="282" y="252" width="268" height="236" rx="10" fill="none" stroke="var(--accent)" stroke-width="1.8"/>
+        <text x="296" y="276" font-family="var(--font-heading)" font-size="14" font-weight="700">React Native + Expo</text>
+        <text x="296" y="296" font-size="12.5" font-weight="700" fill="var(--accent)">앱 파일: 클라우드가 만듦</text>
+        <text x="296" y="318" font-size="11" fill="var(--muted)">무엇인가</text>
+        <text x="296" y="335">JavaScript로 쓰면 폰의 네이티브 화면</text>
+        <text x="296" y="352">요소로 그려 줌. Expo가</text>
+        <text x="296" y="369">만들기·빌드·배포를 묶음</text>
+        <text x="296" y="393" font-size="11" fill="var(--muted)">필요한 것 · 한계</text>
+        <text x="296" y="410">앱 파일을 클라우드에서 빌드하므로 내</text>
+        <text x="296" y="427">컴퓨터에는 Node.js만. Windows에서도</text>
+        <text x="296" y="444">iOS 앱 파일 가능</text>
+      </g>
+    </svg>
+    <figcaption>«앱 파일을 어디서 만드는가»가 네 방법을 가르는 기준이에요. 진한 테두리가 이 글이 고른 방법이에요. PWA<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>는 웹 페이지를 설치하는 방식이라 앱 파일이 없어요.</figcaption>
+    </figure>
     <p>어느 쪽이 좋은지는 상황마다 달라요. 스토어에 안 올려도 되고 웹 화면을 그대로 쓰고 싶으면 PWA가 가장 빨라요. 이미 잘 만든 웹 화면이 있고 맥과 빌드 도구를 갖춘 팀이면 웹 래핑도 해 볼 만해요. 그래픽이 무거운 게임이나 최신 운영체제 기능을 바로 써야 하면 네이티브가 맞아요.</p>
     <p>이 글의 조건은 세 가지예요. 노트북은 대부분 Windows이고, 코딩 에이전트와 함께 만들며, 백엔드는 이미 있어서 화면만 새로 만들면 돼요. 이 조건에서 아이폰까지 다루면서 내 컴퓨터에 설치할 게 가장 적은 길이 Expo라서 Expo로 가요. 다만 앱 파일은 결국 컴파일해야 하므로 그 일을 클라우드 서비스에 맡기고, 무료 플랜의 빌드 횟수 제한을 감수해요.</p>
 
