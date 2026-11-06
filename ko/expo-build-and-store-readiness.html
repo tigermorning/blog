@@ -90,20 +90,58 @@
     <p>두 플랫폼은 언어도 도구도 달라서, 네이티브로 만들면 같은 앱을 두 번 만들고 두 번 빌드해요.</p>
 
     <h2 id="analogy"><span class="hl">비유로 먼저</span> — 앞 편의 칠판과 교과서를 이어서</h2>
-    <p><a href="expo-mobile-app-with-expo-go.html#analogy">앞 편</a>에서 정한 학교 수업 비유를 그대로 이어 가요. 웹은 수업 때마다 선생님이 칠판에 적어 주는 것이고, 앱은 가방에 넣고 다니는 교과서예요. 새 교과서를 학생에게 나눠 주려면 선생님이 쓴 <strong>원고</strong>(내 프로젝트)를 <strong>외주 인쇄소</strong>(EAS 클라우드 빌드)에 보내요. 인쇄소는 원고를 인쇄해 한 권으로 제본하고, 학교가 인정한 책이라는 <strong>검정 도장</strong>(서명)을 찍어 «이 링크에서 받아 가세요» 하고 돌려줘요. 이미 찍어 낸 책의 내용은 바뀌지 않아서, 원고를 고치면 책을 새로 찍어야 하고 그때마다 인쇄 의뢰 횟수를 한 번 써요. 반면 «내 출석과 성적»처럼 학교 사무실(백엔드)에 있는 기록은 책을 펼 때마다 사무실에서 받아 오므로, 사무실 기록을 고쳐도 책을 다시 찍을 필요가 없어요. 원고를 고치는 중에 확인하는 <strong>시험 인쇄본(교정쇄)을 읽는 기계</strong>가 Expo Go예요.</p>
+    <p><a href="expo-mobile-app-with-expo-go.html#analogy">앞 편</a>의 학교 수업 비유를 그대로 이어 가요. 웹은 수업 때마다 선생님이 칠판에 적어 주는 것이고, 앱은 가방에 넣고 다니는 교과서예요. 이번 글은 «그 교과서가 어떻게 만들어지는가»를 정확히 맞춰서 설명해요.</p>
+    <p>먼저 학교에는 <strong>공용 바인더</strong>가 미리 만들어져 있어요. 표지와 고리 같은 부품은 이미 완성돼 있고, 낱장만 끼워 넣으면 돼요. 선생님의 <strong>노트북 책상</strong>(개발 서버)이 내 낱장(내 코드)을 계속 보내 주니 끼우자마자 읽을 수 있고, 낱장을 고치면 바로 바뀌어요. 이것이 Expo Go예요. 다만 낱장은 책상에서 오므로 책상이 꺼지면 낱장이 오지 않고, 공용 바인더에 없는 특수 부품은 쓸 수 없어요.</p>
+    <p>다른 학생에게 나눠 줄 책은 내 낱장과 부품을 <strong>한 권으로 제본</strong>해야 해요. 이 일을 <strong>외주 인쇄소</strong>(EAS 클라우드 빌드)에 맡겨요. 인쇄소는 접수창구에서 낸 원고(저장소에 올라온 파일)만 받고 책상 서랍 속 메모(<code>.env</code>)는 받지 않아요. 그다음 낱장을 한 묶음으로 정리하고(번들), 표지와 부품을 찍고(네이티브 컴파일), 한 권으로 묶고(앱 파일), 학교가 인정한 책이라는 <strong>검정 도장</strong>(서명)을 찍어 «이 링크에서 받아 가세요»를 돌려줘요. 한 번 제본된 책의 낱장은 굳어서, 원고를 고치면 책을 새로 찍어야 하고 그때마다 의뢰 횟수를 한 번 써요. 책은 펼 때마다 <strong>학교 사무실</strong>(백엔드)에서 내 출석과 성적을 받아 오므로, 사무실 기록을 고치는 일은 책을 다시 찍을 필요가 없어요.</p>
     <table>
       <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
       <tbody>
-        <tr><td>편집실에서 시험 인쇄본(교정쇄)을 읽는 기계</td><td>Expo Go — 개발 서버의 코드를 받아 바로 실행해 봄</td></tr>
-        <tr><td>선생님이 쓴 원고</td><td>소스 코드와 <code>app.json</code>, <code>eas.json</code></td></tr>
-        <tr><td>원고를 대신 인쇄·제본해 주는 외주 인쇄소</td><td>EAS 클라우드 빌드 서버(안드로이드용은 리눅스 서버, iOS용은 맥 서버)</td></tr>
-        <tr><td>인쇄소가 찍어 주는 검정 도장</td><td>서명 키(EAS가 만들어 Expo 계정에 보관)</td></tr>
-        <tr><td>인쇄를 의뢰할 수 있는 월 횟수</td><td>무료 플랜의 월 빌드 횟수</td></tr>
-        <tr><td>책을 펼 때마다 학교 사무실에서 받아 오는 내 출석과 성적</td><td>백엔드·데이터베이스·서버 프롬프트(고쳐도 다시 빌드하지 않음)</td></tr>
+        <tr><td>학교가 미리 만든 공용 바인더에 낱장을 끼워 읽기</td><td>Expo Go — 네이티브 부분이 미리 완성돼 있고 내 코드(번들)만 받아 실행</td></tr>
+        <tr><td>낱장을 보내 주는 노트북 책상</td><td>개발 서버(내 노트북)</td></tr>
+        <tr><td>바인더에 달린 부품(고리, 지퍼 등)</td><td>네이티브 라이브러리와 권한 — Expo Go에 없는 것은 못 씀</td></tr>
+        <tr><td>접수창구는 원고만 받고 서랍 속 메모는 안 받음</td><td>EAS는 저장소 파일만 받고 <code>.env</code> 값은 안 올라감</td></tr>
+        <tr><td>인쇄소의 조판 → 인쇄 → 제본 → 검정 도장</td><td>번들 묶기 → 네이티브 컴파일 → 앱 파일(APK·AAB·IPA) → 서명</td></tr>
+        <tr><td>인쇄소 금고에 보관되는 도장</td><td>EAS가 Expo 계정에 보관하는 서명 키</td></tr>
+        <tr><td>한 번 제본되면 굳는 낱장</td><td>빌드한 앱 안의 코드와 환경값 — 고치면 다시 빌드</td></tr>
+        <tr><td>책의 고유 번호(ISBN)</td><td>패키지 이름 — 스토어에 올린 뒤에는 못 바꿈</td></tr>
+        <tr><td>책 뒤표지에 인쇄된 학교 사무실 위치</td><td><code>EXPO_PUBLIC_</code> 값 — 책을 가진 누구나 읽을 수 있어 비밀번호는 못 적음</td></tr>
+        <tr><td>펼 때마다 사무실에서 받아 오는 내 출석과 성적</td><td>백엔드·데이터베이스·서버 프롬프트 — 고쳐도 다시 빌드하지 않음</td></tr>
+        <tr><td>인쇄 의뢰를 할 수 있는 월 횟수</td><td>무료 플랜의 월 빌드 횟수</td></tr>
       </tbody>
     </table>
-    <p><strong>핵심 한 줄:</strong> 책 안에 찍힌 내용은 인쇄하는 순간 굳고, 학교 사무실에서 받아 오는 기록은 언제든 바뀌어요.</p>
-    <p>다만 비유가 끊기는 점이 있어요. 인쇄소는 책을 만들어 줄 뿐 «학생에게 나눠 주는 일»은 하지 않는데, 앱은 만든 파일을 스토어에 올려 심사를 받는 <strong>제출</strong> 단계가 따로 있다는 점이에요.</p>
+    <figure>
+    <svg viewBox="0 0 640 310" style="max-width:640px;margin:0 auto" role="img" aria-label="왼쪽은 공용 바인더에 노트북 책상이 보낸 낱장을 끼워 읽는 Expo Go, 오른쪽은 외주 인쇄소가 낱장과 부품을 한 권으로 제본하고 검정 도장을 찍은 빌드한 앱">
+      <defs>
+        <marker id="an-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/></marker>
+      </defs>
+      <g font-family="var(--font-body)" font-size="13" fill="var(--ink)">
+        <text x="150" y="24" text-anchor="middle" font-family="var(--font-heading)" font-size="15" font-weight="700">Expo Go로 볼 때</text>
+        <text x="490" y="24" text-anchor="middle" font-family="var(--font-heading)" font-size="15" font-weight="700">빌드해서 설치한 앱</text>
+        <line x1="320" y1="12" x2="320" y2="296" stroke="var(--border)" stroke-dasharray="4 4"/>
+        <rect x="50" y="46" width="200" height="150" rx="8" fill="none" stroke="var(--muted)" stroke-width="1.6"/>
+        <circle cx="50" cy="78" r="6" fill="none" stroke="var(--muted)" stroke-width="1.6"/><circle cx="50" cy="121" r="6" fill="none" stroke="var(--muted)" stroke-width="1.6"/><circle cx="50" cy="164" r="6" fill="none" stroke="var(--muted)" stroke-width="1.6"/>
+        <text x="150" y="66" text-anchor="middle" fill="var(--muted)">공용 바인더(미리 만들어 둠)</text>
+        <rect x="82" y="82" width="136" height="98" rx="3" fill="none" stroke="var(--border)" stroke-width="1.6"/>
+        <text x="150" y="136" text-anchor="middle" font-weight="700">내 낱장</text>
+        <rect x="50" y="236" width="200" height="42" rx="8" fill="none" stroke="var(--muted)" stroke-width="1.6"/>
+        <text x="150" y="262" text-anchor="middle">노트북 책상(개발 서버)</text>
+        <line x1="150" y1="234" x2="150" y2="200" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#an-a)"/>
+        <rect x="390" y="46" width="200" height="150" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        <rect x="390" y="46" width="22" height="150" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        <text x="500" y="92" text-anchor="middle" font-weight="700">내 앱 한 권</text>
+        <text x="500" y="114" text-anchor="middle" fill="var(--muted)">낱장 + 부품이 묶여 굳음</text>
+        <rect x="430" y="138" width="106" height="26" rx="4" fill="none" stroke="var(--border)" stroke-width="1.4"/>
+        <text x="483" y="156" text-anchor="middle" font-size="12">패키지 이름 = ISBN</text>
+        <circle cx="560" cy="172" r="18" fill="none" stroke="var(--accent)" stroke-width="2"/><text x="560" y="177" text-anchor="middle" font-size="12" fill="var(--accent)">검정</text>
+        <rect x="390" y="236" width="200" height="42" rx="8" fill="none" stroke="var(--accent)" stroke-width="1.6"/>
+        <text x="490" y="262" text-anchor="middle">외주 인쇄소(EAS)</text>
+        <line x1="490" y1="234" x2="490" y2="200" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#an-a)"/>
+      </g>
+    </svg>
+    <figcaption>왼쪽은 낱장만 바꿔 끼우는 Expo Go, 오른쪽은 인쇄소가 한 권으로 제본한 앱이에요. 진한 테두리는 빌드로 만들어진 것이고, 화살표는 «누가 누구에게 보내 주는지»를 뜻해요.</figcaption>
+    </figure>
+    <p><strong>핵심 한 줄:</strong> 공용 바인더는 낱장만 갈아 끼우면 바로 바뀌지만, 한 권으로 제본한 책은 찍는 순간 내용이 굳어서 고치려면 새로 찍어야 해요.</p>
+    <p>다만 비유가 끊기는 점이 있어요. 학교는 새 교과서를 한꺼번에 나눠 줄 수 있지만 앱은 사용자가 직접 업데이트해야 하고, 인쇄소는 책만 만들 뿐 학생에게 나눠 주는 <strong>제출</strong>과 심사는 스토어에서 따로 거쳐요.</p>
 
     <h2 id="flow"><span class="hl">전체 흐름</span> — 코드가 앱 파일이 되기까지</h2>
     <p>Expo 앱은 내 코드(TypeScript)와 화면·카메라 같은 기기 기능을 맡는 네이티브 부분으로 나뉘어요. 내 코드는 JavaScript로 실행되므로 컴파일하지 않고 Metro가 번들 하나로 묶기만 하고, 컴파일이 필요한 건 네이티브 부분뿐이에요.</p>
