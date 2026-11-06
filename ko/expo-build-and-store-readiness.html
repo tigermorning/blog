@@ -75,6 +75,42 @@
 
     <p><a href="expo-mobile-app-with-expo-go.html">앞 편</a>에서 만든 앱은 내 노트북이 켜져 있고 개발 서버가 돌 때만 내 폰에서 움직여요. 친구에게 보내려면 앱 파일을 누가 어디서 만들고, 폰에는 어떻게 들어가며, 스토어에 올리려면 무엇을 준비해야 할까요? 이 글은 Expo의 클라우드 빌드로 앱 파일을 만들어 내 폰에 설치하는 데까지 가고, 스토어에 올리기 전에 점검할 것을 정리해요. 마지막에는 내가 만들고 싶은 앱을 직접 만들어 폰에 올려 보는 과제가 있어요. 이 글의 명령과 순서는 학습 자료를 정리한 것이고, 제가 직접 빌드까지 해 본 것은 아니에요. 제 앱에 적용해 본 결과는 «내 앱에 적용해 보기» 절에 따로 적었어요.</p>
 
+    <figure>
+    <svg viewBox="0 0 680 290" style="max-width:680px;margin:0 auto;display:block" role="img" aria-label="같은 소스 코드가 세 단계를 거쳐 사용자에게 가는 흐름. 1 개발(Expo Go)은 나만 보고, 2 빌드해서 설치는 링크를 받은 Android 폰이 받고, 3 스토어 배포는 스토어 사용자가 받는다. 고치면 다시 1로 돌아간다">
+      <defs>
+        <marker id="ov-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/></marker>
+      </defs>
+      <g font-family="var(--font-body)" font-size="13" fill="var(--ink)">
+        <line x1="20" y1="22" x2="660" y2="22" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="340" y="16" text-anchor="middle" fill="var(--muted)" font-size="12">같은 소스 코드 하나로 세 단계를 지나가요</text>
+        <rect x="20" y="40" width="190" height="130" rx="10" fill="color-mix(in srgb,#1D9E75 10%,transparent)" stroke="#1D9E75" stroke-width="1.8"/>
+        <text x="115" y="64" text-anchor="middle" font-family="var(--font-heading)" font-size="15" font-weight="700">① 개발</text>
+        <text x="115" y="82" text-anchor="middle" fill="var(--muted)" font-size="12">Expo Go</text>
+        <text x="115" y="108" text-anchor="middle">저장하면 바로 바뀜</text>
+        <text x="115" y="128" text-anchor="middle">노트북이 켜져 있어야 함</text>
+        <text x="115" y="154" text-anchor="middle" font-weight="700">받는 사람: 나(내 폰)</text>
+        <rect x="245" y="40" width="190" height="130" rx="10" fill="color-mix(in srgb,var(--accent) 12%,transparent)" stroke="var(--accent)" stroke-width="1.8"/>
+        <text x="340" y="64" text-anchor="middle" font-family="var(--font-heading)" font-size="15" font-weight="700">② 빌드해서 설치</text>
+        <text x="340" y="82" text-anchor="middle" fill="var(--muted)" font-size="12">EAS Build · preview(APK)</text>
+        <text x="340" y="108" text-anchor="middle">고치면 다시 빌드</text>
+        <text x="340" y="128" text-anchor="middle">노트북 없이 돌아감</text>
+        <text x="340" y="154" text-anchor="middle" font-weight="700">받는 사람: 링크 받은 폰</text>
+        <rect x="470" y="40" width="190" height="130" rx="10" fill="color-mix(in srgb,var(--accent) 12%,transparent)" stroke="var(--accent)" stroke-width="1.8"/>
+        <text x="565" y="64" text-anchor="middle" font-family="var(--font-heading)" font-size="15" font-weight="700">③ 스토어 배포</text>
+        <text x="565" y="82" text-anchor="middle" fill="var(--muted)" font-size="12">production(AAB·iOS) + 제출</text>
+        <text x="565" y="108" text-anchor="middle">테스트·심사를 거쳐 공개</text>
+        <text x="565" y="128" text-anchor="middle">개발자 계정이 필요함</text>
+        <text x="565" y="154" text-anchor="middle" font-weight="700">받는 사람: 스토어 사용자</text>
+        <line x1="212" y1="105" x2="243" y2="105" stroke="var(--muted)" stroke-width="1.8" marker-end="url(#ov-a)"/>
+        <line x1="437" y1="105" x2="468" y2="105" stroke="var(--muted)" stroke-width="1.8" marker-end="url(#ov-a)"/>
+        <path d="M 340 172 L 340 206 L 115 206 L 115 174" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ov-a)"/>
+        <text x="228" y="224" text-anchor="middle" fill="var(--muted)" font-size="12">고칠 때는 다시 ①로 돌아와 Expo Go에서 개발해요</text>
+        <text x="340" y="262" text-anchor="middle" fill="var(--muted)" font-size="12">②는 «다른 사람에게 줄 때»와 «노트북 없이 도는지·권한 문구가 맞는지 확인할 때» 중간중간 해요</text>
+      </g>
+    </svg>
+    <figcaption>Expo Go와 빌드는 서로 바꿔 쓰는 방식이 아니라, 같은 코드를 개발하는 동안 보는 방식(①)과 앱 파일로 묶어 나눠 주는 방식(②③)이에요. 화살표는 «앞 단계를 마친 코드가 다음 단계로 간다»는 뜻이에요.</figcaption>
+    </figure>
+
     <h2 id="why-build"><span class="hl">빌드가 필요한 이유</span> — 폰은 소스 코드를 그대로 받지 못해요</h2>
     <p>폰이 소스 코드 폴더를 그대로 설치하지 못하는 이유는 세 가지예요. 폰의 CPU는 사람이 쓴 코드를 바로 실행하지 못해서 기계가 실행하는 형식으로 바꾸는 <strong>컴파일</strong><sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>이 필요하고, 운영체제는 정해진 형식의 앱 파일만 설치하고, 개발자의 키로 만든 <strong>서명</strong><sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>이 없는 파일은 설치를 거부해요. 이 셋을 차례로 하는 과정이 빌드예요. 웹은 브라우저가 받은 JavaScript를 그 자리에서 실행하므로 설치할 앱 파일 자체가 없어요.</p>
     <p>네이티브 앱은 이 셋을 플랫폼 회사가 만든 도구로 해요.</p>
@@ -90,7 +126,7 @@
     <p>두 플랫폼은 언어도 도구도 달라서, 네이티브로 만들면 같은 앱을 두 번 만들고 두 번 빌드해요.</p>
 
     <h2 id="analogy"><span class="hl">비유로 먼저</span> — 앞 편의 칠판과 교과서를 이어서</h2>
-    <p><a href="expo-mobile-app-with-expo-go.html#analogy">앞 편</a>의 학교 수업 비유를 이어 가요. 아래 장면은 Expo Go(왼쪽)와 빌드한 앱(오른쪽)을 나란히 놓았어요. ①은 원고(화면 코드)를 고칠 때, ②는 학교 사무실의 기록(데이터)을 고칠 때를 눌러 보세요.</p>
+    <p><a href="expo-mobile-app-with-expo-go.html#analogy">앞 편</a>의 학교 수업 비유를 이어 가요. 아래 장면은 위 흐름의 ①(왼쪽)과 ②(오른쪽)를 나란히 놓고, 같은 코드를 고쳤을 때 어떻게 다르게 반영되는지 보여 줘요. ①은 원고(화면 코드)를 고칠 때, ②는 학교 사무실의 기록(데이터)을 고칠 때를 눌러 보세요.</p>
     <figure class="xc-scene">
     <style>
     .xc-svg text{font-family:var(--font-body);stroke:none}
