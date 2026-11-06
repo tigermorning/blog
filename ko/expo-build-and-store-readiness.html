@@ -102,6 +102,8 @@
     .ex-mark{animation:exmark 7s linear infinite}
     .ex-sheet{animation:exsheet 2.4s ease-in-out infinite}
     .ex-pulse{animation:expulse 1.2s linear infinite}
+    .ex-drawer{animation:exdrawer 3.6s ease-in-out infinite}
+    .ex-rec{animation:exrec 3.6s ease-in-out infinite}
     }
     @keyframes exbelt{to{stroke-dashoffset:-16}}
     @keyframes exspin{to{transform:rotate(360deg)}}
@@ -111,6 +113,8 @@
     @keyframes exmark{0%,57%{opacity:0}58%,100%{opacity:1}}
     @keyframes exsheet{0%{transform:translate(0,0);opacity:0}8%{opacity:1}50%{transform:translate(166px,-170px);opacity:1}92%{opacity:1}100%{transform:translate(333px,38px);opacity:0}}
     @keyframes expulse{to{stroke-dashoffset:-20}}
+    @keyframes exdrawer{0%{transform:translateX(0)}10%,38%{transform:translateX(-12px)}52%,100%{transform:translateX(0)}}
+    @keyframes exrec{0%,8%{opacity:0;transform:translate(0,0)}12%{opacity:1;transform:translate(0,0)}85%{opacity:1;transform:translate(-158px,58px)}100%{opacity:0;transform:translate(-158px,58px)}}
     svg.exA #ex-shop,svg.exA .ex-manu,svg.exA .ex-book{animation:none}
     svg.exA #ex-shop{opacity:.3}
     svg.exA .ex-manu,svg.exA .ex-book{visibility:hidden}
@@ -146,9 +150,9 @@
         <rect id="ex-bp" x="335" y="312" width="9" height="26" rx="3" fill="var(--accent)" fill-opacity=".25" stroke="var(--accent)"/>
         <g id="ex-bkA"><rect x="368" y="318" width="30" height="26" rx="3" fill="none" stroke="var(--ink)"/><circle cx="368" cy="326" r="2.5" fill="none" stroke="var(--ink)"/><circle cx="368" cy="336" r="2.5" fill="none" stroke="var(--ink)"/></g>
         <g id="ex-bkB"><rect x="368" y="318" width="30" height="26" rx="3" fill="var(--accent)" fill-opacity=".25" stroke="var(--accent)"/><line x1="374" y1="320" x2="374" y2="342" stroke="var(--accent)" stroke-width="1"/><circle cx="388" cy="331" r="5" fill="none" stroke="var(--accent)"/></g>
-        <rect x="530" y="230" width="135" height="130" fill="none" stroke="var(--muted)"/><rect x="552" y="262" width="44" height="98" rx="3" fill="none" stroke="var(--muted)"/><text x="574" y="280" text-anchor="middle" font-size="12" stroke="none">서류함</text>
-        <line x1="552" y1="292" x2="596" y2="292" stroke="var(--border)"/><line x1="552" y1="322" x2="596" y2="322" stroke="var(--border)"/><rect x="614" y="262" width="36" height="36" rx="3" fill="none" stroke="var(--border)"/>
-        <path class="ex-pulse" d="M552,300 C505,300 450,342 402,336" fill="none" stroke="var(--muted)" stroke-dasharray="6 6"/>
+        <rect x="530" y="230" width="135" height="130" fill="none" stroke="var(--muted)"/><rect x="552" y="262" width="44" height="98" rx="3" fill="none" stroke="var(--muted)"/><text x="574" y="314" text-anchor="middle" font-size="12" stroke="none">출석·성적</text>
+        <line x1="552" y1="292" x2="596" y2="292" stroke="var(--border)"/><line x1="552" y1="322" x2="596" y2="322" stroke="var(--border)"/><g class="ex-drawer"><rect x="552" y="262" width="44" height="30" rx="3" fill="var(--accent)" fill-opacity=".14" stroke="var(--accent)"/><line x1="566" y1="277" x2="582" y2="277" stroke="var(--accent)"/></g><rect x="614" y="262" width="36" height="36" rx="3" fill="none" stroke="var(--border)"/>
+        <rect class="ex-rec" x="546" y="268" width="12" height="16" rx="1" fill="var(--accent)" fill-opacity=".2" stroke="var(--accent)"/><path class="ex-pulse" d="M552,300 C505,300 450,342 402,336" fill="none" stroke="var(--muted)" stroke-dasharray="6 6"/>
         <g text-anchor="middle" font-size="12" fill="var(--muted)" stroke="none"><text x="50" y="384">내 노트북</text><text x="195" y="384">외주 인쇄소(EAS)</text><text x="405" y="384">학생(내 폰)</text><text x="597" y="384">학교 사무실(백엔드)</text></g>
       </g>
     </svg>
@@ -157,22 +161,9 @@
     function exSet(m){document.getElementById('ex-sc').setAttribute('class',m);document.getElementById('ex-bA').setAttribute('aria-pressed',m==='exA');document.getElementById('ex-bB').setAttribute('aria-pressed',m==='exB');document.getElementById('ex-cap').textContent=m==='exA'?'Expo Go: 학교가 미리 만든 공용 바인더(왼쪽 책)에 노트북이 보내 주는 낱장을 끼워 읽어요. 인쇄소는 쉬고, 노트북이 꺼지면 낱장이 오지 않아요.':'빌드: 원고가 인쇄소에서 한 권의 책(진한 색)이 되어 학생 가방으로 가요. 책 속 낱장은 찍은 시점 그대로 굳고, 점선은 펼 때마다 학교 사무실에서 받아 오는 기록이에요. «동작 줄이기» 설정이 켜진 브라우저에서는 움직이지 않아요.'}
     </script>
     </figure>
-    <table>
-      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
-      <tbody>
-        <tr><td>학교가 미리 만든 공용 바인더에 낱장을 끼워 읽기</td><td>Expo Go — 네이티브 부분이 미리 완성돼 있고 내 코드(번들)만 받아 실행</td></tr>
-        <tr><td>낱장을 보내 주는 노트북 책상</td><td>개발 서버(내 노트북)</td></tr>
-        <tr><td>바인더에 달린 부품(고리, 지퍼 등)</td><td>네이티브 라이브러리와 권한 — Expo Go에 없는 것은 못 씀</td></tr>
-        <tr><td>접수창구는 원고만 받고 서랍 속 메모는 안 받음</td><td>EAS는 저장소 파일만 받고 <code>.env</code> 값은 안 올라감</td></tr>
-        <tr><td>인쇄소의 조판 → 인쇄 → 제본 → 검정 도장</td><td>번들 묶기 → 네이티브 컴파일 → 앱 파일(APK·AAB·IPA) → 서명</td></tr>
-        <tr><td>인쇄소 금고에 보관되는 도장</td><td>EAS가 Expo 계정에 보관하는 서명 키</td></tr>
-        <tr><td>한 번 제본되면 굳는 낱장</td><td>빌드한 앱 안의 코드와 환경값 — 고치면 다시 빌드</td></tr>
-        <tr><td>책의 고유 번호(ISBN)</td><td>패키지 이름 — 스토어에 올린 뒤에는 못 바꿈</td></tr>
-        <tr><td>책 뒤표지에 인쇄된 학교 사무실 위치</td><td><code>EXPO_PUBLIC_</code> 값 — 책을 가진 누구나 읽을 수 있어 비밀번호는 못 적음</td></tr>
-        <tr><td>펼 때마다 사무실에서 받아 오는 내 출석과 성적</td><td>백엔드·데이터베이스·서버 프롬프트 — 고쳐도 다시 빌드하지 않음</td></tr>
-        <tr><td>인쇄 의뢰를 할 수 있는 월 횟수</td><td>무료 플랜의 월 빌드 횟수</td></tr>
-      </tbody>
-    </table>
+    <p>학교에는 <strong>공용 바인더</strong>가 미리 만들어져 있어요. 표지와 고리 같은 부품은 완성돼 있어서 낱장만 끼우면 되고, <strong>노트북 책상</strong>(개발 서버)이 낱장(내 코드)을 계속 보내 줘요. 이것이 Expo Go예요. 책상이 꺼지면 낱장이 오지 않고, 바인더에 없는 특수 부품(Expo Go에 없는 네이티브 라이브러리)은 쓸 수 없어요.</p>
+    <p>다른 학생에게 줄 책은 <strong>외주 인쇄소</strong>(EAS)가 한 권으로 만들어요. 접수창구는 원고(저장소 파일)만 받고 서랍 속 메모(<code>.env</code>)는 받지 않아요. 낱장을 묶고(번들), 표지와 부품을 찍고(컴파일), 제본해서(앱 파일) <strong>검정 도장</strong>(서명)을 찍고, 도장은 인쇄소 금고(Expo 계정)에 보관돼요. 책에는 고유 번호(ISBN)가 붙는데 이것이 패키지 이름이라 한 번 올리면 못 바꿔요. 뒤표지에는 학교 사무실 위치(<code>EXPO_PUBLIC_</code> 값)가 인쇄돼 책을 가진 누구나 읽을 수 있으니, 비밀번호는 적으면 안 돼요.</p>
+    <p>제본된 책의 낱장은 굳어서 원고를 고치면 책을 새로 찍어야 하고, 그때마다 인쇄 의뢰 횟수(무료 플랜의 월 빌드 횟수)를 한 번 써요. 반면 출석과 성적은 책을 펼 때마다 <strong>학교 사무실</strong>(백엔드)에서 받아 와요. 그림에서 서랍이 열리고 서류가 책으로 날아가는 것이 이 일이고, 그래서 사무실 기록을 고치는 일은 책을 다시 찍을 필요가 없어요.</p>
     <p><strong>핵심 한 줄:</strong> 공용 바인더는 낱장만 갈아 끼우면 바로 바뀌지만, 한 권으로 제본한 책은 찍는 순간 내용이 굳어서 고치려면 새로 찍어야 해요.</p>
     <p>다만 비유가 끊기는 점이 있어요. 학교는 새 교과서를 한꺼번에 나눠 줄 수 있지만 앱은 사용자가 직접 업데이트해야 하고, 인쇄소는 책만 만들 뿐 학생에게 나눠 주는 <strong>제출</strong>과 심사는 스토어에서 따로 거쳐요.</p>
 
