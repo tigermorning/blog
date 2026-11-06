@@ -126,7 +126,7 @@
     <p>두 플랫폼은 언어도 도구도 달라서, 네이티브로 만들면 같은 앱을 두 번 만들고 두 번 빌드해요.</p>
 
     <h2 id="analogy"><span class="hl">비유로 먼저</span> — 앞 편의 칠판과 교과서를 이어서</h2>
-    <p><a href="expo-mobile-app-with-expo-go.html#analogy">앞 편</a>의 학교 수업 비유를 이어 가요. 아래 장면은 순서대로 읽어요. 먼저 ①에서 Expo Go로 개발하며 확인하고, 개발이 끝나 남에게 줄 때 ②의 빌드를 해요. 두 단계에서 같은 코드를 고쳤을 때 어떻게 다르게 반영되는지, 그리고 학교 사무실의 데이터는 어떻게 오는지 아래 두 버튼으로 눌러 보세요. 폰처럼 화면이 좁으면 그림을 좌우로 밀어서 오른쪽 «② 빌드한 뒤»까지 볼 수 있어요. ①은 원고(화면 코드)를 고칠 때, ②는 학교 사무실의 기록(데이터)을 고칠 때를 눌러 보세요.</p>
+    <p><a href="expo-mobile-app-with-expo-go.html#analogy">앞 편</a>의 학교 수업 비유를 이어 가요. 아래 장면은 순서대로 읽어요. 먼저 ①에서 Expo Go로 개발하며 확인하고, 개발이 끝나 남에게 줄 때 ②의 빌드를 해요. 두 단계에서 같은 코드를 고쳤을 때 어떻게 다르게 반영되는지, 그리고 학교 사무실의 데이터는 어떻게 오는지 아래 두 버튼으로 눌러 보세요. 폰처럼 화면이 좁으면 그림을 좌우로 밀어서 오른쪽 «② 빌드한 뒤»까지 볼 수 있어요. 첫 버튼은 원고(화면 코드)를 고칠 때, 둘째 버튼은 학교 사무실의 기록(데이터)을 고칠 때예요.</p>
     <figure class="xc-scene">
     <style>
     .xc-svg text{font-family:var(--font-body);stroke:none}
@@ -151,6 +151,8 @@
     .xc-btns{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 10px}
     .xc-btns button{padding:7px 14px;border:1px solid var(--border);border-radius:6px;background:transparent;color:var(--ink);font:inherit;cursor:pointer}
     .xc-btns button:disabled{opacity:.45;cursor:default}
+    .xc-scene{overflow-x:auto}
+    @media (max-width:700px){.xc-scene .xc-svg{min-width:600px}}
     .xc-chips{margin:10px 0 4px;font-size:.9em;color:var(--muted)}
     .xc-chips span{display:inline-flex;align-items:center;gap:6px;margin-right:14px}
     .xc-chips i{display:inline-block;width:12px;height:12px;border-radius:3px}
