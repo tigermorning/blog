@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>노트북을 꺼도 도는 앱 — Expo 앱 빌드하고 출시 준비하기 (15) - Tigermorning</title>
+  <meta name="description" content="Expo 클라우드 빌드(EAS Build)로 Android 앱 파일을 만들어 내 폰에 설치하고, 빌드에 들어가는 설정값과 한 번 정하면 못 바꾸는 이름·키, 스토어 배포 단계와 AI 서비스 앱의 출시 전 점검 항목을 정리했어요.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="노트북을 꺼도 도는 앱 — Expo 앱 빌드하고 출시 준비하기 (15)">
+  <meta property="og:description" content="빌드가 왜 필요한지, 클라우드에서 앱 파일을 만들어 설치하는 순서, 스토어 배포와 출시 준비 점검까지 정리했어요.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/expo-build-and-store-readiness.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="two-layer.css">
+  <link rel="stylesheet" href="flow-motion.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">노트북을 꺼도 도는 앱</span> — Expo 앱 빌드하고 출시 준비하기 (15)</h1>
+    <p class="post-date">2026. 11. 6.</p>
+    <p class="post-date">※ 이 글은 모두의연구소(모두연) 학습 자료를 제 나름의 말로 다시 정리한 글이에요.</p>
+
+    <p class="one-liner">다른 사람이 쓰는 앱을 만들려면 클라우드 빌드(EAS Build)로 코드와 설정을 앱 파일 하나로 묶어 서명해야 하고, 그 순간 빌드에 들어간 코드와 값이 고정되므로 고칠 때마다 다시 빌드해야 해요.</p>
+
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>이런 게 궁금했다면</dt>
+        <dd>
+          <ul>
+            <li>"Expo Go로 보는 앱을 친구에게 보내 주려면 뭐가 더 필요해요?"</li>
+            <li>"앱 파일은 누가, 어디서 만들어요? 내 노트북에 Android Studio가 없는데요."</li>
+            <li>"스토어에 올리려면 무엇을 미리 준비해야 해요?"</li>
+          </ul>
+        </dd>
+        <dt>읽고 나면 할 수 있는 것</dt>
+        <dd>
+          <ul>
+            <li>개발 실행·빌드·제출이 각각 무엇을 하고 누가 앱을 받을 수 있는지 구분해서 말할 수 있어요.</li>
+            <li>Android 앱 파일(APK)을 클라우드에서 만들어 내 폰에 설치하는 순서를 따라갈 수 있어요.</li>
+            <li>스토어에 올리기 전에 AI 서비스 앱이 점검할 항목을 표로 정리할 수 있어요.</li>
+          </ul>
+        </dd>
+        <dt>모르면 이런 일이 생겨요</dt>
+        <dd>
+          <ul>
+            <li>빌드는 성공했는데 설치한 앱에서 «백엔드 주소가 비어 있습니다»가 떠요. <a class="suspect-jump" href="#suspect-env">언제 의심하나 ↓</a></li>
+            <li>문구 하나를 고쳤는데 설치한 앱은 그대로여서, 매번 빌드 횟수를 써요. <a class="suspect-jump" href="#suspect-stale">언제 의심하나 ↓</a></li>
+            <li>샘플 패키지 이름을 그대로 올렸다가 다른 앱과 부딪히고, 한 번 올린 이름은 못 바꿔요. <a class="suspect-jump" href="#suspect-package">언제 의심하나 ↓</a></li>
+          </ul>
+        </dd>
+        <dt>어디에 쓰나</dt>
+        <dd>
+          <ul>
+            <li><strong>«이 앱 한번 써 봐» 하고 친구에게 보내고 싶어졌을 때.</strong> 내 노트북의 개발 서버가 꺼지면 Expo Go로 보던 앱도 멈추니, 노트북 없이 도는 앱 파일이 필요해져요.</li>
+            <li>스토어 출시를 앞두고 무엇이 비어 있는지(개인정보처리방침, 계정 삭제, AI 답 신고 등) 체크리스트를 만들 때 써요.</li>
+          </ul>
+        </dd>
+      </dl>
+    </div>
+
+    <a class="post-nav" href="expo-mobile-app-with-expo-go.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">백엔드는 그대로 쓰고 앱 화면만 새로 만들기 — Expo로 휴대폰 앱 만들기 (14)</span>
+    </a>
+
+    <p><a href="expo-mobile-app-with-expo-go.html">앞 편</a>에서 만든 앱은 내 노트북이 켜져 있고 개발 서버가 돌 때만 내 폰에서 움직여요. 친구에게 보내려면 앱 파일을 누가 어디서 만들고, 폰에는 어떻게 들어가며, 스토어에 올리려면 무엇을 준비해야 할까요? 이 글은 Expo의 클라우드 빌드로 앱 파일을 만들어 내 폰에 설치하는 데까지 가고, 스토어에 올리기 전에 점검할 것을 정리해요. 마지막에는 내가 만들고 싶은 앱을 직접 만들어 폰에 올려 보는 과제가 있어요. 이 글의 명령과 순서는 학습 자료를 정리한 것이고, 제가 직접 빌드까지 해 본 것은 아니에요. 제 앱에 적용해 본 결과는 «내 앱에 적용해 보기» 절에 따로 적었어요.</p>
+
+    <h2 id="why-build"><span class="hl">빌드가 필요한 이유</span> — 폰은 소스 코드를 그대로 받지 못해요</h2>
+    <p>폰이 소스 코드 폴더를 그대로 설치하지 못하는 이유는 세 가지예요. 폰의 CPU는 사람이 쓴 코드를 바로 실행하지 못해서 기계가 실행하는 형식으로 바꾸는 <strong>컴파일</strong><sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup>이 필요하고, 운영체제는 정해진 형식의 앱 파일만 설치하고, 개발자의 키로 만든 <strong>서명</strong><sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup>이 없는 파일은 설치를 거부해요. 이 셋을 차례로 하는 과정이 빌드예요. 웹은 브라우저가 받은 JavaScript를 그 자리에서 실행하므로 설치할 앱 파일 자체가 없어요.</p>
+    <p>네이티브 앱은 이 셋을 플랫폼 회사가 만든 도구로 해요.</p>
+    <table>
+      <thead><tr><th></th><th>iOS</th><th>Android</th></tr></thead>
+      <tbody>
+        <tr><td>앱 파일</td><td>IPA</td><td>APK(직접 설치용), AAB(스토어 제출용)</td></tr>
+        <tr><td>컴파일하는 도구</td><td>Xcode — 맥에서만 실행</td><td>Gradle과 Android SDK — Windows·맥·리눅스에서 실행</td></tr>
+        <tr><td>서명</td><td>애플이 발급한 인증서와 프로비저닝 프로필</td><td>개발자가 만든 서명 키(keystore)</td></tr>
+        <tr><td>스토어 밖 설치</td><td>기본적으로 막혀 있음</td><td>사용자가 허용하면 APK를 직접 설치 가능</td></tr>
+      </tbody>
+    </table>
+    <p>두 플랫폼은 언어도 도구도 달라서, 네이티브로 만들면 같은 앱을 두 번 만들고 두 번 빌드해요.</p>
+
+    <h2 id="analogy"><span class="hl">비유로 먼저</span> — 앞 편의 칠판과 교과서를 이어서</h2>
+    <p><a href="expo-mobile-app-with-expo-go.html#analogy">앞 편</a>에서 정한 학교 수업 비유를 그대로 이어 가요. 웹은 수업 때마다 선생님이 칠판에 적어 주는 것이고, 앱은 가방에 넣고 다니는 교과서예요. 새 교과서를 학생에게 나눠 주려면 선생님이 쓴 <strong>원고</strong>(내 프로젝트)를 <strong>외주 인쇄소</strong>(EAS 클라우드 빌드)에 보내요. 인쇄소는 원고를 인쇄해 한 권으로 제본하고, 학교가 인정한 책이라는 <strong>검정 도장</strong>(서명)을 찍어 «이 링크에서 받아 가세요» 하고 돌려줘요. 이미 찍어 낸 책의 내용은 바뀌지 않아서, 원고를 고치면 책을 새로 찍어야 하고 그때마다 인쇄 의뢰 횟수를 한 번 써요. 반면 «내 출석과 성적»처럼 학교 사무실(백엔드)에 있는 기록은 책을 펼 때마다 사무실에서 받아 오므로, 사무실 기록을 고쳐도 책을 다시 찍을 필요가 없어요. 원고를 고치는 중에 확인하는 <strong>시험 인쇄본(교정쇄)을 읽는 기계</strong>가 Expo Go예요.</p>
+    <table>
+      <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
+      <tbody>
+        <tr><td>편집실에서 시험 인쇄본(교정쇄)을 읽는 기계</td><td>Expo Go — 개발 서버의 코드를 받아 바로 실행해 봄</td></tr>
+        <tr><td>선생님이 쓴 원고</td><td>소스 코드와 <code>app.json</code>, <code>eas.json</code></td></tr>
+        <tr><td>원고를 대신 인쇄·제본해 주는 외주 인쇄소</td><td>EAS 클라우드 빌드 서버(안드로이드용은 리눅스 서버, iOS용은 맥 서버)</td></tr>
+        <tr><td>인쇄소가 찍어 주는 검정 도장</td><td>서명 키(EAS가 만들어 Expo 계정에 보관)</td></tr>
+        <tr><td>인쇄를 의뢰할 수 있는 월 횟수</td><td>무료 플랜의 월 빌드 횟수</td></tr>
+        <tr><td>책을 펼 때마다 학교 사무실에서 받아 오는 내 출석과 성적</td><td>백엔드·데이터베이스·서버 프롬프트(고쳐도 다시 빌드하지 않음)</td></tr>
+      </tbody>
+    </table>
+    <p><strong>핵심 한 줄:</strong> 책 안에 찍힌 내용은 인쇄하는 순간 굳고, 학교 사무실에서 받아 오는 기록은 언제든 바뀌어요.</p>
+    <p>다만 비유가 끊기는 점이 있어요. 인쇄소는 책을 만들어 줄 뿐 «학생에게 나눠 주는 일»은 하지 않는데, 앱은 만든 파일을 스토어에 올려 심사를 받는 <strong>제출</strong> 단계가 따로 있다는 점이에요.</p>
+
+    <h2 id="flow"><span class="hl">전체 흐름</span> — 코드가 앱 파일이 되기까지</h2>
+    <p>Expo 앱은 내 코드(TypeScript)와 화면·카메라 같은 기기 기능을 맡는 네이티브 부분으로 나뉘어요. 내 코드는 JavaScript로 실행되므로 컴파일하지 않고 Metro가 번들 하나로 묶기만 하고, 컴파일이 필요한 건 네이티브 부분뿐이에요.</p>
+    <figure>
+    <svg class="flow-motion" viewBox="0 0 460 560" style="max-width:520px;margin:0 auto" role="img" aria-label="내 프로젝트를 EAS에 올리면 번들을 만들고, app.json으로 네이티브 폴더를 만들고, 클라우드 서버가 컴파일하고, 번들을 넣어 서명하고, 설치 링크나 스토어용 파일이 나오는 여섯 단계의 흐름">
+      <defs>
+        <marker id="eb-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/></marker>
+      </defs>
+      <g font-family="var(--font-body)" font-size="13" fill="var(--ink)">
+        <rect x="40" y="10" width="380" height="64" rx="10" fill="none" stroke="var(--accent)" stroke-width="1.6"/>
+        <text x="60" y="36" font-family="var(--font-heading)" font-size="15" font-weight="700">① 내 프로젝트를 EAS에 올림</text>
+        <text x="60" y="58" fill="var(--muted)">노트북에는 Node.js만 있으면 돼요</text>
+        <line x1="230" y1="74" x2="230" y2="96" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#eb-a)"/>
+
+        <rect x="40" y="98" width="380" height="64" rx="10" fill="none" stroke="var(--border)" stroke-width="1.6"/>
+        <text x="60" y="124" font-family="var(--font-heading)" font-size="15" font-weight="700">② 내 코드를 번들 하나로 묶음</text>
+        <text x="60" y="146" fill="var(--muted)">Metro가 묶기만 해요. 컴파일은 아니에요</text>
+        <line x1="230" y1="162" x2="230" y2="184" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#eb-a)"/>
+
+        <rect x="40" y="186" width="380" height="64" rx="10" fill="none" stroke="var(--border)" stroke-width="1.6"/>
+        <text x="60" y="212" font-family="var(--font-heading)" font-size="15" font-weight="700">③ app.json으로 android/·ios/ 폴더를 새로 만듦</text>
+        <text x="60" y="234" fill="var(--muted)">앱 이름·패키지 이름·권한이 여기서 정해져요</text>
+        <line x1="230" y1="250" x2="230" y2="272" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#eb-a)"/>
+
+        <rect x="40" y="274" width="380" height="64" rx="10" fill="none" stroke="var(--border)" stroke-width="1.6"/>
+        <text x="60" y="300" font-family="var(--font-heading)" font-size="15" font-weight="700">④ 클라우드 서버가 네이티브 부분을 컴파일</text>
+        <text x="60" y="322" fill="var(--muted)">안드로이드는 리눅스 서버, iOS는 맥 서버</text>
+        <line x1="230" y1="338" x2="230" y2="360" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#eb-a)"/>
+
+        <rect x="40" y="362" width="380" height="64" rx="10" fill="none" stroke="var(--border)" stroke-width="1.6"/>
+        <text x="60" y="388" font-family="var(--font-heading)" font-size="15" font-weight="700">⑤ 번들을 넣어 앱 파일로 묶고 서명</text>
+        <text x="60" y="410" fill="var(--muted)">서명 키는 EAS가 만들어 Expo 계정에 보관해요</text>
+        <line x1="230" y1="426" x2="230" y2="448" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#eb-a)"/>
+
+        <rect x="40" y="450" width="380" height="64" rx="10" fill="none" stroke="var(--accent)" stroke-width="1.6"/>
+        <text x="60" y="476" font-family="var(--font-heading)" font-size="15" font-weight="700">⑥ 설치 링크 또는 스토어용 파일이 나옴</text>
+        <text x="60" y="498" fill="var(--muted)">내 노트북에는 키 파일이 생기지 않아요</text>
+      </g>
+    </svg>
+    <figcaption>상자가 위에서 아래로 차례로 깜빡이고 화살표 위로 점선이 흘러요(«동작 줄이기» 설정이 켜진 브라우저에서는 멈춰요). 진한 테두리는 내 쪽의 시작과 끝이고, 가운데 네 상자는 EAS 서버가 하는 일이에요. 화살표는 «앞 단계의 결과가 다음 단계로 넘어가는 방향»이에요.</figcaption>
+    </figure>
+    <p>개발할 때 쓰는 Expo Go는 자주 쓰는 네이티브 부분을 Expo 팀이 미리 컴파일·서명해 스토어에 올려 둔 앱이에요. 그래서 노트북은 번들만 보내면 되고, 컴파일도 서명도 없으니 코드를 저장하면 몇 초 안에 화면이 바뀌어요. 대신 Expo Go에 없는 네이티브 라이브러리는 못 쓰고, 앱 이름과 아이콘도 Expo Go의 것이고, 개발 서버가 꺼지면 앱도 멈춰요.</p>
+    <p>EAS 서버가 받는 것은 <strong>저장소에 있는 파일뿐</strong>이라, 커밋하지 않은 <code>.env</code>의 값은 빌드에 들어가지 않아요. 빌드가 실패하면 빌드 로그에서 어느 단계에서 멈췄는지부터 봐요. 패키지 설치에서 멈췄다면 <code>package.json</code>의 버전 충돌을, 네이티브 컴파일에서 멈췄다면 네이티브 라이브러리나 <code>app.json</code> 설정을 먼저 의심해요.</p>
+
+    <h3>버전 번호 두 개와 업데이트</h3>
+    <p>앱 파일에는 번호가 둘 붙어요. 사용자에게 보이는 버전(<code>app.json</code>의 <code>version</code>, 예: 1.0.0)과, 스토어가 파일을 구분하는 <strong>빌드 번호</strong>(안드로이드 <code>versionCode</code>, iOS <code>buildNumber</code>)예요. 스토어는 이미 올린 빌드 번호와 같거나 작은 파일을 받지 않으니, 올릴 때마다 빌드 번호가 커져야 해요.</p>
+    <table>
+      <thead><tr><th>바꾼 것</th><th>Expo Go</th><th>개발용 빌드</th><th><code>preview</code> 빌드(설치한 앱)</th></tr></thead>
+      <tbody>
+        <tr><td>화면·문구·동작(JavaScript)</td><td>저장하면 반영</td><td>저장하면 반영</td><td>다시 빌드</td></tr>
+        <tr><td>네이티브 라이브러리, 권한</td><td>Expo Go에 있는 것만</td><td>다시 빌드</td><td>다시 빌드</td></tr>
+        <tr><td>노트북 없이 실행</td><td>안 됨</td><td>안 됨</td><td>됨</td></tr>
+        <tr><td>백엔드 코드·DB·서버 프롬프트</td><td colspan="3">앱 파일 밖에 있으므로 고쳐도 다시 빌드하지 않아요</td></tr>
+      </tbody>
+    </table>
+    <p>웹은 배포하면 모든 사용자가 새 버전을 쓰지만 앱은 사용자가 업데이트해야 바뀌어요. 그래서 앱을 내놓은 뒤에는 옛 화면이 새 백엔드를 부르는 상황을 늘 생각하고, 앱이 쓰는 API의 응답 모양은 옛 앱이 못 읽게 함부로 바꾸지 않아요.</p>
+
+    <h2 id="profiles"><span class="hl">빌드 프로필과 설정값</span> — eas.json, 서명 키, 패키지 이름</h2>
+    <p>어떤 앱 파일을 어떻게 만들지는 저장소의 <code>eas.json</code>에 <strong>프로필</strong><sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>로 적어요. 모바일 템플릿에는 둘이 있어요.</p>
+    <table>
+      <thead><tr><th>프로필</th><th>만드는 파일</th><th>쓰는 곳</th></tr></thead>
+      <tbody>
+        <tr><td><code>preview</code></td><td>Android APK, 내부 배포(internal distribution)</td><td>설치 링크로 내 폰이나 팀원 폰에 바로 설치</td></tr>
+        <tr><td><code>production</code></td><td>Android AAB, iOS 스토어용 파일. 빌드할 때마다 빌드 번호를 자동으로 올림</td><td>스토어에 제출</td></tr>
+      </tbody>
+    </table>
+    <p><strong>서명 키.</strong> 스토어는 처음 올린 앱 파일의 서명 키를 기억해 두고, 그 뒤에는 같은 키로 서명한 파일만 같은 앱의 새 버전으로 받아요. 키를 잃어버리면 업데이트를 못 하고, 남에게 넘어가면 누가 내 앱인 척 올릴 수 있어서 시크릿처럼 다뤄야 해요. EAS는 처음 빌드할 때 키를 만들어 Expo 계정에 보관하고 빌드마다 꺼내 써요. 그래서 키 파일이 내 노트북이나 저장소에 생기지 않고, 템플릿의 <code>.gitignore</code>에도 키 파일 형식(<code>*.jks</code>, <code>*.p12</code>, <code>*.p8</code>)을 막아 뒀어요.</p>
+    <p><strong>빌드에 들어가는 설정값.</strong> 개발할 때는 <code>.env</code>의 <code>EXPO_PUBLIC_API_URL</code>(백엔드 주소)을 개발 서버가 읽어 앱에 넣어 줘요. 그런데 <code>.env</code>는 커밋하지 않는 파일이라 빌드할 때 클라우드로 올라가지 않아요. 그래서 빌드에 쓸 값은 <code>eas.json</code> 프로필의 <code>env</code>에 따로 적어요. 빠뜨리면 빌드는 성공하는데 설치한 앱에서 «백엔드 주소가 비어 있습니다»가 떠요. <code>EXPO_PUBLIC_</code> 값은 앱 파일 안에 그대로 들어가므로 공개돼도 되는 값(백엔드 주소)만 넣고, LLM API 키나 Supabase secret key는 넣지 않아요. 템플릿은 Supabase 주소와 publishable key를 백엔드의 <code>/api/config</code>에서 받아 오게 만들어 뒀어요.</p>
+    <p><strong>앱 이름과 패키지 이름.</strong> <code>app.json</code>의 <code>name</code>은 홈 화면에 보이는 이름이고, <code>android.package</code>와 <code>ios.bundleIdentifier</code>는 스토어와 폰이 앱을 구분하는 이름이에요. 보통 <code>kr.회사이름.앱이름</code>처럼 도메인을 뒤집은 모양으로 지어요. 같은 패키지 이름의 앱은 한 폰에 하나만 설치되고, 스토어에 한 번 올린 패키지 이름은 바꿀 수 없어요(바꾸면 완전히 다른 앱이 돼요). 템플릿의 <code>com.example.harufriend</code>를 그대로 두면 같은 이름으로 만든 다른 사람의 앱과 부딪혀요.</p>
+
+    <h2 id="first-build"><span class="hl">첫 빌드</span> — 내 Android 폰에 설치하기</h2>
+    <p>실습은 Android 폰 기준이에요. 아이폰은 스토어 밖에서 앱을 설치하는 길이 막혀 있어서(유료 애플 개발자 계정에 그 기기를 미리 등록해야 해요), 아이폰만 있다면 Expo Go로 확인하고 빌드한 앱은 Android 폰을 가진 사람과 짝을 지어 짝의 폰에 설치해 봐요. 먼저 상태를 확인해요. Node.js(이 글의 템플릿은 20 이상으로 안내했고, <a href="expo-mobile-app-with-expo-go.html#numbers">앞 편</a>의 SDK 58은 22.13 이상을 요구해요), 템플릿으로 만든 내 저장소와 설치된 패키지, <code>.env</code>의 백엔드 주소, Expo Go에서 도는 앱, 무료 Expo 계정이 있어야 해요.</p>
+    <p class="run-tag">실행: 로컬 터미널 <span class="run-tag-why">— 모바일 저장소 폴더에서</span></p>
+    <pre><code>node -v
+npm -v
+npx expo-doctor</code></pre>
+    <p>빌드하기 전에 세 가지를 정해 파일에 적어요. 앱 이름(예: <code>하루친구 지수</code>), 다른 사람과 겹치지 않는 패키지 이름(예: <code>kr.study.harufriend.jisu</code>, 영문 소문자·숫자·점만), 빌드에 넣을 백엔드 주소예요.</p>
+    <ol>
+      <li><code>app.json</code>의 <code>name</code>을 내 앱 이름으로 바꿔요.</li>
+      <li><code>app.json</code>의 <code>android.package</code>와 <code>ios.bundleIdentifier</code>를 내 패키지 이름으로 바꿔요. 두 값은 같게 둬요.</li>
+      <li><code>eas.json</code>의 <code>preview</code>와 <code>production</code> 프로필 <code>env</code>에 있는 <code>EXPO_PUBLIC_API_URL</code>을 내 백엔드 주소로 바꿔요(끝에 <code>/</code> 없이).</li>
+      <li><code>npx expo start</code>로 Expo Go에서 다시 열어 그대로 도는지 확인해요. <code>app.json</code>을 바꾼 뒤에는 개발 서버를 껐다 켜요.</li>
+    </ol>
+    <p>코딩 에이전트에게 맡길 때는 <strong>바뀌는 줄이 이 다섯 값뿐인지</strong> 실행 전에 봐요. 패키지 이름은 에이전트가 임의로 짓지 않고 내가 정한 값이 들어갔는지 확인해요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등</p>
+    <pre><code>app.json 의 name 을 [앱 이름], android.package 와 ios.bundleIdentifier 를 [패키지 이름] 으로 바꿔 줘.
+eas.json 의 preview 와 production 프로필 env 의 EXPO_PUBLIC_API_URL 을 [백엔드 주소] 로 바꿔 줘.
+다른 줄은 바꾸지 말고, 바꾸기 전과 후를 나란히 보여 줘.</code></pre>
+    <p>이제 빌드해요. <code>eas</code> 명령은 설치하지 않고 <code>npx eas-cli@latest</code>로 그때그때 최신 버전을 받아 써요. <code>login</code>으로 내 Expo 계정에 로그인하고, <code>build:configure</code>로 이 저장소를 내 Expo 프로젝트로 연결해요(<code>app.json</code>에 프로젝트 ID가 추가돼요). 로그인은 브라우저나 터미널에서 내가 직접 하고, 비밀번호를 에이전트 대화에 붙이지 않아요.</p>
+    <p class="run-tag">실행: 로컬 터미널 <span class="run-tag-why">— 모바일 저장소 폴더에서. 무료 플랜의 빌드 횟수를 한 번 써요</span></p>
+    <pre><code>npx eas-cli@latest login
+npx eas-cli@latest build:configure
+
+# 클라우드에서 Android APK를 만든다. 처음이면 서명 키를 만들지 묻는다 → Yes
+npx eas-cli@latest build --profile preview --platform android</code></pre>
+    <p>빌드 명령을 승인하기 전에 프로필이 <code>preview</code>, 플랫폼이 <code>android</code>인지 봐요. 무료 플랜은 월 빌드 횟수가 정해져 있어서(2026년 10월 기준 월 30회, 낮은 우선순위 대기열) 타입 검사나 설정 검사에서 걸러질 실수로 빌드 한 번을 쓰지 않게 <code>npx tsc --noEmit</code>과 <code>npx expo-doctor</code>를 먼저 돌려요.</p>
+    <p>명령은 프로젝트를 올린 뒤 빌드 페이지 주소를 보여 줘요. 무료 플랜은 대기열이 길어 시작까지 몇 분에서 수십 분이 걸릴 수 있고, 시작한 뒤에도 10분 안팎이 걸려요. 터미널을 기다리지 않아도 서버에서 계속 진행되고, 끝나면 설치 링크와 QR 코드가 나와요. 처음 빌드에서 서명 키를 만들겠다고 답했다면 빌드 페이지의 Credentials 항목에 키가 Expo 계정에 보관된 것으로 나오고, 내 노트북에는 키 파일이 생기지 않았는지도 확인해요.</p>
+    <ol>
+      <li>폰으로 설치 링크를 열거나 QR을 찍어 APK를 내려받아요.</li>
+      <li>«출처를 알 수 없는 앱» 설치를 허용할지 물으면 이번만 허용해요. Play 프로텍트가 «인식하지 못하는 앱»이라고 경고하면 내용을 읽고 그래도 설치를 골라요. 스토어를 거치지 않은 앱이라 나오는 경고예요.</li>
+      <li>홈 화면에 내가 정한 앱 이름으로 앱이 생겼는지 보고, <strong>노트북의 개발 서버를 끈 상태에서</strong> 앱을 열어 캐릭터를 만들고 메시지를 보내 답이 오는지 봐요.</li>
+    </ol>
+    <p>개발 서버를 꺼도 앱이 열리고 대화가 되는 건 내 코드가 앱 파일 안에 번들로 들어 있고 앱이 직접 백엔드로 요청을 보내기 때문이에요. 처음 열면 Expo Go에서 만든 캐릭터와 대화가 안 보이는데, 설치한 앱은 Expo Go와 저장 공간이 따로라 새 게스트로 로그인하기 때문이에요(데이터가 사라진 게 아니라 다른 사용자가 된 거예요). 문구 하나를 고쳐 보면 Expo Go에서는 저장하자마자 바뀌지만 설치한 앱은 그대로예요. 반영하려면 다시 빌드해야 하고 그때마다 빌드 횟수를 하나 써요.</p>
+
+    <h3>아이폰, 그리고 스토어에 올리는 빌드</h3>
+    <p>아이폰에서 빌드한 앱을 직접 실행해 보려면 맥에 Xcode를 설치하고 아이폰을 케이블로 연결해 맥에서 빌드해 설치해요. 무료 애플 계정으로도 되지만 7일 뒤에 열리지 않아 다시 설치해야 하고 아이폰 설정에서 개발자 모드를 켜야 해요. 맥이 있는 사람만 쓸 수 있는 방법이라 아이폰 사용자는 Expo Go 확인이 기본이에요.</p>
+    <p class="run-tag">실행: 로컬 터미널 <span class="run-tag-why">— 맥과 Xcode가 있고 아이폰을 케이블로 연결했을 때만(선택)</span></p>
+    <pre><code># 처음이면 아이폰에서 '이 컴퓨터를 신뢰' 를 누른다
+npx expo run:ios --device
+
+# 개발 서버 없이도 열리는 앱으로 설치할 때 (번들을 앱 안에 넣는다)
+npx expo run:ios --device --configuration Release</code></pre>
+    <p><code>run:ios</code>는 기본으로 개발용 구성으로 빌드해서 설치한 앱이 노트북의 개발 서버에서 코드를 받아 와요. 노트북 없이 도는지 보려면 <code>--configuration Release</code>를 붙여요. 이 명령이 만드는 <code>ios/</code> 폴더는 <code>app.json</code>으로 언제든 다시 만들 수 있으므로 커밋하지 않고 직접 고치지도 않아요.</p>
+    <p>오늘 만든 APK는 링크로 내 폰이나 팀원 폰에 설치해 보는 용도예요. 구글 플레이는 새 앱을 APK가 아니라 <strong>AAB</strong><sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>로만 받아요. AAB는 스토어가 받아 사용자 기기에 맞는 APK로 나눠 내려보내는 형식이라 폰에 바로 설치할 수 없어요. 그래서 스토어에 올릴 빌드는 <code>production</code> 프로필로 만들어요.</p>
+    <p class="run-tag">실행: 로컬 터미널 <span class="run-tag-why">— 개발자 계정이 있을 때. 빌드 횟수를 써요</span></p>
+    <pre><code># Google Play에 올릴 AAB
+npx eas-cli@latest build --profile production --platform android
+
+# App Store에 올릴 iOS 빌드 (유료 Apple 개발자 계정 필요)
+npx eas-cli@latest build --profile production --platform ios</code></pre>
+    <p><code>production</code> 빌드에도 프로필 <code>env</code>에 적은 백엔드 주소가 들어가요. 스토어에 올릴 앱이라면 staging이 아니라 운영 백엔드 주소를 넣어야 하므로, 실행 전에 프로필 이름과 이 주소를 함께 확인해요.</p>
+    <p>빌드 상태와 로그는 expo.dev에서도 보지만 코딩 에이전트에게 물어도 돼요. 에이전트는 로그인해 둔 EAS CLI의 <code>build:list</code>, <code>build:view</code> 명령으로 목록·상태·설치 링크를 조회해요. 조회는 빌드를 새로 시작하지 않아 횟수를 쓰지 않아요.</p>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등</p>
+    <pre><code>npx eas-cli@latest 로 내 Expo 계정에서 가장 최근 Android 빌드의 상태, 걸린 시간, 설치 링크를 알려 줘.
+실패했다면 로그에서 실패한 단계와 원인이 되는 줄을 찾아 설명해 줘. 다시 빌드하기 전에 무엇을 고칠지 먼저 알려 주고, 빌드는 새로 시작하지 마.</code></pre>
+
+    <h2 id="store"><span class="hl">스토어로 가는 길</span> — 테스트 단계와 출시 준비 점검</h2>
+    <p>스토어에 올리려면 개발자 계정이 필요해요. 구글 플레이 계정은 등록비를 한 번 내고, 애플 계정은 해마다 회비를 내요. 계정이 있으면 앱을 만들고 <code>production</code> 빌드를 올린 뒤 테스트 단계를 거쳐 공개해요. 테스트 단계에 올린 앱은 저절로 공개되지 않고, 다음 단계로 넘기는 버튼을 사람이 누르고 필요한 심사를 통과해야 넘어가요.</p>
+    <table>
+      <thead><tr><th>스토어</th><th>단계</th><th>알아 둘 것</th></tr></thead>
+      <tbody>
+        <tr><td>구글 플레이</td><td>내부 테스트 → 비공개 테스트 → 프로덕션</td><td>내부 테스트는 등록한 테스터(최대 100명)만 참여 링크로 받아요. 첫 파일은 Play Console 웹에서 직접 올려요. 자동 제출(EAS Submit)에는 구글 서비스 계정 키 파일(JSON)이 필요한데 유출되면 그 계정으로 무엇이든 할 수 있어 연습에서는 만들지 않아요</td></tr>
+        <tr><td>애플</td><td>TestFlight(내부 테스터 → 외부 테스터) → App Store</td><td>팀원은 내부 테스터로 바로 받고, 외부 테스터에게는 베타 심사를 거쳐요</td></tr>
+      </tbody>
+    </table>
+    <p>2023년 11월 이후 만든 개인 구글 개발자 계정은 테스터 12명 이상이 14일 동안 비공개 테스트를 해야 프로덕션 출시를 신청할 수 있어서, 하루 이틀에 정식 출시까지 가기는 어려워요. 스토어에 한 번 올린 패키지 이름과 번들 ID는 바꿀 수 없고 빌드를 올린 앱은 콘솔에서 지워지지 않고 남는 경우가 많으니, 연습으로 올릴 때도 이름을 정해 두고 끝나면 테스트 트랙을 일시중지하거나 테스터를 빼서 정리해요.</p>
+    <p>스토어는 앱이 사용자 데이터를 어떻게 다루는지와 앱 안에서 무엇을 파는지를 심사하고, AI 서비스 앱은 AI가 만든 콘텐츠를 어떻게 다루는지가 더해져요. 에이전트 서비스 앱을 기준으로 출시 전에 점검할 항목은 이래요.</p>
+    <table>
+      <thead><tr><th>항목</th><th>스토어가 보는 것</th><th>에이전트 서비스 앱에서</th></tr></thead>
+      <tbody>
+        <tr><td>개인정보처리방침</td><td>어떤 데이터를 모으고 어디에 보내는지 적은 공개 주소</td><td>대화·캐릭터·기억·약속을 저장하고 대화를 외부 LLM API로 보낸다는 점을 적어야 함 (아직 없음)</td></tr>
+        <tr><td>데이터 안전(구글)·개인정보(애플) 항목</td><td>수집 데이터 종류와 제3자 전송 여부</td><td>외부 LLM API로 보내는 대화도 제3자 전송에 해당</td></tr>
+        <tr><td>계정과 데이터 삭제</td><td>앱 안에서 계정·데이터를 지울 수 있는지</td><td>백엔드에는 전체 삭제 API(<code>DELETE /api/data</code>)가 있지만 앱 화면에는 버튼이 없음</td></tr>
+        <tr><td>AI 생성 콘텐츠 신고</td><td>부적절한 AI 답을 사용자가 신고할 수 있는지</td><td>답마다 신고 버튼이 필요함 (아직 앱에 없음)</td></tr>
+        <tr><td>AI임을 밝히기</td><td>사람인 척하지 않는지</td><td>캐릭터가 사람이라고 주장하지 않고 화면에 AI 캐릭터임을 표시</td></tr>
+        <tr><td>앱 안 판매</td><td>디지털 상품을 앱 안에서 팔면 스토어 결제를 써야 함</td><td>AI 크레딧을 앱 안에서 팔면 스토어 결제 정책이 적용됨. 결제는 웹에서 하고 앱에서는 사용만 하는 구조로 나누는 경우가 많음</td></tr>
+        <tr><td>연령 등급</td><td>내용에 맞는 등급 설문</td><td>사용자 내용과 AI 답이 섞이므로 설문에 그대로 답함</td></tr>
+      </tbody>
+    </table>
+    <p>표의 «아직 없음»은 출시 전에 채울 일이에요. 스토어 정책은 자주 바뀌므로 실제로 올릴 때는 구글 플레이 정책 센터와 애플 App Review 지침의 최신 내용을 다시 확인해요. 코딩 에이전트에게 «앱이 사용자에게서 받아 어디로 보내는 데이터를 표로 정리해 줘»라고 시키면 출발점을 얻어요. 다만 백엔드에서 데이터가 어디로 가는지는 앱 코드만으로 알 수 없으니, «모른다»고 나온 칸은 백엔드 저장소를 보고 직접 채워요.</p>
+
+    <h2 id="my-app"><span class="hl">내 앱에 적용해 보기</span> — 루틴 도장은 빌드 전에 무엇이 비었나</h2>
+    <p>저는 <a href="expo-mobile-app-with-expo-go.html">앞 편</a>에서 만든 <strong>루틴 도장</strong> 앱(도장판·진동·폰 안 저장, 손글씨 메모 사진을 글자로 읽어 일정으로 넣기, 캘린더)에 이 글의 점검 항목을 적용해 봤어요. <strong>이 앱을 EAS로 빌드하지는 않았어요.</strong> 제 폰이 iPhone이라 Android용 APK를 직접 깔 수 없고, iPhone용 빌드는 유료 애플 개발자 계정이나 맥이 있어야 해서, 오늘은 Expo Go로만 확인했어요. 아래는 설정 파일과 코드를 읽어 확인한 것이고, 앱을 새로 실행해 확인한 것은 아니에요.</p>
+    <table>
+      <thead><tr><th>점검 항목</th><th>내 앱의 현재 상태</th><th>빌드하려면</th></tr></thead>
+      <tbody>
+        <tr><td><code>eas.json</code></td><td>없어요</td><td><code>build:configure</code>로 만들고 <code>preview</code> 프로필이 Android를 APK로 만드는지 확인해요</td></tr>
+        <tr><td>패키지 이름</td><td><code>app.json</code>에 <code>android.package</code>와 <code>ios.bundleIdentifier</code>가 없어요(앱 이름 <code>name</code>은 있어요)</td><td>내 별칭이 들어간 이름을 빌드 전에 정해 두 값을 같게 둬요</td></tr>
+        <tr><td>빌드에 들어갈 값</td><td>글자 읽기 서버 주소(<code>EXPO_PUBLIC_OCR_SERVER_URL</code>) 하나를 쓰는데 <code>.env</code>는 저장소에 없어요</td><td>빌드에 쓸 값이니 <code>eas.json</code> 프로필 <code>env</code>에 적어야 해요. 지금 서버는 내 노트북에서만 닿아서, 그대로 넣으면 다른 폰에서는 글자 읽기가 안 돼요</td></tr>
+        <tr><td>시크릿</td><td>코드와 설정에서 키·토큰은 못 찾았어요(키워드 검색 기준이고 전수 검사는 아니에요)</td><td>빌드 전에 한 번 더 검색해요</td></tr>
+        <tr><td>권한 문구</td><td>사진첩·카메라 권한 문구가 «글자 읽기»만 말해요. 같은 권한을 칸 안 증거 사진에도 써요</td><td>실제 쓰임에 맞게 <code>app.json</code>에서 고쳐요(고치면 다시 빌드해야 해요)</td></tr>
+      </tbody>
+    </table>
+    <p>출시 점검 표에 적용해 보면 이래요. 개인정보처리방침은 사진을 외부 서버로 보내고 카메라·사진첩 권한을 쓰므로 필요한데 아직 없어요. 로그인이 없어 계정 삭제는 해당 없지만, 칸·일정·증거를 하나씩 지우는 기능은 있고 전체 초기화는 못 찾았어요. 결제·구독 코드가 없어 앱 안 판매도 해당 없어요. AI 답 신고와 AI임 표시는 글자 읽기 서버가 생성형 AI를 쓰는지에 달려 있는데, 서버는 다른 저장소라 이 앱의 코드만으로는 판단할 수 없어서 <strong>확인 못 함</strong>으로 남겼어요.</p>
+
+    <h2 id="choice"><span class="hl">나쁜 선택 vs 좋은 선택</span> — 같은 인쇄 의뢰, 같은 상황</h2>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">사무실 주소를 <code>.env</code>에만 적고 인쇄소에 원고를 보낸다 → 인쇄소는 커밋된 파일만 받으므로 주소가 빠진 책이 나오고, 펴 보니 «백엔드 주소가 비어 있습니다»예요.</td>
+          <td class="choice-good">빌드에 쓸 값은 <code>eas.json</code> 프로필의 <code>env</code>에 적는다 → 인쇄소가 받는 원고 안에 주소가 들어가 책이 처음부터 사무실에 연결돼요.</td>
+        </tr>
+        <tr>
+          <td class="choice-bad">샘플 패키지 이름(<code>com.example.harufriend</code>)을 그대로 쓴다 → 같은 샘플을 쓴 다른 사람의 앱과 부딪히고, 한 번 올린 이름은 못 바꿔요.</td>
+          <td class="choice-good">내 별칭이 들어간 이름(<code>kr.study.harufriend.jisu</code>)을 빌드 전에 정한다 → 처음부터 내 앱으로 알아볼 수 있어요.</td>
+        </tr>
+        <tr>
+          <td class="choice-bad">타입 검사도 설정 검사도 없이 곧바로 빌드를 누른다 → 걸러질 오류로 월 빌드 횟수를 쓰고 대기열에서 몇십 분을 기다려요.</td>
+          <td class="choice-good"><code>npx tsc --noEmit</code>과 <code>npx expo-doctor</code>를 먼저 돌린다 → 빌드는 통과한 상태에서만 눌러요.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 빌드 전에 확인할 것</h2>
+    <p>앞 절들의 한도와 조건을 모은 표예요. 요금과 정책은 바뀌므로 실제로 쓰기 전에 공식 문서로 다시 확인해요.</p>
+    <table>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
+      <tbody>
+        <tr><td>Expo 무료 플랜의 월 빌드 횟수(2026년 10월 기준)</td><td>30회, 낮은 우선순위 대기열</td><td>빌드는 모아서 하고, 빌드 전에 타입 검사와 설정 검사를 먼저 돌려요. 대기열은 몇 분에서 수십 분, 시작 뒤에도 10분 안팎 걸려요</td></tr>
+        <tr><td>구글 플레이 내부 테스트 테스터 수</td><td>최대 100명</td><td>처음 올린 앱을 실제 스토어 경로로 설치해 보기에 알맞아요</td></tr>
+        <tr><td>신규 개인 구글 계정의 프로덕션 신청 조건</td><td>테스터 12명 이상, 14일간 비공개 테스트</td><td>2023년 11월 이후 만든 개인 계정에 해당해요. 출시 일정을 잡을 때 이 기간을 넣어요</td></tr>
+        <tr><td>무료 애플 계정으로 설치한 앱의 유효 기간</td><td>7일</td><td>7일 뒤에는 열리지 않아 다시 설치해야 해요</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 빌드한 앱을 처음 열 때</h2>
+    <p>이 문제들은 «Expo Go에서는 됐는데 설치한 앱에서만 안 돼요»라는 모습으로 먼저 나타나요.</p>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-env">
+          <td>설치한 앱을 열자 «백엔드 주소가 비어 있습니다»가 떠요. Expo Go에서는 잘 됐어요</td>
+          <td><code>eas.json</code>의 <code>preview</code> 프로필 <code>env</code>에 있는 <code>EXPO_PUBLIC_API_URL</code>. 와이파이나 Expo Go 버전은 범인이 아니에요</td>
+          <td>내 백엔드 주소가 들어 있는지 봐요. 고친 뒤 다시 빌드해야 반영돼요. <a href="#profiles">빌드 프로필과 설정값</a> 절을 보세요.</td>
+        </tr>
+        <tr id="suspect-stale">
+          <td>버튼 문구를 고쳤는데 Expo Go는 바로 바뀌고 설치한 앱은 그대로예요</td>
+          <td>설치한 앱 안의 번들 — 빌드한 시점의 코드가 고정돼 있어요</td>
+          <td>백엔드에서 화면을 받아 오는 게 아니므로 다시 빌드해서 새 설치 링크로 설치해요. 백엔드를 다시 배포해도 바뀌지 않아요.</td>
+        </tr>
+        <tr id="suspect-package">
+          <td>같은 패키지 이름의 다른 앱이 설치돼 있다고 하거나, 올릴 이름이 이미 쓰인다고 해요</td>
+          <td><code>app.json</code>의 <code>android.package</code>·<code>ios.bundleIdentifier</code>가 <code>com.example.harufriend</code> 그대로인지</td>
+          <td>내 별칭이 들어간 이름으로 바꾸고 두 값을 같게 둬요. 스토어에 올리기 전에만 바꿀 수 있어요.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등</p>
+    <pre><code>app.json 의 name, android.package, ios.bundleIdentifier 와 eas.json 의 모든 프로필 env 값을 표로 보여 줘.
+시크릿처럼 보이는 값이 있으면 표시만 해 줘. 아직 코드는 고치지 마.</code></pre>
+
+    <h2 id="practice"><span class="hl">직접 해보기</span> — 내 앱을 만들어 폰에 올리기</h2>
+    <p>템플릿 앱을 빌드해 설치해 봤다면, 이번에는 내가 만들고 싶던 앱을 Expo로 새로 만들어 같은 길을 끝까지 가 봐요. 아이디어가 없다면 산책 기록, 냉장고 유통기한 메모, 영수증 가계부처럼 사진이나 위치 같은 기기 기능을 하나만 쓰는 작은 앱이 하루 안에 끝내기 좋아요. 코드는 에이전트에게 맡겨도 되지만 <strong>화면 목록과 데이터가 오는 곳</strong>은 내가 먼저 정해요.</p>
+    <table>
+      <thead><tr><th>단계</th><th>할 일</th><th>끝났다는 확인</th></tr></thead>
+      <tbody>
+        <tr><td>0. 앱 계획</td><td>아래 계획 표를 내 앱으로 채워 <code>docs/app-plan.md</code>에 둠</td><td>표만 보여 주고 옆 사람에게 1분 안에 설명함</td></tr>
+        <tr><td>1. 화면 만들기</td><td><code>npx create-expo-app@latest</code>로 새 프로젝트를 만들고 표의 화면을 만듦</td><td>Expo Go에서 모든 화면을 오가고 <code>npx tsc --noEmit</code>과 <code>npx expo-doctor</code>가 오류 없이 끝남</td></tr>
+        <tr><td>2. 기기 기능 하나</td><td>카메라·위치·로컬 알림 중 하나를 붙임</td><td>정한 때에 권한 창이 뜨고, 거부해도 앱이 멈추지 않음</td></tr>
+        <tr><td>3. 빌드와 설치</td><td><code>preview</code> 프로필로 Android 빌드</td><td>노트북의 개발 서버를 끈 상태에서 설치한 앱이 Expo Go에서와 같이 돎</td></tr>
+        <tr><td>4. 출시 준비 점검표</td><td>위 점검 표를 <code>docs/store-readiness.md</code>에 옮겨 내 앱 기준으로 채움</td><td>모든 항목에 «있음/없음»이 적혀 있고, 빈칸 하나를 실제로 채움</td></tr>
+      </tbody>
+    </table>
+    <p>빌드는 무료 플랜의 월 횟수를 쓰므로 1~2단계는 Expo Go로만 확인하고 빌드는 3단계에서 한 번에 해요.</p>
+    <table>
+      <thead><tr><th>정할 것</th><th>예: 산책 기록 앱</th></tr></thead>
+      <tbody>
+        <tr><td>앱이 하는 일 한 문장</td><td>산책한 날의 사진과 장소를 남기고 목록으로 다시 본다</td></tr>
+        <tr><td>화면 목록</td><td>기록 목록, 새 기록, 기록 보기</td></tr>
+        <tr><td>데이터가 오는 곳과 저장</td><td>폰 안 저장소(<code>@react-native-async-storage/async-storage</code>). 서버 없음. 앱을 지우면 기록도 사라짐</td></tr>
+        <tr><td>기기 기능과 Expo Go 지원</td><td>카메라(<code>expo-image-picker</code>), 위치(<code>expo-location</code>). 둘 다 Expo Go에서 됨</td></tr>
+      </tbody>
+    </table>
+    <p>데이터를 어디에 둘지가 가장 큰 결정이에요. 폰 안에만 두면 서버가 필요 없지만 앱을 지우거나 폰을 바꾸면 데이터도 사라지고, 서버에 두면 백엔드가 있어야 해요. 하루 안에 끝내려면 화면은 세 개 이하, 데이터는 폰 안 저장이나 이미 있는 백엔드로 정하는 편이 안전해요. 기기 기능이 Expo Go에서 되는지는 각 라이브러리 문서 위쪽의 «Included in Expo Go» 표시로 확인해요. 완성한 뒤 짝에게 보여 줄 때는 «이 화면의 데이터는 어디서 오는가»와 «코드를 고치면 설치한 앱에 반영하려면 무엇을 해야 하는가»를 물어봐 달라고 해요. 보여 주기 전에는 앱 코드와 <code>eas.json</code>에 시크릿이 없는지, <code>.env</code>와 서명 키 파일이 저장소에 없는지 한 번 더 봐요.</p>
+    <p>참고로 Expo Go에서 카메라 권한 창을 확인한 뒤 빌드해 설치하면 권한 창의 앱 이름과 문구가 달라 보여요. Expo Go에서는 Expo Go의 문구가 뜨고, <code>app.json</code>에 적은 내 앱의 권한 설명은 빌드한 앱에서만 보이기 때문이에요. 출시 전에 이 문구를 <code>app.json</code>에서 정해요.</p>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">컴파일(compile) — 사람이 쓴 코드를 기계가 실행하는 형식으로 바꾸는 일이에요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">서명(signing) — 개발자만 가진 키로 앱 파일에 «누가 만들었고 중간에 바뀌지 않았다»는 표시를 남기는 일이에요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">프로필 — <code>eas.json</code>에 이름을 붙여 적어 둔 «어떤 앱 파일을 어떻게 만들지»의 설정 묶음이에요. <a href="#fnref3">↩</a></li>
+        <li id="fn4">AAB(Android App Bundle) — 구글 플레이에 올리는 형식으로, 스토어가 사용자 기기에 맞는 APK로 나눠 내려보내므로 폰에 직접 설치할 수 없어요. <a href="#fnref4">↩</a></li>
+      </ol>
+    </section>
+
+    <hr>
+    <h3>"AI 서비스로 내놓기" 시리즈</h3>
+    <a class="post-nav" href="credit-payment-cost-and-checkout.html">
+      <span class="post-nav-label">(13)</span>
+      <span class="post-nav-title">메시지 한 건에 0.75원, 그런데 계정 하나가 한 달에 6만 7천 원 — 원가를 계산하고 크레딧 결제 붙이기</span>
+    </a>
+    <a class="post-nav" href="expo-mobile-app-with-expo-go.html">
+      <span class="post-nav-label">(14)</span>
+      <span class="post-nav-title">백엔드는 그대로 쓰고 앱 화면만 새로 만들기 — Expo로 휴대폰 앱 만들기</span>
+    </a>
+    <p class="post-date">(15) 노트북을 꺼도 도는 앱 — Expo 앱 빌드하고 출시 준비하기 (이 글)</p>
+
+    <a class="post-nav" href="expo-mobile-app-with-expo-go.html">
+      <span class="post-nav-label">← 이전 편</span>
+      <span class="post-nav-title">백엔드는 그대로 쓰고 앱 화면만 새로 만들기 — Expo로 휴대폰 앱 만들기 (14)</span>
+    </a>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="two-layer.js"></script>
+  <script src="flow-motion.js"></script>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
