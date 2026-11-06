@@ -1,0 +1,1 @@
+식당 비유(식권·영수증·장부)로 먼저 쉽게 읽어 보고 싶다면 블로그 글부터 보세요: [메시지 한 건에 0.75원, 그런데 계정 하나가 한 달에 6만 7천 원 — 원가를 계산하고 크레딧 결제 붙이기](https://tigermorning.github.io/blog/ko/credit-payment-cost-and-checkout.html)
