@@ -291,8 +291,9 @@
 
     <h3>버전 번호 두 개와 업데이트</h3>
     <p>앱 파일에는 번호가 둘 붙어요. 사용자에게 보이는 버전(<code>app.json</code>의 <code>version</code>, 예: 1.0.0)과, 스토어가 파일을 구분하는 <strong>빌드 번호</strong>(안드로이드 <code>versionCode</code>, iOS <code>buildNumber</code>)예요. 스토어는 이미 올린 빌드 번호와 같거나 작은 파일을 받지 않으니, 올릴 때마다 빌드 번호가 커져야 해요.</p>
+    <p>표에 «개발용 빌드»가 하나 더 있어요. <a href="expo-mobile-app-with-expo-go.html">앞 편</a>에서 본 것처럼, Expo Go에 없는 네이티브 라이브러리가 필요할 때 내 앱 전용으로 네이티브 부분까지 컴파일해 폰에 설치하는 빌드예요(비유로는 «내 전용 바인더»). <strong>개발 중에 쓰므로 ①에 속해요.</strong> 낱장은 여전히 노트북 책상(개발 서버)이 보내 줘서 저장하면 바로 바뀌고, 그래서 노트북이 꺼지면 돌지 않아요. 남에게 주는 ② 책(<code>preview</code> 빌드)과는 이 점이 달라요.</p>
     <table>
-      <thead><tr><th>바꾼 것</th><th>Expo Go</th><th>개발용 빌드</th><th><code>preview</code> 빌드(설치한 앱)</th></tr></thead>
+      <thead><tr><th>바꾼 것</th><th>① Expo Go</th><th>① 개발용 빌드</th><th>② <code>preview</code> 빌드(설치한 앱)</th></tr></thead>
       <tbody>
         <tr><td>화면·문구·동작(JavaScript)</td><td>저장하면 반영</td><td>저장하면 반영</td><td>다시 빌드</td></tr>
         <tr><td>네이티브 라이브러리, 권한</td><td>Expo Go에 있는 것만</td><td>다시 빌드</td><td>다시 빌드</td></tr>
