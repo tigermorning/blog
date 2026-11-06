@@ -196,7 +196,7 @@
 <g class="k-p"><rect id="xc-pkR" x="548" y="242" width="38" height="16" rx="3"/><text id="xc-ptR" class="ts" x="567" y="250" text-anchor="middle" dominant-baseline="central">출석 5</text></g>
 <rect id="xc-shR" class="mv k-g" x="436" y="212" width="20" height="26" rx="2" style="opacity:0"/>
 <text id="xc-bdR1" class="th" x="355" y="334">책은 그대로</text><text id="xc-bdR2" class="ts" x="355" y="352"></text><text id="xc-cnt" class="ts" x="355" y="384">빌드 횟수 사용: 0회</text>
-<g class="k-p"><rect x="10" y="425" width="660" height="95" rx="12"/><text class="th" x="340" y="446" text-anchor="middle">학교 사무실 (백엔드): 출석·성적 서류</text><text class="ts" x="340" y="464" text-anchor="middle">책을 펼 때마다 여기서 받아 와요</text></g>
+<g class="k-p"><rect x="10" y="425" width="660" height="95" rx="12"/><text class="th" x="340" y="446" text-anchor="middle">학교 사무실 (백엔드): 출석·성적 서류</text><text class="ts" x="340" y="464" text-anchor="middle">단계와 상관없이 하나인 사무실 · ①에서도 ②에서도 책을 펼 때마다 여기서 받아 와요</text></g>
 <line class="dash" x1="210" y1="424" x2="210" y2="274" stroke="#7F77DD" stroke-width="1.5" stroke-dasharray="5 4"/><line class="dash" x1="567" y1="424" x2="567" y2="262" stroke="#7F77DD" stroke-width="1.5" stroke-dasharray="5 4"/>
 <rect x="170" y="476" width="70" height="36" rx="4" class="k-b"/><rect x="538" y="476" width="70" height="36" rx="4" class="k-b"/>
 <text class="ts" x="205" y="495" text-anchor="middle" dominant-baseline="central">서랍</text><text class="ts" x="573" y="495" text-anchor="middle" dominant-baseline="central">서랍</text>
@@ -204,13 +204,13 @@
 <g id="xc-slR" class="mv k-p" style="opacity:0"><rect x="556" y="466" width="22" height="28" rx="2"/><line x1="560" y1="474" x2="574" y2="474" stroke="var(--muted)" stroke-width="1.5"/><line x1="560" y1="481" x2="574" y2="481" stroke="var(--muted)" stroke-width="1.5"/></g>
 <text id="xc-bdO" class="ts" x="340" y="500" text-anchor="middle"></text></svg>
     <div class="xc-chips"><span><i style="background:#1D9E75"></i>Expo Go</span><span><i style="background:var(--accent)"></i>빌드(인쇄소·책)</span><span><i style="background:#7F77DD"></i>사무실 데이터(서류)</span></div>
-    <figcaption id="xc-cap">화면과 기능은 같은 코드에서 나와 ①과 ②가 같게 보여요. 달라지는 것은 «고쳤을 때 반영되는 방식»과 «노트북이 필요한지»예요. 개발은 계속 ①에서 하고, 남에게 줄 때 ②를 만들어요. 위 버튼을 눌러 비교해 보세요.</figcaption>
+    <figcaption id="xc-cap">화면과 기능은 같은 코드에서 나와 ①과 ②가 같게 보여요. 달라지는 것은 «고쳤을 때 반영되는 방식»과 «노트북이 필요한지»예요. 개발은 계속 ①에서 하고, 남에게 줄 때 ②를 만들어요. 아래 보라색 사무실(백엔드)은 단계가 아니라 ①과 ②가 함께 쓰는 하나의 서버라서 둘 다 점선으로 이어져 있어요. 위 버튼을 눌러 비교해 보세요.</figcaption>
     <script>
     (function(){
     var T=[],busy=false,E=function(i){return document.getElementById('xc-'+i)};
     function at(ms,f){T.push(setTimeout(f,ms))}
     function lock(b){busy=b;['b1','b2'].forEach(function(i){E(i).disabled=b})}
-    var CAP0='화면과 기능은 같은 코드에서 나와 ①과 ②가 같게 보여요. 달라지는 것은 «고쳤을 때 반영되는 방식»과 «노트북이 필요한지»예요. 개발은 계속 ①에서 하고, 남에게 줄 때 ②를 만들어요. 위 버튼을 눌러 비교해 보세요.';
+    var CAP0='화면과 기능은 같은 코드에서 나와 ①과 ②가 같게 보여요. 달라지는 것은 «고쳤을 때 반영되는 방식»과 «노트북이 필요한지»예요. 개발은 계속 ①에서 하고, 남에게 줄 때 ②를 만들어요. 아래 보라색 사무실(백엔드)은 단계가 아니라 ①과 ②가 함께 쓰는 하나의 서버라서 둘 다 점선으로 이어져 있어요. 위 버튼을 눌러 비교해 보세요.';
     function reset(){T.forEach(clearTimeout);T=[];lock(false);
     ['lpL2','lpR2','bnL2'].forEach(function(i){var e=E(i);e.setAttribute('stroke','var(--muted)');e.setAttribute('stroke-width','2')});
     ['shL','shR','slL','slR'].forEach(function(i){var e=E(i);e.style.transition='none';e.style.opacity=0;e.style.transform='none';void e.offsetWidth;e.style.transition=''});
