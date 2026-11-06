@@ -126,7 +126,7 @@
     <p>두 플랫폼은 언어도 도구도 달라서, 네이티브로 만들면 같은 앱을 두 번 만들고 두 번 빌드해요.</p>
 
     <h2 id="analogy"><span class="hl">비유로 먼저</span> — 앞 편의 칠판과 교과서를 이어서</h2>
-    <p><a href="expo-mobile-app-with-expo-go.html#analogy">앞 편</a>의 학교 수업 비유를 이어 가요. 아래 장면은 위 흐름의 ①(왼쪽)과 ②(오른쪽)를 나란히 놓고, 같은 코드를 고쳤을 때 어떻게 다르게 반영되는지 보여 줘요. ①은 원고(화면 코드)를 고칠 때, ②는 학교 사무실의 기록(데이터)을 고칠 때를 눌러 보세요.</p>
+    <p><a href="expo-mobile-app-with-expo-go.html#analogy">앞 편</a>의 학교 수업 비유를 이어 가요. 아래 장면은 순서대로 읽어요. 먼저 ①에서 Expo Go로 개발하며 확인하고, 개발이 끝나 남에게 줄 때 ②의 빌드를 해요. 두 단계에서 같은 코드를 고쳤을 때 어떻게 다르게 반영되는지, 그리고 학교 사무실의 데이터는 어떻게 오는지 아래 두 버튼으로 눌러 보세요. 폰처럼 화면이 좁으면 그림을 좌우로 밀어서 오른쪽 «② 빌드한 뒤»까지 볼 수 있어요. ①은 원고(화면 코드)를 고칠 때, ②는 학교 사무실의 기록(데이터)을 고칠 때를 눌러 보세요.</p>
     <figure class="xc-scene">
     <style>
     .xc-svg text{font-family:var(--font-body);stroke:none}
@@ -155,9 +155,10 @@
     .xc-chips span{display:inline-flex;align-items:center;gap:6px;margin-right:14px}
     .xc-chips i{display:inline-block;width:12px;height:12px;border-radius:3px}
     </style>
-    <div class="xc-btns"><button type="button" id="xc-b1">① 원고(화면 코드) 고치기</button><button type="button" id="xc-b2">② 사무실 기록(데이터) 고치기</button><button type="button" id="xc-b0">처음으로</button></div>
-    <svg id="xc-sc" class="xc-svg" style="max-width:680px;margin:0 auto;display:block" viewBox="0 0 680 530" role="img" aria-label="Expo Go와 빌드한 앱을 나란히 놓고 비교하는 장면. 왼쪽은 공용 바인더에 노트북이 낱장을 바로 보내는 Expo Go, 오른쪽은 인쇄소가 제본한 책, 아래는 두 책에 출석과 성적 서류를 보내 주는 학교 사무실">
+    <div class="xc-btns"><button type="button" id="xc-b1">원고(화면 코드) 고치기</button><button type="button" id="xc-b2">사무실 기록(데이터) 고치기</button><button type="button" id="xc-b0">처음으로</button></div>
+    <svg id="xc-sc" class="xc-svg" style="max-width:680px;margin:0 auto;display:block" viewBox="0 -50 680 580" role="img" aria-label="먼저 Expo Go로 개발하며 확인하고, 개발이 끝나 남에게 줄 때 빌드한다. 왼쪽은 1단계 개발 중 공용 바인더에 노트북이 낱장을 바로 보내는 Expo Go, 오른쪽은 2단계 인쇄소가 제본한 책이고, 아래는 두 책에 출석과 성적 서류를 보내 주는 학교 사무실이다">
 <defs><marker id="xc-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<rect x="10" y="-42" width="280" height="32" rx="16" fill="color-mix(in srgb,#1D9E75 14%,transparent)" stroke="#1D9E75" stroke-width="1.6"/><text class="th" x="150" y="-26" text-anchor="middle" dominant-baseline="central">1단계 · 먼저: 개발하며 확인</text><rect x="390" y="-42" width="280" height="32" rx="16" fill="color-mix(in srgb,var(--accent) 16%,transparent)" stroke="var(--accent)" stroke-width="1.6"/><text class="th" x="530" y="-26" text-anchor="middle" dominant-baseline="central">2단계 · 나중: 남에게 줄 때</text><text class="ts" x="340" y="-33" text-anchor="middle" dominant-baseline="central">개발이 끝나면</text><line class="arr" x1="298" y1="-19" x2="382" y2="-19" marker-end="url(#xc-arrow)"/>
 <rect x="10" y="10" width="325" height="400" rx="12" class="k-b"/><rect x="345" y="10" width="325" height="400" rx="12" class="k-b"/>
 <text class="th" x="172" y="36" text-anchor="middle">① 개발하는 동안 (Expo Go)</text><text class="ts" x="172" y="54" text-anchor="middle">나만 봄 · 공용 바인더에 낱장 끼우기</text>
 <text class="th" x="507" y="36" text-anchor="middle">② 빌드한 뒤 (설치한 앱)</text><text class="ts" x="507" y="54" text-anchor="middle">남에게 줌 · 한 권으로 제본한 책</text>
@@ -238,7 +239,7 @@
     </figure>
     <p>학교에는 <strong>공용 바인더</strong>가 미리 만들어져 있어요. 표지와 고리 같은 부품은 완성돼 있어서 낱장만 끼우면 되고, <strong>노트북 책상</strong>(개발 서버)이 낱장(내 코드)을 계속 보내 줘요. 이것이 Expo Go예요. 책상이 꺼지면 낱장이 오지 않고, 바인더에 없는 특수 부품(Expo Go에 없는 네이티브 라이브러리)은 쓸 수 없어요.</p>
     <p>다른 학생에게 줄 책은 <strong>외주 인쇄소</strong>(EAS)가 한 권으로 만들어요. 접수창구는 원고(저장소 파일)만 받고 서랍 속 메모(<code>.env</code>)는 받지 않아요. 낱장을 묶고(번들), 표지와 부품을 찍고(컴파일), 제본해서(앱 파일) <strong>검정 도장</strong>(서명)을 찍고, 도장은 인쇄소 금고(Expo 계정)에 보관돼요. 책에는 고유 번호(ISBN)가 붙는데 이것이 패키지 이름이라 한 번 올리면 못 바꿔요. 뒤표지에는 학교 사무실 위치(<code>EXPO_PUBLIC_</code> 값)가 인쇄돼 책을 가진 누구나 읽을 수 있으니, 비밀번호는 적으면 안 돼요.</p>
-    <p>제본된 책의 낱장은 굳어서 원고를 고치면 책을 새로 찍어야 하고, 그때마다 인쇄 의뢰 횟수(무료 플랜의 월 빌드 횟수)를 한 번 써요. 반면 출석과 성적은 책을 펼 때마다 <strong>학교 사무실</strong>(백엔드)에서 받아 와요. 그림의 ②를 누르면 서랍에서 서류가 두 책으로 날아가는 것이 이 일이에요. 그래서 사무실 기록을 고치는 일은 책을 다시 찍을 필요가 없어요.</p>
+    <p>제본된 책의 낱장은 굳어서 원고를 고치면 책을 새로 찍어야 하고, 그때마다 인쇄 의뢰 횟수(무료 플랜의 월 빌드 횟수)를 한 번 써요. 반면 출석과 성적은 책을 펼 때마다 <strong>학교 사무실</strong>(백엔드)에서 받아 와요. 그림의 «사무실 기록 고치기» 버튼을 누르면 서랍에서 서류가 두 책으로 날아가는 것이 이 일이에요. 그래서 사무실 기록을 고치는 일은 책을 다시 찍을 필요가 없어요.</p>
     <p><strong>핵심 한 줄:</strong> 공용 바인더는 낱장만 갈아 끼우면 바로 바뀌지만, 한 권으로 제본한 책은 찍는 순간 내용이 굳어서 고치려면 새로 찍어야 해요.</p>
     <p>다만 비유가 끊기는 점이 있어요. 학교는 새 교과서를 한꺼번에 나눠 줄 수 있지만 앱은 사용자가 직접 업데이트해야 하고, 인쇄소는 책만 만들 뿐 학생에게 나눠 주는 <strong>제출</strong>과 심사는 스토어에서 따로 거쳐요.</p>
 
