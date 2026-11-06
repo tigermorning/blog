@@ -90,9 +90,73 @@
     <p>두 플랫폼은 언어도 도구도 달라서, 네이티브로 만들면 같은 앱을 두 번 만들고 두 번 빌드해요.</p>
 
     <h2 id="analogy"><span class="hl">비유로 먼저</span> — 앞 편의 칠판과 교과서를 이어서</h2>
-    <p><a href="expo-mobile-app-with-expo-go.html#analogy">앞 편</a>의 학교 수업 비유를 그대로 이어 가요. 웹은 수업 때마다 선생님이 칠판에 적어 주는 것이고, 앱은 가방에 넣고 다니는 교과서예요. 이번 글은 «그 교과서가 어떻게 만들어지는가»를 정확히 맞춰서 설명해요.</p>
-    <p>먼저 학교에는 <strong>공용 바인더</strong>가 미리 만들어져 있어요. 표지와 고리 같은 부품은 이미 완성돼 있고, 낱장만 끼워 넣으면 돼요. 선생님의 <strong>노트북 책상</strong>(개발 서버)이 내 낱장(내 코드)을 계속 보내 주니 끼우자마자 읽을 수 있고, 낱장을 고치면 바로 바뀌어요. 이것이 Expo Go예요. 다만 낱장은 책상에서 오므로 책상이 꺼지면 낱장이 오지 않고, 공용 바인더에 없는 특수 부품은 쓸 수 없어요.</p>
-    <p>다른 학생에게 나눠 줄 책은 내 낱장과 부품을 <strong>한 권으로 제본</strong>해야 해요. 이 일을 <strong>외주 인쇄소</strong>(EAS 클라우드 빌드)에 맡겨요. 인쇄소는 접수창구에서 낸 원고(저장소에 올라온 파일)만 받고 책상 서랍 속 메모(<code>.env</code>)는 받지 않아요. 그다음 낱장을 한 묶음으로 정리하고(번들), 표지와 부품을 찍고(네이티브 컴파일), 한 권으로 묶고(앱 파일), 학교가 인정한 책이라는 <strong>검정 도장</strong>(서명)을 찍어 «이 링크에서 받아 가세요»를 돌려줘요. 한 번 제본된 책의 낱장은 굳어서, 원고를 고치면 책을 새로 찍어야 하고 그때마다 의뢰 횟수를 한 번 써요. 책은 펼 때마다 <strong>학교 사무실</strong>(백엔드)에서 내 출석과 성적을 받아 오므로, 사무실 기록을 고치는 일은 책을 다시 찍을 필요가 없어요.</p>
+    <p><a href="expo-mobile-app-with-expo-go.html#analogy">앞 편</a>의 학교 수업 비유를 이어 가요. 아래 장면에서 버튼을 눌러 두 경우를 비교해 보세요.</p>
+    <figure class="ex-scene">
+    <style>
+    @media (prefers-reduced-motion: no-preference){
+    .ex-belt{animation:exbelt .6s linear infinite}
+    .ex-spin{transform-box:fill-box;transform-origin:center;animation:exspin 1.4s linear infinite}
+    .ex-stamp{animation:exstamp 7s ease-in-out infinite}
+    .ex-manu{animation:exmanu 7s linear infinite}
+    .ex-book{animation:exbook 7s linear infinite}
+    .ex-mark{animation:exmark 7s linear infinite}
+    .ex-sheet{animation:exsheet 2.4s ease-in-out infinite}
+    .ex-pulse{animation:expulse 1.2s linear infinite}
+    }
+    @keyframes exbelt{to{stroke-dashoffset:-16}}
+    @keyframes exspin{to{transform:rotate(360deg)}}
+    @keyframes exstamp{0%,50%{transform:translateY(0)}53%,58%{transform:translateY(42px)}62%,100%{transform:translateY(0)}}
+    @keyframes exmanu{0%{transform:translateX(0);opacity:1}34%{transform:translateX(95px);opacity:1}38%,100%{transform:translateX(95px);opacity:0}}
+    @keyframes exbook{0%,40%{transform:translateX(110px);opacity:0}45%{transform:translateX(110px);opacity:1}100%{transform:translateX(287px);opacity:1}}
+    @keyframes exmark{0%,57%{opacity:0}58%,100%{opacity:1}}
+    @keyframes exsheet{0%{transform:translate(0,0);opacity:0}8%{opacity:1}50%{transform:translate(166px,-170px);opacity:1}92%{opacity:1}100%{transform:translate(333px,38px);opacity:0}}
+    @keyframes expulse{to{stroke-dashoffset:-20}}
+    svg.exA #ex-shop,svg.exA .ex-manu,svg.exA .ex-book{animation:none}
+    svg.exA #ex-shop{opacity:.3}
+    svg.exA .ex-manu,svg.exA .ex-book{visibility:hidden}
+    svg.exA #ex-bkB,svg.exA #ex-bp{opacity:0}
+    svg.exB #ex-bkA,svg.exB .ex-sheet{opacity:0;visibility:hidden}
+    .ex-btns{display:flex;gap:8px;margin:0 0 10px;flex-wrap:wrap}
+    .ex-btns button{padding:6px 14px;border:1px solid var(--border);border-radius:6px;background:transparent;color:var(--ink);font:inherit;cursor:pointer}
+    .ex-btns button[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent)}
+    </style>
+    <div class="ex-btns"><button type="button" id="ex-bA" aria-pressed="false" onclick="exSet('exA')">Expo Go로 볼 때</button><button type="button" id="ex-bB" aria-pressed="true" onclick="exSet('exB')">빌드해서 설치할 때</button></div>
+    <svg id="ex-sc" class="exB" viewBox="0 110 680 290" style="max-width:680px;margin:0 auto;display:block" role="img" aria-label="노트북 책상, 외주 인쇄소, 학교와 학생, 학교 사무실이 나란히 있는 마을. 빌드 모드에서는 원고가 인쇄소에서 한 권의 책이 되어 학생에게 가고, Expo Go 모드에서는 노트북이 낱장을 공용 바인더로 직접 보낸다">
+      <g font-family="var(--font-body)" font-size="13" fill="var(--ink)" stroke-width="1.5">
+        <line x1="0" y1="360" x2="680" y2="360" stroke="var(--border)"/>
+        <rect x="15" y="340" width="70" height="20" rx="3" fill="none" stroke="var(--muted)"/>
+        <rect x="25" y="298" width="50" height="38" rx="4" fill="none" stroke="var(--ink)"/><text x="50" y="321" text-anchor="middle" stroke="none">원고</text>
+        <g id="ex-shop">
+          <rect x="105" y="170" width="180" height="190" rx="6" fill="var(--accent)" fill-opacity=".1" stroke="var(--accent)"/>
+          <text x="195" y="196" text-anchor="middle" font-family="var(--font-heading)" font-weight="700" stroke="none">인쇄소</text>
+          <rect x="117" y="212" width="156" height="122" rx="4" fill="none" stroke="var(--border)"/>
+          <g class="ex-spin"><circle cx="152" cy="268" r="20" fill="none" stroke="var(--muted)"/><line x1="152" y1="252" x2="152" y2="284" stroke="var(--muted)"/><line x1="136" y1="268" x2="168" y2="268" stroke="var(--muted)"/></g>
+          <g class="ex-spin"><circle cx="196" cy="268" r="20" fill="none" stroke="var(--muted)"/><line x1="196" y1="252" x2="196" y2="284" stroke="var(--muted)"/><line x1="180" y1="268" x2="212" y2="268" stroke="var(--muted)"/></g>
+          <g class="ex-stamp"><rect x="238" y="222" width="14" height="22" rx="3" fill="none" stroke="var(--ink)"/><rect x="230" y="244" width="30" height="10" rx="3" fill="none" stroke="var(--ink)"/></g>
+          <rect x="105" y="334" width="180" height="10" fill="none" stroke="var(--muted)"/><line class="ex-belt" x1="105" y1="339" x2="285" y2="339" stroke="var(--muted)" stroke-width="1" stroke-dasharray="8 8"/>
+        </g>
+        <rect class="ex-manu" x="85" y="312" width="16" height="22" rx="1" fill="none" stroke="var(--ink)"/>
+        <g class="ex-book"><rect x="85" y="310" width="24" height="24" rx="2" fill="var(--accent)" fill-opacity=".25" stroke="var(--accent)"/><line x1="90" y1="312" x2="90" y2="332" stroke="var(--accent)" stroke-width="1"/><circle class="ex-mark" cx="100" cy="322" r="5" fill="none" stroke="var(--accent)"/></g>
+        <rect class="ex-sheet" x="50" y="292" width="14" height="18" rx="1" fill="none" stroke="var(--ink)" style="animation-delay:0s"/><rect class="ex-sheet" x="50" y="292" width="14" height="18" rx="1" fill="none" stroke="var(--ink)" style="animation-delay:.8s"/><rect class="ex-sheet" x="50" y="292" width="14" height="18" rx="1" fill="none" stroke="var(--ink)" style="animation-delay:1.6s"/>
+        <rect x="325" y="210" width="160" height="150" fill="none" stroke="var(--muted)"/><polygon points="317,210 405,162 493,210" fill="none" stroke="var(--muted)"/>
+        <rect x="345" y="226" width="120" height="50" rx="4" fill="none" stroke="var(--ink)"/><text x="405" y="256" text-anchor="middle" stroke="none">칠판 (웹)</text>
+        <rect x="425" y="312" width="36" height="48" rx="3" fill="none" stroke="var(--border)"/>
+        <circle cx="355" cy="296" r="11" fill="none" stroke="var(--ink)"/><rect x="343" y="309" width="24" height="38" rx="8" fill="none" stroke="var(--ink)"/>
+        <line x1="350" y1="347" x2="350" y2="360" stroke="var(--ink)"/><line x1="360" y1="347" x2="360" y2="360" stroke="var(--ink)"/>
+        <rect id="ex-bp" x="335" y="312" width="9" height="26" rx="3" fill="var(--accent)" fill-opacity=".25" stroke="var(--accent)"/>
+        <g id="ex-bkA"><rect x="368" y="318" width="30" height="26" rx="3" fill="none" stroke="var(--ink)"/><circle cx="368" cy="326" r="2.5" fill="none" stroke="var(--ink)"/><circle cx="368" cy="336" r="2.5" fill="none" stroke="var(--ink)"/></g>
+        <g id="ex-bkB"><rect x="368" y="318" width="30" height="26" rx="3" fill="var(--accent)" fill-opacity=".25" stroke="var(--accent)"/><line x1="374" y1="320" x2="374" y2="342" stroke="var(--accent)" stroke-width="1"/><circle cx="388" cy="331" r="5" fill="none" stroke="var(--accent)"/></g>
+        <rect x="530" y="230" width="135" height="130" fill="none" stroke="var(--muted)"/><rect x="552" y="262" width="44" height="98" rx="3" fill="none" stroke="var(--muted)"/><text x="574" y="280" text-anchor="middle" font-size="12" stroke="none">서류함</text>
+        <line x1="552" y1="292" x2="596" y2="292" stroke="var(--border)"/><line x1="552" y1="322" x2="596" y2="322" stroke="var(--border)"/><rect x="614" y="262" width="36" height="36" rx="3" fill="none" stroke="var(--border)"/>
+        <path class="ex-pulse" d="M552,300 C505,300 450,342 402,336" fill="none" stroke="var(--muted)" stroke-dasharray="6 6"/>
+        <g text-anchor="middle" font-size="12" fill="var(--muted)" stroke="none"><text x="50" y="384">내 노트북</text><text x="195" y="384">외주 인쇄소(EAS)</text><text x="405" y="384">학생(내 폰)</text><text x="597" y="384">학교 사무실(백엔드)</text></g>
+      </g>
+    </svg>
+    <figcaption id="ex-cap">빌드: 원고가 인쇄소에서 한 권의 책(진한 색)이 되어 학생 가방으로 가요. 책 속 낱장은 찍은 시점 그대로 굳고, 점선은 펼 때마다 학교 사무실에서 받아 오는 기록이에요. «동작 줄이기» 설정이 켜진 브라우저에서는 움직이지 않아요.</figcaption>
+    <script>
+    function exSet(m){document.getElementById('ex-sc').setAttribute('class',m);document.getElementById('ex-bA').setAttribute('aria-pressed',m==='exA');document.getElementById('ex-bB').setAttribute('aria-pressed',m==='exB');document.getElementById('ex-cap').textContent=m==='exA'?'Expo Go: 학교가 미리 만든 공용 바인더(왼쪽 책)에 노트북이 보내 주는 낱장을 끼워 읽어요. 인쇄소는 쉬고, 노트북이 꺼지면 낱장이 오지 않아요.':'빌드: 원고가 인쇄소에서 한 권의 책(진한 색)이 되어 학생 가방으로 가요. 책 속 낱장은 찍은 시점 그대로 굳고, 점선은 펼 때마다 학교 사무실에서 받아 오는 기록이에요. «동작 줄이기» 설정이 켜진 브라우저에서는 움직이지 않아요.'}
+    </script>
+    </figure>
     <table>
       <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
       <tbody>
@@ -109,37 +173,6 @@
         <tr><td>인쇄 의뢰를 할 수 있는 월 횟수</td><td>무료 플랜의 월 빌드 횟수</td></tr>
       </tbody>
     </table>
-    <figure>
-    <svg viewBox="0 0 640 310" style="max-width:640px;margin:0 auto" role="img" aria-label="왼쪽은 공용 바인더에 노트북 책상이 보낸 낱장을 끼워 읽는 Expo Go, 오른쪽은 외주 인쇄소가 낱장과 부품을 한 권으로 제본하고 검정 도장을 찍은 빌드한 앱">
-      <defs>
-        <marker id="an-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/></marker>
-      </defs>
-      <g font-family="var(--font-body)" font-size="13" fill="var(--ink)">
-        <text x="150" y="24" text-anchor="middle" font-family="var(--font-heading)" font-size="15" font-weight="700">Expo Go로 볼 때</text>
-        <text x="490" y="24" text-anchor="middle" font-family="var(--font-heading)" font-size="15" font-weight="700">빌드해서 설치한 앱</text>
-        <line x1="320" y1="12" x2="320" y2="296" stroke="var(--border)" stroke-dasharray="4 4"/>
-        <rect x="50" y="46" width="200" height="150" rx="8" fill="none" stroke="var(--muted)" stroke-width="1.6"/>
-        <circle cx="50" cy="78" r="6" fill="none" stroke="var(--muted)" stroke-width="1.6"/><circle cx="50" cy="121" r="6" fill="none" stroke="var(--muted)" stroke-width="1.6"/><circle cx="50" cy="164" r="6" fill="none" stroke="var(--muted)" stroke-width="1.6"/>
-        <text x="150" y="66" text-anchor="middle" fill="var(--muted)">공용 바인더(미리 만들어 둠)</text>
-        <rect x="82" y="82" width="136" height="98" rx="3" fill="none" stroke="var(--border)" stroke-width="1.6"/>
-        <text x="150" y="136" text-anchor="middle" font-weight="700">내 낱장</text>
-        <rect x="50" y="236" width="200" height="42" rx="8" fill="none" stroke="var(--muted)" stroke-width="1.6"/>
-        <text x="150" y="262" text-anchor="middle">노트북 책상(개발 서버)</text>
-        <line x1="150" y1="234" x2="150" y2="200" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#an-a)"/>
-        <rect x="390" y="46" width="200" height="150" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
-        <rect x="390" y="46" width="22" height="150" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
-        <text x="500" y="92" text-anchor="middle" font-weight="700">내 앱 한 권</text>
-        <text x="500" y="114" text-anchor="middle" fill="var(--muted)">낱장 + 부품이 묶여 굳음</text>
-        <rect x="430" y="138" width="106" height="26" rx="4" fill="none" stroke="var(--border)" stroke-width="1.4"/>
-        <text x="483" y="156" text-anchor="middle" font-size="12">패키지 이름 = ISBN</text>
-        <circle cx="560" cy="172" r="18" fill="none" stroke="var(--accent)" stroke-width="2"/><text x="560" y="177" text-anchor="middle" font-size="12" fill="var(--accent)">검정</text>
-        <rect x="390" y="236" width="200" height="42" rx="8" fill="none" stroke="var(--accent)" stroke-width="1.6"/>
-        <text x="490" y="262" text-anchor="middle">외주 인쇄소(EAS)</text>
-        <line x1="490" y1="234" x2="490" y2="200" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#an-a)"/>
-      </g>
-    </svg>
-    <figcaption>왼쪽은 낱장만 바꿔 끼우는 Expo Go, 오른쪽은 인쇄소가 한 권으로 제본한 앱이에요. 진한 테두리는 빌드로 만들어진 것이고, 화살표는 «누가 누구에게 보내 주는지»를 뜻해요.</figcaption>
-    </figure>
     <p><strong>핵심 한 줄:</strong> 공용 바인더는 낱장만 갈아 끼우면 바로 바뀌지만, 한 권으로 제본한 책은 찍는 순간 내용이 굳어서 고치려면 새로 찍어야 해요.</p>
     <p>다만 비유가 끊기는 점이 있어요. 학교는 새 교과서를 한꺼번에 나눠 줄 수 있지만 앱은 사용자가 직접 업데이트해야 하고, 인쇄소는 책만 만들 뿐 학생에게 나눠 주는 <strong>제출</strong>과 심사는 스토어에서 따로 거쳐요.</p>
 
