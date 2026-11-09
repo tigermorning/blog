@@ -115,7 +115,7 @@
         <tr><td>설명서 단계마다 보관해 두는 중간 완성 상자</td><td>레이어<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup>와 레이어 캐시 — 안 바뀐 단계는 다시 안 만듦</td></tr>
       </tbody>
     </table>
-    <p><strong>핵심 한 줄:</strong> 특수 칼처럼 레시피에 안 적힌 것은 포장 라인이 챙기지 못하니, 설명서(Dockerfile)에 직접 적어야 어느 가게에서 열어도 같은 주방이 된다.</p>
+    <p><strong>핵심 한 줄:</strong> tesseract 같은 시스템 패키지는 코드만 보는 buildpacks가 챙기지 못하니, Dockerfile에 직접 적어야 어느 서버에서 실행해도 같은 실행 환경이 된다.</p>
     <p>다만 여기서 비유가 끊기는 점이 있어요. 밀키트는 뜯으면 없어지지만, 이미지는 그대로 남아 있고 같은 이미지로 컨테이너를 몇 개든 띄울 수 있어요. 컨테이너를 지워도 이미지는 안 지워져요. 아래에서 직접 확인해요.</p>
 
     <h2 id="relation"><span class="hl">Dockerfile · 이미지 · 컨테이너</span> — 셋의 관계를 한 장으로</h2>
@@ -187,7 +187,7 @@
         <tr><td>몇 개 생기나</td><td>하나를 계속 고쳐 씀</td><td>build 할 때마다 하나 (캐시를 안 쓰면 매번 다른 ID)</td><td>run 할 때마다 하나</td></tr>
       </tbody>
     </table>
-    <p><strong>핵심 한 줄:</strong> Dockerfile은 레시피, 이미지는 레시피대로 만든 밀키트 상자, 컨테이너는 그 상자를 뜯어 불에 올린 주방이에요. 상자를 고치고 싶으면 레시피를 고쳐서 상자를 새로 만들어야 해요.</p>
+    <p><strong>핵심 한 줄:</strong> Dockerfile은 실행 환경을 적은 파일, 이미지는 Dockerfile대로 빌드한 결과물, 컨테이너는 그 이미지를 실행한 것이에요. 이미지를 바꾸고 싶으면 Dockerfile을 고쳐서 이미지를 새로 빌드해야 해요.</p>
 
     <h2 id="flow"><span class="hl">전체 흐름</span> — Dockerfile을 써서 production까지</h2>
     <figure>
