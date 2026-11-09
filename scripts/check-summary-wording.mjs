@@ -1,4 +1,4 @@
-// 핵심 요약 영역(한 줄 정의 .one-liner, 이 글을 읽기 전에 .why-read, meta/og description)에 비유·감정 표현이 들어갔는지 검사한다.
+// 핵심 요약 영역(한 줄 정의 .one-liner, 이 글을 읽기 전에 .why-read, meta/og description, «핵심 한 줄»)에 비유·감정 표현이 들어갔는지 검사한다.
 // 사용: node scripts/check-summary-wording.mjs [파일...]   (인자가 없으면 ko·en·zh 의 모든 글)
 // 걸리면 종료 코드 1. 정말 문제없는 관용 표현은 아래 ALLOW 에 «파일:문구»로 적고 이유를 남긴다(2026-11-09 사용자 지정 규칙).
 import fs from 'fs';
@@ -11,7 +11,8 @@ const BAN = [
   [/문을 (닫|열|잠)|입구를 열|잠근다/, '문 비유 대신 실제 동작(막는다·허용한다)으로'],
   [/열쇠/, '«열쇠» 비유 대신 키·개인키·비밀 문자열처럼(한 줄 정의·description 에서만 검사)', ['한 줄 정의', 'description']],
   [/시간표에 올|예선|쥔 관리자|먹일수록|밑바닥/, '비유 대신 실제 동작으로'],
-  [/손님|사장님|요리사|주방/, '요약 영역에는 비유 무대(식당)를 쓰지 않고 실제 대상(사용자·개발자·서버)으로'],
+  [/손님|사장님|요리사|주방|요리|셰프|레시피|주문서|공정표|동선표|밀키트|조리|(?<![가-힣])도마|부엌|시식/, '요약 영역에는 비유 무대(식당)를 쓰지 않고 실제 대상(사용자·개발자·서버)으로'],
+  [/세 겹|일곱 겹/, '«겹» 비유 대신 «단계»로'],
 ];
 const ALLOW = [
   // 'domain-expertise-ai-era-asset.html:진짜 아픈 문제' — 사업 용어 «아픈 문제(pain point)»를 풀어 쓴 관용 표현이라 허용
@@ -26,6 +27,8 @@ for (const f of files) {
   const parts = [];
   for (const m of s.matchAll(/<p class="one-liner"[^>]*>([\s\S]*?)<\/p>/g)) parts.push(['한 줄 정의', clean(m[1])]);
   for (const m of s.matchAll(/<div class="why-read">([\s\S]*?)<\/div>/g)) for (const li of m[1].matchAll(/<li[^>]*>([\s\S]*?)<\/li>/g)) parts.push(['읽기 전에 박스', clean(li[1])]);
+  // «핵심 한 줄»(비유 절 끝 문단)도 직설로 — 파이썬 스터디(beginner-python-*)는 건드리지 않기로 한 방침이라 제외
+  if (!/beginner-python/.test(f)) for (const m of s.matchAll(/<p><strong>핵심 한 줄:?<\/strong>:?([\s\S]*?)<\/p>/g)) parts.push(['핵심 한 줄', clean(m[1])]);
   for (const m of s.matchAll(/<meta (?:name="description"|property="og:description") content="([^"]*)"/g)) parts.push(['description', clean(m[1])]);
   for (const [where, text] of parts) for (const [re, why, only] of BAN) {
     if (only && !only.includes(where)) continue;

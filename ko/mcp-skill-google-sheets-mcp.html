@@ -108,7 +108,7 @@
         <tr><td>방문증을 <strong>아무 데나 두지 않는</strong> 습관</td><td><code>save_private()</code> — 토큰 파일을 <strong>남에게 열리지 않게</strong> 저장</td></tr>
       </tbody>
     </table>
-    <p><strong>핵심 한 줄:</strong> <strong>사람이 개입하는 건 "확인해 주는 그 한 번"뿐</strong>이고, 그다음부터는 <strong>주머니 속 방문증과 재발급 티켓이 사람 자리를 대신해요.</strong></p>
+    <p><strong>핵심 한 줄:</strong> <strong>사람이 개입하는 건 동의 화면에서 허용하는 그 한 번뿐</strong>이고, 그다음부터는 <strong>token.json에 저장된 접근 토큰과 갱신 토큰이 사람 역할을 대신해요.</strong></p>
     <p>다만 여기서 비유가 끊기는 점이 하나 있어요. 진짜 방문증은 잃어버려도 다시 내려가서 받으면 그만이지만, <strong><code>token.json</code>은 남의 손에 들어가면 그 사람이 제 동의를 그대로 써 버려요.</strong> 그래서 이 파일은 "잃어버리면 재발급"이 아니라 <strong>"애초에 새어 나가지 않게"</strong>가 원칙이에요 — 11편에서 <code>.gitignore</code> 이야기를 했던 이유가 이거예요.</p>
 
     <h2><span class="hl">비유 둘</span> — 도서관에서 세 줄만 베껴 오기</h2>
@@ -126,7 +126,7 @@
         <tr><td>나오면서 <strong>창구를 닫는</strong> 것</td><td><code>service.close()</code> — 열어 둔 연결을 정리</td></tr>
       </tbody>
     </table>
-    <p><strong>핵심 한 줄:</strong> <strong>API를 두 번 부르는 이유는, 첫 번째 답(시트 이름)이 없으면 두 번째 요청의 범위 문자열 자체를 만들 수 없기 때문</strong>이에요 — 게을러서 두 번 부르는 게 아니에요.</p>
+    <p><strong>핵심 한 줄:</strong> <strong>API를 두 번 호출하는 이유는, 첫 번째 응답(시트 이름)이 없으면 두 번째 요청의 range 문자열을 만들 수 없기 때문</strong>이에요.</p>
 
     <h2><span class="hl">전체 흐름 그림</span> — 한 번뿐인 구간과 매번 도는 구간</h2>
     <p>이번 편의 전체 모양을 한 장에 그렸어요. 윗줄과 아랫줄을 가르는 기준은 <strong>"사람이 화면 앞에 앉아 있어야 하는가"</strong>예요.</p>

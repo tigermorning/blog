@@ -90,7 +90,7 @@
         <tr><td>도장이 없거나 국적이 다르면 국경 스스로 여행자를 돌려보냄</td><td>헤더가 없거나 우리 주소와 다르면 브라우저가 응답을 버림 — 서버는 응답을 이미 다 만들어 보냈는데도요</td></tr>
       </tbody>
     </table>
-    <p><strong>핵심 한 줄:</strong> 막는 쪽은 서버가 아니라 브라우저예요 — 서버는 허용 주소를 헤더로 적어 줄 뿐이에요.</p>
+    <p><strong>핵심 한 줄:</strong> 응답을 허용할지 검사하는 쪽은 브라우저이고, 서버는 허용 주소를 헤더로 적어 줄 뿐이에요.</p>
 
     <h2><span class="hl">실제로 겪으면 이렇게 생겼다</span></h2>
     <p>예를 들어 우리 게임이 <code>https://cheesecake.pages.dev</code>에, 프록시 서버가 <code>https://cheesecake-proxy.onrender.com</code>에 따로 있다고 해봐요. 서버 쪽에서 헤더를 안 챙기면 이렇게 돼요. 아래는 서버 코드 일부이고, 읽기만 해도 돼요. <code>res.json(result)</code> 줄이 서버가 화면에 답을 돌려주는 곳이에요.</p>

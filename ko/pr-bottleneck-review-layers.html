@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>PR 병목 고치기 — 에이전트 PR을 사람이 다 읽지 않아도 되는 조건 - Tigermorning</title>
-  <meta name="description" content="맷 포콕의 AI Engineer Paris 2026 강연 「Fixing the PR Bottleneck」과 한국어 해설 영상을 바탕으로, 에이전트가 올린 PR을 사람이 전부 읽지 않아도 되게 만드는 세 겹(자동 검사·자동 리뷰·사람 리뷰), 통과만 하는 테스트 세 종류, 코딩 규칙을 리뷰 에이전트에게 넘기는 이유, PR 맨 아래 Merge Danger와 retro까지 정리했습니다.">
+  <meta name="description" content="맷 포콕의 AI Engineer Paris 2026 강연 「Fixing the PR Bottleneck」과 한국어 해설 영상을 바탕으로, 에이전트가 올린 PR을 사람이 전부 읽지 않아도 되게 만드는 세 단계(자동 검사·자동 리뷰·사람 리뷰), 통과만 하는 테스트 세 종류, 코딩 규칙을 리뷰 에이전트에게 넘기는 이유, PR 맨 아래 Merge Danger와 retro까지 정리했습니다.">
   <meta property="og:type" content="article">
   <meta property="og:title" content="PR 병목 고치기 — 에이전트 PR을 사람이 다 읽지 않아도 되는 조건">
-  <meta property="og:description" content="자동 검사·자동 리뷰·사람 리뷰 세 겹, 초록불이 거짓말하는 테스트 세 종류, 댓글 대신 커밋하는 리뷰어, one-way·two-way door로 리뷰 강도 정하기.">
+  <meta property="og:description" content="자동 검사·자동 리뷰·사람 리뷰 세 단계, 초록불이 거짓말하는 테스트 세 종류, 댓글 대신 커밋하는 리뷰어, one-way·two-way door로 리뷰 강도 정하기.">
   <meta property="og:url" content="https://tigermorning.github.io/blog/ko/pr-bottleneck-review-layers.html">
   <meta property="og:locale" content="ko_KR">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -106,7 +106,7 @@
         <tr><td>교정 담당이 반복되는 지적을 표기 규칙집에 옮겨 적음</td><td>retro — 반복된 리뷰 지적을 새 자동 검사·코딩 규칙으로 옮김</td></tr>
       </tbody>
     </table>
-    <p><strong>핵심 한 줄:</strong> 편집장이 더 빨리 읽게 만드는 대신, 편집장 책상에 오는 원고를 미리 걸러 둔다.</p>
+    <p><strong>핵심 한 줄:</strong> 사람이 PR을 더 빨리 읽게 만드는 대신, 사람에게 오는 PR을 자동 검사와 자동 리뷰로 미리 걸러 둔다.</p>
     <p>다만 여기서 비유가 끊기는 점이 있어요. 맞춤법 검사기는 틀린 곳을 놓칠 수는 있어도, 통과할 수밖에 없게 짜인 채로 오지는 않아요. 에이전트가 쓴 테스트는 그런 채로 올 수 있어요.</p>
 
     <h2 id="flow"><span class="hl">전체 흐름</span> — PR 하나가 머지되기까지</h2>
