@@ -79,7 +79,7 @@
       <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
       <tbody>
         <tr><td>마감 때마다 장부에 한 줄 — 사장님이 정해 둔 칸(들어온 재료 → 골라 둔 재료 → 담은 접시 → 시식 통과)을 채워 적기</td><td><code>run()</code>이 끝날 때마다 <code>store/metrics.jsonl</code>에 — 개발자가 정해 둔 키(<code>collected</code> → <code>picked</code> → <code>drafted</code> → <code>published</code>)를 JSON 한 줄로 덧붙이기</td></tr>
-        <tr><td>사장님이 몇 주치 장부를 거래처별로 다시 세기</td><td>개발자가 쌓인 기록의 <code>by_source</code>를 더해 <strong>소스별 성적표</strong> 만들기</td></tr>
+        <tr><td>사장님이 몇 주치 장부를 거래처별로 다시 세기</td><td>개발자가 쌓인 기록의 <code>by_source</code>(실행마다 매체별로 몇 건이 발행됐는지 적은 항목)를 더해 <strong>소스별 성적표</strong> 만들기</td></tr>
         <tr><td>메뉴를 정하는 사람이 레시피 카드를 갈아 끼우기</td><td>편집 방향을 정하는 사람이 <code>audience.yaml</code>의 독자·기준 문장을 고치기 — 파이썬 파일은 안 열어요</td></tr>
         <tr><td>조리대 직원은 카드가 바뀌어도 같은 순서로 손질 → 담기 → 시식</td><td>노드 다섯 개와 그래프는 그대로, 실행할 때 설정 파일에서 기준 문장만 읽어 씀</td></tr>
       </tbody>
@@ -315,7 +315,7 @@ AI타임스               1
     <p>실제 값은 매체 목록과 돌린 횟수에 따라 전부 달라요. 요점은 <strong>새 도구 없이, 이미 남긴 기록만으로</strong> 이 표가 나온다는 거예요.</p>
 
     <h3 id="field-nk-metrics">실전 적용기 — 북한 뉴스 첫 기록 두 줄</h3>
-    <p>12편의 잣대로 잰 북한 뉴스 4곳의 값을 이 편의 방식으로 <code>store/metrics.jsonl</code>에 남겼어요. 실제 첫 두 줄을 줄여 적으면 이래요.</p>
+    <p>12편의 잣대로 잰 북한 뉴스 4곳의 값을 이 편의 방식으로 <code>store/metrics.jsonl</code>에 남겼어요. 실제 첫 두 줄을 줄여 적으면 이래요. <code>g1</code>·<code>g2_14d</code>·<code>g3</code>는 <a href="newsletter-agent-collect.html">12편</a>의 세 관문 G1 본문·G2 생존·G3 접근의 결과이고, 특히 <code>g2_14d</code>는 최근 14일 동안 매체별로 올라온 기사 수예요. <code>Yonhap-NK</code>는 12편에서 잰 연합뉴스 북한 섹션이고요.</p>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 쌓인 기록 두 줄을 줄여 적은 모양이에요</span></p>
     <pre><code>1줄: g2_14d {Yonhap-NK: 90, DailyNK: 10, 38North: 6} / g3 38North 전부 false / elapsed 2.1초
 2줄: g2_14d 동일 / g3 전부 true / elapsed 2.2초 / g1 기존 통과율 0.778</code></pre>
