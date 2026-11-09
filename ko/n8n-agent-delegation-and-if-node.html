@@ -52,7 +52,7 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>웹사이트 자바스크립트에 AI API 키(AI 서비스를 쓰는 비밀 열쇠 글자)를 넣으면, 브라우저 개발자 도구를 연 사람 누구나 그 키를 그대로 볼 수 있어요. 그러면 제 몫으로 청구되는 요청을 무제한 보낼 수 있어요. <a class="suspect-jump" href="#suspect-key-in-browser">언제 의심하나 ↓</a></li>
+            <li>웹사이트 자바스크립트에 AI API 키(AI 서비스를 쓰게 해 주는 비밀 문자열)를 넣으면, 브라우저 개발자 도구를 연 사람 누구나 그 키를 그대로 볼 수 있어요. 그러면 제 몫으로 청구되는 요청을 무제한 보낼 수 있어요. <a class="suspect-jump" href="#suspect-key-in-browser">언제 의심하나 ↓</a></li>
             <li>에이전트가 화면 조작보다 빠르다는 이유로 결과를 안 보고 넘기면, 짧은 JSON 한 줄이 외부로 나가는 진짜 요청이 돼요. 그러면 의도하지 않은 워크플로가 그대로 만들어져요. <a class="suspect-jump" href="#suspect-unreviewed-workflow">언제 의심하나 ↓</a></li>
             <li>IF 노드와 AI Agent를 섞어 쓰면서 기록을 안 보면, 뭐가 규칙에 따른 결과이고 뭐가 AI의 판단인지 구별이 안 돼요. <a class="suspect-jump" href="#suspect-rule-or-ai">언제 의심하나 ↓</a></li>
             <li>Webhook 주소는 인터넷에 열린 창구예요. 만들어두는 것만으로 안전해지지 않고, 인증 헤더나 호출 횟수 제한을 따로 걸어야 해요. <a class="suspect-jump" href="#suspect-open-webhook">언제 의심하나 ↓</a></li>
