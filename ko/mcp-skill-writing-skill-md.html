@@ -48,9 +48,9 @@
         <dt>읽고 나면 할 수 있는 것</dt>
         <dd>
           <ul>
-            <li>"첫째 주 TASK-102는 진행이다"(이번 입력에만 맞는 답)와 "개발 완료만으로는 완료에 넣지 않는다"(다음 주에도 쓸 규칙)를 갈라낼 수 있어요. 판별 질문은 하나예요 — 다음 주 기록을 가져와도 이 말이 그대로 맞나?</li>
+            <li>"첫째 주 TASK-102(업무 하나의 번호)는 진행이다"(이번 입력에만 맞는 답)와 "개발 완료만으로는 완료에 넣지 않는다"(다음 주에도 쓸 규칙)를 갈라낼 수 있어요. 판별 질문은 하나예요 — 다음 주 기록을 가져와도 이 말이 그대로 맞나?</li>
             <li>SKILL.md 맨 위 name·description을 직접 채우고, 본문 다섯 문단이 각각 무슨 일을 하는지 알고 쓸 수 있어요.</li>
-            <li>SKILL.md와 references/team-rules.md를 폴더 하나로 묶어 Claude Code나 OpenCode가 찾는 자리에 두고, 실제로 읽혔는지 확인할 수 있어요.</li>
+            <li>SKILL.md와 references/team-rules.md를 폴더 하나로 묶어 Claude Code나 OpenCode(둘 다 AI 코딩 도구)가 찾는 자리에 두고, 실제로 읽혔는지 확인할 수 있어요.</li>
           </ul>
         </dd>
         <dt>모르면 이런 일이 생겨요</dt>
@@ -219,7 +219,7 @@ description: 가상 제품팀의 업무 기록을 팀 기준에 맞는 주간 �
     <ul>
       <li><strong>1문단은 울타리예요.</strong> "입력은 한 주의 업무 기록, 결과는 Markdown 보고서"라고 못 박아요. <strong>'프로젝트를 관리한다'처럼 넓게 적으면 안 되는 이유</strong>가 있어요. 읽는 쪽이 일정 수정이나 담당자 배정까지 포함이라고 해석할 여지를 남기거든요. 마지막 문장 <strong>"상태 이름만 보고 완료 여부를 결정하지 않는다"</strong>는 7편의 TASK-102와 이어져요 — 상태가 '개발 완료'인데 완료가 아니었던 그 사례요.</li>
       <li><strong>2문단은 이정표예요.</strong> "이 판단에 필요한 지식은 내가 아니라 저 파일에 있다"고 알려 줘요. 실제 분류 순서와 날짜 기준은 <code>references/team-rules.md</code>에 있고, <code>SKILL.md</code>는 그걸 <strong>가리키기만</strong> 해요. 뒤에 붙은 "새로 추측하거나 일반적인 기준으로 바꾸지 않는다"가 중요해요. 이게 없으면 규칙 파일을 못 찾았을 때 그럴싸한 일반 기준으로 채워 넣고 넘어가 버릴 수 있어요.</li>
-      <li><strong>3문단은 통로와 지식을 구분해요.</strong> <a href="mcp-skill-building-server.html">3편</a>에서 만든 <code>get_weekly_records</code>는 <strong>기록을 가져오는 통로</strong>일 뿐이고, Skill은 가져온 기록을 <strong>팀 기준으로 해석</strong>해요. 이미 JSON 파일을 손에 들고 있다면 <a href="mcp-skill-host-connection.html">4편</a>의 MCP 연결을 새로 할 필요가 없어요. 이 문단이 없으면 "자료가 필요하니 서버부터 설치할까요?"로 새는 일이 생겨요.</li>
+      <li><strong>3문단은 통로와 지식을 구분해요.</strong> <a href="mcp-skill-building-server.html">3편</a>에서 만든 <code>get_weekly_records</code>는 <strong>기록을 가져오는 통로</strong>일 뿐이고, Skill은 가져온 기록을 <strong>팀 기준으로 해석</strong>해요. 이미 JSON 파일(데이터를 이름과 값 짝으로 적은 파일)을 손에 들고 있다면 <a href="mcp-skill-host-connection.html">4편</a>의 MCP 연결을 새로 할 필요가 없어요. 이 문단이 없으면 "자료가 필요하니 서버부터 설치할까요?"로 새는 일이 생겨요.</li>
       <li><strong>4문단은 되짚을 수 있게 만들어요.</strong> 컴퓨터의 오늘 날짜 대신 입력의 <code>report_date</code>를 쓰면, 지난주 보고서를 몇 달 뒤에 다시 만들어도 <strong>시간 기준이 흔들리지 않아요.</strong> 7편의 신문 마감 시각 비유가 한 줄로 들어간 셈이에요. "판정의 근거가 된 필드를 남긴다"는 결과만 남기지 말고 <strong>어느 칸을 보고 그렇게 정했는지</strong>까지 적으라는 뜻이에요.</li>
       <li><strong>5문단은 하지 않을 일을 적어요.</strong> 기록 자체를 고치지 않고, 메시지를 보내지 않아요. 초보자 입장에서 이 문단이 제일 안 와닿았는데, 지금은 <strong>가장 안심되는 문단</strong>이라고 생각해요 — 보고서를 만들어 달라고 했더니 원본 기록을 정리해 버리는 상황을 막아 주거든요.</li>
     </ul>

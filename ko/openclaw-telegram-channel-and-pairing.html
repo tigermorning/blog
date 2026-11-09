@@ -32,7 +32,7 @@
       <span class="post-nav-title">답변이 아니라 흔적을 본다 — 세션 기록과 사용량</span>
     </a>
 
-    <p class="one-liner">채널은 메신저와 게이트웨이를 잇는 입구이고, 텔레그램을 붙일 때는 봇 토큰으로 연결하고, 페어링 승인으로 "누가 말을 걸 수 있는지"를 따로 제한한다.</p>
+    <p class="one-liner">채널은 메신저와 게이트웨이를 잇는 입구이고, 텔레그램을 붙일 때는 봇 토큰(봇을 대신해 접속하는 비밀 문자열)으로 연결하고, 페어링 승인으로 "누가 말을 걸 수 있는지"를 따로 제한한다.</p>
 
     <div class="why-read">
       <p class="why-read-title">이 글을 읽기 전에</p>
@@ -223,7 +223,7 @@ openclaw pairing approve telegram &lt;코드&gt;</code></pre>
         </tr>
         <tr id="suspect-token-pasted">
           <td>연결이 안 돼서 도움을 청하다가, AI 챗봇이나 단체방에 <code>config set</code> 줄을 <strong>토큰째 붙여 넣은 걸</strong> 알아챘어요</td>
-          <td>붙여 넣은 대화, 그리고 토큰이 적혔을 다른 자리예요. 화면 공유나 메모, 터미널에 직접 친 <code>config set</code> 줄이 남는 셸의 명령 기록도 여기에 들어가요</td>
+          <td>붙여 넣은 대화, 그리고 토큰이 적혔을 다른 자리예요. 화면 공유나 메모, 터미널에 직접 친 <code>config set</code> 줄이 남는 셸(터미널에서 명령을 받는 프로그램)의 명령 기록도 여기에 들어가요</td>
           <td>메시지 삭제로 끝내지 말고 BotFather에서 새 토큰을 발급받아 <code>openclaw config set channels.telegram.botToken</code>으로 바꾼 뒤 게이트웨이를 재시작해요. 옛 토큰은 다시 쓰지 않아요</td>
         </tr>
       </tbody>

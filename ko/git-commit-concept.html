@@ -52,7 +52,7 @@
         <dd>
           <ul>
             <li>"커밋 = 저장"으로 알면 Ctrl+S를 아무리 눌러도 커밋이 안 생기는 이유를 못 찾아요. <a class="suspect-jump" href="#suspect-no-commit-yet">언제 의심하나 ↓</a></li>
-            <li>이름·이메일만 등록하고 "준비 끝"이라고 생각해, 저장소를 안 만든 채 헤매게 돼요. <a class="suspect-jump" href="#suspect-config-no-repo">언제 의심하나 ↓</a></li>
+            <li>이름·이메일만 등록하고 "준비 끝"이라고 생각해, 저장소(변경 이력을 쌓아 두는 폴더)를 안 만든 채 헤매게 돼요. <a class="suspect-jump" href="#suspect-config-no-repo">언제 의심하나 ↓</a></li>
             <li>메시지를 "수정"이라고만 적으면 나중에 슬롯 스무 개가 전부 "수정"이라 어디로 돌아갈지 알 수 없어요. <a class="suspect-jump" href="#suspect-vague-message">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
@@ -149,7 +149,7 @@ git config --global user.email "내메일@example.com"</code></pre>
         <tr id="suspect-config-no-repo">
           <td>이름·이메일을 등록했는데, 커밋하려니 <code>fatal: not a git repository</code>로 시작하는 에러가 나와요</td>
           <td>명령을 실행한 <strong>폴더</strong>예요. 도장(<code>git config</code>)은 멀쩡하고, 서류철(저장소)이 없는 거예요</td>
-          <td>확인 순서는 <a href="learning-git-1.html#suspect-not-a-repo">1편의 이 줄</a>에 있어요. 폴더 경로가 맞는 걸 확인한 다음, 내 빈 폴더에서 시작했다면 <code>git init</code>, GitHub에 이미 있는 저장소라면 <code>git clone</code>이에요</td>
+          <td>확인 순서는 <a href="learning-git-1.html#suspect-not-a-repo">1편의 이 줄</a>에 있어요. 폴더 경로가 맞는 걸 확인한 다음, 내 빈 폴더에서 시작했다면 <code>git init</code>, GitHub(저장소를 인터넷에 올려 두는 서비스)에 이미 있는 저장소라면 <code>git clone</code>이에요</td>
         </tr>
         <tr id="suspect-identity-unknown">
           <td>저장소 폴더에서 커밋했더니 <code>Author identity unknown</code>과 <code>*** Please tell me who you are.</code>가 나와요</td>

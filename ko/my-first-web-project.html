@@ -44,7 +44,7 @@
         <dd>
           <ul>
             <li>~ 가 "내 홈 폴더"를 가리키는 줄임 기호라는 걸 알고, cd ~/Documents 를 정확히 읽고 쓸 수 있어요. pwd 로 지금 어느 폴더에 서 있는지 확인할 수도 있고요.</li>
-            <li>PowerShell에서는 touch 대신 New-Item index.html 로 빈 파일을 만들면 된다는 걸 알고 넘어갈 수 있어요.</li>
+            <li>PowerShell(윈도우의 명령어 입력 창)에서는 touch 대신 New-Item index.html 로 빈 파일을 만들면 된다는 걸 알고 넘어갈 수 있어요.</li>
             <li>AI가 만든 첫 HTML을 제목·본문·브라우저 화면 세 가지로 직접 검토할 수 있어요. HTML은 결국 텍스트 파일이라 특별한 도구 없이 그대로 읽혀요.</li>
           </ul>
         </dd>
@@ -108,7 +108,7 @@ pwd</code></pre>
     </blockquote>
     <p>여기서 중요한 문장이 하나 있었어요. <strong>"이 요청은 코드를 대신 써 달라는 요청이지만, 책임까지 넘기는 요청은 아니다"</strong>라는 거예요. 이게 정확히 <a href="ai-agent-dev-environment.html">1편</a>에서 이해한 "루프"예요. 자연어(사람이 평소에 쓰는 말)로 지시했다고 끝나는 게 아니에요. AI가 만든 결과를 제가 직접 읽고 판단하는 단계가 반드시 따라와요.</p>
 
-    <p>제 도메인(제가 일하는 분야, 영상 자막·SDH 감수)에 맞춰서 이런 결과를 받았어요. 아래는 AI가 만들어 준 파일 내용이라서 읽기만 해도 돼요. 직접 열어 보고 싶다면 이 내용을 <code>index.html</code>에 넣으면 돼요.</p>
+    <p>제 도메인(제가 일하는 분야, 영상 자막·SDH(청각장애인용 자막) 감수)에 맞춰서 이런 결과를 받았어요. 아래는 AI가 만들어 준 파일 내용이라서 읽기만 해도 돼요. 직접 열어 보고 싶다면 이 내용을 <code>index.html</code>에 넣으면 돼요.</p>
     <p class="run-tag">실행: 로컬 파일 + 브라우저 <span class="run-tag-why">— VS Code Live Server 등</span></p>
     <pre><code>&lt;!DOCTYPE html&gt;
 &lt;html lang="ko"&gt;
@@ -181,7 +181,7 @@ pwd</code></pre>
     <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 — Claude Code 등 <span class="run-tag-why">— my-first-web 폴더에서 claude를 켠 뒤</span></p>
     <pre><code>지금 작업 중인 폴더의 전체 경로와, 그 안의 파일 목록을 보여 줘.
 index.html의 title, h1, p 안에 들어간 글자를 그대로 옮겨 보여 주고, 대괄호 [ ]가 남은 곳이 있는지 알려 줘.
-입력한 내용을 저장하는 코드(서버 파일, localStorage 등)가 이 폴더에 있는지도 알려 줘. 아직 파일은 고치지 마.</code></pre>
+입력한 내용을 저장하는 코드(서버 파일, 브라우저에 글을 저장하는 localStorage 등)가 이 폴더에 있는지도 알려 줘. 아직 파일은 고치지 마.</code></pre>
 
     <a class="post-nav" href="vibe-coding-loop.html">
       <span class="post-nav-label">다음 편 →</span>

@@ -140,7 +140,7 @@
     <p>왼쪽에서 오른쪽으로 건수가 100 → 24 → 5로 줄어요. 점선 칸 안의 세 호출은 서로의 결과를 쓰지 않아서 <a href="langgraph-pattern-parallelization.html">8편의 병렬화</a>와 같은 모양이에요. 숫자는 이 편 코드에 100건을 넣고 <strong>모델이 요청한 건수대로 답했다고 칠 때</strong> 나오는 값이에요. 진짜 모델 답이 아니라 가짜 모델로 확인한 값이고(<a href="#fake-run">아래에서 직접 돌려요</a>), 진짜 모델이 건수를 어기면 24와 5도 달라져요.</p>
 
     <h2 id="score-each"><span class="hl">먼저 떠오르는 방법</span> — 기사마다 점수 매기기</h2>
-    <p><a href="newsletter-agent-collect.html">12편</a>까지의 셀을 먼저 실행해 둔 노트북에서 이어 가요. 여기서부터는 모델을 부르니 <strong>OpenAI API 키</strong>가 필요해요. 설치부터 할게요.</p>
+    <p><a href="newsletter-agent-collect.html">12편</a>까지의 셀을 먼저 실행해 둔 노트북에서 이어 가요. 여기서부터는 모델을 부르니 <strong>OpenAI API 키</strong>(서비스를 쓸 때 내는 비밀 문자열)가 필요해요. 설치부터 할게요.</p>
     <p class="run-tag">실행: Colab 같은 원격 주피터 또는 로컬 주피터 <span class="run-tag-why">— 설치 셀이라 API 키 없이 돌아가요</span></p>
     <pre><code>%pip install -q openai feedparser requests
 %pip install -q -U "brotli&gt;=1.2.0"</code></pre>

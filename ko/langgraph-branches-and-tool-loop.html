@@ -49,7 +49,7 @@
         <dd>
           <ul>
             <li>도구 루프를 노드 두 개와 선 세 개로 조립합니다 — agent와 tools 노드, 그리고 START→agent · 조건부 엣지 · tools→agent.</li>
-            <li>모델은 요청서만 쓴다는 걸 눈으로 확인합니다. 답의 글 칸은 비어 있고 tool_calls에 도구 이름과 값만 있고, 실제 실행은 ToolNode가 해요.</li>
+            <li>모델은 요청서만 쓴다는 걸 눈으로 확인합니다. 답의 글 칸은 비어 있고 tool_calls(도구 호출 요청이 담기는 칸)에 도구 이름과 값만 있고, 실제 실행은 ToolNode(요청대로 함수를 실행하는 노드)가 해요.</li>
             <li>틀리면 곤란한 계산을 코드로 떼어냅니다. 날짜 한 줄 계산은 언제 돌려도 같은 답이 나오고, 무엇을 넣고 무엇을 받았는지가 메시지로 남아요.</li>
           </ul>
         </dd>
@@ -79,7 +79,7 @@
 
     <h2><span class="hl">비유</span> — 홀 직원의 창고 조회 요청서</h2>
     <p>2편의 주방에서는 검수대 직원이 맛을 보고, 싱거우면 전표를 화구로 되돌리고 간이 맞으면 홀로 내보냈어요. 이때 기준은 "소금 세 숟갈"이라는 정해진 규칙이었어요. 이번엔 손님을 직접 상대하는 홀 직원이 주인공이에요.</p>
-    <p>손님이 홀 직원에게 "계란말이 두 접시 돼요?" 하고 물어요. 홀 직원은 창고에 계란이 몇 개 남았는지 모르니, <strong>창고 조회 요청서</strong>를 적어 주방의 창고 담당에게 넘겨요(도구 호출 글의 '주문표'와 같은 거예요). 창고 담당은 요청서대로 창고를 뒤져 "계란 4개"라고 적은 쪽지를 붙여 홀 직원에게 돌려줘요. 홀 직원은 쪽지를 읽고, 레시피가 더 궁금하면 요청서를 또 쓰고, 다 알았으면 손님에게 답해요. 그 사이 검수대는 한 가지만 봐요. 홀 직원이 요청서를 냈으면 전표를 창고로, 안 냈으면 홀로 내보내요.</p>
+    <p>손님이 홀 직원에게 "계란말이 두 접시 돼요?" 하고 물어요. 홀 직원은 창고에 계란이 몇 개 남았는지 모르니, <strong>창고 조회 요청서</strong>를 적어 주방의 창고 담당에게 넘겨요(<a href="mcp-skill-tool-call-anatomy.html">도구 호출 글</a>의 '주문표'와 같은 거예요). 창고 담당은 요청서대로 창고를 뒤져 "계란 4개"라고 적은 쪽지를 붙여 홀 직원에게 돌려줘요. 홀 직원은 쪽지를 읽고, 레시피가 더 궁금하면 요청서를 또 쓰고, 다 알았으면 손님에게 답해요. 그 사이 검수대는 한 가지만 봐요. 홀 직원이 요청서를 냈으면 전표를 창고로, 안 냈으면 홀로 내보내요.</p>
     <table>
       <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
       <tbody>
@@ -192,7 +192,7 @@
     <h2 id="tool-loop"><span class="hl">직접 만들기 ③</span> — 도구를 쥐여 주는 루프</h2>
     <p>이제 진짜 LLM을 넣어요. 여기서부터는 OpenAI <strong>API 키<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup></strong>가 필요해요. 키를 넣는 방법은 세 가지예요.</p>
     <ul>
-      <li><strong>내 컴퓨터</strong> — 프로젝트 폴더의 <code>.env</code> 파일에 <code>OPENAI_API_KEY=sk-...</code>를 적고 <code>from dotenv import load_dotenv; load_dotenv()</code>로 읽어요. <code>.env</code>는 절대 깃에 올리지 않아요 (AI 코드 보안 기초에서 다룬 비밀 관리 그대로예요).</li>
+      <li><strong>내 컴퓨터</strong> — 프로젝트 폴더의 <code>.env</code> 파일에 <code>OPENAI_API_KEY=sk-...</code>를 적고 <code>from dotenv import load_dotenv; load_dotenv()</code>로 읽어요. <code>.env</code>는 절대 깃에 올리지 않아요 (<a href="ai-code-security-basics.html">AI 코드 보안 기초</a>에서 다룬 비밀 관리 그대로예요).</li>
       <li><strong><a href="why-gpu-and-colab-cli.html">Colab</a></strong> — 왼쪽 열쇠 아이콘(보안 비밀)에 등록하고 <code>google.colab.userdata</code>로 읽어요.</li>
       <li><strong>임시</strong> — <code>os.environ["OPENAI_API_KEY"] = "sk-..."</code>로 직접 넣어요. 노트북 파일에 키가 그대로 남으니 저장하거나 공유하기 전에 꼭 지워요.</li>
     </ul>

@@ -481,7 +481,7 @@ docker rm -f web-a web-b web-c</code></pre>
     </details>
 
     <h2 id="read-dockerfile"><span class="hl">Dockerfile 한 줄씩 읽기</span> — 위에서 아래로 쌓이는 이미지</h2><details class="deep"><summary>▼ 자세히 보기</summary>
-    <p>Dockerfile에는 베이스 이미지, 설치할 시스템 패키지와 라이브러리, 코드를 둘 곳, 실행할 사용자와 시작 명령을 적어요. 코딩 에이전트에게 쓰게 해도 돼요. 다만 에이전트는 요청받은 대로 파일을 쓸 뿐, 파이썬 버전을 고정할지, root로 실행할지 같은 판단을 대신 정해 주지 않아요. 그래서 무엇을 넣을지는 요청문에 직접 적어요. 이 앱에서 쓴 파일이에요.</p>
+    <p>Dockerfile에는 베이스 이미지, 설치할 시스템 패키지와 라이브러리, 코드를 둘 곳, 실행할 사용자와 시작 명령을 적어요. 코딩 에이전트에게 쓰게 해도 돼요. 다만 에이전트는 요청받은 대로 파일을 쓸 뿐, 파이썬 버전을 고정할지, root(모든 권한을 가진 관리자 계정)로 실행할지 같은 판단을 대신 정해 주지 않아요. 그래서 무엇을 넣을지는 요청문에 직접 적어요. 이 앱에서 쓴 파일이에요.</p>
     <p class="run-tag">실행: 프로젝트에 Dockerfile로 저장 <span class="run-tag-why">— 저장소 맨 위 폴더에 이 이름 그대로 두면 Cloud Run 소스 배포가 읽어요</span></p>
 <pre><code>FROM python:3.13-slim-bookworm
 
@@ -599,7 +599,7 @@ CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}"]</co
       <tbody>
         <tr><td>베이스 이미지와 파이썬 버전이 고정되어 있는가 (<code>python:latest</code>가 아닌가)</td><td>고정하지 않으면 빌드할 때마다 다른 버전이 들어와 결과가 달라질 수 있어요</td></tr>
         <tr><td>tesseract와 한국어 데이터를 설치하는 줄이 있는가</td><td>서버에 없던 바로 그것이에요</td></tr>
-        <tr><td><code>.dockerignore</code>에 <code>.env</code>가 들어 있는가</td><td>빠지면 <code>COPY . .</code>이 API 키가 든 파일을 이미지에 넣어요</td></tr>
+        <tr><td><code>.dockerignore</code>에 <code>.env</code>(비밀 값을 적어 두는 설정 파일)가 들어 있는가</td><td>빠지면 <code>COPY . .</code>이 API 키(서비스를 쓸 때 내는 비밀 문자열)가 든 파일을 이미지에 넣어요</td></tr>
         <tr><td>실행 명령이 <code>PORT</code> 환경변수를 쓰는가</td><td>Cloud Run은 정해 준 포트로 요청을 보내므로, 다른 포트를 리슨(포트를 열고 요청을 기다리는 것)하면 시작에 실패해요</td></tr>
         <tr><td>non-root 사용자로 실행하는가</td><td>앱에 문제가 생겨도 컨테이너 안에서 할 수 있는 일이 줄어요</td></tr>
       </tbody>
@@ -736,7 +736,7 @@ docker image ls routine-stamp:local</code></pre>
     <p>이 캐시를 로컬 <code>docker build</code>에서 직접 본 것이고, 서버(Cloud Build)의 배포 빌드에서도 같은 캐시가 쓰이는지는 확인하지 못했어요.</p>
 
     <h2 id="deploy"><span class="hl">같은 자동 배포로 올리기</span> — 고칠 곳은 한 군데예요</h2><details class="deep"><summary>▼ 자세히 보기</summary>
-    <p>Cloud Run의 소스 배포는 올라온 코드에 Dockerfile이 있으면 buildpacks 대신 그 Dockerfile로 이미지를 만들어요. 그래서 Dockerfile과 <code>.dockerignore</code>를 커밋해 staging 브랜치로 PR을 보내면 돼요. 배포 워크플로(GitHub Actions의 자동 배포 설정)는 <strong>한 군데</strong>만 고쳤어요. buildpacks로 배포한 서비스에는 기능이 하나 켜져 있어요. Google이 관리하는 베이스 이미지를 최신 보안 패치로 자동으로 바꿔 주는 기능이에요. 이 기능은 Dockerfile로 만든 이미지에는 쓸 수 없어요. 그래서 그대로 배포하면 <code>Missing required argument [--clear-base-image]</code> 오류로 멈춘다고 해요. 이 오류는 미리 옵션을 넣고 배포해서 <strong>직접 보지는 못했어요.</strong> 이제 베이스 이미지는 <code>FROM</code> 줄이 정하니, 배포 단계의 <code>flags:</code> 줄 끝에 <code>--clear-base-image</code>를 붙여 그 기능을 껐어요. 대신 베이스 이미지의 보안 패치는 <code>FROM</code> 줄을 바꾸고 다시 빌드할 때 들어와요.</p>
+    <p>Cloud Run의 소스 배포는 올라온 코드에 Dockerfile이 있으면 buildpacks 대신 그 Dockerfile로 이미지를 만들어요. 그래서 Dockerfile과 <code>.dockerignore</code>를 커밋해 staging 브랜치로 PR(합쳐 달라는 요청)을 보내면 돼요. 배포 워크플로(GitHub Actions의 자동 배포 설정)는 <strong>한 군데</strong>만 고쳤어요. buildpacks로 배포한 서비스에는 기능이 하나 켜져 있어요. Google이 관리하는 베이스 이미지를 최신 보안 패치로 자동으로 바꿔 주는 기능이에요. 이 기능은 Dockerfile로 만든 이미지에는 쓸 수 없어요. 그래서 그대로 배포하면 <code>Missing required argument [--clear-base-image]</code> 오류로 멈춘다고 해요. 이 오류는 미리 옵션을 넣고 배포해서 <strong>직접 보지는 못했어요.</strong> 이제 베이스 이미지는 <code>FROM</code> 줄이 정하니, 배포 단계의 <code>flags:</code> 줄 끝에 <code>--clear-base-image</code>를 붙여 그 기능을 껐어요. 대신 베이스 이미지의 보안 패치는 <code>FROM</code> 줄을 바꾸고 다시 빌드할 때 들어와요.</p>
     <p class="run-tag">실행: .github/workflows/deploy.yml 설정 파일에 붙여넣기 <span class="run-tag-why">— GitHub Actions가 이 파일을 읽어요. 다른 줄은 바꾸지 말고 flags: 줄 끝에 한 단어만 더해요</span></p>
 <pre><code>--clear-base-image</code></pre>
     <p>올라가는 파일은 두 번 걸러져요. 소스 배포가 코드를 올릴 때 <code>.gcloudignore</code>에 적힌 파일을 빼고, 빌드할 때 <code>COPY . .</code>이 <code>.dockerignore</code>에 적힌 파일을 다시 빼요. 두 파일 모두 <code>.env</code>를 빼고 있는지 커밋 전에 확인해요. 이 앱은 Node 테스트용 <code>package.json</code>과 <code>node_modules</code>(25MB)도 서버에 필요 없어서 두 파일에서 뺐어요.</p>
