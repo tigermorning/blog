@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>딜런 롤닉 — AI 랩이 수조 달러를 회수하는 길 - Tigermorning</title>
+  <meta name="description" content="누스 리서치 CEO 딜런 롤닉의 AI Engineer 뉴욕 키노트를 재구성하고, 화면에 나온 슬라이드 정보와 이 주장 뒤에 이어질 수 있는 논리(랩은 더 강해지나, AI 의존도가 높은 개인은 불리한가)를 전제별로 따져 봤습니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="딜런 롤닉 — AI 랩이 수조 달러를 회수하는 길">
+  <meta property="og:description" content="AI 랩이 쓴 돈을 회수하려고 AI를 쓰는 회사를 묶어 두거나 직접 대체할 수 있다는 롤닉의 주장과, 그 전제가 깨질 때 달라지는 결론, 개인이 할 수 있는 점검.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/dylan-rolnick-ai-labs-trap-or-replace.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">딜런 롤닉</span> — AI 랩이 수조 달러를 회수하는 길</h1>
+    <p class="post-date">2026. 11. 09.</p>
+    <p class="post-date">※ 이 글은 AgentOS 채널의 해설 영상 <a href="https://www.youtube.com/watch?v=-kPdGYaMYVU" target="_blank" rel="noopener">"수조 달러를 쓴 AI 랩은 그 돈을 어디서 회수하나"</a>(19분 43초)를 보고 제 나름의 언어로 줄인 것입니다. 이 영상은 누스 리서치 CEO 딜런 롤닉이 2026년 10월 13일 AI Engineer New York 2026에서 한 15분 키노트 「AI Labs Will Trap You or Replace You」를 클립 10개로 나눠 한국어 해설과 자막을 붙인 것이에요. 제가 확인한 범위는 이래요. 한국어 자동 자막 전체(한국어 해설과 영어 원발언이 섞여 있고, 자동 자막이라 이름과 숫자가 일부 틀리게 옮겨져 있어요)를 읽었고, 화면은 0:40·2:37·3:10·6:19·15:25 시점을 직접 열어 봤어요. 그 밖의 슬라이드는 해설 자막으로만 알아요. 원본 키노트는 해설에 쓰인 클립 분량만 접했고 전체는 보지 못했어요. 해설 속 숫자와 기사 내용은 해설자가 한 말이고 제가 따로 검증하지 않았어요. 정리와 분석에는 Claude(앤트로픽의 AI)의 도움을 받았는데, 앤트로픽은 영상 속 사례에도 등장하는 회사예요. 아래 "제 추론"이라고 적은 부분은 그 점을 감안해 읽어 주세요.</p>
+
+    <div class="video-embed"><iframe src="https://www.youtube-nocookie.com/embed/-kPdGYaMYVU" title="수조 달러를 쓴 AI 랩은 그 돈을 어디서 회수하나 — 딜런 롤닉 키노트 해설" loading="lazy" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe></div>
+
+    <p class="one-liner">이 키노트는 오픈소스 AI 회사 CEO 딜런 롤닉이 "AI 랩이 이미 쓴 돈을 회수하는 가장 확실한 방법은 AI를 쓰는 회사를 자기 서비스에 묶어 두고 가격을 올리거나, 그 회사가 하던 일을 직접 맡는 것"이라고 주장하고, 그래서 모델을 바꿔 끼울 수 있고 내가 소유하는 기반 위에 서비스를 지으라고 권하는 자리다.</p>
+
+    <div class="why-read">
+      <p class="why-read-title">이 글을 읽기 전에</p>
+      <dl>
+        <dt>이런 게 궁금했다면</dt>
+        <dd>
+          <ul>
+            <li>개발자도 대기업도 아닌 개인이 한 회사(예: 챗GPT, 클로드)의 AI에 일을 많이 맡겨도 괜찮을까요?</li>
+            <li>AI 랩(AI 모델을 만들어 파는 회사)은 앞으로 더 강해질까요, 약해질까요?</li>
+          </ul>
+        </dd>
+        <dt>읽고 나면 할 수 있는 것</dt>
+        <dd>
+          <ul>
+            <li>롤닉의 주장을 "전제 다섯 개의 사슬"로 나눠, 어느 전제가 틀리면 결론이 어떻게 바뀌는지 짚을 수 있어요.</li>
+            <li>내가 쓰는 AI 도구에 던질 점검 질문 다섯 개(영상 화면에 나온 문장을 개인용으로 옮긴 것)를 가질 수 있어요.</li>
+          </ul>
+        </dd>
+        <dt>모르면 이런 일이 생겨요</dt>
+        <dd>
+          <ul>
+            <li>수년 치 대화 기록과 맞춤 설정이 한 서비스 안에만 쌓여서, 가격이나 정책이 바뀌어도 옮기지 못해요. <a class="suspect-jump" href="#suspect-lock">언제 의심하나 ↓</a></li>
+            <li>한 회사의 주장(이 영상은 오픈소스 쪽 회사의 홍보를 겸해요)을 중립적 사실로 받아들여요. <a class="suspect-jump" href="#suspect-source">언제 의심하나 ↓</a></li>
+          </ul>
+        </dd>
+        <dt>어디에 쓰나</dt>
+        <dd>
+          <ul>
+            <li><strong>업무나 부업에서 쓸 AI 도구를 고를 때.</strong> 어떤 기능이 좋은지에 더해 "나중에 옮길 수 있는지"를 함께 따져요.</li>
+            <li>"AI 랩이 전부 가져간다", "AI 전문가가 사라진다" 같은 전망을 들었을 때 어떤 전제 위에 선 말인지 가려 읽을 때</li>
+          </ul>
+        </dd>
+      </dl>
+    </div>
+
+    <p>롤닉이 선 곳은 폐쇄형 AI 랩(오픈AI·앤트로픽 같은 회사)의 반대편이에요. 그가 이끄는 누스 리서치는 2023년에 생겼고, 누구나 내려받아 자기 컴퓨터에서 돌리고 고칠 수 있는 오픈 모델 "헤르메스"로 알려졌어요. 2026년 2월에는 같은 이름의 오픈소스<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup> 에이전트<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup> "헤르메스 에이전트"를 내놨고요. 해설자가 영상 첫머리에서 직접 밝히듯, 롤닉은 폐쇄형 랩의 반대편에서 자기 제품을 파는 사람이에요. 그래서 이 글은 롤닉의 주장을 먼저 순서대로 따라가고, 그다음 화면에서 건진 정보, 주장이 기대는 전제, 그 전제가 깨질 때 나올 수 있는 다른 논리, 개인이 할 수 있는 점검을 차례로 다뤄요.</p>
+
+    <figure class="motion">
+    <svg viewBox="0 0 640 400" role="img" aria-label="롤닉 주장의 순서를 위에서 아래로 그린 흐름도다. 1 모델이 흔해진다, 2 랩은 쓴 돈을 회수해야 한다, 3 두 갈래로 나뉜다. 왼쪽은 층을 옮겨 기업에 박히기, 오른쪽은 돈 되는 산업에 직접 들어가 대체하기, 4 한번 박히면 옮기기 어렵다, 5 처방은 바꿔 끼울 수 있고 내가 소유하는 기반이다.">
+      <defs>
+        <marker id="rn-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <rect x="110" y="8" width="420" height="52" rx="8" fill="none" stroke="var(--ink)" stroke-width="2" class="mo-rise" style="--d:0.1s"/>
+      <text x="320" y="29" text-anchor="middle" font-family="var(--font-heading)" font-size="15" fill="var(--ink)" class="mo-rise" style="--d:0.1s">① 모델이 흔해진다</text>
+      <text x="320" y="48" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)" class="mo-rise" style="--d:0.1s">같은 성능의 값이 해마다 내려가요</text>
+      <line x1="320" y1="60" x2="320" y2="84" stroke="var(--muted)" stroke-width="2" marker-end="url(#rn-arrow)" pathLength="1" class="mo-draw" style="--d:0.4s"/>
+
+      <rect x="110" y="86" width="420" height="52" rx="8" fill="none" stroke="var(--ink)" stroke-width="2" class="mo-rise" style="--d:0.7s"/>
+      <text x="320" y="107" text-anchor="middle" font-family="var(--font-heading)" font-size="15" fill="var(--ink)" class="mo-rise" style="--d:0.7s">② 랩은 이미 쓴 돈을 회수해야 한다</text>
+      <text x="320" y="126" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)" class="mo-rise" style="--d:0.7s">랩 하나가 수천억 달러, 업계 전체는 수조 달러</text>
+      <path d="M 320 138 C 320 150 190 150 190 162" fill="none" stroke="var(--muted)" stroke-width="2" marker-end="url(#rn-arrow)" pathLength="1" class="mo-draw" style="--d:1.0s"/>
+      <path d="M 320 138 C 320 150 450 150 450 162" fill="none" stroke="var(--muted)" stroke-width="2" marker-end="url(#rn-arrow)" pathLength="1" class="mo-draw" style="--d:1.0s"/>
+
+      <rect x="40" y="164" width="300" height="56" rx="8" fill="none" stroke="var(--accent)" stroke-width="2" class="mo-rise" style="--d:1.3s"/>
+      <text x="190" y="186" text-anchor="middle" font-family="var(--font-heading)" font-size="15" fill="var(--accent)" class="mo-rise" style="--d:1.3s">③-가 층을 옮긴다</text>
+      <text x="190" y="206" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)" class="mo-rise" style="--d:1.3s">기업이 쓰는 에이전트 층에 자리잡기</text>
+      <rect x="360" y="164" width="250" height="56" rx="8" fill="none" stroke="var(--accent)" stroke-width="2" class="mo-rise" style="--d:1.5s"/>
+      <text x="485" y="186" text-anchor="middle" font-family="var(--font-heading)" font-size="15" fill="var(--accent)" class="mo-rise" style="--d:1.5s">③-나 직접 대체한다</text>
+      <text x="485" y="206" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)" class="mo-rise" style="--d:1.5s">돈 되는 산업(예: 금융)에 진출</text>
+      <path d="M 190 220 C 190 236 300 232 300 246" fill="none" stroke="var(--muted)" stroke-width="2" marker-end="url(#rn-arrow)" pathLength="1" class="mo-draw" style="--d:1.8s"/>
+      <path d="M 485 220 C 485 236 340 232 340 246" fill="none" stroke="var(--muted)" stroke-width="2" marker-end="url(#rn-arrow)" pathLength="1" class="mo-draw" style="--d:1.8s"/>
+
+      <rect x="110" y="248" width="420" height="52" rx="8" fill="none" stroke="var(--ink)" stroke-width="2" class="mo-rise" style="--d:2.1s"/>
+      <text x="320" y="269" text-anchor="middle" font-family="var(--font-heading)" font-size="15" fill="var(--ink)" class="mo-rise" style="--d:2.1s">④ 한번 박히면 옮기기 어렵다</text>
+      <text x="320" y="288" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)" class="mo-rise" style="--d:2.1s">업무 절차와 노하우가 그 AI 위에 굳어요</text>
+      <line x1="320" y1="300" x2="320" y2="324" stroke="var(--muted)" stroke-width="2" marker-end="url(#rn-arrow)" pathLength="1" class="mo-draw" style="--d:2.4s"/>
+
+      <rect x="110" y="326" width="420" height="58" rx="8" fill="var(--accent)" stroke="var(--accent)" stroke-width="2" class="mo-rise" style="--d:2.7s"/>
+      <text x="320" y="349" text-anchor="middle" font-family="var(--font-heading)" font-size="15" fill="var(--bg)" class="mo-rise" style="--d:2.7s">⑤ 처방: 내가 소유하고 바꿔 끼울 수 있는 기반</text>
+      <text x="320" y="369" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--bg)" class="mo-rise" style="--d:2.7s">모델이 바뀌면 상속하고, 직접 다시 만들지는 않기</text>
+    </svg>
+    <figcaption>롤닉이 편 순서를 제가 다섯 칸으로 줄인 그림이에요. ①·②·④는 그의 말에서 가져왔고, ③은 그가 "명백한 두 방법"이라고 부른 것(층을 옮기기, 그리고 "신을 만들어 수익화하기")을 해설의 표현에 맞춰 풀었어요. 색을 채운 ⑤가 그가 청중에게 내민 결론이에요.</figcaption>
+    </figure>
+
+    <div class="key-point" id="key-three">
+      <p class="key-point-label"><span class="key-point-badge">중요</span>세 줄 요약</p>
+      <ol>
+        <li><strong>모델은 흔해지고 있다.</strong> 같은 성능의 값이 해마다 내려가므로, 모델만 팔아서는 이미 쓴 돈을 회수하기 어렵다는 것이 롤닉의 출발점이다.</li>
+        <li><strong>회수 방법은 두 가지다.</strong> 기업이 쓰는 에이전트 층에 자리를 잡아 옮기기 어렵게 만들거나, 돈 되는 산업을 직접 맡는다. 어느 쪽이든 AI를 쓰는 회사는 가격이 오르거나 일을 빼앗길 수 있다.</li>
+        <li><strong>처방은 교체 가능한 기반이다.</strong> 모델을 갈아 끼울 수 있고, 데이터와 에이전트를 내가 소유하는 기반 위에 지으라고 한다. 단, 이 말은 오픈소스 에이전트를 파는 사람이 했고, 직접 소유하면 운영·보안 책임도 따라온다.</li>
+      </ol>
+    </div>
+
+    <h2 id="commodity"><span class="hl">1. 모델이 흔해진다</span> — 값이 내려가고 갈아타기 쉬워졌다</h2>
+    <p>키노트는 <a href="https://www.youtube.com/watch?v=-kPdGYaMYVU&t=0s" target="_blank" rel="noopener">돈 이야기</a>로 열려요. 랩 하나가 수천억 달러를 쓰고, 업계 전체로는 수조 달러라는 거예요. 롤닉이 보는 문제는 그렇게 만든 모델이 상품화(commoditize)<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>되기 시작했다는 점이에요. 청중도 이미 직관으로 안다고 해요. 모델 뒤에 누가 있는지 크게 따지지 않고 새 모델이 나오면 써 보며 갈아타니까요(해설자는 그가 말한 모델 이름 가운데 아스트라를 오픈AI, 페이블과 오퍼스를 앤트로픽, 키미를 중국 문샷의 모델이라고 풀어요).</p>
+    <p>그는 그 주에 소셜 미디어에서 돌던 차트도 짚어요. 토큰<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup> 하나의 평균 값은 내려가는데 토큰에 쓰는 총액은 치솟고, 그 토큰을 내보내는 인프라 비용은 그대로라는 내용이에요. 자막이 중간에 끊겨 이 차트를 어떻게 결론 냈는지는 확인하지 못했어요. 해설자는 에포크 AI 분석을 들어 같은 성능을 내는 값이 해마다 중앙값으로 약 50배씩 내렸다고 덧붙여요. 모델만 팔아 남기는 몫이 줄어든다는 뜻이에요.</p>
+
+    <figure class="motion">
+    <svg viewBox="0 0 640 250" role="img" aria-label="두 칸 그림이다. 왼쪽은 같은 성능의 값이 해마다 50분의 1이 된다고 가정한 산수 예시로, 지금 100, 1년 뒤 2, 2년 뒤 0.04로 막대가 급격히 줄어든다. 오른쪽은 폐쇄형 최상위 모델이 어떤 수준에 먼저 도달하고, 가장 강한 오픈 모델이 평균 약 4개월 뒤에 같은 수준에 도달한다는 시간축 그림이다.">
+      <defs>
+        <marker id="rn-a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/></marker>
+      </defs>
+      <text x="160" y="22" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)" class="mo-fade">값이 해마다 1/50이 되면</text>
+      <line x1="20" y1="210" x2="300" y2="210" stroke="var(--border)" stroke-width="2"/>
+      <rect x="50" y="50" width="60" height="160" fill="var(--accent)" class="mo-grow" style="--d:0.2s"/>
+      <text x="80" y="44" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)" class="mo-fade" style="--d:0.4s">100</text>
+      <rect x="130" y="206.8" width="60" height="3.2" fill="var(--accent)" class="mo-grow" style="--d:0.8s"/>
+      <text x="160" y="198" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)" class="mo-fade" style="--d:1.0s">2</text>
+      <rect x="210" y="209" width="60" height="1.2" fill="var(--accent)" class="mo-grow" style="--d:1.4s"/>
+      <text x="240" y="198" text-anchor="middle" font-family="var(--font-body)" font-size="13" fill="var(--ink)" class="mo-fade" style="--d:1.6s">0.04</text>
+      <text x="80" y="230" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">지금</text>
+      <text x="160" y="230" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">1년 뒤</text>
+      <text x="240" y="230" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">2년 뒤</text>
+      <line x1="320" y1="14" x2="320" y2="236" stroke="var(--border)" stroke-width="2"/>
+      <text x="480" y="22" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)" class="mo-fade">최강 오픈 모델은 평균 약 4개월 뒤</text>
+      <text x="340" y="82" font-family="var(--font-body)" font-size="12" fill="var(--muted)">폐쇄형 최상위</text>
+      <line x1="340" y1="95" x2="620" y2="95" stroke="var(--border)" stroke-width="2"/>
+      <circle cx="450" cy="95" r="8" fill="var(--accent)" class="mo-pop" style="--d:0.4s"/>
+      <text x="450" y="118" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)" class="mo-fade" style="--d:0.5s">이 수준에 먼저 도달</text>
+      <text x="340" y="162" font-family="var(--font-body)" font-size="12" fill="var(--muted)">오픈 모델 중 가장 강한 것</text>
+      <line x1="340" y1="175" x2="620" y2="175" stroke="var(--border)" stroke-width="2"/>
+      <circle cx="550" cy="175" r="8" fill="var(--ink)" class="mo-pop" style="--d:1.0s"/>
+      <text x="550" y="198" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)" class="mo-fade" style="--d:1.1s">같은 수준에 도달</text>
+      <line x1="450" y1="136" x2="550" y2="136" stroke="var(--accent)" stroke-width="2.5" marker-start="url(#rn-a1)" marker-end="url(#rn-a1)" pathLength="1" class="mo-draw" style="--d:1.5s"/>
+      <text x="500" y="152" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--accent)" class="mo-fade" style="--d:1.8s">약 4개월</text>
+      <text x="620" y="236" text-anchor="end" font-family="var(--font-body)" font-size="12" fill="var(--muted)">시간 →</text>
+    </svg>
+    <figcaption>왼쪽은 "해마다 약 50배 하락(중앙값)"이라는 해설의 숫자를 그대로 이어 붙인 산수 예시이고 실제 가격 그래프가 아니에요. 오른쪽의 4개월은 해설이 에포크 AI를 들어 전한 평균값이에요.</figcaption>
+    </figure>
+
+    <h2 id="two-ways"><span class="hl">2. 두 갈래 길</span> — 층을 옮기거나, "신"을 만들거나</h2>
+    <p>해설자는 AI 서비스를 세 층으로 나눠 보여 줘요(<a href="https://www.youtube.com/watch?v=-kPdGYaMYVU&t=178s" target="_blank" rel="noopener">2:58</a>). 화면에서 확인한 그림은 이래요. 맨 아래가 데이터센터 같은 인프라(서버 선반), 가운데가 모델(기계 속의 뇌), 맨 위가 사람이 직접 만나는 앱과 에이전트(책상에서 일하는 사람들)였어요. 롤닉은 모델이 흔해진 랩에게 길이 두 가지뿐이라고 말해요.</p>
+
+    <figure class="motion">
+    <svg viewBox="0 0 640 280" role="img" aria-label="AI 서비스의 세 층을 위에서 아래로 쌓은 그림이다. 맨 위는 사용자 층으로 앱과 에이전트, 가운데는 모델 층, 맨 아래는 인프라 층이다. 오른쪽에 길 하나는 위로 올라가 사용자 앞에 서는 것, 또는 아래로 내려가 인프라를 쥐는 것, 길 둘은 신을 만들어 수익화하는 것으로 표시했다.">
+      <defs>
+        <marker id="rn-a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/></marker>
+      </defs>
+      <rect x="30" y="20" width="270" height="68" rx="8" fill="none" stroke="var(--accent)" stroke-width="3" class="mo-rise" style="--d:0.1s"/>
+      <text x="165" y="48" text-anchor="middle" font-family="var(--font-heading)" font-size="15" fill="var(--accent)" class="mo-rise" style="--d:0.1s">사용자 층</text>
+      <text x="165" y="70" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)" class="mo-rise" style="--d:0.1s">앱·에이전트 — 사람이 직접 만나는 곳</text>
+      <rect x="30" y="106" width="270" height="68" rx="8" fill="none" stroke="var(--ink)" stroke-width="2" class="mo-rise" style="--d:0.4s"/>
+      <text x="165" y="134" text-anchor="middle" font-family="var(--font-heading)" font-size="15" fill="var(--ink)" class="mo-rise" style="--d:0.4s">모델 층</text>
+      <text x="165" y="156" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)" class="mo-rise" style="--d:0.4s">글을 만들고 판단하는 AI 본체</text>
+      <rect x="30" y="192" width="270" height="68" rx="8" fill="none" stroke="var(--ink)" stroke-width="2" class="mo-rise" style="--d:0.7s"/>
+      <text x="165" y="220" text-anchor="middle" font-family="var(--font-heading)" font-size="15" fill="var(--ink)" class="mo-rise" style="--d:0.7s">인프라 층</text>
+      <text x="165" y="242" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)" class="mo-rise" style="--d:0.7s">데이터센터·서버</text>
+      <path d="M 304 140 C 340 140 340 54 304 54" fill="none" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#rn-a2)" pathLength="1" class="mo-draw" style="--d:1.1s"/>
+      <path d="M 304 140 C 340 140 340 226 304 226" fill="none" stroke="var(--muted)" stroke-width="2.5" marker-end="url(#rn-a2)" pathLength="1" class="mo-draw" style="--d:1.3s"/>
+      <text x="352" y="62" font-family="var(--font-heading)" font-size="14" fill="var(--accent)" class="mo-fade" style="--d:1.5s">길 1: 올라가 사용자 앞에 서기</text>
+      <text x="352" y="80" font-family="var(--font-body)" font-size="12" fill="var(--muted)" class="mo-fade" style="--d:1.5s">끈끈함 = 마진 (롤닉의 논리)</text>
+      <text x="352" y="234" font-family="var(--font-body)" font-size="12" fill="var(--muted)" class="mo-fade" style="--d:1.6s">또는 내려가 인프라 쥐기</text>
+      <rect x="352" y="116" width="260" height="52" rx="8" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="7 5" class="mo-pop" style="--d:1.9s"/>
+      <text x="482" y="138" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)" class="mo-pop" style="--d:1.9s">길 2: "신"을 만들어 수익화</text>
+      <text x="482" y="157" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)" class="mo-pop" style="--d:1.9s">사람만큼 일하는 범용 AI (해설의 풀이)</text>
+    </svg>
+    <figcaption>해설 영상 3:10 장면의 세 층 그림에, 롤닉이 말한 두 길을 제가 덧그린 것이에요.</figcaption>
+    </figure>
+    <ul>
+      <li><strong>층을 옮긴다.</strong> 인프라로 내려가거나 사용자 쪽으로 올라간다. 사용자 앞에 서면 끈끈함(stickiness)을 만들 수 있고, 끈끈함이 곧 마진이라는 논리예요. 그래서 요즘 경쟁이 에이전트 층으로 몰렸다고 봐요.</li>
+      <li><strong>"신(God)"을 만든다.</strong> 남들보다 빨리 만들어 수익화하는 길이에요. 해설자는 이 "신"을 사람만큼, 혹은 사람보다 일을 잘하는 범용 AI로 읽어요. 만들면 남에게 팔기보다 가장 돈 되는 문제에 직접 겨눈다는 거예요.</li>
+    </ul>
+    <p>첫 번째 길에서 고객은 소비자가 아니라 기업이에요. 롤닉은 소비자는 변덕스러운 나쁜 고객이고, 기업은 토큰에 큰돈을 쓰며 경제적으로 쓸모 있는 용도가 있다고 말해요. 기업 안에 박히면 빼내기 어렵다는 점이 핵심이에요. 이어서 가정 하나를 내놔요. 2~3년 뒤 회사 인력의 산출물 가운데 에이전트가 만드는 몫이 보수적으로 잡아도 70%, 아마 그 이상일 거라는 거예요. 그 70%를 이해관계가 어긋날 수 있는 다른 회사가 조직하고 있으면 파업처럼 움직이게 할 수도 있다고요. 해설자는 "파업"이라는 표현이 세다고 짚어요. 롤닉은 랩이 그 비대칭한 지렛대로 판의 규칙을 바꿀 수 있다고 봐요.</p>
+
+    <figure class="motion">
+    <svg viewBox="0 0 640 250" role="img" aria-label="점 100개 그림이다. 점 하나가 회사 산출물의 1퍼센트를 뜻하고, 그중 70개는 에이전트가 만든 몫으로 색을 채웠고 30개는 사람이 만든 몫이다. 오른쪽에는 이 70퍼센트를 이해관계가 다른 회사가 조직하면 파업처럼 움직일 수 있다는 롤닉의 가정을 적었다.">
+      <text x="150" y="22" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)" class="mo-fade">회사 산출물 100칸 (2~3년 뒤 가정)</text>
+      <g stroke-width="15" stroke-linecap="round" stroke-dasharray="0 22" fill="none">
+        <line x1="50" y1="42" x2="249" y2="42" stroke="var(--border)"/>
+        <line x1="50" y1="64" x2="249" y2="64" stroke="var(--border)"/>
+        <line x1="50" y1="86" x2="249" y2="86" stroke="var(--border)"/>
+        <line x1="50" y1="108" x2="249" y2="108" stroke="var(--accent)" class="mo-fade" style="--d:0.3s"/>
+        <line x1="50" y1="130" x2="249" y2="130" stroke="var(--accent)" class="mo-fade" style="--d:0.5s"/>
+        <line x1="50" y1="152" x2="249" y2="152" stroke="var(--accent)" class="mo-fade" style="--d:0.7s"/>
+        <line x1="50" y1="174" x2="249" y2="174" stroke="var(--accent)" class="mo-fade" style="--d:0.9s"/>
+        <line x1="50" y1="196" x2="249" y2="196" stroke="var(--accent)" class="mo-fade" style="--d:1.1s"/>
+        <line x1="50" y1="218" x2="249" y2="218" stroke="var(--accent)" class="mo-fade" style="--d:1.3s"/>
+        <line x1="50" y1="240" x2="249" y2="240" stroke="var(--accent)" class="mo-fade" style="--d:1.5s"/>
+      </g>
+      <text x="290" y="82" font-family="var(--font-body)" font-size="13" fill="var(--muted)">사람이 만든 몫 약 30칸</text>
+      <text x="290" y="150" font-family="var(--font-heading)" font-size="15" fill="var(--accent)" class="mo-fade" style="--d:1.7s">에이전트가 만든 몫 70칸 이상</text>
+      <text x="290" y="176" font-family="var(--font-body)" font-size="13" fill="var(--ink)" class="mo-fade" style="--d:2.0s">이 70%를 이해관계가 다른 회사가</text>
+      <text x="290" y="196" font-family="var(--font-body)" font-size="13" fill="var(--ink)" class="mo-fade" style="--d:2.0s">조직하고 있다면, 한꺼번에 멈추거나</text>
+      <text x="290" y="216" font-family="var(--font-body)" font-size="13" fill="var(--ink)" class="mo-fade" style="--d:2.0s">규칙이 바뀔 수 있다 → 롤닉의 "파업"</text>
+    </svg>
+    <figcaption>점 하나가 산출물의 1%예요. 70%는 롤닉이 보수적으로 잡았다는 가정이고 측정값이 아니에요.</figcaption>
+    </figure>
+
+    <h2 id="finance"><span class="hl">3. 사례</span> — 금융은 이미 랩이 다가가고 있는 산업</h2>
+    <p>롤닉이 두 번째 길의 사례로 꼽은 산업이 금융이에요(<a href="https://www.youtube.com/watch?v=-kPdGYaMYVU&t=351s" target="_blank" rel="noopener">5:51</a>). 그는 랩이 시장을 풀 수 있는 문제로 본다고 말해요. 지금은 금융 맥락과 노하우가 부족해서 투자은행 분석가를 채용하고 큰 금융사와 손을 잡지만, 결국 돈이 있는 원천으로 갈 거라고 "믿는다"고 해요. 이 부분은 롤닉의 믿음이지 확인된 사실이 아니에요.</p>
+    <p>화면에는 이 믿음을 받치는 기사 카드 6장(CNBC, BleepingComputer, The Verge, Business Insider, OpenAI, Banking Dive의 기사 제목들)이 줄지어 나오고, 해설자가 요약한 항목이 옆에 붙어 있어요: 오픈AI는 전직 은행원 100여 명을 시급 150달러 계약직으로 써서 재무 모델을 AI에게 가르치고 있다는 블룸버그 보도(2025.10), 앤트로픽의 금융 서비스용 클로드(2025.07), 금융 에이전트 10종(2026.05)이에요. 롤닉은 "이런 식으로 가두는 건 새롭지 않다"고 먼저 인정하고, 달라진 것은 판돈이라고 해요. 지구 경제의 의미 있는 몇 퍼센트가 걸려 있다는 거예요.</p>
+
+    <h2 id="swamp"><span class="hl">4. 모래 늪</span> — 한번 뿌리내리면 굳는다</h2>
+    <p>해설은 모래 늪을 "한번 발을 들이면 빠져나오기 어려운 땅"으로 풀어요. 롤닉은 청중에게 이미 AI가 필요하다고 말해요. 모델과 에이전트가 할 수 있는 일을 다 봤으니 되돌아갈 수 없다는 거예요. 그러니 부사장·임원·엔지니어는 어떤 도구와 절차에 뿌리를 내릴지 지금 정해야 하고, 무엇을 고르든 그 위에서 굳어지기 시작한다고 해요(말이 일부 끊겨 있어요). 해설자는 이 대목으로 앞부분을 한 줄로 묶어요. 랩이 둘 수 있는 가장 남는 수는 당신을 가두고 가격을 올리거나, 당신을 직접 대체하는 거라고요.</p>
+
+    <h2 id="moat"><span class="hl">5. 해자</span> — 코드만으로 지키던 벽이 얇아졌다</h2>
+    <p>해자<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>가 나오는 대목이에요(<a href="https://www.youtube.com/watch?v=-kPdGYaMYVU&t=592s" target="_blank" rel="noopener">9:52</a>). 롤닉은 독점 소프트웨어를 다시 만드는 한계비용이 곤두박질쳤다고 말해요. 근거는 자기 경험이에요. 몇 달 전 xAI가 내놓은 그록봇(노트북을 닫아도 클라우드에서 계속 일하는 에이전트)을 보고, 헤르메스 에이전트에게 그것을 겨눠 주말 만에 재현해 오픈소스 기능으로 내놨다고 해요. 예전엔 엔지니어 팀이 오래 일해 만든 코드를 SaaS로 팔았지만 이제는 반대라는 거예요. 의욕 있는 오픈소스 개발자가 에이전트를 겨누면 뭐든 역공학할 수 있으니, 폐쇄형 경쟁자가 흥미로운 기능을 만들어도 오픈소스에 곧 생긴다고요.</p>
+
+    <figure class="motion">
+    <svg viewBox="0 0 640 270" role="img" aria-label="위쪽은 시간 순서 세 칸이다. xAI가 그록봇을 내놓고, 롤닉 팀이 헤르메스 에이전트를 그것에 겨눠 주말 만에 재현하고, 오픈소스 기능으로 공개했다. 아래쪽은 두 칸 비교로, 어제의 해자는 독점 지식재산이고 내일의 해자는 네트워크 효과, 평판, 신뢰성이다.">
+      <defs>
+        <marker id="rn-a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/></marker>
+      </defs>
+      <rect x="20" y="16" width="170" height="64" rx="8" fill="none" stroke="var(--ink)" stroke-width="2" class="mo-rise" style="--d:0.1s"/>
+      <text x="105" y="42" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)" class="mo-rise" style="--d:0.1s">xAI 그록봇 출시</text>
+      <text x="105" y="62" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)" class="mo-rise" style="--d:0.1s">몇 달 전</text>
+      <line x1="190" y1="48" x2="232" y2="48" stroke="var(--muted)" stroke-width="2" marker-end="url(#rn-a3)" pathLength="1" class="mo-draw" style="--d:0.5s"/>
+      <rect x="234" y="16" width="170" height="64" rx="8" fill="none" stroke="var(--accent)" stroke-width="2" class="mo-rise" style="--d:0.8s"/>
+      <text x="319" y="42" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)" class="mo-rise" style="--d:0.8s">주말 만에 재현</text>
+      <text x="319" y="62" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)" class="mo-rise" style="--d:0.8s">헤르메스 에이전트를 겨눔</text>
+      <line x1="404" y1="48" x2="446" y2="48" stroke="var(--muted)" stroke-width="2" marker-end="url(#rn-a3)" pathLength="1" class="mo-draw" style="--d:1.2s"/>
+      <rect x="448" y="16" width="172" height="64" rx="8" fill="none" stroke="var(--ink)" stroke-width="2" class="mo-rise" style="--d:1.5s"/>
+      <text x="534" y="42" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)" class="mo-rise" style="--d:1.5s">오픈소스 기능으로 공개</text>
+      <text x="534" y="62" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)" class="mo-rise" style="--d:1.5s">롤닉의 경험담</text>
+
+      <line x1="320" y1="110" x2="320" y2="256" stroke="var(--border)" stroke-width="2"/>
+      <text x="170" y="130" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--muted)" class="mo-fade" style="--d:2.0s">어제의 해자</text>
+      <rect x="40" y="144" width="260" height="96" rx="8" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="6 5" class="mo-pop" style="--d:2.2s"/>
+      <text x="170" y="184" text-anchor="middle" font-family="var(--font-body)" font-size="14" fill="var(--ink)" class="mo-pop" style="--d:2.2s">독점 코드·지식재산</text>
+      <text x="170" y="208" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)" class="mo-pop" style="--d:2.2s">만들기 어려워서 지켜졌다</text>
+      <text x="470" y="130" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)" class="mo-fade" style="--d:2.6s">내일의 해자</text>
+      <rect x="340" y="144" width="260" height="96" rx="8" fill="none" stroke="var(--accent)" stroke-width="3" class="mo-pop" style="--d:2.8s"/>
+      <text x="470" y="178" text-anchor="middle" font-family="var(--font-body)" font-size="14" fill="var(--ink)" class="mo-pop" style="--d:2.8s">네트워크 효과 · 평판 · 신뢰성</text>
+      <text x="470" y="204" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)" class="mo-pop" style="--d:2.8s">베끼기 어려운 것들</text>
+    </svg>
+    <figcaption>위쪽은 롤닉이 든 사례의 순서이고, 아래쪽은 그가 결론으로 말한 해자의 이동이에요.</figcaption>
+    </figure>
+    <p>그가 말한 결론은 "어제의 해자는 독점 지식재산에 있었고, 내일의 해자는 네트워크 효과·평판·신뢰성에 있다"예요. 해설자는 이어 증류<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup> 이야기로 넘어가요. 롤닉은 모델도 같다고 봐요. 모델이 다른 모델을 거의 같은 수준으로 가르칠 수 있고, 모델의 강점이 구조(아키텍처)에 있는 일은 드물다는 거예요. 앤트로픽은 2026년 2월 중국의 딥시크·문샷·미니맥스가 가짜 계정 약 24,000개로 클로드와 1,600만 건 넘게 대화하며 능력을 뽑아갔다고 공개했는데, 롤닉은 이런 일을 "불법 증류 = 도둑질"이라 부르는 것을 저작권 침해라고 부를 수 없다는 쪽으로 읽어요. 저작권 침해라고 하려면 모든 사람의 저작물로 학습한 것까지 침해가 돼야 한다는 논리예요(자막이 이 대목에서 많이 끊겨 그의 주장 전부는 확인하지 못했어요).</p>
+
+    <figure class="motion">
+    <svg viewBox="0 0 640 270" role="img" aria-label="증류의 순서를 그린 흐름도다. 큰 모델에게 질문을 아주 많이 던지고, 받은 답을 모아서, 작은 모델을 학습시킨다. 아래에는 두 경우를 나눠 적었다. 자기 모델이나 허락받은 모델로 하면 업계에서 흔한 정당한 방법이고, 남의 모델에 가짜 계정 약 24,000개로 1,600만 건 넘게 물으면 앤트로픽이 약관 위반 공격이라고 본 경우다.">
+      <defs>
+        <marker id="rn-a4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/></marker>
+      </defs>
+      <rect x="14" y="20" width="130" height="62" rx="8" fill="none" stroke="var(--ink)" stroke-width="2" class="mo-rise" style="--d:0.1s"/>
+      <text x="79" y="46" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)" class="mo-rise" style="--d:0.1s">큰 모델</text>
+      <text x="79" y="66" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)" class="mo-rise" style="--d:0.1s">선생님</text>
+      <line x1="144" y1="51" x2="180" y2="51" stroke="var(--muted)" stroke-width="2" marker-end="url(#rn-a4)" pathLength="1" class="mo-draw" style="--d:0.5s"/>
+      <rect x="182" y="20" width="140" height="62" rx="8" fill="none" stroke="var(--ink)" stroke-width="2" class="mo-rise" style="--d:0.8s"/>
+      <text x="252" y="46" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)" class="mo-rise" style="--d:0.8s">질문 아주 많이</text>
+      <text x="252" y="66" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)" class="mo-rise" style="--d:0.8s">던지고</text>
+      <line x1="322" y1="51" x2="358" y2="51" stroke="var(--muted)" stroke-width="2" marker-end="url(#rn-a4)" pathLength="1" class="mo-draw" style="--d:1.1s"/>
+      <rect x="360" y="20" width="120" height="62" rx="8" fill="none" stroke="var(--ink)" stroke-width="2" class="mo-rise" style="--d:1.4s"/>
+      <text x="420" y="46" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)" class="mo-rise" style="--d:1.4s">답 모으기</text>
+      <text x="420" y="66" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)" class="mo-rise" style="--d:1.4s">받아 적듯</text>
+      <line x1="480" y1="51" x2="516" y2="51" stroke="var(--muted)" stroke-width="2" marker-end="url(#rn-a4)" pathLength="1" class="mo-draw" style="--d:1.7s"/>
+      <rect x="518" y="20" width="108" height="62" rx="8" fill="none" stroke="var(--accent)" stroke-width="2" class="mo-rise" style="--d:2.0s"/>
+      <text x="572" y="46" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)" class="mo-rise" style="--d:2.0s">작은 모델</text>
+      <text x="572" y="66" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)" class="mo-rise" style="--d:2.0s">학생</text>
+
+      <line x1="320" y1="112" x2="320" y2="258" stroke="var(--border)" stroke-width="2"/>
+      <rect x="30" y="124" width="270" height="124" rx="10" fill="none" stroke="var(--ink)" stroke-width="2" class="mo-pop" style="--d:2.4s"/>
+      <text x="165" y="154" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)" class="mo-pop" style="--d:2.4s">정당하게 쓰는 경우</text>
+      <text x="165" y="182" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)" class="mo-pop" style="--d:2.4s">자기 모델·허락받은 모델에 적용</text>
+      <text x="165" y="204" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)" class="mo-pop" style="--d:2.4s">업계에서 흔한 방법이에요</text>
+      <rect x="340" y="124" width="280" height="124" rx="10" fill="none" stroke="var(--accent)" stroke-width="3" class="mo-pop" style="--d:2.8s"/>
+      <text x="480" y="154" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)" class="mo-pop" style="--d:2.8s">논쟁이 되는 경우</text>
+      <text x="480" y="182" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)" class="mo-pop" style="--d:2.8s">남의 모델에 가짜 계정 약 24,000개로</text>
+      <text x="480" y="202" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)" class="mo-pop" style="--d:2.8s">1,600만 건 넘게 대화 (앤트로픽의 공개)</text>
+      <text x="480" y="226" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)" class="mo-pop" style="--d:2.8s">앤트로픽: 약관 위반 공격 / 롤닉: 다른 시각</text>
+    </svg>
+    <figcaption>증류의 순서는 해설이 "선생님의 풀이를 받아 적으며 배우는 학생"으로 비유한 것을 그림으로 옮겼어요.</figcaption>
+    </figure>
+
+    <h2 id="os"><span class="hl">6. 에이전트는 운영체제에 가깝다</span> — 결정론과 비결정론의 결합</h2>
+    <p>롤닉은 에이전트를 똑똑한 개인 비서로만 보면 표면에만 머문다고 말해요. 에이전트는 채팅보다 운영체제<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup>나 프레임워크에 가깝다는 거예요. 해설자는 결정론적(같은 입력에 늘 같은 결과를 내는 보통의 코드)과 비결정론적(같은 질문에도 답이 조금씩 달라지는 모델)이라는 말을 풀어 줘요. 에이전트의 핵심은 두 가지를 섞는 시스템이라는 거예요. 데이터 원천, 일상적인 코드, 사람의 의견, 판단이 한데 모여 새 애플리케이션이 되고, 그 애플리케이션은 더 이상 차갑고 딱딱한 코드만이 아니라 지능·추론·판단을 안에 넣을 수 있다고요.</p>
+
+    <figure class="motion">
+    <svg viewBox="0 0 640 270" role="img" aria-label="에이전트의 재료를 모으는 그림이다. 왼쪽 위 두 칸은 결정론적인 재료로 데이터 원천과 일상적인 코드, 왼쪽 아래 두 칸은 비결정론적인 재료로 사람의 의견과 판단 추론이다. 네 칸에서 가운데 에이전트로 화살표가 모이고, 오른쪽에 새 애플리케이션이 나온다.">
+      <defs>
+        <marker id="rn-a5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/></marker>
+      </defs>
+      <text x="100" y="18" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)">같은 입력 → 같은 결과</text>
+      <rect x="20" y="28" width="180" height="48" rx="8" fill="none" stroke="var(--ink)" stroke-width="2" class="mo-rise" style="--d:0.1s"/>
+      <text x="110" y="58" text-anchor="middle" font-family="var(--font-body)" font-size="14" fill="var(--ink)" class="mo-rise" style="--d:0.1s">데이터 원천</text>
+      <rect x="20" y="88" width="180" height="48" rx="8" fill="none" stroke="var(--ink)" stroke-width="2" class="mo-rise" style="--d:0.3s"/>
+      <text x="110" y="118" text-anchor="middle" font-family="var(--font-body)" font-size="14" fill="var(--ink)" class="mo-rise" style="--d:0.3s">일상적인 코드</text>
+      <text x="100" y="164" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)">같은 질문에도 답이 달라짐</text>
+      <rect x="20" y="174" width="180" height="48" rx="8" fill="none" stroke="var(--accent)" stroke-width="2" class="mo-rise" style="--d:0.5s"/>
+      <text x="110" y="204" text-anchor="middle" font-family="var(--font-body)" font-size="14" fill="var(--ink)" class="mo-rise" style="--d:0.5s">사람의 의견</text>
+      <rect x="20" y="228" width="180" height="40" rx="8" fill="none" stroke="var(--accent)" stroke-width="2" class="mo-rise" style="--d:0.7s"/>
+      <text x="110" y="253" text-anchor="middle" font-family="var(--font-body)" font-size="14" fill="var(--ink)" class="mo-rise" style="--d:0.7s">판단·추론(모델)</text>
+      <path d="M 200 52 C 250 52 250 130 292 130" fill="none" stroke="var(--muted)" stroke-width="2" marker-end="url(#rn-a5)" pathLength="1" class="mo-draw" style="--d:1.0s"/>
+      <path d="M 200 112 C 250 112 250 134 292 134" fill="none" stroke="var(--muted)" stroke-width="2" marker-end="url(#rn-a5)" pathLength="1" class="mo-draw" style="--d:1.1s"/>
+      <path d="M 200 198 C 250 198 250 140 292 140" fill="none" stroke="var(--muted)" stroke-width="2" marker-end="url(#rn-a5)" pathLength="1" class="mo-draw" style="--d:1.2s"/>
+      <path d="M 200 248 C 250 248 250 144 292 144" fill="none" stroke="var(--muted)" stroke-width="2" marker-end="url(#rn-a5)" pathLength="1" class="mo-draw" style="--d:1.3s"/>
+      <rect x="294" y="100" width="150" height="74" rx="10" fill="none" stroke="var(--accent)" stroke-width="3" class="mo-pop" style="--d:1.6s"/>
+      <text x="369" y="132" text-anchor="middle" font-family="var(--font-heading)" font-size="15" fill="var(--accent)" class="mo-pop" style="--d:1.6s">에이전트</text>
+      <text x="369" y="154" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)" class="mo-pop" style="--d:1.6s">운영체제에 가까운 바탕</text>
+      <line x1="444" y1="137" x2="486" y2="137" stroke="var(--muted)" stroke-width="2" marker-end="url(#rn-a5)" pathLength="1" class="mo-draw" style="--d:2.0s"/>
+      <rect x="488" y="100" width="136" height="74" rx="10" fill="none" stroke="var(--ink)" stroke-width="2" class="mo-pop" style="--d:2.3s"/>
+      <text x="556" y="132" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)" class="mo-pop" style="--d:2.3s">새 애플리케이션</text>
+      <text x="556" y="154" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)" class="mo-pop" style="--d:2.3s">딱딱한 코드 + 판단</text>
+    </svg>
+    <figcaption>왼쪽 위 두 칸(결정론)과 아래 두 칸(비결정론)을 한 시스템에 섞는다는 롤닉의 설명을 그린 것이에요.</figcaption>
+    </figure>
+
+    <h2 id="own"><span class="hl">7. 소유한다는 것</span> — 처방과 그 단서</h2>
+    <p>처방은 <a href="https://www.youtube.com/watch?v=-kPdGYaMYVU&t=920s" target="_blank" rel="noopener">15:20</a> 이후에 나와요. 롤닉은 "내가 소유하는 기반 위에 시스템을 지어라, 원하는 모델을 갈아 끼울 수 있어야 한다"고 말하고, 그 기반 위에 결정론·비결정론·코드·데이터 원천·판단·추론으로 점점 더 정교한 기능의 탑을 쌓으라고 해요. 한편 청중은 대부분 에이전트 회사나 AI 회사가 아니니, 평생 지능 회사로 살지 말라고 해요. 자기가 잘하는 일에 집중하고, 최신 기술이 바뀌면 그것을 직접 다시 만들어 유지하지 말고 물려받으라는 거예요. 도구는 사람을 더 낫게 만드는 것이고 대체물이 아니라는 말도 해요. 마지막은 이래요. 누군가는 그 수조 달러를 회수할 테니 그게 당신이 되게 하라, 최신 기능과 신뢰성을 누리면서 자율성은 잃지 않을 수 있다고요.</p>
+    <p>해설자는 마지막에 단서를 세 가지 달아요. 가장 많이 쓰이는 오픈소스 에이전트라는 말은 롤닉의 주장이고, 깃허브 별만 보면 다른 오픈소스 에이전트 오픈클로(39만 개)가 헤르메스(약 26만 개)보다 많아요. 기반을 직접 소유하면 운영·보안·관리 책임도 직접 져요. 그리고 헤르메스 에이전트는 MIT 라이선스로 공개돼 있고, 월스트리트저널은 출시 뒤 다운로드가 2,200만 건을 넘었다고 보도했으며, 누스 리서치는 10월 초 9천만 달러 투자 유치를 발표했고 기업 가치 15억 달러는 회사가 직접 밝힌 값이 아니라 보도된 값이에요.</p>
+
+    <h2 id="screen"><span class="hl">화면에서 건진 정보</span> — 말로는 안 나오는 것들</h2>
+    <p>연사 말만 따라가면 놓치는 정보가 화면에 있어요. 제가 직접 열어 본 장면과, 해설 자막으로만 알 수 있는 장면을 구분해 적어요.</p>
+    <table>
+      <thead><tr><th>시각</th><th>화면</th><th>알 수 있는 것</th></tr></thead>
+      <tbody>
+        <tr><td><a href="https://www.youtube.com/watch?v=-kPdGYaMYVU&t=40s" target="_blank" rel="noopener">0:40</a></td><td>"Hermes Agent" 표지 슬라이드, 연사 화면은 왼쪽 작은 창</td><td>행사는 AI Engineer New York 2026.10.13, 후원 표시는 arize. 이 키노트의 제품은 헤르메스 에이전트예요. (직접 확인)</td></tr>
+        <tr><td><a href="https://www.youtube.com/watch?v=-kPdGYaMYVU&t=157s" target="_blank" rel="noopener">2:37</a></td><td>"The model is commoditized" 슬라이드</td><td>첫 주장의 한 줄 요약이에요. 모델이 상품이 됐다는 선언으로 시작한다는 점이 한눈에 보여요. (직접 확인)</td></tr>
+        <tr><td><a href="https://www.youtube.com/watch?v=-kPdGYaMYVU&t=190s" target="_blank" rel="noopener">3:10</a></td><td>3층 구조 그림: 위는 사람들, 가운데는 뇌, 아래는 서버 선반, 아래층에 "인프라" 표시</td><td>AI 서비스를 사용자 층·모델 층·인프라 층으로 나누는 틀이에요. 랩이 옮겨 갈 수 있는 자리를 이 그림으로 설명해요. (직접 확인)</td></tr>
+        <tr><td><a href="https://www.youtube.com/watch?v=-kPdGYaMYVU&t=379s" target="_blank" rel="noopener">6:19</a></td><td>기사 카드 6장과 요약: "랩 → 금융 업계 가까이", 전직 은행원 100여 명, 시급 150달러 계약직, 금융 서비스용 클로드 2025.07, 금융 에이전트 10종 2026.05</td><td>금융 진출 주장의 근거가 어느 매체의 어느 시점 보도인지 알 수 있어요. 기사 6건의 매체는 슬라이드 아래 주석에 CNBC·BleepingComputer·The Verge·Business Insider·OpenAI·Banking Dive로 적혀 있어요. (직접 확인)</td></tr>
+        <tr><td><a href="https://www.youtube.com/watch?v=-kPdGYaMYVU&t=932s" target="_blank" rel="noopener">15:32</a></td><td>"할 수 있어야 한다" 문장이 빽빽한 슬라이드, 5곳이 강조됨</td><td>아래 점검 질문 다섯 개의 원본이에요. 강조된 곳은 로컬 모델 쓰기, 대화 도중 모델 바꾸기, 인터넷에 닿지 않는 기계에서 돌리기, 에이전트가 따르는 프롬프트 읽기, 에이전트 통째로 내보내기예요. (직접 확인, 5곳 목록은 해설 자막)</td></tr>
+        <tr><td>그 밖</td><td>그록봇 장면, 증류 관련 기사 제목 등</td><td>해설 자막으로만 알아요. 화면은 확인하지 못했어요.</td></tr>
+      </tbody>
+    </table>
+    <p>슬라이드 속 문장에는 그 밖에도 더 쓰는 도구(더 똑똑한 모델이나 더 싼 모델 고르기), 일마다 다른 모델 쓰기, 에이전트가 무엇을 기억하고 잊는지 정하기, 쓰는 도구 목록 보고 필요 없는 것 끄기, 한 번 가르친 것을 다시 설명하지 않기, 에이전트가 무엇을 언제 했는지 알기가 있었어요. 모두 "…할 수 있어야 한다"로 끝나요. 이 목록의 공통점은 에이전트의 선택권이 쓰는 사람에게 있어야 한다는 것이고, 그래서 아래 "나쁜 선택 vs 좋은 선택"의 기준으로 삼았어요.</p>
+
+    <h2 id="weak"><span class="hl">롤닉 논리의 이음매</span> — 전제 다섯 개와 약한 고리</h2>
+    <p>다음은 제 추론이에요. 위 주장을 전제로 나눠 놓고, 각 전제가 틀리면 결론이 어떻게 바뀌는지 적었어요.</p>
+    <table>
+      <thead><tr><th>전제</th><th>영상 안의 근거</th><th>틀리면 생기는 일</th></tr></thead>
+      <tbody>
+        <tr><td><strong>P1. 모델은 상품이 된다</strong></td><td>같은 성능의 값이 해마다 중앙값 약 50배 하락(에포크 AI, 해설), 갈아타기 쉬움</td><td>해설자가 짚은 반대 사정이 여기예요. 가장 강한 오픈 모델이 폐쇄형 최상위 모델보다 평균 약 4개월 뒤처진다는 것. 이 격차가 벌어지면 최상위 모델의 협상력이 커지고 "갈아타기 쉽다"는 말이 약해져요.</td></tr>
+        <tr><td><strong>P2. 랩은 돈을 회수해야 한다</strong></td><td>이미 쓴 수천억~수조 달러</td><td>회수 방식이 꼭 "묶어 두기"여야 하는 것은 아니에요. 값을 낮추고 많이 파는 쪽(전기나 클라우드처럼 박리다매)으로 가면 사용자에게는 오히려 유리해요.</td></tr>
+        <tr><td><strong>P3. 기업에 박히고 산업에 진출한다</strong></td><td>금융 사례(채용·제품 출시), 롤닉의 "믿음"</td><td>진출은 해설이 든 사례이고 "결국 원천으로 간다"는 롤닉의 믿음이에요. 금융처럼 규제와 책임이 큰 산업에서 랩이 직접 서비스를 하려면 진입 비용이 커서 속도가 느릴 수 있어요.</td></tr>
+        <tr><td><strong>P4. 박히면 옮기기 어렵다</strong></td><td>"모래 늪" 대목</td><td>옮기기 어려운 정도는 내가 얼마나 묶였느냐에 따라 달라져요. 업무 절차를 내보낼 수 있는 형식으로 관리해 두면 비용이 줄어요.</td></tr>
+        <tr><td><strong>P5. 소유하면 자율을 얻는다</strong></td><td>"할 수 있어야 한다" 슬라이드</td><td>소유에는 운영·보안·관리 책임이 따라와요(해설자의 단서). 개인에게는 직접 서버를 돌리는 방식이 현실적이지 않을 수 있어요.</td></tr>
+      </tbody>
+    </table>
+    <p>또 하나, 이 주장의 전체 틀에는 이해충돌이 있어요. 롤닉이 권하는 "소유 가능한 기반"은 그가 파는 제품이고, 영상 소개도 그 점을 먼저 밝혀요. 이해충돌이 있다고 주장이 틀리는 것은 아니에요. 다만 각 전제를 따로 검증해야 한다는 뜻이고, 위 표가 그 출발점이에요.</p>
+
+    <h2 id="after"><span class="hl">주장 뒤에 이어질 수 있는 논리</span> — 랩은 더 강해질까, 전문가는 사라질까</h2>
+    <p>아래 세 갈래는 영상에 나오지 않는 제 추론이에요. 각 갈래가 어느 전제가 맞고 틀리다고 보느냐에 따라 갈려요. 예측이 아니라, 어떤 조건에서 어떤 결론이 나오는지 정리한 지도예요.</p>
+    <table>
+      <thead><tr><th>갈래</th><th>기대는 전제</th><th>이 경우 랩과 사용자의 모습</th></tr></thead>
+      <tbody>
+        <tr><td><strong>A. 랩이 더 강해진다</strong></td><td>P1이 약해짐(최상위 모델 격차가 벌어짐), P3가 맞음</td><td>폐쇄형 최상위 모델이 계속 앞서고, 랩이 에이전트 층과 산업까지 올라가요. AI를 쓰는 쪽의 협상력은 약해져요.</td></tr>
+        <tr><td><strong>B. 모델이 공공재처럼 된다</strong></td><td>P1이 강함(격차가 좁아지고 값이 계속 내림)</td><td>랩의 마진은 얇아지고 값은 내려가요. 차이는 모델이 아니라 데이터·신뢰·분배(누가 사용자와 만나는가)에서 나요. 사용자에게 가장 유리해요.</td></tr>
+        <tr><td><strong>C. 둘로 갈라진다</strong></td><td>P1이 일부만 맞음</td><td>가장 어려운 일에는 최상위 폐쇄형 모델을 비싸게 쓰고, 나머지 일은 오픈 모델로 갈아타는 식으로 나뉘어요. 선택권이 생기지만, 어느 일이 어느 쪽인지 판단해야 해요.</td></tr>
+      </tbody>
+    </table>
+    <p>어느 갈래가 맞을지는 이 영상만으로 정할 수 없어요. 격차가 좁아지는지(P1)는 시간이 지나야 보이고, 랩이 산업에 직접 들어가는지(P3)는 각 산업의 규제와 책임에 달려 있어요. 이 글에서 건질 수 있는 것은 "어느 쪽이 되든 내가 대비할 수 있는 부분"이에요.</p>
+
+    <figure class="motion">
+    <svg viewBox="0 0 640 210" role="img" aria-label="한 줄짜리 눈금 그림이다. 왼쪽 끝은 사용자에게 유리하고 오른쪽 끝은 랩에게 유리하다. 갈래 B는 왼쪽, 갈래 C는 가운데, 갈래 A는 오른쪽에 점으로 놓았다.">
+      <defs>
+        <marker id="rn-a6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/></marker>
+      </defs>
+      <line x1="40" y1="100" x2="600" y2="100" stroke="var(--muted)" stroke-width="3" marker-start="url(#rn-a6)" marker-end="url(#rn-a6)" pathLength="1" class="mo-draw"/>
+      <text x="40" y="150" font-family="var(--font-heading)" font-size="14" fill="var(--ink)" class="mo-fade" style="--d:0.4s">사용자에게 유리</text>
+      <text x="600" y="150" text-anchor="end" font-family="var(--font-heading)" font-size="14" fill="var(--ink)" class="mo-fade" style="--d:0.4s">랩에게 유리</text>
+      <circle cx="120" cy="100" r="13" fill="var(--bg)" stroke="var(--accent)" stroke-width="3" class="mo-pop" style="--d:0.8s"/>
+      <text x="120" y="105" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)" class="mo-pop" style="--d:0.8s">B</text>
+      <text x="120" y="68" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)" class="mo-fade" style="--d:1.0s">모델이 공공재처럼</text>
+      <circle cx="320" cy="100" r="13" fill="var(--bg)" stroke="var(--accent)" stroke-width="3" class="mo-pop" style="--d:1.2s"/>
+      <text x="320" y="105" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)" class="mo-pop" style="--d:1.2s">C</text>
+      <text x="320" y="68" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)" class="mo-fade" style="--d:1.4s">둘로 갈라짐</text>
+      <circle cx="520" cy="100" r="13" fill="var(--accent)" stroke="var(--accent)" stroke-width="3" class="mo-pop" style="--d:1.6s"/>
+      <text x="520" y="105" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--bg)" class="mo-pop" style="--d:1.6s">A</text>
+      <text x="520" y="68" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--ink)" class="mo-fade" style="--d:1.8s">랩이 더 강해짐</text>
+      <text x="320" y="192" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)" class="mo-fade" style="--d:2.0s">어느 점이 맞을지는 격차(P1)와 산업 진출(P3)이 정해요</text>
+    </svg>
+    <figcaption>위 표의 세 갈래를 한 줄에 놓은 제 정리예요. 예측이 아니라 조건별 지도예요.</figcaption>
+    </figure>
+
+    <p><strong>"AI 전문가가 사라진다"는 어떻게 읽을까.</strong> 이 영상에는 그런 말이 나오지 않아요. 가장 가까운 대목은 두 군데예요. 하나는 랩이 회사의 일을 "직접 대체"할 수 있다는 시나리오이고, 다른 하나는 청중에게 "평생 지능 회사로 살지 말라, 잘하는 일에 집중하고 최신 기술은 물려받으라"는 권고예요. 제 추론으로는 "AI 전문가"의 뜻에 따라 읽는 길이 둘로 갈려요.</p>
+    <ul>
+      <li><strong>AI를 직접 만들고 조율하는 일이 에이전트에게 흡수된다는 읽기.</strong> 이 읽기에서는 AI 기술 자체가 직업이던 사람의 자리가 줄고, 랩이 더 강해져요(갈래 A에 가까움).</li>
+      <li><strong>AI를 아는 것이 특별한 능력에서 기본 소양으로 내려온다는 읽기.</strong> 롤닉의 "AI 회사가 되지 말라"와 맞닿아요. 이 경우 가치는 AI 기술보다 그 사람이 가진 분야 맥락과 판단에서 나와요(갈래 B·C에 가까움).</li>
+    </ul>
+    <p>두 읽기 모두 개인에게 같은 질문을 남겨요. AI를 잘 다루는 것만으로는 구별되지 않는다면, 내가 가진 구별점은 무엇일까요? 롤닉이 말한 "내일의 해자"(네트워크 효과·평판·신뢰성)를 개인 규모로 옮기면 내 이름으로 낸 결과물의 평판, 믿고 맡기는 관계, 결과를 직접 검증하는 습관이에요. 이 옮김은 제 해석이고, 롤닉이 개인에 대해 한 말은 아니에요. 판단은 사람 몫이라는 연구는 <a href="cranmer-ai-brain-rot-research.html">마일스 크랜머 강연 정리</a>에서 볼 수 있어요.</p>
+
+    <h2 id="matrix"><span class="hl">AI 의존도가 높으면 불리한가</span> — 의존도와 대체재 격차가 함께 정해요</h2>
+    <p>제 추론으로는 불리함이 의존도 하나로 정해지지 않아요. 내 작업이 한 AI에 얼마나 묶였는지(의존도)와, 그 AI를 대신할 다른 선택지가 얼마나 가까운지(대체재 격차)를 함께 봐야 해요.</p>
+
+    <figure class="motion">
+    <svg viewBox="0 0 640 330" role="img" aria-label="두 축으로 나눈 네 칸 그림이다. 가로는 최상위 모델의 격차로 왼쪽이 좁아짐, 오른쪽이 벌어짐. 세로는 내 작업이 한 AI에 묶인 정도로 위가 낮음, 아래가 높음. 좁아짐과 낮음은 가장 유리, 벌어짐과 낮음은 선택 가능, 좁아짐과 높음은 스스로 풀 수 있음, 벌어짐과 높음은 가장 불리하다.">
+      <text x="230" y="22" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)" class="mo-fade">대체재 격차 좁아짐</text>
+      <text x="495" y="22" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--ink)" class="mo-fade">대체재 격차 벌어짐</text>
+      <text x="62" y="108" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)" class="mo-fade">묶임 낮음</text>
+      <text x="62" y="248" text-anchor="middle" font-family="var(--font-heading)" font-size="13" fill="var(--ink)" class="mo-fade">묶임 높음</text>
+
+      <rect x="110" y="36" width="240" height="120" rx="10" fill="none" stroke="var(--ink)" stroke-width="2" class="mo-pop" style="--d:0.2s"/>
+      <text x="230" y="84" text-anchor="middle" font-family="var(--font-heading)" font-size="15" fill="var(--ink)" class="mo-pop" style="--d:0.2s">가장 유리</text>
+      <text x="230" y="108" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)" class="mo-pop" style="--d:0.2s">값은 내리고 갈아타기도 쉬워요</text>
+
+      <rect x="372" y="36" width="246" height="120" rx="10" fill="none" stroke="var(--ink)" stroke-width="2" class="mo-pop" style="--d:0.5s"/>
+      <text x="495" y="84" text-anchor="middle" font-family="var(--font-heading)" font-size="15" fill="var(--ink)" class="mo-pop" style="--d:0.5s">선택 가능</text>
+      <text x="495" y="108" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)" class="mo-pop" style="--d:0.5s">최상위만 비싸게, 나머지는 갈아타요</text>
+
+      <rect x="110" y="176" width="240" height="120" rx="10" fill="none" stroke="var(--ink)" stroke-width="2" class="mo-pop" style="--d:0.8s"/>
+      <text x="230" y="224" text-anchor="middle" font-family="var(--font-heading)" font-size="15" fill="var(--ink)" class="mo-pop" style="--d:0.8s">스스로 풀 수 있음</text>
+      <text x="230" y="248" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)" class="mo-pop" style="--d:0.8s">갈아탈 수 있는데 안 옮긴 상태예요</text>
+
+      <rect x="372" y="176" width="246" height="120" rx="10" fill="none" stroke="var(--accent)" stroke-width="3" class="mo-pop" style="--d:1.1s"/>
+      <text x="495" y="224" text-anchor="middle" font-family="var(--font-heading)" font-size="15" fill="var(--accent)" class="mo-pop" style="--d:1.1s">가장 불리</text>
+      <text x="495" y="248" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--muted)" class="mo-pop" style="--d:1.1s">대체재가 약한데 내 작업도 묶였어요</text>
+    </svg>
+    <figcaption>제가 세운 틀이에요(롤닉의 주장이 아니에요). 대체재 격차는 내가 통제하지 못하는 쪽, 묶임 정도는 내가 줄일 수 있는 쪽이에요.</figcaption>
+    </figure>
+
+    <p>이 틀의 쓸모는 아래쪽 줄을 위쪽 줄로 올리는 일이 내 손에 있다는 점이에요. 격차가 벌어질지는 랩과 시장이 정하지만, 내 작업이 한 AI에 얼마나 묶이는지는 오늘부터 줄일 수 있어요. 의존도가 높은 것 자체보다 "묶인 채 높은 것"이 위험해요.</p>
+
+    <h2 id="choice"><span class="hl">나쁜 선택 vs 좋은 선택</span> — 개발자도 대기업도 아닌 개인이 AI 도구를 쓸 때</h2>
+    <p>제 제안이에요. 롤닉의 "할 수 있어야 한다" 목록을 개인 규모로 줄였어요. 장면은 한 사람이 챗봇으로 보고서·계획·글을 몇 달째 만들어 온 경우예요.</p>
+    <table class="choice-table">
+      <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="choice-bad">작업 지침, 말투 설정, 자료 정리를 한 서비스 안의 맞춤 설정과 대화 기록에만 쌓는다 → 가격이나 정책이 바뀌어도 옮기려면 처음부터 다시 쌓아야 한다.</td>
+          <td class="choice-good">지침·핵심 자료·결과물은 내 컴퓨터의 텍스트 문서로도 보관한다 → 다른 AI에 붙여 넣기만 하면 같은 일을 이어 갈 수 있다.</td>
+        </tr>
+        <tr>
+          <td class="choice-bad">결과를 그대로 믿고 내 이름으로 낸다 → AI가 바뀌거나 틀리면 내 평판이 그대로 깎인다.</td>
+          <td class="choice-good">결과를 내가 검증하고 판단한 흔적을 남긴다 → 어떤 AI를 쓰든 내가 가진 신뢰는 그대로 남는다.</td>
+        </tr>
+        <tr>
+          <td class="choice-bad">비용을 구독료만 보고 판단하고, 쓰는 방식이 바뀌어도 점검하지 않는다.</td>
+          <td class="choice-good">몇 달에 한 번 다른 AI 하나로 같은 작업을 해 본다 → 옮길 수 있는지와 격차가 얼마인지를 직접 안다.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>점검 질문 다섯 개로도 줄일 수 있어요. 영상 화면의 문장을 개인용으로 옮긴 거예요. ① 이 AI를 다른 모델로 바꿔도 내 작업이 돌아가나요? ② 내 지침(프롬프트)을 내가 읽고 가져갈 수 있나요? ③ 내 자료와 기억이 어디에 저장되고, 내보낼 수 있나요? ④ 이 AI가 지금 무슨 도구를 쓰고 무엇을 했는지 볼 수 있나요? ⑤ 이 서비스가 없어져도 하던 일을 이어 갈 방법이 있나요?</p>
+
+    <figure class="motion">
+    <svg viewBox="0 0 640 300" role="img" aria-label="점검 질문 다섯 개를 세로로 늘어놓은 체크리스트 그림이다. 1 모델 바꾸기, 2 지침 가져가기, 3 자료와 기억 내보내기, 4 도구와 행동 기록 보기, 5 서비스가 없어져도 이어 가기. 각 질문 옆에 영상 화면의 해당 문장을 짝지었다.">
+      <text x="44" y="20" font-family="var(--font-heading)" font-size="13" fill="var(--muted)" class="mo-fade">내 질문</text>
+      <text x="360" y="20" font-family="var(--font-heading)" font-size="13" fill="var(--muted)" class="mo-fade">영상 화면의 문장(15:32)</text>
+      <g class="mo-rise" style="--d:0.2s"><circle cx="30" cy="52" r="14" fill="none" stroke="var(--accent)" stroke-width="2.5"/><text x="30" y="57" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">1</text><text x="56" y="57" font-family="var(--font-body)" font-size="14" fill="var(--ink)">다른 모델로 바꿔도 돌아가나?</text><text x="360" y="57" font-family="var(--font-body)" font-size="13" fill="var(--muted)">대화 도중 모델 교체 · 로컬 모델</text></g>
+      <g class="mo-rise" style="--d:0.5s"><circle cx="30" cy="104" r="14" fill="none" stroke="var(--accent)" stroke-width="2.5"/><text x="30" y="109" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">2</text><text x="56" y="109" font-family="var(--font-body)" font-size="14" fill="var(--ink)">내 지침을 읽고 가져갈 수 있나?</text><text x="360" y="109" font-family="var(--font-body)" font-size="13" fill="var(--muted)">에이전트가 따르는 프롬프트 읽기</text></g>
+      <g class="mo-rise" style="--d:0.8s"><circle cx="30" cy="156" r="14" fill="none" stroke="var(--accent)" stroke-width="2.5"/><text x="30" y="161" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">3</text><text x="56" y="161" font-family="var(--font-body)" font-size="14" fill="var(--ink)">자료·기억이 어디 있고 내보내나?</text><text x="360" y="161" font-family="var(--font-body)" font-size="13" fill="var(--muted)">무엇을 기억하고 잊을지 정하기</text></g>
+      <g class="mo-rise" style="--d:1.1s"><circle cx="30" cy="208" r="14" fill="none" stroke="var(--accent)" stroke-width="2.5"/><text x="30" y="213" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--accent)">4</text><text x="56" y="213" font-family="var(--font-body)" font-size="14" fill="var(--ink)">무슨 도구를 쓰고 뭘 했는지 보이나?</text><text x="360" y="213" font-family="var(--font-body)" font-size="13" fill="var(--muted)">도구 목록 보고 끄기 · 언제 무엇을 했는지 알기</text></g>
+      <g class="mo-rise" style="--d:1.4s"><circle cx="30" cy="260" r="14" fill="var(--accent)" stroke="var(--accent)" stroke-width="2.5"/><text x="30" y="265" text-anchor="middle" font-family="var(--font-heading)" font-size="14" fill="var(--bg)">5</text><text x="56" y="265" font-family="var(--font-body)" font-size="14" fill="var(--ink)">서비스가 없어져도 이어 갈 수 있나?</text><text x="360" y="265" font-family="var(--font-body)" font-size="13" fill="var(--muted)">인터넷 없는 기계 · 에이전트 통째로 내보내기</text></g>
+    </svg>
+    <figcaption>오른쪽 문장은 화면에서 읽은 것과 해설 자막을 짝지은 것이고, 짝짓기는 제가 했어요.</figcaption>
+    </figure>
+
+    <h2 id="numbers"><span class="hl">이 글에 나온 숫자</span> — 인용하기 전에</h2>
+    <p>해설 영상 자막과 화면에 나온 값이에요. 저는 이 숫자들을 따로 검증하지 않았어요.</p>
+    <table>
+      <thead><tr><th>무엇의 숫자인가</th><th>값</th><th>알아 둘 것</th></tr></thead>
+      <tbody>
+        <tr><td>랩 하나의 지출 / 업계 전체</td><td>수천억 달러 / 수조 달러</td><td>롤닉의 말이에요(hundreds of billions, trillions perhaps)</td></tr>
+        <tr><td>같은 성능의 값 하락</td><td>해마다 중앙값 약 50배</td><td>해설자가 에포크 AI 분석이라며 한 말이에요</td></tr>
+        <tr><td>2~3년 뒤 회사 인력 산출 중 에이전트 몫</td><td>보수적으로 70%, 아마 그 이상</td><td>롤닉의 가정이고 측정값이 아니에요</td></tr>
+        <tr><td>전직 은행원 계약 / 시급</td><td>100여 명 / 150달러</td><td>블룸버그 2025년 10월 보도(슬라이드 6:19)</td></tr>
+        <tr><td>증류 공격으로 공개된 규모</td><td>가짜 계정 약 24,000개, 대화 1,600만 건 이상</td><td>앤트로픽의 공개 내용이고, 딥시크·문샷·미니맥스를 지목했다고 해설자가 전해요</td></tr>
+        <tr><td>저작권 합의</td><td>15억 달러</td><td>해설자가 든 반대 사정이에요. 책으로 학습한 것 자체는 공정 이용으로 봤고, 불법 복제본 보관이 문제였다고 해요</td></tr>
+        <tr><td>최강 오픈 모델과 폐쇄형 최상위 모델의 격차</td><td>평균 약 4개월</td><td>해설자가 에포크 AI를 들어 한 말이에요</td></tr>
+        <tr><td>헤르메스 에이전트 / 오픈클로 깃허브 별</td><td>약 26만 / 39만</td><td>해설자가 11월 초 기준이라고 한 값이에요</td></tr>
+        <tr><td>헤르메스 에이전트 다운로드</td><td>2,200만 건 초과</td><td>월스트리트저널 보도라고 해설자가 전해요</td></tr>
+        <tr><td>누스 리서치 투자 / 기업 가치</td><td>9천만 달러 / 15억 달러</td><td>기업 가치는 보도된 값이고 회사가 직접 밝힌 값이 아니에요</td></tr>
+        <tr><td>빅테크 4곳의 올해 설비투자 합계</td><td>확인 못 함</td><td>자막에 "7,억 달러가 넘는다"로만 옮겨져 정확한 값을 읽지 못했어요</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — AI 도구와 전망을 접할 때</h2>
+    <table class="suspect-table">
+      <thead><tr><th>이런 증상이 보이면</th><th>먼저 열어 볼 자리</th><th>확인 방법</th></tr></thead>
+      <tbody>
+        <tr id="suspect-lock">
+          <td>내 작업 지침과 자료가 <strong>한 서비스 안에만</strong> 있고 밖에 사본이 없어요</td>
+          <td>그 서비스의 내보내기 기능과 내가 가진 사본</td>
+          <td>지침과 핵심 자료를 텍스트로 꺼내 보고, 다른 AI에 붙여 넣었을 때 같은 결과가 나오는지 시험해요(<a href="#choice">나쁜 선택 vs 좋은 선택</a>)</td>
+        </tr>
+        <tr id="suspect-source">
+          <td>전망을 말한 사람이 <strong>그 전망으로 이익을 보는 쪽</strong>이에요</td>
+          <td>발언자의 제품과 입장</td>
+          <td>주장을 전제로 나눠 각각 따로 확인해요. 이 영상은 소개 글이 직접 입장을 밝혔고, 그 덕에 따지기 쉬워요(<a href="#weak">전제 다섯 개</a>)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2><span class="hl">함께 보기</span></h2>
+    <ul>
+      <li><a href="alex-karp-palantir-citi-talk.html">알렉스 카프 팔란티어×씨티 대담</a> — 기업 AI가 토큰값과 지식재산을 함께 내준다는 주장으로, 이 글의 "묶임·소유" 논의와 이어져요.</li>
+      <li><a href="cost-and-control-of-local-llm.html">비용과 통제권 — 손익분기 계산과 누가 바꾸는가</a> — 모델을 직접 쥘 때의 비용과 통제권을 숫자로 따져 볼 때 이어 읽어요.</li>
+      <li><a href="cranmer-ai-brain-rot-research.html">마일스 크랜머 케임브리지 강연</a> — AI를 쓸수록 판단을 사람이 쥐어야 하는 이유를 연구로 다뤄요. 이 글의 "내가 가진 구별점"과 이어져요.</li>
+    </ul>
+
+    <section class="footnotes">
+      <ol>
+        <li id="fn1">오픈소스(open source) — 프로그램의 설계도(소스 코드)를 공개해서 누구나 내려받아 쓰고 고칠 수 있게 한 것이에요. 이 글의 헤르메스 에이전트는 MIT 라이선스(사용·수정·재배포를 널리 허락하는 조건)로 공개됐다고 해설자가 전해요. <a href="#fnref1">↩</a></li>
+        <li id="fn2">에이전트(agent) — AI가 글만 쓰는 데서 나아가, 도구를 쓰고 여러 단계의 일을 스스로 이어서 해 내는 프로그램이에요. <a href="#fnref2">↩</a></li>
+        <li id="fn3">상품화(commoditize) — 제품들의 차이가 줄어서 누구 것을 사도 비슷해지고, 경쟁이 값으로만 이뤄지는 상태가 되는 일이에요. <a href="#fnref3">↩</a></li>
+        <li id="fn4">토큰(token) — AI가 글을 읽고 쓸 때 세는 단위로, 대략 단어 한 조각이에요. AI 서비스 요금은 보통 토큰 수에 따라 매겨져요. <a href="#fnref4">↩</a></li>
+        <li id="fn5">해자(moat) — 원래 성 둘레에 파 놓은 물길이에요. 사업에서는 경쟁자가 쉽게 따라오지 못하게 막는 장벽을 가리켜요. <a href="#fnref5">↩</a></li>
+        <li id="fn6">증류(distillation) — 큰 모델에 질문을 많이 던져 받은 답으로 작은 모델을 학습시켜 비슷한 능력을 싸게 얻는 방법이에요. 남의 모델에 허락 없이 쓰면 이용 약관 위반이나 도용 논란이 생겨요. <a href="#fnref6">↩</a></li>
+        <li id="fn7">운영체제(OS) — 윈도우·안드로이드처럼 컴퓨터에서 여러 프로그램이 돌아갈 바탕을 제공하는 소프트웨어예요. 롤닉은 에이전트가 앱 하나보다 이런 바탕에 가깝다고 말해요. <a href="#fnref7">↩</a></li>
+      </ol>
+    </section>
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="motion.js"></script>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
