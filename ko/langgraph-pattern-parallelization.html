@@ -142,7 +142,7 @@
     </svg>
 
     <h3 id="why-reducer">리듀서라는 말은 왜 나오나 — 세 단계</h3>
-    <p>동시에 돌리면 시간만 줄고 끝이면 좋겠지만, 두 가지가 따라와요. 이 세 단계이 병렬화의 전부예요.</p>
+    <p>동시에 돌리면 시간만 줄고 끝이면 좋겠지만, 두 가지가 따라와요. 이 세 단계가 병렬화의 전부예요.</p>
     <ol>
       <li><strong>동시에 출발하니 순서가 꼬여요.</strong> 세 갈래가 같이 떠나면 누가 먼저 끝날지 정해지지 않고, 결과를 합치는 순서도 LangGraph가 따로 정해요. 코드에 적은 순서대로 결과가 쌓일 거라 믿으면 안 돼요.</li>
       <li><strong>합치는 자리에 답이 한꺼번에 들어오면 멈춰요.</strong> 세 결과가 State의 <strong>같은 칸</strong>으로 동시에 오면, LangGraph는 무엇을 남기고 무엇을 버릴지 정할 수 없어서 <code>InvalidUpdateError</code>를 내요.</li>
@@ -287,7 +287,7 @@ LANGSMITH_PROJECT=langgraph-study</code></pre>
 
     <section class="apply-box" id="apply-blog">
       <p class="apply-box-title">내 파이프라인에 대입하면 — 검사 셋을 동시에 돌려요</p>
-      <p>다 쓴 글 하나를 검사 셋에 동시에 넣어요 — 링크 검사 · 표 열 이름 검사 · 본문 순서 검사. 셋 다 결과를 <strong>"걸린 것 목록" 한 칸에 써요.</strong> 그래서 이 편의 그 에러가 그대로 나고, <code>operator.add</code>를 달아 주면 세 목록이 이어 붙어요.</p>
+      <p>이 블로그 글 만들기 순서(<a href="langgraph-pattern-chaining.html">체이닝 편</a>에서 본 본문 쓰기 순서와 사이사이의 검사)에서, 본문을 다 쓴 글 하나를 검사 셋에 동시에 넣어요 — 링크 검사 · 표 열 이름 검사 · 본문 순서 검사. 셋 다 결과를 <strong>"걸린 것 목록" 한 칸에 써요.</strong> 그래서 이 편의 그 에러가 그대로 나고, <code>operator.add</code>를 달아 주면 세 목록이 이어 붙어요.</p>
     </section>
     <section class="apply-box apply-box--repo" id="apply-repo">
       <p class="apply-box-title">실제 코드에 대입하면 — 검사 스물다섯 개를 모으는 리듀서 하나가 위험해요</p>

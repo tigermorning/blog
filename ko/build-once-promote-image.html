@@ -335,7 +335,7 @@ var v='__COMMIT__'   →   var v='92d2c86'</code></pre>
         <tr><td>C</td><td><code>RUN useradd</code>와 <code>USER appuser</code> 두 줄 삭제</td><td><code>whoami</code>가 root이고 <code>Config.User</code>가 비어 있고 <code>/etc</code> 쓰기가 성공해요(정상은 Permission denied). 크기는 같아요</td><td><code>USER</code>가 없으면 기본 사용자가 root예요</td></tr>
       </tbody>
     </table>
-    <p>두 문제 모두 <strong>이미지 크기로는 알 수 없고</strong>, 이미지를 열어 파일과 사용자를 직접 봐야 드러났어요. 문제 C에서는 지운 줄 위의 주석(「관리자가 아닌 사용자로 실행한다」)이 남아 거짓 주석이 됐어요. 문제 A(OCR 안 됨)와 D(포트 고정)는 템플릿의 고장 파일이 다른 앱 기준이라 제 앱에 맞는지 비교가 필요해서 하지 않았어요.</p>
+    <p>두 문제 모두 <strong>이미지 크기로는 알 수 없고</strong>, 이미지를 열어 파일과 사용자를 직접 봐야 드러났어요. 문제 C에서는 지운 줄 위의 주석(「관리자가 아닌 사용자로 실행한다」)이 남아 거짓 주석이 됐어요. 문제 A(OCR 안 됨)와 D(포트 고정)는 예제로 받은 고장 난 파일이 다른 앱 기준이라 제 앱에 맞는지 비교가 필요해서 하지 않았어요.</p>
 
     </details>
 
@@ -374,7 +374,7 @@ var v='__COMMIT__'   →   var v='92d2c86'</code></pre>
       <li>이미지 저장소를 새로 만들었더니 이미지·패키지 0개, 0MB로 시작했어요.</li>
       <li>배포를 맡은 서비스 계정(<code>github-deployer</code>)에는 <strong>저장소 하나에만</strong> <code>roles/artifactregistry.writer</code> 역할을 줬어요. 프로젝트 전체 권한은 주지 않았어요. 실행 전에 대상이 저장소(repositories)이고 역할이 writer인지 확인했고, 실행 뒤 정책 조회로 다시 확인했어요.</li>
       <li>GitHub 저장소 변수 <code>AR_REPO</code>를 설정했어요. 다른 저장소의 변수 5개는 그대로였어요.</li>
-      <li>배포 설정을 바꿀 때 제공받은 이미지용 워크플로 틀을 <strong>통째로 복사하지 않았어요.</strong> 통째로 복사하면 화면 구석에 커밋 번호를 새기는 단계와 <code>--no-allow-unauthenticated</code>(로그인 없이 못 열게 하는 옵션)가 사라져서, 기존 워크플로에 필요한 부분만 더했어요.</li>
+      <li>배포 설정을 바꿀 때 예제로 받은 워크플로 파일을 <strong>통째로 복사하지 않았어요.</strong> 통째로 복사하면 화면 구석에 커밋 번호를 새기는 단계와 <code>--no-allow-unauthenticated</code>(로그인 없이 못 열게 하는 옵션)가 사라져서, 기존 워크플로에 필요한 부분만 더했어요.</li>
     </ul>
 
     <h3>production을 먼저 읽기 전용으로 확인하고, 손으로 승격했어요</h3>
