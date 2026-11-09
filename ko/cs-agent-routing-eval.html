@@ -78,7 +78,7 @@
       <p class="key-point-label"><span class="key-point-badge">준비물</span>17~19편을 따라 하려면</p>
       <ul>
         <li><strong>패키지</strong> — <code>pip install langgraph langchain-openai pydantic scikit-learn</code>. 마지막 것은 지표 계산용이에요.</li>
-        <li><strong>API 키</strong> — 모델은 <a href="langgraph-branches-and-tool-loop.html">4편</a>부터 써 온 <code>gpt-4o-mini</code>를 그대로 쓰면 돼요. 키가 안 읽히면 <a href="langgraph-env-troubleshooting.html">5편</a>에 원인 네 가지가 있어요.</li>
+        <li><strong>API 키</strong>(모델 서비스를 쓸 때 내는 비밀 문자열) — 모델은 <a href="langgraph-branches-and-tool-loop.html">4편</a>부터 써 온 <code>gpt-4o-mini</code>를 그대로 쓰면 돼요. 키가 안 읽히면 <a href="langgraph-env-troubleshooting.html">5편</a>에 원인 네 가지가 있어요.</li>
         <li><strong>문의 데이터</strong> — 저는 따로 받은 193건을 썼지만 없어도 돼요. <a href="#evalset">아래 모양</a>대로 <strong>스무 줄만 직접 적어도</strong> 이 글의 절차가 그대로 돌아갑니다.</li>
         <li><strong>업무 문서</strong> — 갈래를 가져올 곳이요. 회사 매뉴얼이 없으면 자주 쓰는 쇼핑몰의 고객센터 FAQ 목차로 대신해도 됩니다.</li>
       </ul>
@@ -151,7 +151,7 @@ g.add_edge(START, "classify")
 g.add_edge("classify", "gate")
 g.add_edge("gate", END)</code></pre>
     <p>둘로 나눠 둔 값이 이 글에서 바로 나와요. 저는 분류하는 부분을 <strong>규칙 → LLM</strong>으로 갈아 끼우는데, 그때 <strong>그래프를 다시 그리지 않습니다.</strong> 같은 이름의 함수를 다시 정의하고 그래프를 한 번 더 세우면 그 노드만 바뀌거든요.</p>
-    <p>이게 왜 중요하냐면, 바뀐 것이 노드 하나뿐이고 평가셋도 지표도 그대로이기 때문에 <strong>점수가 올랐을 때 그 원인이 무엇인지 헷갈릴 일이 없어요.</strong> 만약 분류와 판정이 함수 하나에 섞여 있었다면 "모델을 바꾼 효과인가, 이관 기준을 건드린 효과인가"를 가릴 수 없었을 거예요.</p>
+    <p>이게 왜 중요하냐면, 바뀐 것이 노드 하나뿐이고 평가셋(정답이 붙은 시험 문제 모음)도 지표도 그대로이기 때문에 <strong>점수가 올랐을 때 그 원인이 무엇인지 헷갈릴 일이 없어요.</strong> 만약 분류와 판정이 함수 하나에 섞여 있었다면 "모델을 바꾼 효과인가, 이관 기준을 건드린 효과인가"를 가릴 수 없었을 거예요.</p>
     <p>그리고 이관 기준값(0.5)만 바꿔 보고 싶을 때는 <code>gate</code>만 고치면 됩니다. <strong>모델을 다시 부를 필요가 없어요</strong> — 분류 결과는 이미 <a href="langgraph-state-node-edge.html">State</a>에 들어 있으니까요.</p>
 
     <h2 id="routes"><span class="hl">갈래는 몇 개여야 하나</span></h2>
@@ -225,7 +225,7 @@ g.add_edge("gate", END)</code></pre>
 
     <h2 id="metrics"><span class="hl">정확도 하나로는 부족해요</span></h2>
     <p>가장 단순한 방법부터 만들어 기준선을 잡습니다. "환불"이 있으면 반품, "배송비"가 있으면 배송 — 이런 <strong>키워드 규칙</strong>이에요. 이걸 왜 만드느냐면, LLM 없이 얼마나 되는지를 알아야 <strong>LLM이 정말 필요한지 판단</strong>할 수 있기 때문이에요. 규칙만으로 95%가 나온다면 API 요금을 낼 이유가 없죠.</p>
-    <p>제 경우 규칙 기반은 macro F1 0.677이 나왔어요. 그런데 이 숫자 하나로는 무엇을 고쳐야 할지 알 수 없습니다. 그래서 세 가지를 나눠 봐요.</p>
+    <p>제 경우 규칙 기반은 macro F1(갈래마다 F1 점수를 구해 같은 무게로 평균 낸 값) 0.677이 나왔어요. 그런데 이 숫자 하나로는 무엇을 고쳐야 할지 알 수 없습니다. 그래서 세 가지를 나눠 봐요.</p>
     <p>이 셋이 헷갈리는 건 <strong>분자가 같고 분모만 다르기</strong> 때문이에요. <a href="confusion-matrix-and-metrics.html">맞혔다는 말로는 부족하다 — 혼동 행렬과 정확도·정밀도·재현율</a>에서 네 칸 그림으로 갈라 뒀으니, 표가 안 잡히면 거기를 먼저 보시면 편합니다. 여기서는 <strong>이 표의 세 줄만 알면 뒤를 읽는 데 지장이 없어요.</strong></p>
     <table>
       <thead><tr><th>지표</th><th>뜻</th><th>낮으면</th></tr></thead>
@@ -311,7 +311,7 @@ def classify(state):                       # 그래프의 첫 노드
         </tr>
       </tbody>
     </table>
-    <p>기준값을 올리면 이관이 늘어요. 오답은 줄지만 사람이 처리할 일이 늘어 자동화율이 떨어집니다. 내리면 반대고요. <strong>어느 쪽이 옳은지는 도메인이 정합니다.</strong></p>
+    <p>기준값을 올리면 이관이 늘어요. 오답은 줄지만 사람이 처리할 일이 늘어 자동화율(사람 손 없이 처리되는 비율)이 떨어집니다. 내리면 반대고요. <strong>어느 쪽이 옳은지는 도메인이 정합니다.</strong></p>
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 판정 노드 전체예요. 여기서는 모델을 부르지 않아요</span></p>
     <pre><code>THRESHOLD = 0.5                            # 정책이 정하는 값
 

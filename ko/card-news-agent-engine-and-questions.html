@@ -40,7 +40,7 @@
         <dt>이런 게 궁금했다면</dt>
         <dd>
           <ul>
-            <li>PRD를 코딩 에이전트에게 통째로 건네면 앱이 한 번에 완성되나요, 아니면 중간에 내가 할 일이 남나요?</li>
+            <li>PRD(만들 앱의 요구사항을 적은 문서)를 코딩 에이전트(코드를 대신 짜 주는 AI)에게 통째로 건네면 앱이 한 번에 완성되나요, 아니면 중간에 내가 할 일이 남나요?</li>
             <li>앱이 사용자에게 "누구를 위한 카드뉴스인가요?"라고 묻고 답을 기다리게 하려면 어떻게 만들죠?</li>
             <li>새로고침하거나 서버를 껐다 켜면, 기다리던 질문과 지금까지 고른 소식은 어떻게 되나요?</li>
           </ul>
@@ -97,7 +97,7 @@
     <p>결정을 기록했다면 화면과 서버의 연결부터 확인해요. 웹 화면은 서버에 <strong>API<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup></strong>로 요청해요. 예를 들어 주제를 보내면 프로젝트가 만들어지고, 조사를 시작하면 작업 ID가 돌아오고, 화면은 그 ID에 해당하는 진행 상태를 보여 줘요. PRD 속 API 표는 초안이라서, 코딩 에이전트가 고른 언어에 맞게 입력·출력과 오류를 <code>API_SPEC.md</code>에 다시 정리하게 해요.</p>
     <p>그다음 순서는 한 번에 완성을 요청하지 않고 <strong>작은 흐름을 실행해 보고, 관찰한 문제를 다음 요청에 담는 것</strong>이에요(<a href="vibe-coding-loop.html">지시 → 생성 → 판단 → 재지시</a>의 반복이에요).</p>
     <ol>
-      <li><strong>화면 연결</strong> — 주제 입력, 후보 선택, 질문 답변까지만 먼저 만들고 <strong>모의 데이터<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup></strong>를 화면에 보여 줘요. 서버를 켠 뒤 브라우저에서 안내받은 주소(기본은 <code>http://127.0.0.1:8765</code>, 포트가 이미 쓰이면 안내받은 다른 포트)를 열어요.</li>
+      <li><strong>화면 연결</strong> — 주제 입력, 후보 선택, 질문 답변까지만 먼저 만들고 <strong>모의 데이터<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup></strong>를 화면에 보여 줘요. 서버를 켠 뒤 브라우저에서 안내받은 주소(기본은 <code>http://127.0.0.1:8765</code>, 포트(서버가 연결을 받는 번호)가 이미 쓰이면 안내받은 다른 포트)를 열어요.</li>
       <li><strong>실제 엔진 연결</strong> — 실제 조사와 '답변 뒤 이어 가기'를 연결해요.</li>
       <li><strong>제작 연결</strong> — 이미지는 별도 작업자로 한 장을 실제로 만들어 파일을 열어 본 뒤 전체 카드로 넓혀요.</li>
       <li><strong>수정·내보내기</strong> — 글자 배치, 부분 수정, 내려받기를 연결하고 <code>ACCEPTANCE.md</code>의 조건을 하나씩 확인해요(<a href="my-harness-acceptance.html">완료 조건을 미리 적어 두는 방식</a>이에요).</li>
@@ -141,7 +141,7 @@
       <thead><tr><th>선택</th><th>앱에서 연결하는 방식</th><th>앞선 대화를 이어 가는 방식</th></tr></thead>
       <tbody>
         <tr><td>Claude Agent SDK</td><td>코드에서 <code>query()</code>를 호출하고 메시지를 받아요</td><td>저장한 세션 ID를 <code>options.resume</code>에 전달해요</td></tr>
-        <tr><td>Claude CLI</td><td>서버에서 <code>claude -p</code>를 실행하고 JSON 결과를 읽어요</td><td><code>--resume</code>에 해당 프로젝트의 세션 ID를 전달해요</td></tr>
+        <tr><td>Claude CLI</td><td>서버에서 <code>claude -p</code>를 실행하고 JSON(키와 값 쌍으로 적은 텍스트 데이터 형식) 결과를 읽어요</td><td><code>--resume</code>에 해당 프로젝트의 세션 ID를 전달해요</td></tr>
         <tr><td>OpenCode CLI</td><td>서버에서 <code>opencode run --format json</code>을 실행하고 JSON 이벤트를 읽어요</td><td><code>--session</code>에 해당 프로젝트의 세션 ID를 전달해요</td></tr>
       </tbody>
     </table>

@@ -27,7 +27,7 @@
     <p class="post-date">2026. 9. 2.</p>
     <p class="post-date">※ 이 글은 모두의연구소(모두연) 학습 자료를 제 나름의 말로 다시 정리한 글이에요.</p>
 
-    <p class="one-liner">미니멀 하네스는 <strong>과업을 끝낼 수 있는 가장 작은 루프</strong>만 남긴 하네스이고, 권한은 그 루프가 실행할 수 있는 범위의 경계예요.</p>
+    <p class="one-liner">미니멀 하네스(AI 모델을 감싸서 일을 시키는 도구 묶음)는 <strong>과업을 끝낼 수 있는 가장 작은 루프</strong>만 남긴 하네스이고, 권한은 그 루프가 실행할 수 있는 범위의 경계예요.</p>
 
     <div class="why-read">
       <p class="why-read-title">이 글을 읽기 전에</p>
@@ -52,7 +52,7 @@
         <dd>
           <ul>
             <li>셋을 같은 "권한"으로 뭉뚱그리면, 읽기만 허용했는데 어느새 쓰기까지 되는 구멍을 놓쳐요. <a class="suspect-jump" href="#suspect-read-became-write">언제 의심하나 ↓</a></li>
-            <li>안전 장치가 있으니 됐다고 여기게 돼요. ToolEmu 평가에서 최고 성능 에이전트도 23.9% 실패했어요. <a class="suspect-jump" href="#suspect-guard-gap">언제 의심하나 ↓</a></li>
+            <li>안전 장치가 있으니 됐다고 여기게 돼요. ToolEmu 평가(도구를 쓰는 AI의 안전성을 시험하는 평가)에서 최고 성능 에이전트도 23.9% 실패했어요. <a class="suspect-jump" href="#suspect-guard-gap">언제 의심하나 ↓</a></li>
             <li>촘촘히 막을수록 안전하다고 결론 내리게 돼요. 많이 막을수록 정상 작업까지 못 끝낼 수 있어요. <a class="suspect-jump" href="#suspect-over-blocked">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
@@ -96,7 +96,7 @@
       <tbody>
         <tr><td>칼·가위·드라이버가 다 붙은 <strong>스위스 나이프</strong>는 만능처럼 보여요. 무겁고, 원하는 날을 펼치는 데 시간이 걸려요</td><td>SWE-agent의 풍부한 ACI예요. 그 무게가 <a href="context-window-budget.html">토큰</a>·설정·충돌 규칙으로 나타나요</td></tr>
         <tr><td>나사 하나 박는 날엔 <strong>일자 드라이버 하나</strong>만 있어도 충분한 경우가 많아요</td><td>pi의 네 도구, mini-swe-agent의 Bash 하나예요</td></tr>
-        <tr><td>눈 쌓인 산을 작은 배낭 하나로 오르면 실패해요</td><td>컨텍스트 관리가 병목인 긴 이력, 외부 격리로 안 풀리는 권한 요구, 복잡한 다단계 리팩터링처럼 <strong>가벼움보다 안전이나 정확성이 더 중요한 과업</strong>에는 최소 루프가 부족해요</td></tr>
+        <tr><td>눈 쌓인 산을 작은 배낭 하나로 오르면 실패해요</td><td>컨텍스트 관리가 병목인 긴 이력, 외부 격리로 안 풀리는 권한 요구, 복잡한 다단계 리팩터링(동작은 그대로 두고 코드 구조를 고치는 일)처럼 <strong>가벼움보다 안전이나 정확성이 더 중요한 과업</strong>에는 최소 루프가 부족해요</td></tr>
       </tbody>
     </table>
     <p><strong>핵심 한 줄:</strong> 하네스를 고르는 일은 <strong>오늘 이 과업에 필요한 도구가 무엇인지 고르는 판단</strong>이에요.</p>
@@ -104,7 +104,7 @@
     <table>
       <thead><tr><th>풍부한 ACI</th><th>pi식 최소 루프</th></tr></thead>
       <tbody>
-        <tr><td>파일 뷰어로 100줄씩 넘겨보고 검색 도구로 찾고 lint 피드백까지 받아가며 정교하게 접근해요</td><td><code>read</code>로 읽고 <code>write</code>로 스크립트를 쓰고 <code>bash</code>로 실행해본 뒤, 실패하면 <code>edit</code>으로 한 줄 고쳐 재실행하는 것만으로 끝까지 가요</td></tr>
+        <tr><td>파일 뷰어로 100줄씩 넘겨보고 검색 도구로 찾고 lint(코드 오류를 자동으로 검사하는 도구) 피드백까지 받아가며 정교하게 접근해요</td><td><code>read</code>로 읽고 <code>write</code>로 스크립트를 쓰고 <code>bash</code>로 실행해본 뒤, 실패하면 <code>edit</code>으로 한 줄 고쳐 재실행하는 것만으로 끝까지 가요</td></tr>
       </tbody>
     </table>
     <p>흥미롭게도 상용 도구에서도 같은 방향이 관찰돼요. Anthropic 소속 개발자 Thariq Shihipar는 Claude 블로그에서 이렇게 밝혔어요. Claude Code의 시스템 프롬프트에서 80% 이상을 제거하는 스트레스 테스트(일부러 크게 덜어내 보는 시험)를 했는데도, 코딩 평가에서 측정 가능한 손실이 없었다는 거예요. 과거 최악의 시나리오를 막으려던 규칙이 모델이 좋아진 뒤엔 필요 없어졌고, 서로 부딪히는 지시가 오히려 과잉 제약이 됐다고 해요. 다른 사례에서는 멀티에이전트(AI 여럿이 나눠 일하는 방식) 하네스의 sprint 구조를 없애고 평가를 실행 끝 한 번으로 줄이기도 했어요. 이건 "미니멀이 항상 정답"이라는 뜻이 아니라, <strong>현재 모델이 스스로 해내는 일을 스트레스 테스트해서 불필요한 장치를 덜어낸</strong> 관찰이에요.</p>

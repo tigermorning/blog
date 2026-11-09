@@ -36,7 +36,7 @@
         <dd>
           <ul>
             <li>멀티 에이전트가 정말 나은지 직접 비교해 보고 싶은데, 뭘 어떻게 똑같이 맞춰 놓고 돌려야 하나요?</li>
-            <li>서브에이전트를 만들어 등록해 뒀는데, AI가 실제로 그걸 불렀는지는 어떻게 확인하죠?</li>
+            <li>서브에이전트(리드가 일을 맡기려고 등록해 두는 보조 에이전트)를 만들어 등록해 뒀는데, AI가 실제로 그걸 불렀는지는 어떻게 확인하죠?</li>
             <li>파이썬을 잘 모르는데 이런 실험 코드를 읽을 수 있을까요?</li>
           </ul>
         </dd>
@@ -52,8 +52,8 @@
         <dd>
           <ul>
             <li>서브에이전트를 정의해 둔 것만으로 분업이 일어났다고 보면, 리드가 한 번도 안 불렀는데 "멀티 에이전트를 써봤다"는 결론만 남아요. <a class="suspect-jump" href="#suspect-locator-not-called">언제 의심하나 ↓</a></li>
-            <li>턴 예산이 다른 실행을(A 25턴, B 12+18턴, C 40턴) 그대로 비교하면, 비용 차이가 구조 때문인지 예산 때문인지 못 가려요. <a class="suspect-jump" href="#suspect-budget-compare">언제 의심하나 ↓</a></li>
-            <li>result.json이 이미 있는데 덮어쓰고 다시 돌리면, 이전 기록과 뭐가 달라졌는지 비교할 길이 사라져요. <a class="suspect-jump" href="#suspect-rerun-skipped">언제 의심하나 ↓</a></li>
+            <li>턴 예산(AI가 도구를 부르며 왕복할 수 있는 횟수 한도)이 다른 실행을(A 25턴, B 12+18턴, C 40턴) 그대로 비교하면, 비용 차이가 구조 때문인지 예산 때문인지 못 가려요. <a class="suspect-jump" href="#suspect-budget-compare">언제 의심하나 ↓</a></li>
+            <li>result.json(실행 결과를 적어 두는 파일)이 이미 있는데 덮어쓰고 다시 돌리면, 이전 기록과 뭐가 달라졌는지 비교할 길이 사라져요. <a class="suspect-jump" href="#suspect-rerun-skipped">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>

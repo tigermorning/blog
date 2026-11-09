@@ -28,7 +28,7 @@
     <p class="post-date">※ 이 글은 모두의연구소(모두연) 학습 자료를 제 나름의 말로 다시 정리한 글이에요.</p>
     <p class="post-date">※ 순순팩토리와의 미팅에서 나온 질문에 답하려고, "화면 뒤에서 일어나는 일들" 시리즈에서 한 줄로만 스쳐 지나갔던 내용을 번외로 정리했습니다.</p>
 
-    <p class="one-liner">프록시 서버는 <strong>브라우저 대신 API 키를 들고 외부 서비스를 불러 주는 중계 서버</strong>다.</p>
+    <p class="one-liner">프록시 서버는 <strong>브라우저 대신 API 키(서비스를 쓸 때 내는 비밀 문자열)를 들고 외부 서비스를 불러 주는 중계 서버</strong>다.</p>
 
     <div class="why-read">
       <p class="why-read-title">이 글을 읽기 전에</p>
@@ -45,7 +45,7 @@
         <dd>
           <ul>
             <li>키를 브라우저가 아니라 서버가 대신 들고 있게 하는 구조를 만들 수 있어요. 방문객이 안내 데스크에 용건만 말하면 직원이 자기 사원증으로 다녀오는 것과 같아요.</li>
-            <li>화면 쪽 코드가 우리 서버 주소만 부르고, 진짜 키는 서버 환경변수 안에만 있게 짤 수 있어요.</li>
+            <li>화면 쪽 코드가 우리 서버 주소만 부르고, 진짜 키는 서버 환경변수(코드 밖에 따로 적어 두는 설정 값) 안에만 있게 짤 수 있어요.</li>
             <li>이 중계 서버가 20~30줄이면 충분하다는 걸 알 수 있어요. 바뀐 건 키가 어디 있느냐 하나뿐이에요.</li>
           </ul>
         </dd>
@@ -137,7 +137,7 @@ app.post('/api/npc-line', async (req, res) => {
           <td>보였다면 이미 누구나 복사할 수 있던 키라, 먼저 <a href="ai-code-security-basics.html#suspect-key-leaked">보안 편의 이 줄</a>대로 키를 새로 발급받아요. 그다음 호출을 프록시 서버로 옮기고 새 키는 서버 환경변수에만 넣어요</td>
         </tr>
         <tr id="suspect-key-sent-to-proxy">
-          <td>요청 주소는 <code>/api/...</code>로 우리 서버를 향하는데, 그 요청의 보내는 내용(Payload)이나 헤더에 <strong>키가 여전히 실려</strong> 있어요</td>
+          <td>요청 주소는 <code>/api/...</code>로 우리 서버를 향하는데, 그 요청의 보내는 내용(Payload)이나 헤더(요청 앞머리에 붙는 안내 정보)에 <strong>키가 여전히 실려</strong> 있어요</td>
           <td>화면 코드가 키를 어디서 꺼내는지예요. <code>VITE_</code>나 <code>NEXT_PUBLIC_</code>이 붙은 환경변수에서 키를 읽어 서버로 보내고 있는지 봐요</td>
           <td>키는 화면이 보내는 게 아니라 서버가 자기 환경변수에서 꺼내야 해요. 공개 접두사가 붙어 있었다면 그 키도 이미 브라우저에 실렸던 거라 새로 발급받아요 (<a href="connecting-frontend-backend.html#suspect-public-prefix-secret">연결 편의 이 줄</a>)</td>
         </tr>

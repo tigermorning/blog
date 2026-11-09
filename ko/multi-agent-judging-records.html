@@ -27,7 +27,7 @@
     <p class="post-date">2026. 9. 3.</p>
     <p class="post-date">※ 이 글은 모두의연구소(모두연) 학습 자료를 제 나름의 말로 다시 정리한 글이에요.</p>
 
-    <p class="one-liner">두 층 채점은 <strong>테스트 통과 여부와 행동 기록을 따로 판정하는 방법</strong>이다 — 앞은 채점 코드가, 뒤는 근거 인용을 강제한 LLM이 본다.</p>
+    <p class="one-liner">두 층 채점은 <strong>테스트 통과 여부와 행동 기록을 따로 판정하는 방법</strong>이다 — 앞은 채점 코드가, 뒤는 근거 인용을 강제한 LLM(대형 언어 모델)이 본다.</p>
 
     <div class="why-read">
       <p class="why-read-title">이 글을 읽기 전에</p>
@@ -53,14 +53,14 @@
           <ul>
             <li>통과 여부만 보면 찍어 맞힌 실행과 제대로 확인하고 끝낸 실행이 똑같은 성공으로 잡혀서, 다음에 뭘 고쳐야 할지 알 수가 없어요. <a class="suspect-jump" href="#suspect-pass-only">언제 의심하나 ↓</a></li>
             <li>"검증했습니다"라는 말만 믿고 점수를 주면, 실제로는 검증을 건너뛴 실행에 만점이 그대로 보고서에 남아요. 전사(AI가 한 일을 줄마다 적은 기록 파일)에 인용할 구절이 있는지부터 봐야 해요. <a class="suspect-jump" href="#suspect-quote-not-in-transcript">언제 의심하나 ↓</a></li>
-            <li>턴 예산이 다른 실행끼리(A 25턴, B 12+18턴, C 40턴) 비용과 시간을 나란히 놓고 "구조의 효과"라고 말하면, 조건 차이를 결론으로 착각하는 거예요.</li>
+            <li>턴 예산(AI가 주고받을 수 있는 횟수의 한도)이 다른 실행끼리(A 25턴, B 12+18턴, C 40턴) 비용과 시간을 나란히 놓고 "구조의 효과"라고 말하면, 조건 차이를 결론으로 착각하는 거예요.</li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
         <dd>
           <ul>
             <li><strong>"테스트 통과"만 보고 넘어갔다가 나중에 터졌을 때.</strong> 근거 없이 찍어 맞힌 실행과 제대로 읽고 고친 실행은 결과가 같아도 전혀 다른 일이에요.</li>
-            <li>에이전트 실행 기록을 result.json → changes.diff → 세션 전사 → judgment.json 순서로 읽어 원인을 가릴 때요.</li>
+            <li>에이전트(도구를 써서 스스로 일하는 AI) 실행 기록을 result.json → changes.diff → 세션 전사 → judgment.json 순서로 읽어 원인을 가릴 때요.</li>
             <li>채점용 AI에게 자유 서술 대신 "판정 근거가 된 전사 구절을 반드시 인용하라"를 구조로 강제할 때요.</li>
             <li>실험 조건을 고정한 것 / 바꾼 것 / 잰 것 세 칸으로 나눠 적어 두고, 표의 차이가 어디서 왔는지 가릴 때요.</li>
           </ul>
@@ -118,7 +118,7 @@
     <p>비교는 기억에 의존하지 않아요. 러너(실험을 자동으로 돌려 주는 프로그램)가 실행마다 남긴 파일들은 사람이 빈칸을 채운 메모가 아니에요. <strong>실행이 끝날 때 코드가 만든 산물</strong>이에요. 파일들을 이 순서로 이어 읽어요.</p>
     <ol>
       <li><strong><code>result.json</code></strong> — <code>resolved</code>(대상 테스트 종료 코드가 0인가), <code>invalid</code>(tests/ 아래를 바꿨나), <code>num_turns</code>·<code>cost_usd</code>·<code>wall_s</code>. 이 값들은 서로 다른 질문에 답해요. 통과 여부가 같아도 턴 소진, 비용, 시간, 수정 범위는 다를 수 있어요.</li>
-      <li><strong><code>changes.diff</code></strong> — 실제 수정(바뀐 줄을 모아 보여 주는 파일). B라면 locator의 진단이 이 수정 위치와 이어지는지, C라면 리드의 판단이 실제 수정으로 이어졌는지 봐요.</li>
+      <li><strong><code>changes.diff</code></strong> — 실제 수정(바뀐 줄을 모아 보여 주는 파일). B라면 locator(원인이 있는 곳을 찾는 담당)의 진단이 이 수정 위치와 이어지는지, C라면 리드(일을 맡기는 중심 모델)의 판단이 실제 수정으로 이어졌는지 봐요.</li>
       <li><strong>세션 전사</strong> — 도구 호출 순서. 실패했다면 원인이 탐색 부족인지, 무근거 편집인지, 검증 생략인지 여기서 갈려요. <code>tail</code>·<code>error</code>·<code>final_text</code>도 같이 읽어요.</li>
       <li><strong><code>judgment.json</code></strong>과 집계표 — 두번째 층의 점수·분류·인용. <code>evidence_quote</code>는 3번의 전사로 다시 확인해요.</li>
     </ol>

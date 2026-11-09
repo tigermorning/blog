@@ -60,7 +60,7 @@
         <dd>
           <ul>
             <li><strong>"AI 에이전트를 직접 만들어 보라"는 말 앞에서 막막할 때.</strong> 코드부터 열지 말고 "누가 쓰고, 무엇을 시키고, 무엇을 하면 안 되는가"를 먼저 적는 데서 시작해요.</li>
-            <li>PRD의 OPEN 상태 항목을 하나씩 내 사정을 근거로 채울 때요 — "터미널. 혼자 쓰고 실습 폴더 안에서만 돌릴 거라서"처럼요.</li>
+            <li>PRD(무엇을 만들지 적어 두는 제품 요구사항 문서)의 OPEN 상태 항목을 하나씩 내 사정을 근거로 채울 때요 — "터미널. 혼자 쓰고 실습 폴더 안에서만 돌릴 거라서"처럼요.</li>
             <li>코딩 에이전트를 켜고 첫 마디로 "코드는 아직 만들지 마"를 거는 습관을 들일 때요.</li>
             <li>내 일을 표의 빈 열 하나로 그려 다섯 질문을 직접 채워 볼 때요.</li>
             <li>AI가 질문 없이 빈칸을 채우려 하면 "내가 답하지 않은 건 OPEN으로 남겨 줘"로 되돌릴 때요.</li>
@@ -304,7 +304,7 @@ claude</code></pre>
       <tbody>
         <tr><td>설계 결정 ID (D01~D09)</td><td>9개</td><td>이 중 <strong>D01~D07</strong>은 첫 구현 전에 합의, D08·D09는 미뤄도 됨</td></tr>
         <tr><td>제품 요구사항 ID (R01~R08)</td><td>8개</td><td>R08은 벤치마크 측정 요구</td></tr>
-        <tr><td>완료 조건 ID (A01~A12)</td><td>12개</td><td>시작 상태는 전부 <code>NOT_RUN</code> — 계획만으로 <code>PASS</code>를 적지 않음</td></tr>
+        <tr><td>완료 조건 ID (A01~A12)</td><td>12개</td><td>시작 상태는 전부 <code>NOT_RUN</code>(아직 안 돌림) — 계획만으로 <code>PASS</code>(통과)를 적지 않음</td></tr>
         <tr><td>벤치마크 고정 문항</td><td>10문항</td><td>원본 난도 기준 쉬움 2 · 중간 4 · 어려움 4 (<a href="my-harness-benchmark-local-port.html">8편</a>)</td></tr>
         <tr><td>제출에 필요한 평가 실행</td><td>2회</td><td>기준 실행 1회 + 변경 후 실행 1회, 같은 10문항 (<a href="my-harness-scoring-and-report.html">9편</a>)</td></tr>
       </tbody>
@@ -317,7 +317,7 @@ claude</code></pre>
       <li><strong>개발 도우미</strong>(Claude Code, OpenCode) — 제 소스코드를 <strong>같이 쓰는</strong> 도구예요. 설계 대화, 코드 작성, 오류 분석을 맡겨도 됩니다.</li>
       <li><strong>제가 만드는 하네스</strong> — 별도로 실행해서, <strong>그 프로그램이 모델에 요청하고 도구를 실행한 기록</strong>을 확인해야 하는 제품이에요.</li>
     </ul>
-    <p>그래서 이번 과정에서는 모델과 인터넷으로 말을 주고받게 해 주는 도구 모음(API 통신 라이브러리)은 써도, <strong>모델·도구 반복 자체를 이미 완성된 에이전트 프로그램(CLI나 Agent SDK)에 통째로 넘기지 않아요.</strong> 이미 만들어진 실행 엔진을 조립해 쓰는 경험은 다음 과정에서 따로 다룹니다. 지금은 반복을 직접 씁니다.</p>
+    <p>그래서 이번 과정에서는 모델과 인터넷으로 말을 주고받게 해 주는 도구 모음(API 통신 라이브러리)은 써도, <strong>모델·도구 반복 자체를 이미 완성된 에이전트 프로그램(명령줄 도구인 CLI나, 코드로 에이전트를 만들어 주는 Agent SDK)에 통째로 넘기지 않아요.</strong> 이미 만들어진 실행 엔진을 조립해 쓰는 경험은 다음 과정에서 따로 다룹니다. 지금은 반복을 직접 씁니다.</p>
 
     <h2><span class="hl">직접 해보기</span></h2>
     <p>이번 편의 결과물은 코드가 아니라 <strong>D01 한 칸</strong>이에요.</p>
@@ -340,12 +340,12 @@ claude</code></pre>
       <tbody>
         <tr id="suspect-filled-decision">
           <td>"코드는 아직 만들지 마"로 시작했는데, 대화 몇 번 뒤 <strong>폴더에 코드 파일이 생겨 있거나</strong> <code>PRD.md</code>에 내가 답한 적 없는 항목이 <code>CHOSEN</code>으로 바뀌어 있어요</td>
-          <td>폴더의 파일 목록과 <code>PRD.md</code>의 <strong>상태·결정·이유 줄</strong>이에요. git을 쓰고 있다면 터미널의 <code>git status</code>에 새로 생긴 파일이 바로 보여요</td>
+          <td>폴더의 파일 목록과 <code>PRD.md</code>의 <strong>상태·결정·이유 줄</strong>이에요. git(코드 변경 이력을 관리하는 도구)을 쓰고 있다면 터미널의 <code>git status</code>에 새로 생긴 파일이 바로 보여요</td>
           <td><code>CHOSEN</code>마다 "내가 대화에서 뭐라고 답해서 이렇게 됐지?"를 대 봐요. 못 대는 항목은 AI가 채운 거라, 본문의 "내가 답하지 않은 선택은 OPEN으로 남겨 줘"로 되돌려요. 이유 줄이 비어 있어도 같은 경우예요</td>
         </tr>
         <tr id="suspect-test-edited">
           <td>AI가 "테스트 통과했어요"로 끝냈는데, 바뀐 파일 목록에 <strong>테스트 파일도 들어 있어요</strong></td>
-          <td>테스트 파일에서 <strong>바뀐 줄</strong>이에요. <code>git diff</code>로 그 파일만 열어 <code>assert</code> 줄의 기대값이 달라졌는지 봐요. 고친 코드 쪽만 읽으면 이 줄을 놓쳐요</td>
+          <td>테스트 파일에서 <strong>바뀐 줄</strong>이에요. <code>git diff</code>로 그 파일만 열어 <code>assert</code>(결과가 기대한 값인지 확인하는 검사 줄) 줄의 기대값이 달라졌는지 봐요. 고친 코드 쪽만 읽으면 이 줄을 놓쳐요</td>
           <td>기대값이 바뀌었다면 실패를 숨긴 거예요. 원래 기대값으로 돌려 다시 돌려 봐요. 같은 지름길을 막으려면 D01의 "원하지 않는 행동" 칸에 "검사 기대값을 바꾸지 않는다"를 적고 부탁할 때 같이 붙여요. 기대값을 처음 정할 때 생기는 문제는 <a href="my-harness-acceptance.html#suspect-expected-copied">5편의 이 줄</a>이에요</td>
         </tr>
       </tbody>

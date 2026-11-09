@@ -51,7 +51,7 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>출력층에 확률 변환을 얹고 손실 함수로 또 표준 분류 방식을 쓰면 계산이 중복 적용돼요. 원리를 모르면 에이전트가 짠 코드의 이 함정을 못 알아채요. <a class="suspect-jump" href="#suspect-double-softmax">언제 의심하나 ↓</a></li>
+            <li>출력층(모델의 맨 끝 계산 부분)에 확률 변환을 얹고 손실 함수(예측이 정답에서 얼마나 벗어났는지 재는 함수)로 또 표준 분류 방식을 쓰면 계산이 중복 적용돼요. 원리를 모르면 에이전트가 짠 코드의 이 함정을 못 알아채요. <a class="suspect-jump" href="#suspect-double-softmax">언제 의심하나 ↓</a></li>
             <li>학습 데이터를 10%로 줄이면 정확도가 떨어지는데, 이걸 모델 탓으로 돌리면 엉뚱한 데를 고치게 돼요. 볼 예시가 줄어서 생긴 일이에요. <a class="suspect-jump" href="#suspect-small-dataset">언제 의심하나 ↓</a></li>
             <li>가장 큰 값 하나만 남기는 방식과 달리, 이 장치는 작은 값에도 확률을 조금씩 남겨요. 그 남은 확률을 0으로 착각하면 안 돼요. <a class="suspect-jump" href="#suspect-rounded-zero">언제 의심하나 ↓</a></li>
           </ul>

@@ -38,7 +38,7 @@
     <p class="post-date">2026. 10. 22.</p>
     <p class="post-date">※ 이 글은 모두의연구소(모두연) 학습 자료를 제 나름의 말로 다시 정리한 글이에요.</p>
 
-    <p class="one-liner">GitHub의 main에 코드를 합치는 순간 GitHub Actions가 정해 둔 순서대로 서비스를 Cloud Run에 배포하게 만들면, 사람이 배포 명령을 치지 않아도 서비스가 바뀐다.</p>
+    <p class="one-liner">GitHub의 main(저장소에서 완성된 코드를 모으는 기본 브랜치)에 코드를 합치는 순간 GitHub Actions가 정해 둔 순서대로 서비스를 Cloud Run(Google Cloud에서 앱을 실행해 주는 서비스)에 배포하게 만들면, 사람이 배포 명령을 치지 않아도 서비스가 바뀐다.</p>
 
     <div class="why-read">
       <p class="why-read-title">이 글을 읽기 전에</p>
@@ -80,7 +80,7 @@
     <div class="ba" aria-label="사람이 배포 명령을 직접 치던 방식과 main에 머지하면 저절로 배포되는 방식 비교">
       <div class="before"><p class="ba-tag">BEFORE · 사람이 배포 명령을 직접 침</p><p class="ba-big">고칠 때마다 손으로 배포</p><p class="ba-sub">사람이 명령을 치면 빼먹거나 실수하기 쉬워요</p></div>
       <div class="ba-arrow" aria-hidden="true">→</div>
-      <div class="after"><p class="ba-tag">AFTER · main에 머지하면 GitHub Actions가 배포</p><p class="ba-big">머지 한 번에 새 리비전 생성</p><p class="ba-sub">고장 난 배포는 손님에게 안 나가지만, main에 남은 고장은 Revert로 직접 되돌려요</p></div>
+      <div class="after"><p class="ba-tag">AFTER · main에 머지하면 GitHub Actions가 배포</p><p class="ba-big">머지 한 번에 새 리비전(배포할 때마다 생기는 버전) 생성</p><p class="ba-sub">고장 난 배포는 손님에게 안 나가지만, main에 남은 고장은 Revert로 직접 되돌려요</p></div>
     </div>
 
     <a class="post-nav" href="cloud-run-operating-ai-service.html">
@@ -98,7 +98,7 @@
 
     <h2 id="five"><span class="hl">핵심 5줄</span> — 이번 글 전체를 먼저 요약하면</h2>
     <ul>
-      <li><strong>워크플로</strong><sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>는 GitHub이 로봇에게 시키는 일 목록이에요(<code>.github/workflows</code> 폴더에 적어요). 언제(이벤트)와 무엇을(일)을 적는 기능이라 배포 전용이 아니에요. PR 점검(<code>hello</code>)도 배포(<code>deploy</code>)도 같은 기능이고, 이벤트와 일만 달라요.</li>
+      <li><strong>워크플로</strong><sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup>는 GitHub이 로봇에게 시키는 일 목록이에요(<code>.github/workflows</code> 폴더에 적어요). 언제(이벤트)와 무엇을(일)을 적는 기능이라 배포 전용이 아니에요. PR(합쳐 달라고 올리는 요청) 점검(<code>hello</code>)도 배포(<code>deploy</code>)도 같은 기능이고, 이벤트와 일만 달라요.</li>
       <li>main에 머지되면 로봇이 자동으로 배포한다.</li>
       <li>열쇠 파일 없이 일회용 신분증(WIF<sup class="fn-ref"><a href="#fn5" id="fnref5">5</a></sup>)으로 Google Cloud에 들어간다.</li>
       <li>고장 난 배포는 손님에게 안 나가고, Revert<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup>로 되돌린다.</li>
@@ -273,7 +273,7 @@ permissions:
     <h2 id="tasks"><span class="hl">과제로 내 프로젝트에 적용해 보기</span></h2>
 
     <h3 id="task1">과제 1. 기능 하나 넣고 자동 배포 (PR #7)</h3>
-    <p>화면 맨 아래에 "배포된 커밋 번호"를 보여 주는 기능을 골랐어요. <code>index.html</code>에 <code>COMMIT</code> 자리를 두고, 로봇이 배포 직전에 머지 커밋 번호(7자리)로 바꿔 넣게 했어요. <strong>PR #7</strong>을 머지하자 사람이 배포 명령을 치지 않았는데 <strong>리비전 00005</strong>가 생겼고, 화면에 <code>v 076c27a</code>가 떴어요. 이 번호가 머지 기록의 번호와 같다는 것으로 "방금 머지한 코드가 나갔다"를 확인했어요.</p>
+    <p>화면 맨 아래에 "배포된 커밋 번호"를 보여 주는 기능을 골랐어요. <code>index.html</code>에 <code>COMMIT</code> 자리를 두고, 로봇이 배포 직전에 머지 커밋(합친 변경을 기록으로 저장한 것) 번호(7자리)로 바꿔 넣게 했어요. <strong>PR #7</strong>을 머지하자 사람이 배포 명령을 치지 않았는데 <strong>리비전 00005</strong>가 생겼고, 화면에 <code>v 076c27a</code>가 떴어요. 이 번호가 머지 기록의 번호와 같다는 것으로 "방금 머지한 코드가 나갔다"를 확인했어요.</p>
 
     <h3 id="task2">과제 2. 다른 저장소에서 배포 시도</h3>
     <p>공개 저장소 <code>wif-reject-test</code>를 만들어 같은 워크플로를 돌려 봤어요. 로봇이 신분증을 내밀자 규칙표에서 <code>unauthorized_client: rejected by the attribute condition</code>으로 거절됐고, 배포 단계는 실행되지 않았어요. 새 서비스는 생기지 않았고 기존 리비전도 그대로였어요. <strong>내 저장소 이름이 조건으로 걸려 있어서 다른 저장소는 같은 파일을 복사해도 못 들어간다</strong>는 것을 확인했어요.</p>
@@ -295,7 +295,7 @@ permissions:
         </tr>
       </thead>
       <tbody>
-        <tr><td>누가 일하나</td><td>GitHub 러너</td><td>Google Cloud 안의 Cloud Build</td><td>Cloud Build와 Skaffold</td><td>GitLab 러너</td><td>쿠버네티스 클러스터 안 컨트롤러</td></tr>
+        <tr><td>누가 일하나</td><td>GitHub 러너</td><td>Google Cloud 안의 Cloud Build</td><td>Cloud Build와 Skaffold</td><td>GitLab 러너</td><td>쿠버네티스(컨테이너 앱을 여러 컴퓨터에 나눠 돌려 주는 도구) 클러스터 안 컨트롤러</td></tr>
         <tr><td>무엇이 깨우나</td><td>main에 push(머지)</td><td>브랜치 push</td><td>파이프라인 YAML에 정의한 릴리스</td><td><code>.gitlab-ci.yml</code> 규칙</td><td>Git 저장소의 상태 변화</td></tr>
         <tr><td>권한은</td><td>일회용 신분증(WIF) 교환, 사원증 3개, 변수 5개를 내가 직접 구성</td><td>빌드가 Google Cloud 안에서 돌아서 신분증 교환 단계가 필요 없을 수 있음 (내 해석)</td><td>같은 이유로 교환 단계가 줄 수 있음 (내 해석)</td><td>GitLab과 Google Cloud 연동을 따로 설정해야 함 (문서 확인)</td><td>클러스터 권한(RBAC) 체계를 따름 (문서 확인)</td></tr>
         <tr><td>승인·롤백</td><td>PR 검사(<code>hello</code>)와 Revert PR로 직접 처리</td><td>테스트·승인 방법은 조사한 문서에 없었음</td><td>승인(<code>requireApproval</code>)과 롤백 기능이 있음 (문서 확인)</td><td>테스트와 환경별 배포를 지원 (문서 확인)</td><td>자동·수동 동기화와 롤백을 지원 (문서 확인)</td></tr>

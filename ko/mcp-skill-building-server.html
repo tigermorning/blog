@@ -58,7 +58,7 @@
           <ul>
             <li>자료 위치를 상대 경로로 적으면, 호스트가 다른 폴더에서 서버를 띄웠을 때 연결은 멀쩡한데 도구를 부르는 순간 "그런 파일이 없다"로 실패해요. <a class="suspect-jump" href="#suspect-relative-data-path">언제 의심하나 ↓</a></li>
             <li>이 프로젝트 전용으로 따로 만든 파이썬 공간(가상환경)에 패키지를 깔아 놓고, 정작 AI 앱은 그 바깥의 다른 파이썬을 실행하면 "분명히 설치했는데 못 찾는다"가 나와요. <a class="suspect-jump" href="#suspect-module-not-found">언제 의심하나 ↓</a></li>
-            <li>표준 출력이 곧 통신 통로라서, 디버깅용 출력을 무심코 넣으면 통신 자체가 깨질 수 있어요. <a class="suspect-jump" href="#suspect-debug-print">언제 의심하나 ↓</a></li>
+            <li>표준 출력(프로그램이 글자를 내보내는 기본 통로)이 곧 통신 통로라서, 디버깅용 출력을 무심코 넣으면 통신 자체가 깨질 수 있어요. <a class="suspect-jump" href="#suspect-debug-print">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -75,7 +75,7 @@
     </div>
 
     <p><a href="mcp-skill-protocol-roles.html">지난 편</a>에서 호스트·클라이언트·서버라는 세 역할을 나눠 봤어요. 그때 "서버는 제 노트북에서 도는 작은 파이썬 프로그램 하나"라고만 말하고 넘어갔는데, 이번 편이 바로 그 파일을 여는 편이에요. 파일 이름은 <code>weekly_records_server.py</code>고요.</p>
-    <p>먼저 걱정 하나를 덜고 시작할게요. JSON-RPC 메시지를 직접 조립하거나, 표준 입력으로 들어온 글자를 한 줄씩 읽어 해석하는 코드는 <strong>제가 쓰지 않아요.</strong> 그건 공식 <strong>MCP Python SDK<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup></strong>가 맡아요. 제가 쓰는 건 딱 하나, <strong>"주 이름을 받아 그 주의 기록 파일을 읽어 돌려주는 함수"</strong>예요. 지난 편에서 봤던 <code>get_weekly_records</code>가 그거죠.</p>
+    <p>먼저 걱정 하나를 덜고 시작할게요. JSON-RPC(요청과 응답을 JSON 형식 메시지로 주고받는 규칙) 메시지를 직접 조립하거나, 표준 입력(프로그램이 글자를 받아들이는 기본 통로)으로 들어온 글자를 한 줄씩 읽어 해석하는 코드는 <strong>제가 쓰지 않아요.</strong> 그건 공식 <strong>MCP Python SDK<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup></strong>가 맡아요. 제가 쓰는 건 딱 하나, <strong>"주 이름을 받아 그 주의 기록 파일을 읽어 돌려주는 함수"</strong>예요. 지난 편에서 봤던 <code>get_weekly_records</code>가 그거죠.</p>
     <p>그래서 이번 편의 코드에서 볼 곳은 세 군데예요. ① 자료가 어디 있는지 정하는 곳, ② 입력을 검사하고 파일을 읽는 곳, ③ 그 함수를 <strong>도구로 공개</strong>한다고 표시하는 곳. 지난 편 마지막에 "다음 편 코드에서 이 세 곳을 찾아보라"고 했던 게 이거예요.</p>
 
     <h2><span class="hl">비유</span> — 자료실 신입 직원의 첫 근무</h2>

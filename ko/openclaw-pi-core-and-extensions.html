@@ -42,7 +42,7 @@
           <ul>
             <li>이 도구에는 이 기능이 없던데, 그럼 부족한 건가요?</li>
             <li>브라우저 조작이나 메일 감시 같은 기능을 켜면 편할 것 같은데, 그냥 켜면 되나요?</li>
-            <li>스킬 마켓에서 별점 높은 걸 받으면 안전한 거 아닌가요?</li>
+            <li>스킬(에이전트에게 새 기술을 알려 주는 설명 묶음) 마켓에서 별점 높은 걸 받으면 안전한 거 아닌가요?</li>
           </ul>
         </dd>
         <dt>읽고 나면 할 수 있는 것</dt>
@@ -50,7 +50,7 @@
           <ul>
             <li>에이전트 도구를 "작은 코어 위에 무엇을 얹을지"의 층으로 나눠 볼 수 있어요. 안쪽일수록 바꾸기 어렵고 바깥일수록 붙였다 뗐다 해요.</li>
             <li>확장 기능 하나를 켤 때마다 늘어나는 세 가지를 미리 적어볼 수 있어요 — 새로 닿는 입구, 새로 남는 기록, 새로 허락해야 하는 권한이에요.</li>
-            <li>pi 같은 작은 코어에서 모델을 만나는 세 갈래(구독 로그인·API 키·로컬 모델)와, 코어에 일부러 안 넣은 것들을 구분할 수 있어요.</li>
+            <li>pi 같은 작은 코어에서 모델을 만나는 세 갈래(구독 로그인·API 키(서비스를 쓸 때 내는 비밀 문자열)·로컬 모델(내 컴퓨터에서 도는 모델))와, 코어에 일부러 안 넣은 것들을 구분할 수 있어요.</li>
           </ul>
         </dd>
         <dt>모르면 이런 일이 생겨요</dt>
@@ -74,7 +74,7 @@
       </dl>
     </div>
 
-    <p>마지막 편은 두 가지를 묶었어요. 하나는 OpenClaw의 뼈대였던 <strong>pi</strong>라는 작은 도구를 들여다보는 절이에요. 다른 하나는 OpenClaw에 더 붙일 수 있는 <strong>확장 기능</strong>(기본 몸에 덧붙이는 기능)을 지도처럼 둘러보는 절이에요.</p>
+    <p>마지막 편은 두 가지를 묶었어요. 하나는 OpenClaw(이 시리즈에서 다뤄 온 에이전트 게이트웨이)의 뼈대였던 <strong>pi</strong>라는 작은 도구를 들여다보는 절이에요. 다른 하나는 OpenClaw에 더 붙일 수 있는 <strong>확장 기능</strong>(기본 몸에 덧붙이는 기능)을 지도처럼 둘러보는 절이에요.</p>
     <p>둘 다 같은 질문이에요. "무엇이 코어(가장 안쪽 핵심 부분)에 있고, 무엇이 바깥에 얹히는가." 오늘은 아무것도 켜지 않아요. 무엇이 있는지, 무엇을 조심해야 하는지 읽고 다음에 열어 볼 지점을 정하는 편이에요.</p>
 
     <h2><span class="hl">비유</span> — 뼈대만 있는 집과 증축</h2>
@@ -123,8 +123,8 @@
       <thead><tr><th>부분</th><th>pi에서는</th><th>OpenClaw와 비교하면</th></tr></thead>
       <tbody>
         <tr><td>화면</td><td>터미널 TUI<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup></td><td>OpenClaw는 WebChat + 채널</td></tr>
-        <tr><td>모델 연결</td><td>세 갈래 — Claude Pro/Max 구독 OAuth<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>, API 키, 로컬 Ollama 모델</td><td><a href="openclaw-install-and-first-chat.html">2편</a>의 두 경로에 <strong>로컬 모델 경로가 하나 더</strong></td></tr>
-        <tr><td>세션 기록</td><td><code>~/.pi/agent/sessions/</code>에 작업 경로마다 JSONL<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup> 파일. 첫 줄에 세션 ID·시각·작업 폴더, 이후 줄에 대화와 도구 호출 결과</td><td><a href="openclaw-session-records-and-usage.html">3편</a>의 SQLite와 형식은 다르지만 "말한 것과 실제 호출을 따로 본다"는 발상은 같음</td></tr>
+        <tr><td>모델 연결</td><td>세 갈래 — Claude Pro/Max 구독 OAuth<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>, API 키, 로컬 Ollama(내 컴퓨터에서 모델을 돌리는 프로그램) 모델</td><td><a href="openclaw-install-and-first-chat.html">2편</a>의 두 경로에 <strong>로컬 모델 경로가 하나 더</strong></td></tr>
+        <tr><td>세션 기록</td><td><code>~/.pi/agent/sessions/</code>에 작업 경로마다 JSONL<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup> 파일. 첫 줄에 세션 ID·시각·작업 폴더, 이후 줄에 대화와 도구 호출 결과</td><td><a href="openclaw-session-records-and-usage.html">3편</a>의 SQLite(파일 하나로 된 작은 데이터베이스)와 형식은 다르지만 "말한 것과 실제 호출을 따로 본다"는 발상은 같음</td></tr>
         <tr><td>도구 제한</td><td><code>--tools</code> 옵션으로 허용할 도구 목록 지정</td><td><a href="openclaw-security-boundaries.html">5편</a>의 권한 모드와 같은 질문 — "읽기만 맡길 때와 파일을 바꾸게 할 때의 경계"</td></tr>
       </tbody>
     </table>
@@ -157,13 +157,13 @@
     <table>
       <thead><tr><th>확장</th><th>무엇을 하나</th><th>새로 생기는 입구</th><th>주의할 권한</th></tr></thead>
       <tbody>
-        <tr><td><strong>브라우저 조작</strong></td><td>페이지 열기, 탭, 스크린샷, 클릭, 입력, PDF 저장을 하나의 서비스로</td><td>웹이 통째로 새 접촉면</td><td>방문하는 페이지의 문장은 명령이 아니다 — 5편의 "읽은 내용과 실행 요청 분리"가 더 자주 적용됨</td></tr>
-        <tr><td><strong>카메라·위치 노드</strong></td><td>연결한 폰·컴퓨터의 카메라로 사진, 위도·경도·고도·속도·위치 출처</td><td>물리 세계가 에이전트의 입력이 됨</td><td>권한 거부·기능 꺼짐·시간 초과 시의 오류까지 문서화됨. 허용과 연결이 먼저, 기능은 그다음</td></tr>
+        <tr><td><strong>브라우저 조작</strong></td><td>페이지 열기, 탭, 스크린샷, 클릭, 입력, PDF 저장을 하나의 서비스로</td><td>웹이 통째로 새 접촉면</td><td>방문하는 페이지의 문장은 명령이 아니다 — <a href="openclaw-security-boundaries.html">5편</a>의 "읽은 내용과 실행 요청 분리"가 더 자주 적용됨</td></tr>
+        <tr><td><strong>카메라·위치 노드</strong>(에이전트에 연결해 기능을 내주는 폰·컴퓨터)</td><td>연결한 폰·컴퓨터의 카메라로 사진, 위도·경도·고도·속도·위치 출처</td><td>물리 세계가 에이전트의 입력이 됨</td><td>권한 거부·기능 꺼짐·시간 초과 시의 오류까지 문서화됨. 허용과 연결이 먼저, 기능은 그다음</td></tr>
         <tr><td><strong>Talk mode</strong></td><td>로컬 음성 인식과 합성으로 화면 없이 이어서 대화</td><td>음성 입구</td><td>소리로 듣는 승인은 흘러가기 쉬움 — 위험도 큰 작업은 발화로 정확히 다시 승인</td></tr>
         <tr><td><strong>IMAP<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup> 메일 감시</strong></td><td>메일함을 지켜보다 인증된 메일을 <strong>분리되고 제한된 읽기 전용 reader agent</strong>에 넘김</td><td>메일함 — 검증할 수 없는 입력이 들어오는 입구</td><td>임의의 메일을 주 에이전트에 바로 넣는 기능이 <strong>아님</strong>. 입구에 처음 닿는 것을 권한이 가장 작은 별도 역할로 격리</td></tr>
         <tr><td><strong>모델 페일오버</strong></td><td>지금 모델에 문제가 생기면 같은 제공자 안에서 인증 프로필을 바꿔 본 뒤 설정해 둔 다음 모델로</td><td>—</td><td>실패를 없애는 장치가 아니라 실패 뒤 시도할 순서. 다음 모델을 정해 두지 않으면 넘어갈 곳이 없음</td></tr>
         <tr><td><strong>ClawHub</strong></td><td>스킬을 찾아 설치하는 배포처 — <code>openclaw skills search</code>, <code>openclaw skills install</code></td><td>남이 만든 코드가 들어오는 입구</td><td>설치할 수 있다 ≠ 안전하다. 악성 표시 배포판은 거부하지만, 감사 내용을 보여 주며 설치를 이어 가는 배포판도 있음 — 문서를 읽는 습관이 조건</td></tr>
-        <tr><td><strong>모바일 앱</strong></td><td>iOS·Android 앱이 노드로 연결되어 폰의 감각과 알림이 에이전트와 이어짐</td><td>주머니 속 입구</td><td>4편의 텔레그램 연결과 같은 원리가 앱이라는 다른 옷을 입은 것</td></tr>
+        <tr><td><strong>모바일 앱</strong></td><td>iOS·Android 앱이 노드로 연결되어 폰의 감각과 알림이 에이전트와 이어짐</td><td>주머니 속 입구</td><td><a href="openclaw-telegram-channel-and-pairing.html">4편</a>의 텔레그램 연결과 같은 원리가 앱이라는 다른 옷을 입은 것</td></tr>
       </tbody>
     </table>
     <p>IMAP 감시 항목이 특히 오늘의 원칙을 그대로 보여 줘요. 검증 안 된 메일이 들어오는 문에는 문지기가 따로 서 있는 구조예요. 스킬(에이전트에게 새 기술을 알려 주는 설명 묶음) 마켓의 "설치할 수 있다와 안전하다는 다르다"는 말도 같은 이야기예요. <a href="ai-skills-and-rules-files.html">스킬과 규칙 파일</a>에서 스킬이 뭔지 봤다면, "남이 쓴 스킬을 그대로 믿을 수 있나"라는 질문으로 이어져요.</p>
@@ -207,7 +207,7 @@
       <li>새로 허락해야 하는 <strong>권한</strong>은 무엇인가</li>
     </ul>
     <p>세 줄이 채워지지 않으면 아직 켤 때가 아니에요.</p>
-    <p>여덟 편을 되돌아보면 질문은 계속 같았어요. 어디서 메시지를 받을지(채널), 무엇을 할 수 있게 둘지(권한), 어느 행동에 승인을 둘지(스탠딩 오더), 모델을 어떻게 만날지(인증 경로), 기록이 어디에 남는지(세션·워크스페이스)예요. 작은 코어 위에 무엇을 얹을지 정할 때마다 편리함과 경계를 함께 설계하게 돼요. 도구를 업무에 붙일지 말지의 판단 자체는 <a href="ai-poc-and-application-judgment.html">도구에서 시작하면 아무도 안 씁니다</a>에서 다뤘어요.</p>
+    <p>여덟 편을 되돌아보면 질문은 계속 같았어요. 어디서 메시지를 받을지(채널), 무엇을 할 수 있게 둘지(권한), 어느 행동에 승인을 둘지(<a href="openclaw-multi-agent-bindings.html">스탠딩 오더</a>), 모델을 어떻게 만날지(인증 경로), 기록이 어디에 남는지(세션·워크스페이스)예요. 작은 코어 위에 무엇을 얹을지 정할 때마다 편리함과 경계를 함께 설계하게 돼요. 도구를 업무에 붙일지 말지의 판단 자체는 <a href="ai-poc-and-application-judgment.html">도구에서 시작하면 아무도 안 씁니다</a>에서 다뤘어요.</p>
 
     <h2 id="suspect"><span class="hl">이럴 때 의심하세요</span> — 손을 하나 늘린 뒤 에이전트가 이상하게 굴 때</h2>
     <p>확장을 켠 뒤 생기는 문제는 "설정이 틀렸습니다" 같은 친절한 말로 오지 않아요. <strong>시킨 적 없는 일이 이미 벌어져 있거나, 어제까지 되던 게 조용히 안 되는</strong> 모습으로 와요. 켜기 전에 한 번, 이상할 때 한 번 이 표를 보면 돼요.</p>

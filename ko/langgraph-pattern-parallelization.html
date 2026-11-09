@@ -40,7 +40,7 @@
         <dt>이런 게 궁금했다면</dt>
         <dd>
           <ul>
-            <li>여러 노드가 동시에 같은 칸에 쓰면 어떻게 되나요?</li>
+            <li>여러 노드(그래프에서 한 단계를 맡는 함수)가 동시에 같은 칸(노드들이 함께 읽고 쓰는 State의 항목)에 쓰면 어떻게 되나요?</li>
             <li>동시에 돌린 결과의 순서는 보장되나요?</li>
           </ul>
         </dd>
@@ -81,7 +81,7 @@
       <p>위에서 아래로 갈수록 <strong>개발자가 미리 정해 두는 것이 줄고, LLM이 실행 중에 정하는 것이 늘어요.</strong> 그래도 다섯 다 워크플로예요. 갈 수 있는 길 자체는 전부 개발자가 미리 그려 뒀거든요.</p>
     </section>
     <h2><span class="hl">비유</span> — 검사 담당 셋이 한 접시를</h2>
-    <p>그 주방에서 새 메뉴를 내기 전엔 맛·온도·모양 담당 셋이 <strong>한 접시를 동시에</strong> 검사하고 검수표 한 장에 각자 한 줄씩 적어요.</p>
+    <p>주방에서 새 메뉴를 내기 전엔 맛·온도·모양 담당 셋이 <strong>한 접시를 동시에</strong> 검사하고 검수표 한 장에 각자 한 줄씩 적어요.</p>
     <table>
       <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
       <tbody>
@@ -195,8 +195,8 @@ print(build(Plate).invoke({"checks": []}))</code></pre>
     <p>에러 문장은 "한 스텝에 이 키로 값을 하나만 받을 수 있으니, 여러 값을 받으려면 Annotated 키를 쓰라"는 뜻이에요. 왜 이런 일이 생기는지는 LangGraph의 실행 단위를 알면 풀려요.</p>
     <ul>
       <li><strong>슈퍼스텝</strong> — LangGraph는 노드를 하나씩 도는 게 아니라, 실행 준비가 된 노드를 한 스텝에 <strong>모두 동시에</strong> 돌리고, 스텝이 끝나면 반환값을 한꺼번에 State에 합쳐요. 세 검사 노드는 같은 스텝에서 돌았어요.</li>
-      <li><strong>기본 규칙은 덮어쓰기</strong>예요. 노드가 돌려준 키만 새 값으로 바뀌고 돌려주지 않은 키는 그대로 남는다는 건 2편의 합치기 규칙 확인하기에서 직접 봤어요. 그런데 같은 스텝에 같은 키로 값이 셋 오면 무엇을 남길지 정할 수 없어요. LangGraph는 아무거나 고르지 않고 에러를 내요.</li>
-      <li><strong>리듀서</strong>로 합치는 법을 알려 줘요. <code>Annotated[list, operator.add]</code>는 "이 칸은 리스트이고, 여러 값이 오면 <code>+</code>로 이어 붙여라"예요. <code>Annotated</code>는 타입에 덧붙임 정보를 다는 파이썬 표준 문법인데, 파이썬은 무시하고 LangGraph가 읽어서 합치는 규칙으로 써요. 4편의 <code>MessagesState</code>가 메시지를 쌓아 올리던 것도 이 장치 덕분이었어요.</li>
+      <li><strong>기본 규칙은 덮어쓰기</strong>예요. 노드가 돌려준 키만 새 값으로 바뀌고 돌려주지 않은 키는 그대로 남는다는 건 <a href="langgraph-state-node-edge.html#merge-rules">2편의 합치기 규칙 확인하기</a>에서 직접 봤어요. 그런데 같은 스텝에 같은 키로 값이 셋 오면 무엇을 남길지 정할 수 없어요. LangGraph는 아무거나 고르지 않고 에러를 내요.</li>
+      <li><strong>리듀서</strong>로 합치는 법을 알려 줘요. <code>Annotated[list, operator.add]</code>는 "이 칸은 리스트이고, 여러 값이 오면 <code>+</code>로 이어 붙여라"예요. <code>Annotated</code>는 타입에 덧붙임 정보를 다는 파이썬 표준 문법인데, 파이썬은 무시하고 LangGraph가 읽어서 합치는 규칙으로 써요. <a href="langgraph-branches-and-tool-loop.html">4편</a>의 <code>MessagesState</code>가 메시지를 쌓아 올리던 것도 이 장치 덕분이었어요.</li>
     </ul>
     <p>고친 쪽 출력을 보면 세 결과가 다 살았고, <code>aggregate</code>는 셋이 다 모인 뒤에 <strong>한 번만</strong> 돌았어요("총 3건"). 이렇게 한 노드에서 여러 갈래로 펼치는 걸 <strong>팬아웃</strong>, 여러 갈래가 하나로 모이는 걸 <strong>팬인</strong>이라고 해요. 그런데 <code>checks</code>의 순서가 모양·맛·온도예요. 코드에 적은 순서(맛·온도·모양)와 달라요. <strong>병렬 결과의 순서는 보장되지 않아요.</strong> 그래서 항목마다 이름표를 붙여 두는(<code>("맛", 4)</code>) 게 안전해요.</p>
     <p>성의 없이 쓴 노트 초안을 정확성·명확성·예시 세 축으로 동시에 평가해 봤어요. 점수가 축마다 다르게 나오고 각 코멘트가 자기 축 이야기만 했어요. 한 호출에 기준을 다 몰아넣는 것보다 나은 점은 셋이에요. 모델의 주의가 가장 눈에 띄는 결함 하나로 쏠리지 않고, 한 축의 프롬프트만 고치거나 축을 하나 더하는 게 쉽고, 세 번 연달아 부를 시간에 한 번 부르는 시간이면 끝나요. 다만 <strong>시간은 줄어도 호출 수와 요금은 그대로</strong>예요. 같은 검사를 여러 번 돌려 다수결로 판정하는 투표 방식도 같은 모양으로 만들 수 있어요.</p>
@@ -242,15 +242,15 @@ print(b.compile().invoke({}))</code></pre>
       </tbody>
     </table>
     <p>마지막 줄이 LangGraph가 동시 쓰기에서만 에러를 내는 이유예요. <code>BadPlate</code>의 세 검사를 맛, 온도, 모양 순서로 이어 돌리면 에러 없이 <code>{'checks': [('모양', 5)]}</code>만 남아요. 순서대로 돌 때는 뒤 노드가 앞 노드의 값을 보고 돌았으니, 덮어쓴 것도 뒤 노드가 고른 결과예요. 동시에 돈 노드들은 서로의 값을 못 본 채 썼으니, 하나만 골라 남기면 나머지가 소리 없이 사라져요. 그래서 LangGraph는 조용히 틀리는 대신 눈에 띄게 멈춰요.</p>
-    <p>비슷하게 오해하기 쉬운 것도 둘 있어요. 노드를 가르는 건 함수 이름이 아니라 <code>add_node</code>에 준 노드 이름이라서, 같은 함수를 두 노드에 붙여도 괜찮아요(노드 이름이 겹치면 실행하기도 전에 <code>add_node</code>에서 <code>ValueError</code>로 막혀요). 그리고 State에 리스트를 못 쓰는 것도 아니에요. 위 <code>Plate</code>의 <code>checks</code>도, 4편의 <code>MessagesState</code>도 리스트 칸이에요.</p>
+    <p>비슷하게 오해하기 쉬운 것도 둘 있어요. 노드를 가르는 건 함수 이름이 아니라 <code>add_node</code>에 준 노드 이름이라서, 같은 함수를 두 노드에 붙여도 괜찮아요(노드 이름이 겹치면 실행하기도 전에 <code>add_node</code>에서 <code>ValueError</code>로 막혀요). 그리고 State에 리스트를 못 쓰는 것도 아니에요. 위 <code>Plate</code>의 <code>checks</code>도, <a href="langgraph-branches-and-tool-loop.html">4편</a>의 <code>MessagesState</code>도 리스트 칸이에요.</p>
     <div class="key-point" id="key-reducer">
       <p class="key-point-label"><span class="key-point-badge">중요</span>꼭 기억할 것</p>
       <p>동시에 도는 두 노드가 같은 칸에 값을 돌려주면 <code>InvalidUpdateError</code>가 나요. State의 기본 규칙이 덮어쓰기라서, 같은 스텝에 같은 칸으로 값이 둘 오면 무엇을 남길지 정할 수 없거든요. LangGraph는 아무거나 골라 하나를 몰래 버리는 대신 에러로 알려 줘요. 고치는 법은 그 칸에 합치는 규칙(리듀서, 예: <code>Annotated[list, operator.add]</code>)을 달거나, 노드마다 칸을 따로 두는 거예요.</p>
     </div>
 
     <h2 id="langsmith"><span class="hl">LangSmith로 안을 들여다보기</span></h2>
-    <p>오늘 만든 그래프는 노드가 서너 개라 <code>stream()</code>으로도 충분했어요. 하지만 서비스에서는 하루 수천 건이 흐르고 그중 몇 건이 이상한 답을 내요. 그 몇 건을 찾아 "어느 노드에서 어떤 프롬프트로 무엇을 받았는지" 보려면 <code>print()</code>로는 안 돼요. 게다가 LLM은 같은 입력에도 다르게 답하니, 문제가 난 그 순간의 기록이 없으면 재현조차 못 해요.</p>
-    <p><strong>LangSmith</strong>는 이 기록을 남기고 보여 주는 웹 서비스예요. 환경 변수만 넣으면 LangChain·LangGraph의 모든 호출이 자동으로 기록돼요. 코드는 안 고쳐요. 실행 한 번이 하나의 <strong>트레이스</strong>로 남고, 그 안에 노드별 입력·출력, 모델에게 간 프롬프트 전문, 토큰 사용량, 걸린 시간이 계층으로 쌓여요.</p>
+    <p>오늘 만든 그래프는 노드가 서너 개라 <code>stream()</code>(실행 중 State의 변화를 차례로 보여 주는 함수)으로도 충분했어요. 하지만 서비스에서는 하루 수천 건이 흐르고 그중 몇 건이 이상한 답을 내요. 그 몇 건을 찾아 "어느 노드에서 어떤 프롬프트로 무엇을 받았는지" 보려면 <code>print()</code>로는 안 돼요. 게다가 LLM은 같은 입력에도 다르게 답하니, 문제가 난 그 순간의 기록이 없으면 재현조차 못 해요.</p>
+    <p><strong>LangSmith</strong>는 이 기록을 남기고 보여 주는 웹 서비스예요. 환경 변수만 넣으면 LangChain·LangGraph의 모든 호출이 자동으로 기록돼요. 코드는 안 고쳐요. 실행 한 번이 하나의 <strong>트레이스</strong>로 남고, 그 안에 노드별 입력·출력, 모델에게 간 프롬프트 전문, 토큰(모델이 글을 세는 단위) 사용량, 걸린 시간이 계층으로 쌓여요.</p>
     <p class="run-tag">실행: 프로젝트의 .env 파일에 저장 <span class="run-tag-why">— load_dotenv()로 읽으면 LangChain·LangGraph가 알아서 기록을 보내요</span></p>
     <pre><code>LANGSMITH_TRACING=true
 LANGSMITH_API_KEY=lsv2_...
@@ -291,7 +291,7 @@ LANGSMITH_PROJECT=langgraph-study</code></pre>
     </section>
     <section class="apply-box apply-box--repo" id="apply-repo">
       <p class="apply-box-title">실제 코드에 대입하면 — 검사 스물다섯 개를 모으는 리듀서 하나가 위험해요</p>
-      <p>교정기에 이 패턴도 들어 있어요. 고치는 규칙은 스물네 개였고, 고치지 않고 제안만 만드는 검사는 <strong>스물다섯 개</strong>예요. 비슷한 수지만 다른 목록이에요. 고친 줄 하나를 검사 스물다섯 개에 넣고, 나온 제안을 <strong>한 목록에 모아요.</strong> 여기까지는 이 편의 병렬화 그대로예요. 문제는 모으는 방법이에요.</p>
+      <p>제 저장소의 교정기(<code>subtitle_corrector</code>)에 이 패턴도 들어 있어요. 고치는 규칙은 스물네 개였고, 고치지 않고 제안만 만드는 검사는 <strong>스물다섯 개</strong>예요. 비슷한 수지만 다른 목록이에요. 고친 줄 하나를 검사 스물다섯 개에 넣고, 나온 제안을 <strong>한 목록에 모아요.</strong> 여기까지는 이 편의 병렬화 그대로예요. 문제는 모으는 방법이에요.</p>
       <p class="run-tag run-tag--concept">제 저장소 코드 <span class="run-tag-why">— <code>subtitle_corrector/engine/pipeline.py</code>에서 검사 결과를 모으는 부분이에요. <code>checks</code>는 검사 스물다섯 개의 결과 목록이고, <code>f.suggested_fix</code>는 그 검사가 내놓은 고침 제안이에요</span></p>
       <pre><code>for f in checks:
     if not f:

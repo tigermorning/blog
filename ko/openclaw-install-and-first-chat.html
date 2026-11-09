@@ -32,7 +32,7 @@
       <span class="post-nav-title">새 껍데기, 같은 바닷가재 — OpenClaw는 무엇이고 어디서 왔나</span>
     </a>
 
-    <p class="one-liner">OpenClaw 설치는 "연습 폴더를 만들고, npm으로 받고, 온보딩으로 첫 설정을 하고, 진단 명령 두 개로 상태를 확인한 뒤, WebChat에 한 문장 보내기"까지가 한 묶음이다.</p>
+    <p class="one-liner">OpenClaw(AI 에이전트를 돌리는 프로그램) 설치는 "연습 폴더를 만들고, npm(프로그램을 내려받아 설치하는 도구)으로 받고, 온보딩으로 첫 설정을 하고, 진단 명령 두 개로 상태를 확인한 뒤, WebChat(OpenClaw가 제공하는 대화 화면)에 한 문장 보내기"까지가 한 묶음이다.</p>
 
     <div class="why-read">
       <p class="why-read-title">이 글을 읽기 전에</p>
@@ -42,7 +42,7 @@
           <ul>
             <li>설치 명령만 치면 끝나는 거 아닌가요? 왜 순서가 이렇게 많죠?</li>
             <li>연습용 폴더를 따로 만들었으니 제 계정 정보를 넣어도 안전한 거 아닌가요?</li>
-            <li>구독으로 로그인하는 거랑 API 키를 넣는 거랑 뭐가 다른가요?</li>
+            <li>구독으로 로그인하는 거랑 API 키(쓴 만큼 요금을 내고 서비스를 쓰는 비밀 문자열)를 넣는 거랑 뭐가 다른가요?</li>
           </ul>
         </dd>
         <dt>읽고 나면 할 수 있는 것</dt>
@@ -50,7 +50,7 @@
           <ul>
             <li>연습 폴더 만들기 → npm으로 설치 → 온보딩 → 진단 두 개 → WebChat에 첫 문장 보내기까지 순서대로 직접 할 수 있어요.</li>
             <li>구독 로그인과 API 키 중 어느 쪽이 내 요금 방식에 맞는지 고를 수 있어요 — 앞은 구독 한도에서 빠지고, 뒤는 쓴 만큼 과금돼요.</li>
-            <li>실습이 끝나면 멈추고, ~/.openclaw 에 무엇이 남았는지 확인할 수 있어요.</li>
+            <li>실습이 끝나면 멈추고, ~/.openclaw(내 홈 폴더 안에 OpenClaw가 설정과 상태를 모아 두는 폴더)에 무엇이 남았는지 확인할 수 있어요.</li>
           </ul>
         </dd>
         <dt>모르면 이런 일이 생겨요</dt>
@@ -59,7 +59,7 @@
             <li>폴더를 따로 만들었다고 격리가 끝난 게 아니에요. 어디서 설치하든 자격 증명은 홈 폴더의 ~/.openclaw/ 에 모이니, 실제 업무 키를 넣으면 연습이 끝나도 그대로 남아요. <a class="suspect-jump" href="#suspect-key-in-home">언제 의심하나 ↓</a></li>
             <li>진단 출력의 마지막 줄 "done"만 보고 넘어가면, 중간 경고를 놓친 채 다음 단계로 가서 나중에 어디가 원인인지 못 가려요. <a class="suspect-jump" href="#suspect-doctor-middle-line">언제 의심하나 ↓</a></li>
             <li>Node 버전이 안 맞는데 억지로 바꾸면 다른 프로그램이 깨져요. 안 맞으면 그 자리에서 멈추는 게 맞아요. <a class="suspect-jump" href="#suspect-node-range">언제 의심하나 ↓</a></li>
-            <li>게이트웨이 주소를 바깥에서 접속되게 열면 안 돼요. 기본 주소의 외부 공개는 공식 문서도 권하지 않아요. <a class="suspect-jump" href="#suspect-gateway-reachable">언제 의심하나 ↓</a></li>
+            <li>게이트웨이(WebChat 화면을 내어 주는 OpenClaw의 중심 프로그램) 주소를 바깥에서 접속되게 열면 안 돼요. 기본 주소의 외부 공개는 공식 문서도 권하지 않아요. <a class="suspect-jump" href="#suspect-gateway-reachable">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -136,7 +136,7 @@ node --version</code></pre>
     <p>여기서 제가 놓칠 뻔한 게 있어요. 폴더를 따로 만들었다고 격리가 끝나는 게 아니에요. OpenClaw는 어디서 설치하든 <strong>설정과 상태를 홈 폴더의 <code>~/.openclaw/</code> 아래에</strong> 모으고, 자격 증명<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>도 거기 저장해요. 그래서 "연습 폴더니까 괜찮겠지" 하고 실제 업무 계정을 넣으면 그 계정 정보가 홈 폴더에 남아요. 실습용 계정, 실습용 키만 쓰고, 온보딩 화면에서 실제 업무 계정이나 비밀값을 요구하면 입력을 멈추는 게 규칙이에요.</p>
 
     <h2><span class="hl">② ③ 설치와 온보딩</span></h2>
-    <p>공식 README는 macOS·Linux·WSL2에는 <code>install.sh</code>, Windows에는 <code>install.ps1</code> 스크립트를 안내해요. 하지만 npm은 운영체제와 상관없이 같은 명령으로 설치되고 버전도 지정할 수 있어서, 이 글은 npm 경로를 따라가요.</p>
+    <p>공식 README는 macOS·Linux·WSL2(Windows에서 리눅스를 쓰게 해 주는 기능)에는<code>install.sh</code>, Windows에는 <code>install.ps1</code> 스크립트를 안내해요. 하지만 npm은 운영체제와 상관없이 같은 명령으로 설치되고 버전도 지정할 수 있어서, 이 글은 npm 경로를 따라가요.</p>
     <p class="run-tag">실행: 로컬 터미널</p>
     <pre><code>npm install -g openclaw@latest --allow-scripts=openclaw
 openclaw --version</code></pre>

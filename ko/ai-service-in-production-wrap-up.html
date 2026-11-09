@@ -166,15 +166,15 @@
     <table>
       <thead><tr><th>글</th><th>키워드</th><th>막아 주는 일</th><th>내가 본 것</th></tr></thead>
       <tbody>
-        <tr><td><a href="ai-service-design-before-code.html">1. 설계</a></td><td>PRD 한 장</td><td>누가·어떤 채널로·어떤 방식으로 쓰게 할지 정하기 전에 코드부터 짜는 일</td><td>코드 없이 프로토타입으로 먼저 검증한 뒤 아키텍처와 PRD 한 장으로 정리</td></tr>
-        <tr><td><a href="cloud-run-source-deploy-meaning.html">2. 첫 배포</a></td><td>리비전·시크릿</td><td>API 키를 코드에 적어 두는 일</td><td>콘솔에서 단계를 찾아보고, 리비전 사이로 트래픽을 옮기고, 키를 Secret Manager로 연결</td></tr>
+        <tr><td><a href="ai-service-design-before-code.html">1. 설계</a></td><td>PRD(만들 것의 요구사항을 적은 문서) 한 장</td><td>누가·어떤 채널로·어떤 방식으로 쓰게 할지 정하기 전에 코드부터 짜는 일</td><td>코드 없이 프로토타입으로 먼저 검증한 뒤 아키텍처와 PRD 한 장으로 정리</td></tr>
+        <tr><td><a href="cloud-run-source-deploy-meaning.html">2. 첫 배포</a></td><td>리비전·시크릿</td><td>API 키(서비스를 쓸 때 내는 비밀 문자열)를 코드에 적어 두는 일</td><td>콘솔에서 단계를 찾아보고, 리비전 사이로 트래픽을 옮기고, 키를 Secret Manager(비밀 값을 따로 보관하는 Google Cloud 서비스)로 연결</td></tr>
         <tr><td><a href="cloud-run-operating-ai-service.html">3. 운영</a></td><td>타임아웃·로그</td><td>서버 기록은 정상인데 사용자 답이 끊기는 일</td><td>요청·컨테이너·시스템 로그 세 종류에서 무슨 일이 있었는지 찾아 읽기</td></tr>
         <tr><td><a href="github-actions-auto-deploy.html">4. 자동 배포</a></td><td>WIF</td><td>키 파일 유출, 배포 명령을 빼먹는 실수</td><td>서비스 계정 3개, 통과할 문 3개, 저장소 변수 5개. 일부러 고장 낸 PR #5는 새 리비전 00003이 시작을 못 했고 손님은 00002를 계속 받았어요</td></tr>
-        <tr><td><a href="ci-tests-and-staging.html">5. CI와 staging</a></td><td>필수 검사</td><td>깨진 코드와 시험 배포가 실제 서비스에 닿는 일</td><td>칸 열림 일정 테스트 9개. 일부러 깨뜨린 PR #9는 9개 중 3개가 실패했고, 직접 push는 GH006으로 거절됐어요</td></tr>
+        <tr><td><a href="ci-tests-and-staging.html">5. CI와 staging</a></td><td>필수 검사</td><td>깨진 코드와 시험 배포가 실제 서비스에 닿는 일</td><td>칸 열림 일정 테스트 9개. 일부러 깨뜨린 PR #9는 9개 중 3개가 실패했고, 직접 push는 GH006(보호된 브랜치에 바로 올릴 때 GitHub이 내는 오류 코드)으로 거절됐어요</td></tr>
         <tr><td><a href="dockerfile-fixing-runtime-environment.html">6. Dockerfile</a></td><td>실행 환경 고정</td><td>"내 컴퓨터에서는 되는데 서버에서만 안 되는" 일</td><td>python:3.13-slim-bookworm 183MB에 OCR 레이어 94.9MB를 얹어 최종 385MB</td></tr>
         <tr><td><a href="build-once-promote-image.html">7. 이미지 한 번</a></td><td>다이제스트·승격</td><td>시험한 이미지와 내보낸 이미지가 달라지는 일</td><td>sha256 + 64자리 지문, slim 431MB 대 전체판 1.63GB(약 3.8배), 롤백 24초·복구 36초</td></tr>
         <tr><td><a href="load-balancer-zero-downtime.html">8. 로드밸런서</a></td><td>blue/green·무상태</td><td>서버를 바꾸는 몇 초 동안 요청이 갈 곳이 없는 일, 전환하면 대화가 사라지는 일</td><td>nginx -t로 검사한 뒤 reload로 방향 전환. weight 3 : 1에서 150건 측정 결과 75% 대 25%</td></tr>
-        <tr><td><a href="cloud-run-zero-downtime-deploy.html">9. 무중단 배포</a></td><td>스타트업 프로브·0% 배포</td><td>준비 안 된 새 버전에 요청이 가는 일</td><td>기본 프로브 389건 중 71건 실패(배포 약 19초), /health 프로브 283건 중 0건(약 62초)</td></tr>
+        <tr><td><a href="cloud-run-zero-downtime-deploy.html">9. 무중단 배포</a></td><td>스타트업 프로브(새 서버가 시작을 마쳤는지 확인하는 설정)·0% 배포</td><td>준비 안 된 새 버전에 요청이 가는 일</td><td>기본 프로브 389건 중 71건 실패(배포 약 19초), /health 프로브 283건 중 0건(약 62초)</td></tr>
       </tbody>
     </table>
     <p>이 표를 쓰면서 눈에 띈 건, 아홉 행이 <strong>모두 «증거를 남기는 방법»</strong>이라는 점이에요. 4번의 리비전 번호, 5번의 실패한 테스트 개수, 7번의 지문, 9번의 실패 건수가 그래요. 전부 «안전하다»는 말 대신 숫자로 보여 주는 방식이에요.</p>
@@ -215,7 +215,7 @@
         <tr>
           <td>사용자는 괜찮았나</td>
           <td>9개 시나리오 테스트, /health·/version 확인, 요청 세기</td>
-          <td>프로브와 스모크 테스트는 /health와 /version만 봐서 앱의 답이 이상해졌는지는 몰라요. 도우미 답 품질은 사람이 같은 요청을 여러 번 보내 확인했고, 자동 평가는 없어요.</td>
+          <td>프로브와 스모크 테스트(배포 뒤 핵심 주소만 빠르게 확인하는 테스트)는 /health와 /version만 봐서 앱의 답이 이상해졌는지는 몰라요. 도우미 답 품질은 사람이 같은 요청을 여러 번 보내 확인했고, 자동 평가는 없어요.</td>
           <td>배포 뒤 대표 질문 몇 개를 보내 규칙을 어겼는지 세는 스크립트 하나 만들기</td>
         </tr>
         <tr>
@@ -247,7 +247,7 @@
       <tbody>
         <tr><td>기본 프로브 vs /health 프로브(시작이 30초 늦은 앱)</td><td>389건 중 71건 실패 vs 283건 중 0건</td><td>실패를 없앤 대가는 배포 시간(약 19초 → 약 62초)이에요. 배포 횟수가 많은 서비스일수록 이 교환이 이득이에요.</td></tr>
         <tr><td>99.9% 가용성 목표</td><td>1년에 약 8.8시간 멈춤 허용</td><td>하루 3번 배포하면서 배포마다 29초 실패하면 이 허용량을 거의 다 써요(이 글의 가정).</td></tr>
-        <tr><td>한국 시간과 UTC의 시차</td><td>9시간</td><td>시간이 9의 배수 근처로 어긋나면 시간대부터 의심해요(5번 글의 시간대 버그).</td></tr>
+        <tr><td>한국 시간과 UTC(세계 표준시)의 시차</td><td>9시간</td><td>시간이 9의 배수 근처로 어긋나면 시간대부터 의심해요(5번 글의 시간대 버그).</td></tr>
         <tr><td>서비스 계정 역할 분리 · WIF 문</td><td>3개 · 3개</td><td>배포용·빌드용·실행용으로 나누고, 거절되면 접수처·규칙표·출입 명단 순서로 확인해요.</td></tr>
         <tr><td>롤백 / 복구 배포 시간</td><td>24초 / 36초</td><td>배포 명령이 걸린 시간만이고 원인을 찾는 시간은 빠졌어요. 한 번씩 잰 값이에요.</td></tr>
         <tr><td>같은 이유로 이미지가 커지는 정도</td><td>431MB vs 1.63GB(약 3.8배)</td><td>FROM 한 줄 차이예요. 이 앱의 값이라 다른 서비스는 달라요.</td></tr>
@@ -267,7 +267,7 @@
         <tr id="suspect-pinned">
           <td>배포는 성공했는데 서비스 주소는 <strong>여전히 옛 버전</strong>을 보여 줘요.</td>
           <td>Cloud Run 서비스의 트래픽 설정(특정 리비전이나 태그에 고정돼 있는지)</td>
-          <td>트래픽 설정을 조회해 «가장 최근 리비전 100%»인지 봐요. 롤백이나 카나리(일부 사용자에게만 먼저 내보내기)를 한 번 하면 트래픽이 특정 리비전에 고정돼 새 리비전이 0%로 남을 수 있어요. 풀려면 <code>--to-latest</code>를 써요.</td>
+          <td>트래픽 설정을 조회해 «가장 최근 리비전 100%»인지 봐요. 롤백이나 카나리(일부 사용자에게만 먼저 내보내기)를 한 번 하면 트래픽이 특정 리비전에 고정돼 새 리비전이 0%로 남을 수 있어요. 풀려면 <code>--to-latest</code>(트래픽을 가장 최근 리비전으로 되돌리는 옵션)를 써요.</td>
         </tr>
         <tr id="suspect-half">
           <td>테스트는 전부 통과했는데 <strong>실제 서비스에서는 AI가 규칙을 어겼어요.</strong></td>
@@ -276,7 +276,7 @@
         </tr>
         <tr id="suspect-ci">
           <td>내 컴퓨터에서는 되는데 <strong>CI에서만 실패</strong>해요(<code>No module named 'app'</code>, 종료 코드 2).</td>
-          <td><code>pytest.ini</code>의 <code>pythonpath</code> 줄, 시간대가 들어가는 테스트</td>
+          <td><code>pytest.ini</code>(테스트 도구의 설정 파일)의 <code>pythonpath</code> 줄, 시간대가 들어가는 테스트</td>
           <td>CI는 내 컴퓨터가 우연히 맞춰 주던 것(시간대, 실행 위치)을 걷어 내요. <code>pythonpath = .</code>를 확인하고, 시각이 9시간 어긋나면 UTC를 의심해요.</td>
         </tr>
       </tbody>

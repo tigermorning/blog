@@ -42,7 +42,7 @@
           <ul>
             <li>챗봇에 문서를 넣어 줬는데, 문서 두 개를 합쳐야 나오는 답은 왜 못 할까요?</li>
             <li>검색 결과를 더 많이 가져오면 해결되는 거 아닌가요?</li>
-            <li>GraphRAG라는 말은 들어 봤는데, 그래프를 쓰면 뭐가 달라지나요?</li>
+            <li>GraphRAG(검색한 문서를 근거로 AI가 답하게 하는 RAG에 그래프를 더한 방식)라는 말은 들어 봤는데, 그래프를 쓰면 뭐가 달라지나요?</li>
           </ul>
         </dd>
         <dt>읽고 나면 할 수 있는 것</dt>
@@ -75,9 +75,9 @@
     <div class="key-point" id="prep">
       <p class="key-point-label"><span class="key-point-badge">준비물</span>이 편을 따라 하려면</p>
       <ul>
-        <li><strong>파이썬 3.10 이상</strong> — 이 편의 실습은 전부 <strong>API 키 없이</strong> 돌아가요. 모델을 한 번도 부르지 않거든요.</li>
-        <li><strong>실습 데이터</strong> — 한국어 위키백과 한국 영화 문서 80건과 평가 문항 15개. <a href="https://github.com/88chacha/cinephile-agent-data" target="_blank" rel="noopener">공개 저장소</a>에 zip(324KB)으로 있고 라이선스는 위키백과와 같은 CC BY-SA예요.</li>
-        <li><strong>실행 환경</strong> — 이 편의 노트북은 Colab 같은 원격 주피터에서 돌리는 걸 기준으로 썼어요. 내 컴퓨터의 VS Code에서 돌린다면 <a href="#local-setup">로컬 준비</a>부터 보세요. 커널이 안 잡히는 함정이 하나 있어요.</li>
+        <li><strong>파이썬 3.10 이상</strong> — 이 편의 실습은 전부 <strong>API 키(AI 서비스 이용 권한을 확인하는 비밀 문자열) 없이</strong> 돌아가요. 모델을 한 번도 부르지 않거든요.</li>
+        <li><strong>실습 데이터</strong> — 한국어 위키백과 한국 영화 문서 80건과 평가 문항 15개. <a href="https://github.com/88chacha/cinephile-agent-data" target="_blank" rel="noopener">공개 저장소</a>에 zip(324KB)으로 있고 라이선스는 위키백과와 같은 CC BY-SA(출처를 밝히고 같은 조건으로 공유하면 쓸 수 있는 사용 허가)예요.</li>
+        <li><strong>실행 환경</strong> — 이 편의 노트북은 Colab 같은 원격 주피터(웹에서 파이썬 코드를 돌리는 노트북)에서 돌리는 걸 기준으로 썼어요. 내 컴퓨터의 VS Code에서 돌린다면 <a href="#local-setup">로컬 준비</a>부터 보세요. 커널(노트북 코드를 실제로 돌리는 실행기)이 안 잡히는 함정이 하나 있어요.</li>
         <li><strong>앞에서 본 검색 이야기</strong> — 문서를 잘게 자르는 청크와 BM25 검색은 7단계의 <a href="rag-chatbot-chunk-design.html">청크 설계</a>·<a href="rag-chatbot-hybrid-search.html">하이브리드 검색</a> 편에서 처음 다뤘어요. 몰라도 이 편에서 한 줄씩 다시 풀어요.</li>
       </ul>
     </div>

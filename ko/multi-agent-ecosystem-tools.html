@@ -38,14 +38,14 @@
             <li>Agent Teams, Workflows 같은 새 기능 이름이 계속 나오는데, 뭐가 뭘 하는 건지 구분이 안 돼요.</li>
             <li>에이전트를 여럿 띄웠더니 어느 창이 일하고 어느 창이 멈춰 있는지 모르겠어요. 이걸 볼 방법이 있나요?</li>
             <li>새 도구를 붙였더니 결과가 좋아졌는데, 도구 덕인지 그냥 조건이 달라진 건지 어떻게 알죠?</li>
-            <li>표준 하네스 하나를 팀 전체에 그대로 심었는데, 왜 몇 명 컴퓨터에서만 안 통하죠?</li>
+            <li>표준 하네스(AI가 일하는 환경과 규칙 묶음) 하나를 팀 전체에 그대로 심었는데, 왜 몇 명 컴퓨터에서만 안 통하죠?</li>
           </ul>
         </dd>
         <dt>읽고 나면 할 수 있는 것</dt>
         <dd>
           <ul>
             <li>3·4편 실험이 남긴 네 문제 — 컨텍스트가 끊긴다 / 재현이 안 된다 / 모델을 못 나눈다 / 상태가 안 보인다 — 를 각각 어떤 도구가 겨냥하는지 짚을 수 있어요.</li>
-            <li>locator 같은 서브에이전트를 마크다운 파일 한 장으로 옮겨 Claude Code(.claude/agents/)와 OpenCode(.opencode/agents/) 양쪽에서 쓸 수 있어요.</li>
+            <li>locator 같은 서브에이전트(리드가 일을 맡기는 보조 AI)를 마크다운 파일 한 장으로 옮겨 Claude Code(.claude/agents/)와 OpenCode(.opencode/agents/) 양쪽에서 쓸 수 있어요.</li>
             <li>도구가 바꾸는 층이 조율인지(기준선을 다시 세워야 함) 관측인지(그대로 얹어도 됨)를 붙이기 전에 판단할 수 있어요.</li>
             <li>정의 파일 공유가 어디까지 보장하고 어디서부터 안 되는지 갈라, 최근 회사들이 말하는 AX(회사 전체 업무에 AI를 심으려는 흐름)와 개인화 기능이 왜 같이 나오는지 설명할 수 있어요.</li>
           </ul>
@@ -54,7 +54,7 @@
         <dd>
           <ul>
             <li>"요즘 뜨는 기능이니 붙여보자"로 고르면, 결과가 좋아져도 도구 덕인지 조건이 달라져서인지 가릴 수 없게 돼요. <a class="suspect-jump" href="#suspect-tool-looks-better">언제 의심하나 ↓</a></li>
-            <li>Agent Teams를 켜면 팀원 하나가 곧 세션 하나라 토큰이 팀원 수에 비례해 늘어요. 모르고 켜면 비용이 훅 올라가요. <a class="suspect-jump" href="#suspect-teams-cost">언제 의심하나 ↓</a></li>
+            <li>Agent Teams를 켜면 팀원 하나가 곧 세션 하나라 토큰(AI가 읽고 쓰는 글의 양)이 팀원 수에 비례해 늘어요. 모르고 켜면 비용이 훅 올라가요. <a class="suspect-jump" href="#suspect-teams-cost">언제 의심하나 ↓</a></li>
             <li>herdr 같은 관측 도구가 창을 '유휴'로 표시했다고 해서 테스트가 통과한 건 아니에요. 결과 판정 층은 따로 필요해요. <a class="suspect-jump" href="#suspect-idle-not-passed">언제 의심하나 ↓</a></li>
             <li>같은 서브에이전트 정의 파일을 팀 전체에 그대로 뿌리면, 계정마다 막힌 모델이 달라 에러 없이 다른 모델로 조용히 바뀌어 도는 사람이 나와요. <a class="suspect-jump" href="#suspect-shared-harness-breaks">언제 의심하나 ↓</a></li>
           </ul>
@@ -64,7 +64,7 @@
           <ul>
             <li><strong>새 도구 이름이 쏟아져 무엇을 붙일지 못 정할 때.</strong> 이름이 아니라 겪는 문제(컨텍스트 끊김·재현 불가·모델 고정·상태 불가시)에서 출발해 도구를 골라요.</li>
             <li>매번 같은 순서로 돌아야 하는 자동화를 Workflows 스크립트로 못 박을 때요.</li>
-            <li>파일 경로만 찾는 워커에는 Haiku, 설계를 정하는 리드에는 Opus처럼 역할별로 모델을 나눠 비용을 낮출 때요.</li>
+            <li>파일 경로만 찾는 워커에는 Haiku(작고 싼 모델), 설계를 정하는 리드에는 Opus(크고 비싼 모델)처럼 역할별로 모델을 나눠 비용을 낮출 때요.</li>
             <li>에이전트 창이 셋을 넘어가서 작업 중·대기·유휴를 한눈에 봐야 할 때요.</li>
             <li>표준 하네스를 조직 전체에 심으려 할 때, 공통 뼈대와 사람·컴퓨터별로 갈릴 지점을 미리 나눠 둘 때요.</li>
           </ul>
@@ -83,7 +83,7 @@
     <table>
       <thead><tr><th>문제</th><th>실험에서 실제로 일어난 일</th><th>겨냥한 도구</th><th>바꾸는 층</th></tr></thead>
       <tbody>
-        <tr><td><strong>컨텍스트가 끊긴다</strong></td><td>워커(일을 받아 하는 AI) 결과는 리드(일을 나눠 주는 AI)에게만 돌아와요. 워커가 둘이면 서로 무엇을 찾았는지 알 길이 없어요. C에서 리드가 locator를 정말 불렀는지를 인용으로 확인해야 했던 게 이 문제예요. <a href="multi-agent-split-gains-and-losses.html">1편</a>에서 Cognition이 지적한 "에이전트 사이 문맥 공유 부족"이 바로 여기서 일어나요.</td><td>Agent Teams</td><td>다음 행동을 팀원들이 정함</td></tr>
+        <tr><td><strong>컨텍스트가 끊긴다</strong></td><td>워커(일을 받아 하는 AI) 결과는 리드(일을 나눠 주는 AI)에게만 돌아와요. 워커가 둘이면 서로 무엇을 찾았는지 알 길이 없어요. 3편의 C(리드가 locator를 부르는 실행)에서 리드가 locator를 정말 불렀는지를 인용으로 확인해야 했던 게 이 문제예요. <a href="multi-agent-split-gains-and-losses.html">1편</a>에서 Cognition이 지적한 "에이전트 사이 문맥 공유 부족"이 바로 여기서 일어나요.</td><td>Agent Teams</td><td>다음 행동을 팀원들이 정함</td></tr>
         <tr><td><strong>재현이 안 된다</strong></td><td>리드가 매 턴 다음 행동을 정하는 실행은 같은 명령을 다시 돌려도 같은 경로를 밟지 않아요. 러너가 result.json이 있으면 건너뛰고, 덮어쓰면 비교가 안 된다고 일러둔 까닭이에요.</td><td>Workflows</td><td>다음 행동을 스크립트가 정함</td></tr>
         <tr><td><strong>모델을 나눌 수 없다</strong></td><td>세 실행 모두 haiku로 고정했어요. 파일 경로를 찾는 워커와 수정 방침을 정하는 리드가 같은 모델을 써야 할 이유는 없지만, 실험에는 나눌 자리가 없었어요.</td><td>oh-my-claudecode</td><td>어느 모델이 그 행동을 하는가</td></tr>
         <tr><td><strong>상태가 안 보인다</strong></td><td>어느 실행이 어디서 멈췄는지는 끝난 뒤 judge.py가 전사를 읽어야 알았어요. 터미널을 닫으면 작업도 사라지고요.</td><td>herdr</td><td>그 행동을 어디서 지켜보는가</td></tr>

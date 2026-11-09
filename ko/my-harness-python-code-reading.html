@@ -32,7 +32,7 @@
       <span class="post-nav-title">얇게 한 번 관통시키기 — 첫 구현과 막힌 지점 찾기</span>
     </a>
 
-    <p class="one-liner">Python 하네스 예제는 <strong>모델 연결·도구 실행·상태·채점을 파일별로 나눠 구현한 코드</strong>다 — 내 설계와 대조하는 참고물이다.</p>
+    <p class="one-liner">Python 하네스(모델 호출과 도구 실행을 반복하는 프로그램) 예제는<strong>모델 연결·도구 실행·상태·채점을 파일별로 나눠 구현한 코드</strong>다 — 내 설계와 대조하는 참고물이다.</p>
 
     <div class="why-read">
       <p class="why-read-title">이 글을 읽기 전에</p>
@@ -41,8 +41,8 @@
         <dd>
           <ul>
             <li>AI가 파일을 읽고 명령을 실행한다는데, 그 반복은 대체 어디서 도는 건가요?</li>
-            <li>SDK를 쓰면 에이전트가 된다고 들었는데, 제가 설치한 SDK는 왜 그냥 한 번 물어보고 끝나죠?</li>
-            <li>실행 기록에 토큰 수가 비어 있어요. 그럼 공짜로 쓴 건가요?</li>
+            <li>SDK(프로그램을 만들 때 가져다 쓰는 기능 꾸러미)를 쓰면 에이전트가 된다고 들었는데, 제가 설치한 SDK는 왜 그냥 한 번 물어보고 끝나죠?</li>
+            <li>실행 기록에 토큰(모델이 글의 양을 세는 단위) 수가 비어 있어요. 그럼 공짜로 쓴 건가요?</li>
           </ul>
         </dd>
         <dt>읽고 나면 할 수 있는 것</dt>
@@ -68,7 +68,7 @@
             <li><strong>문서로 설계는 했는데 코드로 어떻게 생겼는지 감이 안 올 때.</strong> 돌아가는 구현을 열어 내 설계와 한 줄씩 대조해 보는 편이에요.</li>
             <li>agent.py·providers.py·tools.py의 책임 분담을 내 설계와 하나씩 맞춰 볼 때요.</li>
             <li>모델 호출 12회, 도구 호출 30회, 300초 같은 기본 한도가 무엇을 재는 값인지 읽을 때요 — 문자 한도는 모델의 토큰 한도와 달라요.</li>
-            <li>같은 루프에 평가용 도구만 갈아 끼워 벤치마크에 연결하는 구조를 이해할 때요.</li>
+            <li>같은 루프에 평가용 도구만 갈아 끼워 벤치마크(같은 문제로 성능을 재는 시험)에 연결하는 구조를 이해할 때요.</li>
             <li>세션 저장의 한계를 확인할 때요 — 파일 변경과 세션 저장이 한 거래로 묶여 있지 않아서, 불확실한 작업은 실제 파일을 봐야 해요.</li>
           </ul>
         </dd>
@@ -76,7 +76,7 @@
     </div>
 
     <p><a href="my-harness-vertical-slice.html">6편</a>에서 제 하네스를 만들었어요. 이번 편은 같은 설계의 <strong>실행 가능한 Python 구현</strong>을 열어 봅니다. 이 하네스는 로컬 자료 읽기와 코드 변경을 수행하고, <strong>같은 모델·도구 반복</strong>을 <a href="my-harness-benchmark-local-port.html">다음 편의 벤치마크 평가 경로</a>에도 연결해요.</p>
-    <p>먼저 목적을 분명히 해 둘게요. <strong>함수를 전부 외우거나 같은 파일 구성을 재현하는 게 목표가 아니에요.</strong> 이 예제의 결정은 Python·로컬 CLI·파일 세션 저장이고, 제가 다른 언어나 플랫폼을 골랐다면 그대로 바꿀 필요도 없어요. <strong>모델 연결·도구 실행·상태·검증을 어떻게 나눴는지</strong>를 제 설계와 대조하려고 읽습니다.</p>
+    <p>먼저 목적을 분명히 해 둘게요. <strong>함수를 전부 외우거나 같은 파일 구성을 재현하는 게 목표가 아니에요.</strong> 이 예제의 결정은 Python·로컬 CLI(터미널에서 명령으로 쓰는 프로그램)·파일 세션 저장이고, 제가 다른 언어나 플랫폼을 골랐다면 그대로 바꿀 필요도 없어요. <strong>모델 연결·도구 실행·상태·검증을 어떻게 나눴는지</strong>를 제 설계와 대조하려고 읽습니다.</p>
     <p class="run-tag">실행: 코딩 에이전트에 붙여넣기 <span class="run-tag-why">— Claude Code 등</span></p>
     <pre><code>이 하네스를 실행하고, 내 설계의 각 기능이 어느 코드에 해당하는지 설명해 줘. 먼저 파일 읽기부터 확인하자.</code></pre>
     <p>키(모델 서비스를 쓰게 해 주는 비밀 문자열) 설정은 예제 하네스 폴더의 <code>README.md</code>에 있는 방법을 따라요. macOS·Linux와 PowerShell용 <strong>숨김 입력</strong> 방법이 각각 제공돼요. 다시 강조하면 <strong>키 값은 AI 채팅에 붙이지 않고, 프로그램을 실행할 그 터미널에 설정</strong>합니다. <a href="my-harness-vertical-slice.html">6편</a>에서 짚었듯 <strong>키를 설정한 터미널과 실행 터미널이 다르면 값이 전달되지 않아요.</strong></p>
@@ -89,7 +89,7 @@
       <thead><tr><th>비유 속 요소</th><th>원래 개념 (파일)</th></tr></thead>
       <tbody>
         <tr><td>취재기자 — 다음 행동 판단과 마감 관리</td><td><code>agent.py</code> — 공통 자료형, 반복, 한도, 세션, 지표</td></tr>
-        <tr><td>외신 번역 담당 — 형식을 하나로 맞춤</td><td><code>providers.py</code> — OpenAI·Ollama 응답 변환 (<strong>어댑터</strong>)</td></tr>
+        <tr><td>외신 번역 담당 — 형식을 하나로 맞춤</td><td><code>providers.py</code> — OpenAI·Ollama(내 컴퓨터에서 AI 모델을 돌리는 프로그램) 응답 변환 (<strong>어댑터</strong>, 서로 다른 형식을 하나로 맞춰 주는 부품)</td></tr>
         <tr><td>자료실 사서 — 열람 규칙을 지키며 꺼내 줌</td><td><code>tools.py</code> — 로컬 파일과 승인된 명령 실행</td></tr>
         <tr><td>접수 창구 — 요청과 승인을 받는 자리</td><td><code>cli.py</code> — 요청·설정 입력, 승인, 모델 연결</td></tr>
         <tr><td>데스크 — 원본과 대조해 판정</td><td><code>grading.py</code> — 원본 검사 실행과 결과 수집</td></tr>
@@ -103,7 +103,7 @@
     <table>
       <thead><tr><th>파일</th><th>책임</th><th>내 설계에서 연결할 항목</th></tr></thead>
       <tbody>
-        <tr><td><code>harness_lab/cli.py</code></td><td>요청·설정 입력, 승인, 모델 연결</td><td>플랫폼(D02)과 첫 제공자(D04)</td></tr>
+        <tr><td><code>harness_lab/cli.py</code></td><td>요청·설정 입력, 승인, 모델 연결</td><td>플랫폼(D02)과 첫 제공자(D04) — D02·D04는 내 설계 문서에 붙인 결정 번호</td></tr>
         <tr><td><code>harness_lab/agent.py</code></td><td>공통 자료형, 자체 반복, 한도, 세션, 지표</td><td>실행 흐름과 완료·실패 조건(<a href="my-harness-flow-and-state.html">3편</a>)</td></tr>
         <tr><td><code>harness_lab/providers.py</code></td><td>OpenAI Responses와 Ollama 응답 변환</td><td>제공자와 내부 계약의 <strong>경계</strong>(<a href="my-harness-interfaces.html">4편</a>)</td></tr>
         <tr><td><code>harness_lab/tools.py</code></td><td>로컬 파일과 승인된 명령 실행</td><td>작업 범위와 권한(D05·D06)</td></tr>
@@ -255,7 +255,7 @@ async with asyncio.timeout(self.limits.tool_timeout_seconds):
       <thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead>
       <tbody>
         <tr>
-          <td class="choice-bad"><strong>무엇을 했나:</strong> 실행 기록에 <code>usage_known=False</code>가 붙어 있고 토큰 수가 비어 있길래, 보고서에 <strong>토큰 0, 비용 0원</strong>이라고 적었어요. 그리고 상태가 <code>completed</code>이니 <strong>성공</strong>으로 세었고요.<br><br><strong>무슨 일이 생기나:</strong> "이 방식이 비용이 안 든다"는 <strong>사실이 아닌 결론</strong>이 보고서에 남아요. 게다가 <code>completed</code>는 <strong>모델이 텍스트를 반환했다는 상태</strong>일 뿐인데 업무 정답으로 셈해서, 실제 정확도보다 높은 숫자가 나옵니다.</td>
+          <td class="choice-bad"><strong>무엇을 했나:</strong> 실행 기록에 <code>usage_known=False</code>(사용량을 못 받았다는 표시)가 붙어 있고 토큰 수가 비어 있길래, 보고서에 <strong>토큰 0, 비용 0원</strong>이라고 적었어요. 그리고 상태가 <code>completed</code>이니 <strong>성공</strong>으로 세었고요.<br><br><strong>무슨 일이 생기나:</strong> "이 방식이 비용이 안 든다"는 <strong>사실이 아닌 결론</strong>이 보고서에 남아요. 게다가 <code>completed</code>는 <strong>모델이 텍스트를 반환했다는 상태</strong>일 뿐인데 업무 정답으로 셈해서, 실제 정확도보다 높은 숫자가 나옵니다.</td>
           <td class="choice-good"><strong>무엇을 했나:</strong> <code>usage_known=False</code>면 토큰·비용을 <strong>'알 수 없음'</strong>으로 두고, <code>completed</code>는 <strong>"모델이 답을 반환함"</strong>으로만 기록했어요. 정답 여부는 별도 채점 결과에서 가져왔고요.<br><br><strong>무슨 일이 생기나:</strong> 숫자가 비어 보여서 아쉽지만, <strong>나중에 다른 실행과 비교할 때 왜곡이 안 생겨요.</strong> 모르는 건 모른다고 적혀 있으니 채워 넣을 지점도 분명해요.</td>
         </tr>
       </tbody>
@@ -277,11 +277,11 @@ async with asyncio.timeout(self.limits.tool_timeout_seconds):
     <ul>
       <li><strong>Python 실행:</strong> 모델이 Python 코드를 실행하려면 <strong>먼저 작업 폴더에 <code>.py</code> 파일을 만든 뒤</strong> 파일 경로와 인수 목록으로 요청해야 해요. 임의 셸 명령(컴퓨터에 아무 명령이나 시키는 방식)을 받는 방식과 구별되는 지점이에요.</li>
       <li><strong>승인 정책:</strong> <strong>평가 작업 복사본 안의 변경은 사전 허용된 동작</strong>이라 매번 승인을 묻지 않아요. 하지만 그 허용이 사용자 컴퓨터의 다른 파일 접근까지 뜻하지는 않아요. 로컬 CLI의 "매번 확인" 방식과 평가의 자동 실행은 <strong>서로 다른 정책</strong>이에요.</li>
-      <li><strong>실행 제한:</strong> <code>execution.py</code>는 실행할 Python 파일의 경로를 검사하고 출력과 시간을 제한해요. 출력이 상한을 넘으면 프로세스를 종료하면서도 <strong>파이프를 계속 비워</strong> 무한 대기를 줄여요. POSIX에서는 원래 프로세스 그룹을 종료하고 Windows에서는 자식 프로세스를 직접 종료해요. 다만 <strong>별도 세션으로 벗어난 자식까지 가두는 운영체제 샌드박스는 아니에요.</strong></li>
+      <li><strong>실행 제한:</strong> <code>execution.py</code>는 실행할 Python 파일의 경로를 검사하고 출력과 시간을 제한해요. 출력이 상한을 넘으면 프로세스를 종료하면서도 <strong>파이프를 계속 비워</strong> 무한 대기를 줄여요. POSIX(macOS·Linux 계열)에서는 원래 프로세스 그룹을 종료하고 Windows에서는 자식 프로세스를 직접 종료해요. 다만 <strong>별도 세션으로 벗어난 자식까지 가두는 운영체제 샌드박스(프로그램을 격리해 실행하는 장치)는 아니에요.</strong></li>
     </ul>
 
     <h2><span class="hl">원본 문제와 채점은 어디서 오나</span></h2>
-    <p>여기부터는 <a href="my-harness-benchmark-local-port.html">다음 편</a>의 예고편이에요. 이 하네스의 평가 문제는 <strong>자체 제작이 아니에요.</strong> Terminal-Bench Pro의 <strong>고정 커밋</strong>에서 원본 난도 쉬움 2개·중간 4개·어려움 4개를 골라, 원래 컨테이너의 절대 경로를 <strong>로컬 작업 폴더로 옮겨</strong> 실행하는 구성이에요.</p>
+    <p>여기부터는 <a href="my-harness-benchmark-local-port.html">다음 편</a>의 예고편이에요. 이 하네스의 평가 문제는 <strong>자체 제작이 아니에요.</strong> Terminal-Bench Pro의 <strong>고정 커밋</strong>(저장소의 특정 저장 시점)에서 원본 난도 쉬움 2개·중간 4개·어려움 4개를 골라, 원래 컨테이너의 절대 경로를 <strong>로컬 작업 폴더로 옮겨</strong> 실행하는 구성이에요.</p>
     <ul>
       <li><strong>원본 확인:</strong> <code>benchmark_source.py</code>는 목록에 기록된 저장소 커밋과 파일별 크기·<strong>SHA256<sup class="fn-ref"><a href="#fn6" id="fnref6">6</a></sup></strong>을 확인해요. 내려받은 파일이 <strong>약속한 원본과 같은지</strong> 보려는 거예요. 원본의 <code>/app</code>, <code>/protected</code>, <code>/home/user</code> 같은 경로는 작업 폴더 안의 대응 위치로 바뀌고, <strong>작업 지시와 채점 코드에도 같은 경로 규칙을 적용</strong>해야 해요.</li>
       <li><strong>채점:</strong> <code>grading.py</code>가 원본 <code>tests/test_outputs.py</code>를 <code>pytest</code>로 실행해요. 이 시리즈를 관통하는 규칙이 다시 나와요. <strong>모델이 "완료했다"고 말한 문장을 점수로 쓰지 않고</strong>, 원본 검사가 실제 산출물을 확인한 결과를 써요. 검사 실행 오류나 시간·출력 한도 초과도 기록해야 해요.</li>

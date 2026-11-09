@@ -51,7 +51,7 @@
         <dt>모르면 이런 일이 생겨요</dt>
         <dd>
           <ul>
-            <li>정확한 이름을 모르면 검색도 에이전트 요청도 안 돼요. "단백질 좀 만들어줘"는 헤매지만 정확한 도구 이름을 대면 바로 붙어요. <a class="suspect-jump" href="#suspect-vague-name">언제 의심하나 ↓</a></li>
+            <li>정확한 이름을 모르면 검색도 에이전트(코드를 대신 짜 주는 AI) 요청도 안 돼요. "단백질 좀 만들어줘"는 헤매지만 정확한 도구 이름을 대면 바로 붙어요. <a class="suspect-jump" href="#suspect-vague-name">언제 의심하나 ↓</a></li>
             <li>화제성만 보고 고르면 설치가 복잡하거나, 무료 환경에서 안 돌거나, 라이선스(쓸 수 있는 조건을 적은 규칙)가 막힌 걸 붙잡고 시간을 버려요. <a class="suspect-jump" href="#suspect-install-loop">언제 의심하나 ↓</a></li>
             <li>설치 난이도나 장비는 더 들이면 넘을 수 있지만, 라이선스 문제와 유지보수 중단은 그렇지 않아요. <a class="suspect-jump" href="#suspect-unmaintained">언제 의심하나 ↓</a></li>
           </ul>
@@ -138,12 +138,12 @@
       <tbody>
         <tr id="suspect-vague-name">
           <td>"단백질 좀 만들어줘"처럼 분야만 말했더니, 에이전트가 <strong>쓸 도구를 못 정하고</strong> 방법만 늘어놓거나 처음부터 직접 짠 코드를 내놔요</td>
-          <td>에이전트의 답에 <strong>구체적인 도구 이름</strong>이 있는지예요. 코드라면 맨 위 <code>import</code> 줄과 설치 명령에 무엇이 적혔는지 봐요</td>
+          <td>에이전트의 답에 <strong>구체적인 도구 이름</strong>이 있는지예요. 코드라면 맨 위 <code>import</code> 줄(쓸 도구를 불러오는 줄)과 설치 명령에 무엇이 적혔는지 봐요</td>
           <td>분야 대신 도구 이름을 대고 다시 부탁해요("RFdiffusion으로 백본을 생성해줘"처럼). 이름을 모르면 먼저 "이 일에 널리 쓰이는 공개 도구 이름과 공식 저장소 주소만 알려 줘"라고 따로 물어요</td>
         </tr>
         <tr id="suspect-install-loop">
           <td>설치 명령에서 에러가 나고, 에이전트가 고칠 때마다 <strong>다른 에러</strong>가 새로 나와요. 몇 번을 돌아도 첫 실행까지 못 가요</td>
-          <td>에러 문장보다 <strong>README의 설치 안내</strong>예요. 요구하는 Python이나 CUDA 버전이 지금 환경과 같은지 봐요. 에이전트가 README를 안 읽고 짐작으로 고치고 있을 수 있어요</td>
+          <td>에러 문장보다 <strong>README(도구 사용법을 적은 안내 문서)의 설치 안내</strong>예요. 요구하는 Python이나 CUDA(그래픽 칩으로 계산을 돌리는 소프트웨어) 버전이 지금 환경과 같은지 봐요. 에이전트가 README를 안 읽고 짐작으로 고치고 있을 수 있어요</td>
           <td>README에 적힌 버전과 명령을 그대로 따르게 해요. README에 Colab 열기 링크가 있으면 그걸로 먼저 돌려 봐요. 거기서 되면 도구 문제가 아니라 내 환경 문제예요</td>
         </tr>
         <tr id="suspect-colab-oom">
@@ -153,7 +153,7 @@
         </tr>
         <tr id="suspect-unmaintained">
           <td>README대로 했는데도 막히고, 같은 에러를 검색하면 그 저장소의 <strong>답 없는 이슈</strong>만 나와요</td>
-          <td>저장소의 <strong>마지막 커밋 날짜</strong>와 Issues 탭이에요. 최근 이슈에 관리자 답이 달리는지 봐요</td>
+          <td>저장소의 <strong>마지막 커밋(코드 변경을 저장한 기록) 날짜</strong>와 Issues 탭이에요. 최근 이슈에 관리자 답이 달리는지 봐요</td>
           <td>마지막 커밋이 오래됐고 같은 에러 이슈가 답 없이 쌓여 있으면, 고쳐 줄 사람이 없는 거예요. 더 붙잡지 말고 관리되는 다른 도구로 옮겨요</td>
         </tr>
       </tbody>

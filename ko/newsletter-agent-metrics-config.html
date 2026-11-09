@@ -58,7 +58,7 @@
           <ul>
             <li>브리핑이 부실해진 날, 매체가 죽었는지 선별이 빡빡한지 검수에서 빠지는지 가려낼 숫자가 없어서 엉뚱한 프롬프트부터 고치게 돼요. <a class="suspect-jump" href="#suspect-funnel-drop">언제 의심하나 ↓</a></li>
             <li>몇 주째 한 건도 못 올리는 매체가 매일 요청 시간과 선별 요금을 쓰며 남아요. "이 매체는 왜 넣었지?"에 답할 기록도 없고요. <a class="suspect-jump" href="#suspect-zero-source">언제 의심하나 ↓</a></li>
-            <li>윈도우 노트북에서 인코딩을 안 적고 기록을 읽으면, GitHub에서 받아 온 기록 파일을 여는 순간 <code>UnicodeDecodeError</code>로 멈춰요. <a class="suspect-jump" href="#suspect-encoding">언제 의심하나 ↓</a></li>
+            <li>윈도우 노트북에서 인코딩(글자를 파일에 저장할 바이트로 바꾸는 규칙)을 안 적고 기록을 읽으면, GitHub에서 받아 온 기록 파일을 여는 순간 <code>UnicodeDecodeError</code>로 멈춰요. <a class="suspect-jump" href="#suspect-encoding">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -74,7 +74,7 @@
 
     <h2 id="analogy"><span class="hl">비유</span> — 장부와 레시피 카드</h2>
     <p>비유 없이 먼저 적으면, 이 편에서 더하는 건 두 가지예요. 하나는 실행이 끝날 때마다 "수집 몇 건, 선별 몇 건, 취재 몇 건, 검수 통과 몇 건"을 파일 끝에 한 줄로 적는 코드예요. 다른 하나는 선별·취재 프롬프트 안에 박혀 있던 "누구를 위해, 무엇을 고르고 무엇을 버릴지" 문장을 따로 떼어 둔 파일이에요. 노드와 그래프 코드는 그대로 두고요.</p>
-    <p><a href="newsletter-agent-skeleton.html">11편</a>부터 이어 온 그 식당 주방은 이제 매일 아침 '오늘의 한 상'(다섯 접시)을 내요. 마감할 때마다 장부에 한 줄이 적혀요. 사장님이 영업 전에 정해 둔 칸대로요 — 들어온 재료 몇, 골라 둔 재료 몇, 접시에 담은 것 몇, 시식을 통과해 나간 것 몇. 몇 주 뒤 사장님이 장부를 거래처별로 다시 세어 보면 "이 거래처 재료는 한 번도 접시에 오른 적이 없네"가 보여요. 벽에는 레시피 카드가 걸려 있어요. 어떤 손님을 위한 상인지, 무엇을 먼저 올리고 무엇은 빼는지가 적힌 카드예요. 손님층이 바뀌는 날 메뉴를 정하는 사람은 카드만 갈아 끼우고, 조리대 직원들은 늘 하던 순서대로 손질하고 담고 시식에 넘겨요.</p>
+    <p><a href="newsletter-agent-skeleton.html">11편</a>부터 뉴스레터 파이프라인을 식당 주방에 빗대 왔어요. 그 주방은 이제 매일 아침 '오늘의 한 상'(다섯 접시)을 내요. 마감할 때마다 장부에 한 줄이 적혀요. 사장님이 영업 전에 정해 둔 칸대로요 — 들어온 재료 몇, 골라 둔 재료 몇, 접시에 담은 것 몇, 시식을 통과해 나간 것 몇. 몇 주 뒤 사장님이 장부를 거래처별로 다시 세어 보면 "이 거래처 재료는 한 번도 접시에 오른 적이 없네"가 보여요. 벽에는 레시피 카드가 걸려 있어요. 어떤 손님을 위한 상인지, 무엇을 먼저 올리고 무엇은 빼는지가 적힌 카드예요. 손님층이 바뀌는 날 메뉴를 정하는 사람은 카드만 갈아 끼우고, 조리대 직원들은 늘 하던 순서대로 손질하고 담고 시식에 넘겨요.</p>
     <table>
       <thead><tr><th>비유 속 요소</th><th>원래 개념</th></tr></thead>
       <tbody>
@@ -147,13 +147,13 @@
     <p>가운데 줄은 <a href="newsletter-agent-skeleton.html">11편</a>에서 세우고 15편까지 하나씩 채운 노드 그대로예요. 위 상자는 코드 밖에서 고치는 파일이고, 아래 상자는 이번 편에서 <code>run()</code>이 새로 남기는 한 줄이에요. 네 개의 건수가 왼쪽에서 오른쪽으로 줄어드는 모양을 보는 게 이 편의 절반이에요.</p>
 
     <h2 id="measure-decisions"><span class="hl">내린 결정을 재 볼 수 있어야 한다</span></h2>
-    <p>돌아보면 11편부터 열 번 넘게 갈림길에서 한쪽을 골랐어요. 수집은 RSS 피드로, 매체는 관문 세 개로, 본문 기준선은 600자로(<a href="newsletter-agent-collect.html">12편</a>), 예선 묶음은 40건, 발행 목표는 다섯 건으로(<a href="newsletter-agent-select.html">13편</a>). 그런데 근거를 들여다보면 대부분 <strong>한 번 재 본 값</strong>이에요. 매체마다 기사가 몇 건 오는지 한 번, 후보 12건으로 비교 한 번, 전체 실행 한 번. 그것만으로 "이 구조가 맞다"고 말하긴 어려워요.</p>
+    <p>돌아보면 11편부터 열 번 넘게 갈림길에서 한쪽을 골랐어요. 수집은 RSS 피드(사이트가 새 글 목록을 공개하는 형식)로, 매체는 관문 세 개로, 본문 기준선은 600자로(<a href="newsletter-agent-collect.html">12편</a>), 예선 묶음은 40건, 발행 목표는 다섯 건으로(<a href="newsletter-agent-select.html">13편</a>). 그런데 근거를 들여다보면 대부분 <strong>한 번 재 본 값</strong>이에요. 매체마다 기사가 몇 건 오는지 한 번, 후보 12건으로 비교 한 번, 전체 실행 한 번. 그것만으로 "이 구조가 맞다"고 말하긴 어려워요.</p>
     <p>설계 결정이 취향과 다른 점은 <strong>나중에 재어 볼 수 있다</strong>는 데 있어요. 재려면 먼저 기록이 있어야 하고요. 그래서 마지막으로 채우는 건 노드가 아니라, 매 실행을 기록으로 남기는 일이에요.</p>
 
     <h3 id="metrics-line">실행마다 한 줄 — <code>store/metrics.jsonl</code></h3>
     <p>기록을 쌓는 데 데이터베이스나 대시보드는 필요 없어요. 파일 하나를 정해 두고, 실행이 끝날 때마다 그 끝에 한 줄을 덧붙이면 돼요. 한 줄에 기록 하나씩 JSON(파이썬 딕셔너리처럼 <code>"이름": 값</code>을 적는 글자 형식)으로 쌓는 이 방식을 <strong>JSONL<sup class="fn-ref"><a href="#fn1" id="fnref1">1</a></sup></strong>이라고 불러요. 메모장으로도 열리고, 줄 하나만 읽어도 그 실행이 보여요.</p>
     <p><a href="newsletter-agent-publish-schedule.html">15편</a>까지의 셀을 먼저 실행해 둔 노트북에서 이어 가요. 이번엔 노드를 바꾸지 않고, <a href="newsletter-agent-skeleton.html">11편</a>에서 만든 <code>run()</code>을 같은 이름으로 다시 정의해요. 그래프를 돌린 뒤 결과에서 건수를 세어 한 줄로 적는 일까지 하게요.</p>
-    <p class="run-tag">실행: Colab 같은 원격 주피터 또는 로컬 주피터 <span class="run-tag-why">— 앞 편에서 채운 노드가 LLM을 부르니 OpenAI API 키 필요 (DRY_RUN 기본값이면 디스코드로는 안 나가요)</span></p>
+    <p class="run-tag">실행: Colab 같은 원격 주피터 또는 로컬 주피터 <span class="run-tag-why">— 앞 편에서 채운 노드가 LLM(대형 언어모델)을 부르니 OpenAI API 키(서비스를 쓸 때 내는 비밀 문자열) 필요 (DRY_RUN 기본값이면 디스코드로는 안 나가요)</span></p>
     <pre><code>import json, pathlib
 from datetime import datetime
 
@@ -206,7 +206,7 @@ print(json.dumps({k: v for k, v in last.items() if k != "log"},
     <p>한 줄이 이만큼을 말해요. 운영 상태를 들여다보는 데 필요한 건 새 도구가 아니라 <strong>무엇을 남길지 정하는 일</strong>이에요. 이 형식은 <a href="multi-agent-judging-records.html">기록으로 판정하는 멀티 에이전트 실험</a>과 <a href="my-harness-scoring-and-report.html">하네스 채점 보고서</a>에서도 실행 기록을 남기는 데 썼어요.</p>
 
     <h3 id="encoding">윈도우에서는 인코딩을 꼭 적는다</h3>
-    <p>위 코드의 <code>encoding="utf-8"</code> 두 군데를 빼고 쓰는 경우가 많아요. Colab이나 GitHub Actions처럼 리눅스에서 도는 곳에서는 빼도 아무 일이 없어서요. 파일에 글자를 저장할 때 어떤 바이트로 바꿀지 정한 규칙을 <strong>인코딩<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup></strong>이라고 하는데, 파이썬은 인코딩을 안 적으면 <strong>운영체제의 기본값</strong>을 써요. 리눅스의 기본값은 UTF-8이지만, 한국어 윈도우의 기본값은 <strong>cp949<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup></strong>예요.</p>
+    <p>위 코드의 <code>encoding="utf-8"</code> 두 군데를 빼고 쓰는 경우가 많아요. Colab이나 GitHub Actions(저장소 코드를 정해 둔 때에 자동으로 돌려 주는 기능)처럼 리눅스에서 도는 곳에서는 빼도 아무 일이 없어서요. 파일에 글자를 저장할 때 어떤 바이트로 바꿀지 정한 규칙을 <strong>인코딩<sup class="fn-ref"><a href="#fn2" id="fnref2">2</a></sup></strong>이라고 하는데, 파이썬은 인코딩을 안 적으면 <strong>운영체제의 기본값</strong>을 써요. 리눅스의 기본값은 UTF-8이지만, 한국어 윈도우의 기본값은 <strong>cp949<sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup></strong>예요.</p>
     <p>제 윈도우 노트북(파이썬 3.12)에서 <code>encoding</code>을 빼고 같은 코드를 돌려 확인해 봤어요. 세 가지가 나왔어요.</p>
     <ul>
       <li>쓰고 읽는 게 같은 컴퓨터라 셀은 멀쩡히 끝났어요. 그런데 만들어진 파일을 UTF-8로 읽어 보니 <code>'utf-8' codec can't decode byte 0xc0</code>로 실패했어요. <strong>파일이 UTF-8이 아니라 cp949로 저장돼 있었던 거예요.</strong> 이 파일을 저장소에 올리면 리눅스에서 도는 Actions가 못 읽어요.</li>
@@ -245,7 +245,7 @@ jobs:
       <li><strong><code>permissions: contents: write</code></strong> — Actions는 기본으로 저장소를 읽기만 할 수 있어서, 커밋을 올리려면 쓰기 권한을 열어야 해요. 권한이 없을 때 어떤 에러가 나는지는 <a href="learning-git-5.html#suspect-write-permission">예약 발행 글의 권한 오류</a>에 정리해 뒀어요.</li>
       <li><strong><code>if: ${{ !inputs.dry_run }}</code></strong> — 손으로 돌리면서 dry_run을 체크한 회차는 커밋하지 않아요. 시험 삼아 돌린 기록이 섞이지 않게요. 매일 아침 스케줄 실행에는 이 입력 자체가 없어서 조건이 참이 되고, 기록 커밋이 들어가요.</li>
       <li><strong><code>git diff --cached --quiet ||</code></strong> — 올릴 변경이 없으면 커밋을 건너뛰어요. 변경이 없는데 <code>git commit</code>을 부르면 그 단계가 실패로 끝나거든요. 커밋과 푸시 자체는 <a href="learning-git-3.html">클론·커밋·푸시 글</a>에서 본 그 명령이에요.</li>
-      <li><strong><code>TZ=Asia/Seoul date +%F</code></strong> — 15편은 <code>TZ</code>를 브리핑 생성 단계에만 넣어서, 이 단계의 <code>date</code>는 UTC로 돌아요. 그대로 두면 한국 시각 아침 7시 반 실행이 UTC로는 전날 22시 반이라 커밋 메시지에 전날 날짜가 적혀요.</li>
+      <li><strong><code>TZ=Asia/Seoul date +%F</code></strong> — 15편은 <code>TZ</code>를 브리핑 생성 단계에만 넣어서, 이 단계의 <code>date</code>는 UTC(세계 표준 시각)로 돌아요. 그대로 두면 한국 시각 아침 7시 반 실행이 UTC로는 전날 22시 반이라 커밋 메시지에 전날 날짜가 적혀요.</li>
     </ul>
     <p>이제 <code>git pull</code>을 할 때마다 그날의 기록이 노트북으로 내려와요. 캐시나 artifact와 달리 커밋은 기간이 지나도 지워지지 않고, 언제 무엇이 발행됐는지가 git 이력에 함께 남아요. 알아 둘 게 두 가지 있어요. 로컬에서도 같은 파일에 기록을 쌓으면 양쪽이 같은 파일 끝에 한 줄씩 붙여서 충돌이 날 수 있어요. 한 줄씩 덧붙이기만 하는 파일이라, 충돌이 나면 두 쪽 줄을 위아래로 둘 다 남기면 돼요. 그리고 <code>store/</code>에 API 응답 원문 같은 걸 함께 저장하면 공개 저장소에선 그것까지 공개돼요. 커밋할 파일은 지표 정도로만 둬요.</p>
 
@@ -308,7 +308,7 @@ AI타임스               1
    104 →   5 →   3 →   2</code></pre>
     <p>한글이 든 줄(제목 줄과 AI타임스 줄)만 칸이 밀린 건, 화면에서 한글은 두 칸을 차지하는데 파이썬 서식은 한 칸으로 세기 때문이에요. 숫자는 맞아요. 성적표에서 보이는 건 세 가지예요.</p>
     <ul>
-      <li><strong>기여가 0인 매체</strong> — DeepMind처럼 수집은 되는데 발행까지는 한 번도 못 간 매체예요. 며칠치로는 우연일 수 있지만 몇 주째 0이라면, 그 매체는 매일 요청 시간과 선별 토큰을 쓰면서 아무것도 기여하지 않고 있어요. 뺄 매체를 숫자가 지목해 주는 게 성적표의 쓸모예요.</li>
+      <li><strong>기여가 0인 매체</strong> — DeepMind처럼 수집은 되는데 발행까지는 한 번도 못 간 매체예요. 며칠치로는 우연일 수 있지만 몇 주째 0이라면, 그 매체는 매일 요청 시간과 선별 토큰(모델이 읽는 글자 단위로, 요금의 기준)을 쓰면서 아무것도 기여하지 않고 있어요. 뺄 매체를 숫자가 지목해 주는 게 성적표의 쓸모예요.</li>
       <li><strong>기여가 한쪽으로 몰림</strong> — 11건 중 8건이 TechCrunch예요. 한 매체가 매일 다섯 자리 중 서너 자리를 가져가면, 나머지 매체 기사는 본선 후보에조차 못 드는 상태일 수 있어요. 그렇다면 다음 수는 매체별 상한을 코드로 거는 거예요.</li>
       <li><strong>깔때기의 어느 쪽이 줄었나</strong> — 수집 → 선별의 낙폭과 취재 → 검수 통과의 낙폭을 따로 봐요. 앞쪽이 큰 건 정상이에요, 그게 선별이 하는 일이니까요. 뒤쪽이 커지고 있다면 본문 추출이나 검수에서 기사가 조용히 빠지고 있는 거예요. 마지막 줄의 3 → 2가 그 모양이에요.</li>
     </ul>
@@ -319,7 +319,7 @@ AI타임스               1
     <p class="run-tag run-tag--concept">개념 설명용 코드 <span class="run-tag-why">— 쌓인 기록 두 줄을 줄여 적은 모양이에요</span></p>
     <pre><code>1줄: g2_14d {Yonhap-NK: 90, DailyNK: 10, 38North: 6} / g3 38North 전부 false / elapsed 2.1초
 2줄: g2_14d 동일 / g3 전부 true / elapsed 2.2초 / g1 기존 통과율 0.778</code></pre>
-    <p>첫 줄의 38North false 아홉 개는 오판이었어요. 기록을 읽는 코드가 파이썬 기본 이름표로 robots.txt를 요청했더니 403이 왔고, 파서가 조용히 전부 금지로 돌아갔거든요(<a href="newsletter-agent-collect.html#field-nk">12편 실전 적용기의 함정</a>). 첫 줄을 지우지 않고 남긴 건, 나중에 "왜 다시 쟀나"를 설명해 주는 감사 기록이 되기 때문이에요. 분석에는 둘째 줄을 써요.</p>
+    <p>첫 줄의 38North false 아홉 개는 오판이었어요. 기록을 읽는 코드가 파이썬 기본 이름표로 robots.txt(사이트가 수집 허용 범위를 적어 둔 파일)를 요청했더니 403(접근 거부 응답 번호)이 왔고, 파서가 조용히 전부 금지로 돌아갔거든요(<a href="newsletter-agent-collect.html#field-nk">12편 실전 적용기의 함정</a>). 첫 줄을 지우지 않고 남긴 건, 나중에 "왜 다시 쟀나"를 설명해 주는 감사 기록이 되기 때문이에요. 분석에는 둘째 줄을 써요.</p>
     <p>두 줄이 말해 주는 건 하나예요. 38North의 14일 기여가 6건이라는 숫자예요. 일간 브리핑 매체로 쓰기엔 모자라지만 주간지로 두기엔 충분하다는, 주간 결정의 근거가 기록에 박힌 거예요. 성적표가 "쓸모"를 재는 방식 그대로예요.</p>
 
     <h3 id="gate-vs-scorecard">관문을 다 통과한 매체가 몇 주째 0이라면</h3>
@@ -361,7 +361,7 @@ AI타임스               1
       </tbody>
     </table>
     <p>고른 기준은 <strong>"누가 이것을 고칠 것인가"</strong>예요. 독자 정의와 중요도 기준은 개발자가 아니라 편집 방향을 정하는 사람이 고쳐야 하는 문장이에요. 그 사람에게 파이썬 파일을 열라고 하면, 실제로는 아무도 안 고쳐요. 고치는 사람이 여럿으로 늘어나는 날이 ④로 넘어갈 때예요.</p>
-    <p>③의 약점인 "검증 없음"은 설정을 읽는 순간 한 번 검사하는 것으로 줄여요. <a href="newsletter-agent-select.html">13편</a>에서 모델 응답의 모양을 강제할 때 쓴 pydantic 같은 도구로 설정 파일의 칸 모양을 검사하면, 오타가 새벽 실행 한가운데가 아니라 프로그램이 시작하자마자 드러나요. 물론 조건이 달라지면 다른 선택지가 답이에요. 혼자 쓰는 실험용이면 ①로도 충분해요.</p>
+    <p>③의 약점인 "검증 없음"은 설정을 읽는 순간 한 번 검사하는 것으로 줄여요. <a href="newsletter-agent-select.html">13편</a>에서 모델 응답의 모양을 강제할 때 쓴 pydantic(데이터 모양을 검사하는 파이썬 도구) 같은 도구로 설정 파일의 칸 모양을 검사하면, 오타가 새벽 실행 한가운데가 아니라 프로그램이 시작하자마자 드러나요. 물론 조건이 달라지면 다른 선택지가 답이에요. 혼자 쓰는 실험용이면 ①로도 충분해요.</p>
 
     <h3 id="audience-yaml"><code>audience.yaml</code> 만들고 읽기</h3>
     <p>13편의 <code>CRITERIA</code> 문자열을 파일로 옮겨요. 파일 형식은 <strong>YAML<sup class="fn-ref"><a href="#fn4" id="fnref4">4</a></sup></strong>이에요. <code>이름: 값</code>을 줄마다 적고, 들여쓰기로 소속을 나타내고, <code>-</code>로 목록을 적어요. 먼저 YAML을 읽는 패키지를 설치해요.</p>

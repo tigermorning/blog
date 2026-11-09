@@ -38,14 +38,14 @@
         <dd>
           <ul>
             <li>"웹으로 잘 돌아가는 서비스를 앱으로 만들려면 처음부터 다시 만들어야 하나요?"</li>
-            <li>"폰에서 Expo Go로 앱을 열려는데 열리지 않아요. 어디부터 봐야 하나요?"</li>
+            <li>"폰에서 Expo Go(개발 중인 앱을 폰에서 열어 보는 앱)로 앱을 열려는데 열리지 않아요. 어디부터 봐야 하나요?"</li>
             <li>"앱에서 만든 대화가 웹에는 안 보여요. 데이터가 사라진 건가요?"</li>
           </ul>
         </dd>
         <dt>읽고 나면 할 수 있는 것</dt>
         <dd>
           <ul>
-            <li>PWA·웹 래핑·네이티브·Expo 중에서 내 상황에 맞는 방법을 이유와 함께 고를 수 있어요.</li>
+            <li>PWA(웹 페이지를 홈 화면에 추가해 앱처럼 쓰는 방식)·웹 래핑(웹 화면을 앱 껍데기에 넣는 방식)·네이티브(플랫폼 기본 언어로 만드는 방식)·Expo 중에서 내 상황에 맞는 방법을 이유와 함께 고를 수 있어요.</li>
             <li>앱이 켜질 때 백엔드와 어떤 순서로 요청을 주고받는지 그림을 보고 읽을 수 있어요.</li>
             <li>Windows 노트북에서도 아이폰 앱을 만들 수 있는 이유를 설명하고, Expo Go로 내 폰에 앱을 띄우고, 코드를 고치면 폰 화면이 바로 바뀌는 원리를 말할 수 있어요. 연결이 안 될 때는 표에서 원인을 찾아가요.</li>
           </ul>
@@ -54,7 +54,7 @@
         <dd>
           <ul>
             <li>백엔드에 둬야 할 비밀 키를 앱 설정 파일에 넣어요. 앱을 받은 누구나 그 키를 꺼내 써요. <a class="suspect-jump" href="#suspect-key">언제 의심하나 ↓</a></li>
-            <li>폰의 Expo Go와 프로젝트의 버전(SDK)이 달라 앱이 열리지 않는데, 코드 문제인 줄 알고 몇 시간을 써요. <a class="suspect-jump" href="#suspect-sdk">언제 의심하나 ↓</a></li>
+            <li>폰의 Expo Go와 프로젝트의 버전(SDK, Expo의 기능 묶음 버전)이 달라 앱이 열리지 않는데, 코드 문제인 줄 알고 몇 시간을 써요. <a class="suspect-jump" href="#suspect-sdk">언제 의심하나 ↓</a></li>
             <li>앱과 웹이 서로 다른 사용자(게스트)로 로그인된 것을, 데이터가 사라졌다고 착각해요. <a class="suspect-jump" href="#suspect-guest">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
@@ -318,7 +318,7 @@
     <figcaption>✓는 «된다», ✕는 «안 된다»예요. Expo Go에는 자주 쓰는 네이티브 기능만 미리 컴파일돼 있어서, 그 밖의 기능은 개발용 빌드를 따로 만들어야 해요.</figcaption>
     </figure>
     <p>이 글에서 만드는 대화 앱은 서버를 부르고 화면을 보여 주고 카메라와 사진첩을 쓰는 정도라 Expo Go로 충분해요. 코딩 에이전트가 새 라이브러리를 설치하자고 하면 <strong>그 라이브러리가 Expo Go에서 도는지부터</strong> 확인하게 해요. 패키지는 <code>npx expo install</code>로 설치하는데, 프로젝트의 SDK 버전에 맞는 버전을 골라 주기 때문이에요.</p>
-    <p>프로젝트의 SDK 버전은 <code>package.json</code>의 <code>expo</code> 버전으로 정해지고, 폰의 Expo Go가 그 SDK를 지원해야 앱이 열려요. 스토어의 Expo Go는 보통 최신 SDK 하나만 지원해요. 이 글에서는 SDK 58 기준으로 설명하고, Node.js는 22.13 이상이 필요해요.</p>
+    <p>프로젝트의 SDK 버전은 <code>package.json</code>의 <code>expo</code> 버전으로 정해지고, 폰의 Expo Go가 그 SDK를 지원해야 앱이 열려요. 스토어의 Expo Go는 보통 최신 SDK 하나만 지원해요. 이 글에서는 SDK 58 기준으로 설명하고, Node.js(자바스크립트를 컴퓨터에서 실행하는 프로그램)는 22.13 이상이 필요해요.</p>
 
     <h2 id="backend"><span class="hl">앱과 백엔드가 주고받는 것</span> — 켜질 때부터 답을 받을 때까지</h2>
     <p>앱은 화면만 가지고, 데이터와 판단은 모두 백엔드에 있어요. 웹 화면이 하던 일을 폰 화면이 대신하는 것이라 백엔드 API는 하나도 바꾸지 않아요. 템플릿(앱 저장소)의 파일은 역할이 이렇게 나뉘어요.</p>
@@ -353,7 +353,7 @@
     </svg>
     <figcaption>왼쪽은 파일이 놓인 모습, 오른쪽은 폰에서 보이는 모습이에요. <code>app/</code>의 파일이 화면이 되고, 새 화면(캐릭터)은 앞 화면(대화) 위에 겹쳐 올라와요. 뒤로 가기를 누르면 위에 올라온 화면이 걷혀요. «화면을 쌓아 보여 준다»는 말이 이 모습이에요. 캐릭터가 아직 없으면 대화 화면이 캐릭터 화면으로 보내 줘요. <code>lib/</code>의 파일은 화면에 보이지 않는 일을 맡아요.</figcaption>
     </figure>
-    <p><code>src/app/</code> 폴더는 Expo Router의 규칙을 따라서, 파일 이름이 곧 화면 주소예요. <code>src/app/memories.tsx</code> 를 만들면 <code>/memories</code> 화면이 생겨요. 화면 파일이 <code>fetch</code>를 직접 부르지 않고 <code>api.ts</code>를 거치게 한 이유는, 백엔드 주소와 로그인 토큰을 붙이는 일을 한곳에 모으기 위해서예요.</p>
+    <p><code>src/app/</code> 폴더는 Expo Router의 규칙을 따라서, 파일 이름이 곧 화면 주소예요. <code>src/app/memories.tsx</code> 를 만들면 <code>/memories</code> 화면이 생겨요. 화면 파일이 <code>fetch</code>(서버에 요청을 보내는 코드 함수)를 직접 부르지 않고 <code>api.ts</code>를 거치게 한 이유는, 백엔드 주소와 로그인 토큰(로그인한 사용자임을 알리는 문자열)을 붙이는 일을 한곳에 모으기 위해서예요.</p>
     <p>앱을 처음 켜서 메시지 하나의 답을 받을 때까지는 이런 순서예요. 답은 한 번에 오지 않고 조각으로 이어서 흘러와요(스트리밍).</p>
     <figure>
     <img src="images/expo-6-app-backend-sequence.png" alt="앱, 백엔드, 로그인 서비스 사이에서 설정 요청, 게스트 로그인, 토큰 받기, 데이터 요청, 메시지 보내기와 조각으로 이어지는 답이 오가는 순서도" style="max-width:100%;height:auto;">
@@ -362,7 +362,7 @@
     <p>React Native의 기본 <code>fetch</code>는 이렇게 조금씩 오는 응답을 읽지 못해서, 템플릿은 Expo의 <code>expo/fetch</code>로 줄 단위로 읽어 글자를 이어 붙여요. 앱에 넣는 설정은 백엔드 주소(<code>EXPO_PUBLIC_API_URL</code>) 하나뿐이에요.</p>
 
     <h3>앱에 넣으면 안 되는 값</h3>
-    <p><code>EXPO_PUBLIC_</code>으로 시작하는 환경변수<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup>는 빌드할 때 앱 파일 안에 그대로 들어가요. 앱 파일은 누구나 내려받아 열어 볼 수 있으니 <strong>공개되는 값</strong>이에요. 백엔드 주소와 Supabase publishable key는 공개돼도 되는 값이라 괜찮지만, Supabase secret key나 LLM API 키를 넣으면 앱을 받은 누구나 그 키로 모든 사용자의 데이터를 읽거나 내 비용으로 LLM을 불러요. 비밀값은 백엔드에만 두고, 앱은 백엔드를 거쳐서만 써요.</p>
+    <p><code>EXPO_PUBLIC_</code>으로 시작하는 환경변수<sup class="fn-ref"><a href="#fn7" id="fnref7">7</a></sup>는 빌드할 때 앱 파일 안에 그대로 들어가요. 앱 파일은 누구나 내려받아 열어 볼 수 있으니 <strong>공개되는 값</strong>이에요. 백엔드 주소와 Supabase(백엔드가 쓰는 데이터베이스·로그인 서비스) publishable key는 공개돼도 되는 값이라 괜찮지만, Supabase secret key나 LLM(글을 만들어 주는 AI 모델) API 키를 넣으면 앱을 받은 누구나 그 키로 모든 사용자의 데이터를 읽거나 내 비용으로 LLM을 불러요. 비밀값은 백엔드에만 두고, 앱은 백엔드를 거쳐서만 써요.</p>
 
     <h2 id="run"><span class="hl">내 폰에서 실행하기</span> — 순서대로</h2>
     <p>시작 상태가 갖춰져 있어야 해요. Node.js 22.13 이상(<code>node -v</code>로 확인), 폰에 설치한 Expo Go(설정 화면의 SDK가 58), 공개 주소로 열리는 백엔드(브라우저로 <code>&lt;백엔드 주소&gt;/health</code>를 열면 <code>{"status":"ok"}</code>), GitHub 계정과 무료 Expo 계정이에요. 백엔드가 Supabase 로그인을 쓴다면 익명 로그인(Allow anonymous sign-ins)도 켜져 있어야 해요.</p>

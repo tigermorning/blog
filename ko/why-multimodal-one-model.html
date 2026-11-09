@@ -36,8 +36,8 @@
         <dd>
           <ul>
             <li>글·이미지·소리를 다 받는 모델이 나왔다는데, 그냥 다 넣으면 되는 거 아닌가요?</li>
-            <li>"멀티모달", "모달리티" — 이 말이 정확히 뭘 가리키는 말인가요?</li>
-            <li>왜 어떤 회사는 통합 모델을 쓰고 어떤 회사는 굳이 도구를 따로 두나요?</li>
+            <li>"멀티모달"(여러 형식의 정보를 함께 다루는), "모달리티" — 이 말이 정확히 뭘 가리키는 말인가요?</li>
+            <li>왜 어떤 회사는 통합 모델(글·이미지·소리를 한 모델이 함께 받는 방식)을 쓰고 어떤 회사는 굳이 도구를 따로 두나요?</li>
           </ul>
         </dd>
         <dt>읽고 나면 할 수 있는 것</dt>
@@ -52,8 +52,8 @@
         <dd>
           <ul>
             <li>검증이 중요한 자리에 통합 모델을 넣게 돼요. 소리를 바로 판단에 넣으면 틀렸을 때 어느 단계에서 틀렸는지 짚을 자리가 없어요 — 소리를 먼저 글자로 옮기고 그 글자를 판단하면 중간에 검사할 지점이 생겨요. <a class="suspect-jump" href="#suspect-no-checkpoint">언제 의심하나 ↓</a></li>
-            <li>실시간 통역처럼 지연이 치명적인 자리에 무겁고 느린 통합 모델을 골라서 일을 그르쳐요. <a class="suspect-jump" href="#suspect-realtime-lag">언제 의심하나 ↓</a></li>
-            <li>YOLO 같은 객체 탐지처럼 오래 다듬어진 전문 도구가 이미 있는데도 "다 되는 모델"에 다 맡기게 돼요. <a class="suspect-jump" href="#suspect-generalist-for-detection">언제 의심하나 ↓</a></li>
+            <li>실시간 통역처럼 지연(요청 뒤 결과가 나오기까지 걸리는 시간)이 치명적인 자리에 무겁고 느린 통합 모델을 골라서 일을 그르쳐요. <a class="suspect-jump" href="#suspect-realtime-lag">언제 의심하나 ↓</a></li>
+            <li>YOLO 같은 객체 탐지(사진 속 물체를 찾아 위치를 표시하는 일)처럼 오래 다듬어진 전문 도구가 이미 있는데도 "다 되는 모델"에 다 맡기게 돼요. <a class="suspect-jump" href="#suspect-generalist-for-detection">언제 의심하나 ↓</a></li>
           </ul>
         </dd>
         <dt>어디에 쓰나</dt>
@@ -111,7 +111,7 @@
         <tr id="suspect-no-checkpoint">
           <td>판정이 틀렸는데, 모델이 <strong>녹음을 잘못 알아들은 건지 판단을 잘못한 건지</strong> 가를 수가 없어요. 남은 건 최종 답 한 줄뿐이에요</td>
           <td>코드에서 오디오 파일을 모델에 <strong>바로 넘기는 줄</strong>이에요. 그 사이에 녹음을 글자로 옮긴 결과가 따로 저장되는지 봐요</td>
-          <td>중간 글자가 없으면 틀린 자리를 짚을 방법이 없어요. 소리를 먼저 글자로 옮기는 단계를 따로 두고 그 글자를 저장하게 해요. 그러면 틀렸을 때 전사문을 녹음과 대조해, 옮기다 틀렸는지 판단이 틀렸는지 나눌 수 있어요</td>
+          <td>중간 글자가 없으면 틀린 자리를 짚을 방법이 없어요. 소리를 먼저 글자로 옮기는 단계를 따로 두고 그 글자를 저장하게 해요. 그러면 틀렸을 때 전사문(녹음을 글자로 옮긴 것)을 녹음과 대조해, 옮기다 틀렸는지 판단이 틀렸는지 나눌 수 있어요</td>
         </tr>
         <tr id="suspect-realtime-lag">
           <td>실시간 통역·자막처럼 바로 반응해야 하는 기능인데, <strong>말이 끝나고 한참 뒤에야</strong> 결과가 나와요</td>
@@ -121,7 +121,7 @@
         <tr id="suspect-generalist-for-detection">
           <td>사진 속 물건의 위치나 개수를 다 받는 모델에 맡겼더니, <strong>돌릴 때마다 답이 조금씩 다르고</strong> 사진이 많아지자 느리고 비싸요</td>
           <td>업무에 필요한 결과의 <strong>모양</strong>이에요. 필요한 게 박스 좌표와 개수뿐인지, 사진과 글을 맞춰 봐야 풀리는 해석인지 나눠 봐요</td>
-          <td>같은 사진 몇 장을 YOLO 같은 <a href="object-detection-and-iou.html">전용 탐지 도구</a>와 나란히 돌려 속도와 결과를 비교해요. 나누는 기준은 <a href="vision-language-models.html#suspect-vlm-bulk">VLM 편의 대량 처리 줄</a>에 있어요</td>
+          <td>같은 사진 몇 장을 YOLO 같은 <a href="object-detection-and-iou.html">전용 탐지 도구</a>와 나란히 돌려 속도와 결과를 비교해요. 나누는 기준은 <a href="vision-language-models.html#suspect-vlm-bulk">VLM(이미지와 글을 함께 읽는 모델) 편의 대량 처리 줄</a>에 있어요</td>
         </tr>
       </tbody>
     </table>

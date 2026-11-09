@@ -238,13 +238,13 @@
     </script>
     </figure>
     <p>학교에는 <strong>공용 바인더</strong>가 미리 만들어져 있어요. 표지와 고리 같은 부품은 완성돼 있어서 낱장만 끼우면 되고, <strong>노트북 책상</strong>(개발 서버)이 낱장(내 코드)을 계속 보내 줘요. 이것이 Expo Go예요. 책상이 꺼지면 낱장이 오지 않고, 바인더에 없는 특수 부품(Expo Go에 없는 네이티브 라이브러리)은 쓸 수 없어요.</p>
-    <p>다른 학생에게 줄 책은 <strong>외주 인쇄소</strong>(EAS)가 한 권으로 만들어요. 접수창구는 원고(저장소 파일)만 받고 서랍 속 메모(<code>.env</code>)는 받지 않아요. 낱장을 묶고(번들), 표지와 부품을 찍고(컴파일), 제본해서(앱 파일) <strong>검정 도장</strong>(서명)을 찍고, 도장은 인쇄소 금고(Expo 계정)에 보관돼요. 책에는 고유 번호(ISBN)가 붙는데 이것이 패키지 이름이라 한 번 올리면 못 바꿔요. 뒤표지에는 학교 사무실 위치(<code>EXPO_PUBLIC_</code> 값)가 인쇄돼 책을 가진 누구나 읽을 수 있으니, 비밀번호는 적으면 안 돼요.</p>
+    <p>다른 학생에게 줄 책은 <strong>외주 인쇄소</strong>(EAS)가 한 권으로 만들어요. 접수창구는 원고(저장소 파일)만 받고 서랍 속 메모(<code>.env</code>, 값을 적어 두는 설정 파일)는 받지 않아요. 낱장을 묶고(번들), 표지와 부품을 찍고(컴파일), 제본해서(앱 파일) <strong>검정 도장</strong>(서명)을 찍고, 도장은 인쇄소 금고(Expo 계정)에 보관돼요. 책에는 고유 번호(ISBN)가 붙는데 이것이 패키지 이름(스토어와 폰이 앱을 구분하는 이름)이라 한 번 올리면 못 바꿔요. 뒤표지에는 학교 사무실 위치(<code>EXPO_PUBLIC_</code> 값)가 인쇄돼 책을 가진 누구나 읽을 수 있으니, 비밀번호는 적으면 안 돼요.</p>
     <p>제본된 책의 낱장은 굳어서 원고를 고치면 책을 새로 찍어야 하고, 그때마다 인쇄 의뢰 횟수(무료 플랜의 월 빌드 횟수)를 한 번 써요. 반면 출석과 성적은 책을 펼 때마다 <strong>학교 사무실</strong>(백엔드)에서 받아 와요. 그림의 «사무실 기록 고치기» 버튼을 누르면 서랍에서 서류가 두 책으로 날아가는 것이 이 일이에요. 그래서 사무실 기록을 고치는 일은 책을 다시 찍을 필요가 없어요.</p>
     <p><strong>핵심 한 줄:</strong> Expo Go는 개발 서버가 보내 주는 코드를 바로 반영하지만, 빌드한 앱은 빌드 시점의 코드가 고정되어 고칠 때마다 다시 빌드해야 해요.</p>
     <p>다만 비유가 끊기는 점이 있어요. 학교는 새 교과서를 한꺼번에 나눠 줄 수 있지만 앱은 사용자가 직접 업데이트해야 하고, 인쇄소는 책만 만들 뿐 학생에게 나눠 주는 <strong>제출</strong>과 심사는 스토어에서 따로 거쳐요.</p>
 
     <h2 id="flow"><span class="hl">② 빌드 안에서 일어나는 일</span> — 코드가 앱 파일이 되기까지</h2>
-    <p>Expo 앱은 내 코드(TypeScript)와 화면·카메라 같은 기기 기능을 맡는 네이티브 부분으로 나뉘어요. 내 코드는 JavaScript로 실행되므로 컴파일하지 않고 Metro가 번들 하나로 묶기만 하고, 컴파일이 필요한 건 네이티브 부분뿐이에요.</p>
+    <p>Expo 앱은 내 코드(TypeScript)와 화면·카메라 같은 기기 기능을 맡는 네이티브 부분으로 나뉘어요. 내 코드는 JavaScript로 실행되므로 컴파일하지 않고 Metro(코드를 파일 하나로 묶는 도구)가 번들 하나로 묶기만 하고, 컴파일이 필요한 건 네이티브 부분뿐이에요.</p>
     <p><strong>① 개발할 때</strong>는 Expo Go를 써요. Expo Go는 자주 쓰는 네이티브 부분을 Expo 팀이 미리 컴파일·서명해 스토어에 올려 둔 앱이에요. 그래서 노트북은 번들만 보내면 되고, 컴파일도 서명도 없으니 코드를 저장하면 몇 초 안에 화면이 바뀌어요. 대신 Expo Go에 없는 네이티브 라이브러리는 못 쓰고, 앱 이름과 아이콘도 Expo Go의 것이고, 개발 서버가 꺼지면 앱도 멈춰요.</p>
     <p><strong>② 남에게 줄 때</strong>는 빌드를 해요. 아래 그림은 그 빌드 안에서 일어나는 여섯 가지 일(㉠~㉥)이에요.</p>
     <figure>
@@ -299,18 +299,18 @@
         <tr><td>백엔드 코드·DB·서버 프롬프트</td><td colspan="3">앱 파일 밖에 있으므로 고쳐도 다시 빌드하지 않아요</td></tr>
       </tbody>
     </table>
-    <p>웹은 배포하면 모든 사용자가 새 버전을 쓰지만 앱은 사용자가 업데이트해야 바뀌어요. 그래서 앱을 내놓은 뒤에는 옛 화면이 새 백엔드를 부르는 상황을 늘 생각하고, 앱이 쓰는 API의 응답 모양은 옛 앱이 못 읽게 함부로 바꾸지 않아요.</p>
+    <p>웹은 배포하면 모든 사용자가 새 버전을 쓰지만 앱은 사용자가 업데이트해야 바뀌어요. 그래서 앱을 내놓은 뒤에는 옛 화면이 새 백엔드를 부르는 상황을 늘 생각하고, 앱이 쓰는 API(앱과 백엔드가 요청과 응답을 주고받는 창구)의 응답 모양은 옛 앱이 못 읽게 함부로 바꾸지 않아요.</p>
 
     <h2 id="profiles"><span class="hl">빌드 프로필과 설정값</span> — eas.json, 서명 키, 패키지 이름</h2>
-    <p>어떤 앱 파일을 어떻게 만들지는 저장소의 <code>eas.json</code>에 <strong>프로필</strong><sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>로 적어요. 모바일 템플릿에는 둘이 있어요.</p>
+    <p>어떤 앱 파일을 어떻게 만들지는 저장소의 <code>eas.json</code>에 <strong>프로필</strong><sup class="fn-ref"><a href="#fn3" id="fnref3">3</a></sup>로 적어요. 앞 편에서 쓴 모바일 앱 템플릿에는 둘이 있어요.</p>
     <figure>
     <svg viewBox="0 0 680 250" style="max-width:680px;margin:0 auto;display:block" role="img" aria-label="빌드 프로필 두 가지. preview는 두 번째 단계(빌드해서 설치)로 Android APK를 내부 배포 방식으로 만들어 설치 링크로 내 폰이나 팀원 폰에 바로 설치하고, production은 세 번째 단계(스토어 배포)로 Android AAB와 iOS 스토어용 파일을 만들고 빌드 번호를 자동으로 올려 스토어에 제출한다">
       <defs><marker id="f2a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/></marker></defs>
       <g font-family="var(--font-body)" font-size="13" fill="var(--ink)"><text x="85" y="22" text-anchor="middle" font-family="var(--font-heading)" font-size="15" font-weight="700">프로필</text><text x="315" y="22" text-anchor="middle" font-family="var(--font-heading)" font-size="15" font-weight="700">만드는 파일</text><text x="575" y="22" text-anchor="middle" font-family="var(--font-heading)" font-size="15" font-weight="700">쓰는 곳</text><rect x="20" y="36" width="130" height="76" rx="10" fill="color-mix(in srgb,var(--accent) 12%,transparent)" stroke="var(--accent)" stroke-width="1.6"/><text x="85" y="68.0" text-anchor="middle" font-family="var(--font-mono,monospace)" font-weight="700">preview</text><text x="85" y="88.0" text-anchor="middle" fill="var(--muted)" font-size="12">② 빌드해서 설치</text><rect x="185" y="36" width="260" height="76" rx="10" fill="none" stroke="var(--border)" stroke-width="1.6"/><text x="315.0" y="54" text-anchor="middle" font-weight="700">Android APK</text><text x="315.0" y="72" text-anchor="middle">내부 배포(internal distribution)</text><rect x="490" y="36" width="170" height="76" rx="10" fill="none" stroke="var(--border)" stroke-width="1.6"/><text x="575.0" y="54" text-anchor="middle" font-weight="700">설치 링크로 내 폰이나</text><text x="575.0" y="72" text-anchor="middle">팀원 폰에 바로 설치</text><line x1="150" y1="74.0" x2="183" y2="74.0" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#f2a)"/><line x1="445" y1="74.0" x2="488" y2="74.0" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#f2a)"/><rect x="20" y="132" width="130" height="96" rx="10" fill="color-mix(in srgb,var(--accent) 12%,transparent)" stroke="var(--accent)" stroke-width="1.6"/><text x="85" y="174.0" text-anchor="middle" font-family="var(--font-mono,monospace)" font-weight="700">production</text><text x="85" y="194.0" text-anchor="middle" fill="var(--muted)" font-size="12">③ 스토어 배포</text><rect x="185" y="132" width="260" height="96" rx="10" fill="none" stroke="var(--border)" stroke-width="1.6"/><text x="315.0" y="150" text-anchor="middle" font-weight="700">Android AAB, iOS 스토어용 파일</text><text x="315.0" y="168" text-anchor="middle">빌드할 때마다</text><text x="315.0" y="186" text-anchor="middle">빌드 번호를 자동으로 올림</text><rect x="490" y="132" width="170" height="96" rx="10" fill="none" stroke="var(--border)" stroke-width="1.6"/><text x="575.0" y="150" text-anchor="middle" font-weight="700">스토어에 제출</text><line x1="150" y1="180.0" x2="183" y2="180.0" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#f2a)"/><line x1="445" y1="180.0" x2="488" y2="180.0" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#f2a)"/></g>
     </svg>
     </figure>
-    <p><strong>서명 키.</strong> 스토어는 처음 올린 앱 파일의 서명 키를 기억해 두고, 그 뒤에는 같은 키로 서명한 파일만 같은 앱의 새 버전으로 받아요. 키를 잃어버리면 업데이트를 못 하고, 남에게 넘어가면 누가 내 앱인 척 올릴 수 있어서 시크릿처럼 다뤄야 해요. EAS는 처음 빌드할 때 키를 만들어 Expo 계정에 보관하고 빌드마다 꺼내 써요. 그래서 키 파일이 내 노트북이나 저장소에 생기지 않고, 템플릿의 <code>.gitignore</code>에도 키 파일 형식(<code>*.jks</code>, <code>*.p12</code>, <code>*.p8</code>)을 막아 뒀어요.</p>
-    <p><strong>빌드에 들어가는 설정값.</strong> 개발할 때는 <code>.env</code>의 <code>EXPO_PUBLIC_API_URL</code>(백엔드 주소)을 개발 서버가 읽어 앱에 넣어 줘요. 그런데 <code>.env</code>는 커밋하지 않는 파일이라 빌드할 때 클라우드로 올라가지 않아요. 그래서 빌드에 쓸 값은 <code>eas.json</code> 프로필의 <code>env</code>에 따로 적어요. 빠뜨리면 빌드는 성공하는데 설치한 앱에서 «백엔드 주소가 비어 있습니다»가 떠요. <code>EXPO_PUBLIC_</code> 값은 앱 파일 안에 그대로 들어가므로 공개돼도 되는 값(백엔드 주소)만 넣고, LLM API 키나 Supabase secret key는 넣지 않아요. 템플릿은 Supabase 주소와 publishable key를 백엔드의 <code>/api/config</code>에서 받아 오게 만들어 뒀어요.</p>
+    <p><strong>서명 키.</strong> 스토어는 처음 올린 앱 파일의 서명 키를 기억해 두고, 그 뒤에는 같은 키로 서명한 파일만 같은 앱의 새 버전으로 받아요. 키를 잃어버리면 업데이트를 못 하고, 남에게 넘어가면 누가 내 앱인 척 올릴 수 있어서 시크릿(공개하면 안 되는 비밀 값)처럼 다뤄야 해요. EAS는 처음 빌드할 때 키를 만들어 Expo 계정에 보관하고 빌드마다 꺼내 써요. 그래서 키 파일이 내 노트북이나 저장소에 생기지 않고, 템플릿의 <code>.gitignore</code>에도 키 파일 형식(<code>*.jks</code>, <code>*.p12</code>, <code>*.p8</code>)을 막아 뒀어요.</p>
+    <p><strong>빌드에 들어가는 설정값.</strong> 개발할 때는 <code>.env</code>의 <code>EXPO_PUBLIC_API_URL</code>(백엔드 주소)을 개발 서버가 읽어 앱에 넣어 줘요. 그런데 <code>.env</code>는 커밋하지 않는 파일이라 빌드할 때 클라우드로 올라가지 않아요. 그래서 빌드에 쓸 값은 <code>eas.json</code> 프로필의 <code>env</code>에 따로 적어요. 빠뜨리면 빌드는 성공하는데 설치한 앱에서 «백엔드 주소가 비어 있습니다»가 떠요. <code>EXPO_PUBLIC_</code> 값은 앱 파일 안에 그대로 들어가므로 공개돼도 되는 값(백엔드 주소)만 넣고, LLM API 키(AI 서비스를 쓸 때 내는 비밀 문자열)나 Supabase(데이터베이스 서비스)의 secret key는 넣지 않아요. 템플릿은 Supabase 주소와 publishable key를 백엔드의 <code>/api/config</code>에서 받아 오게 만들어 뒀어요.</p>
     <p><strong>앱 이름과 패키지 이름.</strong> <code>app.json</code>의 <code>name</code>은 홈 화면에 보이는 이름이고, <code>android.package</code>와 <code>ios.bundleIdentifier</code>는 스토어와 폰이 앱을 구분하는 이름이에요. 보통 <code>kr.회사이름.앱이름</code>처럼 도메인을 뒤집은 모양으로 지어요. 같은 패키지 이름의 앱은 한 폰에 하나만 설치되고, 스토어에 한 번 올린 패키지 이름은 바꿀 수 없어요(바꾸면 완전히 다른 앱이 돼요). 템플릿의 <code>com.example.harufriend</code>를 그대로 두면 같은 이름으로 만든 다른 사람의 앱과 부딪혀요.</p>
 
     <h2 id="first-build"><span class="hl">첫 빌드</span> — 내 Android 폰에 설치하기</h2>
@@ -338,7 +338,7 @@ npx eas-cli@latest build:configure
 
 # 클라우드에서 Android APK를 만든다. 처음이면 서명 키를 만들지 묻는다 → Yes
 npx eas-cli@latest build --profile preview --platform android</code></pre>
-    <p>빌드 명령을 승인하기 전에 프로필이 <code>preview</code>, 플랫폼이 <code>android</code>인지 봐요. 무료 플랜은 월 빌드 횟수가 정해져 있어서(2026년 10월 기준 월 30회, 낮은 우선순위 대기열) 타입 검사나 설정 검사에서 걸러질 실수로 빌드 한 번을 쓰지 않게 <code>npx tsc --noEmit</code>과 <code>npx expo-doctor</code>를 먼저 돌려요.</p>
+    <p>빌드 명령을 승인하기 전에 프로필이 <code>preview</code>, 플랫폼이 <code>android</code>인지 봐요. 무료 플랜은 월 빌드 횟수가 정해져 있어서(2026년 10월 기준 월 30회, 낮은 우선순위 대기열) 타입 검사(코드의 자료형 오류를 미리 찾는 검사)나 설정 검사에서 걸러질 실수로 빌드 한 번을 쓰지 않게 <code>npx tsc --noEmit</code>과 <code>npx expo-doctor</code>를 먼저 돌려요.</p>
     <p>명령은 프로젝트를 올린 뒤 빌드 페이지 주소를 보여 줘요. 무료 플랜은 대기열이 길어 시작까지 몇 분에서 수십 분이 걸릴 수 있고, 시작한 뒤에도 10분 안팎이 걸려요. 터미널을 기다리지 않아도 서버에서 계속 진행되고, 끝나면 설치 링크와 QR 코드가 나와요. 처음 빌드에서 서명 키를 만들겠다고 답했다면 빌드 페이지의 Credentials 항목에 키가 Expo 계정에 보관된 것으로 나오고, 내 노트북에는 키 파일이 생기지 않았는지도 확인해요.</p>
     <ol>
       <li>폰으로 설치 링크를 열거나 QR을 찍어 APK를 내려받아요.</li>
