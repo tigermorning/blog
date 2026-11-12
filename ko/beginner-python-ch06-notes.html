@@ -29,10 +29,16 @@
 
     <p class="one-liner">open 으로 파일을 열어 read·readline·write 로 읽고 쓰고, 파이썬 값은 pickle 로, 파일 찾기는 glob 으로 해요.</p>
 
+<h2><span class="hl">한눈에 정리</span></h2>
+<div class="table-scroll fill"><table><thead><tr><th>하고 싶은 일</th><th>쓰는 것</th></tr></thead><tbody><tr><td>글 전부 읽기</td><td><code>with open('a.txt', encoding='utf-8') as f: text = f.read()</code></td></tr><tr><td>줄 리스트로 읽기</td><td><code>lines = f.readlines()</code></td></tr><tr><td>한 줄씩 처리</td><td><code>for line in f: line.strip()</code></td></tr><tr><td>새로 쓰기 (기존 내용 삭제)</td><td><code>open('a.txt', 'w')</code> + <code>f.write('글자\n')</code></td></tr><tr><td>이어 쓰기</td><td><code>open('a.txt', 'a+')</code></td></tr><tr><td>값 통째로 저장 · 불러오기</td><td><code>pickle.dump(값, f)</code> · <code>pickle.load(f)</code> (바이트 모드 <code>'wb'</code> · <code>'rb'</code>)</td></tr><tr><td>파일 찾기</td><td><code>sorted(glob('*.txt'))</code></td></tr><tr><td>있나 · 폴더인가</td><td><code>os.path.exists(이름)</code> · <code>os.path.isdir(이름)</code></td></tr><tr><td>한글 파일 열기</td><td><code>encoding='utf-8'</code>을 함께 적는다</td></tr></tbody></table></div>
+
+
 <h2><span class="hl">1. 텍스트 파일 읽고 쓰기 (6.1)</span></h2>
 <div class="table-scroll fill"><table><thead><tr><th>하고 싶은 일</th><th>쓰는 것</th></tr></thead><tbody><tr><td>파일 열기</td><td><code>open('파일이름')</code> — 읽기용. 두 번째 자리에 모드를 적으면 달라진다</td></tr><tr><td>전부 읽기</td><td><code>f.read()</code> — 파일 전체를 글자 하나로 돌려준다. 줄 바꿈은 <code>\n</code>으로 들어 있다</td></tr><tr><td>쓰기</td><td><code>f.write('글자')</code> — 줄을 바꾸려면 <code>\n</code>을 직접 쓴다</td></tr><tr><td>닫기</td><td><code>f.close()</code> — 쓰기 뒤에는 꼭 닫는다</td></tr><tr><td>열고 닫기를 한 번에</td><td><code>with open('파일이름') as f:</code> — 블록이 끝나면 저절로 닫힌다</td></tr></tbody></table></div>
 <h3>열기 모드</h3>
 <div class="table-scroll fill"><table><thead><tr><th>모드</th><th>뜻</th><th>기존 내용</th></tr></thead><tbody><tr><td><code>'r'</code> (생략하면 이것)</td><td>읽기</td><td>그대로. 없는 파일이면 오류</td></tr><tr><td><code>'w'</code></td><td>쓰기</td><td><b>전부 지워진다</b>. 없으면 새로 만든다</td></tr><tr><td><code>'a+'</code></td><td>덧붙이기</td><td>그대로 두고 맨 끝에 이어 쓴다</td></tr><tr><td><code>'wb'</code> · <code>'rb'</code></td><td>바이트로 쓰기 · 읽기</td><td>pickle 에서 쓴다 (아래 3절)</td></tr></tbody></table></div>
+<details class="side-note">
+<summary>예제 · 실행 결과 · 설명 보기</summary>
 <p>※ 이 절의 예제 파일 <code>Python_for_Fun.txt</code>에는 영어 세 줄(가운데 한 줄은 빈 줄)이 들어 있어요: <code>Programming is fun.</code> · <code>Very fun!</code> · (빈 줄) · <code>You have to do it yourself...</code></p>
 <h3>읽기</h3>
 <pre><code>f = open('Python_for_Fun.txt')  # f 에 Python_for_Fun.txt 를 읽기용으로 열어 담아 주세요
@@ -64,7 +70,6 @@ letter.close()                    # letter 를 닫아 주세요
 print(open('letter.txt').read())  # letter.txt 의 내용을 읽어 화면에 보여 주세요</code></pre>
 <pre class="out"><code class="nohighlight">Hello</code></pre>
 <p>※ <code>'w'</code>로 다시 열자마자 파일이 비워져서 앞에 있던 <code>Dear Father,</code>와 <code>How are you?</code>가 모두 사라졌어요. 이어 쓰려면 <code>'a+'</code>를 써요.</p>
-<p>아래 그림은 위 코드를 한 줄씩 실행하면서 <b>임시 칸(버퍼)</b>과 <b>디스크의 파일</b>이 어떻게 바뀌는지 보여 줘요. 임시 칸은 <code>write</code>한 글자가 파일에 적히기 전에 잠깐 머무는 곳이에요. 자동으로 재생되고, <b>한 단계</b> 버튼으로 직접 넘길 수도 있어요.</p>
 <style>
 .cwx-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:.8rem}
 .cwx-state{display:flex;flex-direction:column;gap:.5rem}
@@ -123,28 +128,6 @@ cwx.chips=function(arr,o){
   }).join('')+'</div>';
 };
 </script>
-<div id="cwx1"></div>
-<script>
-(function(){
-  function S(disk,buf,fl){return cwx.box('임시 칸(버퍼)',buf,fl==='buf'?'flash':'')+cwx.box('디스크의 letter.txt',disk,fl==='disk'?'flash':(fl==='warn'?'warn':''))}
-  cwx('cwx1',{
-    label:'letter.txt 에 쓰기, 덧붙이기, 지우고 다시 쓰기를 차례로 실행할 때 임시 칸과 디스크 파일이 바뀌는 단계별 그림',
-    code:["letter = open('letter.txt', 'w')","letter.write('Dear Father,')","letter.close()","letter = open('letter.txt', 'a+')","letter.write('\\n\\nHow are you?')","letter.close()","letter = open('letter.txt', 'w')","letter.write('Hello')","letter.close()"],
-    steps:[
-      {c:-1,s:S(null,''),t:"시작 전이에요. <code>letter.txt</code> 는 아직 없어요."},
-      {c:0,s:S('','','disk'),t:"<code>'w'</code> 로 열면 파일이 새로 만들어져요. 지금은 비어 있어요."},
-      {c:1,s:S('','Dear Father,','buf'),t:"<code>write</code> 한 글자는 먼저 임시 칸에 쌓여요. 파일에는 아직 안 적혔어요."},
-      {c:2,s:S('Dear Father,','','disk'),t:"<code>close()</code> 하면 임시 칸의 글자가 파일에 적히고 파일이 닫혀요. 닫지 않으면 이 글자가 파일에 안 보일 수 있어요."},
-      {c:3,s:S('Dear Father,',''),t:"<code>'a+'</code> 로 열면 파일 내용이 <b>그대로</b> 남아 있어요."},
-      {c:4,s:S('Dear Father,',"\n\nHow are you?",'buf'),t:"이번에도 글자는 임시 칸에 먼저 쌓여요. <code>↵</code> 는 줄 바꿈(<code>\\n</code>)을 눈에 보이게 한 표시예요."},
-      {c:5,s:S("Dear Father,\n\nHow are you?",'','disk'),t:"<code>close()</code> 하니 기존 내용 <b>뒤에 이어서</b> 적혔어요."},
-      {c:6,s:S('','','warn'),t:"<code>'w'</code> 로 다시 열자마자 파일이 <b>비워져요</b>. 앞의 글이 모두 사라져요."},
-      {c:7,s:S('','Hello','buf'),t:"<code>'Hello'</code> 가 임시 칸에 쌓여요."},
-      {c:8,s:S('Hello','','disk'),t:"<code>close()</code> 하면 파일에는 <code>Hello</code> 만 남아요. 이어 쓰려면 <code>'a+'</code> 를 써야 해요."}
-    ]
-  });
-})();
-</script>
 <h3>닫지 않으면</h3>
 <pre><code>f = open('unclosed.txt', 'w')             # f 에 unclosed.txt 를 쓰기용으로 열어 담아 주세요
 f.write('hello')                          # f 에 'hello' 를 써 주세요
@@ -170,8 +153,11 @@ with open('hello.txt') as f:                         # hello.txt 를 인코딩 �
 <pre class="out"><code class="nohighlight">안녕하세요
 UnicodeDecodeError: 'cp949' codec can't decode byte 0xec in position 0: illegal multibyte sequence</code></pre>
 <p>※ 첫 번째 읽기는 되고, 인코딩을 안 적은 두 번째 읽기는 오류가 나요(맨 아래 줄이 오류 문장이에요). 글자가 영어뿐인 파일은 이 차이가 드러나지 않아요. 한글 파일을 열 때는 <code>encoding='utf-8'</code>을 습관으로 적어 두면 안전해요.</p>
+</details>
 <h2><span class="hl">2. 한 줄씩 다루기 (6.2)</span></h2>
 <div class="table-scroll fill"><table><thead><tr><th>하고 싶은 일</th><th>쓰는 것</th></tr></thead><tbody><tr><td>한 줄 읽기</td><td><code>f.readline()</code> — 줄 끝의 <code>\n</code>까지 읽고 멈춘다. 다시 부르면 다음 줄</td></tr><tr><td>모든 줄을 리스트로</td><td><code>f.readlines()</code> — 줄 하나가 리스트 원소 하나</td></tr><tr><td>줄마다 반복</td><td><code>for line in f:</code> — 파일에서 한 줄씩 꺼낸다</td></tr><tr><td>줄 끝 떼기</td><td><code>line.strip()</code> — 앞뒤 공백과 <code>\n</code>을 지운다</td></tr><tr><td>낱말·칸으로 자르기</td><td><code>line.split()</code> — 공백 기준. <code>line.split('\t')</code>는 탭 기준</td></tr><tr><td>일부 줄만</td><td><code>lines[2:5]</code> 처럼 리스트 슬라이싱. 끝에서부터는 <code>lines[-3:]</code></td></tr></tbody></table></div>
+<details class="side-note">
+<summary>예제 · 실행 결과 · 설명 보기</summary>
 <p>※ 이 절의 예제 파일 <code>lines.txt</code>에는 <code>1번째 줄</code>부터 <code>15번째 줄</code>까지 15줄이 한 줄에 하나씩 들어 있어요.</p>
 <h3>readline — 부를 때마다 다음 줄</h3>
 <pre><code>f = open('lines.txt', encoding='utf-8')  # f 에 lines.txt 를 UTF-8 읽기용으로 열어 담아 주세요
@@ -380,8 +366,11 @@ print(len(f.read()))            # f 를 다시 전부 읽은 글자 수를 화�
 61</code></pre>
 <p>※ 파일에는 "어디까지 읽었는지"를 기억하는 자리가 하나 있어요. <code>read()</code>가 끝까지 읽으면 그 자리가 맨 끝에 가서, 다시 읽으면 빈 글자가 나와요. <code>seek(0)</code>이 그 자리를 맨 앞으로 되돌려요.</p>
 <p>※ <code>61</code>은 파일 글자 수예요. 줄 끝의 줄 바꿈(<code>\n</code>)도 한 글자로 세요: <code>Programming is fun.</code> 19글자 + <code>\n</code> 1, <code>Very fun!</code> 9글자 + <code>\n</code> 1, 빈 줄의 <code>\n</code> 1, <code>You have to do it yourself...</code> 29글자 + <code>\n</code> 1 = 19+1+9+1+1+29+1 = 61.</p>
+</details>
 <h2><span class="hl">3. 파일을 입맛대로 — pickle · glob · os.path (6.3)</span></h2>
 <div class="table-scroll fill"><table><thead><tr><th>하고 싶은 일</th><th>쓰는 것</th></tr></thead><tbody><tr><td>파이썬 값을 통째로 저장</td><td><code>pickle.dump(값, f)</code> — <code>open('파일', 'wb')</code>로 연 파일에</td></tr><tr><td>저장한 값을 되살리기</td><td><code>pickle.load(f)</code> — <code>open('파일', 'rb')</code>로 연 파일에서</td></tr><tr><td>패턴에 맞는 파일 찾기</td><td><code>glob('*.txt')</code> — <code>*</code>는 아무 글자 여러 개. 리스트로 돌려준다</td></tr><tr><td>파일이 있나</td><td><code>os.path.exists('이름')</code> — <code>True</code> 또는 <code>False</code></td></tr><tr><td>폴더인가</td><td><code>os.path.isdir('이름')</code></td></tr></tbody></table></div>
+<details class="side-note">
+<summary>예제 · 실행 결과 · 설명 보기</summary>
 <h3>pickle — 딕셔너리를 파일에 넣고 꺼내기</h3>
 <pre><code>import pickle                                                  # pickle 모듈을 가져와 주세요
 import os                                                      # os 모듈을 가져와 주세요
@@ -399,31 +388,6 @@ print(type(a), a == users)                                     # a 의 자료형
 {'kim': '3kid9', 'sun80': '393948', 'ljm': 'py90390'}
 &lt;class 'dict'&gt; True</code></pre>
 <p>※ 비밀번호를 이렇게 평문으로 저장하는 것은 연습용이에요. 그리고 출처를 모르는 pickle 파일은 열지 마세요. 불러올 때 파일 안의 코드가 실행될 수 있어서, 내가 만든 파일만 불러와야 해요.</p>
-<p>아래 그림은 딕셔너리가 <code>pickle.dump</code>로 파일에 저장되고 <code>pickle.load</code>로 되살아나는 과정이에요.</p>
-<div id="cwx5"></div>
-<script>
-(function(){
-  var U="{'kim': '3kid9', 'sun80': '393948', 'ljm': 'py90390'}", BYTES='(딕셔너리가 바이트로 바뀐 데이터)';
-  function S(u,a,disk,fl){return cwx.box('파이썬 안의 값','users = '+(u?U:'(아직 없음)')+'\na = '+(a?U:'(아직 없음)'),fl==='py'?'raw flash':'raw')+cwx.box('디스크의 users 파일',disk,fl==='disk'?'flash':'')}
-  cwx('cwx5',{label:'딕셔너리를 pickle.dump 로 파일에 저장하고 pickle.load 로 되살리는 단계별 그림',
-    code:["import pickle","import os","users = {'kim': '3kid9', 'sun80': '393948', 'ljm': 'py90390'}","f = open('users', 'wb')","pickle.dump(users, f)","f.close()","print(os.path.exists('users'))","f = open('users', 'rb')","a = pickle.load(f)","f.close()","print(a)","print(type(a), a == users)"],
-    steps:[
-      {c:-1,s:S(0,0,null),t:"시작 전이에요."},
-      {c:0,s:S(0,0,null),t:"<code>pickle</code> 모듈을 가져와요."},
-      {c:1,s:S(0,0,null),t:"<code>os</code> 모듈을 가져와요. 파일이 있는지 확인할 때 써요."},
-      {c:2,s:S(1,0,null,'py'),t:"<code>users</code> 에 아이디와 비밀번호가 든 딕셔너리를 담아요."},
-      {c:3,s:S(1,0,'','disk'),t:"<code>'wb'</code> 는 바이트로 쓰기용으로 여는 모드예요. <code>users</code> 파일이 새로 만들어져요."},
-      {c:4,s:S(1,0,BYTES,'disk'),t:"<code>dump</code> 가 딕셔너리를 통째로 바이트로 바꿔 파일에 적어요."},
-      {c:5,s:S(1,0,BYTES),t:"파일을 닫아요."},
-      {c:6,s:S(1,0,BYTES),p:'True',t:"<code>users</code> 파일이 있는지 확인하니 <code>True</code> 예요."},
-      {c:7,s:S(1,0,BYTES),t:"<code>'rb'</code> 는 바이트로 읽기용으로 여는 모드예요."},
-      {c:8,s:S(1,1,BYTES,'py'),t:"<code>load</code> 가 파일의 바이트를 읽어 <b>원래 딕셔너리로 되살려</b> <code>a</code> 에 담아요."},
-      {c:9,s:S(1,1,BYTES),t:"파일을 닫아요."},
-      {c:10,s:S(1,1,BYTES),p:U,t:"<code>a</code> 를 찍으면 저장했던 딕셔너리가 그대로 나와요."},
-      {c:11,s:S(1,1,BYTES),p:"<class 'dict'> True",t:"<code>a</code> 는 딕셔너리이고, <code>users</code> 와 값이 같아서 <code>True</code> 예요."}
-    ]});
-})();
-</script>
 <h3>glob — 파일 목록 뽑기</h3>
 <pre><code>from glob import glob          # glob 모듈에서 glob 을 가져와 주세요
 print(sorted(glob('*.txt')))   # 현재 폴더의 .txt 파일 이름들을 정렬해 화면에 보여 주세요
@@ -472,9 +436,7 @@ postcard.txt</code></pre>
     code:["import os","from glob import glob","from os.path import isdir","os.mkdir('docs')","for x in sorted(glob('*')):","    if isdir(x):","        print(x, '<DIR>')","    else:","        print(x)"],steps:steps});
 })();
 </script>
-<h2><span class="hl">4. 한눈에 정리</span></h2>
-<div class="table-scroll fill"><table><thead><tr><th>하고 싶은 일</th><th>쓰는 것</th></tr></thead><tbody><tr><td>글 전부 읽기</td><td><code>with open('a.txt', encoding='utf-8') as f: text = f.read()</code></td></tr><tr><td>줄 리스트로 읽기</td><td><code>lines = f.readlines()</code></td></tr><tr><td>한 줄씩 처리</td><td><code>for line in f: line.strip()</code></td></tr><tr><td>새로 쓰기 (기존 내용 삭제)</td><td><code>open('a.txt', 'w')</code> + <code>f.write('글자\n')</code></td></tr><tr><td>이어 쓰기</td><td><code>open('a.txt', 'a+')</code></td></tr><tr><td>값 통째로 저장 · 불러오기</td><td><code>pickle.dump(값, f)</code> · <code>pickle.load(f)</code> (바이트 모드 <code>'wb'</code> · <code>'rb'</code>)</td></tr><tr><td>파일 찾기</td><td><code>sorted(glob('*.txt'))</code></td></tr><tr><td>있나 · 폴더인가</td><td><code>os.path.exists(이름)</code> · <code>os.path.isdir(이름)</code></td></tr><tr><td>한글 파일 열기</td><td><code>encoding='utf-8'</code>을 함께 적는다</td></tr></tbody></table></div>
-
+</details>
     <h2><span class="hl">함께 보기</span></h2>
     <ul>
       <li><a href="beginner-python-ch06-answers.html">문제 해설 — 밴드 이름·비밀 메시지·끝말 잇기·영어 퀴즈·애국가</a> — 6장 연습 문제 다섯 개를 풀어요.</li>
