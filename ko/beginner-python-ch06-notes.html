@@ -155,7 +155,7 @@ UnicodeDecodeError: 'cp949' codec can't decode byte 0xec in position 0: illegal 
 <p>※ 첫 번째 읽기는 되고, 인코딩을 안 적은 두 번째 읽기는 오류가 나요(맨 아래 줄이 오류 문장이에요). 글자가 영어뿐인 파일은 이 차이가 드러나지 않아요. 한글 파일을 열 때는 <code>encoding='utf-8'</code>을 습관으로 적어 두면 안전해요.</p>
 </details>
 <h2><span class="hl">2. 한 줄씩 다루기 (6.2)</span></h2>
-<div class="table-scroll fill"><table><thead><tr><th>하고 싶은 일</th><th>쓰는 것</th></tr></thead><tbody><tr><td>한 줄 읽기</td><td><code>f.readline()</code> — 줄 끝의 <code>\n</code>까지 읽고 멈춘다. 다시 부르면 다음 줄</td></tr><tr><td>모든 줄을 리스트로</td><td><code>f.readlines()</code> — 줄 하나가 리스트 원소 하나</td></tr><tr><td>줄마다 반복</td><td><code>for line in f:</code> — 파일에서 한 줄씩 꺼낸다</td></tr><tr><td>줄 끝 떼기</td><td><code>line.strip()</code> — 앞뒤 공백과 <code>\n</code>을 지운다</td></tr><tr><td>낱말·칸으로 자르기</td><td><code>line.split()</code> — 공백 기준. <code>line.split('\t')</code>는 탭 기준</td></tr><tr><td>일부 줄만</td><td><code>lines[2:5]</code> 처럼 리스트 슬라이싱. 끝에서부터는 <code>lines[-3:]</code></td></tr></tbody></table></div>
+<div class="table-scroll fill"><table><thead><tr><th>하고 싶은 일</th><th>쓰는 것</th></tr></thead><tbody><tr><td>한 줄 읽기</td><td><code>f.readline()</code> — 줄 끝의 <code>\n</code>까지 읽고 멈춘다. 다시 부르면 다음 줄</td></tr><tr><td>모든 줄을 리스트로</td><td><code>f.readlines()</code> — 줄 하나가 리스트 원소 하나</td></tr><tr><td>줄마다 반복</td><td><code>for line in f:</code> — 파일에서 한 줄씩 꺼낸다</td></tr><tr><td>앞뒤 공백 떼기</td><td><code>line.strip()</code> — 앞뒤 공백과 <code>\n</code>을 지운다</td></tr><tr><td>낱말·칸으로 자르기</td><td><code>line.split()</code> — 공백 기준. <code>line.split('\t')</code>는 탭 기준</td></tr><tr><td>일부 줄만</td><td><code>lines[2:5]</code> 처럼 리스트 슬라이싱. 끝에서부터는 <code>lines[-3:]</code></td></tr></tbody></table></div>
 <details class="side-note">
 <summary>예제 · 실행 결과 · 설명 보기</summary>
 <p>※ 이 절의 예제 파일 <code>lines.txt</code>에는 <code>1번째 줄</code>부터 <code>15번째 줄</code>까지 15줄이 한 줄에 하나씩 들어 있어요.</p>
@@ -231,7 +231,7 @@ print(lines[-3:])                        # lines 의 뒤에서 세 개를 화면
     code:["f = open('lines.txt', encoding='utf-8')","lines = f.readlines()","print(len(lines))","print(lines[:2])","for l in lines[3:6]:","    print(l, end='')","print(lines[-3:])"],steps:steps});
 })();
 </script>
-<h3>for 로 한 줄씩 · strip 으로 줄 끝 떼기</h3>
+<h3>for 로 한 줄씩 · strip 으로 앞뒤 공백 떼기</h3>
 <pre><code>count = 0                                       # count 에 0 을 담아 주세요
 with open('lines.txt', encoding='utf-8') as f:  # lines.txt 를 UTF-8 읽기용으로 열어 f 라 불러 주세요
     for line in f:                              # f 에서 한 줄씩 꺼내 line 이라 부르며 아래를 반복해 주세요

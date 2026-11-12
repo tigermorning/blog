@@ -180,13 +180,14 @@ print(' '.join(words))          # words 의 낱말들을 공백으로 이어 화
 })();
 </script>
 <p>② 단계에서<code>split('\n\n')</code>의 결과 개수가 3이면 머리말·본문·꼬리말로 정확히 나뉜 거예요. 가운데 덩어리(<code>parts[1]</code>)가 본문이에요. 빈 줄에 공백이 섞여 있으면 개수가 달라질 수 있으니, 이 값을 먼저 찍어 보는 습관이 도움이 돼요.</p>
-<p>⑤ 단계에서는 <code>split()</code>에 아무것도 안 적었어요. 공백이 연달아 있어도 하나로 보고 낱말만 뽑아 주거든요. <code>split(' ')</code>와 비교해 봐요.</p>
+<p>⑤ 단계에서는 <code>split()</code>에 아무것도 안 적었어요. 공백이 몇 칸이든 하나로 보고 낱말만 뽑아 주거든요. <code>split(' ')</code>와 비교해 봐요.</p>
 <pre><code>line = 'FIFTY PERCENT  BETTER FOOD ETC'  # line 에 'FIFTY PERCENT  BETTER FOOD ETC' (PERCENT 뒤에 공백 두 칸) 를 담아 주세요
 print(line.split())                      # line 을 공백 기준으로 낱말만 뽑아 화면에 보여 주세요
 print(line.split(' '))                   # line 을 공백 한 칸마다 잘라 화면에 보여 주세요</code></pre>
 <pre class="out"><code class="nohighlight">['FIFTY', 'PERCENT', 'BETTER', 'FOOD', 'ETC']
 ['FIFTY', 'PERCENT', '', 'BETTER', 'FOOD', 'ETC']</code></pre>
-<p><code>split(' ')</code>는 공백 두 칸 사이의 빈 글자(<code>''</code>)까지 낱말로 세어서, 앞 두 개를 뽑으면 엉뚱한 결과가 나와요.</p>
+<p><code>split(' ')</code>는 공백을 한 칸마다 잘라서, 공백이 두 칸 붙어 있으면 그 사이의 빈 글자(<code>''</code>)도 낱말처럼 하나 만들어요. 그래서 낱말의 개수와 자리가 어긋날 수 있어요.</p>
+<p>이 엽서 본문에서는 공백 두 칸이 모두 앞 두 낱말 뒤쪽에 있어서, <code>split(' ')[:2]</code>와 <code>split()[:2]</code>가 여섯 줄 모두 같았어요. 두 칸 공백이 앞쪽에 있는 줄이면 달라져요. <code>'AB  CD EF'</code> 는 <code>split()[:2]</code>가 <code>['AB', 'CD']</code>이고 <code>split(' ')[:2]</code>는 <code>['AB', '']</code>예요.</p>
 <p>이 글의 <code>postcard.txt</code>는 문제의 엽서 내용을 설명대로(머리말 · 빈 줄 · 본문 · 빈 줄 · 꼬리말) 저장한 파일이에요. 문제에 정리된 결과(<code>AFTER SURRENDER FIFTY PERCENT AMERICANS LOST IN PHILIPPINES IN NIPPON 30% SALARY</code>)와 같은 글이 나왔어요.</p>
 </details>
 <h3 id="a3">6.2.2 끝말 잇기 (3)</h3>
