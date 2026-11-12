@@ -105,7 +105,7 @@ function cwx(id,o){
     if(usesOut){q('.cwx-out').innerHTML=s.out.map(function(t,j){var e=cwx.esc(t);return j===s.out.length-1?'<span class="last">'+e+'</span>':e}).join('\n')}
   }
   function next(){ if(cur<steps.length-1){show(cur+1)}else{stop()} }
-  function play(){ if(timer) return; if(cur>=steps.length-1) show(0); timer=setInterval(next,900); q('.b-play').textContent='⏸ 멈춤' }
+  function play(){ if(timer) return; if(cur>=steps.length-1) show(0); timer=setInterval(next,1400); q('.b-play').textContent='⏸ 멈춤' }
   function stop(){ if(timer){clearInterval(timer);timer=null} q('.b-play').textContent=(cur>=steps.length-1)?'↻ 다시 재생':'▶ 재생' }
   q('.b-play').onclick=function(){timer?stop():play()};
   q('.b-step').onclick=function(){stop(); if(cur>=steps.length-1) show(0); else show(cur+1)};
@@ -343,7 +343,7 @@ print(count)                                    # count 를 화면에 보여 주
     $('prog').textContent=(k+1)+' / '+steps.length+' 단계';
   }
   function next(){ if(cur<steps.length-1){show(cur+1)}else{stop()} }
-  function play(){ if(timer) return; if(cur>=steps.length-1) show(0); timer=setInterval(next,850); $('play').textContent='⏸ 멈춤' }
+  function play(){ if(timer) return; if(cur>=steps.length-1) show(0); timer=setInterval(next,1400); $('play').textContent='⏸ 멈춤' }
   function stop(){ if(timer){clearInterval(timer);timer=null} $('play').textContent=(cur>=steps.length-1)?'↻ 다시 재생':'▶ 재생' }
   $('play').onclick=function(){timer?stop():play()};
   $('step').onclick=function(){stop(); if(cur>=steps.length-1) show(0); else show(cur+1)};
