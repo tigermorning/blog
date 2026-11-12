@@ -385,6 +385,7 @@ main, .problem, .p-body, .sol-body, .level { min-width: 0; }
 .p-body p { margin: 0; }
 .p-body .table-scroll, .sol-body .table-scroll { overflow-x: auto; }
 </style>
+<script src="cwx.js"></script>
 </head>
 
 <body>
@@ -594,6 +595,32 @@ print(lines[0][:-1])                                     # lines 의 첫 줄에�
 1번째 줄
 2번째 줄
 1번째 줄</code></pre>
+<p>코드가 이 결과를 어떻게 만드는지 한 단계씩 보세요. 줄마다 <code>\\n</code> 이 이미 들어 있다는 점이 핵심이에요.</p>
+<div id="cwx-m2"></div>
+<script>
+(function(){
+  var L=[];for(var i=0;i<15;i++)L.push((i+1)+'번째 줄\\n');
+  function C(o){return cwx.chips(L,Object.assign({idx:true},o))}
+  var none=cwx.box('lines','','');
+  var steps=[
+    {c:-1,s:none,t:"시작 전이에요."},
+    {c:0,s:C({}),t:"<code>readlines()</code> 가 15줄을 리스트에 담아요. 줄마다 끝에 <code>\\n</code> 이 들어 있어요."},
+    {c:1,s:C({}),p:'15',t:"칸의 개수 15를 찍어요."}
+  ];
+  [13,14].forEach(function(n){
+    steps.push({c:2,s:C({cur:n,hi:[13,14]}),t:"<code>lines[-2:]</code> 는 뒤에서 두 칸이에요. <code>l</code> 에 <b>"+n+"번 칸</b>("+(n+1)+"번째 줄)을 담아요."});
+    steps.push({c:3,s:C({cur:n,hi:[13,14]}),p:(n+1)+'번째 줄\n',t:"<code>print(l)</code> 은 <code>l</code> 속의 <code>\\n</code> 으로 한 번, <code>print</code> 가 더하는 줄 바꿈으로 또 한 번 — <b>줄이 두 번</b> 바뀌어서 아래에 빈 줄이 생겨요."});
+  });
+  [0,1].forEach(function(n){
+    steps.push({c:4,s:C({cur:n,hi:[0,1]}),t:"<code>lines[:2]</code> 는 앞 두 칸이에요. <code>l</code> 에 <b>"+n+"번 칸</b>("+(n+1)+"번째 줄)을 담아요."});
+    steps.push({c:5,s:C({cur:n,hi:[0,1]}),p:(n+1)+'번째 줄',t:"<code>end=''</code> 라서 <code>print</code> 는 줄 바꿈을 더하지 않아요. <code>l</code> 속의 <code>\\n</code> 한 번만 남아 <b>빈 줄이 없어요</b>."});
+  });
+  steps.push({c:6,s:C({cur:0,hi:[0]}),p:'1번째 줄',t:"<code>lines[0][:-1]</code> 은 첫 줄에서 마지막 글자(<code>\\n</code>)만 뺀 글자예요. <code>print</code> 가 줄 바꿈을 한 번 더하니 빈 줄 없이 한 줄이 나와요."});
+  cwx('cwx-m2',{label:'for 반복이 lines 의 뒤 두 줄과 앞 두 줄을 print 와 print end 로 찍는 단계별 그림',stateTitle:'lines 리스트 (칸번호: 내용)',
+    code:["lines = open('lines.txt', encoding='utf-8').readlines()","print(len(lines))","for l in lines[-2:]:","    print(l)","for l in lines[:2]:","    print(l, end='')","print(lines[0][:-1])"],steps:steps});
+})();
+</script>
+
     <p><b>한 문장으로:</b> 뒤에서 두 줄은 줄 바꿈이 두 번씩이라 사이사이 빈 줄이 생기고, 앞 두 줄은 <code>end=''</code>라 빈 줄 없이 붙어요.</p>
     <h4>왜 이런 결과가 나올까요</h4><p><code>15</code> 다음에 <code>lines[-2:]</code>의 두 줄을 <code>print(l)</code>로 출력해서 <code>14번째 줄</code>, 빈 줄, <code>15번째 줄</code>, 빈 줄이 나와요. 이어서 앞 두 줄은 <code>end=''</code>라서 <code>1번째 줄</code>, <code>2번째 줄</code>이 바로 붙어 나오고, 마지막 <code>lines[0][:-1]</code>은 <code>'1번째 줄\n'</code>에서 <code>\n</code>을 뺀 <code>1번째 줄</code>이에요.</p>
     <h4>헷갈리기 쉬운 곳</h4><ul><li>마지막 <code>print(lines[0][:-1])</code>은 <code>strip()</code>과 비슷하지만, 마지막 글자가 <code>\n</code>이 아니면(파일의 마지막 줄에 줄 바꿈이 없을 때) 엉뚱한 글자가 지워져요. 줄 끝 정리는 <code>strip()</code>이 안전해요.</li></ul>
@@ -738,6 +765,40 @@ print(len(text.split()), len(text.splitlines()), text.count('\n'))  # text 의 �
           <div class="sol-body">
 <pre class="out"><code class="nohighlight">12 34
 34 12 12</code></pre>
+<p>코드가 이 결과를 어떻게 만드는지 한 단계씩 보세요. <code>for</code> 가 줄마다 낱말 수를 <code>words</code> 에 더해 가요.</p>
+<div id="cwx-a2"></div>
+<script>
+(function(){
+  var lines=["                August 29, 1943","Dear Iers:","","After surrender, health improved","fifty percent.  Better food etc.","Americans lost confidence","in Philippines.  Am comfortable","in Nippon.  Mother: Invest","30%, salary, in business.  Love","","                (signed)","Frank G. Jonelis"];
+  function cnt(l){return l.split(/\s+/).filter(Boolean).length}
+  var names=lines.map(function(l,i){return (i+1)+'번째 줄: '+(l.trim()===''?'(빈 줄)':l.trim())});
+  function S(i,words,n,fl){
+    return cwx.chips(names,{one:true,cur:i,read:(i<0?0:(fl==='add'?i+1:i))})
+      +cwx.box('len(line.split())',n===null?'':String(n),'raw')
+      +cwx.box('words',String(words),fl==='add'?'raw flash':'raw');
+  }
+  var words=0, steps=[
+    {c:-1,s:S(-1,'-',null),t:"시작 전이에요. <code>postcard.txt</code> 는 열두 줄이고, 줄 하나에 줄 바꿈이 하나씩 있어요."},
+    {c:0,s:S(-1,'-',null),t:"<code>postcard.txt</code> 를 열어요."},
+    {c:1,s:S(-1,'-',null),t:"<code>readlines()</code> 가 열두 줄을 <code>lines</code> 에 담아요."},
+    {c:2,s:S(-1,0,null),t:"<code>words</code> 에 0 을 담아요."}
+  ];
+  lines.forEach(function(L,i){
+    var n=cnt(L);
+    steps.push({c:3,s:S(i,words,null),t:"<code>line</code> 에 <b>"+(i+1)+"번째 줄</b>을 담아요."});
+    words+=n;
+    steps.push({c:4,s:S(i,words,n,'add'),t:"<code>line.split()</code> 의 낱말이 <b>"+n+"개</b>"+(n===0?"예요(빈 줄은 낱말이 없어요)":"")+". <code>words</code> 에 더해서 <b>"+words+"</b> 이 돼요."});
+  });
+  var text=lines.join('\n')+'\n';
+  steps.push({c:5,s:S(-1,words,null),p:lines.length+' '+words,t:"줄 수(<code>len(lines)</code>)와 낱말 수 <code>words</code> 를 찍어요."});
+  steps.push({c:6,s:S(-1,words,null),t:"이번에는 <code>read()</code> 로 글 전체를 <code>text</code> 한 글자에 담아요."});
+  var lc=text.split('\n').length-1;
+  steps.push({c:7,s:S(-1,words,null),p:cnt(text)+' '+lc+' '+lc,t:"통째로 세도 낱말은 같은 <b>"+cnt(text)+"개</b>이고, 줄 수와 줄 바꿈 수는 모두 12예요."});
+  cwx('cwx-a2',{label:'for 반복이 postcard.txt 열두 줄의 낱말 수를 words 에 더해 가는 단계별 그림',stateTitle:'postcard.txt (초록 = 센 줄)',
+    code:["with open('postcard.txt') as f:","    lines = f.readlines()","words = 0","for line in lines:","    words += len(line.split())","print(len(lines), words)","text = open('postcard.txt').read()","print(len(text.split()), len(text.splitlines()), text.count('\\n'))"],steps:steps});
+})();
+</script>
+
     <p><b>한 문장으로:</b> 줄을 먼저 읽어 세든 글 전체를 한 번에 읽어 세든 낱말은 같은 수이고, 줄 바꿈 수는 줄 수와 같아요.</p>
     <h4>왜 이런 결과가 나올까요</h4><p><code>readlines()</code>로 읽으면 12줄이고, 각 줄의 낱말을 더하면 전체 낱말 수가 나와요. 글 전체를 <code>split()</code>해도 같은 낱말 수가 나와요. <code>splitlines()</code>의 줄 수 12와 <code>count('\n')</code>의 12가 같은 건, 모든 줄 끝(마지막 줄 포함)에 줄 바꿈이 있기 때문이에요.</p>
     <h4>헷갈리기 쉬운 곳</h4><ul><li>마지막 줄 끝에 <code>\n</code>이 없는 파일이면 <code>count('\n')</code>이 줄 수보다 1 적어요. 줄 수를 셀 때는 <code>splitlines()</code>나 <code>readlines()</code>가 안전해요.</li></ul>
