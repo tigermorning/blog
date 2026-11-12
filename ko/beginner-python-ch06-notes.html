@@ -379,23 +379,7 @@ print(len(f.read()))            # f 를 다시 전부 읽은 글자 수를 화�
 ''
 61</code></pre>
 <p>※ 파일에는 "어디까지 읽었는지"를 기억하는 자리가 하나 있어요. <code>read()</code>가 끝까지 읽으면 그 자리가 맨 끝에 가서, 다시 읽으면 빈 글자가 나와요. <code>seek(0)</code>이 그 자리를 맨 앞으로 되돌려요.</p>
-<p>아래 그림은 파일의 <b>읽는 자리(빨간 선)</b>가 <code>read()</code>와 <code>seek(0)</code>로 움직이는 모습이에요. 예제 파일은 61글자예요.</p>
-<div id="cwx4"></div>
-<script>
-(function(){
-  function T(pos){var pct=Math.round(pos/61*100);return '<div class="cwx-box"><b>읽는 자리: '+pos+' / 61</b><div class="cwx-track"><div class="cwx-fill" style="width:'+pct+'%"></div><div class="cwx-mark" style="left:'+pct+'%"></div></div></div>'}
-  cwx('cwx4',{label:'read 로 끝까지 읽으면 읽는 자리가 맨 끝으로 가고 seek(0) 으로 맨 앞에 돌아오는 단계별 그림',stateTitle:'Python_for_Fun.txt (초록 = 이미 읽은 부분)',
-    code:["f = open('Python_for_Fun.txt')","print(len(f.read()))","print(repr(f.read()))","f.seek(0)","print(len(f.read()))"],
-    steps:[
-      {c:-1,s:T(0),t:"시작 전이에요."},
-      {c:0,s:T(0),t:"파일을 열었어요. 읽는 자리는 맨 앞(0)이에요."},
-      {c:1,s:T(61),p:'61',t:"<code>read()</code> 가 끝까지 읽어서 61글자를 돌려주고, 읽는 자리가 <b>맨 끝(61)</b>으로 갔어요."},
-      {c:2,s:T(61),p:"''",t:"이미 맨 끝이라 더 읽을 글자가 없어서 <b>빈 글자</b>가 나와요."},
-      {c:3,s:T(0),t:"<code>seek(0)</code> 이 읽는 자리를 맨 앞으로 되돌려요."},
-      {c:4,s:T(61),p:'61',t:"다시 처음부터 읽으니 61글자가 나와요."}
-    ]});
-})();
-</script>
+<p>※ <code>61</code>은 파일 글자 수예요. 줄 끝의 줄 바꿈(<code>\n</code>)도 한 글자로 세요: <code>Programming is fun.</code> 19글자 + <code>\n</code> 1, <code>Very fun!</code> 9글자 + <code>\n</code> 1, 빈 줄의 <code>\n</code> 1, <code>You have to do it yourself...</code> 29글자 + <code>\n</code> 1 = 19+1+9+1+1+29+1 = 61.</p>
 <h2><span class="hl">3. 파일을 입맛대로 — pickle · glob · os.path (6.3)</span></h2>
 <div class="table-scroll fill"><table><thead><tr><th>하고 싶은 일</th><th>쓰는 것</th></tr></thead><tbody><tr><td>파이썬 값을 통째로 저장</td><td><code>pickle.dump(값, f)</code> — <code>open('파일', 'wb')</code>로 연 파일에</td></tr><tr><td>저장한 값을 되살리기</td><td><code>pickle.load(f)</code> — <code>open('파일', 'rb')</code>로 연 파일에서</td></tr><tr><td>패턴에 맞는 파일 찾기</td><td><code>glob('*.txt')</code> — <code>*</code>는 아무 글자 여러 개. 리스트로 돌려준다</td></tr><tr><td>파일이 있나</td><td><code>os.path.exists('이름')</code> — <code>True</code> 또는 <code>False</code></td></tr><tr><td>폴더인가</td><td><code>os.path.isdir('이름')</code></td></tr></tbody></table></div>
 <h3>pickle — 딕셔너리를 파일에 넣고 꺼내기</h3>
