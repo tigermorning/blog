@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>7.2 변수와 메서드 정리 — self, 클래스 변수, 인스턴스 변수 - Tigermorning</title>
+  <meta name="description" content="위키독스 『왕초보를 위한 Python』 7.2 변수와 메서드를 짧게 정리했습니다. 클래스 변수, self, 인스턴스 변수가 바뀌는 방식.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="7.2 변수와 메서드 정리 — self, 클래스 변수, 인스턴스 변수">
+  <meta property="og:description" content="self가 무엇인지, 클래스 변수와 인스턴스 변수가 어떻게 다른지 짧게 정리한 글입니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/beginner-python-ch07-part2-notes.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">7.2 변수와 메서드 정리</span> — 왕초보 Python 7장 객체지향 (2)</h1>
+    <p class="post-date">2026. 11. 19.</p>
+    <p class="post-date">※ 이 글은 위키독스 <a href="https://wikidocs.net/book/2" target="_blank" rel="noopener">『왕초보를 위한 Python』</a> 7.2절과 영상은 <a href="https://www.youtube.com/watch?v=cg1xvFy1JQQ" target="_blank" rel="noopener">노마드 코더의 「객체지향 프로그래밍? 문과도 이해쌉가능. 10분컷.」</a>인데, 영어 음성의 자동 자막 전체를 읽고 정리했어요. 화면에 나온 코드는 보지 못해서 예제는 파이썬으로 새로 짜서 직접 돌렸어요. 코드 실행 결과는 실제로 돌려서 넣었어요.</p>
+
+    <p class="one-liner">클래스 안에 적은 변수는 모든 인스턴스가 처음에 물려받는 값이고, 메서드 안의 self 는 그 메서드를 부른 인스턴스 자신이에요.</p>
+
+<p class="post-date">앞 내용은 <a href="beginner-python-ch07-part1-notes.html">7.1 클래스와 인스턴스 정리</a>에 있어요.</p>
+<h2><span class="hl">1. 변수와 메서드를 가진 클래스 (7.2)</span></h2>
+<div class="table-scroll fill"><table><thead><tr><th>말</th><th>뜻</th></tr></thead><tbody><tr><td>클래스 변수</td><td>클래스 안, 메서드 밖에 적은 변수. 만든 인스턴스가 처음에 그대로 가져다 쓴다</td></tr><tr><td>메서드</td><td>클래스 안의 함수. 첫 매개변수는 항상 <code>self</code></td></tr><tr><td><code>self</code></td><td>그 메서드를 부른 인스턴스. 정의할 때는 적고, 부를 때는 쓰지 않는다 (<code>jane.attack()</code>)</td></tr><tr><td><code>self.변수 += 값</code></td><td>그 인스턴스의 변수만 바꾼다</td></tr></tbody></table></div>
+<pre><code>class Amazon:                       # Amazon 클래스를 정의해 주세요
+    strength = 20                   # 클래스 변수 strength 에 20 을 담아 주세요
+    dexterity = 25                  # 클래스 변수 dexterity 에 25 를 담아 주세요
+    vitality = 20                   # 클래스 변수 vitality 에 20 을 담아 주세요
+    energy = 15                     # 클래스 변수 energy 에 15 를 담아 주세요
+    def attack(self):               # attack 메서드를 정의해 주세요
+        return 'Jab!!!'             # 'Jab!!!' 를 돌려주세요
+    def exercise(self):             # exercise 메서드를 정의해 주세요
+        self.strength += 2          # 이 인스턴스의 strength 에 2 를 더해 주세요
+        self.dexterity += 3         # 이 인스턴스의 dexterity 에 3 을 더해 주세요
+        self.vitality += 1          # 이 인스턴스의 vitality 에 1 을 더해 주세요
+jane = Amazon()                     # jane 에 Amazon 인스턴스를 만들어 담아 주세요
+mary = Amazon()                     # mary 에 Amazon 인스턴스를 만들어 담아 주세요
+print(jane.strength, jane.attack()) # jane 의 strength 와 공격 결과를 화면에 보여 주세요
+jane.exercise()                     # jane 에게 훈련을 시켜 주세요
+print(jane.strength, jane.dexterity, jane.vitality)  # jane 의 힘·기술·체력을 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">20 Jab!!!
+22 28 21</code></pre>
+<p>※ 위키독스 예제는 디아블로2 게임의 아마존 캐릭터를 클래스로 만든 거예요. 교재는 이 코드를 <code>diablo2.py</code>로 저장하고 <code>import diablo2</code> 한 뒤 <code>diablo2.Amazon()</code>으로 인스턴스를 만들어요.</p>
+<h2><span class="hl">2. self 가 왜 필요한가</span></h2>
+<p><code>jane</code>과 <code>mary</code>는 같은 <code>exercise</code> 메서드를 써요. 메서드가 “누구의 힘을 올릴지” 알아야 하니, 부른 인스턴스가 자동으로 첫 매개변수 <code>self</code>에 들어와요.</p>
+<div class="table-scroll fill"><table><thead><tr><th>부르는 모양</th><th>일어나는 일</th></tr></thead><tbody><tr><td><code>jane.exercise()</code></td><td><code>self</code> 가 <code>jane</code> 이 된다 → <code>jane</code> 의 strength 가 올라간다</td></tr><tr><td><code>mary.exercise()</code></td><td><code>self</code> 가 <code>mary</code> 가 된다 → <code>mary</code> 의 strength 가 올라간다</td></tr><tr><td><code>Amazon.exercise()</code></td><td>부른 인스턴스가 없어서 <code>self</code> 를 채울 수 없다 → 오류</td></tr></tbody></table></div>
+<pre><code>jane = Amazon()                          # jane 에 Amazon 인스턴스를 만들어 담아 주세요
+mary = Amazon()                          # mary 에 Amazon 인스턴스를 만들어 담아 주세요
+jane.exercise()                          # jane 에게 훈련을 시켜 주세요
+print(jane.strength, mary.strength)      # jane 과 mary 의 strength 를 화면에 보여 주세요
+print(Amazon.strength)                   # Amazon 클래스의 strength 를 화면에 보여 주세요
+print(jane.__dict__)                     # jane 이 따로 가진 변수들을 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">22 20
+20
+{'strength': 22, 'dexterity': 28, 'vitality': 21}</code></pre>
+<p>※ <code>jane.strength += 2</code>는 클래스 변수 20을 읽어 22로 계산한 뒤 <b>jane 자신의 변수</b>로 따로 저장해요. 그래서 <code>mary</code>와 <code>Amazon</code> 클래스의 값은 20 그대로예요. <code>__dict__</code>에는 jane 이 따로 가진 값만 나와서 <code>energy</code>는 보이지 않아요(jane 이 바꾸지 않았으니 클래스 값을 그대로 읽는 중이에요).</p>
+<pre><code>Amazon.attack()   # 인스턴스 없이 attack 을 불러 주세요</code></pre>
+<pre class="out"><code class="nohighlight">TypeError: Amazon.attack() missing 1 required positional argument: 'self'</code></pre>
+<p>※ 영상은 <code>self</code>(자바스크립트에서는 <code>this</code>)를 “이 플레이어는 xp 라는 속성을 가진다”처럼 읽으면 쉽다고 해요. 그리고 메서드가 있으면 클래스가 데이터만 담는 상자에서 <b>데이터를 읽고 바꾸는 방법까지 정해 둔 틀</b>이 된다고 말해요. 메서드의 예로 인사하기, 공격 받았을 때 체력 줄이기를 들어요.</p>
+<h2><span class="hl">3. 한눈에 정리</span></h2>
+<div class="table-scroll fill"><table><thead><tr><th>하고 싶은 일</th><th>쓰는 것</th></tr></thead><tbody><tr><td>모든 인스턴스가 처음에 같은 값</td><td>클래스 안에 <code>변수 = 값</code> (클래스 변수)</td></tr><tr><td>인스턴스마다 다른 값</td><td><code>__init__</code> 안에서 <code>self.변수 = 값</code> (<a href="beginner-python-ch07-part1-notes.html">7.1</a>)</td></tr><tr><td>메서드 정의</td><td><code>def 이름(self, ...):</code> — 첫 매개변수는 <code>self</code></td></tr><tr><td>메서드 부르기</td><td><code>인스턴스.이름(...)</code> — <code>self</code>는 쓰지 않는다</td></tr><tr><td>내 값 바꾸기</td><td><code>self.변수 = 새 값</code></td></tr></tbody></table></div>
+
+    <h2><span class="hl">함께 보기</span></h2>
+    <ul>
+      <li><a href="beginner-python-ch07-part1-notes.html">7.1 클래스와 인스턴스 정리 — class, 인스턴스, __init__</a> — 앞 편이에요.</li>
+      <li><a href="beginner-python-ch07-part3-notes.html">7.3 상속 정리 — 부모 클래스, 자식 클래스, super()</a> — 다음 편이에요.</li>
+      <li><a href="https://wikidocs.net/86" target="_blank" rel="noopener">7.2 변수와 메서드 (위키독스)</a> — 이 글이 다룬 원래 교재예요.</li>
+    </ul>
+
+    <a class="post-nav" href="beginner-python-ch07-part3-notes.html">
+      <span class="post-nav-label">다음 편 →</span>
+      <span class="post-nav-title">7.3 상속 정리 — 부모 클래스, 자식 클래스, super()</span>
+    </a>
+
+    <h3 id="series-list">"왕초보 Python 7장 객체지향 (7.1~7.3)" 시리즈</h3>
+    <a class="post-nav" href="beginner-python-ch07-part1-notes.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">7.1 클래스와 인스턴스 정리 — class, 인스턴스, __init__</span>
+    </a>
+    <p class="post-date">(2) 7.2 변수와 메서드 정리 — self, 클래스 변수, 인스턴스 변수 (이 글)</p>
+    <a class="post-nav" href="beginner-python-ch07-part3-notes.html">
+      <span class="post-nav-label">(3)</span>
+      <span class="post-nav-title">7.3 상속 정리 — 부모 클래스, 자식 클래스, super()</span>
+    </a>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>7.3 상속 정리 — 부모 클래스, 자식 클래스, super() - Tigermorning</title>
+  <meta name="description" content="위키독스 『왕초보를 위한 Python』 7.3 상속과 노마드 코더 객체지향 영상을 짧게 정리했습니다. 상속, is a 관계, 메서드 덮어쓰기, super().">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="7.3 상속 정리 — 부모 클래스, 자식 클래스, super()">
+  <meta property="og:description" content="상속으로 부모 클래스의 변수·메서드를 물려받고 super()로 부모를 부르는 법을 짧게 정리한 글입니다.">
+  <meta property="og:url" content="https://tigermorning.github.io/blog/ko/beginner-python-ch07-part3-notes.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/blog/">Tigermorning</a>
+    </div>
+  </header>
+
+  <div class="page-layout">
+  <div id="sidebar-mount"></div>
+
+  <main>
+    <h1><span class="hl">7.3 상속 정리</span> — 왕초보 Python 7장 객체지향 (3)</h1>
+    <p class="post-date">2026. 11. 19.</p>
+    <p class="post-date">※ 이 글은 위키독스 <a href="https://wikidocs.net/book/2" target="_blank" rel="noopener">『왕초보를 위한 Python』</a> 7.3절과 영상은 <a href="https://www.youtube.com/watch?v=cg1xvFy1JQQ" target="_blank" rel="noopener">노마드 코더의 「객체지향 프로그래밍? 문과도 이해쌉가능. 10분컷.」</a>인데, 영어 음성의 자동 자막 전체를 읽고 정리했어요. 화면에 나온 코드는 보지 못해서 예제는 파이썬으로 새로 짜서 직접 돌렸어요. 코드 실행 결과는 실제로 돌려서 넣었어요.</p>
+
+    <p class="one-liner">상속(inheritance)은 자식 클래스가 부모 클래스의 변수와 메서드를 그대로 물려받고, 자기만의 것을 더하는 것이에요.</p>
+
+<p class="post-date">앞 내용은 <a href="beginner-python-ch07-part2-notes.html">7.2 변수와 메서드 정리</a>에 있어요.</p>
+<h2><span class="hl">1. 물려받기 (7.3)</span></h2>
+<div class="table-scroll fill"><table><thead><tr><th>말</th><th>뜻</th></tr></thead><tbody><tr><td>부모 클래스</td><td>물려주는 클래스. 위키독스는 상위 클래스, 영상은 father class 라고 불러요</td></tr><tr><td>자식 클래스</td><td>물려받는 클래스. 만들 때 <code>class 자식(부모):</code></td></tr><tr><td><code>is a</code> 읽기</td><td>자식 → 부모 화살표를 따라 읽는다. “Student is a Person”(학생은 사람이다)</td></tr></tbody></table></div>
+<pre><code>class Person:                 # Person 클래스를 정의해 주세요
+    eyes = 2                  # 클래스 변수 eyes 에 2 를 담아 주세요
+    def eat(self):            # eat 메서드를 정의해 주세요
+        print('얌냠...')      # '얌냠...' 을 화면에 보여 주세요
+    def sleep(self):          # sleep 메서드를 정의해 주세요
+        print('쿨쿨...')      # '쿨쿨...' 을 화면에 보여 주세요
+    def talk(self):           # talk 메서드를 정의해 주세요
+        print('주절주절...')  # '주절주절...' 을 화면에 보여 주세요
+class Student(Person):        # Person 을 상속받는 Student 클래스를 정의해 주세요
+    def study(self):          # study 메서드를 정의해 주세요
+        print('열공열공...')  # '열공열공...' 을 화면에 보여 주세요
+kim = Student()               # kim 에 Student 인스턴스를 만들어 담아 주세요
+kim.talk()                    # kim 에게 말을 시켜 주세요
+kim.study()                   # kim 에게 공부를 시켜 주세요
+print(kim.eyes)               # kim 의 eyes 를 화면에 보여 주세요
+print(isinstance(kim, Person))        # kim 은 Person 인스턴스이기도 한가요?
+print(issubclass(Student, Person))    # Student 는 Person 의 자식 클래스인가요?
+print(hasattr(Person(), 'study'))     # Person 인스턴스에 study 가 있나요?</code></pre>
+<pre class="out"><code class="nohighlight">주절주절...
+열공열공...
+2
+True
+True
+False</code></pre>
+<p>※ <code>Student</code>에는 <code>study</code>만 적었는데 <code>talk</code>와 <code>eyes</code>도 써져요. 반대로 부모 <code>Person</code>에는 <code>study</code>가 없어요. 물려주는 방향은 부모 → 자식 한 방향이에요.</p>
+<h3>왜 복사해 붙이지 않고 상속하나</h3>
+<div class="table-scroll fill"><table><thead><tr><th>방법</th><th>나중에 고칠 때</th></tr></thead><tbody><tr><td>복사해 붙임</td><td>나중에 “옷 색깔” 같은 것을 넣으려면 사람 클래스와 학생 클래스를 각각 고쳐야 한다</td></tr><tr><td>상속</td><td>부모 한 곳만 고치면 자식에게도 반영된다</td></tr></tbody></table></div>
+<p>영상의 예도 같아요. 사람 시뮬레이션에 아기, 십대 클래스가 있으면 둘 다 이름·팔·다리를 갖는 “사람”이에요. 이 공통 부분을 사람 클래스에 한 번만 적고, 아기와 십대는 사람을 <b>extend(확장)</b>해서 자기만의 것(아기는 울기, 십대는 투덜대기)만 더해요. 영상은 이것으로 코드 중복을 줄이고 코드를 다시 쓸 수 있는 조각으로 나눈다고 말해요.</p>
+<h2><span class="hl">2. 부모의 __init__ 부르기 — super()</span></h2>
+<p>부모에 <code>__init__</code>이 있는데 자식이 자기 <code>__init__</code>을 다시 적으면, 부모의 <code>__init__</code>은 자동으로 불리지 않아요. 부모의 속성도 만들고 싶으면 자식의 <code>__init__</code> 안에서 <code>super().__init__(...)</code>으로 부모 것을 불러 줘요. 영상은 이 줄이 빠지면 “사람의 이름을 정하는 부분이 실행되지 않아서” 코드가 동작하지 않는다고 설명해요(자바스크립트는 <code>super()</code>).</p>
+<pre><code>class Human:                              # Human 클래스를 정의해 주세요
+    def __init__(self, name):             # 만들 때 불리는 __init__ 을 정의해 주세요
+        self.name = name                  # 이 인스턴스의 name 에 name 을 담아 주세요
+class Baby(Human):                        # Human 을 상속받는 Baby 클래스를 정의해 주세요
+    def __init__(self, name):             # Baby 의 __init__ 을 정의해 주세요
+        super().__init__(name)            # 부모 Human 의 __init__ 을 name 으로 불러 주세요
+        self.cute = True                  # 이 인스턴스의 cute 에 True 를 담아 주세요
+    def cry(self):                        # cry 메서드를 정의해 주세요
+        return self.name + " 응애"        # 이름과 " 응애" 를 이어서 돌려주세요
+b = Baby("아기")                          # b 에 이름이 "아기" 인 Baby 를 만들어 담아 주세요
+print(b.name, b.cute, b.cry())            # b 의 name, cute, 울음 결과를 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">아기 True 아기 응애</code></pre>
+<h3>메서드 덮어쓰기와 super()</h3>
+<p>자식이 부모와 같은 이름의 메서드를 적으면 자식 것이 우선해요(덮어쓰기). 부모 것도 같이 쓰고 싶으면 <code>super().메서드()</code>로 불러요.</p>
+<pre><code>class Teen(Human):                          # Human 을 상속받는 Teen 클래스를 정의해 주세요
+    def talk(self):                         # talk 메서드를 정의해 주세요
+        return "아 몰라요"                  # "아 몰라요" 를 돌려주세요
+class Teen2(Teen):                          # Teen 을 상속받는 Teen2 클래스를 정의해 주세요
+    def talk(self):                         # talk 메서드를 다시 정의해 주세요
+        return super().talk() + "!"         # 부모의 talk 결과에 "!" 를 붙여 돌려주세요
+print(Teen2("민수").talk())                 # 이름이 "민수" 인 Teen2 의 말을 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">아 몰라요!</code></pre>
+<p>※ 이 예제의 <code>Human</code>은 위 <code>__init__</code> 예제의 것을 그대로 써요. 덮어쓰기는 위키독스 7.3에는 없고, 영상의 “자식은 부모 것 + 자기 것” 설명을 이어서 이 글이 덧붙인 내용이에요.</p>
+<h2><span class="hl">3. 한눈에 정리</span></h2>
+<div class="table-scroll fill"><table><thead><tr><th>하고 싶은 일</th><th>쓰는 것</th></tr></thead><tbody><tr><td>상속받기</td><td><code>class 자식(부모):</code></td></tr><tr><td>물려받는 것</td><td>부모의 클래스 변수와 메서드 전부</td></tr><tr><td>자식만의 것 더하기</td><td>자식 클래스 안에 메서드·변수를 더 적는다</td></tr><tr><td>부모 <code>__init__</code> 부르기</td><td>자식 <code>__init__</code> 안에서 <code>super().__init__(...)</code></td></tr><tr><td>부모 메서드 같이 쓰기</td><td><code>super().메서드()</code></td></tr><tr><td>관계 확인</td><td><code>isinstance(a, 부모)</code>, <code>issubclass(자식, 부모)</code></td></tr></tbody></table></div>
+
+    <h2><span class="hl">함께 보기</span></h2>
+    <ul>
+      <li><a href="beginner-python-ch07-part2-notes.html">7.2 변수와 메서드 정리 — self, 클래스 변수, 인스턴스 변수</a> — 앞 편이에요.</li>
+      <li><a href="beginner-python-ch07-part1-notes.html">7.1 클래스와 인스턴스 정리 — class, 인스턴스, __init__</a> — 시리즈의 첫 편이에요.</li>
+      <li><a href="https://wikidocs.net/87" target="_blank" rel="noopener">7.3 상속 (위키독스)</a> — 이 글이 다룬 원래 교재예요.</li>
+    </ul>
+
+    <h3 id="series-list">"왕초보 Python 7장 객체지향 (7.1~7.3)" 시리즈</h3>
+    <a class="post-nav" href="beginner-python-ch07-part1-notes.html">
+      <span class="post-nav-label">(1)</span>
+      <span class="post-nav-title">7.1 클래스와 인스턴스 정리 — class, 인스턴스, __init__</span>
+    </a>
+    <a class="post-nav" href="beginner-python-ch07-part2-notes.html">
+      <span class="post-nav-label">(2)</span>
+      <span class="post-nav-title">7.2 변수와 메서드 정리 — self, 클래스 변수, 인스턴스 변수</span>
+    </a>
+    <p class="post-date">(3) 7.3 상속 정리 — 부모 클래스, 자식 클래스, super() (이 글)</p>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2026 Tigermorning
+  </footer>
+  <script src="fit-title.js"></script>
+  <script src="sidebar-loader.js"></script>
+</body>
+</html>
