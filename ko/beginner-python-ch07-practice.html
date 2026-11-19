@@ -565,21 +565,21 @@ class Truck(Vehicle):                         # Vehicle 을 상속받는 Truck �
         return "적재"                         # "적재" 를 돌려주세요
 t = Truck()                                   # t 에 Truck 인스턴스를 만들어 담아 주세요
 print(t.start(), t.load())                    # t 의 start 와 load 결과를 화면에 보여 주세요</code></pre>
-<p>보기:</p><ol class="choices" style="list-style:none;padding-left:0;"><li style="margin:.25rem 0;">① <code>class AdminUser(User)</code></li><li style="margin:.25rem 0;">② <code>class SavingsAccount(Account)</code></li><li style="margin:.25rem 0;">③ <code>class Car(Engine)</code></li><li style="margin:.25rem 0;">④ <code>class Truck(Vehicle)</code></li></ol>
+<p>보기:</p><ol class="choices" style="list-style:none;padding-left:0;"><li style="margin:.25rem 0;">① <code>class AdminUser(User)</code></li><li style="margin:.25rem 0;">② <code>class SavingsAccount(Account)</code></li><li style="margin:.25rem 0;">③ <code>class User(AdminUser)</code></li><li style="margin:.25rem 0;">④ <code>class Truck(Vehicle)</code></li></ol>
 <div class="table-scroll"><table><thead><tr><th>답할 것</th><th>내 답</th></tr></thead><tbody><tr><td>① 어색한 것</td><td>?</td></tr><tr><td>② <code>t.start()</code>를 찾는 순서</td><td>?</td></tr></tbody></table></div>
         </div>
         <details class="hint"><summary>힌트 보기</summary>
           <div class="sol-body">
-<p>각각 “자식은 부모의 한 종류다”로 읽어 보세요. 자동차는 엔진의 한 종류인가요, 아니면 엔진을 가지고 있는 것인가요?</p>
+<p>괄호 안이 부모예요. 각각 “자식은 부모의 한 종류다”로 읽어 보세요. 특히 ①과 ③은 같은 두 클래스의 부모와 자식이 서로 바뀐 모양이에요.</p>
           </div>
         </details>
         <div class="memo"><label for="memo-b5">내 답 <span>이 브라우저에만 저장</span></label><textarea id="memo-b5"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
-<p><b>정답:</b> ① ③ <code>class Car(Engine)</code> ② 인스턴스 <code>t</code> → <code>Truck</code> → <code>Vehicle</code> (<code>Vehicle</code>에서 찾아 실행)</p>
+<p><b>정답:</b> ① ③ <code>class User(AdminUser)</code> ② 인스턴스 <code>t</code> → <code>Truck</code> → <code>Vehicle</code> (<code>Vehicle</code>에서 찾아 실행)</p>
 <p>원래 코드의 실행 결과예요.</p><pre class="out"><code class="nohighlight">시동 적재</code></pre>
-    <h4>왜 이런 답이 나올까요</h4><p>“관리자는 사용자다”, “저축 계좌는 계좌다”, “트럭은 탈것이다”는 말이 되지만, “자동차는 엔진이다”는 말이 안 돼요. 자동차는 엔진을 <b>가지고 있는</b> 관계라서 상속이 아니라 <code>Car</code> 안에 엔진 객체를 속성으로 담는 방식이 알맞아요. 이름은 인스턴스 → 자식 클래스 → 부모 클래스 순서로 올라가며 찾고, <code>start</code>는 <code>Truck</code>에 없어서 <code>Vehicle</code>에서 찾아요.</p>
-    <h4>헷갈리기 쉬운 곳</h4><ul><li>코드를 재사용하고 싶다는 이유만으로 상속하면 이름만 어색해지고 불필요한 것까지 물려받아요.</li><li>“가지고 있다” 관계는 교재 7.4 “객체 속의 객체”에서 다뤄요.</li></ul>
+    <h4>왜 이런 답이 나올까요</h4><p>“관리자는 사용자다”(①), “저축 계좌는 계좌다”(②), “트럭은 탈것이다”(④)는 말이 되지만, ③ “사용자는 관리자다”는 말이 안 돼요. 관리자는 사용자의 한 종류이므로 부모는 <code>User</code>이고 자식이 <code>AdminUser</code>여야 해요. 이름은 인스턴스 → 자식 클래스 → 부모 클래스 순서로 올라가며 찾고, <code>start</code>는 <code>Truck</code>에 없어서 <code>Vehicle</code>에서 찾아요.</p>
+    <h4>헷갈리기 쉬운 곳</h4><ul><li>괄호 안에 부모를 적어요. 부모와 자식을 거꾸로 적으면 모든 사용자가 관리자의 기능을 물려받는 이상한 구조가 돼요.</li><li>코드를 재사용하고 싶다는 이유만으로 상속하면 이름만 어색해지고 불필요한 것까지 물려받아요.</li></ul>
     <p><b>핵심 한 줄:</b> 상속은 “자식은 부모의 한 종류다”가 말이 될 때만 쓰고, 이름은 인스턴스 → 자식 → 부모 순서로 찾아요.</p>
           </div>
         </details>
