@@ -38,9 +38,11 @@
     <p>앞 글의 문제는 코드 조각 하나씩 읽고 푸는 방식이었어요. 이 글은 <b>같은 프로그램에 단계마다 코드를 더해 가는</b> 방식이에요. 실제 프로그램도 이렇게 자라요. 문법은 <a href="beginner-python-ch07-notes.html">7장 객체지향 정리(7.1~7.3)</a>에 있어요.</p>
     <ul>
       <li><b>준비:</b> 파이썬 파일 하나(예: <code>game.py</code>)를 만들어 두고, 단계마다 코드를 더한 뒤 실행해서 <b>기대 출력</b>과 비교해요.</li>
-      <li><b>풀이 순서:</b> 해야 할 일을 읽고 → 직접 써 보고 → 막히면 힌트 → 마지막에 정답 코드와 비교해요.</li>
       <li><b>정답 코드는 그 단계까지의 전체 코드</b>예요. 앞 단계를 풀지 못했어도 이어서 할 수 있어요.</li>
     </ul>
+    <p>각 단계는 아래 세 부분으로 이뤄져 있고, 정답은 모두 접혀 있어서 눌러야 보여요.</p>
+<div class="table-scroll fill"><table><thead><tr><th>부분</th><th>어디에 있나</th><th>이렇게 써요</th></tr></thead><tbody><tr><td>문제 — 코드 쓰기</td><td>“해야 할 일” 목록과 확인용 실행 줄, 기대 출력</td><td>직접 코드를 써서 기대 출력과 비교해요</td></tr><tr><td>정답</td><td>“힌트 보기”, “정답 코드 보기”</td><td>막히면 힌트부터, 다 쓴 뒤에 정답과 비교해요</td></tr><tr><td>개념 질문 — 코드 없이 답하기</td><td>단계마다 1~2개, 질문 아래 “답 보기”</td><td>방금 쓴 코드가 왜 그렇게 동작하는지 말로 설명해 봐요</td></tr></tbody></table></div>
+
 
     <h2><span class="hl">한눈에 보기</span> — 다섯 단계와 도전</h2>
 <div class="table-scroll fill"><table><thead><tr><th>단계</th><th>만드는 것</th><th>쓰는 개념</th></tr></thead><tbody><tr><td>1</td><td><code>Player</code> 만들기</td><td>클래스, 인스턴스, <code>__init__</code>, 메서드</td></tr><tr><td>2</td><td>피해 받기</td><td><code>self</code>로 속성 바꾸기, 값을 돌려주는 메서드</td></tr><tr><td>3</td><td>몬스터 만들기</td><td>부모 클래스로 공통 부분 옮기기, 상속, <code>super().__init__</code></td></tr><tr><td>4</td><td>피해를 절반만 받는 전사</td><td>메서드 덮어쓰기, <code>super().메서드()</code></td></tr><tr><td>5</td><td>파티와 몬스터의 전투</td><td>종류를 따지지 않고 같은 메서드를 부르는 반복문</td></tr><tr><td>도전</td><td>두 번 때리는 보스</td><td>다른 코드를 고치지 않고 새 종류 더하기</td></tr></tbody></table></div>
@@ -48,9 +50,10 @@
     <p>※ 단계 순서는 앞 단계의 결과가 다음 단계의 재료가 되는 순서예요.</p>
 
 <h2 id="step1"><span class="hl">단계 1</span> — 플레이어 만들기</h2>
-<p><b>해야 할 일</b></p>
+<h3>문제 — 코드 쓰기</h3>
+<p>아래 조건에 맞게 코드를 직접 써 보세요.</p>
 <ul><li><code>Player(name, health)</code> 클래스를 만들어요. 이름과 체력을 저장하고, 경험치 <code>xp</code>는 항상 0으로 시작해요.</li><li><code>say_hello()</code>는 <code>"안녕, 나는 이름"</code> 글자를 돌려줘요.</li></ul>
-<p>시작 코드와 확인용 실행 줄이에요. 확인용 실행 줄은 클래스 정의 아래에 그대로 붙여요.</p>
+<p>코드를 다 쓴 뒤 <b>확인용 실행 줄</b>을 클래스 정의 아래에 붙여 실행해요. 아래 <b>기대 출력</b>과 같게 나오면 성공이에요.</p>
 <pre><code>class Player:
     pass
 
@@ -66,8 +69,7 @@ print(hero.health, hero.xp)                   # hero 의 health 와 xp 를 화�
 <p>세 값은 <code>__init__</code>에서 <code>self.이름 = 값</code>으로 저장해요. <code>xp</code>는 받지 않고 <code>__init__</code> 안에서 0으로 정해요. 메서드의 첫 매개변수는 <code>self</code>예요.</p>
 </details>
 <details class="side-note">
-<summary>정답 코드 · 설명 보기</summary>
-<p>아래는 이 단계까지의 전체 코드와 실행 결과예요.</p>
+<summary>정답 코드 보기 (이 단계까지의 전체 코드)</summary>
 <pre><code>class Player:                                 # Player 클래스를 정의해 주세요
     def __init__(self, name, health):         # 만들 때 불리는 __init__ 을 정의해 주세요
         self.name = name                      # 이 플레이어의 name 에 name 을 담아 주세요
@@ -82,11 +84,24 @@ print(hero.health, hero.xp)                   # hero 의 health 와 xp 를 화�
 100 0</code></pre>
 <p>속성은 <code>__init__</code>에서 만들고, 메서드는 <code>self</code>로 그 값을 읽어요. 이 단계에서 쓴 것은 7.1과 7.2의 기본이에요.</p>
 </details>
+<h3>개념 질문 — 코드 없이 답해 보기</h3>
+<p>방금 쓴 코드를 떠올리며 먼저 머릿속으로(또는 종이에) 답해 보고, 각 질문 아래 “답 보기”를 열어 비교해요.</p>
+<p><b>질문 1-1.</b> <code>self.health = health</code> 한 줄에서 왼쪽 <code>self.health</code>와 오른쪽 <code>health</code>는 각각 무엇인가요?</p>
+<details class="side-note">
+<summary>답 보기</summary>
+<p>오른쪽 <code>health</code>는 <code>__init__</code>이 매개변수로 받은 값이고, 왼쪽 <code>self.health</code>는 그 값을 이 인스턴스에 저장해 두는 속성이에요. 속성으로 저장해 두어야 <code>say_hello</code> 같은 다른 메서드가 나중에 읽을 수 있어요.</p>
+</details>
+<p><b>질문 1-2.</b> <code>elon</code>과 <code>mark</code>를 만들고 <code>elon.xp = 50</code>으로 바꾸면 <code>mark.xp</code>는 어떻게 될까요? 이유도 말해 보세요.</p>
+<details class="side-note">
+<summary>답 보기</summary>
+<p>실행하면 <code>50 0</code>이 나와요(<code>elon.xp</code>, <code>mark.xp</code> 순서). <code>self.xp</code>는 인스턴스마다 따로 저장돼서 <code>mark.xp</code>는 0 그대로예요.</p>
+</details>
 
 <h2 id="step2"><span class="hl">단계 2</span> — 피해 받기</h2>
-<p><b>해야 할 일</b></p>
+<h3>문제 — 코드 쓰기</h3>
+<p>아래 조건에 맞게 코드를 직접 써 보세요.</p>
 <ul><li>앞 단계의 <code>Player</code>에 <code>take_hit(damage)</code>를 더해요. 체력을 <code>damage</code>만큼 줄이되 0보다 작아지지 않게 하고, 줄어든 체력을 돌려줘요.</li><li><code>is_alive()</code>는 체력이 0보다 크면 <code>True</code>를 돌려줘요.</li></ul>
-<p>시작 코드와 확인용 실행 줄이에요. 확인용 실행 줄은 클래스 정의 아래에 그대로 붙여요.</p>
+<p>코드를 다 쓴 뒤 <b>확인용 실행 줄</b>을 클래스 정의 아래에 붙여 실행해요. 아래 <b>기대 출력</b>과 같게 나오면 성공이에요.</p>
 <pre><code># 앞 단계의 Player 클래스에 메서드 두 개를 더하세요.
 
 hero = Player("elon", 100)                    # hero 에 체력 100 인 Player 를 만들어 담아 주세요
@@ -104,8 +119,7 @@ False</code></pre>
 <p>상태를 바꾸는 일은 메서드가 <code>self.health</code>를 직접 바꿔서 해요. <code>max(0, 값)</code>은 0과 값 중 큰 쪽을 돌려줘서 음수를 막아요.</p>
 </details>
 <details class="side-note">
-<summary>정답 코드 · 설명 보기</summary>
-<p>아래는 이 단계까지의 전체 코드와 실행 결과예요.</p>
+<summary>정답 코드 보기 (이 단계까지의 전체 코드)</summary>
 <pre><code>class Player:                                 # Player 클래스를 정의해 주세요
     def __init__(self, name, health):         # 만들 때 불리는 __init__ 을 정의해 주세요
         self.name = name                      # 이 플레이어의 name 에 name 을 담아 주세요
@@ -129,11 +143,24 @@ True
 False</code></pre>
 <p>값을 바꾸는 코드를 클래스 안에 두면, 밖에서는 <code>hero.take_hit(30)</code>처럼 부르기만 하면 돼요. 체력이 0 밑으로 내려가지 않는다는 규칙이 한 곳에만 있어요.</p>
 </details>
+<h3>개념 질문 — 코드 없이 답해 보기</h3>
+<p>방금 쓴 코드를 떠올리며 먼저 머릿속으로(또는 종이에) 답해 보고, 각 질문 아래 “답 보기”를 열어 비교해요.</p>
+<p><b>질문 2-1.</b> <code>hero.take_hit(30)</code>을 부르면 <code>take_hit</code> 안의 <code>self</code>에는 무엇이 들어가나요? 몬스터가 같은 메서드를 쓴다면요?</p>
+<details class="side-note">
+<summary>답 보기</summary>
+<p><code>self</code>에는 점 앞의 <code>hero</code>가 들어가요. 다른 인스턴스(<code>slime.take_hit(5)</code>)가 부르면 그 인스턴스가 들어가서 그 인스턴스의 <code>health</code>만 바뀌어요.</p>
+</details>
+<p><b>질문 2-2.</b> <code>take_hit</code>에서 <code>self.health = max(...)</code> 대신 <code>health = max(...)</code>라고 적으면 어떻게 될까요?</p>
+<details class="side-note">
+<summary>답 보기</summary>
+<p>코드를 돌려 보면 <code>take_hit(30)</code>이 <code>100</code>, 그 뒤 <code>hero.health</code>가 <code>100</code>이에요. <code>health = ...</code>는 메서드 안에서만 쓰이는 임시 변수를 만들 뿐이라 인스턴스의 체력이 바뀌지 않아요. 인스턴스의 값을 바꾸려면 <code>self.health</code>에 저장해야 해요.</p>
+</details>
 
 <h2 id="step3"><span class="hl">단계 3</span> — 몬스터 만들기 — 공통 부분을 부모로</h2>
-<p><b>해야 할 일</b></p>
+<h3>문제 — 코드 쓰기</h3>
+<p>아래 조건에 맞게 코드를 직접 써 보세요.</p>
 <ul><li>플레이어와 몬스터가 모두 가진 <code>name</code>, <code>health</code>, <code>take_hit</code>, <code>is_alive</code>를 부모 클래스 <code>Character</code>로 옮겨요.</li><li><code>Player</code>는 <code>Character</code>를 물려받고 <code>xp</code>와 <code>say_hello</code>만 자기 것으로 가져요. <code>__init__</code>에서 <code>super().__init__(...)</code>을 써요.</li><li><code>Monster(name, health, power)</code>도 <code>Character</code>를 물려받고, <code>attack(target)</code>은 상대에게 <code>power</code>만큼 <code>take_hit</code>를 시키고 상대의 남은 체력을 돌려줘요.</li></ul>
-<p>시작 코드와 확인용 실행 줄이에요. 확인용 실행 줄은 클래스 정의 아래에 그대로 붙여요.</p>
+<p>코드를 다 쓴 뒤 <b>확인용 실행 줄</b>을 클래스 정의 아래에 붙여 실행해요. 아래 <b>기대 출력</b>과 같게 나오면 성공이에요.</p>
 <pre><code># Character, Player, Monster 세 클래스를 만드세요.
 
 hero = Player("elon", 100)                    # hero 에 체력 100 인 Player 를 만들어 담아 주세요
@@ -152,8 +179,7 @@ True True</code></pre>
 <p>같은 코드를 두 클래스에 복사하지 말고 부모에 한 번만 적어요. 자식의 <code>__init__</code>은 먼저 <code>super().__init__(name, health)</code>로 부모 몫을 맡기고 자기 몫을 저장해요. <code>attack</code>은 <code>target.take_hit(...)</code>를 부르면 돼요.</p>
 </details>
 <details class="side-note">
-<summary>정답 코드 · 설명 보기</summary>
-<p>아래는 이 단계까지의 전체 코드와 실행 결과예요.</p>
+<summary>정답 코드 보기 (이 단계까지의 전체 코드)</summary>
 <pre><code>class Character:                              # Character 클래스를 정의해 주세요 (플레이어와 몬스터의 공통 부분)
     def __init__(self, name, health):         # 만들 때 불리는 __init__ 을 정의해 주세요
         self.name = name                      # 이 캐릭터의 name 에 name 을 담아 주세요
@@ -187,11 +213,24 @@ print(slime.is_alive(), hero.is_alive())      # slime 과 hero 는 각각 살아
 True True</code></pre>
 <p>두 자식이 공통 코드를 부모에서 물려받으니, 체력 규칙을 고치려면 <code>Character</code> 한 곳만 고치면 돼요. <code>slime.attack(hero)</code>에서는 <code>attack</code>의 <code>self</code>가 <code>slime</code>, <code>target</code>이 <code>hero</code>예요.</p>
 </details>
+<h3>개념 질문 — 코드 없이 답해 보기</h3>
+<p>방금 쓴 코드를 떠올리며 먼저 머릿속으로(또는 종이에) 답해 보고, 각 질문 아래 “답 보기”를 열어 비교해요.</p>
+<p><b>질문 3-1.</b> <code>Player</code>와 <code>Monster</code>에는 <code>take_hit</code>를 적지 않았는데 <code>hero.take_hit(...)</code>이 되는 이유는? 파이썬은 어디를 어떤 순서로 찾나요?</p>
+<details class="side-note">
+<summary>답 보기</summary>
+<p>이름을 찾을 때 인스턴스 → 자기 클래스(<code>Player</code>) → 부모 클래스(<code>Character</code>) 순서로 올라가고, <code>Character</code>에서 <code>take_hit</code>를 찾아 실행해요. 공통 코드를 부모에 한 번만 적은 덕분이에요.</p>
+</details>
+<p><b>질문 3-2.</b> <code>Monster.__init__</code>에서 <code>super().__init__(name, health)</code> 줄을 지우면 <code>slime.attack(hero)</code>와 <code>slime.is_alive()</code>는 각각 어떻게 될까요?</p>
+<details class="side-note">
+<summary>답 보기</summary>
+<p>돌려 보면 <code>88</code>(공격은 <code>self.power</code>만 쓰니 성공), 다음 줄에서 <code>AttributeError: 'Monster' object has no attribute 'health'</code>예요. 부모 <code>__init__</code>이 불리지 않아 <code>health</code>가 만들어지지 않았기 때문이에요. 오류는 만드는 줄이 아니라 <code>health</code>를 읽는 줄에서 나요.</p>
+</details>
 
 <h2 id="step4"><span class="hl">단계 4</span> — 피해를 절반만 받는 전사</h2>
-<p><b>해야 할 일</b></p>
+<h3>문제 — 코드 쓰기</h3>
+<p>아래 조건에 맞게 코드를 직접 써 보세요.</p>
 <ul><li><code>Player</code>를 물려받는 <code>Warrior</code>를 만들어요. <code>take_hit(damage)</code>를 다시 적어서, 받은 피해의 절반(<code>//</code>로 몫만)만 부모의 <code>take_hit</code>에 넘기고 그 결과를 돌려줘요.</li><li><code>Warrior</code>에는 <code>__init__</code>을 적지 않아요.</li></ul>
-<p>시작 코드와 확인용 실행 줄이에요. 확인용 실행 줄은 클래스 정의 아래에 그대로 붙여요.</p>
+<p>코드를 다 쓴 뒤 <b>확인용 실행 줄</b>을 클래스 정의 아래에 붙여 실행해요. 아래 <b>기대 출력</b>과 같게 나오면 성공이에요.</p>
 <pre><code># 앞 단계의 코드 뒤에 Warrior 클래스를 더하세요.
 
 hero = Player("elon", 100)                    # hero 에 체력 100 인 Player 를 만들어 담아 주세요
@@ -211,8 +250,7 @@ True True</code></pre>
 <p>자식이 부모와 같은 이름의 메서드를 적으면 자식 것이 먼저 쓰여요. 부모 것을 쓰고 싶을 때는 <code>super().take_hit(...)</code>예요. <code>Warrior</code>에 <code>__init__</code>이 없으면 부모 <code>Player</code>의 <code>__init__</code>이 그대로 쓰여요.</p>
 </details>
 <details class="side-note">
-<summary>정답 코드 · 설명 보기</summary>
-<p>아래는 이 단계까지의 전체 코드와 실행 결과예요.</p>
+<summary>정답 코드 보기 (이 단계까지의 전체 코드)</summary>
 <pre><code>class Character:                              # Character 클래스를 정의해 주세요 (플레이어와 몬스터의 공통 부분)
     def __init__(self, name, health):         # 만들 때 불리는 __init__ 을 정의해 주세요
         self.name = name                      # 이 캐릭터의 name 에 name 을 담아 주세요
@@ -250,11 +288,24 @@ print(isinstance(tank, Player), isinstance(tank, Character))  # tank 는 Player,
 True True</code></pre>
 <p>몬스터의 <code>attack</code> 코드는 한 글자도 바꾸지 않았는데 <code>Warrior</code>가 맞으면 피해가 절반이에요. <code>attack</code>은 상대의 <code>take_hit</code>를 부를 뿐이고, 어느 <code>take_hit</code>가 실행되는지는 상대가 어떤 클래스인지에 따라 정해져요.</p>
 </details>
+<h3>개념 질문 — 코드 없이 답해 보기</h3>
+<p>방금 쓴 코드를 떠올리며 먼저 머릿속으로(또는 종이에) 답해 보고, 각 질문 아래 “답 보기”를 열어 비교해요.</p>
+<p><b>질문 4-1.</b> <code>attack</code>은 <code>Monster</code>에만 있는데, <code>slime.attack(tank)</code>에서 피해가 절반이 되는 이유는 무엇인가요? 어떤 <code>take_hit</code>가 실행되나요?</p>
+<details class="side-note">
+<summary>답 보기</summary>
+<p><code>attack</code>은 <code>target.take_hit(self.power)</code>를 부를 뿐이에요. 어느 <code>take_hit</code>가 실행될지는 <code>target</code>이 어떤 클래스인지에 따라 정해져요. <code>tank</code>는 <code>Warrior</code>라서 <code>Warrior.take_hit</code>가 실행되고 피해가 절반이 돼요. <code>hero</code>는 <code>Player</code>라서 부모의 <code>take_hit</code>가 그대로 실행돼요.</p>
+</details>
+<p><b>질문 4-2.</b> <code>Warrior.take_hit</code>에서 <code>super().take_hit(damage // 2)</code> 대신 <code>self.health -= damage // 2</code>라고 적으면 무엇이 달라지나요?</p>
+<details class="side-note">
+<summary>답 보기</summary>
+<p>체력 3인 전사에게 10의 피해를 주고 체력을 보면 <code>-2</code>이에요. 부모의 “체력은 0 밑으로 내려가지 않는다”는 규칙이 적용되지 않아서 음수가 돼요. 부모의 규칙을 고쳐도 이 자식에는 반영되지 않아요. 부모 것을 이어서 쓰려면 <code>super()</code>로 불러요.</p>
+</details>
 
 <h2 id="step5"><span class="hl">단계 5</span> — 파티와 몬스터의 전투</h2>
-<p><b>해야 할 일</b></p>
+<h3>문제 — 코드 쓰기</h3>
+<p>아래 조건에 맞게 코드를 직접 써 보세요.</p>
 <ul><li>파티 <code>[Player("elon", 100), Warrior("mark", 100)]</code>와 몬스터 <code>[Monster("슬라임", 30, 12), Monster("고블린", 40, 25)]</code>를 리스트로 만들어요.</li><li>각 몬스터가 파티의 모든 멤버를 한 번씩 공격하게 반복문을 써요. 멤버가 <code>Player</code>인지 <code>Warrior</code>인지 따지는 <code>if</code>는 쓰지 않아요.</li><li>마지막에 멤버마다 이름, 체력, 생존 여부를 출력해요.</li></ul>
-<p>시작 코드와 확인용 실행 줄이에요. 확인용 실행 줄은 클래스 정의 아래에 그대로 붙여요.</p>
+<p>코드를 다 쓴 뒤 <b>확인용 실행 줄</b>을 클래스 정의 아래에 붙여 실행해요. 아래 <b>기대 출력</b>과 같게 나오면 성공이에요.</p>
 <pre><code># 앞 단계의 클래스들은 그대로 두고, 아래를 채우세요.
 party = []
 monsters = []
@@ -274,8 +325,7 @@ mark 82 True</code></pre>
 <p>반복문 두 겹이면 돼요. 바깥은 몬스터, 안쪽은 파티 멤버예요. 안에서 <code>m.attack(p)</code>만 부르면, 멤버의 종류에 맞는 <code>take_hit</code>가 알아서 실행돼요.</p>
 </details>
 <details class="side-note">
-<summary>정답 코드 · 설명 보기</summary>
-<p>아래는 이 단계까지의 전체 코드와 실행 결과예요.</p>
+<summary>정답 코드 보기 (이 단계까지의 전체 코드)</summary>
 <pre><code>class Character:                              # Character 클래스를 정의해 주세요 (플레이어와 몬스터의 공통 부분)
     def __init__(self, name, health):         # 만들 때 불리는 __init__ 을 정의해 주세요
         self.name = name                      # 이 캐릭터의 name 에 name 을 담아 주세요
@@ -311,11 +361,24 @@ for p in party:                               # party 의 멤버를 하나씩 p 
 mark 82 True</code></pre>
 <p>고블린의 힘 25는 일반 플레이어에게 그대로(100 → 63), 전사에게는 절반인 12(100 → 82)로 들어가요. 반복문은 종류를 몰라도 되고, 새 종류의 멤버나 몬스터를 더해도 이 반복문은 고칠 필요가 없어요.</p>
 </details>
+<h3>개념 질문 — 코드 없이 답해 보기</h3>
+<p>방금 쓴 코드를 떠올리며 먼저 머릿속으로(또는 종이에) 답해 보고, 각 질문 아래 “답 보기”를 열어 비교해요.</p>
+<p><b>질문 5-1.</b> 반복문 안에 <code>if</code>로 <code>Player</code>인지 <code>Warrior</code>인지 나누지 않았는데도 전사의 피해만 절반이 되는 이유는 무엇인가요?</p>
+<details class="side-note">
+<summary>답 보기</summary>
+<p>반복문은 <code>m.attack(p)</code>만 부르고, <code>attack</code>은 <code>p.take_hit(...)</code>을 불러요. 어느 <code>take_hit</code>가 쓰일지는 <code>p</code>가 어떤 클래스의 인스턴스인지가 정해 줘요. 종류별 차이는 클래스 안에 있고 부르는 쪽은 몰라도 돼요.</p>
+</details>
+<p><b>질문 5-2.</b> <code>party</code>에 <code>take_hit</code>와 <code>is_alive</code>를 가진 새 클래스의 인스턴스를 더하면 반복문을 고쳐야 하나요?</p>
+<details class="side-note">
+<summary>답 보기</summary>
+<p>고치지 않아도 돼요. 반복문이 쓰는 것은 <code>take_hit</code>와 <code>is_alive</code>, <code>name</code>, <code>health</code>뿐이라서, 같은 이름의 메서드와 속성을 가진 클래스(예: <code>Character</code>를 물려받은 새 클래스)라면 그대로 동작해요.</p>
+</details>
 
 <h2 id="step6"><span class="hl">도전</span> — 한 번에 두 번 때리는 보스</h2>
-<p><b>해야 할 일</b></p>
+<h3>문제 — 코드 쓰기</h3>
+<p>아래 조건에 맞게 코드를 직접 써 보세요.</p>
 <ul><li><code>Monster</code>를 물려받는 <code>Boss</code>를 만들어요. <code>attack(target)</code>을 다시 적어서 같은 힘으로 <b>두 번</b> 공격하고, 마지막 공격 뒤 상대의 남은 체력을 돌려줘요.</li><li><code>Boss("드래곤", 200, 20)</code>이 일반 플레이어와 전사를 한 번씩 공격하는 코드를 써서 결과를 확인해요.</li></ul>
-<p>시작 코드와 확인용 실행 줄이에요. 확인용 실행 줄은 클래스 정의 아래에 그대로 붙여요.</p>
+<p>코드를 다 쓴 뒤 <b>확인용 실행 줄</b>을 클래스 정의 아래에 붙여 실행해요. 아래 <b>기대 출력</b>과 같게 나오면 성공이에요.</p>
 <pre><code># 앞 단계의 코드 뒤에 Boss 클래스를 더하세요.
 
 hero = Player("elon", 100)                    # hero 에 체력 100 인 Player 를 만들어 담아 주세요
@@ -331,8 +394,7 @@ mark 80</code></pre>
 <p>같은 이름의 <code>attack</code>을 자식에서 다시 적고, 안에서 <code>target.take_hit(self.power)</code>를 두 번 불러요. <code>super().attack(target)</code>을 한 번 부르고 한 번 더 공격하는 방법도 있어요.</p>
 </details>
 <details class="side-note">
-<summary>정답 코드 · 설명 보기</summary>
-<p>아래는 이 단계까지의 전체 코드와 실행 결과예요.</p>
+<summary>정답 코드 보기 (이 단계까지의 전체 코드)</summary>
 <pre><code>class Character:                              # Character 클래스를 정의해 주세요 (플레이어와 몬스터의 공통 부분)
     def __init__(self, name, health):         # 만들 때 불리는 __init__ 을 정의해 주세요
         self.name = name                      # 이 캐릭터의 name 에 name 을 담아 주세요
@@ -369,6 +431,13 @@ for target in [hero, tank]:                   # hero 와 tank 를 하나씩 targ
 <pre class="out"><code class="nohighlight">elon 60
 mark 80</code></pre>
 <p>일반 플레이어는 20을 두 번 맞아 60, 전사는 10을 두 번 맞아 80이에요. <code>Boss</code>를 더하려고 <code>Monster</code>나 <code>Player</code> 코드는 하나도 고치지 않았어요.</p>
+</details>
+<h3>개념 질문 — 코드 없이 답해 보기</h3>
+<p>방금 쓴 코드를 떠올리며 먼저 머릿속으로(또는 종이에) 답해 보고, 각 질문 아래 “답 보기”를 열어 비교해요.</p>
+<p><b>질문 6-1.</b> <code>Boss</code>를 더하려고 고친 기존 코드가 있나요? 있다면 어디인가요?</p>
+<details class="side-note">
+<summary>답 보기</summary>
+<p>없어요. <code>Monster</code>를 물려받은 새 클래스를 더했을 뿐이고, <code>Player</code>·<code>Warrior</code>·<code>Monster</code>·<code>Character</code>는 그대로예요. <code>Boss</code>가 다시 적은 것은 <code>attack</code> 하나뿐이에요.</p>
 </details>
 
     <h2><span class="hl">마무리</span> — 무엇이 어디에서 쓰였나</h2>
