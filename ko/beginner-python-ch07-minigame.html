@@ -41,7 +41,7 @@
       <li><b>정답 코드는 그 단계까지의 전체 코드</b>예요. 앞 단계를 풀지 못했어도 이어서 할 수 있어요.</li>
     </ul>
     <p>각 단계는 아래 세 부분으로 이뤄져 있고, 정답은 모두 접혀 있어서 눌러야 보여요.</p>
-<div class="table-scroll fill"><table><thead><tr><th>부분</th><th>어디에 있나</th><th>이렇게 써요</th></tr></thead><tbody><tr><td>문제 — 코드 쓰기</td><td>“해야 할 일” 목록과 확인용 실행 줄, 기대 출력</td><td>직접 코드를 써서 기대 출력과 비교해요</td></tr><tr><td>정답</td><td>“힌트 보기”, “정답 코드 보기”</td><td>막히면 힌트부터, 다 쓴 뒤에 정답과 비교해요</td></tr><tr><td>개념 질문 — 직접 정리해 보기</td><td>단계마다 1~2개, 질문 아래 “답 보기”</td><td>그 단계의 개념을 표나 문장으로 스스로 정리하고, 답의 “정리” 문장과 비교해요</td></tr></tbody></table></div>
+<div class="table-scroll fill"><table><thead><tr><th>부분</th><th>어디에 있나</th><th>이렇게 써요</th></tr></thead><tbody><tr><td>문제 — 코드 쓰기</td><td>“해야 할 일” 목록과 확인용 실행 줄, 기대 출력</td><td>직접 코드를 써서 기대 출력과 비교해요</td></tr><tr><td>정답</td><td>“힌트 보기”, “정답 코드 보기”</td><td>막히면 힌트부터, 다 쓴 뒤에 정답과 비교해요</td></tr><tr><td>개념 질문 — 코드 없이 답하기</td><td>단계마다 1~2개, 질문 아래 “답 보기”</td><td>방금 쓴 코드가 왜 그렇게 동작하는지 말로 설명해 봐요</td></tr></tbody></table></div>
 
 
     <h2><span class="hl">한눈에 보기</span> — 다섯 단계와 도전</h2>
@@ -84,18 +84,17 @@ print(hero.health, hero.xp)                   # hero 의 health 와 xp 를 화�
 100 0</code></pre>
 <p>속성은 <code>__init__</code>에서 만들고, 메서드는 <code>self</code>로 그 값을 읽어요. 이 단계에서 쓴 것은 7.1과 7.2의 기본이에요.</p>
 </details>
-<h3>개념 질문 — 직접 정리해 보기</h3>
-<p>이 단계에서 쓴 개념을 <b>스스로 말로 정리해 보는</b> 질문이에요. 먼저 종이나 메모장에 적어 보고, “답 보기”의 정리와 비교해요. 답 끝의 <b>정리</b> 문장이 이 단계에서 기억할 규칙이에요.</p>
-<p><b>질문 1-1.</b> <b>클래스와 인스턴스의 차이</b>를 <b>무엇인가 · 언제 생기나 · 몇 개 만들 수 있나</b> 세 기준으로 비교해 정리해 보세요.</p>
+<h3>개념 질문 — 코드 없이 답해 보기</h3>
+<p>방금 쓴 코드를 떠올리며 먼저 머릿속으로(또는 종이에) 답해 보고, 각 질문 아래 “답 보기”를 열어 비교해요.</p>
+<p><b>질문 1-1.</b> <code>self.health = health</code> 한 줄에서 왼쪽 <code>self.health</code>와 오른쪽 <code>health</code>는 각각 무엇인가요?</p>
 <details class="side-note">
 <summary>답 보기</summary>
-<p>예시: <code>Player</code>가 클래스, <code>hero = Player("elon", 100)</code>의 <code>hero</code>가 인스턴스예요.</p><div class="table-scroll fill"><table><thead><tr><th>기준</th><th>클래스</th><th>인스턴스</th></tr></thead><tbody><tr><td>무엇인가</td><td>같은 모양의 속성·메서드를 적어 둔 설계</td><td>그 설계로 만든, 실제 값을 가진 객체</td></tr><tr><td>언제 생기나</td><td><code>class</code> 줄이 실행될 때 (보통 한 번)</td><td><code>클래스(...)</code>를 부를 때마다</td></tr><tr><td>몇 개인가</td><td>하나</td><td>필요한 만큼 (각자 값을 따로 가짐)</td></tr></tbody></table></div>
-<p><b>정리:</b> 클래스는 모양을 정하고, 인스턴스는 그 모양대로 값을 가진 실물이에요.</p>
+<p>오른쪽 <code>health</code>는 <code>__init__</code>이 매개변수로 받은 값이고, 왼쪽 <code>self.health</code>는 그 값을 이 인스턴스에 저장해 두는 속성이에요. 속성으로 저장해 두어야 <code>say_hello</code> 같은 다른 메서드가 나중에 읽을 수 있어요.</p>
 </details>
-<p><b>질문 1-2.</b> <code>__init__</code>에 대해 빈칸을 채워 보세요. “<code>__init__</code>은 ( ① ) 때, ( ② )가 자동으로 부르고, 인스턴스 하나당 ( ③ ) 번 실행되며, 하는 일은 ( ④ )이다.”</p>
+<p><b>질문 1-2.</b> <code>elon</code>과 <code>mark</code>를 만들고 <code>elon.xp = 50</code>으로 바꾸면 <code>mark.xp</code>는 어떻게 될까요? 이유도 말해 보세요.</p>
 <details class="side-note">
 <summary>답 보기</summary>
-<p>① <code>클래스(...)</code>로 인스턴스를 만들 ② 파이썬 (우리가 직접 부르지 않아요) ③ 한 ④ 인스턴스가 처음 가질 속성을 <code>self.이름 = 값</code>으로 저장하는 일</p><p><b>정리:</b> <code>__init__</code>은 인스턴스를 만드는 순간에만, 자동으로, 한 번 실행되는 “처음 값 정하기” 메서드예요. 인스턴스를 변수에 옮겨 담거나 리스트에서 꺼내는 것은 새로 만드는 것이 아니어서 다시 실행되지 않아요.</p>
+<p>실행하면 <code>50 0</code>이 나와요(<code>elon.xp</code>, <code>mark.xp</code> 순서). <code>self.xp</code>는 인스턴스마다 따로 저장돼서 <code>mark.xp</code>는 0 그대로예요.</p>
 </details>
 
 <h2 id="step2"><span class="hl">단계 2</span> — 피해 받기</h2>
@@ -144,18 +143,17 @@ True
 False</code></pre>
 <p>값을 바꾸는 코드를 클래스 안에 두면, 밖에서는 <code>hero.take_hit(30)</code>처럼 부르기만 하면 돼요. 체력이 0 밑으로 내려가지 않는다는 규칙이 한 곳에만 있어요.</p>
 </details>
-<h3>개념 질문 — 직접 정리해 보기</h3>
-<p>이 단계에서 쓴 개념을 <b>스스로 말로 정리해 보는</b> 질문이에요. 먼저 종이나 메모장에 적어 보고, “답 보기”의 정리와 비교해요. 답 끝의 <b>정리</b> 문장이 이 단계에서 기억할 규칙이에요.</p>
-<p><b>질문 2-1.</b> 메서드를 <b>정의할 때는 <code>self</code>를 적고 부를 때는 적지 않는</b> 이유를, <code>hero.take_hit(30)</code>이 실제로 어떻게 실행되는지 풀어서 설명해 보세요.</p>
+<h3>개념 질문 — 코드 없이 답해 보기</h3>
+<p>방금 쓴 코드를 떠올리며 먼저 머릿속으로(또는 종이에) 답해 보고, 각 질문 아래 “답 보기”를 열어 비교해요.</p>
+<p><b>질문 2-1.</b> <code>hero.take_hit(30)</code>을 부르면 <code>take_hit</code> 안의 <code>self</code>에는 무엇이 들어가나요? 몬스터가 같은 메서드를 쓴다면요?</p>
 <details class="side-note">
 <summary>답 보기</summary>
-<p>파이썬은 <code>hero.take_hit(30)</code>을 <code>Player.take_hit(hero, 30)</code>으로 바꿔 실행해요. 점 앞의 <code>hero</code>가 첫 번째 값으로 자동으로 넘어가고, 그것을 받는 매개변수가 <code>self</code>예요.</p><p>두 방식으로 부른 결과를 비교하면 같아요: <code>70 70</code> (<code>h1.take_hit(30)</code>과 <code>Player.take_hit(h2, 30)</code> 뒤의 체력).</p><p><b>정리:</b> <code>self</code>는 “점 앞의 그 인스턴스”가 들어오는 자리예요. 부를 때 안 적는 것은 파이썬이 대신 넘겨 주기 때문이에요.</p>
+<p><code>self</code>에는 점 앞의 <code>hero</code>가 들어가요. 다른 인스턴스(<code>slime.take_hit(5)</code>)가 부르면 그 인스턴스가 들어가서 그 인스턴스의 <code>health</code>만 바뀌어요.</p>
 </details>
-<p><b>질문 2-2.</b> <code>self.health</code>, 매개변수 <code>damage</code>, 메서드 안에서 <code>health = ...</code>로 만든 변수는 <b>각각 어디에 저장되고 언제까지 남는지</b> 표로 정리해 보세요.</p>
+<p><b>질문 2-2.</b> <code>take_hit</code>에서 <code>self.health = max(...)</code> 대신 <code>health = max(...)</code>라고 적으면 어떻게 될까요?</p>
 <details class="side-note">
 <summary>답 보기</summary>
-<div class="table-scroll fill"><table><thead><tr><th>이름</th><th>저장되는 곳</th><th>남는 기간</th></tr></thead><tbody><tr><td><code>self.health</code></td><td>그 인스턴스 안</td><td>인스턴스가 있는 동안 (다른 메서드에서도 읽을 수 있어요)</td></tr><tr><td><code>damage</code> (매개변수)</td><td>메서드를 부르는 동안만</td><td>메서드가 끝나면 사라져요</td></tr><tr><td><code>health = ...</code> (<code>self</code> 없음)</td><td>메서드 안의 임시 변수</td><td>메서드가 끝나면 사라져요 (인스턴스는 바뀌지 않아요)</td></tr></tbody></table></div>
-<p>실제로 <code>health = max(...)</code>로 적어 돌려 보면 <code>take_hit(30)</code>이 <code>100</code>, 그 뒤 <code>hero.health</code>가 <code>100</code>이에요. 체력이 줄지 않았어요.</p><p><b>정리:</b> 인스턴스에 남겨야 할 값은 <code>self.이름</code>에 저장하고, 그 밖의 이름은 메서드가 끝나면 사라져요.</p>
+<p>코드를 돌려 보면 <code>take_hit(30)</code>이 <code>100</code>, 그 뒤 <code>hero.health</code>가 <code>100</code>이에요. <code>health = ...</code>는 메서드 안에서만 쓰이는 임시 변수를 만들 뿐이라 인스턴스의 체력이 바뀌지 않아요. 인스턴스의 값을 바꾸려면 <code>self.health</code>에 저장해야 해요.</p>
 </details>
 
 <h2 id="step3"><span class="hl">단계 3</span> — 몬스터 만들기 — 공통 부분을 부모로</h2>
@@ -215,18 +213,17 @@ print(slime.is_alive(), hero.is_alive())      # slime 과 hero 는 각각 살아
 True True</code></pre>
 <p>두 자식이 공통 코드를 부모에서 물려받으니, 체력 규칙을 고치려면 <code>Character</code> 한 곳만 고치면 돼요. <code>slime.attack(hero)</code>에서는 <code>attack</code>의 <code>self</code>가 <code>slime</code>, <code>target</code>이 <code>hero</code>예요.</p>
 </details>
-<h3>개념 질문 — 직접 정리해 보기</h3>
-<p>이 단계에서 쓴 개념을 <b>스스로 말로 정리해 보는</b> 질문이에요. 먼저 종이나 메모장에 적어 보고, “답 보기”의 정리와 비교해요. 답 끝의 <b>정리</b> 문장이 이 단계에서 기억할 규칙이에요.</p>
-<p><b>질문 3-1.</b> <b>상속을 써도 되는 경우</b>를 판단하는 기준을 정리해 보세요. <code>Player</code>와 <code>Monster</code>를 각각 <code>Character</code>의 자식으로 만든 것은 왜 알맞고, <code>Monster</code>를 <code>Player</code>의 자식으로 만들면 왜 어색할까요?</p>
+<h3>개념 질문 — 코드 없이 답해 보기</h3>
+<p>방금 쓴 코드를 떠올리며 먼저 머릿속으로(또는 종이에) 답해 보고, 각 질문 아래 “답 보기”를 열어 비교해요.</p>
+<p><b>질문 3-1.</b> <code>Player</code>와 <code>Monster</code>에는 <code>take_hit</code>를 적지 않았는데 <code>hero.take_hit(...)</code>이 되는 이유는? 파이썬은 어디를 어떤 순서로 찾나요?</p>
 <details class="side-note">
 <summary>답 보기</summary>
-<p>기준은 <b>“자식은 부모의 한 종류다”(is a)</b>가 말이 되는지예요. 위키독스도 화살표를 따라 “Student is a Person”처럼 읽어 보라고 해요.</p><div class="table-scroll fill"><table><thead><tr><th>관계</th><th>읽어 보기</th><th>판단</th></tr></thead><tbody><tr><td><code>Player</code> → <code>Character</code></td><td>“플레이어는 캐릭터다”</td><td>알맞아요. 이름·체력·피해 받기가 모두 공통이에요</td></tr><tr><td><code>Monster</code> → <code>Character</code></td><td>“몬스터는 캐릭터다”</td><td>알맞아요</td></tr><tr><td><code>Monster</code> → <code>Player</code></td><td>“몬스터는 플레이어다”</td><td>어색해요. <code>xp</code>, <code>say_hello</code>처럼 몬스터에 필요 없는 것까지 물려받아요</td></tr></tbody></table></div>
-<p><b>정리:</b> 상속은 코드를 재사용하려는 용도만이 아니라, 두 클래스가 같은 종류의 관계일 때 공통 부분을 부모에 한 번만 적기 위해 써요.</p>
+<p>이름을 찾을 때 인스턴스 → 자기 클래스(<code>Player</code>) → 부모 클래스(<code>Character</code>) 순서로 올라가고, <code>Character</code>에서 <code>take_hit</code>를 찾아 실행해요. 공통 코드를 부모에 한 번만 적은 덕분이에요.</p>
 </details>
-<p><b>질문 3-2.</b> 자식 클래스가 <b><code>__init__</code>을 다시 적으면 부모의 <code>__init__</code>은 자동으로 실행될까요?</b> 안 된다면 부모가 하던 일(<code>name</code>, <code>health</code> 저장)은 누가 하나요?</p>
+<p><b>질문 3-2.</b> <code>Monster.__init__</code>에서 <code>super().__init__(name, health)</code> 줄을 지우면 <code>slime.attack(hero)</code>와 <code>slime.is_alive()</code>는 각각 어떻게 될까요?</p>
 <details class="side-note">
 <summary>답 보기</summary>
-<p>자동으로 실행되지 않아요. 자식이 <code>__init__</code>을 적으면 그것이 부모 것을 가려서, 부모의 <code>__init__</code>이 하던 일은 자식 <code>__init__</code> 안에서 <code>super().__init__(...)</code>로 직접 불러야 해요.</p><p>빼 보면 <code>slime.attack(hero)</code>는 <code>88</code>으로 성공하지만 <code>slime.is_alive()</code>에서 <code>AttributeError: 'Monster' object has no attribute 'health'</code>예요. 오류는 만드는 줄이 아니라 <code>health</code>를 읽는 줄에서 나요.</p><p><b>정리:</b> 자식에 <code>__init__</code>이 있으면 <code>super().__init__(...)</code>을 꼭 불러요. 자식에 <code>__init__</code>이 아예 없으면 부모 것이 그대로 쓰여서 부를 필요가 없어요.</p>
+<p>돌려 보면 <code>88</code>(공격은 <code>self.power</code>만 쓰니 성공), 다음 줄에서 <code>AttributeError: 'Monster' object has no attribute 'health'</code>예요. 부모 <code>__init__</code>이 불리지 않아 <code>health</code>가 만들어지지 않았기 때문이에요. 오류는 만드는 줄이 아니라 <code>health</code>를 읽는 줄에서 나요.</p>
 </details>
 
 <h2 id="step4"><span class="hl">단계 4</span> — 피해를 절반만 받는 전사</h2>
@@ -291,18 +288,17 @@ print(isinstance(tank, Player), isinstance(tank, Character))  # tank 는 Player,
 True True</code></pre>
 <p>몬스터의 <code>attack</code> 코드는 한 글자도 바꾸지 않았는데 <code>Warrior</code>가 맞으면 피해가 절반이에요. <code>attack</code>은 상대의 <code>take_hit</code>를 부를 뿐이고, 어느 <code>take_hit</code>가 실행되는지는 상대가 어떤 클래스인지에 따라 정해져요.</p>
 </details>
-<h3>개념 질문 — 직접 정리해 보기</h3>
-<p>이 단계에서 쓴 개념을 <b>스스로 말로 정리해 보는</b> 질문이에요. 먼저 종이나 메모장에 적어 보고, “답 보기”의 정리와 비교해요. 답 끝의 <b>정리</b> 문장이 이 단계에서 기억할 규칙이에요.</p>
-<p><b>질문 4-1.</b> <b>덮어쓰기</b>(자식이 부모와 같은 이름의 메서드를 다시 적기)와 <b>새 메서드 더하기</b>(부모에 없는 이름을 자식에 적기)는 어떻게 다른가요? 이 게임에서 각각의 예는 무엇인가요?</p>
+<h3>개념 질문 — 코드 없이 답해 보기</h3>
+<p>방금 쓴 코드를 떠올리며 먼저 머릿속으로(또는 종이에) 답해 보고, 각 질문 아래 “답 보기”를 열어 비교해요.</p>
+<p><b>질문 4-1.</b> <code>attack</code>은 <code>Monster</code>에만 있는데, <code>slime.attack(tank)</code>에서 피해가 절반이 되는 이유는 무엇인가요? 어떤 <code>take_hit</code>가 실행되나요?</p>
 <details class="side-note">
 <summary>답 보기</summary>
-<div class="table-scroll fill"><table><thead><tr><th></th><th>덮어쓰기</th><th>새 메서드 더하기</th></tr></thead><tbody><tr><td>이름</td><td>부모와 같음</td><td>부모에 없음</td></tr><tr><td>부르면</td><td>자식 것만 실행돼요 (부모 것은 가려져요)</td><td>자식만 쓸 수 있어요 (부모 인스턴스에는 없어요)</td></tr><tr><td>쓰는 때</td><td>같은 일을 다르게 하고 싶을 때</td><td>새 기능을 더하고 싶을 때</td></tr><tr><td>이 게임의 예</td><td><code>Warrior.take_hit</code>, <code>Boss.attack</code></td><td><code>Player.say_hello</code>, <code>Monster.attack</code></td></tr></tbody></table></div>
-<p><b>정리:</b> 이름이 같으면 자식 것이 먼저이고(덮어쓰기), 이름이 다르면 자식이 기능을 더하는 거예요. 이름을 찾는 순서는 인스턴스 → 자식 클래스 → 부모 클래스예요.</p>
+<p><code>attack</code>은 <code>target.take_hit(self.power)</code>를 부를 뿐이에요. 어느 <code>take_hit</code>가 실행될지는 <code>target</code>이 어떤 클래스인지에 따라 정해져요. <code>tank</code>는 <code>Warrior</code>라서 <code>Warrior.take_hit</code>가 실행되고 피해가 절반이 돼요. <code>hero</code>는 <code>Player</code>라서 부모의 <code>take_hit</code>가 그대로 실행돼요.</p>
 </details>
-<p><b>질문 4-2.</b> 덮어쓴 메서드 안에서 부모 것을 쓰는 방법은 <b><code>super().메서드()</code></b>와 <b>부모가 하던 계산을 자식에서 직접 다시 적기</b> 두 가지예요. 어느 쪽이 나은 이유를 이 게임의 <code>take_hit</code>로 설명해 보세요.</p>
+<p><b>질문 4-2.</b> <code>Warrior.take_hit</code>에서 <code>super().take_hit(damage // 2)</code> 대신 <code>self.health -= damage // 2</code>라고 적으면 무엇이 달라지나요?</p>
 <details class="side-note">
 <summary>답 보기</summary>
-<p>직접 다시 적으면 부모의 규칙(체력은 0 밑으로 내려가지 않는다)까지 따로 적지 않는 한 사라져요. 실제로 <code>self.health -= damage // 2</code>로 적고 체력 3인 전사에게 10의 피해를 주면 체력이 <code>-2</code>이 돼요.</p><p>또 부모의 규칙을 나중에 고쳐도 자식에는 반영되지 않아요. <code>super().take_hit(damage // 2)</code>는 바꾸고 싶은 부분(피해를 절반으로)만 자식에 적고 나머지는 부모에게 맡겨요.</p><p><b>정리:</b> 자식은 바꾸고 싶은 부분만 적고, 나머지는 <code>super()</code>로 부모에게 맡겨요. 그러면 부모를 고칠 때 자식도 함께 따라와요.</p>
+<p>체력 3인 전사에게 10의 피해를 주고 체력을 보면 <code>-2</code>이에요. 부모의 “체력은 0 밑으로 내려가지 않는다”는 규칙이 적용되지 않아서 음수가 돼요. 부모의 규칙을 고쳐도 이 자식에는 반영되지 않아요. 부모 것을 이어서 쓰려면 <code>super()</code>로 불러요.</p>
 </details>
 
 <h2 id="step5"><span class="hl">단계 5</span> — 파티와 몬스터의 전투</h2>
@@ -365,18 +361,17 @@ for p in party:                               # party 의 멤버를 하나씩 p 
 mark 82 True</code></pre>
 <p>고블린의 힘 25는 일반 플레이어에게 그대로(100 → 63), 전사에게는 절반인 12(100 → 82)로 들어가요. 반복문은 종류를 몰라도 되고, 새 종류의 멤버나 몬스터를 더해도 이 반복문은 고칠 필요가 없어요.</p>
 </details>
-<h3>개념 질문 — 직접 정리해 보기</h3>
-<p>이 단계에서 쓴 개념을 <b>스스로 말로 정리해 보는</b> 질문이에요. 먼저 종이나 메모장에 적어 보고, “답 보기”의 정리와 비교해요. 답 끝의 <b>정리</b> 문장이 이 단계에서 기억할 규칙이에요.</p>
-<p><b>질문 5-1.</b> <code>m.attack(p)</code> 한 줄이 <code>p</code>가 <code>Player</code>인지 <code>Warrior</code>인지에 따라 <b>다르게 동작하는 원리</b>를 “누가 어느 메서드를 고르는가”로 설명해 보세요.</p>
+<h3>개념 질문 — 코드 없이 답해 보기</h3>
+<p>방금 쓴 코드를 떠올리며 먼저 머릿속으로(또는 종이에) 답해 보고, 각 질문 아래 “답 보기”를 열어 비교해요.</p>
+<p><b>질문 5-1.</b> 반복문 안에 <code>if</code>로 <code>Player</code>인지 <code>Warrior</code>인지 나누지 않았는데도 전사의 피해만 절반이 되는 이유는 무엇인가요?</p>
 <details class="side-note">
 <summary>답 보기</summary>
-<p><code>Monster.attack</code>은 <code>target.take_hit(...)</code>이라는 <b>이름</b>만 부르고, 그 이름의 메서드를 <b>실행하는 순간 <code>target</code>의 클래스에서 찾아</b> 실행해요. <code>Player</code> 인스턴스면 부모 <code>Character</code>의 <code>take_hit</code>가, <code>Warrior</code> 인스턴스면 <code>Warrior</code>의 <code>take_hit</code>가 찾아져요.</p><p><b>정리:</b> 부르는 쪽은 메서드 이름만 정하고, 어느 구현을 쓸지는 받는 인스턴스의 클래스가 정해요. 그래서 부르는 쪽 코드에 종류별 <code>if</code>가 필요 없어요.</p>
+<p>반복문은 <code>m.attack(p)</code>만 부르고, <code>attack</code>은 <code>p.take_hit(...)</code>을 불러요. 어느 <code>take_hit</code>가 쓰일지는 <code>p</code>가 어떤 클래스의 인스턴스인지가 정해 줘요. 종류별 차이는 클래스 안에 있고 부르는 쪽은 몰라도 돼요.</p>
 </details>
-<p><b>질문 5-2.</b> 새 종류(예: 방어력이 있는 <code>Knight</code>)를 더할 때, <b>클래스를 나눈 지금 구조</b>와 <b>종류마다 <code>if</code>로 나누는 구조</b>에서 각각 고쳐야 하는 곳을 비교해 정리해 보세요.</p>
+<p><b>질문 5-2.</b> <code>party</code>에 <code>take_hit</code>와 <code>is_alive</code>를 가진 새 클래스의 인스턴스를 더하면 반복문을 고쳐야 하나요?</p>
 <details class="side-note">
 <summary>답 보기</summary>
-<div class="table-scroll fill"><table><thead><tr><th></th><th>클래스로 나눈 구조</th><th><code>if</code>로 나누는 구조</th></tr></thead><tbody><tr><td>고쳐야 하는 곳</td><td><code>Knight</code> 클래스를 하나 더 적는다 (필요하면 <code>take_hit</code>만 덮어쓰기)</td><td>전투 반복문, 피해 계산 함수 등 종류를 나누는 <code>if</code>가 있는 모든 곳</td></tr><tr><td>기존 코드</td><td>그대로</td><td>고쳐야 해서 실수할 곳이 늘어요</td></tr></tbody></table></div>
-<p><b>정리:</b> 종류별 차이를 클래스 안에 두면 새 종류는 클래스만 더하면 되고, 부르는 쪽 코드는 그대로예요.</p>
+<p>고치지 않아도 돼요. 반복문이 쓰는 것은 <code>take_hit</code>와 <code>is_alive</code>, <code>name</code>, <code>health</code>뿐이라서, 같은 이름의 메서드와 속성을 가진 클래스(예: <code>Character</code>를 물려받은 새 클래스)라면 그대로 동작해요.</p>
 </details>
 
 <h2 id="step6"><span class="hl">도전</span> — 한 번에 두 번 때리는 보스</h2>
@@ -437,13 +432,12 @@ for target in [hero, tank]:                   # hero 와 tank 를 하나씩 targ
 mark 80</code></pre>
 <p>일반 플레이어는 20을 두 번 맞아 60, 전사는 10을 두 번 맞아 80이에요. <code>Boss</code>를 더하려고 <code>Monster</code>나 <code>Player</code> 코드는 하나도 고치지 않았어요.</p>
 </details>
-<h3>개념 질문 — 직접 정리해 보기</h3>
-<p>이 단계에서 쓴 개념을 <b>스스로 말로 정리해 보는</b> 질문이에요. 먼저 종이나 메모장에 적어 보고, “답 보기”의 정리와 비교해요. 답 끝의 <b>정리</b> 문장이 이 단계에서 기억할 규칙이에요.</p>
-<p><b>질문 6-1.</b> <b>클래스로 짜는 것이 도움이 되는 상황</b>과 <b>함수만으로 충분한 상황</b>을 각각 기준 두 가지씩 정리해 보세요.</p>
+<h3>개념 질문 — 코드 없이 답해 보기</h3>
+<p>방금 쓴 코드를 떠올리며 먼저 머릿속으로(또는 종이에) 답해 보고, 각 질문 아래 “답 보기”를 열어 비교해요.</p>
+<p><b>질문 6-1.</b> <code>Boss</code>를 더하려고 고친 기존 코드가 있나요? 있다면 어디인가요?</p>
 <details class="side-note">
 <summary>답 보기</summary>
-<div class="table-scroll fill"><table><thead><tr><th>기준</th><th>클래스가 도움이 됨</th><th>함수만으로 충분</th></tr></thead><tbody><tr><td>같은 모양의 값이 여러 개</td><td>플레이어·몬스터가 여럿이고 각자 체력이 따로 바뀐다</td><td>값이 하나뿐이고 계산만 한다 (예: 평균 구하기)</td></tr><tr><td>값과 그것을 바꾸는 일이 함께 움직임</td><td>체력과 <code>take_hit</code>를 한 곳에 두면 규칙이 한 곳에만 있다</td><td>넣은 값으로 결과만 돌려주면 끝이다</td></tr><tr><td>종류가 늘어남</td><td>종류별 차이를 클래스로 나누면 새 종류가 쉽다</td><td>종류가 늘어날 일이 없다</td></tr></tbody></table></div>
-<p><b>정리:</b> 같은 모양의 값이 여럿이고 각자 상태가 바뀌며 종류가 늘 수 있을 때 클래스가 편하고, 그렇지 않은 작은 계산은 함수만으로 충분해요. 이 기준은 정답이 하나가 아니라 판단에 쓰는 것이에요.</p>
+<p>없어요. <code>Monster</code>를 물려받은 새 클래스를 더했을 뿐이고, <code>Player</code>·<code>Warrior</code>·<code>Monster</code>·<code>Character</code>는 그대로예요. <code>Boss</code>가 다시 적은 것은 <code>attack</code> 하나뿐이에요.</p>
 </details>
 
     <h2><span class="hl">마무리</span> — 무엇이 어디에서 쓰였나</h2>
