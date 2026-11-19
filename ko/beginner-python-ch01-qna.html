@@ -722,6 +722,47 @@ False</code></pre>
       <li>리스트 안 요소가 모두 문자열이어야 해요. 숫자가 섞이면 <code>TypeError: sequence item 1: expected str instance, int found</code>가 나요. 숫자는 <code>', '.join(str(x) for x in nums)</code>로 바꿔서 이어요.</li>
     </ul>
 
+    <h3 id="q-class">클래스와 인스턴스는 무엇이고, 왜 쓰나요?</h3>
+    <p>Q17에서 점 앞의 <strong>객체</strong>가 메서드를 가진다고 했어요. 그 객체를 만드는 틀이 <strong>클래스</strong>예요. 예를 들어 <code>', '</code> 같은 문자열은 <code>str</code>이라는 클래스로 만든 객체(인스턴스)라서 <code>join</code>이라는 메서드를 쓸 수 있어요. 클래스를 직접 만들어 보면 이해가 쉬워요.</p>
+    <p>붕어빵 틀은 하나뿐이고, 그 틀로 붕어빵을 여러 마리 구울 수 있어요.</p>
+<div class="table-scroll fill"><table><thead><tr><th>붕어빵 가게</th><th>파이썬</th></tr></thead><tbody><tr><td>붕어빵 틀 (모양을 정해 둔 것)</td><td>클래스 <code>class Bungeoppang</code></td></tr><tr><td>틀로 구워 낸 붕어빵 한 마리</td><td>인스턴스(객체) <code>Bungeoppang("팥")</code></td></tr><tr><td>속재료, 가격 (붕어빵마다 다름)</td><td>속성 <code>self.filling</code>, <code>self.price</code> — 객체가 가진 값</td></tr><tr><td>붕어빵으로 하는 일 (가격 깎기, 소개하기)</td><td>메서드 <code>discount</code>, <code>describe</code> — 클래스 안에 정의한 함수</td></tr></tbody></table></div>
+    <p><b>핵심 한 줄:</b> 클래스는 먹을 수 없는 설계, 인스턴스는 그 설계로 만든 실물이에요. 같은 틀에서 나온 팥붕어빵과 슈크림붕어빵은 서로 다른 붕어빵이라서, 하나의 값을 바꿔도 다른 하나는 그대로예요.</p>
+    <p>※ 비유가 끊기는 곳이 하나 있어요. 실제 틀은 쇳덩이지만 파이썬 클래스는 코드라서, 틀을 고치면 이후에 만드는 인스턴스가 모두 달라져요.</p>
+    <h4>함수만 쓸 때와 클래스로 쓸 때</h4>
+    <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— 아무 환경 OK</span></p>
+<pre><code>def make_bread(filling, price):           # make_bread 함수를 정의해 주세요
+    return {"filling": filling, "price": price}  # 속재료와 가격을 딕셔너리로 만들어 돌려주세요
+def describe(b):                          # describe 함수를 정의해 주세요
+    return b["filling"] + "붕어빵 " + str(b["price"]) + "원"  # 소개 글자를 만들어 돌려주세요
+a = make_bread("팥", 1000)                # a 에 팥 붕어빵 정보를 만들어 담아 주세요
+print(describe(a))                        # a 의 소개를 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">팥붕어빵 1000원</code></pre>
+    <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— 아무 환경 OK</span></p>
+<pre><code>class Bungeoppang:                        # Bungeoppang 클래스를 정의해 주세요
+    def __init__(self, filling, price=1000):  # 만들 때 불리는 __init__ 을 정의해 주세요 (가격을 안 주면 1000)
+        self.filling = filling                # 이 인스턴스의 filling 에 filling 을 담아 주세요
+        self.price = price                    # 이 인스턴스의 price 에 price 를 담아 주세요
+    def describe(self):                       # describe 메서드를 정의해 주세요
+        return self.filling + "붕어빵 " + str(self.price) + "원"  # 소개 글자를 만들어 돌려주세요
+    def discount(self, won):                  # discount 메서드를 정의해 주세요
+        self.price -= won                     # 이 인스턴스의 price 에서 won 을 빼 주세요
+x = Bungeoppang("팥")                         # x 에 팥 붕어빵을 만들어 담아 주세요
+y = Bungeoppang("슈크림", 1500)               # y 에 가격이 1500 인 슈크림 붕어빵을 만들어 담아 주세요
+x.discount(200)                               # x 의 가격을 200 깎아 주세요
+print(x.describe())                           # x 의 소개를 화면에 보여 주세요
+print(y.describe())                           # y 의 소개를 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">팥붕어빵 800원
+슈크림붕어빵 1500원</code></pre>
+    <h4>클래스로 짰을 때 편해지는 점 3가지</h4>
+<div class="table-scroll fill"><table><thead><tr><th>장점</th><th>왜 편한가</th></tr></thead><tbody><tr><td>1. 데이터와 일이 한 곳에 모인다</td><td>함수만 쓰면 딕셔너리와 <code>describe</code> 함수가 따로 놀아서 엉뚱한 딕셔너리를 넣어도 막을 수 없다. 클래스는 <code>x.describe()</code> 로 “이 붕어빵에게 시킨다”가 되고, 가능한 일이 틀 안에 모여 있다</td></tr><tr><td>2. 모양이 통일돼 빠뜨림·오타가 준다</td><td>딕셔너리는 <code>price</code> 를 빠뜨리거나 <code>prise</code> 로 적어도 실행 전엔 모른다. <code>Bungeoppang("팥")</code> 은 항상 같은 모양이고, 새 속성이 생기면 <code>__init__</code> 한 곳만 고친다</td></tr><tr><td>3. 상속으로 복사 없이 늘린다</td><td>치즈붕어빵이 필요할 때 코드를 복사하면 가격 계산을 두 곳에서 고쳐야 한다. 상속(부모 클래스의 것을 물려받는 것)하면 달라지는 부분만 적는다</td></tr></tbody></table></div>
+    <p class="run-tag">실행: 로컬 파이썬 <span class="run-tag-why">— 아무 환경 OK</span></p>
+<pre><code>class Cheese(Bungeoppang):                # Bungeoppang 을 상속받는 Cheese 클래스를 정의해 주세요
+    def describe(self):                   # describe 메서드를 다시 정의해 주세요
+        return super().describe() + " (치즈 추가)"  # 부모의 소개 뒤에 " (치즈 추가)" 를 붙여 돌려주세요
+print(Cheese("치즈").describe())          # 치즈 붕어빵의 소개를 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">치즈붕어빵 1000원 (치즈 추가)</code></pre>
+    <p>※ 작은 프로그램에서는 함수만으로도 충분해요. 같은 종류의 물건이 여러 개 나올 때부터 클래스가 편해져요. 문법을 하나씩 따라가며 익히고 싶다면 <a href="beginner-python-ch07-notes.html">7장 객체지향 정리(7.1~7.3)</a>와 <a href="beginner-python-ch07-practice.html">실습 문제</a>로 이어 가세요. 이 예제는 파이썬으로 실제로 돌려서 출력을 넣었어요.</p>
+
     <h3 id="q18"><code>for</code> 문을 일반 문장으로 읽으면?</h3>
     <p><code>for</code> 문은 반복문이에요. 리스트·문자열 같은 것의 요소를 하나씩 꺼내 같은 코드를 반복해서 실행해요. 읽는 요령은 <strong>"<code>for A in B:</code> = B의 각각의 A에 대해"</strong>예요.</p>
     <p class="run-tag">실행: 파이썬 대화형 셸 <span class="run-tag-why">— 터미널에서 python을 입력하면 열려요 (들여쓰기 뒤 Enter를 한 번 더 눌러요)</span></p>
