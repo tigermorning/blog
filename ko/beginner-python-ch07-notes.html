@@ -29,54 +29,59 @@
 
     <p class="one-liner">클래스는 같은 모양의 객체를 만드는 틀이고, 그 틀로 만든 인스턴스는 self 로 자기 값을 갖고, 자식 클래스는 부모의 것을 물려받아요.</p>
 
+<h2><span class="hl">먼저 알아 둘 말 세 개</span></h2>
+<p>이 장에는 처음 보는 말이 몇 개 나와요. 코드를 읽기 전에 뜻만 잡고 갈게요.</p>
+<div class="table-scroll fill"><table><thead><tr><th>말</th><th>뜻</th></tr></thead><tbody><tr><td>객체(object)</td><td>값과, 그 값에게 시킬 수 있는 동작을 한 덩어리로 가진 것. 점(<code>.</code>)으로 동작을 시켜요. 예: <code>', '.join(['사과', '배'])</code>에서 점 앞의 <code>', '</code>가 객체예요 (<a href="beginner-python-ch01-qna.html#q17">1장 Q&amp;A</a>)</td></tr><tr><td>속성(attribute)</td><td>객체가 가진 값. 예: 붕어빵의 속재료, 가격</td></tr><tr><td>메서드(method)</td><td>객체에게 시키는 동작. 클래스 안에 적은 함수예요</td></tr></tbody></table></div>
+<h2><span class="hl">이 글은 붕어빵 가게 하나로 설명해요</span></h2>
+<p>7.1부터 7.3까지 같은 가게 하나만 써요. 각 절에서 코드가 실제로 하는 일을 먼저 적고, 그 다음에 가게에 빗대요.</p>
+<p>붕어빵 가게에 틀이 하나 있어요. 틀에는 기본 가격표가 새겨져 있어요. 손님이 주문서에 속재료를 적으면, 점원이 주문서 내용을 반영해 틀로 붕어빵을 구워요. 구운 붕어빵에는 가격 스티커를 붙여요. 점원이 “이 붕어빵 200원 깎아”라고 하면 지목된 붕어빵의 스티커만 바뀌어요. 치즈붕어빵은 기본 틀을 물려받아 치즈 단계만 더한 새 틀로 만들고, 그 틀은 기본 레시피를 먼저 따라 해요.</p>
+<div class="table-scroll fill"><table><thead><tr><th>붕어빵 가게</th><th>파이썬</th><th>나오는 절</th></tr></thead><tbody><tr><td>틀</td><td>클래스 (<code>class Bungeoppang</code>)</td><td>7.1</td></tr><tr><td>틀로 구운 붕어빵 한 마리</td><td>인스턴스 (<code>Bungeoppang("팥")</code>)</td><td>7.1</td></tr><tr><td>주문서를 받아 붕어빵에 적는 단계</td><td><code>__init__</code> 메서드</td><td>7.1</td></tr><tr><td>틀에 새겨진 기본 가격표</td><td>클래스 변수 (<code>price = 1000</code>)</td><td>7.2</td></tr><tr><td>붕어빵에 붙인 가격 스티커</td><td>인스턴스 변수 (<code>self.price</code>)</td><td>7.2</td></tr><tr><td>“이 붕어빵”이라고 지목된 한 마리</td><td><code>self</code></td><td>7.2</td></tr><tr><td>기본 틀을 물려받은 치즈붕어빵 틀</td><td>자식 클래스 (상속)</td><td>7.3</td></tr><tr><td>기본 레시피를 먼저 따라 하기</td><td><code>super()</code></td><td>7.3</td></tr></tbody></table></div>
+<p><b>핵심 한 줄:</b> 틀은 하나, 붕어빵은 여러 마리이고, 값은 틀에 새긴 가격표와 붕어빵에 붙인 스티커 두 군데에 있을 수 있어요.</p>
+<p>※ 비유가 끊기는 곳이 있어요. 실제 틀은 쇳덩이지만 파이썬 클래스는 코드라서, 틀을 고치면 이후에 만드는 인스턴스가 모두 달라져요.</p>
+<h2><span class="hl">한눈에 보기</span> — 세 단계의 순서와 관계</h2>
+<figure>
+<svg viewBox="0 0 340 450" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="ov-title">
+<title id="ov-title">7장의 세 단계. 7.1에서 클래스(틀)로 인스턴스(붕어빵)를 만들고, 7.2에서 값이 틀에 있는지 붕어빵에 있는지와 self를 보고, 7.3에서 자식 클래스가 부모 클래스를 물려받는다.</title>
+<style>
+.o-box{stroke:var(--accent);stroke-width:2;fill:none;}
+.o-sub{stroke:var(--muted);stroke-width:2;fill:none;stroke-dasharray:4 3;}
+.o-t{font-family:var(--font-body);fill:var(--ink);font-size:13px;}
+.o-m{font-family:var(--font-body);fill:var(--muted);font-size:12px;}
+.o-h{font-family:var(--font-heading);font-weight:700;fill:var(--accent);font-size:15px;}
+.o-a{stroke:var(--border);stroke-width:2;fill:none;}
+</style>
+<defs><marker id="ov-ar" markerWidth="9" markerHeight="9" refX="4.5" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="var(--border)"/></marker></defs>
+<text x="10" y="22" class="o-h">7.1 클래스 → 인스턴스</text>
+<rect x="10" y="34" width="320" height="52" rx="8" class="o-box"/>
+<text x="170" y="56" text-anchor="middle" class="o-t">클래스 class Bungeoppang</text>
+<text x="170" y="75" text-anchor="middle" class="o-m">같은 모양을 정해 둔 설계 (틀)</text>
+<line x1="170" y1="86" x2="170" y2="114" class="o-a" marker-end="url(#ov-ar)"/>
+<text x="182" y="105" class="o-m">만든다</text>
+<rect x="10" y="118" width="153" height="40" rx="8" class="o-box"/>
+<text x="86" y="143" text-anchor="middle" class="o-t">인스턴스 x (팥)</text>
+<rect x="177" y="118" width="153" height="40" rx="8" class="o-box"/>
+<text x="254" y="143" text-anchor="middle" class="o-t">인스턴스 y (슈크림)</text>
+<text x="10" y="196" class="o-h">7.2 값은 어디에 있나</text>
+<rect x="10" y="208" width="320" height="52" rx="8" class="o-sub"/>
+<text x="170" y="230" text-anchor="middle" class="o-t">클래스 변수 — 틀에 적힌 기본값</text>
+<text x="170" y="249" text-anchor="middle" class="o-m">인스턴스에 값이 없을 때 이 값을 읽어요</text>
+<rect x="10" y="272" width="320" height="52" rx="8" class="o-box"/>
+<text x="170" y="294" text-anchor="middle" class="o-t">인스턴스 변수 — self.price = …</text>
+<text x="170" y="313" text-anchor="middle" class="o-m">self = 메서드를 부른 그 인스턴스</text>
+<text x="10" y="362" class="o-h">7.3 자식 클래스 → 부모 클래스</text>
+<rect x="10" y="374" width="130" height="36" rx="8" class="o-box"/>
+<text x="75" y="397" text-anchor="middle" class="o-t">자식 Cheese</text>
+<line x1="140" y1="392" x2="198" y2="392" class="o-a" marker-end="url(#ov-ar)"/>
+<text x="169" y="384" text-anchor="middle" class="o-m">상속</text>
+<rect x="200" y="374" width="130" height="36" rx="8" class="o-box"/>
+<text x="265" y="397" text-anchor="middle" class="o-t">부모 Bungeoppang</text>
+<text x="10" y="434" class="o-m">자식은 부모의 변수·메서드를 쓰고 자기 몫만 더해요</text>
+</svg>
+<figcaption>세 단계는 앞 단계의 결과가 다음 단계의 재료가 되는 순서예요. 클래스로 인스턴스를 만든 뒤(7.1), 그 인스턴스의 값이 어디에 있는지 보고(7.2), 마지막으로 클래스끼리 물려주는 관계를 봐요(7.3).</figcaption>
+</figure>
 <h2 id="s71"><span class="hl">7.1 클래스와 인스턴스</span></h2>
-
-<h3><span class="hl">1. 틀과 결과물 (7.1)</span></h3>
-<div class="table-scroll fill"><table><thead><tr><th>말</th><th>뜻</th></tr></thead><tbody><tr><td>클래스(class)</td><td>같은 종류의 객체가 갖는 공통점을 적어 둔 틀. “부류”. 예: 스케이터, 사과</td></tr><tr><td>인스턴스(instance)·객체(object)</td><td>틀로 만든, 실제로 하나 콕 집을 수 있는 것. 예: 김연아, 어제 먹은 사과 두 번째 것</td></tr><tr><td>메서드(method)</td><td>클래스 안에 정의한 함수</td></tr><tr><td>만들기</td><td><code>인스턴스 = 클래스()</code></td></tr><tr><td>쓰기</td><td><code>인스턴스.메서드()</code></td></tr></tbody></table></div>
-<h4>클래스 만들고 인스턴스 만들기</h4>
-<pre><code>class Singer:                  # Singer 라는 클래스를 정의해 주세요
-    def sing(self):            # sing 메서드를 정의해 주세요 (self 는 7.2 에서 정리해요)
-        return "Lalala~"       # "Lalala~" 를 돌려주세요
-taeji = Singer()               # taeji 에 Singer 인스턴스를 만들어 담아 주세요
-ricky = Singer()               # ricky 에 Singer 인스턴스를 만들어 담아 주세요
-print(taeji.sing())            # taeji 에게 노래를 시킨 결과를 화면에 보여 주세요
-print(ricky.sing())            # ricky 에게 노래를 시킨 결과를 화면에 보여 주세요
-print(type(taeji))             # taeji 의 자료형을 화면에 보여 주세요
-print(isinstance(taeji, Singer))  # taeji 는 Singer 인스턴스인가요?
-print(taeji is ricky)          # taeji 와 ricky 는 같은 객체인가요?</code></pre>
-<pre class="out"><code class="nohighlight">Lalala~
-Lalala~
-&lt;class '__main__.Singer'&gt;
-True
-False</code></pre>
-<p>※ 같은 클래스에서 만든 <code>taeji</code>와 <code>ricky</code>는 같은 메서드를 쓰지만 서로 다른 객체예요(<code>is</code>가 <code>False</code>). <code>__main__</code>은 이 코드를 파일로 직접 실행했다는 표시이고, 다른 파일에서 <code>import</code>하면 그 파일 이름으로 바뀌어요.</p>
-<h3><span class="hl">2. 왜 클래스를 쓰나 — 영상 요약</span></h3>
-<p>영상은 게임 플레이어를 예로 들어요. 플레이어를 하나씩 손으로 적으면 세 가지 문제가 생겨요.</p>
-<div class="table-scroll fill"><table><thead><tr><th>문제</th><th>왜 생기나</th></tr></thead><tbody><tr><td>틀이 없어서 빠뜨림</td><td>어떤 플레이어에는 skill 을 안 적고 넘어가도 아무도 알려 주지 않는다</td></tr><tr><td>오타</td><td><code>helth</code>처럼 속성 이름을 잘못 적어도 찾기 어렵다</td></tr><tr><td>고칠 곳이 많음</td><td>경험치(xp)를 모든 플레이어에게 추가하려면 하나씩 찾아가 고쳐야 한다</td></tr></tbody></table></div>
-<p>해결은 “이름·체력·기술 값만 넣으면 플레이어 하나를 내주는 공장”을 한 곳에 만드는 거예요. 그 공장이 클래스예요. 영상은 클래스를 <b>쿠키 틀</b>, 인스턴스를 <b>그 틀로 찍은 쿠키</b>에 비유해요. 나중에 틀 한 곳만 고치면 이후에 찍는 쿠키가 모두 달라져요.</p>
-<h4>값을 받아서 만들기 — __init__</h4>
-<div class="table-scroll fill"><table><thead><tr><th>말</th><th>뜻</th></tr></thead><tbody><tr><td><code>__init__</code></td><td>인스턴스를 만들 때 파이썬이 자동으로 한 번 불러 주는 특별한 메서드. 처음 속성 값을 정한다</td></tr><tr><td><code>self.이름 = 값</code></td><td>이 인스턴스가 가질 속성(변수)을 저장한다</td></tr><tr><td><code>클래스(값1, 값2)</code></td><td>값들이 <code>__init__</code>의 <code>self</code> 다음 매개변수로 들어간다</td></tr></tbody></table></div>
-<pre><code>class Player:                                  # Player 클래스를 정의해 주세요
-    def __init__(self, name, health, skill):   # 만들 때 자동으로 불리는 __init__ 을 정의해 주세요
-        self.name = name                       # 이 인스턴스의 name 에 name 을 담아 주세요
-        self.health = health                   # 이 인스턴스의 health 에 health 를 담아 주세요
-        self.skill = skill                     # 이 인스턴스의 skill 에 skill 을 담아 주세요
-        self.xp = 0                            # 이 인스턴스의 xp 에 0 을 담아 주세요
-    def say_hello(self):                       # say_hello 메서드를 정의해 주세요
-        return "안녕, 나는 " + self.name       # "안녕, 나는 " 과 이름을 이어서 돌려주세요
-elon = Player("elon", 100, "coding")           # elon 에 Player 인스턴스를 만들어 담아 주세요
-mark = Player("mark", 90, "design")            # mark 에 Player 인스턴스를 만들어 담아 주세요
-print(elon.name, elon.xp)                      # elon 의 name 과 xp 를 화면에 보여 주세요
-print(mark.say_hello())                        # mark 에게 인사를 시킨 결과를 화면에 보여 주세요</code></pre>
-<pre class="out"><code class="nohighlight">elon 0
-안녕, 나는 mark</code></pre>
-<p>※ 영상의 자바스크립트 <code>constructor</code>가 파이썬의 <code>__init__</code>에 해당해요. 함수처럼 생겼지만 클래스 안에 있어서 <b>메서드</b>라고 불러요. xp 처럼 값을 받지 않고 항상 0으로 시작하게 정하는 것도 <code>__init__</code> 안에서 해요.</p>
-<h3>붕어빵 틀로 보는 클래스와 인스턴스</h3>
-<p>붕어빵 틀은 하나뿐이고, 그 틀로 붕어빵을 여러 마리 구울 수 있어요.</p>
-<div class="table-scroll fill"><table><thead><tr><th>붕어빵 가게</th><th>파이썬</th></tr></thead><tbody><tr><td>붕어빵 틀 (모양을 정해 둔 것)</td><td>클래스 <code>class Bungeoppang</code></td></tr><tr><td>틀로 구워 낸 붕어빵 한 마리</td><td>인스턴스 <code>Bungeoppang("팥")</code></td></tr><tr><td>속재료, 가격 (붕어빵마다 다름)</td><td>속성 <code>self.filling</code>, <code>self.price</code></td></tr><tr><td>붕어빵으로 하는 일 (가격 깎기, 소개하기)</td><td>메서드 <code>discount</code>, <code>describe</code></td></tr></tbody></table></div>
-<p><b>핵심 한 줄:</b> 클래스는 먹을 수 없는 설계, 인스턴스는 그 설계로 만든 실물이에요. 같은 틀에서 나온 팥붕어빵과 슈크림붕어빵은 서로 다른 붕어빵이라서, 하나의 값을 바꿔도 다른 하나는 그대로예요.</p>
-<p>※ 비유가 끊기는 곳이 하나 있어요. 실제 틀은 쇳덩이지만 파이썬 클래스는 코드라서, 틀을 고치면 이후에 만드는 인스턴스가 모두 달라져요.</p>
-<h3>함수만 쓸 때와 클래스로 쓸 때</h3>
+<h3>왜 필요한가 — 붕어빵을 함수만으로 관리하면</h3>
+<p>붕어빵 정보를 딕셔너리로 만들고 함수로 소개하는 코드예요. 붕어빵이 한두 개일 때는 잘 돌아가요.</p>
 <pre><code>def make_bread(filling, price):           # make_bread 함수를 정의해 주세요
     return {"filling": filling, "price": price}  # 속재료와 가격을 딕셔너리로 만들어 돌려주세요
 def describe(b):                          # describe 함수를 정의해 주세요
@@ -84,37 +89,85 @@ def describe(b):                          # describe 함수를 정의해 주세�
 a = make_bread("팥", 1000)                # a 에 팥 붕어빵 정보를 만들어 담아 주세요
 print(describe(a))                        # a 의 소개를 화면에 보여 주세요</code></pre>
 <pre class="out"><code class="nohighlight">팥붕어빵 1000원</code></pre>
-<pre><code>class Bungeoppang:                        # Bungeoppang 클래스를 정의해 주세요
-    def __init__(self, filling, price=1000):  # 만들 때 불리는 __init__ 을 정의해 주세요 (가격을 안 주면 1000)
-        self.filling = filling                # 이 인스턴스의 filling 에 filling 을 담아 주세요
-        self.price = price                    # 이 인스턴스의 price 에 price 를 담아 주세요
+<p>붕어빵이 수십 개로 늘면 세 가지 문제가 생겨요.</p>
+<div class="table-scroll fill"><table><thead><tr><th>문제</th><th>무슨 일이 생기나</th></tr></thead><tbody><tr><td>빠뜨림</td><td>딕셔너리를 손으로 만들면 어떤 붕어빵에서 <code>price</code>를 안 적고 넘어가도 아무도 알려 주지 않아요</td></tr><tr><td>오타</td><td><code>prise</code>처럼 이름을 틀리게 적어도 코드를 돌려 보기 전에는 몰라요</td></tr><tr><td>고칠 곳이 많음</td><td>크기(size)를 모든 붕어빵에 추가하려면 붕어빵을 만드는 곳을 전부 찾아 고쳐야 해요</td></tr></tbody></table></div>
+<p>해결책은 “붕어빵은 이런 모양이야”를 한 곳에 정해 두고, 그 모양대로만 만드는 거예요. 그 한 곳이 클래스예요.</p>
+<h3>클래스와 인스턴스</h3>
+<p><b>클래스(class)</b>는 같은 모양의 객체를 만드는 설계예요. <b>인스턴스(instance)</b>는 그 설계로 만든 하나하나(객체)예요. 설계 자체는 먹을 수 없고, 먹는 건 설계로 구운 붕어빵이에요. 같은 틀에서 나온 팥붕어빵과 슈크림붕어빵은 서로 다른 붕어빵이라서, 하나를 바꿔도 다른 하나는 그대로예요.</p>
+<p>위키독스는 이 관계를 “스케이터”로 설명해요. 김연아와 김동성은 실제로 존재하는 사람(인스턴스)이고, 둘의 공통점인 “스케이트 타는 사람”이 클래스(부류)예요. “스케이터 한 명”은 없고, 김연아처럼 콕 집어 말할 수 있는 한 명이 인스턴스예요.</p>
+<h3>클래스 읽는 법 — 네 줄이면 돼요</h3>
+<pre><code>class Bungeoppang:                            # Bungeoppang 이라는 클래스를 정의해 주세요
+    def __init__(self, filling, price=1000):  # 만들 때 자동으로 불리는 __init__ 을 정의해 주세요 (가격을 안 주면 1000)
+        self.filling = filling                # 이 붕어빵의 filling 칸에 filling 을 담아 주세요
+        self.price = price                    # 이 붕어빵의 price 칸에 price 를 담아 주세요
     def describe(self):                       # describe 메서드를 정의해 주세요
         return self.filling + "붕어빵 " + str(self.price) + "원"  # 소개 글자를 만들어 돌려주세요
-    def discount(self, won):                  # discount 메서드를 정의해 주세요
-        self.price -= won                     # 이 인스턴스의 price 에서 won 을 빼 주세요
 x = Bungeoppang("팥")                         # x 에 팥 붕어빵을 만들어 담아 주세요
 y = Bungeoppang("슈크림", 1500)               # y 에 가격이 1500 인 슈크림 붕어빵을 만들어 담아 주세요
-x.discount(200)                               # x 의 가격을 200 깎아 주세요
 print(x.describe())                           # x 의 소개를 화면에 보여 주세요
 print(y.describe())                           # y 의 소개를 화면에 보여 주세요</code></pre>
-<pre class="out"><code class="nohighlight">팥붕어빵 800원
+<pre class="out"><code class="nohighlight">팥붕어빵 1000원
 슈크림붕어빵 1500원</code></pre>
-<h3>클래스로 짰을 때 편해지는 점 3가지</h3>
-<div class="table-scroll fill"><table><thead><tr><th>장점</th><th>왜 편한가</th></tr></thead><tbody><tr><td>1. 데이터와 일이 한 곳에 모인다</td><td>함수만 쓰면 딕셔너리와 <code>describe</code> 함수가 따로 놀아서 엉뚱한 딕셔너리를 넣어도 막을 수 없다. 클래스는 <code>x.describe()</code> 로 “이 붕어빵에게 시킨다”가 되고, 가능한 일이 틀 안에 모여 있다</td></tr><tr><td>2. 모양이 통일돼 빠뜨림·오타가 준다</td><td>딕셔너리는 <code>price</code> 를 빠뜨리거나 <code>prise</code> 로 적어도 실행 전엔 모른다. <code>Bungeoppang("팥")</code> 은 항상 같은 모양이고, 새 속성이 생기면 <code>__init__</code> 한 곳만 고친다</td></tr><tr><td>3. 상속으로 복사 없이 늘린다</td><td>치즈붕어빵이 필요할 때 코드를 복사하면 가격 계산을 두 곳에서 고쳐야 한다. 상속하면 달라지는 부분만 적는다</td></tr></tbody></table></div>
-<pre><code>class Cheese(Bungeoppang):                # Bungeoppang 을 상속받는 Cheese 클래스를 정의해 주세요
-    def describe(self):                   # describe 메서드를 다시 정의해 주세요
-        return super().describe() + " (치즈 추가)"  # 부모의 소개 뒤에 " (치즈 추가)" 를 붙여 돌려주세요
-print(Cheese("치즈").describe())          # 치즈 붕어빵의 소개를 화면에 보여 주세요</code></pre>
-<pre class="out"><code class="nohighlight">치즈붕어빵 1000원 (치즈 추가)</code></pre>
-<p>※ 작은 프로그램에서는 함수만으로도 충분해요. 같은 종류의 물건이 여러 개 나올 때부터 클래스가 편해져요. 이 예제는 파이썬으로 실제로 돌려서 출력을 넣었어요.</p>
-<h3><span class="hl">3. 한눈에 정리</span></h3>
-<div class="table-scroll fill"><table><thead><tr><th>하고 싶은 일</th><th>쓰는 것</th></tr></thead><tbody><tr><td>틀 만들기</td><td><code>class 이름:</code></td></tr><tr><td>인스턴스 만들기</td><td><code>a = 이름()</code>, 값이 필요하면 <code>이름(값1, 값2)</code></td></tr><tr><td>시작할 때 속성 정하기</td><td><code>def __init__(self, ...): self.x = ...</code></td></tr><tr><td>행동 시키기</td><td><code>a.메서드()</code></td></tr><tr><td>어느 틀에서 나왔나</td><td><code>isinstance(a, 이름)</code></td></tr></tbody></table></div>
-
-    
+<div class="table-scroll fill"><table><thead><tr><th>줄</th><th>하는 일</th></tr></thead><tbody><tr><td><code>class Bungeoppang:</code></td><td>클래스의 이름을 정하고, 아래에 들여쓴 줄들이 이 클래스의 내용이 돼요 (틀 만들기)</td></tr><tr><td><code>def __init__(self, filling, price=1000)</code></td><td>붕어빵을 만들 때 자동으로 한 번 불리는 메서드예요. 주문서에 적힌 속재료와 가격을 받는 자리이고, 가격을 안 적으면 1000이에요</td></tr><tr><td><code>self.filling = filling</code></td><td>왼쪽 <code>self.filling</code>은 “이 붕어빵에 달린 filling 칸”이고, 오른쪽 <code>filling</code>은 주문서에서 받은 값이에요. 받은 값을 붕어빵의 칸에 적어 두는 줄이에요</td></tr><tr><td><code>def describe(self)</code></td><td>붕어빵에게 시킬 수 있는 동작(메서드)이에요. 소개 글자를 만들어 돌려줘요</td></tr></tbody></table></div>
+<h3><code>Bungeoppang("팥")</code>을 쓰면 무슨 순서로 일어나나요</h3>
+<div class="table-scroll fill"><table><thead><tr><th>순서</th><th>일어나는 일</th></tr></thead><tbody><tr><td>① 빈 붕어빵 만들기</td><td>속이 빈 인스턴스가 먼저 생겨요</td></tr><tr><td>② <code>__init__</code> 자동 호출</td><td>파이썬이 <code>__init__(self=그 인스턴스, filling="팥")</code>을 대신 불러요. 우리가 <code>__init__</code>을 직접 부르지 않아요</td></tr><tr><td>③ 칸 채우기</td><td><code>self.filling</code>, <code>self.price</code>에 받은 값이 저장돼요</td></tr><tr><td>④ 변수에 담기</td><td>완성된 붕어빵이 <code>x</code>에 담겨요</td></tr></tbody></table></div>
+<p><b>핵심 한 줄:</b> <code>클래스이름(값)</code>을 쓰면 빈 인스턴스가 생기고, <code>__init__</code>이 자동으로 불려 값을 칸에 적어 줘요.</p>
+<h3>교재 예제로 한 번 더 — 노래하는 Singer</h3>
+<p>위키독스 예제는 값을 받지 않고 동작만 있는 가장 작은 클래스예요. 메서드를 부르는 모양(<code>인스턴스.메서드()</code>)을 보세요.</p>
+<pre><code>class Singer:                  # Singer 라는 클래스를 정의해 주세요
+    def sing(self):            # sing 메서드를 정의해 주세요 (self 는 7.2 에서 자세히 정리해요)
+        return "Lalala~"       # "Lalala~" 를 돌려주세요
+taeji = Singer()               # taeji 에 Singer 인스턴스를 만들어 담아 주세요
+ricky = Singer()               # ricky 에 Singer 인스턴스를 만들어 담아 주세요
+print(taeji.sing())            # taeji 에게 노래를 시킨 결과를 화면에 보여 주세요
+print(ricky.sing())            # ricky 에게 노래를 시킨 결과를 화면에 보여 주세요
+print(taeji is ricky)          # taeji 와 ricky 는 같은 객체인가요?</code></pre>
+<pre class="out"><code class="nohighlight">Lalala~
+Lalala~
+False</code></pre>
+<p>메서드는 틀(<code>Singer</code>)에 한 벌만 있고 두 인스턴스가 같이 써요. 그래서 같은 노래가 나오지만, <code>taeji is ricky</code>가 <code>False</code>이듯 둘은 서로 다른 객체예요.</p>
+<h3>같은 일을, 두 가지 방법으로</h3>
+<table class="choice-table"><thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead><tbody><tr><td class="choice-bad">붕어빵을 딕셔너리로 하나씩 만든다 → <code>price</code>를 빠뜨리거나 <code>prise</code>로 잘못 써도 실행 전엔 몰라요. 크기를 추가하려면 만드는 곳을 전부 찾아 고쳐야 해요.</td><td class="choice-good"><code>Bungeoppang("팥")</code>처럼 클래스로 만든다 → 항상 같은 모양이고, 새 속성은 <code>__init__</code> 한 곳만 고치면 돼요.</td></tr></tbody></table>
 <h2 id="s72"><span class="hl">7.2 변수와 메서드</span></h2>
-
-<h3><span class="hl">1. 변수와 메서드를 가진 클래스 (7.2)</span></h3>
-<div class="table-scroll fill"><table><thead><tr><th>말</th><th>뜻</th></tr></thead><tbody><tr><td>클래스 변수</td><td>클래스 안, 메서드 밖에 적은 변수. 만든 인스턴스가 처음에 그대로 가져다 쓴다</td></tr><tr><td>메서드</td><td>클래스 안의 함수. 첫 매개변수는 항상 <code>self</code></td></tr><tr><td><code>self</code></td><td>그 메서드를 부른 인스턴스. 정의할 때는 적고, 부를 때는 쓰지 않는다 (<code>jane.attack()</code>)</td></tr><tr><td><code>self.변수 += 값</code></td><td>그 인스턴스의 변수만 바꾼다</td></tr></tbody></table></div>
+<p>제목은 “변수와 메서드”인데, 여기서 변수는 <b>클래스 안에 적은 변수</b>, 메서드는 <b>클래스 안에 적은 함수</b>를 말해요. 그리고 이 둘을 이어 주는 것이 <code>self</code>예요. 이 절에서 가장 많이 막히는 곳이 <code>self</code>라서, 값이 어디에 있는지부터 보고 <code>self</code>로 넘어갈게요.</p>
+<h3>값이 사는 곳은 두 군데예요</h3>
+<div class="table-scroll fill"><table><thead><tr><th>이름</th><th>직접 설명</th><th>가게 비유</th></tr></thead><tbody><tr><td>클래스 변수</td><td>클래스 안, 메서드 밖에 <code>이름 = 값</code>으로 적은 변수. 이 클래스로 만든 모든 인스턴스가 처음에 읽는 기본값이에요</td><td>틀에 새겨진 기본 가격표</td></tr><tr><td>인스턴스 변수</td><td>메서드 안에서 <code>self.이름 = 값</code>으로 저장한 변수. 그 인스턴스만 가진 값이에요</td><td>구운 붕어빵에 붙인 가격 스티커</td></tr></tbody></table></div>
+<p>읽는 규칙은 하나예요. <code>붕어빵.price</code>를 읽을 때 <b>그 붕어빵에 스티커(인스턴스 변수)가 있으면 스티커 값을, 없으면 틀의 가격표(클래스 변수)를</b> 읽어요.</p>
+<pre><code>class Bungeoppang:                  # Bungeoppang 클래스를 정의해 주세요
+    price = 1000                    # 클래스 변수 price 에 1000 을 담아 주세요 (틀의 기본 가격표)
+    def discount(self, won):        # discount 메서드를 정의해 주세요
+        self.price -= won           # 이 붕어빵의 price 에서 won 을 빼 주세요
+x = Bungeoppang()                   # x 에 붕어빵을 만들어 담아 주세요
+y = Bungeoppang()                   # y 에 붕어빵을 만들어 담아 주세요
+print(x.price, y.price)             # x 와 y 의 price 를 화면에 보여 주세요
+x.discount(200)                     # x 의 가격을 200 깎아 주세요
+print(x.price, y.price, Bungeoppang.price)  # x, y, 틀의 price 를 화면에 보여 주세요
+print(x.__dict__)                   # x 가 따로 가진 변수들을 화면에 보여 주세요
+Bungeoppang.price = 1500            # 틀의 기본 가격표를 1500 으로 바꿔 주세요
+print(x.price, y.price)             # x 와 y 의 price 를 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">1000 1000
+800 1000 1000
+{'price': 800}
+800 1500</code></pre>
+<div class="table-scroll fill"><table><thead><tr><th>시점</th><th>x.price</th><th>y.price</th><th>Bungeoppang.price</th><th>x 가 따로 가진 변수</th></tr></thead><tbody><tr><td>처음</td><td>1000 (틀의 가격표)</td><td>1000 (틀의 가격표)</td><td>1000</td><td>없음</td></tr><tr><td><code>x.discount(200)</code> 뒤</td><td>800 (x 의 스티커)</td><td>1000 (틀의 가격표)</td><td>1000</td><td><code>price</code></td></tr><tr><td>틀의 가격표를 1500 으로 바꾼 뒤</td><td>800 (스티커는 그대로)</td><td>1500 (틀의 가격표)</td><td>1500</td><td><code>price</code></td></tr></tbody></table></div>
+<p><code>self.price -= 200</code>은 “틀의 1000을 읽어 800을 계산한 뒤, 그 결과를 <b>x 자신의 변수로 새로 저장</b>”하는 줄이에요. 그때부터 x는 틀의 가격표를 보지 않고 자기 스티커를 봐요. y는 스티커가 없으니 틀이 바뀌면 같이 바뀌어요.</p>
+<p><b>핵심 한 줄:</b> <code>self.이름 = 값</code>을 하는 순간 그 인스턴스는 클래스 변수 대신 자기 값을 써요.</p>
+<h3><code>self</code>는 “지금 시킨 그 붕어빵”이에요</h3>
+<p>메서드를 정의할 때는 첫 매개변수로 <code>self</code>를 적는데, 부를 때는 <code>x.discount(200)</code>처럼 <code>self</code>를 쓰지 않아요. 이 차이 때문에 많이 헷갈려요. 사실은 <code>x.discount(200)</code>을 부르는 순간 파이썬이 <code>self</code> 자리에 <b><code>x</code>를 몰래 넣어 줘요.</b> 그래서 <code>self</code>는 “이 메서드를 부른 인스턴스 자신”이에요.</p>
+<pre><code>class Bungeoppang:                  # Bungeoppang 클래스를 정의해 주세요
+    def me(self):                   # me 메서드를 정의해 주세요
+        return self                 # 이 메서드를 부른 인스턴스 자신을 돌려주세요
+x = Bungeoppang()                   # x 에 붕어빵을 만들어 담아 주세요
+y = Bungeoppang()                   # y 에 붕어빵을 만들어 담아 주세요
+print(x.me() is x, x.me() is y)     # x.me() 의 결과가 x 인가요, y 인가요?
+print(Bungeoppang.me(x) is x)       # self 자리에 x 를 직접 넘긴 모양도 같은 결과인가요?</code></pre>
+<pre class="out"><code class="nohighlight">True False
+True</code></pre>
+<div class="table-scroll fill"><table><thead><tr><th>부르는 모양</th><th><code>self</code>에 들어가는 것</th></tr></thead><tbody><tr><td><code>x.discount(200)</code></td><td><code>self</code>가 <code>x</code>가 되어 <code>x</code>의 가격이 바뀌어요</td></tr><tr><td><code>y.discount(200)</code></td><td><code>self</code>가 <code>y</code>가 되어 <code>y</code>의 가격이 바뀌어요</td></tr><tr><td><code>Bungeoppang.discount(x, 200)</code></td><td><code>self</code> 자리에 <code>x</code>를 직접 넘긴 모양이에요. <code>x.discount(200)</code>은 이 줄을 줄여 쓴 거예요</td></tr></tbody></table></div>
+<p>가게 비유로는, 점원 매뉴얼에 “<b>이 붕어빵</b>의 가격에서 깎을 금액만큼 빼라”라고 적혀 있고, 손님이 “저 붕어빵 200원 깎아 주세요”라고 가리키면 <b>가리킨 붕어빵</b>이 매뉴얼의 “이 붕어빵”이 되는 거예요. 같은 매뉴얼 한 벌을 모든 붕어빵이 쓰는데, 누구에게 적용할지는 가리킨 붕어빵이 정해 줘요.</p>
+<p><b>핵심 한 줄:</b> <code>self</code>는 정의할 때만 적고, 부를 때는 파이썬이 시킨 인스턴스를 넣어 줘요.</p>
+<h3>교재 예제로 한 번 더 — 훈련하는 아마존</h3>
+<p>위키독스는 게임 캐릭터 아마존으로 같은 내용을 보여 줘요. 클래스 변수(<code>strength</code> 등)와 메서드(<code>attack</code>, <code>exercise</code>)가 한 클래스에 있어요.</p>
 <pre><code>class Amazon:                       # Amazon 클래스를 정의해 주세요
     strength = 20                   # 클래스 변수 strength 에 20 을 담아 주세요
     dexterity = 25                  # 클래스 변수 dexterity 에 25 를 담아 주세요
@@ -130,34 +183,24 @@ jane = Amazon()                     # jane 에 Amazon 인스턴스를 만들어 
 mary = Amazon()                     # mary 에 Amazon 인스턴스를 만들어 담아 주세요
 print(jane.strength, jane.attack()) # jane 의 strength 와 공격 결과를 화면에 보여 주세요
 jane.exercise()                     # jane 에게 훈련을 시켜 주세요
-print(jane.strength, jane.dexterity, jane.vitality)  # jane 의 힘·기술·체력을 화면에 보여 주세요</code></pre>
+print(jane.strength, jane.dexterity, jane.vitality)  # jane 의 힘·기술·체력을 화면에 보여 주세요
+print(mary.strength)                # mary 의 strength 를 화면에 보여 주세요</code></pre>
 <pre class="out"><code class="nohighlight">20 Jab!!!
-22 28 21</code></pre>
-<p>※ 위키독스 예제는 디아블로2 게임의 아마존 캐릭터를 클래스로 만든 거예요. 교재는 이 코드를 <code>diablo2.py</code>로 저장하고 <code>import diablo2</code> 한 뒤 <code>diablo2.Amazon()</code>으로 인스턴스를 만들어요.</p>
-<h3><span class="hl">2. self 가 왜 필요한가</span></h3>
-<p><code>jane</code>과 <code>mary</code>는 같은 <code>exercise</code> 메서드를 써요. 메서드가 “누구의 힘을 올릴지” 알아야 하니, 부른 인스턴스가 자동으로 첫 매개변수 <code>self</code>에 들어와요.</p>
-<div class="table-scroll fill"><table><thead><tr><th>부르는 모양</th><th>일어나는 일</th></tr></thead><tbody><tr><td><code>jane.exercise()</code></td><td><code>self</code> 가 <code>jane</code> 이 된다 → <code>jane</code> 의 strength 가 올라간다</td></tr><tr><td><code>mary.exercise()</code></td><td><code>self</code> 가 <code>mary</code> 가 된다 → <code>mary</code> 의 strength 가 올라간다</td></tr><tr><td><code>Amazon.exercise()</code></td><td>부른 인스턴스가 없어서 <code>self</code> 를 채울 수 없다 → 오류</td></tr></tbody></table></div>
-<pre><code>jane = Amazon()                          # jane 에 Amazon 인스턴스를 만들어 담아 주세요
-mary = Amazon()                          # mary 에 Amazon 인스턴스를 만들어 담아 주세요
-jane.exercise()                          # jane 에게 훈련을 시켜 주세요
-print(jane.strength, mary.strength)      # jane 과 mary 의 strength 를 화면에 보여 주세요
-print(Amazon.strength)                   # Amazon 클래스의 strength 를 화면에 보여 주세요
-print(jane.__dict__)                     # jane 이 따로 가진 변수들을 화면에 보여 주세요</code></pre>
-<pre class="out"><code class="nohighlight">22 20
-20
-{'strength': 22, 'dexterity': 28, 'vitality': 21}</code></pre>
-<p>※ <code>jane.strength += 2</code>는 클래스 변수 20을 읽어 22로 계산한 뒤 <b>jane 자신의 변수</b>로 따로 저장해요. 그래서 <code>mary</code>와 <code>Amazon</code> 클래스의 값은 20 그대로예요. <code>__dict__</code>에는 jane 이 따로 가진 값만 나와서 <code>energy</code>는 보이지 않아요(jane 이 바꾸지 않았으니 클래스 값을 그대로 읽는 중이에요).</p>
-<pre><code>Amazon.attack()   # 인스턴스 없이 attack 을 불러 주세요</code></pre>
-<pre class="out"><code class="nohighlight">TypeError: Amazon.attack() missing 1 required positional argument: 'self'</code></pre>
-<p>※ 영상은 <code>self</code>(자바스크립트에서는 <code>this</code>)를 “이 플레이어는 xp 라는 속성을 가진다”처럼 읽으면 쉽다고 해요. 그리고 메서드가 있으면 클래스가 데이터만 담는 상자에서 <b>데이터를 읽고 바꾸는 방법까지 정해 둔 틀</b>이 된다고 말해요. 메서드의 예로 인사하기, 공격 받았을 때 체력 줄이기를 들어요.</p>
-<h3><span class="hl">3. 한눈에 정리</span></h3>
-<div class="table-scroll fill"><table><thead><tr><th>하고 싶은 일</th><th>쓰는 것</th></tr></thead><tbody><tr><td>모든 인스턴스가 처음에 같은 값</td><td>클래스 안에 <code>변수 = 값</code> (클래스 변수)</td></tr><tr><td>인스턴스마다 다른 값</td><td><code>__init__</code> 안에서 <code>self.변수 = 값</code> (<a href="#s71">7.1</a>)</td></tr><tr><td>메서드 정의</td><td><code>def 이름(self, ...):</code> — 첫 매개변수는 <code>self</code></td></tr><tr><td>메서드 부르기</td><td><code>인스턴스.이름(...)</code> — <code>self</code>는 쓰지 않는다</td></tr><tr><td>내 값 바꾸기</td><td><code>self.변수 = 새 값</code></td></tr></tbody></table></div>
-
-    
+22 28 21
+20</code></pre>
+<p>위키독스 예제는 이 코드를 <code>diablo2.py</code> 파일로 저장하고 <code>import diablo2</code> 한 뒤 <code>diablo2.Amazon()</code>으로 인스턴스를 만들어요. 붕어빵 예제와 똑같은 구조예요. jane만 훈련했으니 mary의 힘은 20 그대로예요.</p>
+<h3>자주 막히는 곳 — self 를 빠뜨리면</h3>
+<pre><code>class Bungeoppang:                  # Bungeoppang 클래스를 정의해 주세요
+    price = 1000                    # 클래스 변수 price 에 1000 을 담아 주세요
+    def discount(won):              # discount 메서드를 정의해 주세요 (self 를 빠뜨렸어요)
+        print(won)                  # won 을 화면에 보여 주세요
+x = Bungeoppang()                   # x 에 붕어빵을 만들어 담아 주세요
+x.discount(200)                     # x 의 가격을 200 깎아 주세요</code></pre>
+<pre class="out"><code class="nohighlight">TypeError: Bungeoppang.discount() takes 1 positional argument but 2 were given</code></pre>
+<table class="choice-table"><thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead><tbody><tr><td class="choice-bad"><code>def discount(won):</code>처럼 <code>self</code>를 안 적는다 → <code>x.discount(200)</code>을 부르면 파이썬이 <code>x</code>도 같이 넘기는데 받을 자리가 하나뿐이라 <code>TypeError</code>가 나요(값을 두 개 줬다고 불평해요).</td><td class="choice-good"><code>def discount(self, won):</code>처럼 첫 매개변수로 <code>self</code>를 꼭 적는다 → <code>x</code>는 <code>self</code>로, <code>200</code>은 <code>won</code>으로 들어가요.</td></tr></tbody></table>
 <h2 id="s73"><span class="hl">7.3 상속</span></h2>
-
-<h3><span class="hl">1. 물려받기 (7.3)</span></h3>
-<div class="table-scroll fill"><table><thead><tr><th>말</th><th>뜻</th></tr></thead><tbody><tr><td>부모 클래스</td><td>물려주는 클래스. 위키독스는 상위 클래스, 영상은 father class 라고 불러요</td></tr><tr><td>자식 클래스</td><td>물려받는 클래스. 만들 때 <code>class 자식(부모):</code></td></tr><tr><td><code>is a</code> 읽기</td><td>자식 → 부모 화살표를 따라 읽는다. “Student is a Person”(학생은 사람이다)</td></tr></tbody></table></div>
+<p><b>상속(inheritance)</b>은 이미 있는 클래스(부모)의 변수와 메서드를 새 클래스(자식)가 그대로 물려받는 거예요. 자식 클래스는 <code>class 자식(부모):</code>처럼 이름 옆 괄호에 부모를 적어서 만들어요. 가게 비유로는 치즈붕어빵 틀을 처음부터 새로 깎는 대신, 기본 틀을 물려받아 치즈를 넣는 단계만 더하는 거예요.</p>
+<h3>물려받으면 이렇게 돼요 — 교재의 Person과 Student</h3>
 <pre><code>class Person:                 # Person 클래스를 정의해 주세요
     eyes = 2                  # 클래스 변수 eyes 에 2 를 담아 주세요
     def eat(self):            # eat 메서드를 정의해 주세요
@@ -182,12 +225,31 @@ print(hasattr(Person(), 'study'))     # Person 인스턴스에 study 가 있나�
 True
 True
 False</code></pre>
-<p>※ <code>Student</code>에는 <code>study</code>만 적었는데 <code>talk</code>와 <code>eyes</code>도 써져요. 반대로 부모 <code>Person</code>에는 <code>study</code>가 없어요. 물려주는 방향은 부모 → 자식 한 방향이에요.</p>
-<h4>왜 복사해 붙이지 않고 상속하나</h4>
-<div class="table-scroll fill"><table><thead><tr><th>방법</th><th>나중에 고칠 때</th></tr></thead><tbody><tr><td>복사해 붙임</td><td>나중에 “옷 색깔” 같은 것을 넣으려면 사람 클래스와 학생 클래스를 각각 고쳐야 한다</td></tr><tr><td>상속</td><td>부모 한 곳만 고치면 자식에게도 반영된다</td></tr></tbody></table></div>
-<p>영상의 예도 같아요. 사람 시뮬레이션에 아기, 십대 클래스가 있으면 둘 다 이름·팔·다리를 갖는 “사람”이에요. 이 공통 부분을 사람 클래스에 한 번만 적고, 아기와 십대는 사람을 <b>extend(확장)</b>해서 자기만의 것(아기는 울기, 십대는 투덜대기)만 더해요. 영상은 이것으로 코드 중복을 줄이고 코드를 다시 쓸 수 있는 조각으로 나눈다고 말해요.</p>
-<h3><span class="hl">2. 부모의 __init__ 부르기 — super()</span></h3>
-<p>부모에 <code>__init__</code>이 있는데 자식이 자기 <code>__init__</code>을 다시 적으면, 부모의 <code>__init__</code>은 자동으로 불리지 않아요. 부모의 속성도 만들고 싶으면 자식의 <code>__init__</code> 안에서 <code>super().__init__(...)</code>으로 부모 것을 불러 줘요. 영상은 이 줄이 빠지면 “사람의 이름을 정하는 부분이 실행되지 않아서” 코드가 동작하지 않는다고 설명해요(자바스크립트는 <code>super()</code>).</p>
+<p><code>Student</code>에는 <code>study</code>만 적었는데 <code>talk</code>와 <code>eyes</code>도 써져요. 반대로 부모 <code>Person</code>에는 <code>study</code>가 없어요. 물려주는 방향은 부모 → 자식 한 방향이에요. 교재는 이 관계를 화살표(자식 → 부모)로 그리고 “Student is a Person(학생은 사람이다)”으로 읽으라고 해요.</p>
+<h3>파이썬이 이름을 찾는 순서</h3>
+<div class="table-scroll fill"><table><thead><tr><th>부른 것</th><th>찾는 순서 (인스턴스 → 자식 → 부모)</th></tr></thead><tbody><tr><td><code>kim.talk()</code></td><td>kim 인스턴스에 없음 → <code>Student</code>에 없음 → <code>Person</code>에서 찾음 → 실행</td></tr><tr><td><code>kim.study()</code></td><td>kim 인스턴스에 없음 → <code>Student</code>에서 바로 찾음 → 실행</td></tr><tr><td><code>kim.eyes</code></td><td>kim 에 없음 → <code>Student</code>에 없음 → <code>Person</code>의 클래스 변수를 찾음</td></tr></tbody></table></div>
+<table class="choice-table"><thead><tr><th>나쁜 선택</th><th>좋은 선택</th></tr></thead><tbody><tr><td class="choice-bad">코드를 복사해 두 클래스에 붙인다 → 나중에 “옷 색깔”을 추가하려면 사람 클래스와 학생 클래스를 각각 고쳐야 해요.</td><td class="choice-good"><code>class Student(Person):</code>로 상속한다 → 부모 <code>Person</code> 한 곳만 고치면 자식 <code>Student</code>에도 반영돼요.</td></tr></tbody></table>
+<h3>부모의 <code>__init__</code>도 불러 줘야 해요 — super()</h3>
+<p>부모에 <code>__init__</code>이 있는데 자식이 자기 <code>__init__</code>을 다시 적으면, 부모의 <code>__init__</code>은 자동으로 불리지 않아요. 부모가 하던 일(예: 속재료와 가격 적기)까지 하려면 자식의 <code>__init__</code> 안에서 <code>super().__init__(...)</code>으로 부모 것을 직접 불러요. <code>super()</code>는 “지금 클래스의 부모”를 가리켜요. 가게 비유로는 치즈붕어빵 틀이 “기본 레시피를 먼저 따라 하고, 그 다음 치즈를 넣는” 순서예요.</p>
+<pre><code>class Bungeoppang:                                  # Bungeoppang 클래스를 정의해 주세요
+    def __init__(self, filling, price=1000):        # 만들 때 불리는 __init__ 을 정의해 주세요
+        self.filling = filling                      # 이 붕어빵의 filling 에 filling 을 담아 주세요
+        self.price = price                          # 이 붕어빵의 price 에 price 를 담아 주세요
+    def describe(self):                             # describe 메서드를 정의해 주세요
+        return self.filling + "붕어빵 " + str(self.price) + "원"  # 소개 글자를 만들어 돌려주세요
+class Cheese(Bungeoppang):                          # Bungeoppang 을 상속받는 Cheese 클래스를 정의해 주세요
+    def __init__(self, filling, cheese_g, price=1500):  # Cheese 의 __init__ 을 정의해 주세요
+        super().__init__(filling, price)            # 부모의 __init__ 을 불러 속재료와 가격을 적게 해 주세요
+        self.cheese_g = cheese_g                    # 이 붕어빵의 cheese_g 에 cheese_g 를 담아 주세요
+    def describe(self):                             # describe 메서드를 다시 정의해 주세요
+        return super().describe() + " (치즈 " + str(self.cheese_g) + "g)"  # 부모의 소개 뒤에 치즈 양을 붙여 돌려주세요
+c = Cheese("팥", 20)                                # c 에 팥, 치즈 20g 붕어빵을 만들어 담아 주세요
+print(c.describe())                                 # c 의 소개를 화면에 보여 주세요
+print(c.filling, c.price, c.cheese_g)               # c 의 세 칸을 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">팥붕어빵 1500원 (치즈 20g)
+팥 1500 20</code></pre>
+<div class="table-scroll fill"><table><thead><tr><th>순서</th><th>일어나는 일</th></tr></thead><tbody><tr><td>① <code>Cheese("팥", 20)</code></td><td>빈 인스턴스가 생기고 <code>Cheese.__init__</code>이 불려요</td></tr><tr><td>② <code>super().__init__(filling, price)</code></td><td>부모 <code>Bungeoppang.__init__</code>이 실행돼서 <code>filling</code>, <code>price</code> 칸이 채워져요</td></tr><tr><td>③ <code>self.cheese_g = cheese_g</code></td><td>다시 자식으로 돌아와 치즈 양 칸이 채워져요</td></tr><tr><td>④ <code>describe()</code></td><td>자식의 <code>describe</code>가 먼저 쓰이고(덮어쓰기), 안에서 <code>super().describe()</code>로 부모 소개를 받아 치즈 양을 붙여요</td></tr></tbody></table></div>
+<p>교재 흐름대로 작은 예도 하나 더 볼게요. 아래 <code>Baby</code>에서 <code>super().__init__(name)</code> 줄을 지우면 <code>name</code> 칸이 만들어지지 않아 오류가 나요.</p>
 <pre><code>class Human:                              # Human 클래스를 정의해 주세요
     def __init__(self, name):             # 만들 때 불리는 __init__ 을 정의해 주세요
         self.name = name                  # 이 인스턴스의 name 에 name 을 담아 주세요
@@ -200,21 +262,27 @@ class Baby(Human):                        # Human 을 상속받는 Baby 클래�
 b = Baby("아기")                          # b 에 이름이 "아기" 인 Baby 를 만들어 담아 주세요
 print(b.name, b.cute, b.cry())            # b 의 name, cute, 울음 결과를 화면에 보여 주세요</code></pre>
 <pre class="out"><code class="nohighlight">아기 True 아기 응애</code></pre>
-<h4>메서드 덮어쓰기와 super()</h4>
-<p>자식이 부모와 같은 이름의 메서드를 적으면 자식 것이 우선해요(덮어쓰기). 부모 것도 같이 쓰고 싶으면 <code>super().메서드()</code>로 불러요.</p>
-<pre><code>class Teen(Human):                          # Human 을 상속받는 Teen 클래스를 정의해 주세요
-    def talk(self):                         # talk 메서드를 정의해 주세요
-        return "아 몰라요"                  # "아 몰라요" 를 돌려주세요
-class Teen2(Teen):                          # Teen 을 상속받는 Teen2 클래스를 정의해 주세요
-    def talk(self):                         # talk 메서드를 다시 정의해 주세요
-        return super().talk() + "!"         # 부모의 talk 결과에 "!" 를 붙여 돌려주세요
-print(Teen2("민수").talk())                 # 이름이 "민수" 인 Teen2 의 말을 화면에 보여 주세요</code></pre>
+<h3>덮어쓰기 — 같은 이름을 자식이 다시 적으면</h3>
+<p>자식이 부모와 같은 이름의 메서드를 적으면 자식 것이 먼저 쓰여요(덮어쓰기). 부모 것도 같이 쓰고 싶으면 <code>super().메서드()</code>로 불러요.</p>
+<pre><code>class Human:                              # Human 클래스를 정의해 주세요
+    def __init__(self, name):             # 만들 때 불리는 __init__ 을 정의해 주세요
+        self.name = name                  # 이 인스턴스의 name 에 name 을 담아 주세요
+class Teen(Human):                        # Human 을 상속받는 Teen 클래스를 정의해 주세요
+    def talk(self):                       # talk 메서드를 정의해 주세요
+        return "아 몰라요"                # "아 몰라요" 를 돌려주세요
+class Teen2(Teen):                        # Teen 을 상속받는 Teen2 클래스를 정의해 주세요
+    def talk(self):                       # talk 메서드를 다시 정의해 주세요
+        return super().talk() + "!"       # 부모의 talk 결과에 "!" 를 붙여 돌려주세요
+print(Teen2("민수").talk())               # 이름이 "민수" 인 Teen2 의 말을 화면에 보여 주세요</code></pre>
 <pre class="out"><code class="nohighlight">아 몰라요!</code></pre>
-<p>※ 이 예제의 <code>Human</code>은 위 <code>__init__</code> 예제의 것을 그대로 써요. 덮어쓰기는 위키독스 7.3에는 없고, 영상의 “자식은 부모 것 + 자기 것” 설명을 이어서 이 글이 덧붙인 내용이에요.</p>
-<h3><span class="hl">3. 한눈에 정리</span></h3>
-<div class="table-scroll fill"><table><thead><tr><th>하고 싶은 일</th><th>쓰는 것</th></tr></thead><tbody><tr><td>상속받기</td><td><code>class 자식(부모):</code></td></tr><tr><td>물려받는 것</td><td>부모의 클래스 변수와 메서드 전부</td></tr><tr><td>자식만의 것 더하기</td><td>자식 클래스 안에 메서드·변수를 더 적는다</td></tr><tr><td>부모 <code>__init__</code> 부르기</td><td>자식 <code>__init__</code> 안에서 <code>super().__init__(...)</code></td></tr><tr><td>부모 메서드 같이 쓰기</td><td><code>super().메서드()</code></td></tr><tr><td>관계 확인</td><td><code>isinstance(a, 부모)</code>, <code>issubclass(자식, 부모)</code></td></tr></tbody></table></div>
+<p><b>핵심 한 줄:</b> 자식은 부모 것을 그대로 쓰고, 같은 이름을 다시 적으면 자기 것이 먼저이며, 부모 것이 필요할 때는 <code>super()</code>로 불러요.</p>
+<p>영상은 같은 개념을 “사람 시뮬레이션”으로 말해요. 사람 클래스에 이름·팔·다리를 한 번만 적고, 아기와 십대는 사람을 확장(extend)해서 아기는 울기, 십대는 투덜대기만 더해요.</p>
+<h2><span class="hl">마무리</span> — 클래스로 짰을 때 편해지는 점 3가지</h2>
+<div class="table-scroll fill"><table><thead><tr><th>장점</th><th>왜 편한가</th></tr></thead><tbody><tr><td>1. 데이터와 일이 한 곳에 모인다</td><td>함수만 쓰면 딕셔너리와 <code>describe</code> 함수가 따로 놀아서 엉뚱한 딕셔너리를 넣어도 막을 수 없어요. 클래스는 <code>x.describe()</code>처럼 “이 붕어빵에게 시킨다”가 되고, 가능한 일이 틀 안에 모여 있어요</td></tr><tr><td>2. 모양이 통일돼 빠뜨림·오타가 준다</td><td><code>Bungeoppang("팥")</code>은 항상 같은 모양이고, 새 속성이 생기면 <code>__init__</code> 한 곳만 고쳐요</td></tr><tr><td>3. 상속으로 복사 없이 늘린다</td><td>치즈붕어빵처럼 달라지는 부분만 적고, 나머지는 부모 것을 그대로 써요</td></tr></tbody></table></div>
+<p>※ 작은 프로그램에서는 함수만으로도 충분해요. 같은 종류의 물건이 여러 개 나올 때부터 클래스가 편해져요.</p>
+<h2><span class="hl">한눈에 정리</span></h2>
+<div class="table-scroll fill"><table><thead><tr><th>하고 싶은 일</th><th>쓰는 것</th></tr></thead><tbody><tr><td>틀 만들기</td><td><code>class 이름:</code></td></tr><tr><td>인스턴스 만들기</td><td><code>a = 이름()</code>, 값이 필요하면 <code>이름(값1, 값2)</code></td></tr><tr><td>처음 값 적기</td><td><code>def __init__(self, ...): self.x = ...</code> (<a href="#s71">7.1</a>)</td></tr><tr><td>틀의 기본값</td><td>클래스 안에 <code>변수 = 값</code> (클래스 변수, <a href="#s72">7.2</a>)</td></tr><tr><td>내 값</td><td><code>self.변수 = 값</code> — 그 인스턴스만의 값</td></tr><tr><td>메서드</td><td><code>def 이름(self, ...):</code> 로 정의하고 <code>인스턴스.이름(...)</code>으로 부른다</td></tr><tr><td>물려받기</td><td><code>class 자식(부모):</code> (<a href="#s73">7.3</a>)</td></tr><tr><td>부모 부르기</td><td><code>super().__init__(...)</code>, <code>super().메서드()</code></td></tr><tr><td>관계 확인</td><td><code>isinstance(a, 클래스)</code>, <code>issubclass(자식, 부모)</code></td></tr></tbody></table></div>
 
-    
     <h2><span class="hl">함께 보기</span></h2>
     <ul>
       <li><a href="beginner-python-ch07-answers.html">7장 예제 해설 — 실행 순서와 값 변화를 한 단계씩</a> — 이 글의 예제가 어떤 순서로 실행되는지 풀어요.</li>
