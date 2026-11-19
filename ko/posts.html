@@ -981,6 +981,10 @@
         render();
       });
       for (var i = 0; i < scopeRadios.length; i++) {
+        Array.prototype.forEach.call(document.querySelectorAll('#vibe-coding-section .post-subgroup'), function (sg) {
+          sg.hidden = sg.querySelectorAll('.title-list li:not([hidden])').length === 0;
+        });
+
         scopeRadios[i].addEventListener('change', function () {
           currentPage = 1;
           render();
