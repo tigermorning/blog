@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>7장 객체지향 개념 확인 문제 12개 — 클래스·self·상속을 객관식·OX·결과 예측으로 점검하기 - Tigermorning</title>
-<meta name="description" content="왕초보를 위한 Python 7.1~7.3(클래스와 인스턴스, 변수와 메서드, 상속) 범위의 개념 확인 12문제. 객관식·OX·짝짓기·결과 예측·빈칸 채우기로 이해했는지 점검하고 정답과 해설을 확인해요.">
+<title>7장 객체지향 실습 문제 12개 — 개념 확인부터 실제 상황 적용까지, 클래스·self·상속 코드 읽고 고치고 짜 보기 - Tigermorning</title>
+<meta name="description" content="왕초보를 위한 Python 7장 객체지향(7.1~7.3) 범위로 만든 실습 12문제. 개념을 이해했는지 확인하는 문제 5개, 코드를 읽고 결과를 예측하는 문제 4개, 실제 프로그램에서 쓰는 상황에 적용하는 문제 3개와 정답·해설.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=JetBrains+Mono:wght@400;600&family=Nanum+Gothic+Coding:wght@400;700&display=swap">
@@ -394,140 +394,232 @@ main, .problem, .p-body, .sol-body, .level { min-width: 0; }
     <a class="backlink" href="posts.html#python-basics-books">← Tigermorning 블로그 · 파이썬 스터디 › 왕초보를 위한 Python</a>
     <a class="backlink" href="beginner-python-ch07-notes.html">← 이전 편: 7장 객체지향 정리(7.1~7.3) — 클래스, self, 상속</a>
     <div class="eyebrow"><b>왕초보를 위한 Python</b> · 7장 객체지향 · 7.1 – 7.3</div>
-    <h1><span class="prompt">&gt;&gt;&gt;</span>7장 객체지향 개념 확인 문제</h1>
-    <p class="lead">7.1~7.3에는 교재에 연습 문제가 없어서, 코드를 짜는 문제 대신 <b>개념을 이해했는지 확인하는 문제</b>로 만들었어요. <b>객관식 · OX · 짝짓기 · 결과 예측 · 빈칸 채우기</b>를 섞었고, 코드가 나오는 문제는 읽고 답만 고르거나 적으면 돼요. 문제마다 <b>힌트 보기</b>와 <b>정답·해설 보기</b>가 따로 접혀 있어요. 교재 7.6 퀴즈에서 7.1~7.3에 해당하는 유형(생성 결과 읽기, 상속으로 쓸 수 있는 메서드, <code>self</code>가 가리키는 것)을 바탕으로 했고, 퀴즈의 나머지 문제는 7.5 범위라서 뺐어요. 코드 실행 결과는 파이썬으로 실제로 돌려서 넣었어요.</p>
+    <h1><span class="prompt">&gt;&gt;&gt;</span>7장 객체지향 실습 문제</h1>
+    <p class="lead">교재는 7.3 첫머리에서, 개념은 이해가 돼도 실제 프로그램에 적용하려면 난감할 수 있다고 말해요. 그래서 이 글은 두 가지를 함께 묻습니다. <b>개념을 이해했는지 확인하는 문제</b>와, 회원·장바구니·로그·게임 캐릭터처럼 <b>실제 프로그램에서 쓰는 상황에 적용하는 문제</b>예요. 게임 플레이어에 속성을 더하고, 사람·아기·십대 클래스를 만드는 장면은 노마드 코더의 객체지향 영상(<a href="https://www.youtube.com/watch?v=cg1xvFy1JQQ" target="_blank" rel="noopener">「객체지향 프로그래밍? 문과도 이해쌉가능. 10분컷.」</a>)에서 다룬 상황을 바탕으로 했어요. 결과 예측, 객관식, OX, 버그 분석, 오류 고치기, 코드 쓰기를 섞었어요. 어떤 개념을 묻는지는 문제를 풀어 보면서 알아내도록 일부러 제목에 쓰지 않았어요. 문제마다 <b>힌트 보기</b>와 <b>정답·해설 보기</b>가 따로 접혀 있어요. 7.6 퀴즈 유형(실행 결과 읽기, 상속으로 쓸 수 있는 것, <code>self</code>가 가리키는 것)도 참고했어요. 코드 실행 결과는 파이썬으로 실제로 돌려서 넣었어요.</p>
     <div class="counts">
       <span class="count all">12문제</span>
-      <span class="count basic">7.1 4</span><span class="count mid">7.2 4</span><span class="count adv">7.3 4</span>
+      <span class="count basic">개념 확인 5</span><span class="count mid">코드 읽기 4</span><span class="count adv">적용 3</span>
     </div>
   </header>
 
   <nav class="toc" aria-label="문제 목록">
-<div class="grp-basic"><h2>7.1 클래스와 인스턴스</h2><ol><li><a href="#b1"><span class="n">1</span>클래스와 인스턴스의 관계</a></li><li><a href="#b2"><span class="n">2</span>두 번 만들면 같은 객체일까</a></li><li><a href="#b3"><span class="n">3</span>__init__ 은 언제 불릴까</a></li><li><a href="#b4"><span class="n">4</span>붕어빵 가게와 파이썬 짝짓기</a></li></ol></div>
-<div class="grp-mid"><h2>7.2 변수와 메서드</h2><ol><li><a href="#m1"><span class="n">1</span>self 는 무엇을 가리킬까</a></li><li><a href="#m2"><span class="n">2</span>클래스 변수와 자기 값</a></li><li><a href="#m3"><span class="n">3</span>self 를 직접 넘겨야 할까</a></li><li><a href="#m4"><span class="n">4</span>같은 뜻으로 풀어 쓰기</a></li></ol></div>
-<div class="grp-adv"><h2>7.3 상속</h2><ol><li><a href="#a1"><span class="n">1</span>자식 클래스가 쓸 수 있는 메서드</a></li><li><a href="#a2"><span class="n">2</span>부모도 자식의 메서드를 쓸 수 있을까</a></li><li><a href="#a3"><span class="n">3</span>덮어쓰기와 super()</a></li><li><a href="#a4"><span class="n">4</span>부모의 __init__ 을 안 부르면</a></li></ol></div>
+<div class="grp-basic"><h2>개념 확인</h2><ol><li><a href="#b1"><span class="n">1</span>두 사용자의 이메일</a></li><li><a href="#b2"><span class="n">2</span>모든 플레이어에게 경험치 칸 추가</a></li><li><a href="#b3"><span class="n">3</span>AttributeError 읽기</a></li><li><a href="#b4"><span class="n">4</span>연결 여러 개 만들기</a></li><li><a href="#b5"><span class="n">5</span>게임 속 인물 만들기</a></li></ol></div>
+<div class="grp-mid"><h2>코드 읽고 예측</h2><ol><li><a href="#m1"><span class="n">6</span>기본 설정과 바꾼 설정</a></li><li><a href="#m2"><span class="n">7</span>두 사람의 장바구니가 섞인다</a></li><li><a href="#m3"><span class="n">8</span>로그 기록기 두 종류</a></li><li><a href="#m4"><span class="n">9</span>파일 이름 기록장</a></li></ol></div>
+<div class="grp-adv"><h2>실제 상황에 적용</h2><ol><li><a href="#a1"><span class="n">10</span>게임 캐릭터 만들기</a></li><li><a href="#a2"><span class="n">11</span>직원 등록 오류 고치기</a></li><li><a href="#a3"><span class="n">12</span>상품 가격 계산</a></li></ol></div>
   </nav>
 
   <main>
     <div class="toolbar">
-      <div class="seg" role="group" aria-label="절 필터">
+      <div class="seg" role="group" aria-label="유형 필터">
         <button type="button" id="f-all" data-filter="all" aria-pressed="true">전체</button>
-        <button type="button" id="f-basic" data-filter="basic" aria-pressed="false">7.1</button><button type="button" id="f-mid" data-filter="mid" aria-pressed="false">7.2</button><button type="button" id="f-adv" data-filter="adv" aria-pressed="false">7.3</button>
+        <button type="button" id="f-basic" data-filter="basic" aria-pressed="false">개념 확인</button><button type="button" id="f-mid" data-filter="mid" aria-pressed="false">코드 읽기</button><button type="button" id="f-adv" data-filter="adv" aria-pressed="false">적용</button>
       </div>
       <button type="button" class="ghost" id="toggle-sol">정답·해설 모두 펼치기</button>
     </div>
 
     <section class="level basic" data-level="basic">
       <div class="level-head">
-        <span class="tag">7.1</span>
-        <h2>7.1 클래스와 인스턴스</h2>
-        <p>클래스가 무엇이고 인스턴스가 무엇인지, <code>__init__</code>이 언제 불리는지 확인해요.</p>
+        <span class="tag">개념 확인</span>
+        <h2>개념 확인</h2>
+        <p>짧은 코드를 읽고 결과를 예측하거나 알맞은 설명을 골라, 개념을 이해했는지 확인해요.</p>
       </div>
 
       <article class="problem" id="b1">
-        <div class="p-head"><span class="p-id">7.1 · 1</span><span class="p-type">객관식</span><h3>클래스와 인스턴스의 관계</h3></div>
+        <div class="p-head"><span class="p-id">문제 1</span><span class="p-type">결과 예측</span><h3>두 사용자의 이메일</h3></div>
         <div class="p-body">
-<p>붕어빵 틀(클래스)과 틀로 구운 붕어빵(인스턴스)에 대한 설명 중 맞는 것을 하나 고르세요.</p>
-<ol class="choices" style="list-style:none;padding-left:0;"><li style="margin:.25rem 0;">① 클래스는 설계이고, 인스턴스는 그 설계로 만든 실물이에요.</li><li style="margin:.25rem 0;">② 클래스와 인스턴스는 같은 말이에요.</li><li style="margin:.25rem 0;">③ 인스턴스가 모여서 클래스를 만들어요.</li><li style="margin:.25rem 0;">④ 클래스 하나로는 인스턴스를 하나만 만들 수 있어요.</li></ol>
+<p>회원 정보를 클래스로 만든 코드예요. 한 사용자의 이메일을 바꿨을 때 출력을 적어 보세요.</p>
+<pre><code class="language-python">class User:                                   # User 클래스를 정의해 주세요
+    def __init__(self, name, email):          # 만들 때 불리는 __init__ 을 정의해 주세요
+        self.name = name                      # 이 인스턴스의 name 에 name 을 담아 주세요
+        self.email = email                    # 이 인스턴스의 email 에 email 을 담아 주세요
+u1 = User("민지", "minji@example.com")        # u1 에 민지의 User 를 만들어 담아 주세요
+u2 = User("준호", "junho@example.com")        # u2 에 준호의 User 를 만들어 담아 주세요
+u1.email = "new@example.com"                  # u1 의 email 에 새 주소를 담아 주세요
+print(u1.email)                               # u1 의 email 을 화면에 보여 주세요
+print(u2.email)                               # u2 의 email 을 화면에 보여 주세요</code></pre>
+<div class="table-scroll"><table><thead><tr><th>출력</th><th>내 답</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr></tbody></table></div>
         </div>
         <details class="hint"><summary>힌트 보기</summary>
           <div class="sol-body">
-<p>틀 하나로 붕어빵을 여러 마리 구울 수 있고, 먹는 것은 구운 붕어빵이에요.</p>
+<p><code>self.email</code>은 인스턴스마다 따로 저장돼요. <code>u1</code>을 바꿨을 때 <code>u2</code>도 영향을 받을까요?</p>
           </div>
         </details>
         <div class="memo"><label for="memo-b1">내 답 <span>이 브라우저에만 저장</span></label><textarea id="memo-b1"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
-<p><b>정답:</b> ①</p>
-    <h4>왜 이런 답이 나올까요</h4><p>클래스는 같은 모양을 정해 둔 설계이고, 인스턴스는 그 설계로 만든 하나하나(객체)예요. 같은 클래스에서 인스턴스를 얼마든지 만들 수 있어요.</p>
-    <h4>헷갈리기 쉬운 곳</h4><ul><li>“클래스로 만든 값”을 인스턴스 또는 객체라고 불러요. 두 말은 거의 같은 뜻으로 쓰여요.</li></ul>
-    <p><b>핵심 한 줄:</b> 클래스는 설계, 인스턴스는 그 설계로 만든 실물이에요.</p>
+<p>실행하면 이렇게 나와요.</p><pre class="out"><code class="nohighlight">new@example.com
+junho@example.com</code></pre>
+    <h4>왜 이런 답이 나올까요</h4><p><code>User(...)</code>를 부를 때마다 새 인스턴스가 만들어지고, <code>__init__</code>의 <code>self</code>가 그 인스턴스를 가리켜서 각자 <code>email</code>을 따로 저장해요. <code>u1.email</code>을 바꿔도 <code>u2.email</code>은 처음 값 그대로예요.</p>
+    <h4>헷갈리기 쉬운 곳</h4><ul><li>두 변수가 같은 클래스에서 나왔다고 같은 값을 공유하는 것은 아니에요.</li></ul>
+    <p><b>핵심 한 줄:</b> 같은 클래스로 만든 인스턴스도 <code>self.속성</code>은 각자 따로 가져요.</p>
           </div>
         </details>
       </article>
 
       <article class="problem" id="b2">
-        <div class="p-head"><span class="p-id">7.1 · 2</span><span class="p-type">OX</span><h3>두 번 만들면 같은 객체일까</h3></div>
+        <div class="p-head"><span class="p-id">문제 2</span><span class="p-type">객관식</span><h3>모든 플레이어에게 경험치 칸 추가</h3></div>
         <div class="p-body">
-<p>아래 코드에서 <code>a is b</code>는 <code>True</code>가 나올까요? ○ 또는 ✕로 답하세요.</p>
-<pre><code class="language-python">class Dog:                       # Dog 클래스를 정의해 주세요
-    def bark(self):              # bark 메서드를 정의해 주세요
-        return "멍멍"            # "멍멍" 을 돌려주세요
-a = Dog()                        # a 에 Dog 인스턴스를 만들어 담아 주세요
-b = Dog()                        # b 에 Dog 인스턴스를 만들어 담아 주세요
-print(a is b)                    # a 와 b 는 같은 객체인가요?</code></pre>
+<p>게임에서 플레이어를 클래스로 만든 코드예요. 개발자가 <b>모든 플레이어가 경험치(<code>xp</code>)를 갖고 0에서 시작하게</b> 하려고 해요. 가장 적게 고쳐도 되는 곳을 고르세요.</p>
+<pre><code class="language-python">class Player:                                 # Player 클래스를 정의해 주세요
+    def __init__(self, name, health, skill):  # 만들 때 불리는 __init__ 을 정의해 주세요
+        self.name = name                      # 이 인스턴스의 name 에 name 을 담아 주세요
+        self.health = health                  # 이 인스턴스의 health 에 health 를 담아 주세요
+        self.skill = skill                    # 이 인스턴스의 skill 에 skill 을 담아 주세요
+players = [                                   # players 에 아래 세 명을 담아 주세요
+    Player("elon", 100, "coding"),            # 이름이 elon 인 Player 를 만들어 주세요
+    Player("mark", 90, "design"),             # 이름이 mark 인 Player 를 만들어 주세요
+    Player("jane", 80, "music"),              # 이름이 jane 인 Player 를 만들어 주세요
+]
+for p in players:                             # players 의 플레이어를 하나씩 p 로 꺼내 주세요
+    print(p.name, p.health)                   # p 의 name 과 health 를 화면에 보여 주세요</code></pre>
+<p>보기:</p><ol class="choices" style="list-style:none;padding-left:0;"><li style="margin:.25rem 0;">① <code>Player(...)</code>로 만드는 세 줄을 각각 고친다</li><li style="margin:.25rem 0;">② <code>__init__</code> 안에 <code>self.xp = 0</code> 한 줄을 더한다</li><li style="margin:.25rem 0;">③ <code>for</code> 반복문 안에서 <code>p.xp = 0</code>을 한다</li><li style="margin:.25rem 0;">④ <code>Player</code> 클래스를 하나 더 만든다</li></ol>
         </div>
         <details class="hint"><summary>힌트 보기</summary>
           <div class="sol-body">
-<p><code>Dog()</code>를 부를 때마다 새 인스턴스가 하나씩 만들어져요.</p>
+<p>플레이어를 만드는 줄은 세 개지만, 플레이어의 속성이 처음 만들어지는 곳은 어디인가요? 플레이어가 100명으로 늘어도 고칠 곳이 같은지 생각해 보세요.</p>
           </div>
         </details>
         <div class="memo"><label for="memo-b2">내 답 <span>이 브라우저에만 저장</span></label><textarea id="memo-b2"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
-<p><b>정답:</b> ✕ (False)</p>
-<p>실행하면 이렇게 나와요.</p><pre class="out"><code class="nohighlight">False</code></pre>
-    <h4>왜 이런 답이 나올까요</h4><p><code>Dog()</code>를 두 번 불렀으니 서로 다른 인스턴스 두 개가 있어요. 그래서 <code>a is b</code>는 <code>False</code>예요.</p>
-    <h4>헷갈리기 쉬운 곳</h4><ul><li>둘 다 같은 클래스에서 나와서 같은 메서드를 쓰지만, 서로 다른 객체예요.</li></ul>
-    <p><b>핵심 한 줄:</b> 클래스를 부를 때마다 새 인스턴스가 하나 더 생겨요.</p>
+<p><b>정답:</b> ②</p>
+<p>원래 코드의 실행 결과예요.</p><pre class="out"><code class="nohighlight">elon 100
+mark 90
+jane 80</code></pre>
+<p>정답대로 고친 코드와 실행 결과예요.</p><pre><code class="language-python">class Player:                                 # Player 클래스를 정의해 주세요
+    def __init__(self, name, health, skill):  # 만들 때 불리는 __init__ 을 정의해 주세요
+        self.name = name                      # 이 인스턴스의 name 에 name 을 담아 주세요
+        self.health = health                  # 이 인스턴스의 health 에 health 를 담아 주세요
+        self.skill = skill                    # 이 인스턴스의 skill 에 skill 을 담아 주세요
+        self.xp = 0                           # 이 인스턴스의 xp 에 0 을 담아 주세요
+players = [                                   # players 에 아래 세 명을 담아 주세요
+    Player("elon", 100, "coding"),            # 이름이 elon 인 Player 를 만들어 주세요
+    Player("mark", 90, "design"),             # 이름이 mark 인 Player 를 만들어 주세요
+    Player("jane", 80, "music"),              # 이름이 jane 인 Player 를 만들어 주세요
+]
+for p in players:                             # players 의 플레이어를 하나씩 p 로 꺼내 주세요
+    print(p.name, p.xp)                       # p 의 name 과 xp 를 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">elon 0
+mark 0
+jane 0</code></pre>
+    <h4>왜 이런 답이 나올까요</h4><p>모든 <code>Player</code>의 속성은 <code>__init__</code>에서 만들어져요. 거기에 <code>self.xp = 0</code>을 한 줄 더하면, 지금 만드는 세 플레이어도 앞으로 만들 플레이어도 모두 <code>xp</code>를 0으로 시작해요. 플레이어를 만드는 곳마다 고치면 플레이어가 늘 때마다 같은 일을 되풀이하고, 빠뜨린 곳이 생겨요.</p>
+    <h4>헷갈리기 쉬운 곳</h4><ul><li>③처럼 반복문에서 고치면 이미 만든 플레이어에만 적용되고, 나중에 만든 플레이어는 <code>xp</code>가 없어요.</li></ul>
+    <p><b>핵심 한 줄:</b> 모든 인스턴스에 같은 속성을 더할 때는 <code>__init__</code> 한 곳만 고쳐요.</p>
           </div>
         </details>
       </article>
 
       <article class="problem" id="b3">
-        <div class="p-head"><span class="p-id">7.1 · 3</span><span class="p-type">결과 예측</span><h3>__init__ 은 언제 불릴까</h3></div>
+        <div class="p-head"><span class="p-id">문제 3</span><span class="p-type">객관식</span><h3>AttributeError 읽기</h3></div>
         <div class="p-body">
-<p>아래 코드가 출력하는 세 줄을 순서대로 적어 보세요. <code>__init__</code>이 실행되는 때를 맞히는 문제예요.</p>
-<pre><code class="language-python">class Tea:                       # Tea 클래스를 정의해 주세요
-    def __init__(self):          # 만들 때 자동으로 불리는 __init__ 을 정의해 주세요
-        print("끓이는 중")       # "끓이는 중" 을 화면에 보여 주세요
-print("시작")                    # "시작" 을 화면에 보여 주세요
-t = Tea()                        # t 에 Tea 인스턴스를 만들어 담아 주세요
-print("끝")                      # "끝" 을 화면에 보여 주세요</code></pre>
-<div class="table-scroll"><table><thead><tr><th>출력</th><th>내 답</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr></tbody></table></div>
+<p>아래 코드를 실행했더니 마지막 줄에서 오류가 났어요. 오류의 가장 알맞은 원인을 고르세요.</p>
+<pre><code class="language-python">class User:                                   # User 클래스를 정의해 주세요
+    def __init__(self, name, email):          # 만들 때 불리는 __init__ 을 정의해 주세요
+        self.name = name                      # 이 인스턴스의 name 에 name 을 담아 주세요
+    def show(self):                           # show 메서드를 정의해 주세요
+        print(self.name, self.email)          # 이 인스턴스의 name 과 email 을 화면에 보여 주세요
+u = User("민지", "minji@example.com")         # u 에 민지의 User 를 만들어 담아 주세요
+u.show()                                      # u 의 정보를 보여 달라고 시켜 주세요</code></pre>
+<p>보기:</p><ol class="choices" style="list-style:none;padding-left:0;"><li style="margin:.25rem 0;">① <code>show</code>를 정의할 때 <code>self</code>를 빠뜨렸다</li><li style="margin:.25rem 0;">② <code>__init__</code>이 받은 <code>email</code>을 <code>self.email</code>에 저장하지 않았다</li><li style="margin:.25rem 0;">③ <code>User</code>를 만들 때 인자를 하나 덜 넘겼다</li><li style="margin:.25rem 0;">④ <code>print</code>는 값을 두 개 보여 줄 수 없다</li></ol>
         </div>
         <details class="hint"><summary>힌트 보기</summary>
           <div class="sol-body">
-<p>클래스를 정의하는 줄에서는 안의 코드가 실행되지 않고, <code>Tea()</code>를 부르는 순간에 실행돼요.</p>
+<p>오류 문장의 “no attribute ‘email’”은 <code>email</code>이라는 속성이 그 인스턴스에 없다는 뜻이에요. 속성은 어디에서 만들어지나요?</p>
           </div>
         </details>
         <div class="memo"><label for="memo-b3">내 답 <span>이 브라우저에만 저장</span></label><textarea id="memo-b3"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
-<p>실행하면 이렇게 나와요.</p><pre class="out"><code class="nohighlight">시작
-끓이는 중
-끝</code></pre>
-    <h4>왜 이런 답이 나올까요</h4><p><code>class</code> 줄을 지나갈 때는 틀만 만들어지고 <code>__init__</code>은 실행되지 않아요. <code>t = Tea()</code>로 인스턴스를 만드는 순간 파이썬이 <code>__init__</code>을 자동으로 불러서 “끓이는 중”이 나와요.</p>
-    <h4>헷갈리기 쉬운 곳</h4><ul><li><code>__init__</code>은 우리가 직접 부르지 않아요. 인스턴스를 만들 때 한 번만 자동으로 불려요.</li></ul>
-    <p><b>핵심 한 줄:</b> <code>__init__</code>은 <code>클래스()</code>로 인스턴스를 만드는 순간 자동으로 한 번 불려요.</p>
+<p><b>정답:</b> ②</p>
+<p>원래 코드의 실행 결과예요.</p><pre class="out"><code class="nohighlight">AttributeError: 'User' object has no attribute 'email'</code></pre>
+    <h4>왜 이런 답이 나올까요</h4><p><code>__init__</code>이 <code>email</code>을 매개변수로 받았지만 <code>self.email = email</code>을 하지 않아서, 인스턴스에는 <code>name</code>만 저장돼요. <code>show</code>가 <code>self.email</code>을 읽는 순간 없는 속성이라 <code>AttributeError</code>가 나요.</p>
+    <h4>헷갈리기 쉬운 곳</h4><ul><li>매개변수 <code>email</code>은 <code>__init__</code> 안에서만 쓰이는 이름이에요. <code>self.email</code>에 담아 두어야 다른 메서드가 읽을 수 있어요.</li><li>오류는 <code>User(...)</code>를 만드는 줄이 아니라 <code>self.email</code>을 읽는 줄에서 나요.</li></ul>
+    <p><b>핵심 한 줄:</b> 인스턴스의 속성은 <code>self.이름 = 값</code>으로 저장해야 생겨요.</p>
           </div>
         </details>
       </article>
 
       <article class="problem" id="b4">
-        <div class="p-head"><span class="p-id">7.1 · 4</span><span class="p-type">짝짓기</span><h3>붕어빵 가게와 파이썬 짝짓기</h3></div>
+        <div class="p-head"><span class="p-id">문제 4</span><span class="p-type">결과 예측</span><h3>연결 여러 개 만들기</h3></div>
         <div class="p-body">
-<p>왼쪽 붕어빵 가게 요소에 맞는 파이썬 용어를 <b>클래스 · 인스턴스 · 속성 · 메서드</b> 중에서 골라 짝지어 보세요. (아래 코드의 <code>Bungeoppang</code> 클래스를 보고 답해요.)</p>
-<pre><code class="language-python">class Bungeoppang:                        # Bungeoppang 클래스를 정의해 주세요
-    def __init__(self, filling):          # 만들 때 불리는 __init__ 을 정의해 주세요
-        self.price = 1000                 # 이 붕어빵의 price 에 1000 을 담아 주세요
-    def discount(self, won):              # discount 메서드를 정의해 주세요
-        self.price -= won                 # 이 붕어빵의 price 에서 won 을 빼 주세요
-x = Bungeoppang("팥")                     # x 에 팥 붕어빵을 만들어 담아 주세요</code></pre>
-<div class="table-scroll"><table><thead><tr><th>붕어빵 가게</th><th>파이썬 용어</th></tr></thead><tbody><tr><td>붕어빵 틀</td><td>?</td></tr><tr><td>틀로 구운 붕어빵 한 마리 (<code>x</code>)</td><td>?</td></tr><tr><td>붕어빵의 가격 (<code>x.price</code>)</td><td>?</td></tr><tr><td>가격 깎기 (<code>discount</code>)</td><td>?</td></tr></tbody></table></div>
+<p>서버 주소마다 연결 객체를 만드는 코드예요. 출력을 순서대로 적어 보세요.</p>
+<pre><code class="language-python">class Connection:                             # Connection 클래스를 정의해 주세요
+    def __init__(self, host):                 # 만들 때 불리는 __init__ 을 정의해 주세요
+        print("연결:", host)                  # "연결:" 과 host 를 화면에 보여 주세요
+        self.host = host                      # 이 인스턴스의 host 에 host 를 담아 주세요
+hosts = ["a.example.com", "b.example.com", "c.example.com"]  # hosts 에 주소 세 개를 담아 주세요
+pool = []                                     # pool 에 빈 리스트를 담아 주세요
+for h in hosts:                               # hosts 의 주소를 하나씩 h 로 꺼내 주세요
+    pool.append(Connection(h))                # h 로 Connection 을 만들어 pool 에 덧붙여 주세요
+print(len(pool))                              # pool 의 칸 수를 화면에 보여 주세요
+first = pool[0]                               # first 에 pool 의 첫 칸을 담아 주세요
+print(first.host)                             # first 의 host 를 화면에 보여 주세요</code></pre>
+<div class="table-scroll"><table><thead><tr><th>출력</th><th>내 답</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr><tr><td>4번째 줄</td><td>?</td></tr><tr><td>5번째 줄</td><td>?</td></tr></tbody></table></div>
         </div>
         <details class="hint"><summary>힌트 보기</summary>
           <div class="sol-body">
-<p>“틀”은 설계, “구워 낸 한 마리”는 실물, “칸에 적힌 값”은 객체가 가진 값, “시킬 수 있는 일”은 함수예요.</p>
+<p><code>Connection(h)</code>를 쓰는 곳이 몇 군데인지, <code>first = pool[0]</code>도 <code>Connection(...)</code>을 쓰는지 살펴보세요.</p>
           </div>
         </details>
         <div class="memo"><label for="memo-b4">내 답 <span>이 브라우저에만 저장</span></label><textarea id="memo-b4"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
-<div class="table-scroll"><table><thead><tr><th>붕어빵 가게</th><th>파이썬 용어</th></tr></thead><tbody><tr><td>붕어빵 틀</td><td>클래스</td></tr><tr><td>틀로 구운 붕어빵 한 마리 (<code>x</code>)</td><td>인스턴스</td></tr><tr><td>붕어빵의 가격 (<code>x.price</code>)</td><td>속성</td></tr><tr><td>가격 깎기 (<code>discount</code>)</td><td>메서드</td></tr></tbody></table></div>
-    <h4>왜 이런 답이 나올까요</h4><p>붕어빵 틀 = <b>클래스</b>(<code>Bungeoppang</code>), 틀로 구운 한 마리 = <b>인스턴스</b>(<code>x</code>), 가격 = <b>속성</b>(<code>x.price</code>), 가격 깎기 = <b>메서드</b>(<code>discount</code>)예요.</p>
-    <h4>헷갈리기 쉬운 곳</h4><ul><li><code>__init__</code>도 메서드예요. 다만 인스턴스를 만들 때 자동으로 불리는 특별한 메서드예요.</li></ul>
-    <p><b>핵심 한 줄:</b> 틀은 클래스, 구운 붕어빵은 인스턴스, 붕어빵이 가진 값은 속성, 붕어빵에게 시키는 일은 메서드예요.</p>
+<p>실행하면 이렇게 나와요.</p><pre class="out"><code class="nohighlight">연결: a.example.com
+연결: b.example.com
+연결: c.example.com
+3
+a.example.com</code></pre>
+    <h4>왜 이런 답이 나올까요</h4><p><code>__init__</code>은 <code>Connection(...)</code>으로 인스턴스를 만들 때마다 한 번씩 자동으로 불려요. 반복문이 세 번 돌아 “연결:”이 세 줄 나오고, 그다음 <code>len(pool)</code>이 3이에요. <code>first = pool[0]</code>은 이미 만든 인스턴스를 가리킬 뿐이라 <code>__init__</code>이 다시 불리지 않아요.</p>
+    <h4>헷갈리기 쉬운 곳</h4><ul><li>인스턴스를 변수에 옮겨 담거나 리스트에서 꺼내는 것은 새로 만드는 일이 아니에요.</li></ul>
+    <p><b>핵심 한 줄:</b> <code>__init__</code>은 인스턴스를 만들 때만 한 번 자동으로 불려요.</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="problem" id="b5">
+        <div class="p-head"><span class="p-id">문제 5</span><span class="p-type">결과 예측</span><h3>게임 속 인물 만들기</h3></div>
+        <div class="p-body">
+<p>인물 시뮬레이션 게임에서 사람, 아기, 십대를 클래스로 만든 코드예요. 출력 다섯 줄을 적어 보세요.</p>
+<pre><code class="language-python">class Human:                                  # Human 클래스를 정의해 주세요
+    def __init__(self, name):                 # 만들 때 불리는 __init__ 을 정의해 주세요
+        self.name = name                      # 이 인스턴스의 name 에 name 을 담아 주세요
+        self.legs = 2                         # 이 인스턴스의 legs 에 2 를 담아 주세요
+    def introduce(self):                      # introduce 메서드를 정의해 주세요
+        return "나는 " + self.name            # 자기소개 글자를 만들어 돌려주세요
+class Baby(Human):                            # Human 을 상속받는 Baby 클래스를 정의해 주세요
+    def __init__(self, name):                 # Baby 의 __init__ 을 정의해 주세요
+        super().__init__(name)                # 부모 Human 의 __init__ 을 name 으로 불러 주세요
+        self.cute = True                      # 이 인스턴스의 cute 에 True 를 담아 주세요
+    def cry(self):                            # cry 메서드를 정의해 주세요
+        return self.name + " 응애"            # 이름과 " 응애" 를 이어서 돌려주세요
+class Teenager(Human):                        # Human 을 상속받는 Teenager 클래스를 정의해 주세요
+    def introduce(self):                      # introduce 메서드를 다시 정의해 주세요
+        return super().introduce() + " (흥)"  # 부모의 소개 뒤에 " (흥)" 을 붙여 돌려주세요
+b = Baby("아기")                              # b 에 이름이 "아기" 인 Baby 를 만들어 담아 주세요
+t = Teenager("민수")                          # t 에 이름이 "민수" 인 Teenager 를 만들어 담아 주세요
+print(b.legs, b.cute)                         # b 의 legs 와 cute 를 화면에 보여 주세요
+print(b.cry())                                # b 가 우는 소리를 화면에 보여 주세요
+print(b.introduce())                          # b 의 자기소개를 화면에 보여 주세요
+print(t.introduce())                          # t 의 자기소개를 화면에 보여 주세요
+print(t.legs)                                 # t 의 legs 를 화면에 보여 주세요</code></pre>
+<div class="table-scroll"><table><thead><tr><th>출력</th><th>내 답</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr><tr><td>4번째 줄</td><td>?</td></tr><tr><td>5번째 줄</td><td>?</td></tr></tbody></table></div>
+        </div>
+        <details class="hint"><summary>힌트 보기</summary>
+          <div class="sol-body">
+<p><code>Baby</code>는 <code>__init__</code>을 다시 적었고 <code>Teenager</code>는 적지 않았어요. 각각 <code>legs</code>가 어디에서 만들어지는지, <code>introduce</code>를 어느 클래스에서 찾는지 따라가 보세요.</p>
+          </div>
+        </details>
+        <div class="memo"><label for="memo-b5">내 답 <span>이 브라우저에만 저장</span></label><textarea id="memo-b5"></textarea></div>
+        <details class="sol"><summary>정답·해설 보기</summary>
+          <div class="sol-body">
+<p>실행하면 이렇게 나와요.</p><pre class="out"><code class="nohighlight">2 True
+아기 응애
+나는 아기
+나는 민수 (흥)
+2</code></pre>
+    <h4>왜 이런 답이 나올까요</h4><p><code>Baby</code>는 자기 <code>__init__</code>에서 <code>super().__init__(name)</code>으로 부모의 <code>__init__</code>을 불러서 <code>name</code>과 <code>legs</code>가 만들어지고, 자기 몫인 <code>cute</code>를 더해요. <code>introduce</code>는 <code>Baby</code>에 없어서 부모 것을 써요. <code>Teenager</code>는 <code>__init__</code>이 없어 부모 것이 그대로 쓰이고, <code>introduce</code>를 다시 적어 부모의 소개 뒤에 “ (흥)”을 붙여요.</p>
+    <h4>헷갈리기 쉬운 곳</h4><ul><li><code>Baby.__init__</code> 안의 <code>super().__init__(name)</code>을 지우면 <code>name</code>과 <code>legs</code>가 만들어지지 않아 <code>b.legs</code>에서 오류가 나요.</li></ul>
+    <p><b>핵심 한 줄:</b> 공통 부분은 부모에 한 번만 적고, 자식은 자기 몫만 더하거나 다시 적어요.</p>
           </div>
         </details>
       </article>
@@ -536,127 +628,172 @@ x = Bungeoppang("팥")                     # x 에 팥 붕어빵을 만들어 �
 
     <section class="level mid" data-level="mid">
       <div class="level-head">
-        <span class="tag">7.2</span>
-        <h2>7.2 변수와 메서드</h2>
-        <p>클래스에 적은 값과 인스턴스의 값이 어떻게 다른지, <code>self</code>가 무엇을 가리키는지 확인해요.</p>
+        <span class="tag">코드 읽기</span>
+        <h2>코드 읽고 예측</h2>
+        <p>조금 더 긴 코드를 읽고 결과를 예측해요. 실제 프로그램에서 자주 만나는 모양이에요.</p>
       </div>
 
       <article class="problem" id="m1">
-        <div class="p-head"><span class="p-id">7.2 · 1</span><span class="p-type">객관식</span><h3>self 는 무엇을 가리킬까</h3></div>
+        <div class="p-head"><span class="p-id">문제 6</span><span class="p-type">결과 예측</span><h3>기본 설정과 바꾼 설정</h3></div>
         <div class="p-body">
-<p>아래 코드에서 <code>a.toggle()</code>을 부를 때 <code>toggle</code> 메서드 안의 <code>self</code>가 가리키는 것을 하나 고르세요.</p>
-<pre><code class="language-python">class Lamp:                      # Lamp 클래스를 정의해 주세요
-    def __init__(self):          # 만들 때 불리는 __init__ 을 정의해 주세요
-        self.on = False          # 이 램프의 on 에 False 를 담아 주세요
-    def toggle(self):            # toggle 메서드를 정의해 주세요
-        self.on = not self.on    # 이 램프의 on 을 반대로 바꿔 담아 주세요
-a = Lamp()                       # a 에 Lamp 인스턴스를 만들어 담아 주세요
-b = Lamp()                       # b 에 Lamp 인스턴스를 만들어 담아 주세요
-a.toggle()                       # a 를 켜고 꺼 주세요
-print(a.on, b.on)                # a 와 b 의 on 을 화면에 보여 주세요</code></pre>
-<ol class="choices" style="list-style:none;padding-left:0;"><li style="margin:.25rem 0;">① Lamp 클래스</li><li style="margin:.25rem 0;">② 메서드를 부른 인스턴스 <code>a</code></li><li style="margin:.25rem 0;">③ 만들어진 모든 Lamp 인스턴스</li><li style="margin:.25rem 0;">④ on 변수</li></ol>
+<p>프로그램의 기본 설정을 클래스에 적어 두고, 일부 인스턴스에서만 바꾸는 코드예요. 출력 세 줄을 적어 보세요.</p>
+<pre><code class="language-python">class Config:                                 # Config 클래스를 정의해 주세요
+    debug = False                             # 클래스 변수 debug 에 False 를 담아 주세요
+    timeout = 30                              # 클래스 변수 timeout 에 30 을 담아 주세요
+    def enable_debug(self):                   # enable_debug 메서드를 정의해 주세요
+        self.debug = True                     # 이 인스턴스의 debug 에 True 를 담아 주세요
+a = Config()                                  # a 에 Config 인스턴스를 만들어 담아 주세요
+b = Config()                                  # b 에 Config 인스턴스를 만들어 담아 주세요
+a.enable_debug()                              # a 의 debug 를 켜 주세요
+print(a.debug, b.debug, Config.debug)         # a, b, 클래스의 debug 를 화면에 보여 주세요
+Config.timeout = 60                           # 클래스의 timeout 에 60 을 담아 주세요
+print(a.timeout, b.timeout)                   # a 와 b 의 timeout 을 화면에 보여 주세요
+a.timeout = 5                                 # a 의 timeout 에 5 를 담아 주세요
+Config.timeout = 90                           # 클래스의 timeout 에 90 을 담아 주세요
+print(a.timeout, b.timeout)                   # a 와 b 의 timeout 을 화면에 보여 주세요</code></pre>
+<div class="table-scroll"><table><thead><tr><th>출력</th><th>내 답</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr></tbody></table></div>
         </div>
         <details class="hint"><summary>힌트 보기</summary>
           <div class="sol-body">
-<p><code>a.toggle()</code>을 부르면 파이썬이 <code>self</code> 자리에 점 앞의 값을 넣어 줘요. 실행 결과에서 <code>b</code>의 <code>on</code>이 바뀌었는지도 보세요.</p>
+<p>인스턴스에 같은 이름의 값이 따로 저장돼 있으면 그 값을 읽고, 없으면 클래스에 적힌 값을 읽어요. 어느 줄에서 인스턴스에 값이 저장되는지 찾아보세요.</p>
           </div>
         </details>
         <div class="memo"><label for="memo-m1">내 답 <span>이 브라우저에만 저장</span></label><textarea id="memo-m1"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
-<p><b>정답:</b> ②</p>
-<p>실행하면 이렇게 나와요.</p><pre class="out"><code class="nohighlight">True False</code></pre>
-    <h4>왜 이런 답이 나올까요</h4><p><code>self</code>는 메서드를 부른 인스턴스 자신이에요. <code>a.toggle()</code>이니 <code>self</code>는 <code>a</code>이고, 그래서 <code>a.on</code>만 <code>True</code>가 되고 <code>b.on</code>은 <code>False</code> 그대로예요.</p>
-    <h4>헷갈리기 쉬운 곳</h4><ul><li><code>b.toggle()</code>을 부르면 같은 코드가 실행되지만 이번에는 <code>self</code>가 <code>b</code>예요.</li></ul>
-    <p><b>핵심 한 줄:</b> <code>self</code>는 그 메서드를 부른 인스턴스 자신이에요.</p>
+<p>실행하면 이렇게 나와요.</p><pre class="out"><code class="nohighlight">True False False
+60 60
+5 90</code></pre>
+    <h4>왜 이런 답이 나올까요</h4><p><code>a.enable_debug()</code>는 <code>self.debug = True</code>로 <b>a에만</b> 값을 저장해요. 그래서 <code>a.debug</code>는 <code>True</code>, <code>b.debug</code>와 <code>Config.debug</code>는 <code>False</code>예요. <code>timeout</code>은 처음에 <code>a</code>와 <code>b</code> 모두 값이 없어서 클래스 값을 읽고, 클래스를 60으로 바꾸면 둘 다 60이에요. 그 뒤 <code>a.timeout = 5</code>로 a에 값이 저장되면, 클래스를 90으로 바꿔도 a는 5, b는 90이에요.</p>
+    <h4>헷갈리기 쉬운 곳</h4><ul><li>“클래스 값을 바꾸면 모든 인스턴스가 바뀐다”는 말은 <b>자기 값을 따로 저장하지 않은</b> 인스턴스에만 맞아요.</li></ul>
+    <p><b>핵심 한 줄:</b> 인스턴스에 같은 이름의 값을 저장하면, 그 인스턴스는 클래스 값 대신 자기 값을 읽어요.</p>
           </div>
         </details>
       </article>
 
       <article class="problem" id="m2">
-        <div class="p-head"><span class="p-id">7.2 · 2</span><span class="p-type">결과 예측</span><h3>클래스 변수와 자기 값</h3></div>
+        <div class="p-head"><span class="p-id">문제 7</span><span class="p-type">버그 분석</span><h3>두 사람의 장바구니가 섞인다</h3></div>
         <div class="p-body">
-<p>클래스에 적은 <code>count = 0</code>과 메서드 안의 <code>self.count += 1</code>이 만나면 값이 어떻게 될까요? 출력을 적어 보세요.</p>
-<pre><code class="language-python">class Counter:                   # Counter 클래스를 정의해 주세요
-    count = 0                    # 클래스 변수 count 에 0 을 담아 주세요
-    def hit(self):               # hit 메서드를 정의해 주세요
-        self.count += 1          # 이 인스턴스의 count 에 1 을 더해 주세요
-a = Counter()                    # a 에 Counter 인스턴스를 만들어 담아 주세요
-b = Counter()                    # b 에 Counter 인스턴스를 만들어 담아 주세요
-a.hit()                          # a 에게 hit 을 시켜 주세요
-a.hit()                          # a 에게 hit 을 한 번 더 시켜 주세요
-b.hit()                          # b 에게 hit 을 시켜 주세요
-print(a.count, b.count, Counter.count)  # a, b, 클래스의 count 를 화면에 보여 주세요</code></pre>
-<div class="table-scroll"><table><thead><tr><th>출력</th><th>내 답</th></tr></thead><tbody><tr><td>출력</td><td>?</td></tr></tbody></table></div>
+<p>쇼핑몰 코드에서 한 사람이 담은 상품이 다른 사람의 장바구니에도 나타난다는 버그 제보가 들어왔어요. 출력 세 줄을 적고, 알맞은 수정 방법을 고르세요.</p>
+<pre><code class="language-python">class Cart:                                   # Cart 클래스를 정의해 주세요
+    items = []                                # 클래스 변수 items 에 빈 리스트를 담아 주세요
+    def add(self, item):                      # add 메서드를 정의해 주세요
+        self.items.append(item)               # 이 장바구니가 보는 items 에 item 을 덧붙여 주세요
+alice = Cart()                                # alice 에 Cart 를 만들어 담아 주세요
+bob = Cart()                                  # bob 에 Cart 를 만들어 담아 주세요
+alice.add("노트북")                           # alice 에 "노트북" 을 담아 주세요
+bob.add("마우스")                             # bob 에 "마우스" 를 담아 주세요
+print(alice.items)                            # alice 의 items 를 화면에 보여 주세요
+print(bob.items)                              # bob 의 items 를 화면에 보여 주세요
+print(alice.items is bob.items)               # 둘의 items 는 같은 리스트인가요?</code></pre>
+<p>보기:</p><ol class="choices" style="list-style:none;padding-left:0;"><li style="margin:.25rem 0;">① <code>add</code> 메서드 안에서 <code>self.items = []</code>를 한 뒤 덧붙인다</li><li style="margin:.25rem 0;">② <code>__init__</code> 메서드를 만들고 그 안에서 <code>self.items = []</code>로 저장한다</li><li style="margin:.25rem 0;">③ <code>items</code>를 <code>Cart.items</code>로 바꿔 쓴다</li><li style="margin:.25rem 0;">④ 변수 이름을 <code>items</code>에서 <code>cart</code>로 바꾼다</li></ol>
+<div class="table-scroll"><table><thead><tr><th>출력</th><th>내 답</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr></tbody></table></div>
         </div>
         <details class="hint"><summary>힌트 보기</summary>
           <div class="sol-body">
-<p><code>self.count += 1</code>은 읽은 값에 1을 더해서 <b>그 인스턴스 자신의 변수</b>로 저장해요. 틀(클래스)의 <code>count</code>는 바뀌지 않아요.</p>
+<p>이 코드에는 <code>self.items = ...</code>처럼 값을 <b>새로 저장하는</b> 줄이 하나도 없어요. 두 사람이 읽는 리스트는 어디에 있나요?</p>
           </div>
         </details>
         <div class="memo"><label for="memo-m2">내 답 <span>이 브라우저에만 저장</span></label><textarea id="memo-m2"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
-<p>실행하면 이렇게 나와요.</p><pre class="out"><code class="nohighlight">2 1 0</code></pre>
-    <h4>왜 이런 답이 나올까요</h4><p><code>a.hit()</code>을 두 번 했으니 <code>a</code>는 자기 <code>count</code>를 갖고 2가 돼요. <code>b</code>는 한 번 해서 1이에요. 틀에 적힌 <code>Counter.count</code>는 한 번도 바뀌지 않아 0이에요.</p>
-    <h4>헷갈리기 쉬운 곳</h4><ul><li>“클래스에 적은 변수는 모든 인스턴스가 같이 쓴다”고 생각하기 쉬워요. 읽을 때는 같이 쓰지만, <code>self.이름 = 값</code>으로 저장하는 순간 그 인스턴스만의 값이 돼요.</li></ul>
-    <p><b>핵심 한 줄:</b> <code>self.변수 = 값</code>을 하면 그 인스턴스만의 값이 생기고, 클래스에 적힌 값은 그대로예요.</p>
+<p><b>정답:</b> ② (출력은 아래 정답 참고)</p>
+<p>원래 코드의 출력이에요.</p><pre class="out"><code class="nohighlight">['노트북', '마우스']
+['노트북', '마우스']
+True</code></pre>
+<p>②로 고친 코드와 출력이에요.</p><pre><code class="language-python">class Cart:                                   # Cart 클래스를 정의해 주세요
+    def __init__(self):                       # 만들 때 불리는 __init__ 을 정의해 주세요
+        self.items = []                       # 이 장바구니의 items 에 빈 리스트를 담아 주세요
+    def add(self, item):                      # add 메서드를 정의해 주세요
+        self.items.append(item)               # 이 장바구니의 items 에 item 을 덧붙여 주세요
+alice = Cart()                                # alice 에 Cart 를 만들어 담아 주세요
+bob = Cart()                                  # bob 에 Cart 를 만들어 담아 주세요
+alice.add("노트북")                           # alice 에 "노트북" 을 담아 주세요
+bob.add("마우스")                             # bob 에 "마우스" 를 담아 주세요
+print(alice.items)                            # alice 의 items 를 화면에 보여 주세요
+print(bob.items)                              # bob 의 items 를 화면에 보여 주세요
+print(alice.items is bob.items)               # 둘의 items 는 같은 리스트인가요?</code></pre>
+<pre class="out"><code class="nohighlight">['노트북']
+['마우스']
+False</code></pre>
+    <h4>왜 이런 답이 나올까요</h4><p><code>self.items</code>를 저장한 적이 없어서 <code>alice</code>와 <code>bob</code> 모두 클래스에 하나뿐인 리스트를 읽어요. 그 리스트에 두 번 <code>append</code>했으니 두 사람이 같은 내용을 보고, <code>is</code>도 <code>True</code>예요. <code>__init__</code>에서 <code>self.items = []</code>로 저장하면 인스턴스를 만들 때마다 각자 새 리스트가 생겨요.</p>
+    <h4>헷갈리기 쉬운 곳</h4><ul><li>①은 <code>add</code>를 부를 때마다 리스트를 비워서 앞에 담은 상품이 사라져요.</li><li>③은 클래스의 리스트를 직접 쓰는 것이라 문제가 그대로예요.</li><li>숫자나 글자는 <code>self.값 += 1</code>처럼 새로 저장되어 갈라지지만, 리스트의 <code>append</code>는 있는 리스트를 고치기만 해서 갈라지지 않아요.</li></ul>
+    <p><b>핵심 한 줄:</b> 인스턴스마다 따로 가져야 하는 리스트·딕셔너리는 <code>__init__</code>에서 <code>self.이름 = ...</code>으로 만들어요.</p>
           </div>
         </details>
       </article>
 
       <article class="problem" id="m3">
-        <div class="p-head"><span class="p-id">7.2 · 3</span><span class="p-type">OX</span><h3>self 를 직접 넘겨야 할까</h3></div>
+        <div class="p-head"><span class="p-id">문제 8</span><span class="p-type">결과 예측</span><h3>로그 기록기 두 종류</h3></div>
         <div class="p-body">
-<p>메서드를 부를 때 <code>a.hit(a)</code>처럼 <code>self</code> 자리에 인스턴스를 직접 적어 줘야 한다. ○ 또는 ✕로 답하세요.</p>
-<pre><code class="language-python">class Counter:                   # Counter 클래스를 정의해 주세요
-    def hit(self):               # hit 메서드를 정의해 주세요
-        print("hit")             # "hit" 을 화면에 보여 주세요
-a = Counter()                    # a 에 Counter 인스턴스를 만들어 담아 주세요
-a.hit(a)                         # a 에게 hit 을 시키면서 a 를 직접 넘겨 주세요</code></pre>
+<p>기본 로그 기록기를 물려받아 시각까지 적는 기록기를 만든 코드예요. 출력 세 줄을 적어 보세요.</p>
+<pre><code class="language-python">class Logger:                                 # Logger 클래스를 정의해 주세요
+    def __init__(self, prefix):               # 만들 때 불리는 __init__ 을 정의해 주세요
+        self.prefix = prefix                  # 이 인스턴스의 prefix 에 prefix 를 담아 주세요
+    def log(self, message):                   # log 메서드를 정의해 주세요
+        print(self.prefix + " " + message)    # prefix 와 message 를 이어 화면에 보여 주세요
+class TimeLogger(Logger):                     # Logger 를 상속받는 TimeLogger 클래스를 정의해 주세요
+    def __init__(self, prefix, time):         # TimeLogger 의 __init__ 을 정의해 주세요
+        super().__init__(prefix)              # 부모의 __init__ 을 prefix 로 불러 주세요
+        self.time = time                      # 이 인스턴스의 time 에 time 을 담아 주세요
+    def log(self, message):                   # log 메서드를 다시 정의해 주세요
+        super().log(self.time + " " + message)  # 시각을 앞에 붙여 부모의 log 를 불러 주세요
+base = Logger("[INFO]")                       # base 에 prefix 가 [INFO] 인 Logger 를 만들어 담아 주세요
+timed = TimeLogger("[WARN]", "12:30")         # timed 에 TimeLogger 를 만들어 담아 주세요
+base.log("서버 시작")                         # base 에 "서버 시작" 을 기록하게 해 주세요
+timed.log("디스크 부족")                      # timed 에 "디스크 부족" 을 기록하게 해 주세요
+print(timed.prefix, timed.time)               # timed 의 prefix 와 time 을 화면에 보여 주세요</code></pre>
+<div class="table-scroll"><table><thead><tr><th>출력</th><th>내 답</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr></tbody></table></div>
         </div>
         <details class="hint"><summary>힌트 보기</summary>
           <div class="sol-body">
-<p><code>hit(self)</code>가 받는 값은 <code>self</code> 하나뿐인데, 부르는 쪽에서 몇 개를 넘기고 있는지 세어 보세요.</p>
+<p><code>timed.log(...)</code>에서 <code>TimeLogger</code>의 <code>log</code>와 <code>Logger</code>의 <code>log</code> 중 어느 것이 먼저 실행되고, 어떻게 이어지는지 따라가 보세요.</p>
           </div>
         </details>
         <div class="memo"><label for="memo-m3">내 답 <span>이 브라우저에만 저장</span></label><textarea id="memo-m3"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
-<p><b>정답:</b> ✕ (오류가 나요)</p>
-<p>실행하면 이렇게 나와요.</p><pre class="out"><code class="nohighlight">TypeError: Counter.hit() takes 1 positional argument but 2 were given</code></pre>
-    <h4>왜 이런 답이 나올까요</h4><p><code>a.hit()</code>만 써도 파이썬이 <code>self</code> 자리에 <code>a</code>를 넣어 줘요. 거기에 <code>a</code>를 또 적으면 값이 두 개가 넘어가서 <code>TypeError</code>가 나요.</p>
-    <h4>헷갈리기 쉬운 곳</h4><ul><li>정의할 때는 <code>self</code>를 적고, 부를 때는 적지 않아요. 둘이 서로 반대처럼 보이지만 같은 약속이에요.</li></ul>
-    <p><b>핵심 한 줄:</b> <code>self</code>는 정의할 때만 적고, 부를 때는 파이썬이 알아서 넣어 줘요.</p>
+<p>실행하면 이렇게 나와요.</p><pre class="out"><code class="nohighlight">[INFO] 서버 시작
+[WARN] 12:30 디스크 부족
+[WARN] 12:30</code></pre>
+    <h4>왜 이런 답이 나올까요</h4><p><code>timed.log("디스크 부족")</code>는 자식의 <code>log</code>가 먼저 실행돼요. 그 안의 <code>super().log("12:30 디스크 부족")</code>이 부모의 <code>log</code>를 불러서 <code>self.prefix</code>(<code>[WARN]</code>) 뒤에 이어 붙여 출력해요. <code>prefix</code>는 자식의 <code>__init__</code>이 <code>super().__init__(prefix)</code>로 부모에게 맡겨 저장했기 때문에 <code>timed.prefix</code>로 읽을 수 있어요.</p>
+    <h4>헷갈리기 쉬운 곳</h4><ul><li><code>super().__init__(prefix)</code>를 빼면 <code>self.prefix</code>가 없어서 <code>log</code>에서 <code>AttributeError</code>가 나요(아래 실습 문제 11번).</li></ul>
+    <p><b>핵심 한 줄:</b> 자식이 같은 이름의 메서드를 다시 적으면 자식 것이 먼저이고, 부모 것은 <code>super()</code>로 불러요.</p>
           </div>
         </details>
       </article>
 
       <article class="problem" id="m4">
-        <div class="p-head"><span class="p-id">7.2 · 4</span><span class="p-type">빈칸 채우기</span><h3>같은 뜻으로 풀어 쓰기</h3></div>
+        <div class="p-head"><span class="p-id">문제 9</span><span class="p-type">결과 예측</span><h3>파일 이름 기록장</h3></div>
         <div class="p-body">
-<p><code>a.hit()</code>은 아래 한 줄과 같은 뜻이에요. 빈칸에 들어갈 것을 쓰세요.</p>
-<pre><code class="language-python">class Counter:                   # Counter 클래스를 정의해 주세요
-    count = 0                    # 클래스 변수 count 에 0 을 담아 주세요
-    def hit(self):               # hit 메서드를 정의해 주세요
-        self.count += 1          # 이 인스턴스의 count 에 1 을 더해 주세요
-a = Counter()                    # a 에 Counter 인스턴스를 만들어 담아 주세요
-Counter.hit(____)                # a.hit() 과 같은 뜻이 되도록 빈칸을 채워 주세요
-print(a.count)                   # a 의 count 를 화면에 보여 주세요</code></pre>
+<p>파이썬에 처음부터 들어 있는 <code>list</code>도 클래스예요. <code>list</code>를 물려받아 마지막 항목을 꺼내는 기능을 더한 코드예요. 출력 네 줄을 적어 보세요.</p>
+<pre><code class="language-python">class History(list):                          # list 를 상속받는 History 클래스를 정의해 주세요
+    def last(self):                           # last 메서드를 정의해 주세요
+        return self[-1]                       # 이 기록장의 마지막 칸을 돌려주세요
+h = History()                                 # h 에 빈 History 를 만들어 담아 주세요
+h.append("a.txt")                             # h 에 "a.txt" 를 덧붙여 주세요
+h.append("b.txt")                             # h 에 "b.txt" 를 덧붙여 주세요
+print(h.last())                               # h 의 마지막 항목을 화면에 보여 주세요
+print(len(h))                                 # h 의 칸 수를 화면에 보여 주세요
+print(h)                                      # h 를 화면에 보여 주세요
+print(isinstance(h, list))                    # h 는 list 인스턴스이기도 한가요?</code></pre>
+<div class="table-scroll"><table><thead><tr><th>출력</th><th>내 답</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr><tr><td>3번째 줄</td><td>?</td></tr><tr><td>4번째 줄</td><td>?</td></tr></tbody></table></div>
         </div>
         <details class="hint"><summary>힌트 보기</summary>
           <div class="sol-body">
-<p><code>hit(self)</code>의 <code>self</code> 자리에 누구를 넣고 싶은가요?</p>
+<p><code>History</code>에는 <code>append</code>를 적지 않았어요. 그래도 <code>h.append(...)</code>가 되는 이유를 생각해 보세요.</p>
           </div>
         </details>
         <div class="memo"><label for="memo-m4">내 답 <span>이 브라우저에만 저장</span></label><textarea id="memo-m4"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
-<p><b>정답:</b> <code>a</code></p>
-<p>실행하면 이렇게 나와요.</p><pre class="out"><code class="nohighlight">1</code></pre>
-    <h4>왜 이런 답이 나올까요</h4><p>빈칸에 <code>a</code>를 넣으면 <code>self</code>가 <code>a</code>가 되어 <code>a.hit()</code>과 똑같이 동작하고 <code>1</code>이 출력돼요. <code>a.hit()</code>은 이 긴 모양을 줄여 쓴 거예요.</p>
-    <h4>헷갈리기 쉬운 곳</h4><ul><li>실제로는 줄여 쓴 <code>a.hit()</code>을 써요. 이 문제는 <code>self</code>에 무엇이 들어가는지 확인하려는 거예요.</li></ul>
-    <p><b>핵심 한 줄:</b> <code>a.hit()</code>은 <code>Counter.hit(a)</code>를 줄여 쓴 모양이에요.</p>
+<p>실행하면 이렇게 나와요.</p><pre class="out"><code class="nohighlight">b.txt
+2
+['a.txt', 'b.txt']
+True</code></pre>
+    <h4>왜 이런 답이 나올까요</h4><p><code>History</code>는 <code>list</code>를 상속받아서 <code>append</code>, <code>len</code>, 출력 모양 같은 리스트의 기능을 그대로 쓰고, <code>last</code>만 더했어요. <code>h</code>는 <code>History</code>이면서 <code>list</code>이므로 <code>isinstance(h, list)</code>는 <code>True</code>예요.</p>
+    <h4>헷갈리기 쉬운 곳</h4><ul><li>이미 있는 클래스(<code>list</code>, <code>dict</code> 등)도 상속해서 기능을 더할 수 있어요.</li></ul>
+    <p><b>핵심 한 줄:</b> 상속은 내가 만든 클래스뿐 아니라 파이썬에 들어 있는 클래스에도 쓸 수 있어요.</p>
           </div>
         </details>
       </article>
@@ -665,130 +802,160 @@ print(a.count)                   # a 의 count 를 화면에 보여 주세요</c
 
     <section class="level adv" data-level="adv">
       <div class="level-head">
-        <span class="tag">7.3</span>
-        <h2>7.3 상속</h2>
-        <p>자식이 부모에게서 무엇을 물려받는지, <code>super()</code>가 언제 필요한지 확인해요.</p>
+        <span class="tag">적용</span>
+        <h2>실제 상황에 적용</h2>
+        <p>실제 프로그램에서 쓰는 상황에서 직접 코드를 쓰고, 오류를 찾아 고쳐요.</p>
       </div>
 
       <article class="problem" id="a1">
-        <div class="p-head"><span class="p-id">7.3 · 1</span><span class="p-type">객관식</span><h3>자식 클래스가 쓸 수 있는 메서드</h3></div>
+        <div class="p-head"><span class="p-id">문제 10</span><span class="p-type">코드 쓰기</span><h3>게임 캐릭터 만들기</h3></div>
         <div class="p-body">
-<p>아래 코드에서 <code>b</code>가 쓸 수 있는 메서드를 하나 고르세요.</p>
-<pre><code class="language-python">class Animal:                    # Animal 클래스를 정의해 주세요
-    def breathe(self):           # breathe 메서드를 정의해 주세요
-        return "숨쉬기"          # "숨쉬기" 를 돌려주세요
-class Bird(Animal):              # Animal 을 상속받는 Bird 클래스를 정의해 주세요
-    def fly(self):               # fly 메서드를 정의해 주세요
-        return "푸드덕"          # "푸드덕" 을 돌려주세요
-b = Bird()                       # b 에 Bird 인스턴스를 만들어 담아 주세요
-print(b.breathe(), b.fly())      # b 에게 숨쉬기와 날기를 시킨 결과를 화면에 보여 주세요</code></pre>
-<ol class="choices" style="list-style:none;padding-left:0;"><li style="margin:.25rem 0;">① <code>fly()</code>만</li><li style="margin:.25rem 0;">② <code>breathe()</code>만</li><li style="margin:.25rem 0;">③ <code>breathe()</code>와 <code>fly()</code> 모두</li><li style="margin:.25rem 0;">④ 하나도 못 써요</li></ol>
+<p>게임 플레이어를 나타내는 <code>Player</code> 클래스를 직접 써 보세요.</p><ul><li><code>Player(name, health, skill)</code> — 세 값을 저장하고, 경험치 <code>xp</code>는 항상 0으로 시작해요.</li><li><code>say_hello()</code> — <code>"안녕, 나는 이름"</code> 글자를 돌려줘요.</li><li><code>take_hit(damage)</code> — 체력을 <code>damage</code>만큼 줄이되 0보다 작아지지 않게 하고, 줄어든 체력을 돌려줘요.</li></ul><p>아래 실행 줄이 기대 출력대로 나오게 하세요.</p>
+<pre><code class="language-python">class Player:
+    pass
+
+
+p = Player("elon", 100, "coding")
+print(p.say_hello())
+print(p.take_hit(30))
+print(p.take_hit(90))
+print(p.xp, p.health)</code></pre>
+<p>기대 출력:</p><pre class="out"><code class="nohighlight">안녕, 나는 elon
+70
+0
+0 0</code></pre>
         </div>
         <details class="hint"><summary>힌트 보기</summary>
           <div class="sol-body">
-<p>자식은 부모의 메서드를 물려받고, 자기 것도 더해요.</p>
+<p>속성 네 개(<code>name</code>, <code>health</code>, <code>skill</code>, <code>xp</code>)는 <code>__init__</code>에서 저장해요. <code>take_hit</code>은 <code>self.health</code>를 바꾸고, 0 밑으로 내려가지 않게 하려면 <code>max(0, 값)</code>이나 <code>if</code>를 써요.</p>
           </div>
         </details>
         <div class="memo"><label for="memo-a1">내 답 <span>이 브라우저에만 저장</span></label><textarea id="memo-a1"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
-<p><b>정답:</b> ③</p>
-<p>실행하면 이렇게 나와요.</p><pre class="out"><code class="nohighlight">숨쉬기 푸드덕</code></pre>
-    <h4>왜 이런 답이 나올까요</h4><p><code>Bird</code>는 <code>Animal</code>을 상속받아서 부모의 <code>breathe()</code>와 자기 <code>fly()</code>를 모두 쓸 수 있어요.</p>
-    <h4>헷갈리기 쉬운 곳</h4><ul><li>부모에게 없는 <code>fly()</code>를 자식에 더한 거예요. 다음 문제에서 이 방향을 거꾸로 확인해 봐요.</li></ul>
-    <p><b>핵심 한 줄:</b> 자식은 부모 것을 모두 쓰고 자기 것을 더해요.</p>
+<p>정답 코드(한 가지 예)와 실행 결과예요.</p><pre><code class="language-python">class Player:                                 # Player 클래스를 정의해 주세요
+    def __init__(self, name, health, skill):  # 만들 때 불리는 __init__ 을 정의해 주세요
+        self.name = name                      # 이 인스턴스의 name 에 name 을 담아 주세요
+        self.health = health                  # 이 인스턴스의 health 에 health 를 담아 주세요
+        self.skill = skill                    # 이 인스턴스의 skill 에 skill 을 담아 주세요
+        self.xp = 0                           # 이 인스턴스의 xp 에 0 을 담아 주세요
+    def say_hello(self):                      # say_hello 메서드를 정의해 주세요
+        return "안녕, 나는 " + self.name      # 인사말을 만들어 돌려주세요
+    def take_hit(self, damage):               # take_hit 메서드를 정의해 주세요
+        self.health = max(0, self.health - damage)  # health 를 damage 만큼 줄이되 0 밑으로는 안 내려가게 해 주세요
+        return self.health                    # 줄어든 health 를 돌려주세요
+p = Player("elon", 100, "coding")             # p 에 체력 100 인 Player 를 만들어 담아 주세요
+print(p.say_hello())                          # p 의 인사말을 화면에 보여 주세요
+print(p.take_hit(30))                         # p 가 30 의 피해를 입은 뒤 체력을 화면에 보여 주세요
+print(p.take_hit(90))                         # p 가 90 의 피해를 입은 뒤 체력을 화면에 보여 주세요
+print(p.xp, p.health)                         # p 의 xp 와 health 를 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">안녕, 나는 elon
+70
+0
+0 0</code></pre>
+    <h4>왜 이런 답이 나올까요</h4><p>체력 100에서 30을 맞아 70, 다시 90을 맞으면 -20이 되어야 하지만 0 밑으로는 내려가지 않게 해서 0이에요. <code>xp</code>는 값을 받지 않고 <code>__init__</code>에서 항상 0으로 저장하니 0 그대로예요. 위 코드가 한 가지 정답이에요.</p>
+    <h4>헷갈리기 쉬운 곳</h4><ul><li><code>xp</code>를 <code>__init__</code>의 매개변수로 받을 필요는 없어요. 항상 0으로 시작하는 값은 <code>__init__</code> 안에서 직접 정해요.</li><li><code>take_hit</code>이 값을 돌려주지 않으면 <code>print(p.take_hit(30))</code>이 <code>None</code>을 보여 줘요.</li></ul>
+    <p><b>핵심 한 줄:</b> 값은 <code>__init__</code>에서 저장하고, 상태를 바꾸는 일은 메서드가 <code>self</code>로 해요.</p>
           </div>
         </details>
       </article>
 
       <article class="problem" id="a2">
-        <div class="p-head"><span class="p-id">7.3 · 2</span><span class="p-type">OX</span><h3>부모도 자식의 메서드를 쓸 수 있을까</h3></div>
+        <div class="p-head"><span class="p-id">문제 11</span><span class="p-type">오류 고치기</span><h3>직원 등록 오류 고치기</h3></div>
         <div class="p-body">
-<p>앞 문제의 <code>Animal</code>로 만든 인스턴스도 <code>fly()</code>를 쓸 수 있다. ○ 또는 ✕로 답하세요.</p>
-<pre><code class="language-python">class Animal:                    # Animal 클래스를 정의해 주세요
-    def breathe(self):           # breathe 메서드를 정의해 주세요
-        return "숨쉬기"          # "숨쉬기" 를 돌려주세요
-class Bird(Animal):              # Animal 을 상속받는 Bird 클래스를 정의해 주세요
-    def fly(self):               # fly 메서드를 정의해 주세요
-        return "푸드덕"          # "푸드덕" 을 돌려주세요
-print(Animal().fly())            # Animal 인스턴스에게 날기를 시켜 주세요</code></pre>
+<p>사람 클래스를 물려받아 직원 클래스를 만들었는데 소개를 출력하려니 오류가 나요. 코드를 읽고 고칠 줄을 찾아 기대 출력이 나오게 고쳐 보세요.</p>
+<pre><code class="language-python">class Person:                                 # Person 클래스를 정의해 주세요
+    def __init__(self, name):                 # 만들 때 불리는 __init__ 을 정의해 주세요
+        self.name = name                      # 이 인스턴스의 name 에 name 을 담아 주세요
+    def intro(self):                          # intro 메서드를 정의해 주세요
+        return "이름: " + self.name           # 이름 소개 글자를 만들어 돌려주세요
+class Employee(Person):                       # Person 을 상속받는 Employee 클래스를 정의해 주세요
+    def __init__(self, name, company):        # Employee 의 __init__ 을 정의해 주세요
+        self.company = company                # 이 인스턴스의 company 에 company 를 담아 주세요
+    def intro(self):                          # intro 메서드를 다시 정의해 주세요
+        return super().intro() + ", 회사: " + self.company  # 부모의 소개 뒤에 회사를 붙여 돌려주세요
+e = Employee("민지", "한빛전자")              # e 에 민지, 한빛전자 직원을 만들어 담아 주세요
+print(e.intro())                              # e 의 소개를 화면에 보여 주세요</code></pre>
+<p>지금은 이렇게 오류가 나요.</p><pre class="out"><code class="nohighlight">AttributeError: 'Employee' object has no attribute 'name'</code></pre>
+<p>기대 출력:</p><pre class="out"><code class="nohighlight">이름: 민지, 회사: 한빛전자</code></pre>
         </div>
         <details class="hint"><summary>힌트 보기</summary>
           <div class="sol-body">
-<p>물려주는 방향은 부모 → 자식이에요. <code>fly</code>는 어느 클래스에 적혀 있나요?</p>
+<p>오류 문장의 “no attribute ‘name’”을 보세요. <code>name</code>은 어느 클래스의 <code>__init__</code>이 저장하나요? 그 <code>__init__</code>은 지금 실행되고 있나요?</p>
           </div>
         </details>
         <div class="memo"><label for="memo-a2">내 답 <span>이 브라우저에만 저장</span></label><textarea id="memo-a2"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
-<p><b>정답:</b> ✕ (오류가 나요)</p>
-<p>실행하면 이렇게 나와요.</p><pre class="out"><code class="nohighlight">AttributeError: 'Animal' object has no attribute 'fly'</code></pre>
-    <h4>왜 이런 답이 나올까요</h4><p><code>fly</code>는 자식 <code>Bird</code>에만 있고 부모 <code>Animal</code>에는 없어요. 그래서 <code>Animal()</code>에게 <code>fly()</code>를 시키면 <code>AttributeError</code>가 나요.</p>
-    <h4>헷갈리기 쉬운 곳</h4><ul><li>“학생은 사람이다”는 맞지만 “사람은 학생이다”는 아니에요. 같은 이치예요.</li></ul>
-    <p><b>핵심 한 줄:</b> 상속은 부모 → 자식 한 방향이에요.</p>
+<p>고친 코드와 실행 결과예요.</p><pre><code class="language-python">class Person:                                 # Person 클래스를 정의해 주세요
+    def __init__(self, name):                 # 만들 때 불리는 __init__ 을 정의해 주세요
+        self.name = name                      # 이 인스턴스의 name 에 name 을 담아 주세요
+    def intro(self):                          # intro 메서드를 정의해 주세요
+        return "이름: " + self.name           # 이름 소개 글자를 만들어 돌려주세요
+class Employee(Person):                       # Person 을 상속받는 Employee 클래스를 정의해 주세요
+    def __init__(self, name, company):        # Employee 의 __init__ 을 정의해 주세요
+        super().__init__(name)                # 부모 Person 의 __init__ 을 name 으로 불러 주세요
+        self.company = company                # 이 인스턴스의 company 에 company 를 담아 주세요
+    def intro(self):                          # intro 메서드를 다시 정의해 주세요
+        return super().intro() + ", 회사: " + self.company  # 부모의 소개 뒤에 회사를 붙여 돌려주세요
+e = Employee("민지", "한빛전자")              # e 에 민지, 한빛전자 직원을 만들어 담아 주세요
+print(e.intro())                              # e 의 소개를 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">이름: 민지, 회사: 한빛전자</code></pre>
+    <h4>왜 이런 답이 나올까요</h4><p><code>Employee</code>가 자기 <code>__init__</code>을 다시 적었기 때문에 부모 <code>Person.__init__</code>은 자동으로 실행되지 않고, <code>name</code>이 저장되지 않아요. <code>intro</code>가 부모의 <code>intro</code>를 불러 <code>self.name</code>을 읽는 순간 <code>AttributeError</code>가 나요. <code>Employee.__init__</code> 안에 <code>super().__init__(name)</code>을 넣으면 해결돼요.</p>
+    <h4>헷갈리기 쉬운 곳</h4><ul><li>오류는 <code>Employee(...)</code>를 만드는 줄이 아니라 <code>e.intro()</code>에서 나요. 만드는 줄만 봐서는 문제가 보이지 않아요.</li></ul>
+    <p><b>핵심 한 줄:</b> 자식 클래스에 <code>__init__</code>을 적으면 <code>super().__init__(...)</code>으로 부모의 <code>__init__</code>도 불러야 해요.</p>
           </div>
         </details>
       </article>
 
       <article class="problem" id="a3">
-        <div class="p-head"><span class="p-id">7.3 · 3</span><span class="p-type">결과 예측</span><h3>덮어쓰기와 super()</h3></div>
+        <div class="p-head"><span class="p-id">문제 12</span><span class="p-type">코드 쓰기</span><h3>상품 가격 계산</h3></div>
         <div class="p-body">
-<p>자식이 부모와 같은 이름의 메서드를 적고, 그 안에서 <code>super()</code>로 부모 것을 불러요. 출력 두 줄을 적어 보세요.</p>
-<pre><code class="language-python">class Shop:                                     # Shop 클래스를 정의해 주세요
-    def greet(self):                            # greet 메서드를 정의해 주세요
-        return "어서 오세요"                    # "어서 오세요" 를 돌려주세요
-class CheeseShop(Shop):                         # Shop 을 상속받는 CheeseShop 클래스를 정의해 주세요
-    def greet(self):                            # greet 메서드를 다시 정의해 주세요
-        return super().greet() + ", 치즈도 있어요"  # 부모의 인사 뒤에 문장을 붙여 돌려주세요
-print(Shop().greet())                           # Shop 의 인사를 화면에 보여 주세요
-print(CheeseShop().greet())                     # CheeseShop 의 인사를 화면에 보여 주세요</code></pre>
-<div class="table-scroll"><table><thead><tr><th>출력</th><th>내 답</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr></tbody></table></div>
+<p>쇼핑몰에서 일반 상품과 할인 상품의 최종 가격을 계산해요. 아래 조건에 맞는 두 클래스를 직접 써 보세요.</p><ul><li><code>Product(name, price)</code> — 이름과 가격을 저장하고, <code>final_price()</code>는 가격을 그대로 돌려줘요.</li><li><code>SaleProduct(name, price, rate)</code> — <code>Product</code>를 물려받아요. 할인율 <code>rate</code>(0~1)도 저장하고, <code>final_price()</code>는 부모의 <code>final_price()</code>에서 할인율만큼 깎은 값을 <code>int</code>로 돌려줘요.</li><li>아래 실행 줄은 두 종류를 같은 방식으로 다뤄요. 새 상품 종류가 생겨도 이 반복문은 고치지 않아도 되게 만들어 보세요.</li></ul>
+<pre><code class="language-python">class Product:
+    pass
+
+
+class SaleProduct(Product):
+    pass
+
+
+items = [Product("노트", 3000), SaleProduct("펜", 2000, 0.25)]
+total = 0
+for item in items:
+    total += item.final_price()
+print(total)</code></pre>
+<p>기대 출력:</p><pre class="out"><code class="nohighlight">4500</code></pre>
         </div>
         <details class="hint"><summary>힌트 보기</summary>
           <div class="sol-body">
-<p>같은 이름이 자식에도 있으면 자식 것이 먼저 쓰여요. <code>super().greet()</code>는 부모의 <code>greet</code>를 불러요.</p>
+<p>할인 상품의 <code>__init__</code>은 이름과 가격을 부모에게 맡기고 할인율만 자기가 저장해요. <code>final_price</code>는 같은 이름으로 다시 적고, 안에서 <code>super().final_price()</code>로 부모 값을 받아 와요.</p>
           </div>
         </details>
         <div class="memo"><label for="memo-a3">내 답 <span>이 브라우저에만 저장</span></label><textarea id="memo-a3"></textarea></div>
         <details class="sol"><summary>정답·해설 보기</summary>
           <div class="sol-body">
-<p>실행하면 이렇게 나와요.</p><pre class="out"><code class="nohighlight">어서 오세요
-어서 오세요, 치즈도 있어요</code></pre>
-    <h4>왜 이런 답이 나올까요</h4><p><code>Shop().greet()</code>는 부모 것만 실행해서 <code>어서 오세요</code>예요. <code>CheeseShop().greet()</code>는 자식 것이 먼저 쓰이고, 그 안의 <code>super().greet()</code>가 부모의 <code>어서 오세요</code>를 받아 뒤에 문장을 붙여요.</p>
-    <h4>헷갈리기 쉬운 곳</h4><ul><li><code>super()</code>가 없으면 부모 것은 쓰이지 않아요. 자식 것이 부모 것을 통째로 가려요.</li></ul>
-    <p><b>핵심 한 줄:</b> 같은 이름이면 자식 것이 먼저이고, 부모 것이 필요하면 <code>super()</code>로 불러요.</p>
-          </div>
-        </details>
-      </article>
-
-      <article class="problem" id="a4">
-        <div class="p-head"><span class="p-id">7.3 · 4</span><span class="p-type">결과 예측</span><h3>부모의 __init__ 을 안 부르면</h3></div>
-        <div class="p-body">
-<p>자식이 자기 <code>__init__</code>을 적었어요. 아래 코드를 실행하면 어떻게 될까요? 마지막 줄까지의 출력을 적어 보세요.</p>
-<pre><code class="language-python">class Base:                      # Base 클래스를 정의해 주세요
-    def __init__(self, name):    # 만들 때 불리는 __init__ 을 정의해 주세요
-        self.name = name         # 이 인스턴스의 name 에 name 을 담아 주세요
-class Kid(Base):                 # Base 를 상속받는 Kid 클래스를 정의해 주세요
-    def __init__(self, name):    # Kid 의 __init__ 을 정의해 주세요
-        self.age = 3             # 이 인스턴스의 age 에 3 을 담아 주세요
-k = Kid("민수")                  # k 에 이름이 "민수" 인 Kid 를 만들어 담아 주세요
-print(k.age)                     # k 의 age 를 화면에 보여 주세요
-print(k.name)                    # k 의 name 을 화면에 보여 주세요</code></pre>
-<div class="table-scroll"><table><thead><tr><th>출력</th><th>내 답</th></tr></thead><tbody><tr><td>1번째 줄</td><td>?</td></tr><tr><td>2번째 줄</td><td>?</td></tr></tbody></table></div>
-        </div>
-        <details class="hint"><summary>힌트 보기</summary>
-          <div class="sol-body">
-<p>자식에 <code>__init__</code>이 있으면 그것만 실행돼요. 부모의 <code>__init__</code>이 하던 일(<code>name</code> 저장)은 누가 하나요?</p>
-          </div>
-        </details>
-        <div class="memo"><label for="memo-a4">내 답 <span>이 브라우저에만 저장</span></label><textarea id="memo-a4"></textarea></div>
-        <details class="sol"><summary>정답·해설 보기</summary>
-          <div class="sol-body">
-<p>실행하면 이렇게 나와요.</p><pre class="out"><code class="nohighlight">3
-AttributeError: 'Kid' object has no attribute 'name'</code></pre>
-    <h4>왜 이런 답이 나올까요</h4><p><code>Kid.__init__</code>만 실행돼서 <code>age</code>는 만들어지지만 <code>name</code>은 만들어지지 않아요. 그래서 첫 <code>print</code>는 3을 보여 주고, 둘째 <code>print</code>에서 <code>AttributeError</code>가 나요. <code>Kid.__init__</code> 안에 <code>super().__init__(name)</code>을 넣으면 해결돼요.</p>
-    <h4>헷갈리기 쉬운 곳</h4><ul><li>오류는 <code>k = Kid("민수")</code> 줄이 아니라 <code>k.name</code>을 읽는 줄에서 나요. 만들 때는 아무 문제가 없어 보여요.</li></ul>
-    <p><b>핵심 한 줄:</b> 자식에 <code>__init__</code>을 적으면 <code>super().__init__(...)</code>으로 부모 것도 불러야 해요.</p>
+<p>정답 코드(한 가지 예)와 실행 결과예요.</p><pre><code class="language-python">class Product:                                # Product 클래스를 정의해 주세요
+    def __init__(self, name, price):          # 만들 때 불리는 __init__ 을 정의해 주세요
+        self.name = name                      # 이 인스턴스의 name 에 name 을 담아 주세요
+        self.price = price                    # 이 인스턴스의 price 에 price 를 담아 주세요
+    def final_price(self):                    # final_price 메서드를 정의해 주세요
+        return self.price                     # price 를 그대로 돌려주세요
+class SaleProduct(Product):                   # Product 를 상속받는 SaleProduct 클래스를 정의해 주세요
+    def __init__(self, name, price, rate):    # SaleProduct 의 __init__ 을 정의해 주세요
+        super().__init__(name, price)         # 부모의 __init__ 을 name, price 로 불러 주세요
+        self.rate = rate                      # 이 인스턴스의 rate 에 rate 를 담아 주세요
+    def final_price(self):                    # final_price 메서드를 다시 정의해 주세요
+        return int(super().final_price() * (1 - self.rate))  # 부모의 가격에서 할인율만큼 깎아 정수로 돌려주세요
+items = [Product("노트", 3000), SaleProduct("펜", 2000, 0.25)]  # items 에 일반 상품과 할인 상품을 담아 주세요
+total = 0                                     # total 에 0 을 담아 주세요
+for item in items:                            # items 의 상품을 하나씩 item 으로 꺼내 주세요
+    total += item.final_price()               # total 에 item 의 최종 가격을 더해 주세요
+print(total)                                  # total 을 화면에 보여 주세요</code></pre>
+<pre class="out"><code class="nohighlight">4500</code></pre>
+    <h4>왜 이런 답이 나올까요</h4><p>노트는 3000, 펜은 2000에서 25%를 깎은 1500이라서 합계가 4500이에요. 반복문은 <code>item</code>이 어느 종류인지 따지지 않고 <code>final_price()</code>만 불러요. 각 인스턴스가 자기 클래스의 <code>final_price</code>를 알아서 쓰기 때문에, 새 상품 종류는 클래스만 추가하면 이 반복문을 고치지 않아도 돼요.</p>
+    <h4>헷갈리기 쉬운 곳</h4><ul><li>종류마다 <code>if</code>로 나눠 계산하면 새 종류가 생길 때마다 반복문을 고쳐야 해요.</li></ul>
+    <p><b>핵심 한 줄:</b> 같은 이름의 메서드를 클래스마다 다르게 적으면, 부르는 쪽 코드는 종류를 몰라도 돼요.</p>
           </div>
         </details>
       </article>
